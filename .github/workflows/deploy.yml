@@ -54,14 +54,19 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
+      - name: Unlock SSH Private Key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-key-password: ${{ secrets.SSH_PRIVATE_KEY_PASSPHRASE }}
+
       - name: SSH Deploy
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.PUBLIC_DNS }} # Set your server's host
-          username: ${{ secrets.USERNAME }} # Set your server's username
-          key: ${{ secrets.SSH_PRIVATE_KEY }} # Set your SSH private key
-          port: ${{ secrets.PORT }} # Set your server's SSH port
+          host: ${{ secrets.PUBLIC_DNS }}
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.PORT }}
           script: |
-            cd ~/client
+            cd /path/to/your/project
             git pull origin main  # Pull the latest changes from your repository
             # Additional deployment steps or commands as needed
