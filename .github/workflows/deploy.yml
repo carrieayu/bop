@@ -1,41 +1,67 @@
-name: Deploy to EC2
+# name: Deploy to EC2
+
+# on:
+#   push:
+#     branches: [main]
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - uses: actions/checkout@v3
+
+#       - name: Install SSH agent
+#         run: |
+#           echo "Adding SSH key..."
+#           mkdir -p ~/.ssh
+#           chmod 700 ~/.ssh
+#           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+#           chmod 600 ~/.ssh/id_rsa
+#           echo "SSH key added!"
+
+#       - name: Use a known SSH host
+#         run: |
+#           ssh-keyscan -T 10 ec2:10.1.20.58 >> ~/.ssh/known_hosts
+
+#       - name: Install dependencies
+#         run: |
+#           ssh -o StrictHostKeyChecking=no ubuntu@10.1.20.58 "sudo yum install -y gcc make gcc-c++ libcurl openssl openssl-devel perl perl-devel git"  # Install dependencies on EC2
+
+#       - name: Build React App
+#         run: npm ci
+#           npm run build
+
+#       - name: Deploy to EC2
+#         run: |
+#           scp -r build/* ubuntu@10.1.20.58:/var/www/html/  # Upload build files
+#           ssh -o StrictHostKeyChecking=no ubuntu@10.1.20.58 "sudo systemctl restart nginx"  # Restart web server
+
+# env:
+#   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }} # Reference to secret containing private key
+name: Deployment
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main # Adjust branch name as needed
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-      - name: Install SSH agent
-        run: |
-          echo "Adding SSH key..."
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa 
-          chmod 600 ~/.ssh/id_rsa
-          echo "SSH key added!"
-
-      - name: Use a known SSH host
-        run: |
-          ssh-keyscan -T ec2:10.1.20.58 >> ~/.ssh/known_hosts
-
-      - name: Install dependencies
-        run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@10.1.20.58 "sudo yum install -y gcc make gcc-c++ libcurl openssl openssl-devel perl perl-devel git"  # Install dependencies on EC2
-
-      - name: Build React App
-        run: npm ci
-          npm run build
-
-      - name: Deploy to EC2
-        run: |
-          scp -r build/* ubuntu@10.1.20.58:/var/www/html/  # Upload build files
-          ssh -o StrictHostKeyChecking=no ubuntu@10.1.20.58 "sudo systemctl restart nginx"  # Restart web server
-
-env:
-  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }} # Reference to secret containing private key
+      - name: SSH Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }} # Set your server's host
+          username: ${{ secrets.USERNAME }} # Set your server's username
+          key: ${{ secrets.SSH_PRIVATE_KEY }} # Set your SSH private key
+          port: ${{ secrets.PORT }} # Set your server's SSH port
+          script: |
+            cd /path/to/your/project
+            git pull origin main  # Pull the latest changes from your repository
+            # Additional deployment steps or commands as needed
