@@ -29,5 +29,5 @@ jobs:
           username: ec2-user
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "build/*"
-          target: "~/"
+          target: "/home/ec2-user/"
           strip_components: 2
