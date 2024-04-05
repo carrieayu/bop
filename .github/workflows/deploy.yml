@@ -41,6 +41,6 @@ jobs:
           target: "/home/ec2-user/build"
           strip_components: 2
 
-    #   - name: Check EC2 Instance Directory
-    #     run: |
-    #       ssh -i ${{ secrets.SSH_PRIVATE_PEM_KEY }} ec2-user@ec2-54-178-202-58.ap-northeast-1.compute.amazonaws.com ls -al /home/ec2-user/build
+      - name: Check EC2 Instance Directory
+        run: |
+          ssh -i ${{ secrets.SSH_PRIVATE_PEM_KEY }} ec2-user@ec2-54-178-202-58.ap-northeast-1.compute.amazonaws.com ls -al /home/ec2-user/build
