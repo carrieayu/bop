@@ -29,18 +29,27 @@ jobs:
             exit 1
           fi
 
-      - name: Copy build files via SSH
-        uses: appleboy/ssh-action@master # Consider a more recent version
+      - name: Copy build files view SSH
+        uses: appleboy/scp-action@master
         with:
           host: ec2-54-178-202-58.ap-northeast-1.compute.amazonaws.com
           username: ec2-user
-          key: ${{ secrets.SSH_PRIVATE_PEM_KEY }}
-          port: 22 # Optional if using default port
-          script: |
-            mkdir -p /home/ec2-user/build
-            rsync -avz --delete ${GITHUB_WORKSPACE}/build/ /home/ec2-user/build/
-            # Use rsync for efficient transfer and overwrite handling
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "build/*"
+          target: "/home/ec2-user/build/"
+          strip_components: 2
+    #   - name: Copy build files via SSH
+    #     uses: appleboy/ssh-action@master # Consider a more recent version
+    #     with:
+    #       host: ec2-54-178-202-58.ap-northeast-1.compute.amazonaws.com
+    #       username: ec2-user
+    #       key: ${{ secrets.SSH_PRIVATE_PEM_KEY }}
+    #       port: 22 # Optional if using default port
+    #       script: |
+    #         mkdir -p /home/ec2-user/build
+    #         rsync -avz --delete ${GITHUB_WORKSPACE}/build/ /home/ec2-user/build/
+    #         # Use rsync for efficient transfer and overwrite handling
 
-      - name: Check EC2 Instance Directory (optional)
-        run: |
-          ssh -i ${{ secrets.SSH_PRIVATE_PEM_KEY }} ec2-user@ec2-54-178-202-58.ap-northeast-1.compute.amazonaws.com ls -al /home/ec2-user/build
+    #   - name: Check EC2 Instance Directory (optional)
+    #     run: |
+    #       ssh -i ${{ secrets.SSH_PRIVATE_PEM_KEY }} ec2-user@ec2-54-178-202-58.ap-northeast-1.compute.amazonaws.com ls -al /home/ec2-user/build
