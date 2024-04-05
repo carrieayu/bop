@@ -37,7 +37,9 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           strip_components: 2
-          script: whoami
+          script: |
+            whoami
+            ls -al
     #   - name: Copy build files via SSH
     #     uses: appleboy/ssh-action@master # Consider a more recent version
     #     with:
