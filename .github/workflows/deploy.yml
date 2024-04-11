@@ -16,6 +16,7 @@ jobs:
           node-version: 20
       - name: Run Build
         run: |
+          cd ./client
           npm install
           if [ ! -d "./client/build" ]; then
             CI=false npm run build
