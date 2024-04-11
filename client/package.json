@@ -28,7 +28,9 @@
     "start": "webpack serve --mode development",
     "test": "jest",
     "build:webpack": "webpack",
-    "coverage": "jest --coverage"
+    "coverage": "jest --coverage",
+    "prettier:check": "prettier -c \"{src/**,__test__/**}.{js,ts,jsx,tsx}\"",
+    "prettier:write": "prettier --write \"{src/**,__test__/**}.{js,ts,jsx,tsx}\""
   },
   "eslintConfig": {
     "extends": [

@@ -17,12 +17,12 @@ jobs:
       - name: Run Build
         run: |
           npm install
-          if [ ! -d "./build" ]; then
+          if [ ! -d "./client/build" ]; then
             CI=false npm run build
           fi
       - name: Check if build directory is empty
         run: |
-          if [ "$(ls -A build)" ]; then
+          if [ "$(ls -A ./client/build)" ]; then
             echo "Build directory is not empty"
           else
             echo "Build directory is empty. Exiting deployment."
@@ -35,23 +35,5 @@ jobs:
           username: ${{ secrets.USERNAME }}
           port: ${{ secrets.PORT }}
           key: ${{ secrets.SSH_PRIVATE_PEM_KEY }}
-          source: "build/*"
+          source: "client/build/*"
           target: "/home/ec2-user/build/"
-    #   - name: Copy build files view SSH
-    #     uses: appleboy/ssh-action@v1.0.3
-    #     with:
-    #       host: ec2-54-178-202-58.ap-northeast-1.compute.amazonaws.com
-    #       username: ec2-user
-    #       key: ${{ secrets.SSH_PRIVATE_PEM_KEY }}
-    #       port: 22
-    #       strip_components: 2
-    #       script: |
-    #         whoami
-    #         ls -al
-    #         if [ "$(ls -A build)" ]; then
-    #             echo "Build directory is not empty"
-    #         else
-    #             echo "Build directory is empty. Exiting deployment."
-    #             exit 1
-    #         fi
-    #         scp -r -i ${{ secrets.SSH_PRIVATE_PEM_KEY }} build/* ec2-user@ec2-54-178-202-58.ap-northeast-1.compute.amazonaws.com:~/build

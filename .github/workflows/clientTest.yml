@@ -1,0 +1,41 @@
+name: Unit Test
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  start:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "start client test"
+
+  ui-tests:
+    needs: [start]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test: ["client/src/**"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup up Node
+        uses: actions/setup/node@v3
+        with:
+          node-version: 18.17.1
+
+      - name: Npm CI
+        run: |
+          cd ./client
+          npm ci || (echo "npm ci failed, runing npm i" && npm i)
+
+      - name: Check Style format
+        run: |
+          cd ./client
+          npm run prettier:check
+
+      - name: Run Tests
+        run: |
+          cd ./client
+          npm run test

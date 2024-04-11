@@ -13,7 +13,7 @@ import "bulma/css/bulma.min.css";
 // dotenv.config();
 
 const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
+  document.getElementById("root") as HTMLElement,
 );
 root.render(
   <React.StrictMode>
@@ -24,5 +24,5 @@ root.render(
         </BrowserRouter>
       </HelmetProvider>
     </Provider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
