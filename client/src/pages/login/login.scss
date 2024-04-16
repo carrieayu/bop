@@ -1,0 +1,129 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; // This assumes that the container is the full height of the viewport
+  
+    .card-box {
+      // border: 1px solid black;
+      width: 100%;
+      box-shadow: 1px 14px 31px 1px rgba(157,149,149,0.75);
+      -webkit-box-shadow: 1px 14px 31px 1px rgba(157,149,149,0.75);
+      -moz-box-shadow: 1px 14px 31px 1px rgba(157,149,149,0.75);
+      height: 80%;
+  
+      @media only screen and (max-width: 1300px) {
+        margin: 200px 50px 239px 50px; // Apply different margin values for smaller screens
+      }
+      @media only screen and (max-width: 425px) {
+        margin: 250px 30px 239px 30px; // Apply different margin values for smaller screens
+      }
+        
+      .card-content {
+        display: flex;
+        @media only screen and (max-width: 1300px) {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            margin-top: 80px;
+          }
+      .left-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        .logo {
+            display: flex;
+            @media only screen and (max-width: 500px){
+                // width: 50%;
+                margin: 10px 30px;
+            }
+          img {
+           
+          }
+        }
+      }
+      .line {
+        display: flex;
+        height: 80vh;
+      .line-content{
+        border: 3px solid black;
+        height: 80%;
+        margin-top: 50px;
+        @media only screen and (max-width: 1300px) {
+            display: none; 
+          }
+      }
+    }
+      .right-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        @media only screen and (max-width: 1300px) {
+            // position: static;
+            // width: 80%;
+            // height: 100%;
+            // justify-content: center;
+            // align-items: center;
+          }
+        .form {
+            bottom: 30%;
+            right: 10%;
+            width: 60%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            @media only screen and (max-width: 1300px) {
+                margin: -20px auto;
+                width: 80%;
+                justify-content: center;
+                align-items: center;
+                position: absolute;
+            }
+      
+            .field {
+              .label {
+                font-weight: bold;
+              }
+              .input {
+                width: 100%;
+                padding: 0.5em 1em 0.5em 1em;
+                @media only screen and (max-width: 1300px) {
+                    width: 100%;
+                }
+              }
+              .icon {
+                position: absolute;
+                top: 70%;
+                right: 10px;
+                transform: translateY(-50%);
+                color: #ccc;
+              }
+              .button {
+                width: 60%;
+                border-radius: 100px;
+                background-color: #34a953;
+                color: white;
+              }
+              .button:hover{
+                background-color: #67d284;
+              }
+            }
+            .link {
+              margin-top: 20px;
+              a {
+                color: #7090fe;
+                font-weight: bold;
+                text-decoration: underline;
+              }
+            }
+          }
+      }
+    }
+    }
+  
+  }
