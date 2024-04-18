@@ -1,7 +1,7 @@
 import React from "react";
 import { useForm } from "./login.component";
-import './login.scss';
-import dattLogo from  '../../assets/logo.png'
+// import '../../assets/scss/login.scss';
+import dattLogo from  '../../assets/images/logo.png'
 import {FaUser, FaEye} from 'react-icons/fa';
 interface LoginFormProps {
   onSubmit: (data: LoginData) => void;
@@ -35,13 +35,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
 
           <div className="right-content">
             <div className="form">
-              <form action="">
+              <form onSubmit={(e) => handleSubmit(onSubmit, e)}>
               <div className="field">
                     <p className="control">
                       <label htmlFor="username" className="label">Username</label>
                       <input type="text"className="input"
                         placeholder="Enter username..."
-                        style={{ fontFamily: 'Arial, FontAwesome' }} // Set font family to FontAwesome
+                        style={{ fontFamily: 'Arial, FontAwesome' }}
                       />
                       <span className="icon is-medium is-right">
                         <FaUser />
@@ -73,31 +73,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
         </div>
       </div>
     </div>
-    // <form onSubmit={(e) => handleSubmit(onSubmit, e)}>
-    //   <div>
-    //     <label htmlFor="username">Username:</label>
-    //     <input
-    //       type="text"
-    //       id="username"
-    //       name="username"
-    //       value={values.username}
-    //       onChange={handleChange}
-    //     />
-    //     {errors.username && <p className="error">{errors.username}</p>}
-    //   </div>
-    //   <div>
-    //     <label htmlFor="password">Password:</label>
-    //     <input
-    //       type="password"
-    //       id="password"
-    //       name="password"
-    //       value={values.password}
-    //       onChange={handleChange}
-    //     />
-    //     {errors.password && <p className="error">{errors.password}</p>}
-    //   </div>
-    //   <button type="submit">Login</button>
-    // </form>
   );
 };
 
