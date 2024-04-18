@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import CreateUserView
+from api.views import CreatePerformanceProjectData, CreatePlanningProjectData, CreateUserView , CreateCompanyMaster, DeleteCompanyMaster, DeletePerformanceProjectData, DeletePlanningProjectData, NoteDelete, NoteListCreate, UpdateCompanyMaster, UpdateCreateNote, UpdatePerformanceProjectData, UpdatePlanningProjectData
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
@@ -10,4 +10,16 @@ urlpatterns = [
     path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"),
     path("api-auth/", include("rest_framework.urls")),
     path("api/", include("api.urls")),
+    path('api/note/add', NoteListCreate.as_view()),  
+    path('api/note/update', UpdateCreateNote.as_view()),  
+    path('api/note/delete', NoteDelete.as_view()),  
+    path('api/companymaster/add', CreateCompanyMaster.as_view()),  
+    path('api/companymaster/update/<int:pk>', UpdateCompanyMaster.as_view()),  
+    path('api/companymaster/delete/<int:pk>', DeleteCompanyMaster.as_view()),  
+    path('api/performance/add', CreatePerformanceProjectData.as_view()), 
+    path('api/performance/update/<int:pk>', UpdatePerformanceProjectData.as_view()),  
+    path('api/performance/delete/<int:pk>', DeletePerformanceProjectData.as_view()),   
+    path('api/planning/add', CreatePlanningProjectData.as_view()), 
+    path('api/planning/update/<int:pk>', UpdatePlanningProjectData.as_view()),  
+    path('api/planning/delete/<int:pk>', DeletePlanningProjectData.as_view()),   
 ]
