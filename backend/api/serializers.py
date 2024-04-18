@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Note, AccountMaster, ClientMaster, BusinessDivisionMaster, CompanyMaster
+from .models import Note, AccountMaster, ClientMaster, BusinessDivisionMaster, CompanyMaster, PerformanceProjectData, PlanningProjectData
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -25,9 +25,8 @@ class UserSerializer(serializers.ModelSerializer):
 class NoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Note
-        fields = ["id", "title", "content", "created_at", "author"]
+        fields = '__all__'
         extra_kwargs = {"author": {"read_only": True}}
-
 
 class AccountMasterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -48,3 +47,63 @@ class ClientMasterSerializer(serializers.ModelSerializer):
      class Meta:
         model = ClientMaster
         fields = ["client_id", "client_name", "created_at", "registered_user_id"]
+        
+class CompanyMasterSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = CompanyMaster
+        fields = '__all__'
+class UpdateCompanyMasterSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = CompanyMaster
+        fields = [
+            "company_name",
+            "created_at", 
+            "registered_user_id"
+            ]
+        
+class CreatePerformanceProjectDataSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = PerformanceProjectData
+        fields = '__all__'
+
+class UpdatePerformanceProjectDataSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = PerformanceProjectData
+        fields = [
+            "sales_revenue",
+            "cost_of_goods_sold",
+            "dispatched_personnel_expenses",
+            "personnel_expenses",
+            "indirect_personnel_expenses",
+            "expenses",
+            "operating_profit",
+            "non_operating_income",
+            "ordinary_profit",
+            "ordinary_profit_margin",
+            ]
+        
+
+class CreatePlanningProjectDataSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = PlanningProjectData
+        fields = '__all__'
+        
+
+class UpdatePlanningProjectDataSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = PlanningProjectData
+        fields = [
+            "planning_project_name",
+            "planning_project_type",
+            "planning",
+            "sales_revenue",
+            "cost_of_goods_sold",
+            "dispatched_personnel_expenses",
+            "personal_expenses",
+            "indirect_personal_expenses",
+            "expenses",
+            "operating_profit",
+            "non_operating_income",
+            "ordinary_profit",
+            "ordinary_profit_margin"
+            ]
