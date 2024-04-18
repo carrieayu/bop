@@ -1,6 +1,5 @@
 import React from "react";
 import { useForm } from "./login.component";
-// import '../../assets/scss/login.scss';
 import dattLogo from  '../../assets/images/logo.png'
 import {FaUser, FaEye} from 'react-icons/fa';
 interface LoginFormProps {
