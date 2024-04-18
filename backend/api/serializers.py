@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import CompanyMaster, Note, PerformanceProjectData, PlanningProjectData
+from .models import Note, AccountMaster, ClientMaster, BusinessDivisionMaster, CompanyMaster, PerformanceProjectData, PlanningProjectData
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -28,7 +28,26 @@ class NoteSerializer(serializers.ModelSerializer):
         fields = '__all__'
         extra_kwargs = {"author": {"read_only": True}}
 
+class AccountMasterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AccountMaster
+        fields = ['id', 'sales_revenue', 'cost_of_goods_sold', 'dispatched_personnel_expenses', 'personal_expenses', 'expenses']
 
+        
+class BusinessDivisionMasterSerializer(serializers.ModelSerializer):
+    company_id = serializers.PrimaryKeyRelatedField(queryset=CompanyMaster.objects.all())
+    company = CompanyMasterSerializer(source='company_id', read_only=True)
+    class Meta:
+        model = BusinessDivisionMaster
+        fields = ["business_division_id", "business_division_name", "company_id", "company", "created_at", "registered_user_id"]
+
+
+class ClientMasterSerializer(serializers.ModelSerializer):
+     
+     class Meta:
+        model = ClientMaster
+        fields = ["client_id", "client_name", "created_at", "registered_user_id"]
+        
 class CompanyMasterSerializers(serializers.ModelSerializer):
     class Meta:
         model = CompanyMaster
