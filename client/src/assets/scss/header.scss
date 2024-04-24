@@ -1,0 +1,99 @@
+.header_container {
+    background-color: #EFEDEA;
+    width: 100%;
+    padding: 5px;
+    display: flex;
+    justify-content: space-between; 
+}
+
+label.option_label {
+    display: flex;
+}
+
+.container_right {
+    padding: 24px 0px 0px 0px;
+}
+
+.header_div {
+    display: inline-block;
+    margin: 0px 5px;
+}
+
+.header_div_right {
+    display: inline-block;
+}
+
+.calendar-icon {
+    font-size: 15px;
+    float: right;
+    margin-top: 4px;
+}
+
+.date-picker {
+    width: 166px;
+    border: 1px solid #c9c9c9;
+    background-color: white;
+    border-radius: 4px;
+    padding: 0px 5px;
+}
+
+.blue_btn {
+    background: #3651A3;
+    color: white;
+    border-radius: 3px;
+    padding: 0px 20px
+}
+
+.sky_btn {
+    background: #C6D4E7;
+    color: #5A72B3;
+    border-radius: 3px;
+    padding: 0px 20px
+}
+
+
+.sml_bl_btn {
+    background: #3651A3;
+    color: white;
+    border-radius: 3px;
+    padding: 0px 6px;
+}
+
+.sml_white_btn {
+    background: white;
+    color: black;
+    border-radius: 3px;
+    padding: 0px 6px;
+}
+
+.arrow_up_btn{
+    color: #928A89;
+    border: 1px solid #928A89;
+    border-radius: 6px;
+    padding: 0px 4px;
+}
+.btn_setting{
+    color: #928A89;
+    border: 1px solid #928A89;
+    border-radius: 6px;
+    padding: 0px 4px;
+    background-color: white;
+}
+
+select.options {
+    border: 1px solid #c9c9c9;
+    width: 160px;
+    border-radius: 4px;
+    padding: 2px;
+}
+
+.question_mark {
+    border-radius: 20px;
+    width: 14px;
+    font-size: 9px;
+    text-align: center;
+    font-weight: 900;
+    color: white;
+    background: black;
+    margin-bottom: 4px;
+}
