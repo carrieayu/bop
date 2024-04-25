@@ -1,0 +1,105 @@
+nav {
+  width: auto;
+ 
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    white-space: nowrap;
+
+    &.mainMenu {
+      > li {
+        display: inline-block;
+        
+
+        &:hover {
+          .subMenu {
+            display: block;
+          }
+        }
+      }
+    }
+
+    a {
+      margin: 0;
+      text-align: left;
+      padding: 12px 15px 12px 15px;
+      color: white;
+      background-color: rgb(83, 83, 83);
+      text-decoration: none;
+      position: relative;
+      display: block;
+
+      &:hover {
+        background: red;
+        cursor: pointer;
+      }
+    }
+    .customStyle {
+      margin: 0;
+      text-align: left;
+      padding: 12px 15px 12px 15px;
+      color: white;
+      background-color: rgb(248, 94, 94);
+      text-decoration: none;
+      position: relative;
+      display: block;
+
+      &:hover {
+        background: rgb(11, 241, 245);
+        cursor: pointer;
+      }
+    }
+
+    .subMenu, .supersubMenu {
+      position: absolute;
+      display: none;
+    }
+
+    .mainMenu > li:hover {
+      .subMenu {
+        display: block;
+      }
+    }
+
+    .subMenu > li:hover {
+      .supersubMenu {
+        display: block;
+      }
+    }
+
+    .supersubMenu {
+      top: 0;
+      right: 0;
+      transform: translate(100%, 0);
+    }
+
+    .subMenu li {
+      position: relative;
+      border-top: 1px solid rgb(19, 18, 18);
+      border-bottom: 1px solid rgb(170, 169, 165);
+    }
+
+    .arrow {
+      display: inline-block;
+      border: 3px solid white;
+      width: 8px;
+      height: 8px;
+      border-left: none;
+      border-bottom: none;
+      position: relative;
+      right: 0;
+      margin-left: 10px;
+
+      &.arrowDown {
+        transform: rotateZ(135deg) translate(0px, 3px);
+      }
+
+      &.arrowRight {
+        transform: rotateZ(45deg);
+      }
+    }
+  }
+  
+}
