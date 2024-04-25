@@ -2,7 +2,6 @@ import React from "react";
 import { useForm } from "./login.component";
 import dattLogo from  '../../assets/images/logo.png'
 import {FaUser, FaEye} from 'react-icons/fa';
-import Btn from "../../components/Button/Button";
 interface LoginFormProps {
   onSubmit: (data: LoginData) => void;
 }
@@ -59,13 +58,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
                   </div>
                   <div className="field">
                     <p className="control has-text-centered">
-                      <Btn
-                        label="Login"
-                        onClick={() => {console.log("Clicked")}}
-                        borderRadius={100}
-                        size="normal"
-                        className="custom-button"
-                      />
+                      <button className="button">
+                        Login
+                      </button>
                       <div className="link">
                         <a href="#">No account? Sign up here!</a>
                       </div>
