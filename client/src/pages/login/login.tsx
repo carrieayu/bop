@@ -19,8 +19,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
   });
 
   return (
-    <div>
-      <HeaderDashboard value={''} />
       <div className='container'>
         <div className='card-box'>
           <div className='card-content'>
@@ -79,7 +77,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
           </div>
         </div>
       </div>
-    </div>
   )
 };
 
