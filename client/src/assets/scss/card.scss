@@ -1,0 +1,19 @@
+// custom scss for reusable card
+.card{
+    .register-content{
+        margin: 10px 0px 10px 10px;
+        .txt1{
+            font-weight: 800;
+        }
+        .numtxt{
+            font-size: 24px;
+            font-weight: bolder;
+            .totaltxt{
+                font-size: 12px;
+            }
+        }
+        .txt2{
+            font-weight: 800;
+        }
+    }
+}
