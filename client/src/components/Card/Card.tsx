@@ -7,11 +7,8 @@ interface CardProps {
   width?: string;
   height?: string;
   contentClassName?: string;
-  txt1?: string; 
-  numtxt?: string; 
-  totaltxt?: string;
-  txt2?: string; 
-  customIcon?: React.ReactNode;
+  CardClassName?: string;
+  children?: React.ReactNode;
 }
 
 const Card: React.FC<CardProps> = ({
@@ -21,29 +18,24 @@ const Card: React.FC<CardProps> = ({
   width = "auto", 
   height = "auto",
   contentClassName = "",
-  txt1 = "", 
-  numtxt = "", 
-  totaltxt = "",
-  txt2 = "",
-  customIcon,
+  CardClassName = "",
+  children,
 }: CardProps) => {
   return (
     <div
-      className="card"
+      className={`card ${CardClassName}`}
       style={{
         backgroundColor: backgroundColor,
         boxShadow: shadow,
         border: border,
-        width: width,
-        height: height,
+        width: typeof width === 'number'? `${width}px` : width,
+        height: typeof height === 'number'? `${height}px` : height,
       }}
     >
-      <div className={`${contentClassName}`}>
-        <p className="txt1">{txt1}&nbsp;<span className="customIcon">{customIcon}</span></p>
-        <p className="numtxt">{numtxt}&nbsp;<span className="totaltxt">{totaltxt}</span></p>
-        <p className="txt2">{txt2}</p>
+      <div className={`custom ${contentClassName}`}>
+        {children}
       </div>
-
+      
     </div>
   );
 };
