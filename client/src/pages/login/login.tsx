@@ -2,7 +2,6 @@ import React from "react";
 import { useForm } from "./login.component";
 import dattLogo from  '../../assets/images/logo.png'
 import {FaUser, FaEye} from 'react-icons/fa';
-import { HeaderDashboard } from "../../components/header/header";
 interface LoginFormProps {
   onSubmit: (data: LoginData) => void;
 }
