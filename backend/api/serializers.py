@@ -33,10 +33,14 @@ class AccountMasterSerializer(serializers.ModelSerializer):
         model = AccountMaster
         fields = ['id', 'sales_revenue', 'cost_of_goods_sold', 'dispatched_personnel_expenses', 'personal_expenses', 'expenses']
 
+class CompanyMasterSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = CompanyMaster
+        fields = '__all__'
         
 class BusinessDivisionMasterSerializer(serializers.ModelSerializer):
     company_id = serializers.PrimaryKeyRelatedField(queryset=CompanyMaster.objects.all())
-    company = CompanyMasterSerializer(source='company_id', read_only=True)
+    company = CompanyMasterSerializers(source='company_id', read_only=True)
     class Meta:
         model = BusinessDivisionMaster
         fields = ["business_division_id", "business_division_name", "company_id", "company", "created_at", "registered_user_id"]
@@ -48,10 +52,6 @@ class ClientMasterSerializer(serializers.ModelSerializer):
         model = ClientMaster
         fields = ["client_id", "client_name", "created_at", "registered_user_id"]
         
-class CompanyMasterSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = CompanyMaster
-        fields = '__all__'
 class UpdateCompanyMasterSerializers(serializers.ModelSerializer):
     class Meta:
         model = CompanyMaster
@@ -107,3 +107,7 @@ class UpdatePlanningProjectDataSerializers(serializers.ModelSerializer):
             "ordinary_profit",
             "ordinary_profit_margin"
             ]
+        
+class AuthenticationSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
