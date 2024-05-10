@@ -1,16 +1,155 @@
-.card-custom {
-    margin-left: 25%;
-    margin-top: 10%;
-    width: 50%!important;
-   .custom {
-      height: 30vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      height: 80%;
-     .custom-bar {
-        margin-top: 10%;
-      }
+// custom scss for dashboard
+.wrapper{
+    background-color: #EFEDEA;
+    max-width: 2560px;
+    padding: 5px;
+    .header_cont{
+        margin: 0px 0px 10px 0px;
+        .hamburger{
+            display: none;
+        }
+        @media only screen and (max-width: 1000px) {
+            .hamburger{
+                display: block;
+                .burger_icon{
+                    display: flex;
+                    justify-content: flex-end;
+                    padding: 20px 10px 20px 0px;
+                    svg{
+                        width: 50px;
+                    }
+                }
+            }
+            .header_container{
+                display: none;
+            }
+          }
     }
-  }
+    .body_cont{
+        display: flex;
+        @media only screen and (max-width: 1000px){
+            display: block;
+        }
+        .card_cont{
+            width: 100%;
+            display: flex;
+            @media only screen and (max-width: 1000px){
+                max-width: 1000px;
+                margin: 0 auto;
+                padding: 10px;
+            }
+            @media only screen and (max-width: 451px){
+                display: block;
+            }
+            .card{
+                @media only screen and (max-width: 1000px){
+                    width: auto;
+                }
+            }
+            .left_card{
+                width: 50%;
+                @media only screen and (max-width: 451px){
+                    width: 100%;
+                }
+            }
+            .right_card{
+                width: 50%;
+                @media only screen and (max-width: 451px){
+                    width: 100%;
+                }
+            }
+            .custom-card-content{
+                margin: 10px 0px 10px 10px;
+                .text1{
+                    font-weight: 800;
+                }
+                .numTxt{
+                    font-size: 24px;
+                    font-weight: bolder;
+                    .totalTxt{
+                        font-size: 12px;
+                    }
+                }
+                .text2{
+                    font-weight: 800;
+                }
+            }
+        }
+        .graph_cont{
+            width: 100%;
+            @media only screen and (max-width: 1000px){
+                max-width: 1000px;
+                margin: 0 auto;
+                padding: 10px;
+            }
+            .graph_wrap{
+                .card-custom{
+                    margin-left: 0 !important;
+                    margin-top: 0 !important;
+                    width: 100% !important;
+                    .custom-bar{
+                        width: 90% !important;
+                    
+                    }
+                }
+            }
+        }
+    }
+    .bottom_cont{
+        margin-top: 20px;
+        width: 100%;
+        background-color: #fff;
+        .pagination_cont{
+            max-width: 1700px;
+            @media only screen and (max-width: 1000px){
+                max-width: 1000px;
+            }
+            .paginate{
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+                padding: 30px 50px 0px 0px;
+                @media only screen and (max-width: 426px){
+                    padding: 30px 0px 0px 0px;
+                }
+            }
+        }
+        .table_cont{
+            width: 100%;
+            .table_container{
+                width: 100% !important;
+                margin: 0px !important;
+                padding: 0px 35px 0px 35px;
+            }
+            table.table_header{
+                width: 100% !important;
+                display: block !important;
+                .tr_header{
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
+                }
+                .tr_title{
+                    width: 100%;
+                    display: flex;
+                    justify-content: space-between;
+                }
+                .tr_dates{
+                    width: 100%;
+                    display: flex;
+                    justify-content: space-around;
+                }
+                .tr_underline{
+                    width: 100%;
+                    display: flex;
+                    justify-content: space-between;
+                }
+                .tr_input_underline{
+                    width: 100%;
+                    display: flex;
+                    justify-content: space-between;
+                }
+            }
+        }
+    }
+}
