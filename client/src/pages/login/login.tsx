@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "./login.component";
 import dattLogo from  '../../assets/images/logo.png'
 import {FaUser, FaEye} from 'react-icons/fa';
@@ -11,11 +11,43 @@ interface LoginData {
   password: string;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
-  const { values, errors, handleChange, handleSubmit } = useForm<LoginData>({
-    username: "",
-    password: "",
-  });
+const LoginForm = ({ onSubmit }) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/token/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // "Authorization": `Bearer ${ACCESS_TOKEN}`
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        const accessToken = data.access;
+
+        localStorage.setItem("accessToken", accessToken);
+        console.log(accessToken);
+        window.location.href = "/dashboard";
+        console.log(accessToken)
+      } else {
+        setError("Invalid username or password");
+        console.log(setError);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setError("Something went wrong. Please try again later.");
+    }
+  };
+
 
   return (
       <div className='container'>
@@ -34,7 +66,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
 
             <div className='right-content'>
               <div className='form'>
-                <form onSubmit={(e) => handleSubmit(onSubmit, e)}>
+                <form onSubmit={handleSubmit}>
                   <div className='field'>
                     <p className='control'>
                       <label htmlFor='username' className='label'>
@@ -45,6 +77,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
                         className='input'
                         placeholder='Enter username...'
                         style={{ fontFamily: 'Arial, FontAwesome' }}
+                        value={username}
+                        onChange={(e)=>setUsername(e.target.value)}
                       />
                       <span className='icon is-medium is-right'>
                         <FaUser />
@@ -56,7 +90,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
                       <label htmlFor='password' className='label'>
                         Password
                       </label>
-                      <input type='password' className='input' placeholder='*******' />
+                      <input type='password' 
+                        className='input' 
+                        placeholder='*******'
+                        value={password}
+                        onChange={(e)=>setPassword(e.target.value)}
+                      />
                       <span className='icon is-medium is-right'>
                         <FaEye />
                       </span>
@@ -64,7 +103,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
                   </div>
                   <div className='field'>
                     <p className='control has-text-centered'>
-                      <button className='button'>Login</button>
+                      <button className='button' type='submit'>Login</button>
                       <div className='link'>
                         <a href='#'>No account? Sign up here!</a>
                       </div>
