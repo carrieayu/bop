@@ -13,9 +13,9 @@ export const TableComponentProps: React.FC<TableProps> = (props) => {
     const inputCells = []
     for (let i = 0; i < 10; i++) {
       inputCells.push(
-        <td className='td_right' key={i}>
-          <input className='input_right' type='text' />
-        </td>,
+        <td className='td_right' style={{width:"9%"}}  key={i}>
+          <input className='input_right' style={{width:"100%"}} type='text' />
+        </td>
       )
     }
     return (
@@ -34,23 +34,23 @@ export const TableComponentProps: React.FC<TableProps> = (props) => {
           <tr className='tr_dates'>
             <td></td>
             {props.dates.map((item) => (
-              <td className='td_right'>{item}</td>
+              <td className='td_right' style={{overflow:"hidden", whiteSpace:"nowrap"}}>{item}</td>
             ))}
             <td></td>
           </tr>
           <tr className='tr_underline'>
             <td className='td_first'>title</td>
             {props.data2.map((data2) => (
-              <td className='td_right' key={data2.id}>
+              <td className='td_right' style={{overflow:"hidden", whiteSpace:"nowrap"}} key={data2.id}>
                 {data2.number}
               </td>
             ))}
             <td className='td_right'>total</td>
           </tr>
-          <tr className='tr_input_underline'>
+          <tr className='tr_underline'>
             <td className='td_center'>title</td>
             {props.data.map((data) => (
-              <td className='td_right' key={data.id}>
+              <td className='td_right' style={{overflow:"hidden", whiteSpace:"nowrap"}} key={data.id}>
                 {data.number}
               </td>
             ))}
@@ -79,7 +79,7 @@ export const TableComponentProps: React.FC<TableProps> = (props) => {
           <tr className='tr_underline'>
             <td className='td_first'>title</td>
             {props.data2.map((data2) => (
-              <td className='td_right' key={data2.id}>
+              <td className='td_right' style={{overflow:"hidden", whiteSpace:"nowrap"}} key={data2.id}>
                 {data2.number}
               </td>
             ))}
