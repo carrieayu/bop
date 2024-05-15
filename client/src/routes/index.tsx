@@ -33,11 +33,9 @@ const routes: RouteObject[] = [
     path: "",
     children: [
       {
-        path: "",
+        path: "dashboard",
         element: (
-          <ProtectedRoutes>
             <Dashboard />
-          </ProtectedRoutes>
         ),
       },
       {
