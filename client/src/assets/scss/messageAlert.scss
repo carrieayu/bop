@@ -1,4 +1,4 @@
-.error-message {
+.message-alert {
     position: relative;
     transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out; 
     transform: translateY(-100%); // Start position, slide up
@@ -18,12 +18,12 @@
     }
 }
 
-.error-message.visible {
+.message-alert.visible {
     transform: translateY(0); 
     opacity: 1; 
 }
 
-.error-message.hidden {
+.message-alert.hidden {
     transform: translateY(-100%);
     opacity: 0;
 }

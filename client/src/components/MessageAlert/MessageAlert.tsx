@@ -1,9 +1,9 @@
-// ErrorMessage.tsx
+// MessageAlert.tsx
 import React, { useEffect, useState } from 'react';
 import { FaCheckCircle, FaExclamationTriangle, FaTimesCircle } from 'react-icons/fa';
 
 
-interface ErrorMessageProps {
+interface MessageAlertProps {
     code: number;
     message: string;
     customIcon?: React.ReactNode;
@@ -13,7 +13,7 @@ interface ErrorMessageProps {
     onRemove?: () => void;
 }
 
-const ErrorMessage: React.FC<ErrorMessageProps> = ({
+const MessageAlert: React.FC<MessageAlertProps> = ({
     code,
     message,
     customIcon,
@@ -40,7 +40,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
 
     return (
         <div
-            className={`error-message ${visible ? 'visible' : 'hidden'} ${className}`}
+            className={`message-alert ${visible ? 'visible' : 'hidden'} ${className}`}
             onTransitionEnd={handleTransitionEnd}
             style={{
                 backgroundColor: getColor(code),
@@ -98,4 +98,4 @@ const getCustomIcon = (code: number): React.ReactNode => {
     }
 };
 
-export default ErrorMessage;
+export default MessageAlert;
