@@ -107,6 +107,9 @@ const LoginForm = ({ onSubmit }) => {
                       <div className='link'>
                         <a href='#'>No account? Sign up here!</a>
                       </div>
+                      <div className='link'>
+                        <a href='/forgot'>Forgot your password?</a>
+                      </div>
                     </p>
                   </div>
                 </form>
