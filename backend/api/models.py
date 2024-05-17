@@ -108,3 +108,16 @@ class PerformanceProjectData(models.Model):
 
     def __str__(self):
         return self.project_id
+
+class OtherPlanningData(models.Model):
+    other_planning_id = models.CharField(max_length=10, primary_key=True)
+    planning_project_id = models.ForeignKey(
+        PlanningProjectData, on_delete=models.CASCADE, related_name="other_planning"
+    )
+    gross_profit = models.IntegerField(max_length=12)
+    net_profit_for_the_period = models.IntegerField(max_length=12)
+    gross_profit_margin = models.FloatField(max_length=10)
+    operating_profit_margin = models.FloatField(max_length=10)
+
+    def __str__(self):
+        return self.planning_project_id
