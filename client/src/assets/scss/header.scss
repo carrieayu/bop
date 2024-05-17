@@ -17,10 +17,30 @@ label.option_label {
 .header_div {
     display: inline-block;
     margin: 0px 5px;
+    position: relative;
 }
 
 .header_div_right {
     display: inline-block;
+    margin-left: 200px;
+}
+
+.header_div_right_1 {
+    display: inline-block;
+}
+
+.header_div_right_2 {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.date-picker {
+    width: 166px;
+    border: 1px solid #c9c9c9;
+    background-color: white;
+    border-radius: 4px;
+    padding: 0px 5px;
+    position: relative;
 }
 
 .calendar-icon {
@@ -96,4 +116,26 @@ select.options {
     color: white;
     background: black;
     margin-bottom: 4px;
+}
+
+.react-datepicker-popper {
+    z-index: 1000 !important;
+}
+
+.date-picker__calendar {
+    position: absolute;
+    top: 35px;
+    left: 0;
+    z-index: 1000;
+}
+/* Media query */
+@media only screen and (max-width: 1190px) {
+    .header_div_right {
+        margin-left: 100px;
+    }
+}
+@media only screen and (max-width: 1090px) {
+    .header_div_right {
+        margin-left: 15px;
+    }
 }

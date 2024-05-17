@@ -8,6 +8,7 @@ import './index.css'
 import App from './App'
 import 'bulma/css/bulma.min.css'
 import './assets/scss/main.scss'
+import 'react-datepicker/dist/react-datepicker.css'
 
 // import dotenv from "dotenv";
 
