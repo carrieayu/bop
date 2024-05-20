@@ -2,9 +2,10 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework import generics, status
-from .serializers import UserSerializer, NoteSerializer, AccountMasterSerializer, ClientMasterSerializer, BusinessDivisionMasterSerializer, CompanyMasterSerializers, CreatePerformanceProjectDataSerializers, CreatePlanningProjectDataSerializers, UpdateCompanyMasterSerializers, UpdatePerformanceProjectDataSerializers, UpdatePlanningProjectDataSerializers, AuthenticationSerializer
+from .serializers import UserSerializer, NoteSerializer, AccountMasterSerializer, ClientMasterSerializer, BusinessDivisionMasterSerializer, CompanyMasterSerializers, CreatePerformanceProjectDataSerializers, CreatePlanningProjectDataSerializers, UpdateCompanyMasterSerializers, UpdatePerformanceProjectDataSerializers, UpdatePlanningProjectDataSerializers, AuthenticationSerializer,CreateOtherPlanningSerializers
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .models import Note, AccountMaster, ClientMaster, BusinessDivisionMaster, CompanyMaster, PerformanceProjectData, PlanningProjectData
+from .models import Note, AccountMaster, ClientMaster, BusinessDivisionMaster, CompanyMaster, PerformanceProjectData, PlanningProjectData, OtherPlanningData
+from functools import reduce
 
 class NoteListCreate(generics.ListCreateAPIView):
     serializer_class = NoteSerializer
@@ -61,7 +62,7 @@ class NoteDelete(generics.DestroyAPIView):
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
 class CreateCompanyMaster(generics.CreateAPIView):
     serializer_class = CompanyMasterSerializers
@@ -236,7 +237,27 @@ class UpdatePlanningProjectData(generics.UpdateAPIView):
         self.perform_update(serializer)
         return Response({"message": "planning data updated !!!"}, status=status.HTTP_200_OK)
 
+# OtherPlanning Data for card
+class CreateOtherPlanningData(generics.CreateAPIView):
+    serializer_class = CreateOtherPlanningSerializers
+    permission_classes = [IsAuthenticated]
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response({"message": "other planning created!"},status=status.HTTP_200_OK)
 
+
+class PlanningProjectDataList(generics.ListCreateAPIView):
+    queryset = PlanningProjectData.objects.all()
+    serializer_class = CreatePlanningProjectDataSerializers
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self): 
+        return PlanningProjectData.objects.all()
+    
+
+    
 class DeletePlanningProjectData(generics.DestroyAPIView):
     queryset = PlanningProjectData.objects.all()
     permission_classes = [IsAuthenticated]

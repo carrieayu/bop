@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { ACCESS_TOKEN } from "../constants";
 
 const api: AxiosInstance = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: "http://localhost:3000/api/",
 });
 
 type RequestConfigWithToken = AxiosRequestConfig & {

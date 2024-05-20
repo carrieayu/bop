@@ -14,6 +14,7 @@ const Loader = (Component: any) => (props: any) =>
 const Dashboard = Loader(lazy(() => import("../pages/dashboard/dashboard")));
 const Login = Loader(lazy(() => import("../pages/login/login")));
 const Register = Loader(lazy(() => import("../pages/register/register")));
+const Forgot = Loader(lazy(() => import("../pages/forgot/forgot")));
 
 // Not Found Page
 const NotFound = Loader(lazy(() => import("../pages/notFound/notFound")));
@@ -33,11 +34,11 @@ const routes: RouteObject[] = [
     path: "",
     children: [
       {
-        path: "",
+        path: "dashboard",
         element: (
-          <ProtectedRoutes>
+          // <ProtectedRoutes>
             <Dashboard />
-          </ProtectedRoutes>
+          // </ProtectedRoutes>
         ),
       },
       {
@@ -47,6 +48,10 @@ const routes: RouteObject[] = [
       {
         path: "register",
         element: <RegisterAndLogout />,
+      },
+      {
+        path: "forgot",
+        element: <Forgot />,
       },
       {
         path: "logout",
