@@ -180,15 +180,17 @@ const Dashboard = () => {
               </div>
       </div>
       <div className="bottom_cont">
-        <div className="pagination_cont">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
-        </div>
-        <div className="table_cont">
-          <TableComponent />
+        <div className="table_bg">
+          <div className="pagination_cont">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+          <div className="table_cont">
+            <TableComponent />
+          </div>
         </div>
       </div>
     </div>
