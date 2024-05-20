@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { useForm } from "./login.component";
 import dattLogo from  '../../assets/images/logo.png'
 import {FaUser, FaEye} from 'react-icons/fa';
+import { useSelector, useDispatch } from 'react-redux'
+import { login } from '../../reducers/user/userSlice'
+import { fetchApi } from '../../components/Localhost/localhost'
+
 interface LoginFormProps {
   onSubmit: (data: LoginData) => void;
 }
@@ -15,40 +19,42 @@ const LoginForm = ({ onSubmit }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
+  const dispatch = useDispatch();
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/token/", {
-        method: "POST",
+      const options: RequestInit = {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          // "Authorization": `Bearer ${ACCESS_TOKEN}`
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-        const accessToken = data.access;
-
-        localStorage.setItem("accessToken", accessToken);
-        console.log(accessToken);
-        window.location.href = "/dashboard";
-        console.log(accessToken)
-      } else {
-        setError("Invalid username or password");
-        console.log(setError);
       }
+      await fetchApi(
+        'api/token/',
+        options,
+        (data) => {
+          const loginData: LoginData = {
+            username: username,
+            password: password,
+          }
+          dispatch(login({ loginData }))
+          const accessToken = data.access
+          localStorage.setItem('accessToken', accessToken)
+          window.location.href = '/dashboard'
+        },
+        (error) => {
+          setError('Invalid username or password')
+          console.log(error)
+        },
+      )
     } catch (error) {
-      console.error("Error:", error);
-      setError("Something went wrong. Please try again later.");
+      console.error('Error:', error)
+      setError('Something went wrong. Please try again later.')
     }
+    
   };
-
-
+  
   return (
       <div className='container'>
         <div className='card-box'>
