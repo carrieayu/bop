@@ -27,11 +27,13 @@ ChartJS.register(
 interface CustomBarProps {
   className?: string;
   style?: React.CSSProperties;
+  data: any;
 }
 
 const GraphDashboard: React.FC<CustomBarProps> = ({
   className,
   style,
+  data,
 }) => {
   const data = {
     labels: ['2021/04', '2021/05', '2021/06', '2021/07', '2021/09', '2021/10', '2021/11', '2021/12'],
@@ -111,6 +113,7 @@ const GraphDashboard: React.FC<CustomBarProps> = ({
         labels: {
           usePointStyle: false,
         },
+
       },
     },
     scales: {
@@ -132,6 +135,13 @@ const GraphDashboard: React.FC<CustomBarProps> = ({
             return value + '%';
           },
         },
+      },
+    },
+    elements: {
+      point: {
+        pointStyle: 'circle',
+        radius: 5,
+        hoverRadius: 7,
       },
     },
   };
