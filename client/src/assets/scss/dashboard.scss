@@ -2,9 +2,13 @@
 .wrapper{
     background-color: #EFEDEA;
     max-width: 2560px;
-    padding: 5px;
     .header_cont{
         margin: 0px 0px 10px 0px;
+        .header_container{
+            background-color: #fff;
+            padding: 5px 5px 10px 5px;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
         .hamburger{
             display: none;
         }
@@ -33,6 +37,7 @@
         .card_cont{
             width: 100%;
             display: flex;
+            padding: 5px;
             @media only screen and (max-width: 1000px){
                 max-width: 1000px;
                 margin: 0 auto;
@@ -77,6 +82,7 @@
         }
         .graph_cont{
             width: 100%;
+            padding: 5px;
             @media only screen and (max-width: 1000px){
                 max-width: 1000px;
                 margin: 0 auto;
@@ -87,6 +93,7 @@
                     margin-left: 0 !important;
                     margin-top: 0 !important;
                     width: 100% !important;
+                    height: 25.5rem !important;
                     .custom-bar{
                         width: 90% !important;
                     
@@ -98,56 +105,60 @@
     .bottom_cont{
         margin-top: 20px;
         width: 100%;
-        background-color: #fff;
-        .pagination_cont{
-            max-width: 1700px;
-            @media only screen and (max-width: 1000px){
-                max-width: 1000px;
+        padding: 5px;
+        .table_bg{
+            background-color: #fff;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            .pagination_cont{
+                max-width: 1700px;
+                @media only screen and (max-width: 1000px){
+                    max-width: 1000px;
+                }
+                .paginate{
+                    width: 100%;
+                    display: flex;
+                    justify-content: flex-end;
+                    padding: 30px 50px 0px 0px;
+                    @media only screen and (max-width: 426px){
+                        padding: 30px 0px 0px 0px;
+                    }
+                }
             }
-            .paginate{
+            .table_cont{
                 width: 100%;
-                display: flex;
-                justify-content: flex-end;
-                padding: 30px 50px 0px 0px;
-                @media only screen and (max-width: 426px){
-                    padding: 30px 0px 0px 0px;
+                .table_container{
+                    width: 100% !important;
+                    margin: 0px !important;
+                    padding: 0px 35px 0px 35px;
                 }
-            }
-        }
-        .table_cont{
-            width: 100%;
-            .table_container{
-                width: 100% !important;
-                margin: 0px !important;
-                padding: 0px 35px 0px 35px;
-            }
-            table.table_header{
-                width: 100% !important;
-                display: block !important;
-                .tr_header{
-                    width: 100%;
-                    display: flex;
-                    justify-content: center;
-                }
-                .tr_title{
-                    width: 100%;
-                    display: flex;
-                    justify-content: space-between;
-                }
-                .tr_dates{
-                    width: 100%;
-                    display: flex;
-                    justify-content: space-around;
-                }
-                .tr_underline{
-                    width: 100%;
-                    display: flex;
-                    justify-content: space-between;
-                }
-                .tr_input_underline{
-                    width: 100%;
-                    display: flex;
-                    justify-content: space-between;
+                table.table_header{
+                    width: 100% !important;
+                    display: block !important;
+                    .tr_header{
+                        width: 100%;
+                        display: flex;
+                        justify-content: center;
+                    }
+                    .tr_title{
+                        width: 100%;
+                        display: flex;
+                        justify-content: space-between;
+                    }
+                    .tr_dates{
+                        width: 100%;
+                        display: flex;
+                        justify-content: space-around;
+                    }
+                    .tr_underline{
+                        width: 100%;
+                        display: flex;
+                        justify-content: space-between;
+                    }
+                    .tr_input_underline{
+                        width: 100%;
+                        display: flex;
+                        justify-content: space-between;
+                    }
                 }
             }
         }
