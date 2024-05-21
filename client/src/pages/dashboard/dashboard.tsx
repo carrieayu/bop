@@ -22,7 +22,9 @@ const Dashboard = () => {
   const [totalNetProfitPeriod, setTotalNetProfitPeriod] = useState(0)
   const [totalGrossProfitMargin, setTotalGrossProfitMargin] = useState(0)
   const [totalOperatingProfitMargin, setTotalOperatingProfitMargin] = useState(0)
+  const [datePlanning, setDatePlanning] = useState<string[]>([])
   const dispatch = useDispatch()
+  
   const toggleMenu = () => {
     setShowMenu(!showMenu);
   };
@@ -39,14 +41,18 @@ const Dashboard = () => {
     getAllCards()
   }, [])
 
-    useEffect(() =>{
-      setTotalSales(getSum(cardsList.map((card) => Number(card.sales_revenue))))
-      setTotalOperatingProfit(getSum(cardsList.map((card) => Number(card.operating_profit))))
-      setTotalGrossProfit(getOtherPlanningSum(cardsList.map((card) => card.other_planning), "gross_profit"))
-      setTotalNetProfitPeriod(getOtherPlanningSum(cardsList.map((card) => card.other_planning), "net_profit_for_the_period"))
-      setTotalGrossProfitMargin(getOtherPlanningSum(cardsList.map((card) => card.other_planning), "gross_profit_margin"))
-      setTotalOperatingProfitMargin(getOtherPlanningSum(cardsList.map((card) => card.other_planning), "operating_profit_margin"))
-    },[cardsList])
+  useEffect(() => {
+    if (cardsList && Array.isArray(cardsList)) {
+      setTotalSales(getSum(cardsList.map((card) => Number(card.sales_revenue))));
+      setTotalOperatingProfit(getSum(cardsList.map((card) => Number(card.operating_profit))));
+      setTotalGrossProfit(getOtherPlanningSum(cardsList.map((card) => card.other_planning), "gross_profit"));
+      setTotalNetProfitPeriod(getOtherPlanningSum(cardsList.map((card) => card.other_planning), "net_profit_for_the_period"));
+      setTotalGrossProfitMargin(getOtherPlanningSum(cardsList.map((card) => card.other_planning), "gross_profit_margin"));
+      setTotalOperatingProfitMargin(getOtherPlanningSum(cardsList.map((card) => card.other_planning), "operating_profit_margin"));
+      setDatePlanning(cardsList.map((card) => card.planning || ""));
+    }
+  }, [cardsList]);
+  
 
     function getSum(data: number[]) {
       return data?.reduce((accumulator: number, currentValue: number): number => {
@@ -54,17 +60,22 @@ const Dashboard = () => {
       }, 0);
     }
     function getOtherPlanningSum(datas: OtherPlanningEntity[][], field: string) {
-      
       let total = 0;
-       datas.forEach((data: OtherPlanningEntity[]) => {
-          total += data?.map((each) => each[field])
+      if (datas && Array.isArray(datas)) {
+        datas.forEach((data: OtherPlanningEntity[]) => {
+          if (data && Array.isArray(data)) {
+            total += data
+              .map((each) => each[field])
               .reduce((accumulator: number, currentValue: number): number => {
-            return accumulator + currentValue;
-          }, 0);
-       });
-       console.log("total", total)
+                return accumulator + currentValue;
+              }, 0);
+          }
+        });
+      }
+      console.log("total", total);
       return total;
     }
+    
     //State for pagination
     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = Math.ceil(100 / 10);
@@ -73,6 +84,70 @@ const Dashboard = () => {
     const handlePageChange = (page: number) => {
       setCurrentPage(page);
     };
+
+    const graphData = {
+      labels: datePlanning,
+      datasets: [
+        {
+          type: 'bar' as const,
+          label: '売上高',
+          data: cardsList.map((card) => Number(card.sales_revenue)),
+          backgroundColor: '#6e748c',
+          borderColor: 'black',
+          borderWidth: 1,
+          yAxisID: 'y',
+        },
+        {
+          type: 'bar' as const,
+          label: '売上総利益',
+          data: cardsList.map((card) => getOtherPlanningSum([card.other_planning], "gross_profit")),
+          backgroundColor: '#7696c6',
+          borderColor: 'black',
+          borderWidth: 1,
+          yAxisID: 'y',
+        },
+        {
+          type: 'bar' as const,
+          label: '営業利益',
+          data: cardsList.map((card) => Number(card.operating_profit)),
+          backgroundColor: '#b8cbe2',
+          borderColor: 'black',
+          borderWidth: 1,
+          yAxisID: 'y',
+        },
+        {
+          type: 'bar' as const,
+          label: '当期純利益',
+          data: cardsList.map((card) => getOtherPlanningSum([card.other_planning], "net_profit_for_the_period")),
+          backgroundColor: '#bde386',
+          borderColor: 'black',
+          borderWidth: 1,
+          yAxisID: 'y',
+        },
+        {
+          type: 'line' as const,
+          label: '売上総利益率',
+          data: cardsList.map((card) => getOtherPlanningSum([card.other_planning], "gross_profit_margin")),
+          backgroundColor: '#ff8e13',
+          borderColor: '#ff8e13',
+          borderWidth: 2,
+          yAxisID: 'y1',
+          fill: false,
+        },
+        {
+          type: 'line' as const,
+          label: '営業利益率',
+          data: cardsList.map((card) => getOtherPlanningSum([card.other_planning], "operating_profit_margin")),
+          backgroundColor: '#ec3e4a',
+          borderColor: '#ec3e4a',
+          borderWidth: 2,
+          yAxisID: 'y1',
+          fill: false,
+        },
+      ],
+    };
+    
+
   return (
     <div className="wrapper">
       <div className="header_cont">
@@ -124,7 +199,7 @@ const Dashboard = () => {
                     >
                         <div className="custom-card-content">
                           <p className="text1">売上総利益率</p>
-                          <p className="numTxt">{totalGrossProfitMargin}&nbsp;<span className="totalTxt">円</span></p>
+                          <p className="numTxt">{totalGrossProfitMargin}&nbsp;<span className="totalTxt">%</span></p>
                           <p className="text2">トータル</p>
                         </div>
                     </Card>
@@ -166,7 +241,7 @@ const Dashboard = () => {
                     >
                         <div className="custom-card-content">
                           <p className="text1">営業利益率</p>
-                          <p className="numTxt">{totalOperatingProfitMargin}&nbsp;<span className="totalTxt">円</span></p>
+                          <p className="numTxt">{totalOperatingProfitMargin}&nbsp;<span className="totalTxt">%</span></p>
                           <p className="text2">トータル</p>
                         </div>
                     </Card>
@@ -175,20 +250,22 @@ const Dashboard = () => {
               &nbsp;&nbsp;&nbsp;
               <div className="graph_cont">
                 <div className="graph_wrap">
-                  <GraphDashboard />
+                  <GraphDashboard data={graphData} />
                 </div>
               </div>
       </div>
       <div className="bottom_cont">
-        <div className="pagination_cont">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
-        </div>
-        <div className="table_cont">
-          <TableComponent />
+        <div className="table_bg">
+          <div className="pagination_cont">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+          <div className="table_cont">
+            <TableComponent />
+          </div>
         </div>
       </div>
     </div>
