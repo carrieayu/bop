@@ -25,8 +25,10 @@ const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({ children }) => {
 
       if (res.status === 200) {
         localStorage.setItem(ACCESS_TOKEN, res.data.access);
+        console.log('ari 1');
         setIsAuthorized(true);
       } else {
+        console.log('ari 2');
         setIsAuthorized(false);
       }
     } catch (err) {
@@ -38,6 +40,7 @@ const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({ children }) => {
   const auth = async () => {
     const token = localStorage.getItem(ACCESS_TOKEN);
     if (!token) {
+      console.log('ari 3');
       setIsAuthorized(false);
       return;
     }
@@ -54,9 +57,11 @@ const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({ children }) => {
   };
 
   if (isAuthorized === null) {
+    console.log('ari 4');
     return <div>Loading...</div>;
   }
 
+  console.log('ari 5');
   return isAuthorized ? children : <Navigate to="/login" />;
 };
 

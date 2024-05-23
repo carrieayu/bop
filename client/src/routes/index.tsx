@@ -19,6 +19,9 @@ const Forgot = Loader(lazy(() => import("../pages/forgot/forgot")));
 // Not Found Page
 const NotFound = Loader(lazy(() => import("../pages/notFound/notFound")));
 
+// Project Data Registration
+const ProjectDataRegistration = Loader(lazy(() => import("../pages/projectDataRegistration/projectdataregistration")))
+
 const Logout = () => {
   localStorage.clear();
   return <Navigate to="/login" />;
@@ -57,6 +60,14 @@ const routes: RouteObject[] = [
         path: "logout",
         element: <Logout />,
       },
+      {
+        path: "projectcreate",
+        element: (
+          // <ProtectedRoutes>
+            <ProjectDataRegistration />
+          // </ProtectedRoutes>
+        )
+      }
     ],
   },
   {

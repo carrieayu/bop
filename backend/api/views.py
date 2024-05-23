@@ -274,5 +274,30 @@ class DeletePlanningProjectData(generics.DestroyAPIView):
         except:
             return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
         
+class StorePlanningProject(generics.CreateAPIView):
+    def create(self, request, *args, **kwargs):
+        client_serializer =  ClientMasterSerializer(data=request.data.get('client_data',{}))
+        business_serializer = BusinessDivisionMasterSerializer(data=request.data.get('business_data',{}))
+        planning_serializer = CreatePlanningProjectDataSerializers(data=request.data.get('planning_data',{}))
         
+        client_valid = client_serializer.is_valid()
+        business_valid = business_serializer.is_valid()
+        planning_valid = planning_serializer.is_valid()
+        
+        if client_valid and business_valid and planning_valid:
+            client_instance = client_serializer.save()
+            business_instance = business_serializer.save(company_id=client_instance)
+            planning_instance = planning_serializer.save(client_id=client_instance,business_division_id=business_instance)
+            
+            return Response({
+                'client': client_serializer.data,
+                'business': business_serializer.data,
+                'planning': planning_serializer.data
+            },status=status.HTTP_201_CREATED)
+        else:
+             return Response({
+                'client_errors': client_serializer.errors,
+                'business_errors': business_serializer.errors,
+                'planning_errors': planning_serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
 
