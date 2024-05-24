@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface PaginationProps {
   currentPage: number;
@@ -7,7 +7,17 @@ interface PaginationProps {
 }
 
 const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
+  const [activeButton, setActiveButton] = useState<string>('prevButton');
 
+  const handleButtonClick = (page: number, buttonId: string) => {
+    onPageChange(page);
+    setActiveButton(buttonId);
+  };
+
+  // Ensure the prevButton is active by default on initial render
+  useEffect(() => {
+    setActiveButton('prevButton');
+  }, []);
   return (
       <div className="content">
        <div className="paginate">
@@ -24,22 +34,25 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
             <div className="pagination">
               <button
                 id="prevButton"
-                onClick={() => onPageChange(Math.max(currentPage - 1, 1))} // Ensure currentPage doesn't go below 1
+                onClick={() => handleButtonClick(Math.max(currentPage - 1, 1), 'prevButton')} // Ensure currentPage doesn't go below 1
                 disabled={currentPage === 1} // Disable the button if currentPage is 1
+                className={activeButton === 'prevButton' ? 'activeButton' : ''}
               >
                 同
               </button>
               <button
                 id="nextButton"
-                onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))} // Ensure currentPage doesn't exceed totalPages
+                onClick={() => handleButtonClick(Math.min(currentPage + 1, totalPages), 'nextButton')} // Ensure currentPage doesn't exceed totalPages
                 disabled={currentPage === totalPages} // Disable the button if currentPage is equal to totalPages
+                className={activeButton === 'nextButton' ? 'activeButton' : ''}
               >
                 千円
               </button>
               <button
                 id="lastButton"
-                onClick={() => onPageChange(totalPages)} // Go to the last page
+                onClick={() => handleButtonClick(totalPages, 'lastButton')} // Go to the last page
                 disabled={currentPage === totalPages} // Disable the button if currentPage is already on the last page
+                className={activeButton === 'lastButton' ? 'activeButton' : ''}
               >
                 百万円
               </button>
