@@ -133,7 +133,7 @@ const ProjectDataList: React.FC = () => {
                                         <tr key={project.planning_project_id} className="proj_table_body_content_horizantal">
                                         <td className="proj_table_body_content_vertical has-text-centered">{project.client.client_name}</td>
                                         <td className="proj_table_body_content_vertical">{project.planning_project_name}</td>
-                                        <td className="proj_table_body_content_vertical has-text-centered"> {project.planning}</td>
+                                        <td className="proj_table_body_content_vertical has-text-centered">{project.start_yyyymm} - {project.end_yyyymm}</td>
                                         <td className="proj_table_body_content_vertical has-text-right">{project.sales_revenue}</td>
                                         <td className="proj_table_body_content_vertical has-text-right">{project.operating_profit}</td>
                                         </tr>
