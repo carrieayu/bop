@@ -89,6 +89,7 @@ class CreateOtherPlanningSerializers(serializers.ModelSerializer):
 
 class CreatePlanningProjectDataSerializers(serializers.ModelSerializer):
     other_planning = CreateOtherPlanningSerializers(many=True, read_only=True)
+    client = ClientMasterSerializer(source='client_id', read_only=True)
     class Meta:
         model = PlanningProjectData
         fields = '__all__'
