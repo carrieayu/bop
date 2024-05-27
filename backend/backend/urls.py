@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import CreateOtherPlanningData, CreatePerformanceProjectData, CreatePlanningProjectData, CreateUserView , CreateCompanyMaster, DeleteCompanyMaster, DeletePerformanceProjectData, DeletePlanningProjectData, NoteDelete, NoteListCreate, PlanningProjectDataList, UpdateCompanyMaster, UpdateCreateNote, UpdatePerformanceProjectData, UpdatePlanningProjectData
+from api.views import ClientMasterTableList, CreateOtherPlanningData, CreatePerformanceProjectData, CreatePlanningProjectData, CreateUserView , CreateCompanyMaster, DeleteCompanyMaster, DeletePerformanceProjectData, DeletePlanningProjectData, NoteDelete, NoteListCreate, PlanningProjectDataList, UpdateCompanyMaster, UpdateCreateNote, UpdatePerformanceProjectData, UpdatePlanningProjectData
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
@@ -22,8 +22,9 @@ urlpatterns = [
     path('api/planning/add', CreatePlanningProjectData.as_view()), 
     path('api/planning/update/<int:pk>', UpdatePlanningProjectData.as_view()),  
     path('api/planning/delete/<int:pk>', DeletePlanningProjectData.as_view()),
-    path('api/planning/add/', CreateOtherPlanningData.as_view()),
+    path('api/otherplanning/add', CreateOtherPlanningData.as_view()),
     path('api/planningprojects/', PlanningProjectDataList.as_view()),
+    path('api/planningprojects/tablelist/', ClientMasterTableList.as_view()),
 
 
 ]

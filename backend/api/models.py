@@ -73,7 +73,7 @@ class PlanningProjectData(models.Model):
     planning_project_id = models.CharField(max_length=10, primary_key=True)
     planning_project_name = models.CharField(max_length=100)
     planning_project_type = models.CharField(max_length=50)
-    client_id = models.ForeignKey(ClientMaster, on_delete=models.CASCADE)
+    client_id = models.ForeignKey(ClientMaster, on_delete=models.CASCADE , related_name="planning_project")
     planning = models.DateField()
     sales_revenue = models.IntegerField(max_length=12)
     cost_of_goods_sold = models.IntegerField(max_length=12)
