@@ -63,6 +63,7 @@ useEffect(() => {
           objectEntity.forEach((header, index) => {
             if (project[header] !== undefined) {
               entityGrids[entityIndex].grid[index][adjustedMonth] = project[header].toString()
+
             }
           })
         }
