@@ -75,6 +75,8 @@ class PlanningProjectData(models.Model):
     planning_project_type = models.CharField(max_length=50)
     client_id = models.ForeignKey(ClientMaster, on_delete=models.CASCADE)
     planning = models.DateField()
+    start_yyyymm = models.CharField(max_length=6)
+    end_yyyymm = models.CharField(max_length=6)
     sales_revenue = models.IntegerField(max_length=12)
     cost_of_goods_sold = models.IntegerField(max_length=12)
     dispatched_personnel_expenses = models.IntegerField(max_length=12)
