@@ -57,11 +57,13 @@ useEffect(() => {
       entity.planning_project_data.forEach((project) => {
         if (project.planning && project.sales_revenue !== undefined) {
           const date = new Date(project.planning)
-          const month = ((date.getMonth() + 8) % 12) + 1
+          const month = date.getMonth()
+          const adjustedMonth = (month + 8 + 1) % 12
 
           objectEntity.forEach((header, index) => {
             if (project[header] !== undefined) {
-              entityGrids[entityIndex].grid[index][month] = project[header].toString()
+              entityGrids[entityIndex].grid[index][adjustedMonth] = project[header].toString()
+
             }
           })
         }

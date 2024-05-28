@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework import generics, status
-from .serializers import UserSerializer, NoteSerializer, AccountMasterSerializer, ClientMasterSerializer, BusinessDivisionMasterSerializer, CompanyMasterSerializers, CreatePerformanceProjectDataSerializers, CreatePlanningProjectDataSerializers, UpdateCompanyMasterSerializers, UpdatePerformanceProjectDataSerializers, UpdatePlanningProjectDataSerializers, AuthenticationSerializer,CreateOtherPlanningSerializers
+from .serializers import CreateTableListSerializers, UserSerializer, NoteSerializer, AccountMasterSerializer, ClientMasterSerializer, BusinessDivisionMasterSerializer, CompanyMasterSerializers, CreatePerformanceProjectDataSerializers, CreatePlanningProjectDataSerializers, UpdateCompanyMasterSerializers, UpdatePerformanceProjectDataSerializers, UpdatePlanningProjectDataSerializers, AuthenticationSerializer,CreateOtherPlanningSerializers
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Note, AccountMaster, ClientMaster, BusinessDivisionMaster, CompanyMaster, PerformanceProjectData, PlanningProjectData, OtherPlanningData
 from functools import reduce
@@ -255,6 +255,15 @@ class PlanningProjectDataList(generics.ListCreateAPIView):
 
     def get_queryset(self): 
         return PlanningProjectData.objects.all()
+    
+
+class ClientMasterTableList(generics.ListCreateAPIView):
+    queryset = ClientMaster.objects.all()
+    serializer_class = CreateTableListSerializers
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self): 
+        return ClientMaster.objects.all()
     
 
     

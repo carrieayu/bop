@@ -93,7 +93,20 @@ class CreatePlanningProjectDataSerializers(serializers.ModelSerializer):
     class Meta:
         model = PlanningProjectData
         fields = '__all__'
-        
+
+
+class ClientMasterPlanningProjectDataSerializer(serializers.ModelSerializer):
+    other_planning_data = CreateOtherPlanningSerializers(many=True, read_only=True, source='other_planning')
+    class Meta:
+        model = PlanningProjectData
+        fields = '__all__'
+
+
+class CreateTableListSerializers(serializers.ModelSerializer):
+    planning_project_data = ClientMasterPlanningProjectDataSerializer(many=True, read_only=True, source='planning_project')
+    class Meta:
+        model = ClientMaster
+        fields = '__all__'     
 
 class UpdatePlanningProjectDataSerializers(serializers.ModelSerializer):
     class Meta:
