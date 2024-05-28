@@ -34,9 +34,8 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
             <div className="pagination">
               <button
                 id="prevButton"
-                onClick={() => handleButtonClick(Math.max(currentPage - 1, 1), 'prevButton')} // Ensure currentPage doesn't go below 1
-                disabled={currentPage === 1} // Disable the button if currentPage is 1
-                className={activeButton === 'prevButton' ? 'activeButton' : ''}
+                onClick={() => onPageChange(Math.max(currentPage - 1))} // Ensure currentPage doesn't go below 1
+                disabled={currentPage === 0} // Disable the button if currentPage is 1
               >
                 同
               </button>
