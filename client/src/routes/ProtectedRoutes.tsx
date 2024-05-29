@@ -9,7 +9,7 @@ interface ProtectedRoutesProps {
 }
 
 const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({ children }) => {
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   useEffect(() => {
     auth().catch(() => setIsAuthorized(false));

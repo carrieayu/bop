@@ -5,6 +5,7 @@ import {FaUser, FaEye} from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux'
 import { login } from '../../reducers/user/userSlice'
 import { fetchApi } from '../../components/Localhost/localhost'
+import { jwtDecode } from "jwt-decode";
 
 interface LoginFormProps {
   onSubmit: (data: LoginData) => void;
@@ -40,7 +41,12 @@ const LoginForm = ({ onSubmit }) => {
           }
           dispatch(login({ loginData }))
           const accessToken = data.access
+          const decodedAccess = jwtDecode(accessToken)
+          console.log(accessToken)
+          const userID = decodedAccess["user_id"]
+          console.log("User ID: ", userID)
           localStorage.setItem('accessToken', accessToken)
+          localStorage.setItem('userID', userID)
           window.location.href = '/dashboard'
         },
         (error) => {
