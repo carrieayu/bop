@@ -39,11 +39,12 @@ class CompanyMasterSerializers(serializers.ModelSerializer):
         fields = '__all__'
         
 class BusinessDivisionMasterSerializer(serializers.ModelSerializer):
-    company_id = serializers.PrimaryKeyRelatedField(queryset=CompanyMaster.objects.all())
-    company = CompanyMasterSerializers(source='company_id', read_only=True)
+    # company_id = serializers.PrimaryKeyRelatedField(queryset=CompanyMaster.objects.all())
+    # company = CompanyMasterSerializers(source='company_id', read_only=True)
     class Meta:
         model = BusinessDivisionMaster
-        fields = ["business_division_id", "business_division_name", "company_id", "company", "created_at", "registered_user_id"]
+        fields = ["business_division_id", "business_division_name", "company_id", "created_at", "registered_user_id"]
+        # fields = ["business_division_id", "business_division_name", "company_id", "company", "created_at", "registered_user_id"]
 
 
 class ClientMasterSerializer(serializers.ModelSerializer):

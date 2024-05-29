@@ -6,6 +6,7 @@ from .serializers import CreateTableListSerializers, UserSerializer, NoteSeriali
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Note, AccountMaster, ClientMaster, BusinessDivisionMaster, CompanyMaster, PerformanceProjectData, PlanningProjectData, OtherPlanningData
 from functools import reduce
+from datetime import datetime
 
 class NoteListCreate(generics.ListCreateAPIView):
     serializer_class = NoteSerializer
@@ -282,6 +283,62 @@ class DeletePlanningProjectData(generics.DestroyAPIView):
             return Response({"message": "planning deleted successfully"}, status=status.HTTP_200_OK)
         except:
             return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
-        
-        
+    
+class StorePlanningProject(generics.CreateAPIView):
+    def post(self, request):
+        client_data = request.data.get('client', {})  # Access the 'client' dict
+        client_data['client_name'] = client_data.get('client_name')  
+        client_data['registered_user_id'] = client_data.get('registered_user_id') 
 
+        business_data = request.data.get('business', {})  # Access the 'business' dict
+        business_data['business_division_name'] = business_data.get('business_division_name')
+        business_data['registered_user_id'] = business_data.get('registered_user_id')
+        business_data['company_id'] = business_data.get('company_id')
+
+        planning_data = request.data.get('planning', {})  # Access the 'planning' dict
+        planning_data['planning_project_name'] = planning_data.get('project_name')
+        planning_data['planning_project_type'] = 'Type A'
+        planning_data['client_id'] = ''
+        planning_data['planning'] = datetime.now().strftime('%Y-%m-%d')
+        planning_data['start_yyyymm'] = planning_data.get('start_yyyymm')
+        planning_data['end_yyyymm'] = planning_data.get('end_yyyymm')
+        planning_data['sales_revenue'] = planning_data.get('sales_revenue')
+        planning_data['cost_of_goods_sold'] = planning_data.get('cost_of_goods_sold')
+        planning_data['dispatched_personnel_expenses'] = 0
+        planning_data['personal_expenses'] = planning_data.get('personnel_expenses')
+        planning_data['indirect_personal_expenses'] = planning_data.get('indirect_personnel_cost')
+        planning_data['expenses'] = planning_data.get('expenses')
+        planning_data['operating_profit'] = planning_data.get('operating_income')
+        planning_data['non_operating_income'] = planning_data.get('non_operating_income')
+        planning_data['ordinary_profit'] = planning_data.get('ordinary_income')
+        planning_data['ordinary_profit_margin'] = planning_data.get('ordinary_income_margin')
+        
+        print("Client Data:", client_data)
+        print("Business Data:", business_data)
+        print("Planning Data:", planning_data)
+
+        # Save client data
+        client_serializer = ClientMasterSerializer(data=client_data)
+        if client_serializer.is_valid():
+            client = client_serializer.save()
+        else:
+            return Response(client_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # Save business division data
+        business_serializer = BusinessDivisionMasterSerializer(data=business_data)
+        if business_serializer.is_valid():
+            business = business_serializer.save()
+        else:
+            return Response(business_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update client_id in planning_data with the actual client ID
+        planning_data['client_id'] = client.client_id
+
+        # Save planning project data
+        planning_serializer = CreatePlanningProjectDataSerializers(data=planning_data)
+        if planning_serializer.is_valid():
+            planning_serializer.save()
+        else:
+             return Response(planning_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response({'message': 'Project Planning Data created successfully'}, status=status.HTTP_201_CREATED)
