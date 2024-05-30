@@ -14,6 +14,11 @@ import { OtherPlanningEntity } from '../../entity/otherPlanningEntity'
 import { TableComponentProps } from '../../components/Table/table.component'
 import { fetchAllClientData } from '../../reducers/table/tableSlice'
 import TableEntity from '../../entity/tableEntity'
+import { fetchGraphData } from '../../reducers/graph/graphSlice'
+
+function formatNumberWithCommas(number: number): string {
+  return number.toLocaleString();
+}
 
 const header = ['計画	']
 const smallDate = ['2022/24月', '2022/25月', '2022/26月']
@@ -22,18 +27,23 @@ const dates = ['04月', '05月', '06月', '07月', '08月', '09月', '10月', '1
 const Dashboard = () => {
   const [showMenu, setShowMenu] = useState(false)
   const [tableList, setTableList] = useState<any>([]);
-  // const tableList = useAppSelector((state: RootState) => state.table.tableList)
   const totalSales = useAppSelector((state: RootState) => state.cards.totalSales)
   const totalOperatingProfit = useAppSelector((state: RootState) => state.cards.totalOperatingProfit)
   const totalGrossProfit = useAppSelector((state: RootState) => state.cards.totalGrossProfit)
   const totalNetProfitPeriod = useAppSelector((state: RootState) => state.cards.totalNetProfitPeriod)
   const totalGrossProfitMargin = useAppSelector((state: RootState) => state.cards.totalGrossProfitMargin)
   const totalOperatingProfitMargin = useAppSelector((state: RootState) => state.cards.totalOperatingProfitMargin)
-  const [datePlanning, setDatePlanning] = useState([])
   const dispatch = useDispatch()
   const [currentPage, setCurrentPage] = useState(0)
   const rowsPerPage = 5
   const totalPages = Math.ceil(tableList.length / rowsPerPage)
+  const totalSalesByDate = useAppSelector((state: RootState) => state.graph.totalSalesByDate)
+  const totalOperatingProfitByDate = useAppSelector((state: RootState) => state.graph.totalOperatingProfitByDate)
+  const totalGrossProfitByDate = useAppSelector((state: RootState) => state.graph.totalGrossProfitByDate)
+  const totalNetProfitPeriodByDate = useAppSelector((state: RootState) => state.graph.totalNetProfitPeriodByDate)
+  const totalGrossProfitMarginByDate = useAppSelector((state: RootState) => state.graph.totalGrossProfitMarginByDate)
+  const totalOperatingProfitMarginByDate = useAppSelector((state: RootState) => state.graph.totalOperatingProfitMarginByDate)
+  const datePlanning = useAppSelector((state: RootState) => state.graph.datePlanning)
 
   const toggleMenu = () => {
     setShowMenu(!showMenu)
@@ -44,6 +54,7 @@ const Dashboard = () => {
       const res = await dispatch(fetchAllClientData() as unknown as UnknownAction)
       setTableList(res.payload);
       await dispatch(fetchAllCards() as unknown as UnknownAction)
+      await dispatch(fetchGraphData() as unknown as UnknownAction)
     } catch (e) {
       console.error(e)
     }
@@ -59,7 +70,7 @@ const Dashboard = () => {
       {
         type: 'bar' as const,
         label: '売上高',
-        data: totalSales,
+        data: datePlanning.map(date => totalSalesByDate[date]),
         backgroundColor: '#6e748c',
         borderColor: 'black',
         borderWidth: 1,
@@ -68,7 +79,7 @@ const Dashboard = () => {
       {
         type: 'bar' as const,
         label: '売上総利益',
-        data: totalGrossProfit,
+        data: datePlanning.map(date => totalGrossProfitByDate[date]),
         backgroundColor: '#7696c6',
         borderColor: 'black',
         borderWidth: 1,
@@ -77,7 +88,7 @@ const Dashboard = () => {
       {
         type: 'bar' as const,
         label: '営業利益',
-        data: totalOperatingProfit,
+        data: datePlanning.map(date => totalOperatingProfitByDate[date]),
         backgroundColor: '#b8cbe2',
         borderColor: 'black',
         borderWidth: 1,
@@ -86,7 +97,7 @@ const Dashboard = () => {
       {
         type: 'bar' as const,
         label: '当期純利益',
-        data: totalNetProfitPeriod,
+        data: datePlanning.map(date => totalNetProfitPeriodByDate[date]),
         backgroundColor: '#bde386',
         borderColor: 'black',
         borderWidth: 1,
@@ -95,7 +106,7 @@ const Dashboard = () => {
       {
         type: 'line' as const,
         label: '売上総利益率',
-        data: totalGrossProfitMargin,
+        data: datePlanning.map(date => totalGrossProfitMarginByDate[date]),
         backgroundColor: '#ff8e13',
         borderColor: '#ff8e13',
         borderWidth: 2,
@@ -105,7 +116,7 @@ const Dashboard = () => {
       {
         type: 'line' as const,
         label: '営業利益率',
-        data: totalOperatingProfitMargin,
+        data: datePlanning.map(date => totalOperatingProfitMarginByDate[date]),
         backgroundColor: '#ec3e4a',
         borderColor: '#ec3e4a',
         borderWidth: 2,
@@ -114,7 +125,7 @@ const Dashboard = () => {
       },
     ],
   }
-
+console.log('data:', graphData)
   //State for pagination
   //Function to handle page change
   const handlePageChange = (page: number) => {
@@ -154,7 +165,7 @@ const Dashboard = () => {
               <div className='custom-card-content'>
                 <p className='text1'>売上高</p>
                 <p className='numTxt'>
-                  {totalSales}&nbsp;<span className='totalTxt'>円</span>
+                  {formatNumberWithCommas(totalSales)}&nbsp;<span className='totalTxt'>円</span>
                 </p>
                 <p className='text2'>トータル</p>
               </div>
@@ -169,7 +180,7 @@ const Dashboard = () => {
               <div className='custom-card-content'>
                 <p className='text1'>営業利益</p>
                 <p className='numTxt'>
-                  {totalOperatingProfit}&nbsp;<span className='totalTxt'>円</span>
+                  {formatNumberWithCommas(totalOperatingProfit)}&nbsp;<span className='totalTxt'>円</span>
                 </p>
                 <p className='text2'>トータル</p>
               </div>
@@ -184,7 +195,7 @@ const Dashboard = () => {
               <div className='custom-card-content'>
                 <p className='text1'>売上総利益率</p>
                 <p className='numTxt'>
-                  {totalGrossProfitMargin}&nbsp;<span className='totalTxt'>円</span>
+                  {totalGrossProfitMargin}&nbsp;<span className='totalTxt'>%</span>
                 </p>
                 <p className='text2'>トータル</p>
               </div>
@@ -202,7 +213,7 @@ const Dashboard = () => {
               <div className='custom-card-content'>
                 <p className='text1'>売上総利益</p>
                 <p className='numTxt'>
-                  {totalGrossProfit}&nbsp;<span className='totalTxt'>円</span>
+                  {formatNumberWithCommas(totalGrossProfit)}&nbsp;<span className='totalTxt'>円</span>
                 </p>
                 <p className='text2'>トータル</p>
               </div>
@@ -217,7 +228,7 @@ const Dashboard = () => {
               <div className='custom-card-content'>
                 <p className='text1'>当期純利益</p>
                 <p className='numTxt'>
-                  {totalNetProfitPeriod}&nbsp;<span className='totalTxt'>円</span>
+                  {formatNumberWithCommas(totalNetProfitPeriod)}&nbsp;<span className='totalTxt'>円</span>
                 </p>
                 <p className='text2'>トータル</p>
               </div>
@@ -232,7 +243,7 @@ const Dashboard = () => {
               <div className='custom-card-content'>
                 <p className='text1'>営業利益率</p>
                 <p className='numTxt'>
-                  {totalOperatingProfitMargin}&nbsp;<span className='totalTxt'>円</span>
+                  {totalOperatingProfitMargin}&nbsp;<span className='totalTxt'>%</span>
                 </p>
                 <p className='text2'>トータル</p>
               </div>

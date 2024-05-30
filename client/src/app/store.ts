@@ -3,13 +3,15 @@ import CounterReducer from "../reducers/counter/counterSlice";
 import userReducer from '../reducers/user/userSlice'
 import CardReducer from "../reducers/card/cardSlice"
 import tableSlice from "../reducers/table/tableSlice";
+import graphSlice from "../reducers/graph/graphSlice";
 
 export const store = configureStore({
   reducer: {
     counter: CounterReducer,
     user: userReducer,
     cards: CardReducer,
-    table: tableSlice
+    table: tableSlice,
+    graph: graphSlice
   },
 })
 
