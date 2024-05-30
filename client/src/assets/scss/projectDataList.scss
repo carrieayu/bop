@@ -1,5 +1,6 @@
 .proj_wrapper{
     max-width: 2560px;
+    background-color: #EFEDEA;
     .proj_whole_container{
         // border: 2px solid #000;
         // box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
@@ -10,7 +11,7 @@
         .proj_header_wrapper{
             .proj_header_cont{
                 .header_container{
-                    background-color: #34a953;
+                    background-color: #fff;
                     padding: 5px 5px 10px 5px;
                     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
                     .option_label{
@@ -21,7 +22,8 @@
         }
         .proj_top_wrapper{
             .proj_top_cont{
-                background-color: #fff;
+                background-color: #EFEDEA;
+                margin-top: 10px;
                 padding: 20px 5px 15px 50px;
                 // box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
                 // border-bottom: 2px solid #000;

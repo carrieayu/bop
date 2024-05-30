@@ -8,6 +8,7 @@ interface PaginationProps {
 
 const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
   const [activeButton, setActiveButton] = useState<string>('prevButton');
+  const [dropdownValue, setDropdownValue] = useState<number>(5);
 
   const handleButtonClick = (page: number, buttonId: string) => {
     onPageChange(page);
@@ -36,6 +37,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
                 id="prevButton"
                 onClick={() => onPageChange(Math.max(currentPage - 1))} // Ensure currentPage doesn't go below 1
                 disabled={currentPage === 0} // Disable the button if currentPage is 1
+                className={activeButton === 'prevButton' ? 'activeButton' : ''}
               >
                 同
               </button>
