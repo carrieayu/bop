@@ -42,7 +42,7 @@ interface EntityGrid {
 
 export const TableComponentProps: React.FC<TableProps> = (props) => {
 const gridRows = objectEntity.length
-const gridCols = 12
+const gridCols = 13
 
 const [grid, setGrid] = useState<EntityGrid[]>([])
 
@@ -71,8 +71,17 @@ useEffect(() => {
     }
   })
 
+    entityGrids.forEach((entityGrid) => {
+      entityGrid.grid.forEach((row) => {
+        const total = row.slice(0, gridCols - 1).reduce((acc, val) => acc + parseInt(val, 10), 0)
+        row[gridCols - 1] = total.toString()
+      })
+    })
+
   setGrid(entityGrids)
 }, [props.data])
+
+console.log("Grid: ", grid)
 
   return (
     <div className='table_container'>
@@ -138,17 +147,14 @@ useEffect(() => {
                       </td>
                       {Array.isArray(row)
                         ? row.map((cell, colIndex) => (
-                            <td key={colIndex} style={{ width: 100, border: '1px solid black', textAlign: 'center' }}>
+                            <td
+                              key={colIndex}
+                              style={{ width: 100, height: 50, border: '1px solid black', textAlign: 'center' }}
+                            >
                               {cell}
                             </td>
                           ))
                         : null}
-                      <td
-                        key={'total'}
-                        style={{ width: 100, height: 50, border: '1px solid black', textAlign: 'center' }}
-                      >
-                        {Array.isArray(row) ? row.reduce((acc, val) => acc + parseInt(val), 0) : null}
-                      </td>
                     </tr>
                   ))}
                 </tbody>
