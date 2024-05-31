@@ -7,6 +7,11 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Note, AccountMaster, ClientMaster, BusinessDivisionMaster, CompanyMaster, PerformanceProjectData, PlanningProjectData, OtherPlanningData
 from functools import reduce
 from datetime import datetime
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.utils.translation import gettext as _
+from django.core.mail import send_mail
 
 class NoteListCreate(generics.ListCreateAPIView):
     serializer_class = NoteSerializer
@@ -342,3 +347,51 @@ class StorePlanningProject(generics.CreateAPIView):
              return Response(planning_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         return Response({'message': 'Project Planning Data created successfully'}, status=status.HTTP_201_CREATED)
+
+class ForgotPasswordView(generics.CreateAPIView):
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        email = request.data.get('email')
+        
+        # Check if email exists in the database
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"message": "Email does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Generate password reset token
+        token_generator = PasswordResetTokenGenerator()
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = token_generator.make_token(user)
+        
+        # Construct password reset link
+        reset_url = f'http://localhost:3000/reset-password/{uid}/{token}/'
+        
+        # Send password reset email
+        subject = _('Password Reset Request')
+        message = _('Please click the link below to reset your password:\n\n') + reset_url
+        from_email = 'bopmsemail@gmail.com'  # Update with your email
+        recipient_list = [email]
+        
+        send_mail(subject, message, from_email, recipient_list)
+
+        return Response({"message": "Password reset link sent successfully."}, status=status.HTTP_200_OK)
+    
+    def put(self, request, uidb64, token):
+        # Decode uidb64 to get user id
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        # Check if user exists and token is valid
+        if user is not None and PasswordResetTokenGenerator().check_token(user, token):
+            # Update user's password
+            new_password = request.data.get('password')
+            user.set_password(new_password)
+            user.save()
+            return Response({"message": "Password updated successfully."}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "Invalid token."}, status=status.HTTP_400_BAD_REQUEST)
