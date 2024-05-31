@@ -81,8 +81,6 @@ useEffect(() => {
   setGrid(entityGrids)
 }, [props.data])
 
-console.log("Grid: ", grid)
-
   return (
     <div className='table_container'>
       <div className='table-container'>
