@@ -7,5 +7,6 @@ PyJWT
 pytz
 sqlparse
 python-dotenv
-mysqlclient
-gunicorn
+
+# mysqlclient
+# gunicorn

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { HeaderDashboard } from '../../components/header/header'
+import React, { HtmlHTMLAttributes, useEffect, useMemo, useRef, useState } from 'react'
+import { HeaderDashboard } from '../../components/Header/header'
 import Card from '../../components/Card/Card'
 import GraphDashboard from '../../components/GraphDashboard/GraphDashboard'
 import Pagination from '../../components/Pagination/Pagination'

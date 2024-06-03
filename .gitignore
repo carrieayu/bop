@@ -25,3 +25,90 @@ client/.env
 client/npm-debug.log*
 client/yarn-debug.log*
 client/yarn-error.log*
+
+
+# Python bytecode
+backend/api/__pycache__/
+backend/backend/__pycache__/
+backend/backend/migrations
+backend/api/migrations
+backend/*.py[cod]
+backend/*$py.class
+
+# Compiled or optimized / DLL files
+backend/*.so
+backend/*.dll
+
+# Distribution / packaging
+backend/.eggs/
+backend/build/
+backend/develop-eggs/
+backend/dist/
+backend/downloads/
+backend/eggs/
+backend/lib/
+backend/lib64/
+backend/parts/
+backend/sdist/
+backend/var/
+backend/*.egg-info/
+backend/*.egg
+
+# PyInstaller / cx_Freeze
+backend/*.spec
+backend/*.dist
+
+# IDE and editor specific files
+.idea/
+.vscode/
+backend/*.sublime-project
+backend/*.sublime-workspace
+backend/pycharm/
+
+# Coverage reports
+backend/htmlcov/
+backend/.tox/
+backend/.coverage
+backend/.coverage.*
+backend/.cache
+
+# Django stuff
+backend/*.log
+backend/local_settings.py
+backend/db.sqlite3  # Adjust if using a different database
+
+# Testing frameworks
+# Uncomment these lines if using specific testing frameworks
+
+# nose
+backend/*.pyc
+backend/.nose.rst
+
+# pytest
+backend/.pytest_cache/
+
+# Scrapy
+backend/.scrapy
+
+# Sphinx documentation
+backend/docs/_build/
+
+# Celery beat schedule
+backend/celerybeat-schedule
+
+# Temporary notebook checkpoints
+backend/.ipynb_checkpoints
+
+# Pipenv/Poetry (uncomment one)
+# Pipenv
+Pipfile.lock
+
+# Poetry
+poetry.lock
+
+# System wide ignore
+# You can add additional patterns here to exclude files specific to your system
+*.swp
+*.swo
+*.crt
+*.pem

@@ -2,9 +2,33 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework import generics, status
-from .serializers import CreateTableListSerializers, UserSerializer, NoteSerializer, AccountMasterSerializer, ClientMasterSerializer, BusinessDivisionMasterSerializer, CompanyMasterSerializers, CreatePerformanceProjectDataSerializers, CreatePlanningProjectDataSerializers, UpdateCompanyMasterSerializers, UpdatePerformanceProjectDataSerializers, UpdatePlanningProjectDataSerializers, AuthenticationSerializer,CreateOtherPlanningSerializers
+from .serializers import (
+    CreateTableListSerializers,
+    UserSerializer,
+    NoteSerializer,
+    AccountMasterSerializer,
+    ClientMasterSerializer,
+    BusinessDivisionMasterSerializer,
+    CompanyMasterSerializers,
+    CreatePerformanceProjectDataSerializers,
+    CreatePlanningProjectDataSerializers,
+    UpdateCompanyMasterSerializers,
+    UpdatePerformanceProjectDataSerializers,
+    UpdatePlanningProjectDataSerializers,
+    AuthenticationSerializer,
+    CreateOtherPlanningSerializers,
+)
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .models import Note, AccountMaster, ClientMaster, BusinessDivisionMaster, CompanyMaster, PerformanceProjectData, PlanningProjectData, OtherPlanningData
+from .models import (
+    Note,
+    AccountMaster,
+    ClientMaster,
+    BusinessDivisionMaster,
+    CompanyMaster,
+    PerformanceProjectData,
+    PlanningProjectData,
+    OtherPlanningData,
+)
 from functools import reduce
 from datetime import datetime
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -12,6 +36,7 @@ from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.utils.translation import gettext as _
 from django.core.mail import send_mail
+
 
 class NoteListCreate(generics.ListCreateAPIView):
     serializer_class = NoteSerializer
@@ -27,17 +52,19 @@ class NoteListCreate(generics.ListCreateAPIView):
         else:
             print(serializer.errors)
 
+
 class CreateNote(generics.CreateAPIView):
     serializer_class = NoteSerializer
     permission_classes = [IsAuthenticated]
+
 
 class UpdateCreateNote(generics.UpdateAPIView):
     serializer_class = NoteSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-            user = self.request.user
-            return Note.objects.filter(author=user)
+        user = self.request.user
+        return Note.objects.filter(author=user)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -54,12 +81,14 @@ class NoteDelete(generics.DestroyAPIView):
     def get_queryset(self):
         user = self.request.user
         return Note.objects.filter(author=user)
-    
+
     def destroy(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
             instance.delete()
-            return Response({"message": "note deleted successfully"}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "note deleted successfully"}, status=status.HTTP_200_OK
+            )
         except:
             return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -70,9 +99,11 @@ class CreateUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
+
 class CreateCompanyMaster(generics.CreateAPIView):
     serializer_class = CompanyMasterSerializers
     permission_classes = [AllowAny]
+
 
 # CRUD for AccountMaster
 class AccountMasterListCreate(generics.ListCreateAPIView):
@@ -88,15 +119,17 @@ class AccountMasterListCreate(generics.ListCreateAPIView):
         else:
             print(serializer.errors)
 
+
 class AccountMasterRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AccountMasterSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return AccountMaster.objects.all()
-    
+
 
 # CRUD for BusinessDivisionMaster
+
 
 class BusinessDivisionMasterListCreate(generics.ListCreateAPIView):
     serializer_class = BusinessDivisionMasterSerializer
@@ -104,13 +137,17 @@ class BusinessDivisionMasterListCreate(generics.ListCreateAPIView):
 
     def get_queryset(self):
         return BusinessDivisionMaster.objects.all()
+
     def perform_create(self, serializer):
         if serializer.is_valid():
             serializer.save()
         else:
             print(serializer.errors)
 
-class BusinessDivisionMasterRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+
+class BusinessDivisionMasterRetrieveUpdateDestroy(
+    generics.RetrieveUpdateDestroyAPIView
+):
     serializer_class = BusinessDivisionMasterSerializer
     permission_classes = [IsAuthenticated]
 
@@ -132,11 +169,12 @@ class ClientMasterListCreate(generics.ListCreateAPIView):
         else:
             print(serializer.errors)
 
+
 class ClientMasterRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ClientMasterSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self): 
+    def get_queryset(self):
         return ClientMaster.objects.all()
 
     def create(self, request, *args, **kwargs):
@@ -144,14 +182,15 @@ class ClientMasterRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response({"message": "data created !!!"}, status=status.HTTP_200_OK)
-        
+
+
 class UpdateCompanyMaster(generics.UpdateAPIView):
     serializer_class = UpdateCompanyMasterSerializers
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-            id = self.kwargs.get('pk')
-            return CompanyMaster.objects.filter(company_id=id)
+        id = self.kwargs.get("pk")
+        return CompanyMaster.objects.filter(company_id=id)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -160,22 +199,26 @@ class UpdateCompanyMaster(generics.UpdateAPIView):
         self.perform_update(serializer)
         return Response({"message": "data updated !!!"}, status=status.HTTP_200_OK)
 
+
 class DeleteCompanyMaster(generics.DestroyAPIView):
     queryset = CompanyMaster.objects.all()
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-            id = self.kwargs.get('pk')
-            return CompanyMaster.objects.filter(company_id=id)
+        id = self.kwargs.get("pk")
+        return CompanyMaster.objects.filter(company_id=id)
 
     def destroy(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
             instance.delete()
-            return Response({"message": "deleted successfully"}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "deleted successfully"}, status=status.HTTP_200_OK
+            )
         except:
             return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
-    
+
+
 class CreatePerformanceProjectData(generics.CreateAPIView):
     serializer_class = CreatePerformanceProjectDataSerializers
     permission_classes = [IsAuthenticated]
@@ -184,22 +227,27 @@ class CreatePerformanceProjectData(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        return Response({"message": "performance data created !!!"}, status=status.HTTP_200_OK)
-    
+        return Response(
+            {"message": "performance data created !!!"}, status=status.HTTP_200_OK
+        )
+
+
 class UpdatePerformanceProjectData(generics.UpdateAPIView):
     serializer_class = UpdatePerformanceProjectDataSerializers
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-            id = self.kwargs.get('pk')
-            return PerformanceProjectData.objects.filter(project_id=id)
+        id = self.kwargs.get("pk")
+        return PerformanceProjectData.objects.filter(project_id=id)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        return Response({"message": "performance data updated !!!"}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "performance data updated !!!"}, status=status.HTTP_200_OK
+        )
 
 
 class DeletePerformanceProjectData(generics.DestroyAPIView):
@@ -207,14 +255,17 @@ class DeletePerformanceProjectData(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-            id = self.kwargs.get('pk')
-            return PerformanceProjectData.objects.filter(project_id=id)
+        id = self.kwargs.get("pk")
+        return PerformanceProjectData.objects.filter(project_id=id)
 
     def destroy(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
             instance.delete()
-            return Response({"message": "performance deleted successfully"}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "performance deleted successfully"},
+                status=status.HTTP_200_OK,
+            )
         except:
             return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -222,36 +273,46 @@ class DeletePerformanceProjectData(generics.DestroyAPIView):
 class CreatePlanningProjectData(generics.CreateAPIView):
     serializer_class = CreatePlanningProjectDataSerializers
     permission_classes = [IsAuthenticated]
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        return Response({"message": "planning data created !!!"}, status=status.HTTP_200_OK)
-    
+        return Response(
+            {"message": "planning data created !!!"}, status=status.HTTP_200_OK
+        )
+
+
 class UpdatePlanningProjectData(generics.UpdateAPIView):
     serializer_class = UpdatePlanningProjectDataSerializers
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-            id = self.kwargs.get('pk')
-            return PlanningProjectData.objects.filter(planning_project_id=id)
+        id = self.kwargs.get("pk")
+        return PlanningProjectData.objects.filter(planning_project_id=id)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        return Response({"message": "planning data updated !!!"}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "planning data updated !!!"}, status=status.HTTP_200_OK
+        )
+
 
 # OtherPlanning Data for card
 class CreateOtherPlanningData(generics.CreateAPIView):
     serializer_class = CreateOtherPlanningSerializers
     permission_classes = [IsAuthenticated]
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        return Response({"message": "other planning created!"},status=status.HTTP_200_OK)
+        return Response(
+            {"message": "other planning created!"}, status=status.HTTP_200_OK
+        )
 
 
 class PlanningProjectDataList(generics.ListCreateAPIView):
@@ -259,65 +320,86 @@ class PlanningProjectDataList(generics.ListCreateAPIView):
     serializer_class = CreatePlanningProjectDataSerializers
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self): 
+    def get_queryset(self):
         return PlanningProjectData.objects.all()
-    
+
 
 class ClientMasterTableList(generics.ListCreateAPIView):
     queryset = ClientMaster.objects.all()
     serializer_class = CreateTableListSerializers
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self): 
+    def get_queryset(self):
         return ClientMaster.objects.all()
-    
 
-    
+
 class DeletePlanningProjectData(generics.DestroyAPIView):
     queryset = PlanningProjectData.objects.all()
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-            id = self.kwargs.get('pk')
-            return PlanningProjectData.objects.filter(planning_project_id=id)
+        id = self.kwargs.get("pk")
+        return PlanningProjectData.objects.filter(planning_project_id=id)
 
     def destroy(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
             instance.delete()
-            return Response({"message": "planning deleted successfully"}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "planning deleted successfully"}, status=status.HTTP_200_OK
+            )
         except:
             return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
-    
+
+
 class StorePlanningProject(generics.CreateAPIView):
     def post(self, request):
-        client_data = request.data.get('client', {})  # Access the 'client' dict
-        client_data['client_name'] = client_data.get('client_name')  
-        client_data['registered_user_id'] = client_data.get('registered_user_id') 
+        client_data = request.data.get("client", {})
+        business_data = request.data.get("business", {})
+        planning_data = request.data.get("planning", {})
 
-        business_data = request.data.get('business', {})  # Access the 'business' dict
-        business_data['business_division_name'] = business_data.get('business_division_name')
-        business_data['registered_user_id'] = business_data.get('registered_user_id')
-        business_data['company_id'] = business_data.get('company_id')
+        client_data["client_name"] = client_data.get("client_name")
+        client_data["registered_user_id"] = client_data.get("registered_user_id")
 
-        planning_data = request.data.get('planning', {})  # Access the 'planning' dict
-        planning_data['planning_project_name'] = planning_data.get('project_name')
-        planning_data['planning_project_type'] = 'Type A'
-        planning_data['client_id'] = ''
-        planning_data['planning'] = datetime.now().strftime('%Y-%m-%d')
-        planning_data['start_yyyymm'] = planning_data.get('start_yyyymm')
-        planning_data['end_yyyymm'] = planning_data.get('end_yyyymm')
-        planning_data['sales_revenue'] = planning_data.get('sales_revenue')
-        planning_data['cost_of_goods_sold'] = planning_data.get('cost_of_goods_sold')
-        planning_data['dispatched_personnel_expenses'] = 0
-        planning_data['personal_expenses'] = planning_data.get('personnel_expenses')
-        planning_data['indirect_personal_expenses'] = planning_data.get('indirect_personnel_cost')
-        planning_data['expenses'] = planning_data.get('expenses')
-        planning_data['operating_profit'] = planning_data.get('operating_income')
-        planning_data['non_operating_income'] = planning_data.get('non_operating_income')
-        planning_data['ordinary_profit'] = planning_data.get('ordinary_income')
-        planning_data['ordinary_profit_margin'] = planning_data.get('ordinary_income_margin')
-        
+        business_data["business_division_name"] = business_data.get(
+            "business_division_name"
+        )
+        business_data["registered_user_id"] = business_data.get("registered_user_id")
+        business_data["company_id"] = business_data.get("company_id")
+
+        planning_data["planning_project_name"] = planning_data.get("project_name")
+        planning_data["planning_project_type"] = "Type A"
+        planning_data["client_id"] = ""
+        planning_data["planning"] = datetime.now().strftime("%Y-%m-%d")
+        planning_data["start_yyyymm"] = planning_data.get("start_yyyymm")
+        planning_data["end_yyyymm"] = planning_data.get("end_yyyymm")
+        planning_data["sales_revenue"] = float(
+            planning_data.get("sales_revenue", "0") or "0"
+        )
+        planning_data["cost_of_goods_sold"] = float(
+            planning_data.get("cost_of_goods_sold", "0") or "0"
+        )
+        planning_data["dispatched_personnel_expenses"] = 0.0
+        planning_data["personal_expenses"] = float(
+            planning_data.get("personnel_expenses", "0") or "0"
+        )
+        planning_data["indirect_personal_expenses"] = float(
+            planning_data.get("indirect_personnel_cost", "0") or "0"
+        )
+        planning_data["expenses"] = float(planning_data.get("expenses", "0") or "0")
+        planning_data["operating_profit"] = float(
+            planning_data.get("operating_income", "0") or "0"
+        )
+        planning_data["non_operating_income"] = float(
+            planning_data.get("non_operating_income", "0") or "0"
+        )
+        planning_data["ordinary_profit"] = float(
+            planning_data.get("ordinary_income", "0") or "0"
+        )
+        planning_data["ordinary_profit_margin"] = float(
+            planning_data.get("ordinary_income_margin", "0") or "0"
+        )
+
         print("Client Data:", client_data)
         print("Business Data:", business_data)
         print("Planning Data:", planning_data)
@@ -327,17 +409,21 @@ class StorePlanningProject(generics.CreateAPIView):
         if client_serializer.is_valid():
             client = client_serializer.save()
         else:
-            return Response(client_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                client_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
 
         # Save business division data
         business_serializer = BusinessDivisionMasterSerializer(data=business_data)
         if business_serializer.is_valid():
             business = business_serializer.save()
         else:
-            return Response(business_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                business_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
 
         # Update client_id in planning_data with the actual client ID
-        planning_data['client_id'] = client.client_id
+        planning_data["client_id"] = client.client_id
 
         # Save planning project data
         planning_serializer = CreatePlanningProjectDataSerializers(data=planning_data)
@@ -395,3 +481,11 @@ class ForgotPasswordView(generics.CreateAPIView):
             return Response({"message": "Password updated successfully."}, status=status.HTTP_200_OK)
         else:
             return Response({"message": "Invalid token."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                planning_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        return Response(
+            {"message": "Project Planning Data created successfully"},
+            status=status.HTTP_201_CREATED,
+        )

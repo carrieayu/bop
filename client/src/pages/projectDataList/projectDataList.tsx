@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Btn from "../../components/Button/Button";
 import Pagination from "../../components/Pagination/Pagination";
-import { HeaderDashboard } from "../../components/header/header";
+import { HeaderDashboard } from "../../components/Header/header";
 import axios from "axios";
 
 interface ButtonData {
