@@ -1,4 +1,4 @@
-import React, { HtmlHTMLAttributes, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { HeaderDashboard } from '../../components/header/header'
 import Card from '../../components/Card/Card'
 import GraphDashboard from '../../components/GraphDashboard/GraphDashboard'
@@ -9,11 +9,8 @@ import { fetchAllCards } from '../../reducers/card/cardSlice'
 import { UnknownAction } from '@reduxjs/toolkit'
 import { useAppSelector } from '../../actions/hooks'
 import { RootState } from '../../app/store'
-import CardEntity from '../../entity/cardEntity'
-import { OtherPlanningEntity } from '../../entity/otherPlanningEntity'
 import { TableComponentProps } from '../../components/Table/table.component'
 import { fetchAllClientData } from '../../reducers/table/tableSlice'
-import TableEntity from '../../entity/tableEntity'
 import { fetchGraphData } from '../../reducers/graph/graphSlice'
 
 function formatNumberWithCommas(number: number): string {
@@ -35,7 +32,7 @@ const Dashboard = () => {
   const totalOperatingProfitMargin = useAppSelector((state: RootState) => state.cards.totalOperatingProfitMargin)
   const dispatch = useDispatch()
   const [currentPage, setCurrentPage] = useState(0)
-  const rowsPerPage = 5
+  const [rowsPerPage, setRowsPerPage] = useState(5)
   const totalPages = Math.ceil(tableList.length / rowsPerPage)
   const totalSalesByDate = useAppSelector((state: RootState) => state.graph.totalSalesByDate)
   const totalOperatingProfitByDate = useAppSelector((state: RootState) => state.graph.totalOperatingProfitByDate)
@@ -44,7 +41,8 @@ const Dashboard = () => {
   const totalGrossProfitMarginByDate = useAppSelector((state: RootState) => state.graph.totalGrossProfitMarginByDate)
   const totalOperatingProfitMarginByDate = useAppSelector((state: RootState) => state.graph.totalOperatingProfitMarginByDate)
   const datePlanning = useAppSelector((state: RootState) => state.graph.datePlanning)
-
+  const select = [5, 10, 100]
+  const [paginatedData, setPaginatedData] = useState<any[]>([])
   const toggleMenu = () => {
     setShowMenu(!showMenu)
   }
@@ -61,8 +59,12 @@ const Dashboard = () => {
   }
   useEffect(() => {
     fetchData()
-    console.log('sensha kana: ', totalGrossProfit)
   }, [])
+
+  useEffect(() => {
+    const startIndex = currentPage * rowsPerPage
+    setPaginatedData(tableList.slice(startIndex, startIndex + rowsPerPage))
+  }, [currentPage, rowsPerPage, tableList])
 
   const graphData = {
     labels: datePlanning,
@@ -125,16 +127,13 @@ const Dashboard = () => {
       },
     ],
   }
-console.log('data:', graphData)
-  //State for pagination
-  //Function to handle page change
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
   }
 
-  const getPaginatedData = () => {
-    const startIndex = currentPage * rowsPerPage
-    return tableList.slice(startIndex, startIndex + rowsPerPage)
+  const handleRowsPerPageChange = (numRows: number) => {
+    setRowsPerPage(numRows)
+    setCurrentPage(0)
   }
 
   return (
@@ -259,10 +258,17 @@ console.log('data:', graphData)
       </div>
       <div className='bottom_cont'>
         <div className='pagination_cont'>
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            options={select}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleRowsPerPageChange}
+          />
         </div>
         <div className='table_cont'>
-          <TableComponentProps data={getPaginatedData()} header={header} dates={dates} smallDate={smallDate} />
+          <TableComponentProps data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
         </div>
       </div>
     </div>

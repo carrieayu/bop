@@ -126,6 +126,7 @@
                         .pagination{
                             #prevButton,
                             #nextButton,
+                            #optionNumber,
                             #lastButton{
                                 border: 1px solid #34a953;
                                 background-color: #fff;
@@ -134,6 +135,10 @@
                                     background-color: #34a953;
                                     color: #fff;
                                 }
+                            }
+                            #optionNumber {
+                                float: right;
+                                padding: 6px;
                             }
                             .activeButton{
                                 background-color: #34a953 !important;
