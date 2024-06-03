@@ -15,6 +15,7 @@ const Dashboard = Loader(lazy(() => import("../pages/dashboard/dashboard")));
 const Login = Loader(lazy(() => import("../pages/login/login")));
 const Register = Loader(lazy(() => import("../pages/register/register")));
 const Forgot = Loader(lazy(() => import("../pages/forgot/forgot")));
+const ResetPassword = Loader(lazy(() => import("../pages/resetPassword/resetPassword")));
 
 // Not Found Page
 const NotFound = Loader(lazy(() => import("../pages/notFound/notFound")));
@@ -55,6 +56,10 @@ const routes: RouteObject[] = [
       {
         path: "forgot",
         element: <Forgot />,
+      },
+      {
+        path: "reset-password/:uid/:token",
+        element: <ResetPassword />,
       },
       {
         path: "logout",
