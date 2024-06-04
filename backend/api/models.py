@@ -110,7 +110,7 @@ class PlanningProjectData(models.Model):
         "ClientMaster", on_delete=models.CASCADE, related_name="planning_project"
     )
     planning = models.DateField(null=True, default=timezone.now)
-    start_yyyymm = models.CharField(max_length=6)
+    start_yyyymm = models.CharField(max_length=6, default="200001")
     end_yyyymm = models.CharField(max_length=6, default="200001")
     sales_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
     cost_of_goods_sold = models.DecimalField(
