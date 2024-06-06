@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import generics, status
 from .serializers import (
     CreateTableListSerializers,
+    GetUserMasterSerializer,
     UserSerializer,
     NoteSerializer,
     AccountMasterSerializer,
@@ -18,8 +19,10 @@ from .serializers import (
     AuthenticationSerializer,
     CreateOtherPlanningSerializers,
 )
+from .serializers import CreateTableListSerializers, UserSerializer, NoteSerializer, AccountMasterSerializer, ClientMasterSerializer, BusinessDivisionMasterSerializer, CompanyMasterSerializers, CreatePerformanceProjectDataSerializers, CreatePlanningProjectDataSerializers, UpdateCompanyMasterSerializers, UpdatePerformanceProjectDataSerializers, UpdatePlanningProjectDataSerializers, AuthenticationSerializer,CreateOtherPlanningSerializers
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import (
+    User,
     Note,
     AccountMaster,
     ClientMaster,
@@ -489,3 +492,9 @@ class ForgotPasswordView(generics.CreateAPIView):
             {"message": "Project Planning Data created successfully"},
             status=status.HTTP_201_CREATED,
         )
+class PersonnelExpensesList(generics.ListCreateAPIView):
+    serializer_class = GetUserMasterSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self): 
+        return User.objects.all()
