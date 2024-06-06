@@ -1,6 +1,8 @@
 // custom scss for reusable pagination
 .content{
-  margin: 10px 0px 0px 10px;
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px 30px;
   .paginate{
     .txt1{
       display: inline-block;
@@ -53,14 +55,16 @@
       margin-left: 10px;
     }
     .pagination{
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
       margin-left: 20px;
-      button{
+      button, select{
         padding: 5px 10px;
         margin: 0;
         border: 1px solid #ccc;
         background-color: #f2f2f2;
         cursor: pointer;
+        height: 32px;
         &:first-child{
           border-top-left-radius: 5px;
           border-bottom-left-radius: 5px;
@@ -84,11 +88,18 @@
         }
       }
       select{
-        padding: 5px 10px;
-        margin: 0;
-        border: 1px solid #ccc;
-        background-color: #f2f2f2;
-        cursor: pointer;
+        border-top-left-radius: 0; 
+        border-bottom-left-radius: 0; 
+        border-top-right-radius: 5px; 
+        border-bottom-right-radius: 5px; 
+        margin-left: -1px; 
+        &:hover,
+        &:focus,
+        &:active {
+          background-color: #f2f2f2 !important; 
+          border-color: #ccc !important; 
+          color: #000 !important;
+        }
       }
     }
   }

@@ -1,127 +1,259 @@
-.parent-div {
-    
+.project_wrapper{
     display: flex;
     flex-direction: column;
-    // padding: 50px;
-    // margin-top: 10px;
-    // border: 1px solid black;
-    height: 100vh;
-    .inner-div {
-        margin: 20px 10px;
-        height: 90%;
-        // border: 2px solid black;
-        .header-container {
-            background-color: white;
-            height: 4rem;
-            // border-bottom: 2px solid black;
-            .btn-content {
-                margin-left: 5%;
-                display: flex;
-                gap: 2%;
-                .header-btn{
-                   margin-top: 15px;
-                   border: 1px solid #34a953;
-                   width: 10rem;
-                   height: 30px;
-                   border-radius: 100px !important;
-                }
-                .header-btn:hover{
-                    background-color: #34a953;
-                    color: black;
-                }
-                .h-btn-active{
-                    background-color: #34a953;
-                    color: white;
-                }
-
+    .header_cont{
+        margin: 0px 0px 0px 0px;
+        .header_container{
+            background-color: #fff;
+            padding: 5px 5px 10px 5px;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+    }
+    .proj_content_wrapper{
+        display: flex;
+        background-color: #EFEDEA;
+        @media only screen and (max-width: 1000px){
+            flex-direction: column;
+        }
+        .sidebar{
+            flex: 0 0 180px;
+            background-color: #1c302c;
+            @media only screen and (max-width: 1000px){
+                flex: 0 0 auto;
+                width: 100%;
+                display: none;
             }
         }
-        .body-container{
-            background-color: #ffffff;
-            height: 90% ;
-            .body-top{
-                margin-left: 5%;
-                display: flex;
-                gap: 2%;
-                .body-btn{
-                    margin-top: 15px;
-                    border: 1px solid #34a953;
-                    width: 10rem;
-                    height: 30px;
-                    border-radius: 100px !important;
-                    font-weight: bold;
-                }
-                .body-btn:hover{
-                    background-color: #34a953;
-                    color: white;
-                }
-                .body-btn-active{
-                    background-color: #34a953;
-                    color: white;
-                }
-                .form-title{
-                    background-color: red;
+        .project_data_content{
+            width: 100%;
+            height: 100vh;
+            margin: 10px 30px 10px 30px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            background-color: #fff;
+            .top_body_cont{
+                background-color: #fff;
+                height: 4rem;
+                .top_btn_cont{
+                    margin-left: 5%;
+                    display: flex;
+                    gap: 2%;
+                    .header-btn{                        
+                        margin-top: 15px;
+                        border: 1px solid #808080;
+                        width: 10rem;
+                        height: 30px;
+                        border-radius: 5px !important;
+                        background-color: #fff;
+                        color: #000;
+                    }
+                    .header-btn:hover{
+                        background-color: #808080;
+                        color: #fff;
+                    }
+                    .h-btn-active{
+                        background-color: #808080;
+                        color: #fff;
+                    }
                 }
             }
-            .form-title{
-                margin: 10px 50px;
-                height: 90%;
-                .form-header{
-                    padding: 5px 0px 9px 23px;
-                    font-weight: bold;
+            .mid_body_cont{
+                background-color: #fff;
+                .mid_btn_cont{
+                    margin-left: 5%;
+                    display: flex;
+                    gap: 2%;
+                    .body-btn{
+                        margin-top: 15px;
+                        border: 1px solid #808080;
+                        width: 10rem;
+                        height: 30px;
+                        border-radius: 5px !important;
+                        background-color: #fff;
+                        color: #000;
+                    }
+                    .body-btn:hover{
+                        background-color: #808080;
+                        color: #fff;
+                    }
+                    .body-btn-active{
+                        background-color: #808080;
+                        color: #fff;
+                    }
                 }
-                .inp-form{
-                    padding: 15px 0px 0px 20px;
-                    height: 100%;
-                    .table-layout {
-                        width: 100%;
-                        border-collapse: collapse;
-                        // box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
-                        thead {
-                            tr {
-                                background-color: #e1e1e1;
-                                border: none;
-                                th {
-                                    padding: 10px;
-                                    border: 1px solid black;
-                                    text-align: center;
-                                    border: none;
-                                }
-                                .th-no-disp{
-                                    background-color: white;
-                                    border-bottom: none;
-                                }
+                .mid_form_cont{
+                    margin: 10px 50px;
+                    .form-title{
+                        padding: 10px 0px 9px 23px;
+                        font-weight: bold;
+                        color: #000;
+                    }
+                    .form-content{
+                        padding: 15px 0px 0px 20px;
+                        .form-content-div{
+                            display: flex;
+                            .calc{
+                                width: calc(100%/3);
                             }
-                            .trd-row-h{
-                                .hide-th{
-                                    border: none;
-                                    background-color: white;
-                                }
-                            }
-                        }
-                        tbody {
-                            tr {
-                                td {
-                                    padding: 10px;
-                                    border: 1px solid black;
-                                    text-align: left;
-                                    height: 50px;
-                                    // border: none;
-                                    .td-no-disp{
-                                        border: none;
+                            .left-form-div{
+                                .client-name-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .client_name{
+                                        margin-bottom: 5px;
                                     }
-                                    .td-no-disp,.no-inp{
-                                        border: none;
+                                    .select-option{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                }
+                                .business_division_name-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .business_division_name{
+                                        margin-bottom: 5px;
                                     }
                                     input{
-                                        width: 100%;
-                                        height: 100%;
-                                        border: none;
-                                        background-color: white;
-                                        &:focus {
-                                            border: none;
-                                            outline: none;
-                                          }
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                }
+                                .project_name-div{ 
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .project_name{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                }
+                                .start_date-div{ 
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .start_yyyymm{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                }
+                                .end_date-div{ 
+                                    display: flex;
+                                    flex-direction: column;
+                                    .end_yyyymm{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                }
+                            }
+                            .middle-form-div{
+                                .net-sales-div{ 
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .net_sales{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                    input::-webkit-outer-spin-button,
+                                    input::-webkit-inner-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
+                                    }
+                                }
+                                .cost-of-sales-div{ 
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .cost_of_goods_sold{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                    input::-webkit-outer-spin-button,
+                                    input::-webkit-inner-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
+                                    }
+                                }
+                                .personnel-expenses-div{ 
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .personnel_expenses{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                    input::-webkit-outer-spin-button,
+                                    input::-webkit-inner-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
+                                    }
+                                }
+                                .indirect-personnel-cost-div{ 
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .indirect_personnel_cost{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                    input::-webkit-outer-spin-button,
+                                    input::-webkit-inner-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
+                                    }
+                                }
+                                .expenses-div{ 
+                                    display: flex;
+                                    flex-direction: column;
+                                    .expenses{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
                                     }
                                     input::-webkit-outer-spin-button,
                                     input::-webkit-inner-spin-button {
@@ -130,71 +262,107 @@
                                     }
                                 }
                             }
-                            .dropdown-select{
-                                width: 20%;
-                                .select{
-                                    width: 100%;
-                                    .select-option{
-                                        width: 100%;
-                                        border: none;
-                                        text-align: center;
-                                        background-color: white;
+                            .right-form-div{
+                                .non-operating-income-div{ 
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .non_operating_income{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                    input::-webkit-outer-spin-button,
+                                    input::-webkit-inner-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
                                     }
                                 }
-                                &:focus{
-                                    outline: none;
-                                    border: none;
+                                .operating-income-div{ 
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .operating_income{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                    input::-webkit-outer-spin-button,
+                                    input::-webkit-inner-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
+                                    }
+                                }
+                                .ordinary-income-div{ 
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .ordinary_income{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                    input::-webkit-outer-spin-button,
+                                    input::-webkit-inner-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
+                                    }
+                                }
+                                .ordinary-income-margin-div{ 
+                                    display: flex;
+                                    flex-direction: column;
+                                    .ordinary_income_margin{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                    input::-webkit-outer-spin-button,
+                                    input::-webkit-inner-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
+                                    }
                                 }
                             }
-                            .trd-row{
-                                .hide{
-                                    // background-color: red;
-                                    border: none;
-                                    width: 20%;
-                                }
+                        }
+                        .plus-btn{
+                            padding: 20px 10px 20px 10px;
+                            gap: 1rem;
+                            display: flex;
+                            margin-left: 90%;
+                            .inc,.dec{
+                                background-color: #34a953;
+                                color: whitesmoke;
+                                width: 30px;
+                                height: 40px;
+                                font-size: 25px;
+                                border-radius: 5px;
                             }
                         }
-                    }
-                    .table-layout tbody tr:nth-child(even) {
-                        background-color: #b5c6e6;
-                    }
-                    .plus-btn{
-                        padding: 30px 10px 10px 10px;
-                        gap: 1rem;
-                        display: flex;
-                        margin-left: 90%;
-                        .inc,.dec{
-                            background-color: #34a953;
-                            color: whitesmoke;
-                            width: 30px;
-                            height: 40px;
-                            font-size: 25px;
-                        }
-                    }
-                    .options-btn{
-                        display: flex;
-                        gap: 10%;
-                        padding: 10px 10px 10px 10px;
-                        align-items: center;
-                        justify-content: center;
-                        .cancel{
-                            background-color: #34a953;
-                            border-radius: 100px;
-                            width: 10%;
-                            height: 3rem;
-                            font-weight: bold;
-                        }
-                        .register{
-                            // border: 1px solid red;
-                            background-color: #34a953;
-                            border-radius: 100px;
-                            width: 10%;
-                            height: 3rem;
-                            font-weight: bold;
-                        }
-                        .cancel:hover,.register:hover{
-                            background-color: #67d284;
-                            color: black;
+                        .options-btn{
+                            display: flex;
+                            gap: 1%;
+                            padding: 10px 10px 10px 10px;
+                            align-items: center;
+                            justify-content: center;
+                            button{
+                                width: 10%;
+                            }
                         }
                     }
                 }
