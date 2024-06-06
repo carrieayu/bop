@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Note, AccountMaster, ClientMaster, BusinessDivisionMaster, CompanyMaster, PerformanceProjectData, PlanningProjectData, OtherPlanningData
+from .models import PlanningAssignData, User as UserApi ,Note, AccountMaster, ClientMaster, BusinessDivisionMaster, CompanyMaster, PerformanceProjectData, PlanningProjectData, OtherPlanningData
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -43,7 +43,7 @@ class BusinessDivisionMasterSerializer(serializers.ModelSerializer):
     # company = CompanyMasterSerializers(source='company_id', read_only=True)
     class Meta:
         model = BusinessDivisionMaster
-        fields = ["business_division_id", "business_division_name", "company_id", "created_at", "registered_user_id"]
+        fields = ["business_division_name"]
         # fields = ["business_division_id", "business_division_name", "company_id", "company", "created_at", "registered_user_id"]
 
 
@@ -132,4 +132,42 @@ class AuthenticationSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
+
+class GetPlanningProjectDataSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = PlanningProjectData
+        fields = [
+            "planning_project_name",
+            "planning_project_type",
+            "planning",
+            "sales_revenue",
+            "cost_of_goods_sold",
+            "dispatched_personnel_expenses",
+            "personal_expenses",
+            "indirect_personal_expenses",
+            "expenses",
+            "operating_profit",
+            "non_operating_income",
+            "ordinary_profit",
+            "ordinary_profit_margin"
+            ]
+
+class GetPlanningAssignSerializer(serializers.ModelSerializer):
+    planning_project = GetPlanningProjectDataSerializers(source='planning_project_id' , read_only=True, )
+    class Meta:
+        model = PlanningAssignData
+        fields = ["planning_assign_id", "client_id", "assignment_start_date", "assignment_end_date", "assignment_ratio", "assignment_unit_price", "year", "registration_date", "registration_user", "planning_project"]
+
+class GetUserMasterSerializer(serializers.ModelSerializer):
+    planning_assign = GetPlanningAssignSerializer(many=True, read_only=True, source='user')
+    class Meta:
+        model = UserApi
+        fields = ["username", "email", "last_login", "created_at", "registered_user_id" , "planning_assign"]
+
+class GetBusinessDivisionMasterSerializer(serializers.ModelSerializer):
+    company = CompanyMasterSerializers(source='company_id', read_only=True)
+
+    class Meta:
+        model = BusinessDivisionMaster
+        fields = ["business_division_id", "business_division_name", "created_at", "registered_user_id", "company"]
 
