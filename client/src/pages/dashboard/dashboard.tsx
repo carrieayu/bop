@@ -1,5 +1,4 @@
 import React, { HtmlHTMLAttributes, useEffect, useMemo, useRef, useState } from 'react'
-import { HeaderDashboard } from '../../components/Header/header'
 import Card from '../../components/Card/Card'
 import GraphDashboard from '../../components/GraphDashboard/GraphDashboard'
 import Pagination from '../../components/Pagination/Pagination'
@@ -12,6 +11,7 @@ import { RootState } from '../../app/store'
 import { TableComponentProps } from '../../components/Table/table.component'
 import { fetchAllClientData } from '../../reducers/table/tableSlice'
 import { fetchGraphData } from '../../reducers/graph/graphSlice'
+import { HeaderDashboard } from '../../components/header/header'
 
 function formatNumberWithCommas(number: number): string {
   return number.toLocaleString();
