@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react'
 import Btn from '../../components/Button/Button'
 import Pagination from '../../components/Pagination/Pagination'
 import { HeaderDashboard } from '../../components/header/header'
-import { fetchPersonnel } from '../../reducers/personnel/personnelExpensesSlice'
 import { UnknownAction } from 'redux'
 import { useAppSelector } from '../../actions/hooks'
 import { RootState } from '../../app/store'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
+import { fetchPersonnel } from '../../reducers/personnel/personnelExpensesSlice'
 
 interface ButtonData {
   label: string

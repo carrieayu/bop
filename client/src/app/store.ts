@@ -4,7 +4,7 @@ import userReducer from '../reducers/user/userSlice'
 import CardReducer from "../reducers/card/cardSlice"
 import tableSlice from "../reducers/table/tableSlice";
 import graphSlice from "../reducers/graph/graphSlice";
-import personnelExpenses from "../reducers/personnel/personnelExpensesSlice";
+import personnelExpensesSlice from "../reducers/personnel/personnelExpensesSlice";
 
 export const store = configureStore({
   reducer: {
@@ -13,7 +13,7 @@ export const store = configureStore({
     cards: CardReducer,
     table: tableSlice,
     graph: graphSlice,
-    personnel: personnelExpenses
+    personnel: personnelExpensesSlice,
   },
 })
 
