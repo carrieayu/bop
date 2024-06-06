@@ -3,6 +3,7 @@ import Btn from "../../components/Button/Button";
 import Pagination from "../../components/Pagination/Pagination";
 import axios from "axios";
 import { HeaderDashboard } from "../../components/header/header";
+import Sidebar from "../../components/SideBar/Sidebar";
 
 interface ButtonData {
     label: string;
@@ -85,95 +86,98 @@ const ProjectDataList: React.FC = () => {
         const startIndex = currentPage * rowsPerPage
         setPaginatedData(projects.slice(startIndex, startIndex + rowsPerPage))
       }, [currentPage, rowsPerPage, projects])
+
   return (
     <div className='proj_wrapper'>
-      <div className='proj_whole_container'>
-        <div className='proj_header_wrapper'>
-          <div className='proj_header_cont'>
-            <HeaderDashboard value='value' />
-          </div>
+       <div className="header_cont">
+            <HeaderDashboard value="" />
         </div>
-        <div className='proj_top_wrapper'>
-          <div className='proj_top_cont'>
-            {headerButtons.map((button) => (
-              <Btn
-                key={button.index}
-                label={button.label}
-                size='normal'
-                onClick={() => handleButton1Click(button.index)}
-                className={`proj_btn ${activeButton1 === button.index ? 'active' : ''}`}
-              />
-            ))}
-          </div>
+        <div className="projectlist_cont_wrapper">
+            <div className="sidebar">
+                <Sidebar />
+            </div>
+            <div className="projectlist_wrapper">
+                    <div className="proj_top_content">
+                        <div className="proj_top_body_cont">
+                            <div className="proj_top_btn_cont">
+                                {headerButtons.map((button) => (
+                                    <Btn 
+                                        key={button.index}
+                                        label={button.label}
+                                        size="normal"
+                                        onClick={() => handleButton1Click(button.index)}
+                                        className={`proj_btn ${activeButton1 === button.index ? 'active' : ''}`}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                        <div className="proj_mid_body_cont">
+                            <div className="proj_mid_btn_cont">
+                                {topBodyButtons.map((button) => (
+                                    <Btn 
+                                        key={button.index}
+                                        label={button.label}
+                                        size="normal"
+                                        onClick={() => handleButton2Click(button.index)}
+                                        className={`proj_btn ${activeButton2 === button.index ? 'active' : ''}`}
+                                    />
+                                ))}
+                            </div>
+                            <div className="proj_title_table_cont">
+                                <p className="proj_title">案件一覧</p>
+                                <Btn 
+                                    label="新規登録"
+                                    size="normal"
+                                    onClick={() =>("")}
+                                    className="proj_btn"
+                                />
+                            </div>
+                            <div className="proj_table_wrapper">
+                                <div className="proj_table_cont">
+                                    <div className='columns is-mobile'>
+                                        <div className='column'>
+                                            <table className='table is-bordered is-hoverable'>
+                                            <thead>
+                                                <tr className="proj_table_title ">
+                                                <th className="proj_table_title_content_vertical has-text-centered">顧客名</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">案件名</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">計上期間</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">売上高</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">計上利益</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="proj_table_body">
+                                                {projects.map((project) => (
+                                                    <tr key={project.planning_project_id} className="proj_table_body_content_horizantal">
+                                                    <td className="proj_table_body_content_vertical has-text-centered">{project.client.client_name}</td>
+                                                    <td className="proj_table_body_content_vertical">{project.planning_project_name}</td>
+                                                    <td className="proj_table_body_content_vertical has-text-centered">{project.start_yyyymm} - {project.end_yyyymm}</td>
+                                                    <td className="proj_table_body_content_vertical has-text-right">{project.sales_revenue}</td>
+                                                    <td className="proj_table_body_content_vertical has-text-right">{project.operating_profit}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="proj_pagination_wrapper">
+                                <div className="proj_pagination_cont">
+                                    <Pagination
+                                      currentPage={currentPage}
+                                      totalPages={totalPages}
+                                      onPageChange={handlePageChange}
+                                      options={select}
+                                      rowsPerPage={rowsPerPage}
+                                      onRowsPerPageChange={handleRowsPerPageChange}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
         </div>
-        <div className='proj_body_wrapper'>
-          <div className='proj_body_cont'>
-            <div className='proj_topbody'>
-              {topBodyButtons.map((button) => (
-                <Btn
-                  key={button.index}
-                  label={button.label}
-                  size='normal'
-                  onClick={() => handleButton2Click(button.index)}
-                  className={`proj_btn ${activeButton2 === button.index ? 'active' : ''}`}
-                />
-              ))}
-            </div>
-            <div className='proj_midbody'>
-              <p className='proj_mid_txt'>案件一覧</p>
-              <Btn label='新規登録' size='normal' onClick={() => ''} className='proj_btn' />
-            </div>
-            <div className='proj_botbody'>
-              <div className='proj_table_container'>
-                <div className='columns is-mobile'>
-                  <div className='column'>
-                    <table className='table is-bordered is-hoverable'>
-                      <thead>
-                        <tr className='proj_table_title '>
-                          <th className='proj_table_title_content_vertical has-text-centered'>顧客名</th>
-                          <th className='proj_table_title_content_vertical has-text-centered'>案件名</th>
-                          <th className='proj_table_title_content_vertical has-text-centered'>計上期間</th>
-                          <th className='proj_table_title_content_vertical has-text-centered'>売上高</th>
-                          <th className='proj_table_title_content_vertical has-text-centered'>計上利益</th>
-                        </tr>
-                      </thead>
-                      <tbody className='proj_table_body'>
-                        {paginatedData.map((project) => (
-                          <tr key={project.planning_project_id} className='proj_table_body_content_horizantal'>
-                            <td className='proj_table_body_content_vertical has-text-centered'>
-                              {project.client.client_name}
-                            </td>
-                            <td className='proj_table_body_content_vertical'>{project.planning_project_name}</td>
-                            <td className='proj_table_body_content_vertical has-text-centered'>
-                              {project.start_yyyymm} - {project.end_yyyymm}
-                            </td>
-                            <td className='proj_table_body_content_vertical has-text-right'>{project.sales_revenue}</td>
-                            <td className='proj_table_body_content_vertical has-text-right'>
-                              {project.operating_profit}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className='proj_footer_wrapper'>
-              <div className='proj_footer_cont'>
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  rowsPerPage={rowsPerPage}
-                  onPageChange={handlePageChange}
-                  options={select}
-                  onRowsPerPageChange={handleRowsPerPageChange}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   )
 };

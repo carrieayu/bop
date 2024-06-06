@@ -12,6 +12,7 @@ import { TableComponentProps } from '../../components/Table/table.component'
 import { fetchAllClientData } from '../../reducers/table/tableSlice'
 import { fetchGraphData } from '../../reducers/graph/graphSlice'
 import { HeaderDashboard } from '../../components/header/header'
+import Sidebar from '../../components/SideBar/Sidebar'
 
 function formatNumberWithCommas(number: number): string {
   return number.toLocaleString();
@@ -138,139 +139,146 @@ const Dashboard = () => {
 
   return (
     <div className='wrapper'>
-      <div className='header_cont'>
-        <HeaderDashboard value='value' />
-        {showMenu && (
-          <div className='menu'>
-            <HeaderDashboard value='value' />
-          </div>
-        )}
-        <div className='hamburger' onClick={toggleMenu}>
-          <span className='burger_icon'>
-            <GiHamburgerMenu />
-          </span>
-        </div>
-      </div>
-      <div className='body_cont'>
-        <div className='card_cont'>
-          <div className='left_card'>
-            <Card
-              backgroundColor='#fff'
-              shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-              border='2px solid #ccc'
-              width='auto'
-              height='120px'
-            >
-              <div className='custom-card-content'>
-                <p className='text1'>売上高</p>
-                <p className='numTxt'>
-                  {formatNumberWithCommas(totalSales)}&nbsp;<span className='totalTxt'>円</span>
-                </p>
-                <p className='text2'>トータル</p>
-              </div>
-            </Card>
-            <Card
-              backgroundColor='#fff'
-              shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-              border='2px solid #ccc'
-              width='auto'
-              height='120px'
-            >
-              <div className='custom-card-content'>
-                <p className='text1'>営業利益</p>
-                <p className='numTxt'>
-                  {formatNumberWithCommas(totalOperatingProfit)}&nbsp;<span className='totalTxt'>円</span>
-                </p>
-                <p className='text2'>トータル</p>
-              </div>
-            </Card>
-            <Card
-              backgroundColor='#fff'
-              shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-              border='2px solid #ccc'
-              width='auto'
-              height='120px'
-            >
-              <div className='custom-card-content'>
-                <p className='text1'>売上総利益率</p>
-                <p className='numTxt'>
-                  {totalGrossProfitMargin}&nbsp;<span className='totalTxt'>%</span>
-                </p>
-                <p className='text2'>トータル</p>
-              </div>
-            </Card>
-          </div>
-          &nbsp;&nbsp;&nbsp;
-          <div className='right_card'>
-            <Card
-              backgroundColor='#fff'
-              shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-              border='2px solid #ccc'
-              width='auto'
-              height='120px'
-            >
-              <div className='custom-card-content'>
-                <p className='text1'>売上総利益</p>
-                <p className='numTxt'>
-                  {formatNumberWithCommas(totalGrossProfit)}&nbsp;<span className='totalTxt'>円</span>
-                </p>
-                <p className='text2'>トータル</p>
-              </div>
-            </Card>
-            <Card
-              backgroundColor='#fff'
-              shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-              border='2px solid #ccc'
-              width='auto'
-              height='120px'
-            >
-              <div className='custom-card-content'>
-                <p className='text1'>当期純利益</p>
-                <p className='numTxt'>
-                  {formatNumberWithCommas(totalNetProfitPeriod)}&nbsp;<span className='totalTxt'>円</span>
-                </p>
-                <p className='text2'>トータル</p>
-              </div>
-            </Card>
-            <Card
-              backgroundColor='#fff'
-              shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-              border='2px solid #ccc'
-              width='auto'
-              height='120px'
-            >
-              <div className='custom-card-content'>
-                <p className='text1'>営業利益率</p>
-                <p className='numTxt'>
-                  {totalOperatingProfitMargin}&nbsp;<span className='totalTxt'>%</span>
-                </p>
-                <p className='text2'>トータル</p>
-              </div>
-            </Card>
+        <div className='header_cont'>
+          <HeaderDashboard value='value' />
+          {showMenu && (
+            <div className='menu'>
+              <HeaderDashboard value='value' />
+            </div>
+          )}
+          <div className='hamburger' onClick={toggleMenu}>
+            <span className='burger_icon'>
+              <GiHamburgerMenu />
+            </span>
           </div>
         </div>
-        &nbsp;&nbsp;&nbsp;
-        <div className='graph_cont'>
-          <div className='graph_wrap'>
-            <GraphDashboard data={graphData} />
+        <div className="content_wrapper">
+          <div className="sidebar">
+            <Sidebar />
+          </div>
+          <div className="dashboard_content">
+            <div className='body_cont'>
+            <div className='card_cont'>
+              <div className='left_card'>
+                <Card
+                  backgroundColor='#fff'
+                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
+                  border='2px solid #ccc'
+                  width='auto'
+                  height='120px'
+                >
+                  <div className='custom-card-content'>
+                    <p className='text1'>売上高</p>
+                    <p className='numTxt'>
+                      {formatNumberWithCommas(totalSales)}&nbsp;<span className='totalTxt'>円</span>
+                    </p>
+                    <p className='text2'>トータル</p>
+                  </div>
+                </Card>
+                <Card
+                  backgroundColor='#fff'
+                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
+                  border='2px solid #ccc'
+                  width='auto'
+                  height='120px'
+                >
+                  <div className='custom-card-content'>
+                    <p className='text1'>営業利益</p>
+                    <p className='numTxt'>
+                      {formatNumberWithCommas(totalOperatingProfit)}&nbsp;<span className='totalTxt'>円</span>
+                    </p>
+                    <p className='text2'>トータル</p>
+                  </div>
+                </Card>
+                <Card
+                  backgroundColor='#fff'
+                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
+                  border='2px solid #ccc'
+                  width='auto'
+                  height='120px'
+                >
+                  <div className='custom-card-content'>
+                    <p className='text1'>売上総利益率</p>
+                    <p className='numTxt'>
+                      {totalGrossProfitMargin}&nbsp;<span className='totalTxt'>%</span>
+                    </p>
+                    <p className='text2'>トータル</p>
+                  </div>
+                </Card>
+              </div>
+              &nbsp;&nbsp;&nbsp;
+              <div className='right_card'>
+                <Card
+                  backgroundColor='#fff'
+                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
+                  border='2px solid #ccc'
+                  width='auto'
+                  height='120px'
+                >
+                  <div className='custom-card-content'>
+                    <p className='text1'>売上総利益</p>
+                    <p className='numTxt'>
+                      {formatNumberWithCommas(totalGrossProfit)}&nbsp;<span className='totalTxt'>円</span>
+                    </p>
+                    <p className='text2'>トータル</p>
+                  </div>
+                </Card>
+                <Card
+                  backgroundColor='#fff'
+                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
+                  border='2px solid #ccc'
+                  width='auto'
+                  height='120px'
+                >
+                  <div className='custom-card-content'>
+                    <p className='text1'>当期純利益</p>
+                    <p className='numTxt'>
+                      {formatNumberWithCommas(totalNetProfitPeriod)}&nbsp;<span className='totalTxt'>円</span>
+                    </p>
+                    <p className='text2'>トータル</p>
+                  </div>
+                </Card>
+                <Card
+                  backgroundColor='#fff'
+                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
+                  border='2px solid #ccc'
+                  width='auto'
+                  height='120px'
+                >
+                  <div className='custom-card-content'>
+                    <p className='text1'>営業利益率</p>
+                    <p className='numTxt'>
+                      {totalOperatingProfitMargin}&nbsp;<span className='totalTxt'>%</span>
+                    </p>
+                    <p className='text2'>トータル</p>
+                  </div>
+                </Card>
+              </div>
+            </div>
+            &nbsp;&nbsp;&nbsp;
+            <div className='graph_cont'>
+              <div className='graph_wrap'>
+                <GraphDashboard data={graphData} />
+              </div>
+            </div>
+            </div>
+            <div className='bottom_cont'>
+              <div className='pagination_cont'>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                  options={select}
+                  rowsPerPage={rowsPerPage}
+                  onRowsPerPageChange={handleRowsPerPageChange}
+                />
+              </div>
+              <div className='table_cont'>
+                <TableComponentProps data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div className='bottom_cont'>
-        <div className='pagination_cont'>
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            options={select}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleRowsPerPageChange}
-          />
-        </div>
-        <div className='table_cont'>
-          <TableComponentProps data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
-        </div>
-      </div>
     </div>
   )
 }
