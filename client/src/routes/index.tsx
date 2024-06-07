@@ -24,6 +24,7 @@ const NotFound = Loader(lazy(() => import("../pages/notFound/notFound")));
 // Project Data List Page
 const ProjectDataList = Loader(lazy(() => import("../pages/projectDataList/projectDataList")));
 const ProjectDataRegistration = Loader(lazy(() => import("../pages/projectDataRegistration/projectdataregistration")))
+const PersonnelExpenseCreate = Loader(lazy(() => import("../pages/personnelCreate/personnelExpenseCreate")))
 const Logout = () => {
   localStorage.clear();
   return <Navigate to="/login" />;
@@ -90,6 +91,14 @@ const routes: RouteObject[] = [
           </ProtectedRoutes>
         ),
       },
+      {
+        path: "personnel-expense-create",
+        element: (
+          <ProtectedRoutes>
+            <PersonnelExpenseCreate />
+          </ProtectedRoutes>
+        )
+      }
     ],
   },
   {
