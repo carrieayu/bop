@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import PlanningAssignData, User as UserApi ,Note, AccountMaster, ClientMaster, BusinessDivisionMaster, CompanyMaster, PerformanceProjectData, PlanningProjectData, OtherPlanningData
+from .models import PlanningAssignData, User as UserApi, User as PersonnelUser ,Note, AccountMaster, ClientMaster, BusinessDivisionMaster, CompanyMaster, PerformanceProjectData, PlanningProjectData, OtherPlanningData
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -20,6 +20,23 @@ class UserSerializer(serializers.ModelSerializer):
         print(validated_data)
         user = User.objects.create_user(**validated_data)
         return user
+    
+class PersonnelUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PersonnelUser
+        fields = [
+            "user_id",
+            "username",
+            "email",
+            "affiliated_company_id",
+            "affiliated_business_division_id",
+            "created_at",
+            "registered_user_id"
+        ]
+        
+    def create(self, validated_data):
+        personnel_user = PersonnelUser.objects.create(**validated_data)
+        return personnel_user
 
 
 class NoteSerializer(serializers.ModelSerializer):
@@ -170,4 +187,10 @@ class GetBusinessDivisionMasterSerializer(serializers.ModelSerializer):
     class Meta:
         model = BusinessDivisionMaster
         fields = ["business_division_id", "business_division_name", "created_at", "registered_user_id", "company"]
+        
+class PlanningAssignPersonnelDataSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = PlanningAssignData
+        fields = '__all__'
 
