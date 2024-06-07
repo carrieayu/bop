@@ -1,154 +1,181 @@
 .proj_wrapper{
     max-width: 2560px;
-    background-color: #EFEDEA;
-    .proj_whole_container{
-        // border: 2px solid #000;
-        // box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        // padding: 2px;
-        width: 100%;
-        // margin-top: 100px;
-        // padding: 100px;
-        .proj_header_wrapper{
-            .proj_header_cont{
-                .header_container{
-                    background-color: #fff;
-                    padding: 5px 5px 10px 5px;
-                    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-                    .option_label{
-                        color: #fff;
-                    }
-                }
+    .header_cont{
+        margin: 0px 0px 0px 0px;
+        .header_container{
+            background-color: #fff;
+            padding: 5px 5px 10px 5px;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+    }
+    .projectlist_cont_wrapper{
+        display: flex;
+        background-color: #EFEDEA;
+        @media only screen and (max-width: 1000px){
+            flex-direction: column;
+        }
+        .sidebar{
+            flex: 0 0 180px;
+            background-color: #1c302c;
+            @media only screen and (max-width: 1000px){
+                flex: 0 0 auto;
+                width: 100%;
+                display: none;
             }
         }
-        .proj_top_wrapper{
-            .proj_top_cont{
-                background-color: #EFEDEA;
-                margin-top: 10px;
-                padding: 20px 5px 15px 50px;
-                // box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-                // border-bottom: 2px solid #000;
-                display: flex;
-                gap: 2%;
-                .proj_btn{
-                    width: 10rem;
-                    height: 5px;
-                    padding: 15px 0px;
-                    border: 1px solid #34a953;
-                    border-radius: 100px !important;
-                    &:hover{
-                        background-color: #34a953;
-                        color: #fff;
-                    }
-                }
-                .proj_btn.active{
-                    background-color: #34a953;
-                    color: #fff;
-                }
-            }
-        }
-        .proj_body_wrapper{
-            .proj_body_cont{
-                // background-color: #EFEDEA;
-                padding: 20px 5px 15px 50px;
-                .proj_topbody{
-                    display: flex;
-                    gap: 2%;
-                    .proj_btn{
-                        width: 10rem;
-                        height: 5px;
-                        padding: 15px 0px;
-                        border: 1px solid #34a953;
-                        border-radius: 100px !important;
-                        &:hover{
-                            background-color: #34a953;
-                            color: #fff;
-                        }
-                    }
-                    .proj_btn.active{
-                        background-color: #34a953;
-                        color: #fff;
-                    }
-                }
-                .proj_midbody{
-                    display: flex;
-                    gap: 8%;
-                    margin-top: 50px;
-                    .proj_mid_txt{
-                        letter-spacing: 2px;
-                        font-weight: bold;
-                    }
-                    .proj_btn{
-                        width: 12rem;
-                        height: 20px;
-                        padding: 15px 0px;
-                        border: 1px solid #34a953;
-                        border-radius: 100px !important;
-                        background-color: #34a953;
-                        color: #fff;
-                        &:hover{
-                            background-color: #34a953;
-                            color: #fff;
-                        }
-                    }
-                }
-                .proj_botbody{
-                    .proj_table_container{
-                        padding: 20px 0px;
-                        .table{
-                            width: 97%;
-                            // border: 2px solid #000;
-                            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-                            .proj_table_title{
-                                background-color: #34a953;
-                                .proj_table_title_content_vertical{
-                                    // border: 2px solid #000;
+        .projectlist_wrapper{
+                    width: 100%;
+                    height: 100vh;
+                    padding: 10px 30px 10px 30px;
+                    .proj_top_content{
+                        border: 1px solid #fff;
+                        border-radius: 5px;
+                        background-color: #fff;
+                        .proj_top_body_cont{
+                            background-color: #fff;
+                            height: 4rem;
+                            .proj_top_btn_cont{
+                                margin-left: 5%;
+                                display: flex;
+                                gap: 2%;
+                                .proj_btn{
+                                    margin-top: 15px;
+                                    border: 1px solid #808080;
+                                    width: 10rem;
+                                    height: 30px;
+                                    border-radius: 5px !important;
+                                    background-color: #fff;
+                                    color: #000;
+                                    &:hover{
+                                        background-color: #808080;
+                                        color: #fff;
+                                    }
+                                }
+                                .proj_btn.active{
+                                    background-color: #808080;
                                     color: #fff;
                                 }
                             }
-                            .proj_table_body{
-                                // border: 2px solid #000;
-                                .proj_table_body_content_horizantal{
-                                    // border: 2px solid #000;
-                                    .proj_table_body_content_vertical{
-                                        // border: 2px solid #000;
+                        }
+                        .proj_mid_body_cont{
+                            .proj_mid_btn_cont{
+                                margin-left: 5%;
+                                display: flex;
+                                gap: 2%;
+                                .proj_btn{
+                                    margin-top: 15px;
+                                    border: 1px solid #808080;
+                                    width: 10rem;
+                                    height: 30px;
+                                    border-radius: 5px !important;
+                                    background-color: #fff;
+                                    color: #000;
+                                    &:hover{
+                                        background-color: #808080;
+                                        color: #fff;
+                                    }
+                                }
+                                .proj_btn.active{
+                                    background-color: #808080;
+                                    color: #fff;
+                                }
+                            }
+                            .proj_title_table_cont{
+                                        display: flex;
+                                        gap: 8%;
+                                        padding: 40px 70px;
+                                        .proj_title{
+                                            letter-spacing: 2px;
+                                            font-weight: bold;
+                                            color: #000;
+                                        }
+                                        .proj_btn{
+                                            border: 1px solid #808080;
+                                            width: 12rem;
+                                            height: 35px;
+                                            border-radius: 5px !important;
+                                            background-color: #808080;
+                                            color: #fff;
+                                            margin-left: 14px;
+                                        }
+                            }
+                            .proj_table_wrapper{
+                                width: 100%;
+                                max-height: 500px;
+                                overflow-y: auto; 
+                                overflow-x: hidden;
+                                scrollbar-width: thin;
+                                scrollbar-color: #888 #f1f1f1;
+                            
+                                &::-webkit-scrollbar {
+                                    width: 5px;
+                                    height: 5px;
+                                }
+                            
+                                &::-webkit-scrollbar-track {
+                                    background: #f1f1f1;
+                                }
+                            
+                                &::-webkit-scrollbar-thumb {
+                                    background-color: #888;
+                                    border-radius: 10px;
+                                    border: 1px solid #f1f1f1;
+                                }
+                            
+                                &::-webkit-scrollbar-thumb:hover {
+                                    background-color: #555;
+                                }
+                                .proj_table_cont{
+                                    padding: 0px 0px 0px 70px;
+                                    .table{
+                                        width: 97%;
+                                        .proj_table_title{
+                                            background-color: #34a953;
+                                            .proj_table_title_content_vertical{
+                                                color: #fff;
+                                                border: none;
+                                            }
+                                        }
+                                        .proj_table_body{
+                                            .proj_table_body_content_horizantal{
+                                                border: none;
+                                                .proj_table_body_content_vertical{
+                                                    border: none;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            .proj_pagination_wrapper{
+                                .proj_pagination_cont{
+                                    display: flex;
+                                    justify-content: flex-end;
+                                    padding: 20px 20px 0px 20px;
+                                    margin: 0px !important;
+                                    .pagination{
+                                        #prevButton,
+                                        #nextButton,
+                                        #lastButton,
+                                        #optionNumber{
+                                            border: 1px solid #34a953;
+                                            background-color: #fff;
+                                            color: #000;
+                                            &:hover{
+                                                background-color: #34a953;
+                                                color: #fff;
+                                            }
+                                        }
+                                        .activeButton{
+                                            background-color: #34a953 !important;
+                                            color: #fff !important;
+                                            border: 1px solid #34a953 !important;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-                .proj_footer_wrapper{
-                    .proj_footer_cont{
-                        display: flex;
-                        justify-content: flex-end;
-                        padding: 5px 60px 0px 20px;
-                        // gap: 1%;
-                        .pagination{
-                            #prevButton,
-                            #nextButton,
-                            #optionNumber,
-                            #lastButton{
-                                border: 1px solid #34a953;
-                                background-color: #fff;
-                                color: #000;
-                                &:hover{
-                                    background-color: #34a953;
-                                    color: #fff;
-                                }
-                            }
-                            #optionNumber {
-                                float: right;
-                                padding: 6px;
-                            }
-                            .activeButton{
-                                background-color: #34a953 !important;
-                                color: #fff !important;
-                                border: 1px solid #34a953 !important;
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 }

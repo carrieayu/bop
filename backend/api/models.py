@@ -1,6 +1,8 @@
+from urllib import response
 from django.db import models
 from django.contrib.auth.models import User, AbstractBaseUser
 from django.utils import timezone
+
 
 
 class Note(models.Model):
@@ -60,18 +62,15 @@ class CompanyMaster(models.Model):
 
 
 class BusinessDivisionMaster(models.Model):
-    business_division_id = models.CharField(
-        max_length=10, primary_key=True, editable=False
-    )
+    business_division_id = models.CharField(max_length=10, primary_key=True, editable=False)
     business_division_name = models.CharField(max_length=100)
-    company_id = models.CharField(max_length=10)
-    # company_id = models.ForeignKey(CompanyMaster, on_delete=models.CASCADE)
+    company_id = models.ForeignKey(CompanyMaster, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     registered_user_id = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.business_division_id
-
+        return self.business_division_name
+    
     def save(self, *args, **kwargs):
         if not self.business_division_id:
             max_business_division_id = (
@@ -110,7 +109,7 @@ class PlanningProjectData(models.Model):
         "ClientMaster", on_delete=models.CASCADE, related_name="planning_project"
     )
     planning = models.DateField(null=True, default=timezone.now)
-    start_yyyymm = models.CharField(max_length=6)
+    start_yyyymm = models.CharField(max_length=6, default="200001")
     end_yyyymm = models.CharField(max_length=6, default="200001")
     sales_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
     cost_of_goods_sold = models.DecimalField(
@@ -182,3 +181,21 @@ class OtherPlanningData(models.Model):
 
     def __str__(self):
         return self.planning_project_id
+    
+class PlanningAssignData(models.Model):
+    planning_assign_id = models.CharField(max_length=10, primary_key=True)
+    planning_project_id = models.ForeignKey(
+        PlanningProjectData, on_delete=models.CASCADE
+    )
+    client_id = models.CharField(max_length=10)
+    assignment_user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
+    assignment_start_date = models.DateField(null=True, default=timezone.now)
+    assignment_end_date = models.DateField(null=True, default=timezone.now)
+    assignment_ratio = models.IntegerField(max_length=3)
+    assignment_unit_price = models.IntegerField(max_length=8)
+    year = models.CharField(max_length=4)
+    registration_date = models.DateField(null=True, default=timezone.now)
+    registration_user = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.planning_assign_id

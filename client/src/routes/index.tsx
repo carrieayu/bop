@@ -2,6 +2,7 @@ import React, { Component, Suspense, lazy } from "react";
 import { Navigate, RouteObject } from "react-router-dom";
 import SuspenseLoader from "../components/SuspendLoader/suspendLoader";
 import ProtectedRoutes from "./ProtectedRoutes";
+import PersonnelExpensesList from "../pages/personnel_expenses/personnelExpenses";
 
 const Loader = (Component: any) => (props: any) =>
   (
@@ -35,10 +36,10 @@ const RegisterAndLogout = () => {
 
 const routes: RouteObject[] = [
   {
-    path: "",
+    path: '',
     children: [
       {
-        path: "",
+        path: 'dashboard',
         element: (
           <ProtectedRoutes>
             <Dashboard />
@@ -46,15 +47,15 @@ const routes: RouteObject[] = [
         ),
       },
       {
-        path: "login",
+        path: 'login',
         element: <Login />,
       },
       {
-        path: "register",
+        path: 'register',
         element: <RegisterAndLogout />,
       },
       {
-        path: "forgot",
+        path: 'forgot',
         element: <Forgot />,
       },
       {
@@ -66,27 +67,35 @@ const routes: RouteObject[] = [
         element: <Logout />,
       },
       {
-        path: "projectdatalist",
+        path: 'projectdatalist',
         element: (
           <ProtectedRoutes>
             <ProjectDataList />
           </ProtectedRoutes>
-        )
+        ),
       },
       {
-        path: "projectcreate",
+        path: 'projectcreate',
         element: (
           <ProtectedRoutes>
             <ProjectDataRegistration />
           </ProtectedRoutes>
-        )
-      }
+        ),
+      },
+      {
+        path: 'personnel-expenses-list',
+        element: (
+          <ProtectedRoutes>
+            <PersonnelExpensesList />
+          </ProtectedRoutes>
+        ),
+      },
     ],
   },
   {
-    path: "*",
+    path: '*',
     element: <NotFound />,
   },
-];
+]
 
 export default routes;
