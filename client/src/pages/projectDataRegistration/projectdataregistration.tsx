@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Btn from '../../components/Button/Button'
 import axios from 'axios'
-import { HeaderDashboard } from '../../components/header/header'
+import { HeaderDashboard } from '../../components/Header/header'
 import Sidebar from '../../components/SideBar/Sidebar'
 
 const ProjectDataRegistration = () => {
@@ -86,7 +86,8 @@ const ProjectDataRegistration = () => {
     }
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/projectplanning/create/', postData, {
+      // const response = await axios.post('http://127.0.0.1:8000/api/projectplanning/create/', postData, {
+      const response = await axios.post('http://54.178.202.58:8000/api/projectplanning/create/', postData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

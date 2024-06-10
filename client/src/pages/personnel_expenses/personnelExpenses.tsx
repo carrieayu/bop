@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Btn from '../../components/Button/Button'
 import Pagination from '../../components/Pagination/Pagination'
-import { HeaderDashboard } from '../../components/header/header'
+import { HeaderDashboard } from '../../components/Header/header'
 import { UnknownAction } from 'redux'
 import { useAppSelector } from '../../actions/hooks'
 import { RootState } from '../../app/store'

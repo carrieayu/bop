@@ -9,7 +9,8 @@ const initialState = {
 
 export const fetchPersonnel = createAsyncThunk('personnel/fetch', async () => {
   try {
-    const response = await api.get<PersonnelEntity[]>('http://127.0.0.1:8000/api/personnelexpenses/get/')
+    // const response = await api.get<PersonnelEntity[]>('http://127.0.0.1:8000/api/personnelexpenses/get/')
+    const response = await api.get<PersonnelEntity[]>('http://54.178.202.58:8000/api/personnelexpenses/get/')
     return response.data.map((data) => new PersonnelEntity(data))
   } catch (error) {
     console.error('Error fetching personnel:', error)

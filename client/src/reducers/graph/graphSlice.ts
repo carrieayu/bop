@@ -26,7 +26,8 @@ const initialState: GraphDataState = {
 }
 
 export const fetchGraphData = createAsyncThunk('graphData/fetch', async () => {
-  const response = await api.get<CardEntity[]>(`http://127.0.0.1:8000/api/planningprojects/`)
+  // const response = await api.get<CardEntity[]>(`http://127.0.0.1:8000/api/planningprojects/`)
+  const response = await api.get<CardEntity[]>(`http://54.178.202.58:8000/api/planningprojects/`)
   const cards = response.data.map((data) => new CardEntity(data))
 
   const aggregatedData: Partial<GraphDataState> = {
