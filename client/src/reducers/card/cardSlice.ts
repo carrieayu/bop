@@ -33,7 +33,8 @@ function getOtherPlanningSum(datas: OtherPlanningEntity[][], field: string) {
 }
 
 export const fetchAllCards = createAsyncThunk('', async () => {
-  return await api.get<CardEntity[]>(`http://127.0.0.1:8000/api/planningprojects/`).then((res) => {
+  // return await api.get<CardEntity[]>(`http://127.0.0.1:8000/api/planningprojects/`).then((res) => {
+  return await api.get<CardEntity[]>(`http://54.178.202.58:8000/api/planningprojects/`).then((res) => {
     return res.data.map((data) => new CardEntity(data))
   })
 })
