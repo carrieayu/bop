@@ -1,10 +1,15 @@
+import json
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework import generics, status
+from django.http import JsonResponse
+from rest_framework.parsers import JSONParser
 from .serializers import (
     CreateTableListSerializers,
     GetUserMasterSerializer,
+    PersonnelUserSerializer,
+    PlanningAssignPersonnelDataSerializer,
     UserSerializer,
     NoteSerializer,
     AccountMasterSerializer,
@@ -30,7 +35,9 @@ from .models import (
     CompanyMaster,
     PerformanceProjectData,
     PlanningProjectData,
+    User as PersonnelUser,
     OtherPlanningData,
+    PlanningAssignData
 )
 from functools import reduce
 from datetime import datetime
@@ -39,7 +46,7 @@ from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.utils.translation import gettext as _
 from django.core.mail import send_mail
-
+from django.utils import timezone
 
 class NoteListCreate(generics.ListCreateAPIView):
     serializer_class = NoteSerializer
@@ -100,6 +107,11 @@ class NoteDelete(generics.DestroyAPIView):
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [AllowAny]
+    
+class CreatePersonnelView(generics.CreateAPIView):
+    queryset = PersonnelUser.objects.all()
+    serializer_class = PersonnelUserSerializer
     permission_classes = [AllowAny]
 
 
@@ -498,3 +510,52 @@ class PersonnelExpensesList(generics.ListCreateAPIView):
 
     def get_queryset(self): 
         return User.objects.all()
+    
+class FetchPersonnelView(generics.ListAPIView):
+    queryset = PersonnelUser.objects.all()
+    serializer_class = PersonnelUserSerializer
+    permission_classes = [AllowAny]
+    
+class StorePersonnelPlanning(generics.CreateAPIView):
+    serializer_class = PlanningAssignPersonnelDataSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        data = JSONParser().parse(request)
+        
+        # Check if the incoming data is a list
+        if not isinstance(data, list):
+            return JsonResponse({"messagessss": "Expected a list of items."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        responses = []
+        
+        for item in data:
+            try:
+                planning_project = PlanningProjectData.objects.get(planning_project_id=item['planning_project_id'])
+                user = User.objects.get(user_id=item['assignment_user_id'])
+                planning_data = {
+                    'planning_project_id': planning_project.planning_project_id,
+                    'client_id': item['client_id'],
+                    'assignment_user_id': user.user_id,
+                    'assignment_ratio': item['assignment_ratio'],
+                    'assignment_unit_price': item['assignment_unit_price'],
+                    'year': timezone.now().year,
+                    'assignment_start_date': timezone.now().date(),
+                    'assignment_end_date': timezone.now().date(),
+                    'registration_date': timezone.now().date(),
+                    'registration_user': request.user.username
+                }
+                serializer = PlanningAssignPersonnelDataSerializer(data=planning_data)
+                if serializer.is_valid():
+                    serializer.save()
+                    responses.append({"message": "Personnel Planning Data created successfully."})
+                else:
+                    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except PlanningProjectData.DoesNotExist:
+                return JsonResponse({"message": "Planning project not found."}, status=status.HTTP_404_NOT_FOUND)
+            except User.DoesNotExist:
+                return JsonResponse({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+            except Exception as e:
+                return JsonResponse({"messagessss": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)

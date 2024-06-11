@@ -5,7 +5,8 @@ import CardReducer from "../reducers/card/cardSlice"
 import tableSlice from "../reducers/table/tableSlice";
 import graphSlice from "../reducers/graph/graphSlice";
 import personnelExpensesSlice from "../reducers/personnel/personnelExpensesSlice";
-
+import personnelSlice from "../reducers/personnel/personnelSlice";
+import personnelPlanningSlice from "../reducers/personnel/personnelPlanningSlice";
 export const store = configureStore({
   reducer: {
     counter: CounterReducer,
@@ -14,6 +15,8 @@ export const store = configureStore({
     table: tableSlice,
     graph: graphSlice,
     personnel: personnelExpensesSlice,
+    personnelData: personnelSlice,
+    personnelPlanning: personnelPlanningSlice
   },
 })
 
