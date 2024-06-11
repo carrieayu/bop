@@ -47,7 +47,7 @@ const LoginForm = ({ onSubmit }) => {
           console.log("User ID: ", userID)
           localStorage.setItem('accessToken', accessToken)
           localStorage.setItem('userID', userID)
-          window.location.href = '/'
+          window.location.href = '/dashboard'
         },
         (error) => {
           setError('Invalid username or password')

@@ -1,102 +1,84 @@
-import React from 'react';
-import Card from '../Card/Card';
-import {
-  Chart as ChartJS,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-  Title,
-} from 'chart.js';
-import { Chart } from 'react-chartjs-2';
-
-ChartJS.register(
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-  Title
-);
+import React from 'react'
+import Card from '../Card/Card'
+import Chart from 'react-apexcharts'
+import { ApexOptions } from 'apexcharts'
 
 interface CustomBarProps {
-  className?: string;
-  style?: React.CSSProperties;
-  data: any;
+  className?: string
+  style?: React.CSSProperties
+  data: any
 }
 
-const GraphDashboard: React.FC<CustomBarProps> = ({
-  className,
-  style,
-  data,
-}) => {
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'bottom' as const,
-        labels: {
-          usePointStyle: false,
-        },
+const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, data }) => {
+  const categories = data.datasets[0].data.map((_: any, index: number) => `Category ${index + 1}`)
 
+  const options: ApexOptions = {
+    chart: {
+      type: 'bar',
+      height: 350,
+    },
+    plotOptions: {
+      bar: {
+        columnWidth: '55%',
+        distributed: false,
       },
     },
-    scales: {
+    dataLabels: {
+      enabled: false,
+    },
+    stroke: {
+      show: true,
+      width: [0, 2, 2, 2, 2, 2]
+    },
+    xaxis: {
+      categories: data.labels,
+    },
+    yaxis: [
+      {
+        title: {
+          text: '',
+        },
+      },
+
+      {
+        opposite: true,
+        title: {
+          text: '',
+        },
+      },
+    ],
+    fill: {
+      opacity: 1,
+    },
+    tooltip: {
       y: {
-        type: 'linear' as const,
-        beginAtZero: true,
-        ticks: {
-          callback: function (value) {
-            return value;
-          },
-        },
-      },
-      y1: {
-        type: 'linear' as const,
-        beginAtZero: true,
-        position: 'right' as const,
-        ticks: {
-          callback: function (value) {
-            return value + '%';
-          },
+        formatter: function (val: number) {
+          return val.toFixed(0)
         },
       },
     },
-    elements: {
-      point: {
-        pointStyle: 'circle',
-        radius: 5,
-        hoverRadius: 7,
-      },
-    },
-  };
+    colors: data.datasets.map((dataset: any) => dataset.backgroundColor),
+  }
+
+  const series = data.datasets.map((dataset: any) => ({
+    name: dataset.label,
+    type: dataset.type,
+    data: dataset.data,
+    color: dataset.backgroundColor,
+  }))
 
   return (
     <Card
-      backgroundColor="#fffff"
-      shadow="0px 4px 8px rgba(0, 0, 0, 0.1)"
-      border="1px solid #dddddd"
-      width="50%"
-      height="30rem"
-      CardClassName="card-custom"
+      backgroundColor='#ffffff'
+      shadow='0px 4px 8px rgba(0, 0, 0, 0.1)'
+      border='1px solid #dddddd'
+      width='50%'
+      height='30rem'
+      CardClassName='card-custom'
     >
-      <Chart
-        type="bar"
-        data={data}
-        options={options}
-        className="custom-bar"
-        style={{
-          width: '200px',
-          height: '100px',
-        }}
-      />
+      <Chart options={options} series={series} type='bar' height={350} className='custom-bar' />
     </Card>
-  );
-};
+  )
+}
 
-export default GraphDashboard;
+export default GraphDashboard
