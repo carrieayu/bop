@@ -38,6 +38,14 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_PEM_KEY }}
           source: "client/build/*"
           target: "/usr/share/nginx/html/"
+      - name: Sync frontend build files
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.PUBLIC_DNS }}
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.PORT }}
+          key: ${{ secrets.SSH_PRIVATE_PEM_KEY }}
+          script: rsync -av --delete client/build/ /usr/share/nginx/html/
       - name: Restart Nginx service
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -45,4 +53,6 @@ jobs:
           username: ${{ secrets.USERNAME }}
           port: ${{ secrets.PORT }}
           key: ${{ secrets.SSH_PRIVATE_PEM_KEY }}
-          script: sudo systemctl restart nginx
+          script: |
+            rsync -av --delete /usr/share/nginx/html/client/build/ /usr/share/nginx/html/
+            rm -rf /usr/share/nginx/html/client/
