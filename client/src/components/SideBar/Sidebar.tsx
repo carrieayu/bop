@@ -20,7 +20,7 @@ const Sidebar = () => {
           <span className="icons"><FaTableList /></span><Link to="/projectdatalist">项目数据清单</Link>
           </li>
           <li>
-          <span className="icons"><BsPersonFillAdd /></span><Link to="">人件費登録</Link>
+          <span className="icons"><BsPersonFillAdd /></span><Link to="/personnel-expense-create">人件費登録</Link>
           </li>
           <li>
           <span className="icons"><FaTableList /></span><Link to="/personnel-expenses-list">人件費リスト</Link>

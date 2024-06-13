@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Btn from "../../components/Button/Button";
 import Pagination from "../../components/Pagination/Pagination";
 import axios from "axios";
-import { HeaderDashboard } from "../../components/Header/header";
+import { HeaderDashboard } from "../../components/header/header";
 import Sidebar from "../../components/SideBar/Sidebar";
 
 interface ButtonData {
@@ -64,8 +64,8 @@ const ProjectDataList: React.FC = () => {
           }
     
           try {
-            // const response = await axios.get('http://127.0.0.1:8000/api/planningprojects/', {
-            const response = await axios.get('http://54.178.202.58:8000/api/planningprojects/', {
+            const response = await axios.get('http://127.0.0.1:8000/api/planningprojects/', {
+            // const response = await axios.get('http://54.178.202.58:8000/api/planningprojects/', {
               headers: {
                 'Authorization': `Bearer ${token}`  // Add token to request headers
               }
