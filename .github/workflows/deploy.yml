@@ -37,4 +37,12 @@ jobs:
           port: ${{ secrets.PORT }}
           key: ${{ secrets.SSH_PRIVATE_PEM_KEY }}
           source: "client/build/*"
-          target: "/use/share/nginx/html/"
+          target: "/usr/share/nginx/html/"
+      - name: Restart Nginx service
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.PUBLIC_DNS }}
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.PORT }}
+          key: ${{ secrets.SSH_PRIVATE_PEM_KEY }}
+          script: sudo systemctl restart nginx
