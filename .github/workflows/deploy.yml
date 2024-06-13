@@ -10,10 +10,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+       # Use specific Node.js version
       - name: Use Node.js 18.17.1
         uses: actions/setup-node@v3
         with:
           node-version: 18.17.1
+
+      # Install specific npm version
+      - name: Install npm 10.1.0
+        run: npm install -g npm@10.1.0
+
+      # Check npm version
+      - name: Check npm version
+        run: npm --version
       - name: Run Build
         run: |
           cd ./client
