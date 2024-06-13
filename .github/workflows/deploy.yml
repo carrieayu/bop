@@ -37,4 +37,4 @@ jobs:
           port: ${{ secrets.PORT }}
           key: ${{ secrets.SSH_PRIVATE_PEM_KEY }}
           source: "client/build/*"
-          target: "/home/ec2-user/build/"
+          target: "/use/share/nginx/html/"
