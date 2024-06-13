@@ -11,7 +11,7 @@ import { RootState } from '../../app/store'
 import { TableComponentProps } from '../../components/Table/table.component'
 import { fetchAllClientData } from '../../reducers/table/tableSlice'
 import { fetchGraphData } from '../../reducers/graph/graphSlice'
-import { HeaderDashboard } from '../../components/header/header'
+import { HeaderDashboard } from '../../components/Header/header'
 import Sidebar from '../../components/SideBar/Sidebar'
 
 function formatNumberWithCommas(number: number): string {
