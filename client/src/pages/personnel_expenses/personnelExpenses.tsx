@@ -7,6 +7,7 @@ import { RootState } from '../../app/store'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 import { fetchPersonnel } from '../../reducers/personnel/personnelExpensesSlice'
+import Sidebar from '../../components/SideBar/Sidebar'
 import { HeaderDashboard } from '../../components/header/header'
 
 interface ButtonData {
@@ -50,94 +51,109 @@ const PersonnelExpensesList: React.FC = () => {
     console.log("data: ", personnel)
 
     return (
-      <div className='proj_wrapper'>
-        <div className='proj_whole_container'>
-          <div className='proj_header_wrapper'>
-            <div className='proj_header_cont'>
-              <HeaderDashboard value='value' />
-            </div>
-          </div>
-          <div className='proj_top_wrapper'>
-            <div className='proj_top_cont'>
-              {headerButtons.map((button) => (
-                <Btn
-                  key={button.index}
-                  label={button.label}
-                  size='normal'
-                  onClick={() => handleButton1Click(button.index)}
-                  className={`proj_btn ${activeButton1 === button.index ? 'active' : ''}`}
-                />
-              ))}
-            </div>
-          </div>
-          <div className='proj_body_wrapper'>
-            <div className='proj_body_cont'>
-              <div className='proj_topbody'>
-                {topBodyButtons.map((button) => (
-                  <Btn
-                    key={button.index}
-                    label={button.label}
-                    size='normal'
-                    onClick={() => handleButton2Click(button.index)}
-                    className={`proj_btn ${activeButton2 === button.index ? 'active' : ''}`}
-                  />
-                ))}
-              </div>
-              <div className='proj_midbody'>
-                <p className='proj_mid_txt'>案件一覧</p>
-                <Btn label='新規登録' size='normal' onClick={() => ''} className='proj_btn' />
-              </div>
-              <div className='proj_botbody'>
-                <div className='proj_table_container'>
-                  <div className='columns is-mobile'>
-                    <div className='column'>
-                      <table className='table is-bordered is-hoverable'>
-                        <thead>
-                          <tr className='proj_table_title'>
-                            <th className='proj_table_title_content_vertical has-text-centered'>顧客名</th>
-                            <th className='proj_table_title_content_vertical has-text-centered'>案件</th>
-                            <th className='proj_table_title_content_vertical has-text-centered'>案件</th>
-                            <th className='proj_table_title_content_vertical has-text-centered'>案件</th>
-                            <th className='proj_table_title_content_vertical has-text-centered'>案件</th>
-                            <th className='proj_table_title_content_vertical has-text-centered'>案件</th>
-                          </tr>
-                        </thead>
-                        <tbody className='proj_table_body'>
-                          {personnel.map((user, index) => (
-                            <tr key={index}>
-                              <td>{user.username}</td>
-                              {user.planning_assign?.map((assign, index) => (
-                                <>
-                                  <td>
-                                    <div style={{ textAlign: 'center', border: '1px solid black' }}>
-                                      {assign.planning_project['planning_project_name']}
-                                    </div>
-                                    <div style={{ display: 'flex' }}>
-                                      <div style={{ width: '100%' , textAlign: 'center' , border: '1px solid black' }}>人件費</div>
-                                      <div style={{ width: '100%' , textAlign: 'center' , border: '1px solid black' }}>{assign.planning_project['personal_expenses']}</div>
-                                      <div style={{ width: '100%' , textAlign: 'center' , border: '1px solid black' }}>割合</div>
-                                      <div style={{ width: '100%' , textAlign: 'center' , border: '1px solid black' }}>{assign.assignment_ratio}</div>
-                                    </div>
-                                  </td>
-                                </>
-                              ))}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className='proj_footer_wrapper'>
-                <div className='proj_footer_cont'>
-                  {/* <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} /> */}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <div className='personnel_wrapper'>
+      <div className="header_cont">
+           <HeaderDashboard value="" />
+       </div>
+       <div className="personnel_cont_wrapper">
+           <div className="sidebar">
+               <Sidebar />
+           </div>
+           <div className="personnel_wrapper_div">
+                   <div className="personnel_top_content">
+                       <div className="personnel_top_body_cont">
+                           <div className="personnel_top_btn_cont">
+                               {headerButtons.map((button) => (
+                                   <Btn 
+                                       key={button.index}
+                                       label={button.label}
+                                       size="normal"
+                                       onClick={() => handleButton1Click(button.index)}
+                                       className={`personnel_btn ${activeButton1 === button.index ? 'active' : ''}`}
+                                   />
+                               ))}
+                           </div>
+                       </div>
+                       <div className="personnel_mid_body_cont">
+                           <div className="personnel_mid_btn_cont">
+                               {topBodyButtons.map((button) => (
+                                   <Btn 
+                                       key={button.index}
+                                       label={button.label}
+                                       size="normal"
+                                       onClick={() => handleButton2Click(button.index)}
+                                       className={`personnel_btn ${activeButton2 === button.index ? 'active' : ''}`}
+                                   />
+                               ))}
+                           </div>
+                           <div className="personnel_title_table_cont">
+                               <p className="personnel_title">人件費一覧</p>
+                               <Btn 
+                                   label="新規登録"
+                                   size="normal"
+                                   onClick={() =>("")}
+                                   className="personnel_btn"
+                               />
+                           </div>
+                           <div className="personnel_table_wrapper">
+                               <div className="personnel_table_cont">
+                                   <div className='columns is-mobile'>
+                                       <div className='column'>
+                                           <table className='table is-bordered is-hoverable'>
+                                           <thead>
+                                            <tr className='personnel_table_title'>
+                                              <th className='personnel_table_title_content_vertical has-text-centered'>顧客名</th>
+                                              <th className='personnel_table_title_content_vertical has-text-centered'>案件</th>
+                                              <th className='personnel_table_title_content_vertical has-text-centered'>案件</th>
+                                              <th className='personnel_table_title_content_vertical has-text-centered'>案件</th>
+                                              <th className='personnel_table_title_content_vertical has-text-centered'>案件</th>
+                                              <th className='personnel_table_title_content_vertical has-text-centered'>案件</th>
+                                            </tr>
+                                           </thead>
+                                           <tbody className="personnel_table_body">
+                                              {personnel.map((user, index) => (
+                                                  <tr key={index} className="user_name">
+                                                    <td>{user.username}</td>
+                                                    {user.planning_assign?.map((assign, index) => (
+                                                      <>
+                                                        <td>
+                                                          <div style={{ textAlign: 'center'}} className="txt0">
+                                                            {assign.planning_project['planning_project_name']}
+                                                          </div>
+                                                          <div style={{ display: 'flex' }}>
+                                                            <div style={{ width: '100%' , textAlign: 'center' }} className="txt1">人件費</div>
+                                                            <div style={{ width: '100%' , textAlign: 'center' }} className="txt2">{assign.planning_project['personal_expenses']}</div>
+                                                            <div style={{ width: '100%' , textAlign: 'center' }} className="txt3">割合</div>
+                                                            <div style={{ width: '100%' , textAlign: 'center' }} className="txt4">{assign.assignment_ratio}</div>
+                                                          </div>
+                                                        </td>
+                                                      </>
+                                                    ))}
+                                                  </tr>
+                                                ))}
+                                           </tbody>
+                                           </table>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                           <div className="proj_pagination_wrapper">
+                               <div className="proj_pagination_cont">
+                                   {/* <Pagination
+                                     currentPage={currentPage}
+                                     totalPages={totalPages}
+                                     onPageChange={handlePageChange}
+                                     options={select}
+                                     rowsPerPage={rowsPerPage}
+                                     onRowsPerPageChange={handleRowsPerPageChange}
+                                   /> */}
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+           </div>
+       </div>
+   </div>
     )
 }
 

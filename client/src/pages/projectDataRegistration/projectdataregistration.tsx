@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Btn from '../../components/Button/Button'
 import axios from 'axios'
-import { HeaderDashboard } from '../../components/Header/header'
+import { HeaderDashboard } from '../../components/header/header'
 import Sidebar from '../../components/SideBar/Sidebar'
 
 const ProjectDataRegistration = () => {
