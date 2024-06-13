@@ -183,7 +183,7 @@ class OtherPlanningData(models.Model):
         return self.planning_project_id
     
 class PlanningAssignData(models.Model):
-    planning_assign_id = models.CharField(max_length=10, primary_key=True)
+    planning_assign_id = models.AutoField(primary_key=True)
     planning_project_id = models.ForeignKey(
         PlanningProjectData, on_delete=models.CASCADE
     )

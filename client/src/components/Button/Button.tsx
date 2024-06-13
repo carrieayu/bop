@@ -8,7 +8,8 @@ interface ButtonProps {
     iconPosition?: "left" | "right";
     borderRadius?: number;
     size?: "small" | "normal" | "medium" | "large";
-    className?: string;  
+    className?: string;
+    type?: "button" | "submit" | "reset";
 }
 
 const Btn: React.FC<ButtonProps> = ({
@@ -19,6 +20,7 @@ const Btn: React.FC<ButtonProps> = ({
   borderRadius = 100,
   size = "normal",
   className,
+  type,
 }) => {
   // Determine button class based on size
   const btnClass = 
@@ -35,7 +37,7 @@ const Btn: React.FC<ButtonProps> = ({
   
 
   return (
-    <button className={`button ${btnClass} ${className}`} onClick={onClick} style={{ borderRadius }}>
+    <button className={`button ${btnClass} ${className}`} onClick={onClick} style={{ borderRadius }} type={type}>
       {customIcon && iconPosition === "left" && (
         <span className={iconClass} style={{ marginRight: '5px' }}>
           {customIcon}

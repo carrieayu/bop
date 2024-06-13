@@ -61,7 +61,7 @@ const Dashboard = () => {
   useEffect(() => {
     fetchData()
   }, [])
-
+  
   useEffect(() => {
     const startIndex = currentPage * rowsPerPage
     setPaginatedData(tableList.slice(startIndex, startIndex + rowsPerPage))
@@ -139,25 +139,25 @@ const Dashboard = () => {
 
   return (
     <div className='wrapper'>
-        <div className='header_cont'>
-          <HeaderDashboard value='value' />
-          {showMenu && (
-            <div className='menu'>
-              <HeaderDashboard value='value' />
-            </div>
-          )}
-          <div className='hamburger' onClick={toggleMenu}>
-            <span className='burger_icon'>
-              <GiHamburgerMenu />
-            </span>
+      <div className='header_cont'>
+        <HeaderDashboard value='value' />
+        {showMenu && (
+          <div className='menu'>
+            <HeaderDashboard value='value' />
           </div>
+        )}
+        <div className='hamburger' onClick={toggleMenu}>
+          <span className='burger_icon'>
+            <GiHamburgerMenu />
+          </span>
         </div>
-        <div className="content_wrapper">
-          <div className="sidebar">
-            <Sidebar />
-          </div>
-          <div className="dashboard_content">
-            <div className='body_cont'>
+      </div>
+      <div className='content_wrapper'>
+        <div className='sidebar'>
+          <Sidebar />
+        </div>
+        <div className='dashboard_content'>
+          <div className='body_cont'>
             <div className='card_cont'>
               <div className='left_card'>
                 <Card
@@ -261,24 +261,24 @@ const Dashboard = () => {
                 <GraphDashboard data={graphData} />
               </div>
             </div>
+          </div>
+          <div className='bottom_cont'>
+            <div className='pagination_cont'>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                options={select}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={handleRowsPerPageChange}
+              />
             </div>
-            <div className='bottom_cont'>
-              <div className='pagination_cont'>
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                  options={select}
-                  rowsPerPage={rowsPerPage}
-                  onRowsPerPageChange={handleRowsPerPageChange}
-                />
-              </div>
-              <div className='table_cont'>
-                <TableComponentProps data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
-              </div>
+            <div className='table_cont'>
+              <TableComponentProps data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
             </div>
           </div>
         </div>
+      </div>
     </div>
   )
 }
