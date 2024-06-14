@@ -40,9 +40,9 @@ class ClientMaster(models.Model):
             ClientMaster.objects.all().aggregate(max_client_id=models.Max("client_id"))[
                 "max_client_id"
             ]
-            or "00000"
+            or "000"
         )
-        new_client_id = str(int(max_client_id) + 1).zfill(5)
+        new_client_id = str(int(max_client_id) + 1).zfill(3)
         self.client_id = new_client_id
 
     def save(self, *args, **kwargs):
@@ -52,13 +52,25 @@ class ClientMaster(models.Model):
 
 
 class CompanyMaster(models.Model):
-    company_id = models.CharField(max_length=10, primary_key=True)
+    company_id = models.CharField(max_length=10, primary_key=True, editable=False)
     company_name = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     registered_user_id = models.CharField(max_length=100)
 
     def __str__(self):
         return self.company_id
+    
+    def save(self, *args, **kwargs):
+        if not self.company_id:
+            max_company_id = (
+                BusinessDivisionMaster.objects.aggregate(
+                    max_company_id=models.Max("company_id")
+                )["max_company_id"]
+                or "000"
+            )
+            new_company_id = str(int(max_company_id) + 1).zfill(3)
+            self.company_id = new_company_id
+        super().save(*args, **kwargs)
 
 
 class BusinessDivisionMaster(models.Model):
@@ -85,7 +97,7 @@ class BusinessDivisionMaster(models.Model):
 
 
 class User(AbstractBaseUser):
-    user_id = models.CharField(max_length=10, primary_key=True)
+    user_id = models.CharField(max_length=10, primary_key=True, editable=False)
     username = models.TextField()
     email = models.EmailField()
     affiliated_company_id = models.ForeignKey(CompanyMaster, on_delete=models.CASCADE)
@@ -97,6 +109,18 @@ class User(AbstractBaseUser):
 
     def __str__(self):
         return self.user_id
+    
+    def save(self, *args, **kwargs):
+        if not self.user_id:
+            max_user_id = (
+                BusinessDivisionMaster.objects.aggregate(
+                    max_user_id=models.Max("user_id")
+                )["max_user_id"]
+                or "00000"
+            )
+            new_user_id = str(int(max_user_id) + 1).zfill(5)
+            self.user_id = new_user_id
+        super().save(*args, **kwargs)
 
 
 class PlanningProjectData(models.Model):
@@ -142,15 +166,15 @@ class PlanningProjectData(models.Model):
                 PlanningProjectData.objects.aggregate(
                     max_planning_project_id=models.Max("planning_project_id")
                 )["max_planning_project_id"]
-                or "0000"
+                or "000000"
             )
-            new_planning_project_id = str(int(max_planning_project_id) + 1).zfill(4)
+            new_planning_project_id = str(int(max_planning_project_id) + 1).zfill(6)
             self.planning_project_id = new_planning_project_id
         super().save(*args, **kwargs)
 
 
 class PerformanceProjectData(models.Model):
-    project_id = models.CharField(max_length=10, primary_key=True)
+    project_id = models.CharField(max_length=10, primary_key=True, editable=False)
     planning_project_id = models.ForeignKey(
         PlanningProjectData, on_delete=models.CASCADE
     )
@@ -167,10 +191,22 @@ class PerformanceProjectData(models.Model):
 
     def __str__(self):
         return self.project_id
+    
+    def save(self, *args, **kwargs):
+        if not self.project_id:
+            max_project_id = (
+                BusinessDivisionMaster.objects.aggregate(
+                    max_project_id=models.Max("project_id")
+                )["max_project_id"]
+                or "0000000"
+            )
+            new_project_id = str(int(max_project_id) + 1).zfill(7)
+            self.project_id = new_project_id
+        super().save(*args, **kwargs)
 
 
 class OtherPlanningData(models.Model):
-    other_planning_id = models.CharField(max_length=10, primary_key=True)
+    other_planning_id = models.CharField(max_length=10, primary_key=True, editable=False)
     planning_project_id = models.ForeignKey(
         PlanningProjectData, on_delete=models.CASCADE, related_name="other_planning"
     )
@@ -181,6 +217,18 @@ class OtherPlanningData(models.Model):
 
     def __str__(self):
         return self.planning_project_id
+    
+    def save(self, *args, **kwargs):
+        if not self.planning_project_id:
+            max_planning_project_id = (
+                BusinessDivisionMaster.objects.aggregate(
+                    max_planning_project_id=models.Max("planning_project_id")
+                )["max_planning_project_id"]
+                or "00000000"
+            )
+            new_planning_project_id = str(int(max_planning_project_id) + 1).zfill(8)
+            self.planning_project_id = new_planning_project_id
+        super().save(*args, **kwargs)
     
 class PlanningAssignData(models.Model):
     planning_assign_id = models.AutoField(primary_key=True)
