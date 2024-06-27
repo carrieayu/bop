@@ -41,26 +41,26 @@ interface EntityGrid {
 }
 
 export const TableComponentProps: React.FC<TableProps> = (props) => {
-const gridRows = objectEntity.length
+const gridRows = objectEntity?.length
 const gridCols = 13
 
 const [grid, setGrid] = useState<EntityGrid[]>([])
 
 useEffect(() => {
-  const entityGrids: EntityGrid[] = props.data.map((entity) => ({
+  const entityGrids: EntityGrid[] = props.data?.map((entity) => ({
     clientName: entity.client_name,
     grid: Array.from({ length: gridRows }, () => Array.from({ length: gridCols }, () => '0')),
   }))
 
-  props.data.forEach((entity, entityIndex) => {
-    if (entity && entity.planning_project_data && entity.planning_project_data.length > 0) {
-      entity.planning_project_data.forEach((project) => {
+  props.data?.forEach((entity, entityIndex) => {
+    if (entity && entity.planning_project_data && entity.planning_project_data?.length > 0) {
+      entity.planning_project_data?.forEach((project) => {
         if (project.planning && project.sales_revenue !== undefined) {
           const date = new Date(project.planning)
           const month = date.getMonth()
           const adjustedMonth = (month + 8 + 1) % 12
 
-          objectEntity.forEach((header, index) => {
+          objectEntity?.forEach((header, index) => {
             if (project[header] !== undefined) {
               entityGrids[entityIndex].grid[index][adjustedMonth] = project[header].toString()
 
@@ -71,9 +71,9 @@ useEffect(() => {
     }
   })
 
-    entityGrids.forEach((entityGrid) => {
-      entityGrid.grid.forEach((row) => {
-        const total = row.slice(0, gridCols - 1).reduce((acc, val) => acc + parseInt(val, 10), 0)
+    entityGrids?.forEach((entityGrid) => {
+      entityGrid.grid?.forEach((row) => {
+        const total = row?.slice(0, gridCols - 1).reduce((acc, val) => acc + parseInt(val, 10), 0)
         row[gridCols - 1] = total.toString()
       })
     })
@@ -88,7 +88,7 @@ useEffect(() => {
           <></>
         </table>
         <div className='scrollable_container'>
-          {grid.map((entityGrid: EntityGrid, entityIndex: number) => (
+          {grid?.map((entityGrid: EntityGrid, entityIndex: number) => (
             <div key={entityIndex}>
               <table className='tableGrid'>
                 <thead></thead>
@@ -100,7 +100,7 @@ useEffect(() => {
                         <th style={{ borderRight: '1px solid black' }}></th>
                         <th style={{ borderRight: '1px solid black' }}></th>
                         <th colSpan={5}></th>
-                        {props.header.map((item, index) => (
+                        {props.header?.map((item, index) => (
                           <th key={index}>{item}</th>
                         ))}
                         <th colSpan={6}></th>
@@ -119,7 +119,7 @@ useEffect(() => {
                         <td className='td_border'></td>
                         <td className='td_border'></td>
                         <td className='td_border'></td>
-                        {props.dates.map((item, index) => (
+                        {props.dates?.map((item, index) => (
                           <td
                             key={index}
                             className='td_right'
@@ -132,7 +132,7 @@ useEffect(() => {
                       </tr>
                     </>
                   )}
-                  {entityGrid.grid.map((row, rowIndex) => (
+                  {entityGrid.grid?.map((row, rowIndex) => (
                     <tr key={rowIndex}>
                       <td style={{ width: 100, textAlign: 'center' }} className='div_border'>
                         {rowIndex === 5 ? <div>{entityIndex}</div> : rowIndex === 0 && <></>}
@@ -144,7 +144,7 @@ useEffect(() => {
                         {headerTitle[rowIndex]}
                       </td>
                       {Array.isArray(row)
-                        ? row.map((cell, colIndex) => (
+                        ? row?.map((cell, colIndex) => (
                             <td
                               key={colIndex}
                               style={{ width: 100, height: 50, border: '1px solid black', textAlign: 'center' }}

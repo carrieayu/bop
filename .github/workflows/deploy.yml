@@ -10,10 +10,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js 20.x
+       # Use specific Node.js version
+      - name: Use Node.js 18.17.1
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 18.17.1
+
+      # Install specific npm version
+      - name: Install npm 10.1.0
+        run: npm install -g npm@10.1.0
+
+      # Check npm version
+      - name: Check npm version
+        run: npm --version
       - name: Run Build
         run: |
           cd ./client
@@ -45,7 +54,9 @@ jobs:
           username: ${{ secrets.USERNAME }}
           port: ${{ secrets.PORT }}
           key: ${{ secrets.SSH_PRIVATE_PEM_KEY }}
-          script: rsync -av --delete client/build/ /usr/share/nginx/html/
+          script: |
+            rsync -av --delete /usr/share/nginx/html/client/build/ /usr/share/nginx/html/
+            rm -rf /usr/share/nginx/html/client/
       - name: Restart Nginx service
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -53,6 +64,4 @@ jobs:
           username: ${{ secrets.USERNAME }}
           port: ${{ secrets.PORT }}
           key: ${{ secrets.SSH_PRIVATE_PEM_KEY }}
-          script: |
-            rsync -av --delete /usr/share/nginx/html/client/build/ /usr/share/nginx/html/
-            rm -rf /usr/share/nginx/html/client/
+          script: sudo systemctl restart nginx

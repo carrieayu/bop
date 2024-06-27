@@ -34,7 +34,7 @@ const Dashboard = () => {
   const dispatch = useDispatch()
   const [currentPage, setCurrentPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
-  const totalPages = Math.ceil(tableList.length / rowsPerPage)
+  const totalPages = Math.ceil(tableList?.length / rowsPerPage)
   const totalSalesByDate = useAppSelector((state: RootState) => state.graph.totalSalesByDate)
   const totalOperatingProfitByDate = useAppSelector((state: RootState) => state.graph.totalOperatingProfitByDate)
   const totalGrossProfitByDate = useAppSelector((state: RootState) => state.graph.totalGrossProfitByDate)
@@ -64,7 +64,7 @@ const Dashboard = () => {
   
   useEffect(() => {
     const startIndex = currentPage * rowsPerPage
-    setPaginatedData(tableList.slice(startIndex, startIndex + rowsPerPage))
+    setPaginatedData(tableList?.slice(startIndex, startIndex + rowsPerPage))
   }, [currentPage, rowsPerPage, tableList])
 
   const graphData = {
@@ -73,7 +73,7 @@ const Dashboard = () => {
       {
         type: 'bar' as const,
         label: '売上高',
-        data: datePlanning.map(date => totalSalesByDate[date]),
+        data: datePlanning?.map(date => totalSalesByDate[date]),
         backgroundColor: '#6e748c',
         borderColor: 'black',
         borderWidth: 1,
@@ -82,7 +82,7 @@ const Dashboard = () => {
       {
         type: 'bar' as const,
         label: '売上総利益',
-        data: datePlanning.map(date => totalGrossProfitByDate[date]),
+        data: datePlanning?.map(date => totalGrossProfitByDate[date]),
         backgroundColor: '#7696c6',
         borderColor: 'black',
         borderWidth: 1,
@@ -91,7 +91,7 @@ const Dashboard = () => {
       {
         type: 'bar' as const,
         label: '営業利益',
-        data: datePlanning.map(date => totalOperatingProfitByDate[date]),
+        data: datePlanning?.map(date => totalOperatingProfitByDate[date]),
         backgroundColor: '#b8cbe2',
         borderColor: 'black',
         borderWidth: 1,
@@ -100,7 +100,7 @@ const Dashboard = () => {
       {
         type: 'bar' as const,
         label: '当期純利益',
-        data: datePlanning.map(date => totalNetProfitPeriodByDate[date]),
+        data: datePlanning?.map(date => totalNetProfitPeriodByDate[date]),
         backgroundColor: '#bde386',
         borderColor: 'black',
         borderWidth: 1,
@@ -109,7 +109,7 @@ const Dashboard = () => {
       {
         type: 'line' as const,
         label: '売上総利益率',
-        data: datePlanning.map(date => totalGrossProfitMarginByDate[date]),
+        data: datePlanning?.map(date => totalGrossProfitMarginByDate[date]),
         backgroundColor: '#ff8e13',
         borderColor: '#ff8e13',
         borderWidth: 2,
@@ -119,7 +119,7 @@ const Dashboard = () => {
       {
         type: 'line' as const,
         label: '営業利益率',
-        data: datePlanning.map(date => totalOperatingProfitMarginByDate[date]),
+        data: datePlanning?.map(date => totalOperatingProfitMarginByDate[date]),
         backgroundColor: '#ec3e4a',
         borderColor: '#ec3e4a',
         borderWidth: 2,
