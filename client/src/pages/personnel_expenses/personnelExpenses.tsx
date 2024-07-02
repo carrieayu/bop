@@ -53,7 +53,17 @@ const PersonnelExpensesList: React.FC = () => {
     return (
       <div className='personnel_wrapper'>
       <div className="header_cont">
-           <HeaderDashboard value="" />
+        <div className="personnel_top_btn_cont">
+            {headerButtons.map((button) => (
+                <Btn 
+                    key={button.index}
+                    label={button.label}
+                    size="normal"
+                    onClick={() => handleButton1Click(button.index)}
+                    className={`personnel_btn ${activeButton1 === button.index ? 'active' : ''}`}
+                />
+            ))}
+        </div>
        </div>
        <div className="personnel_cont_wrapper">
            <div className="sidebar">
@@ -63,15 +73,7 @@ const PersonnelExpensesList: React.FC = () => {
                    <div className="personnel_top_content">
                        <div className="personnel_top_body_cont">
                            <div className="personnel_top_btn_cont">
-                               {headerButtons.map((button) => (
-                                   <Btn 
-                                       key={button.index}
-                                       label={button.label}
-                                       size="normal"
-                                       onClick={() => handleButton1Click(button.index)}
-                                       className={`personnel_btn ${activeButton1 === button.index ? 'active' : ''}`}
-                                   />
-                               ))}
+                             
                            </div>
                        </div>
                        <div className="personnel_mid_body_cont">

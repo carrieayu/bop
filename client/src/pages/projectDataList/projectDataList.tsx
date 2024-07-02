@@ -91,7 +91,17 @@ const ProjectDataList: React.FC = () => {
   return (
     <div className='proj_wrapper'>
        <div className="header_cont">
-            <HeaderDashboard value="" />
+        <div className="proj_top_btn_cont">
+            {headerButtons.map((button) => (
+                <Btn 
+                    key={button.index}
+                    label={button.label}
+                    size="normal"
+                    onClick={() => handleButton1Click(button.index)}
+                    className={`proj_btn ${activeButton1 === button.index ? 'active' : ''}`}
+                />
+            ))}
+        </div>
         </div>
         <div className="projectlist_cont_wrapper">
             <div className="sidebar">
@@ -100,17 +110,7 @@ const ProjectDataList: React.FC = () => {
             <div className="projectlist_wrapper">
                     <div className="proj_top_content">
                         <div className="proj_top_body_cont">
-                            <div className="proj_top_btn_cont">
-                                {headerButtons.map((button) => (
-                                    <Btn 
-                                        key={button.index}
-                                        label={button.label}
-                                        size="normal"
-                                        onClick={() => handleButton1Click(button.index)}
-                                        className={`proj_btn ${activeButton1 === button.index ? 'active' : ''}`}
-                                    />
-                                ))}
-                            </div>
+                          
                         </div>
                         <div className="proj_mid_body_cont">
                             <div className="proj_mid_btn_cont">
