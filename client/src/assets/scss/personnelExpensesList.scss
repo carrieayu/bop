@@ -2,10 +2,33 @@
     max-width: 2560px;
     .header_cont{
         margin: 0px 0px 0px 0px;
+        height: 60px;
         .header_container{
             background-color: #fff;
             padding: 5px 5px 10px 5px;
             box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .personnel_top_btn_cont{
+            margin-left: 5%;
+            display: flex;
+            gap: 2%;
+            .personnel_btn{
+                margin-top: 15px;
+                border: 1px solid #808080;
+                width: 10rem;
+                height: 30px;
+                border-radius: 5px !important;
+                background-color: #fff;
+                color: #000;
+                &:hover{
+                    background-color: #808080;
+                    color: #fff;
+                }
+            }
+            .personnel_btn.active{
+                background-color: #808080;
+                color: #fff;
+            }
         }
     }
     .personnel_cont_wrapper{
@@ -15,7 +38,7 @@
             flex-direction: column;
         }
         .sidebar{
-            flex: 0 0 180px;
+            flex: 0 0 205px;
             background-color: #1c302c;
             @media only screen and (max-width: 1000px){
                 flex: 0 0 auto;

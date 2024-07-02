@@ -124,7 +124,21 @@ const ProjectDataRegistration = () => {
   return (
     <div className="project_wrapper">
       <div className="header_cont">
-        <HeaderDashboard value="" />
+          <Btn
+            label="分析"
+            onClick={() => handleTabClick("analysis")}
+            className={activeTab === "analysis" ? "h-btn-active header-btn" : "header-btn"}
+          />
+          <Btn
+            label="計画"
+            onClick={() => handleTabClick("plan")}
+            className={activeTab === "plan" ? "h-btn-active header-btn" : "header-btn"}
+          />
+          <Btn
+            label="実績"
+            onClick={() => handleTabClick("result")}
+            className={activeTab === "result" ? "h-btn-active header-btn" : "header-btn"}
+          />
       </div>
       <div className="proj_content_wrapper">
         <div className="sidebar">
@@ -133,21 +147,7 @@ const ProjectDataRegistration = () => {
         <div className="project_data_content">
           <div className="top_body_cont">
             <div className="top_btn_cont">
-              <Btn
-                label="分析"
-                onClick={() => handleTabClick("analysis")}
-                className={activeTab === "analysis" ? "h-btn-active header-btn" : "header-btn"}
-              />
-              <Btn
-                label="計画"
-                onClick={() => handleTabClick("plan")}
-                className={activeTab === "plan" ? "h-btn-active header-btn" : "header-btn"}
-              />
-              <Btn
-                label="実績"
-                onClick={() => handleTabClick("result")}
-                className={activeTab === "result" ? "h-btn-active header-btn" : "header-btn"}
-              />
+              
             </div>
           </div>
           <div className="mid_body_cont">
