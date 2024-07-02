@@ -13,6 +13,7 @@ import { fetchAllClientData } from '../../reducers/table/tableSlice'
 import { fetchGraphData } from '../../reducers/graph/graphSlice'
 import { HeaderDashboard } from '../../components/header/header'
 import Sidebar from '../../components/SideBar/Sidebar'
+import Btn from '../../components/Button/Button'
 
 function formatNumberWithCommas(number: number): string {
   return number.toLocaleString();
@@ -44,6 +45,10 @@ const Dashboard = () => {
   const datePlanning = useAppSelector((state: RootState) => state.graph.datePlanning)
   const select = [5, 10, 100]
   const [paginatedData, setPaginatedData] = useState<any[]>([])
+  const [activeTab, setActiveTab] = useState('plan')
+  const handleTabClick = (tab) => {
+    setActiveTab(tab)
+  }
   const toggleMenu = () => {
     setShowMenu(!showMenu)
   }
@@ -140,17 +145,21 @@ const Dashboard = () => {
   return (
     <div className='wrapper'>
       <div className='header_cont'>
-        <HeaderDashboard value='value' />
-        {showMenu && (
-          <div className='menu'>
-            <HeaderDashboard value='value' />
-          </div>
-        )}
-        <div className='hamburger' onClick={toggleMenu}>
-          <span className='burger_icon'>
-            <GiHamburgerMenu />
-          </span>
-        </div>
+        <Btn
+          label="分析"
+          onClick={() => handleTabClick("analysis")}
+          className={activeTab === "analysis" ? "h-btn-active header-btn" : "header-btn"}
+        />
+        <Btn
+          label="計画"
+          onClick={() => handleTabClick("plan")}
+          className={activeTab === "plan" ? "h-btn-active header-btn" : "header-btn"}
+        />
+        <Btn
+          label="実績"
+          onClick={() => handleTabClick("result")}
+          className={activeTab === "result" ? "h-btn-active header-btn" : "header-btn"}
+        />
       </div>
       <div className='content_wrapper'>
         <div className='sidebar'>
