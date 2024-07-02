@@ -109,6 +109,12 @@
                         font-weight: bold;
                         color: #000;
                     }
+                    .form-content.form-content-special{
+                        padding: 50px 0px 0px 20px;
+                    }
+                    .form-content.form-line {
+                        border-top: 4px solid rgb(183, 183, 183);
+                    }
                     .form-content{
                         padding: 15px 0px 0px 20px;
                         .form-content-div{
@@ -360,7 +366,7 @@
                                     }
                                 }
                             }
-                        }
+                    }
                         .plus-btn{
                             padding: 20px 10px 20px 10px;
                             gap: 1rem;
