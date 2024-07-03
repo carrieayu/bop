@@ -47,6 +47,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.translation import gettext as _
 from django.core.mail import send_mail
 from django.utils import timezone
+from django.db.models import Max
 
 class NoteListCreate(generics.ListCreateAPIView):
     serializer_class = NoteSerializer
@@ -373,80 +374,77 @@ class StorePlanningProject(generics.CreateAPIView):
         business_data = request.data.get("business", {})
         planning_data = request.data.get("planning", {})
 
-        client_data["client_name"] = client_data.get("client_name")
-        client_data["registered_user_id"] = client_data.get("registered_user_id")
 
-        business_data["business_division_name"] = business_data.get(
-            "business_division_name"
-        )
-        business_data["registered_user_id"] = business_data.get("registered_user_id")
-        business_data["company_id"] = business_data.get("company_id")
+        clients = []
+        for i in range(len(client_data.get("client_name", []))):
+                client_instance_data = {
+                    'client_name': client_data.get("client_name")[i],
+                    'registered_user_id': client_data.get("registered_user_id")[i] or None
+                }
+                client_serializer = ClientMasterSerializer(data=client_instance_data)
+                
+                if client_serializer.is_valid():
+                    client = client_serializer.save()
+                    clients.append(client)
+                else:
+                    return Response(client_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        planning_data["planning_project_name"] = planning_data.get("project_name")
-        planning_data["planning_project_type"] = "Type A"
-        planning_data["client_id"] = ""
-        planning_data["planning"] = datetime.now().strftime("%Y-%m-%d")
-        planning_data["start_yyyymm"] = planning_data.get("start_yyyymm")
-        planning_data["end_yyyymm"] = planning_data.get("end_yyyymm")
-        planning_data["sales_revenue"] = float(
-            planning_data.get("sales_revenue", "0") or "0"
+        businesses = []
+        max_business_division_id = (
+            BusinessDivisionMaster.objects.aggregate(
+                max_business_division_id=Max("business_division_id")
+            )["max_business_division_id"]
+            or "0000"
         )
-        planning_data["cost_of_goods_sold"] = float(
-            planning_data.get("cost_of_goods_sold", "0") or "0"
-        )
-        planning_data["dispatched_personnel_expenses"] = 0.0
-        planning_data["personal_expenses"] = float(
-            planning_data.get("personnel_expenses", "0") or "0"
-        )
-        planning_data["indirect_personal_expenses"] = float(
-            planning_data.get("indirect_personnel_cost", "0") or "0"
-        )
-        planning_data["expenses"] = float(planning_data.get("expenses", "0") or "0")
-        planning_data["operating_profit"] = float(
-            planning_data.get("operating_income", "0") or "0"
-        )
-        planning_data["non_operating_income"] = float(
-            planning_data.get("non_operating_income", "0") or "0"
-        )
-        planning_data["ordinary_profit"] = float(
-            planning_data.get("ordinary_income", "0") or "0"
-        )
-        planning_data["ordinary_profit_margin"] = float(
-            planning_data.get("ordinary_income_margin", "0") or "0"
-        )
+        current_max_id = int(max_business_division_id)
 
-        print("Client Data:", client_data)
-        print("Business Data:", business_data)
-        print("Planning Data:", planning_data)
-
-        # Save client data
-        client_serializer = ClientMasterSerializer(data=client_data)
-        if client_serializer.is_valid():
-            client = client_serializer.save()
-        else:
-            return Response(
-                client_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+        for i in range(len(business_data.get("business_division_name", []))):
+            company, created = CompanyMaster.objects.get_or_create(
+                company_id=business_data.get("company_id")[i]
             )
 
-        # Save business division data
-        business_serializer = BusinessDivisionMasterSerializer(data=business_data)
-        if business_serializer.is_valid():
-            business = business_serializer.save()
-        else:
-            return Response(
-                business_serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
+            current_max_id += 1
+            new_business_division_id = str(current_max_id).zfill(4)
 
-        # Update client_id in planning_data with the actual client ID
-        planning_data["client_id"] = client.client_id
-
-        # Save planning project data
-        planning_serializer = CreatePlanningProjectDataSerializers(data=planning_data)
-        if planning_serializer.is_valid():
-            planning_serializer.save()
-        else:
-             return Response(planning_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            business_instance_data = {
+                'business_division_id': new_business_division_id,
+                'business_division_name': business_data.get("business_division_name")[i],
+                'registered_user_id': business_data.get("registered_user_id")[i] or 0,
+                'company_id': company.company_id
+            }
+            
+            
+            business_serializer = BusinessDivisionMasterSerializer(data=business_instance_data)
+            if business_serializer.is_valid():
+                business = business_serializer.save()
+                businesses.append(business)
+            else:
+                return Response(business_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
+        for i in range(len(planning_data.get("project_name", []))):
+            planning_instance_data = {
+                'planning_project_name': planning_data.get("project_name")[i],
+                'start_yyyymm': planning_data.get("start_yyyymm")[i],
+                'end_yyyymm': planning_data.get("end_yyyymm")[i],
+                'sales_revenue': float(planning_data.get("sales_revenue")[i] or 0),
+                'cost_of_goods_sold': float(planning_data.get("cost_of_goods_sold")[i] or 0),
+                'personnel_expenses': float(planning_data.get("personnel_expenses")[i] or 0),
+                'indirect_personnel_cost': float(planning_data.get("indirect_personnel_cost")[i] or 0),
+                'expenses': float(planning_data.get("expenses")[i] or 0),
+                'non_operating_income': float(planning_data.get("non_operating_income")[i] or 0),
+                'operating_income': float(planning_data.get("operating_income")[i] or 0),
+                'ordinary_income': float(planning_data.get("ordinary_income")[i] or 0),
+                'ordinary_income_margin': float(planning_data.get("ordinary_income_margin")[i] or 0),
+                'planning_date': timezone.now().date(),
+                'planning_project_type': "Type A",
+                'client_id': "0001",
+            }
+            planning_serializer = CreatePlanningProjectDataSerializers(data=planning_instance_data)
+            if planning_serializer.is_valid():
+                planning_serializer.save()
+            else:
+                print(planning_serializer.errors)
+                return Response(planning_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response({'message': 'Project Planning Data created successfully'}, status=status.HTTP_201_CREATED)
 
 class ForgotPasswordView(generics.CreateAPIView):
