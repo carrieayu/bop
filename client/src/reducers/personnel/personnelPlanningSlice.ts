@@ -10,7 +10,8 @@ const initialState = {
 
 export const fetchPlanning = createAsyncThunk('personnel/fetchPlanning', async () => {
     const token = localStorage.getItem('accessToken'); // Replace with your actual token
-    const response = await fetch('http://127.0.0.1:8000/api/planningprojects/', {
+    // const response = await fetch('http://127.0.0.1:8000/api/planningprojects/', {
+    const response = await fetch('http://54.178.202.58:8000/api/planningprojects/', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
