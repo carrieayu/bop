@@ -37,12 +37,14 @@ class ClientMaster(models.Model):
 
     def generate_client_id(self):
         max_client_id = (
-            ClientMaster.objects.all().aggregate(max_client_id=models.Max("client_id"))[
-                "max_client_id"
-            ]
-            or "000"
+            ClientMaster.objects.all()
+            .aggregate(max_client_id=models.Max("client_id"))
+            .get("max_client_id")
         )
-        new_client_id = str(int(max_client_id) + 1).zfill(3)
+        if max_client_id is None or max_client_id == '':
+            new_client_id = "0001"  
+        else:
+            new_client_id = str(int(max_client_id) + 1).zfill(4) 
         self.client_id = new_client_id
 
     def save(self, *args, **kwargs):
@@ -93,7 +95,7 @@ class BusinessDivisionMaster(models.Model):
             )
             new_business_division_id = str(int(max_business_division_id) + 1).zfill(4)
             self.business_division_id = new_business_division_id
-        super().save(*args, **kwargs)
+        super(BusinessDivisionMaster, self).save(*args, **kwargs)
 
 
 class User(AbstractBaseUser):
@@ -159,17 +161,19 @@ class PlanningProjectData(models.Model):
     def __str__(self):
         return self.planning_project_id
 
+    def generate_planning_project_id(self):
+        max_planning_project_id = (
+            PlanningProjectData.objects.aggregate(
+                max_planning_project_id=models.Max("planning_project_id")
+            )["max_planning_project_id"]
+            or "000000"
+        )
+        new_planning_project_id = str(int(max_planning_project_id) + 1).zfill(6)
+        return new_planning_project_id
+
     def save(self, *args, **kwargs):
         if not self.planning_project_id:
-            # Generate planning_project_id only if it's not provided
-            max_planning_project_id = (
-                PlanningProjectData.objects.aggregate(
-                    max_planning_project_id=models.Max("planning_project_id")
-                )["max_planning_project_id"]
-                or "000000"
-            )
-            new_planning_project_id = str(int(max_planning_project_id) + 1).zfill(6)
-            self.planning_project_id = new_planning_project_id
+            self.planning_project_id = self.generate_planning_project_id()
         super().save(*args, **kwargs)
 
 
