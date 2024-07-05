@@ -13,7 +13,7 @@
             margin-left: 5%;
             display: flex;
             gap: 2%;
-            .proj_btn{
+            .header-btn{                        
                 margin-top: 15px;
                 border: 1px solid #808080;
                 width: 10rem;
@@ -21,12 +21,12 @@
                 border-radius: 5px !important;
                 background-color: #fff;
                 color: #000;
-                &:hover{
-                    background-color: #808080;
-                    color: #fff;
-                }
             }
-            .proj_btn.active{
+            .header-btn:hover{
+                background-color: #808080;
+                color: #fff;
+            }
+            .h-btn-active{
                 background-color: #808080;
                 color: #fff;
             }
