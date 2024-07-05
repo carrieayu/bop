@@ -3,9 +3,12 @@ import Btn from '../../components/Button/Button'
 import axios from 'axios'
 import { HeaderDashboard } from '../../components/header/header'
 import Sidebar from '../../components/SideBar/Sidebar'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const ProjectDataRegistration = () => {
-  const [activeTab, setActiveTab] = useState('plan')
+  const [activeTab, setActiveTab] = useState('/planning')
+  const navigate = useNavigate()
+  const location = useLocation()
   const [activeTabOther, setActiveTabOther] = useState('case')
   const storedUserID = localStorage.getItem('userID')
   const [formData, setFormData] = useState([
@@ -66,6 +69,7 @@ const ProjectDataRegistration = () => {
   }
   const handleTabClick = (tab) => {
     setActiveTab(tab)
+    navigate(tab)
   }
   const handleTabsClick = (tab) => {
     setActiveTabOther(tab)
@@ -83,6 +87,13 @@ const ProjectDataRegistration = () => {
 
   useEffect(() => {
   }, [formData])
+
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === '/dashboard' || path === '/planning' || path === '/result') {
+      setActiveTab(path);
+    }
+  }, [location.pathname]);
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -164,18 +175,18 @@ const ProjectDataRegistration = () => {
       <div className="header_cont">
           <Btn
             label="分析"
-            onClick={() => handleTabClick("analysis")}
-            className={activeTab === "analysis" ? "h-btn-active header-btn" : "header-btn"}
+            onClick={() => handleTabClick("/dashboard")}
+            className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
           />
           <Btn
             label="計画"
-            onClick={() => handleTabClick("plan")}
-            className={activeTab === "plan" ? "h-btn-active header-btn" : "header-btn"}
+            onClick={() => handleTabClick("/planning")}
+            className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
           />
           <Btn
             label="実績"
-            onClick={() => handleTabClick("result")}
-            className={activeTab === "result" ? "h-btn-active header-btn" : "header-btn"}
+            onClick={() => handleTabClick("/result")}
+            className={activeTab === "/result" ? "h-btn-active header-btn" : "header-btn"}
           />
       </div>
       <div className='proj_content_wrapper'>
@@ -184,23 +195,6 @@ const ProjectDataRegistration = () => {
         </div>
         <div className='project_data_content'>
           <div className='top_body_cont'>
-            <div className='top_btn_cont'>
-              <Btn
-                label='分析'
-                onClick={() => handleTabClick('analysis')}
-                className={activeTab === 'analysis' ? 'h-btn-active header-btn' : 'header-btn'}
-              />
-              <Btn
-                label='計画'
-                onClick={() => handleTabClick('plan')}
-                className={activeTab === 'plan' ? 'h-btn-active header-btn' : 'header-btn'}
-              />
-              <Btn
-                label='実績'
-                onClick={() => handleTabClick('result')}
-                className={activeTab === 'result' ? 'h-btn-active header-btn' : 'header-btn'}
-              />
-            </div>
           </div>
           <div className='mid_body_cont'>
             <div className='mid_btn_cont'>

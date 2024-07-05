@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux'
 import { fetchPersonnel } from '../../reducers/personnel/personnelExpensesSlice'
 import Sidebar from '../../components/SideBar/Sidebar'
 import { HeaderDashboard } from '../../components/header/header'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 interface ButtonData {
   label: string
@@ -18,14 +19,11 @@ interface ButtonData {
 const PersonnelExpensesList: React.FC = () => {
     const personnel = useAppSelector((state: RootState) => state.personnel.personnelList)
     const dispatch = useDispatch()
-    const [activeButton1, setActiveButton1] = useState(1)
     const [activeButton2, setActiveButton2] = useState(0)
+    const [activeTab, setActiveTab] = useState('/planning')
+    const navigate = useNavigate()
+    const location = useLocation()
 
-    const headerButtons: ButtonData[] = [
-        { label: "分析", index: 0 },
-        { label: "計画", index: 1 },
-        { label: "実績", index: 2 },
-    ];
 
     const topBodyButtons: ButtonData[] = [
         { label: "案件", index: 0 },
@@ -36,9 +34,12 @@ const PersonnelExpensesList: React.FC = () => {
         { label: "原価 - 通信費", index: 5 },
     ];
 
-    const handleButton1Click = (index) => {
-        setActiveButton1(index)
-    }
+
+    const handleTabClick = (tab) => {
+        setActiveTab(tab)
+        navigate(tab)
+      }
+
     const handleButton2Click = (index) => {
         setActiveButton2(index)
     }
@@ -47,6 +48,13 @@ const PersonnelExpensesList: React.FC = () => {
     useEffect(() => {
       dispatch(fetchPersonnel() as unknown as UnknownAction)
     }, [dispatch])
+    
+    useEffect(() => {
+      const path = location.pathname;
+      if (path === '/dashboard' || path === '/planning' || path === '/result') {
+        setActiveTab(path);
+      }
+    }, [location.pathname]);
 
     console.log("data: ", personnel)
 
@@ -54,15 +62,21 @@ const PersonnelExpensesList: React.FC = () => {
       <div className='personnel_wrapper'>
       <div className="header_cont">
         <div className="personnel_top_btn_cont">
-            {headerButtons.map((button) => (
-                <Btn 
-                    key={button.index}
-                    label={button.label}
-                    size="normal"
-                    onClick={() => handleButton1Click(button.index)}
-                    className={`personnel_btn ${activeButton1 === button.index ? 'active' : ''}`}
-                />
-            ))}
+            <Btn
+                label="分析"
+                onClick={() => handleTabClick("/dashboard")}
+                className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
+            />
+            <Btn
+                label="計画"
+                onClick={() => handleTabClick("/planning")}
+                className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
+            />
+            <Btn
+                label="実績"
+                onClick={() => handleTabClick("/result")}
+                className={activeTab === "/result" ? "h-btn-active header-btn" : "header-btn"}
+            />
         </div>
        </div>
        <div className="personnel_cont_wrapper">
