@@ -11,16 +11,16 @@ const Sidebar = () => {
       <div className="sidebar-nav">
         <ul>
           <li>
-            <span className="icons"><MdDashboard /></span><Link to="/*">分析</Link>
+            <span className="icons"><MdDashboard /></span><Link to="/dashboard">分析</Link>
           </li>
           <li>
-            <span className="icons"><MdDashboard /></span><Link to="/dashboard">計画</Link>
+            <span className="icons"><MdDashboard /></span><Link to="/planning">計画</Link>
           </li>
           <li className="sub_menu">
-            <span className="icons"><AiFillFileAdd /></span><Link to="/projectcreate">プロジェクト登録</Link>
+            <span className="icons"><FaTableList /></span><Link to="/projectdatalist">プロジェクト一覧</Link>
           </li>
           <li className="sub_menu">
-          <span className="icons"><FaTableList /></span><Link to="/projectdatalist">プロジェクト一覧</Link>
+          <span className="icons"><AiFillFileAdd /></span><Link to="/projectcreate">プロジェクト登録</Link>
           </li>
           <li className="sub_menu">
           <span className="icons"><BsPersonFillAdd /></span><Link to="/personnel-expense-create">人件費登録</Link>

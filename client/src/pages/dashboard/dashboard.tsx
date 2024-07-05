@@ -14,6 +14,7 @@ import { fetchGraphData } from '../../reducers/graph/graphSlice'
 import { HeaderDashboard } from '../../components/header/header'
 import Sidebar from '../../components/SideBar/Sidebar'
 import Btn from '../../components/Button/Button'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 function formatNumberWithCommas(number: number): string {
   return number.toLocaleString();
@@ -45,9 +46,13 @@ const Dashboard = () => {
   const datePlanning = useAppSelector((state: RootState) => state.graph.datePlanning)
   const select = [5, 10, 100]
   const [paginatedData, setPaginatedData] = useState<any[]>([])
-  const [activeTab, setActiveTab] = useState('plan')
+  const [activeTab, setActiveTab] = useState('/planning')
+  const navigate = useNavigate()
+  const location = useLocation()
+
   const handleTabClick = (tab) => {
     setActiveTab(tab)
+    navigate(tab)
   }
   const toggleMenu = () => {
     setShowMenu(!showMenu)
@@ -66,6 +71,13 @@ const Dashboard = () => {
   useEffect(() => {
     fetchData()
   }, [])
+
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === '/dashboard' || path === '/planning' || path === '/result') {
+      setActiveTab(path);
+    }
+  }, [location.pathname]);
   
   useEffect(() => {
     const startIndex = currentPage * rowsPerPage
@@ -147,18 +159,18 @@ const Dashboard = () => {
       <div className='header_cont'>
         <Btn
           label="分析"
-          onClick={() => handleTabClick("analysis")}
-          className={activeTab === "analysis" ? "h-btn-active header-btn" : "header-btn"}
+          onClick={() => handleTabClick("/dashboard")}
+          className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
         />
         <Btn
           label="計画"
-          onClick={() => handleTabClick("plan")}
-          className={activeTab === "plan" ? "h-btn-active header-btn" : "header-btn"}
+          onClick={() => handleTabClick("/planning")}
+          className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
         />
         <Btn
           label="実績"
-          onClick={() => handleTabClick("result")}
-          className={activeTab === "result" ? "h-btn-active header-btn" : "header-btn"}
+          onClick={() => handleTabClick("/result")}
+          className={activeTab === "/result" ? "h-btn-active header-btn" : "header-btn"}
         />
       </div>
       <div className='content_wrapper'>
