@@ -87,16 +87,33 @@ const Planning = () => {
           <Sidebar />
         </div>
         <div className='dashboard_content planning'>
-          <div className='bottom_cont'>
-            <div className='pagination_cont'>
-              <Pagination
+          <div className='bottom_cont planning_btm'>
+            <div className='pagination_cont planning_header'>
+              <div className="left-content">
+                <p>PL計画</p>
+              </div>
+              <div className="right-content">
+                <div className="paginate">
+                  <p className="pl-label">案件別表示</p>
+                  <label className="switch">
+                    <input type="checkbox"/>
+                    <span className="slider"></span>
+                  </label>
+                  <p className="pl-label">千円</p>
+                  <label className="switch">
+                    <input type="checkbox"/>
+                    <span className="slider"></span>
+                  </label>
+                </div>
+              </div>
+              {/* <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={handlePageChange}
                 options={select}
                 rowsPerPage={rowsPerPage}
                 onRowsPerPageChange={handleRowsPerPageChange}
-              />
+              /> */}
             </div>
             <div className='table_cont'>
               <TableComponentProps data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
