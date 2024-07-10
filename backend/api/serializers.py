@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import PlanningAssignData, User as UserApi, User as PersonnelUser ,Note, AccountMaster, ClientMaster, BusinessDivisionMaster, CompanyMaster, PerformanceProjectData, PlanningProjectData, OtherPlanningData
+from .models import CostOfSales, Expenses, PlanningAssignData, User as UserApi, User as PersonnelUser ,Note, AccountMaster, ClientMaster, BusinessDivisionMaster, CompanyMaster, PerformanceProjectData, PlanningProjectData, OtherPlanningData
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -173,7 +173,7 @@ class GetPlanningAssignSerializer(serializers.ModelSerializer):
     planning_project = GetPlanningProjectDataSerializers(source='planning_project_id' , read_only=True, )
     class Meta:
         model = PlanningAssignData
-        fields = ["planning_assign_id", "client_id", "assignment_start_date", "assignment_end_date", "assignment_ratio", "assignment_unit_price", "year", "registration_date", "registration_user", "planning_project"]
+        fields = ["planning_assign_id", "client_id", "assignment_ratio", "assignment_unit_price", "year", "month", "registration_date", "registration_user", "planning_project"]
 
 class GetUserMasterSerializer(serializers.ModelSerializer):
     planning_assign = GetPlanningAssignSerializer(many=True, read_only=True, source='user')
@@ -192,5 +192,18 @@ class PlanningAssignPersonnelDataSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = PlanningAssignData
+        fields = '__all__'
+
+
+class CostOfSalesSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CostOfSales
+        fields = '__all__'
+
+class ExpensesSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Expenses
         fields = '__all__'
 
