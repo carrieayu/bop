@@ -87,7 +87,7 @@ useEffect(() => {
         <table className='table_header'>
           <></>
         </table>
-        <div className='scrollable_container'>
+        <div className='scrollable_container planning_scrollable'>
           {grid?.map((entityGrid: EntityGrid, entityIndex: number) => (
             <div key={entityIndex}>
               <table className='tableGrid'>
