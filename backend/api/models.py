@@ -135,8 +135,8 @@ class PlanningProjectData(models.Model):
         "ClientMaster", on_delete=models.CASCADE, related_name="planning_project"
     )
     planning = models.DateField(null=True, default=timezone.now)
-    start_yyyymm = models.CharField(max_length=6, default="200001")
-    end_yyyymm = models.CharField(max_length=6, default="200001")
+    year = models.CharField(max_length=4)
+    month = models.CharField(max_length=2)
     sales_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
     cost_of_goods_sold = models.DecimalField(
         max_digits=12, decimal_places=2, default=0.0
@@ -235,19 +235,53 @@ class OtherPlanningData(models.Model):
         super().save(*args, **kwargs)
     
 class PlanningAssignData(models.Model):
-    planning_assign_id = models.AutoField(primary_key=True)
+    planning_assign_id = models.BigAutoField(primary_key=True)
     planning_project_id = models.ForeignKey(
         PlanningProjectData, on_delete=models.CASCADE
     )
     client_id = models.CharField(max_length=10)
     assignment_user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
-    assignment_start_date = models.DateField(null=True, default=timezone.now)
-    assignment_end_date = models.DateField(null=True, default=timezone.now)
     assignment_ratio = models.IntegerField(max_length=3)
     assignment_unit_price = models.IntegerField(max_length=8)
     year = models.CharField(max_length=4)
+    month = models.CharField(max_length=2)
     registration_date = models.DateField(null=True, default=timezone.now)
     registration_user = models.CharField(max_length=100)
 
     def __str__(self):
         return self.planning_assign_id
+    
+class CostOfSales(models.Model):
+    id = models.CharField(max_length=10, primary_key=True, editable=False)
+    year = models.CharField(max_length=4)
+    month = models.CharField(max_length=2)
+    cost_of_sales = models.IntegerField(max_length=12)
+    purchases = models.IntegerField(max_length=12)
+    outsourcing_costs = models.IntegerField(max_length=12)
+    product_purchases = models.IntegerField(max_length=12)
+    dispatch_labor_costs = models.IntegerField(max_length=12)
+    communication_costs = models.IntegerField(max_length=12)
+    work_in_progress = models.IntegerField(max_length=12)
+    amortization = models.IntegerField(max_length=12)
+
+    def __str__(self):
+        return self.id
+    
+class Expenses(models.Model):
+    id = models.CharField(max_length=10, primary_key=True, editable=False)
+    year = models.CharField(max_length=4)
+    month = models.CharField(max_length=2)
+    consumables_expenses = models.IntegerField(max_length=12)
+    rent = models.IntegerField(max_length=12)
+    taxes_and_public_charges = models.IntegerField(max_length=12)
+    depreciation_expenses = models.IntegerField(max_length=12)
+    travel_expenses = models.IntegerField(max_length=12)
+    communication_expenses = models.IntegerField(max_length=12)
+    utilities_expenses = models.IntegerField(max_length=12)
+    payment_fees = models.IntegerField(max_length=12)
+    advertising_expenses = models.IntegerField(max_length=12)
+    entertainment_expenses = models.IntegerField(max_length=12)
+    remuneration = models.IntegerField(max_length=12)
+
+    def __str__(self):
+        return self.id
