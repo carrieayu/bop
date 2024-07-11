@@ -135,8 +135,8 @@ class PlanningProjectData(models.Model):
         "ClientMaster", on_delete=models.CASCADE, related_name="planning_project"
     )
     planning = models.DateField(null=True, default=timezone.now)
-    year = models.CharField(max_length=4)
-    month = models.CharField(max_length=2)
+    year = models.CharField(max_length=4, default="2001")
+    month = models.CharField(max_length=2, default="01")
     sales_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
     cost_of_goods_sold = models.DecimalField(
         max_digits=12, decimal_places=2, default=0.0
@@ -243,8 +243,8 @@ class PlanningAssignData(models.Model):
     assignment_user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
     assignment_ratio = models.IntegerField(max_length=3)
     assignment_unit_price = models.IntegerField(max_length=8)
-    year = models.CharField(max_length=4)
-    month = models.CharField(max_length=2)
+    year = models.CharField(max_length=4, default="2001")
+    month = models.CharField(max_length=2, default="01")
     registration_date = models.DateField(null=True, default=timezone.now)
     registration_user = models.CharField(max_length=100)
 
@@ -253,8 +253,8 @@ class PlanningAssignData(models.Model):
     
 class CostOfSales(models.Model):
     id = models.CharField(max_length=10, primary_key=True, editable=False)
-    year = models.CharField(max_length=4)
-    month = models.CharField(max_length=2)
+    year = models.CharField(max_length=4, default="2001")
+    month = models.CharField(max_length=2, default="01")
     cost_of_sales = models.IntegerField(max_length=12)
     purchases = models.IntegerField(max_length=12)
     outsourcing_costs = models.IntegerField(max_length=12)
@@ -269,8 +269,8 @@ class CostOfSales(models.Model):
     
 class Expenses(models.Model):
     id = models.CharField(max_length=10, primary_key=True, editable=False)
-    year = models.CharField(max_length=4)
-    month = models.CharField(max_length=2)
+    year = models.CharField(max_length=4, default="2001")
+    month = models.CharField(max_length=2, default="01")
     consumables_expenses = models.IntegerField(max_length=12)
     rent = models.IntegerField(max_length=12)
     taxes_and_public_charges = models.IntegerField(max_length=12)
