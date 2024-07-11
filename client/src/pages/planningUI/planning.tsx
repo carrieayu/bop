@@ -1,51 +1,52 @@
-import React, { useEffect, useState } from 'react'
-import Pagination from '../../components/Pagination/Pagination'
-import { useDispatch } from 'react-redux'
-import { UnknownAction } from '@reduxjs/toolkit'
-import { TableComponentProps } from '../../components/Table/table.component'
-import { fetchAllClientData } from '../../reducers/table/tableSlice'
-import Sidebar from '../../components/SideBar/Sidebar'
-import Btn from '../../components/Button/Button'
-import { useLocation, useNavigate } from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { UnknownAction } from '@reduxjs/toolkit';
+import { fetchAllClientData } from '../../reducers/table/tableSlice';
+import Sidebar from '../../components/SideBar/Sidebar';
+import Btn from '../../components/Button/Button';
+import { useLocation, useNavigate } from 'react-router-dom';
+import TablePlanning from '../../components/Table/tablePlanning'; // Import TablePlanning component
+import { TableComponentProps } from '../../components/Table/table.component';
 
-
-const header = ['計画	']
-const smallDate = ['2022/24月', '2022/25月', '2022/26月']
-const dates = ['04月', '05月', '06月', '07月', '08月', '09月', '10月', '11月', '12月', '1月', '2月', '3月']
+const header = ['計画'];
+const smallDate = ['2022/24月', '2022/25月', '2022/26月'];
+const dates = ['04月', '05月', '06月', '07月', '08月', '09月', '10月', '11月', '12月', '1月', '2月', '3月'];
 
 const Planning = () => {
   const [tableList, setTableList] = useState<any>([]);
-  const dispatch = useDispatch()
-  const [currentPage, setCurrentPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(5)
-  const totalPages = Math.ceil(tableList?.length / rowsPerPage)
-  const select = [5, 10, 100]
-  const [paginatedData, setPaginatedData] = useState<any[]>([])
-  const [activeTab, setActiveTab] = useState('/planning')
-  const navigate = useNavigate()
-  const loation = useLocation()
+  const dispatch = useDispatch();
+  const [currentPage, setCurrentPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const totalPages = Math.ceil(tableList?.length / rowsPerPage);
+  const select = [5, 10, 100];
+  const [paginatedData, setPaginatedData] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState('/planning');
+  const [isSwitchActive, setIsSwitchActive] = useState(false); // State for switch
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleTabClick = (tab) => {
-    setActiveTab(tab)
-    navigate(tab)
-  }
+    setActiveTab(tab);
+    navigate(tab);
+  };
 
   const fetchData = async () => {
     try {
-      const res = await dispatch(fetchAllClientData() as unknown as UnknownAction)
+      const res = await dispatch(fetchAllClientData() as unknown as UnknownAction);
       setTableList(res.payload);
     } catch (e) {
-      console.error(e)
+      console.error(e);
     }
-  }
+  };
+
   useEffect(() => {
-    fetchData()
-  }, [])
-  
+    fetchData();
+  }, []);
+
   useEffect(() => {
-    const startIndex = currentPage * rowsPerPage
-    setPaginatedData(tableList?.slice(startIndex, startIndex + rowsPerPage))
-  }, [currentPage, rowsPerPage, tableList])
+    const startIndex = currentPage * rowsPerPage;
+    setPaginatedData(tableList?.slice(startIndex, startIndex + rowsPerPage));
+  }, [currentPage, rowsPerPage, tableList]);
 
   useEffect(() => {
     const path = location.pathname;
@@ -55,13 +56,17 @@ const Planning = () => {
   }, [location.pathname]);
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page)
-  }
+    setCurrentPage(page);
+  };
 
   const handleRowsPerPageChange = (numRows: number) => {
-    setRowsPerPage(numRows)
-    setCurrentPage(0)
-  }
+    setRowsPerPage(numRows);
+    setCurrentPage(0);
+  };
+
+  const handleSwitchToggle = () => {
+    setIsSwitchActive(prevState => !prevState);
+  };
 
   return (
     <div className='wrapper'>
@@ -86,27 +91,45 @@ const Planning = () => {
         <div className='sidebar'>
           <Sidebar />
         </div>
-        <div className='dashboard_content planning'>
-          <div className='bottom_cont'>
-            <div className='pagination_cont'>
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-                options={select}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={handleRowsPerPageChange}
-              />
-            </div>
-            <div className='table_cont'>
-              <TableComponentProps data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
+        <div className="projectlist_wrapper planning_wrapper">
+          <div className="proj_top_content plan_top_cont">
+            <div className='dashboard_content planning'>
+              <div className='bottom_cont planning_btm'>
+                <div className='pagination_cont planning_header'>
+                  <div className="left-content">
+                    <p>PL計画</p>
+                  </div>
+                  <div className="right-content">
+                    <div className="paginate">
+                      <p className="pl-label">案件別表示</p>
+                      <label className="switch">
+                        <input type="checkbox" checked={isSwitchActive} onChange={handleSwitchToggle} />
+                        <span className="slider"></span>
+                      </label>
+                      <p className="pl-label">千円</p>
+                      <label className="switch">
+                        <input type="checkbox" />
+                        <span className="slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div className='planning_tbl_cont'>
+                  <div className={`table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
+                    {/* Render the TablePlanning component here */}
+                    <TablePlanning />
+                  </div>
+                  <div className={`table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
+                    <TableComponentProps data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </div> 
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Planning
-
+export default Planning;
