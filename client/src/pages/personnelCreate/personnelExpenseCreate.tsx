@@ -10,39 +10,28 @@ import { HeaderDashboard } from '../../components/header/header';
 import Sidebar from '../../components/SideBar/Sidebar';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-interface ButtonData {
-  label: string
-  index: number
-}
+const months = [
+  '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月', '1月', '2月', '3月'
+];
 
 const PersonnelExpenseCreate = () => {
   const dispatch = useDispatch();
   const [personnelList, setPersonnelList] = useState<any>([]);
   const personnel = useSelector((state: RootState) => state.personnelData.personnel);
   const personnelPlanning = useSelector((state: RootState) => state.personnelPlanning.personnelPlanning);
-  const [activeButton2, setActiveButton2] = useState(0)
   const [activeTab, setActiveTab] = useState('/planning')
   const navigate = useNavigate()
   const location = useLocation()
+  const [activeTabOther, setActiveTabOther] = useState('case')
 
-
-
-  const topBodyButtons: ButtonData[] = [
-      { label: "案件", index: 0 },
-      { label: "人件費", index: 1 },
-      { label: "経費", index: 2 },
-      { label: "原価 - 仕入", index: 3 },
-      { label: "原価 - 外注費", index: 4 },
-      { label: "原価 - 通信費", index: 5 },
-  ];
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
   }
   
-  const handleButton2Click = (index) => {
-      setActiveButton2(index)
+  const handleTabsClick = (tab) => {
+    setActiveTabOther(tab)
   }
 
   const [containers, setContainers] = useState([{
@@ -190,15 +179,40 @@ const PersonnelExpenseCreate = () => {
                      </div>
                      <div className="personnel_mid_body_cont">
                          <div className="personnel_mid_btn_cont">
-                             {topBodyButtons.map((button) => (
-                                 <Btn 
-                                     key={button.index}
-                                     label={button.label}
-                                     size="normal"
-                                     onClick={() => handleButton2Click(button.index)}
-                                     className={`personnel_btn ${activeButton2 === button.index ? 'active' : ''}`}
-                                 />
-                             ))}
+                                {[...Array(4)].map((_, index) => (
+                                  <Btn
+                                    key={index}
+                                    label={
+                                      index === 0
+                                        ? '案件'
+                                        : index === 1
+                                          ? '人件費'
+                                          : index === 2
+                                            ? '經費': '売上原価'
+                                    }
+                                    onClick={() =>
+                                      handleTabsClick(
+                                        index === 0
+                                          ? 'case'
+                                          : index === 1
+                                            ? 'personnel_cost'
+                                            : index === 2
+                                              ? 'expenses': 'cost_purchase'
+                                      )
+                                    }
+                                    className={
+                                      activeTabOther ===
+                                      (index === 0
+                                        ? 'case'
+                                        : index === 1
+                                          ? 'personnel_cost'
+                                          : index === 2
+                                            ? 'expenses': 'cost_purchase')
+                                        ? 'body-btn-active body-btn'
+                                        : 'body-btn'
+                                    }
+                                  />
+                                ))}
                          </div>
                          <div className="personnel_title_table_cont">
                              <p className="personnel_title">人件費新規登録</p>
@@ -247,6 +261,23 @@ const PersonnelExpenseCreate = () => {
                                                     {person_plan.planning_project_name}
                                                   </option>
                                                 ))}
+                                              </select>
+                                            </div>
+                                          </div>
+                                          <div className="personnel-row">
+                                            <div className="personnel-label">
+                                              <p>月</p>
+                                            </div>
+                                            <div className="personnel-card-box">
+                                              <select
+                                                name="month"
+                                                value={''}
+                                                onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
+                                              >
+                                                <option value=""></option>
+                                                  {months.map((month, idx) => (
+                                                    <option key={idx} value={month}>{month}</option>
+                                                  ))}
                                               </select>
                                             </div>
                                           </div>
