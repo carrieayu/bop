@@ -2,7 +2,6 @@ import React, { Component, Suspense, lazy } from "react";
 import { Navigate, RouteObject } from "react-router-dom";
 import SuspenseLoader from "../components/SuspendLoader/suspendLoader";
 import ProtectedRoutes from "./ProtectedRoutes";
-import PersonnelExpensesList from "../pages/personnel_expenses/personnelExpenses";
 
 const Loader = (Component: any) => (props: any) =>
   (
@@ -21,11 +20,25 @@ const ResetPassword = Loader(lazy(() => import("../pages/resetPassword/resetPass
 // Not Found Page
 const NotFound = Loader(lazy(() => import("../pages/notFound/notFound")));
 
-// Project Data List Page
+// Project Data Pages
 const ProjectDataList = Loader(lazy(() => import("../pages/projectDataList/projectDataList")));
 const ProjectDataRegistration = Loader(lazy(() => import("../pages/projectDataRegistration/projectdataregistration")))
+
+//Personnel Expenses Pages
 const PersonnelExpenseCreate = Loader(lazy(() => import("../pages/personnelCreate/personnelExpenseCreate")))
+const PersonnelExpensesList = Loader(lazy(() => import("../pages/personnel_expenses/personnelExpenses")))
+
+//Planning Page
 const Planning = Loader(lazy(() => import("../pages/planningUI/planning")))
+
+//Cost of Sales Pages
+const CostOfSales = Loader(lazy(() => import("../pages/costofSalesRegistration/costofSalesRegistration")))
+const CostOfSalesList = Loader(lazy(() => import("../pages/costofSalesList/costofSalesList")))
+
+//Expenses Page
+const ExpensesRegistration = Loader(lazy(() => import("../pages/expensesRegistration/expensesRegistration")))
+const ExpensesList = Loader(lazy(() => import("../pages/expensesList/expensesList")))
+
 const Logout = () => {
   localStorage.clear();
   return <Navigate to="/login" />;
@@ -105,6 +118,38 @@ const routes: RouteObject[] = [
         element: (
           <ProtectedRoutes>
             <Planning />
+          </ProtectedRoutes>
+        )
+      },
+      {
+        path: "cost-of-sales-registration",
+        element: (
+          <ProtectedRoutes>
+            <CostOfSales />
+          </ProtectedRoutes>
+        )
+      },
+      {
+        path: "cost-of-sales-list",
+        element: (
+          <ProtectedRoutes>
+            <CostOfSalesList />
+          </ProtectedRoutes>
+        )
+      },
+      {
+        path: "expenses-registration",
+        element: (
+          <ProtectedRoutes>
+            <ExpensesRegistration />
+          </ProtectedRoutes>
+        )
+      },
+      {
+        path: "expenses-list",
+        element: (
+          <ProtectedRoutes>
+            <ExpensesList />
           </ProtectedRoutes>
         )
       }

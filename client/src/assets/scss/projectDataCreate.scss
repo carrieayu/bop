@@ -80,6 +80,11 @@
             }
             .mid_body_cont{
                 background-color: #fff;
+                max-height: 670px;
+                overflow-y: auto;
+                overflow-x: hidden;
+                scrollbar-width: thin;
+                scrollbar-color: #888 #f1f1f1;
                 .mid_btn_cont{
                     margin-left: 5%;
                     display: flex;
