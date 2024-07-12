@@ -11,28 +11,14 @@ import Sidebar from '../../components/SideBar/Sidebar'
 import { HeaderDashboard } from '../../components/header/header'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-interface ButtonData {
-  label: string
-  index: number
-}
 
 const PersonnelExpensesList: React.FC = () => {
     const personnel = useAppSelector((state: RootState) => state.personnel.personnelList)
     const dispatch = useDispatch()
-    const [activeButton2, setActiveButton2] = useState(0)
     const [activeTab, setActiveTab] = useState('/planning')
     const navigate = useNavigate()
     const location = useLocation()
-
-
-    const topBodyButtons: ButtonData[] = [
-        { label: "案件", index: 0 },
-        { label: "人件費", index: 1 },
-        { label: "経費", index: 2 },
-        { label: "原価 - 仕入", index: 3 },
-        { label: "原価 - 外注費", index: 4 },
-        { label: "原価 - 通信費", index: 5 },
-    ];
+    const [activeTabOther, setActiveTabOther] = useState('case')
 
 
     const handleTabClick = (tab) => {
@@ -40,9 +26,9 @@ const PersonnelExpensesList: React.FC = () => {
         navigate(tab)
       }
 
-    const handleButton2Click = (index) => {
-        setActiveButton2(index)
-    }
+      const handleTabsClick = (tab) => {
+        setActiveTabOther(tab)
+      }
   
 
     useEffect(() => {
@@ -92,15 +78,40 @@ const PersonnelExpensesList: React.FC = () => {
                        </div>
                        <div className="personnel_mid_body_cont">
                            <div className="personnel_mid_btn_cont">
-                               {topBodyButtons.map((button) => (
-                                   <Btn 
-                                       key={button.index}
-                                       label={button.label}
-                                       size="normal"
-                                       onClick={() => handleButton2Click(button.index)}
-                                       className={`personnel_btn ${activeButton2 === button.index ? 'active' : ''}`}
-                                   />
-                               ))}
+                                {[...Array(4)].map((_, index) => (
+                                  <Btn
+                                    key={index}
+                                    label={
+                                      index === 0
+                                        ? '案件'
+                                        : index === 1
+                                          ? '人件費'
+                                          : index === 2
+                                            ? '經費': '売上原価'
+                                    }
+                                    onClick={() =>
+                                      handleTabsClick(
+                                        index === 0
+                                          ? 'case'
+                                          : index === 1
+                                            ? 'personnel_cost'
+                                            : index === 2
+                                              ? 'expenses': 'cost_purchase'
+                                      )
+                                    }
+                                    className={
+                                      activeTabOther ===
+                                      (index === 0
+                                        ? 'case'
+                                        : index === 1
+                                          ? 'personnel_cost'
+                                          : index === 2
+                                            ? 'expenses': 'cost_purchase')
+                                        ? 'body-btn-active body-btn'
+                                        : 'body-btn'
+                                    }
+                                  />
+                                ))}
                            </div>
                            <div className="personnel_title_table_cont">
                                <p className="personnel_title">人件費一覧</p>
@@ -118,12 +129,11 @@ const PersonnelExpensesList: React.FC = () => {
                                            <table className='table is-bordered is-hoverable'>
                                            <thead>
                                             <tr className='personnel_table_title'>
-                                              <th className='personnel_table_title_content_vertical has-text-centered'>顧客名</th>
+                                              <th className='personnel_table_title_content_vertical has-text-centered'>從業員</th>
                                               <th className='personnel_table_title_content_vertical has-text-centered'>案件</th>
-                                              <th className='personnel_table_title_content_vertical has-text-centered'>案件</th>
-                                              <th className='personnel_table_title_content_vertical has-text-centered'>案件</th>
-                                              <th className='personnel_table_title_content_vertical has-text-centered'>案件</th>
-                                              <th className='personnel_table_title_content_vertical has-text-centered'>案件</th>
+                                              <th className='personnel_table_title_content_vertical has-text-centered'>月</th>
+                                              <th className='personnel_table_title_content_vertical has-text-centered'>人件費</th>
+                                              <th className='personnel_table_title_content_vertical has-text-centered'>割合</th>
                                             </tr>
                                            </thead>
                                            <tbody className="personnel_table_body">
