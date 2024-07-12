@@ -5,12 +5,20 @@ import { HeaderDashboard } from '../../components/header/header'
 import Sidebar from '../../components/SideBar/Sidebar'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+const months = [
+  '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月', '1月', '2月', '3月'
+];
+
 const ProjectDataRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning')
   const navigate = useNavigate()
   const location = useLocation()
   const [activeTabOther, setActiveTabOther] = useState('case')
   const storedUserID = localStorage.getItem('userID')
+  const years = [];
+  for (let year = 2000; year <= new Date().getFullYear(); year++) {
+    years.push(year);
+  }
   const [formData, setFormData] = useState([
     {
       client_name: '',
@@ -198,55 +206,40 @@ const ProjectDataRegistration = () => {
           </div>
           <div className='mid_body_cont'>
             <div className='mid_btn_cont'>
-              {[...Array(6)].map((_, index) => (
-                <Btn
-                  key={index}
-                  label={
+                {[...Array(4)].map((_, index) => (
+                  <Btn
+                    key={index}
+                    label={
                     index === 0
                       ? '案件'
-                      : index === 1
-                        ? '人件費'
-                        : index === 2
-                          ? '経費'
-                          : index === 3
-                            ? '原価 - 仕入'
-                            : index === 4
-                              ? '原価-外注費'
-                              : '原価 - 通信費'
-                  }
-                  onClick={() =>
+                    : index === 1
+                      ? '人件費'
+                    : index === 2
+                      ? '經費': '売上原価'
+                    }
+                    onClick={() =>
                     handleTabsClick(
                       index === 0
-                        ? 'case'
-                        : index === 1
-                          ? 'personnel_cost'
-                          : index === 2
-                            ? 'expenses'
-                            : index === 3
-                              ? 'cost_purchase'
-                              : index === 4
-                                ? 'price_outsourcing'
-                                : 'communication_cost',
-                    )
-                  }
-                  className={
+                      ? 'case'
+                    : index === 1
+                      ? 'personnel_cost'
+                    : index === 2
+                      ? 'expenses': 'cost_purchase'
+                      )
+                    }
+                    className={
                     activeTabOther ===
                     (index === 0
-                      ? 'case'
-                      : index === 1
+                        ? 'case'
+                    : index === 1
                         ? 'personnel_cost'
-                        : index === 2
-                          ? 'expenses'
-                          : index === 3
-                            ? 'cost_purchase'
-                            : index === 4
-                              ? 'price_outsourcing'
-                              : 'communication_cost')
-                      ? 'body-btn-active body-btn'
-                      : 'body-btn'
-                  }
-                />
-              ))}
+                    : index === 2
+                        ? 'expenses': 'cost_purchase')
+                        ? 'body-btn-active body-btn'
+                    : 'body-btn'
+                    }
+                  />
+                ))}
             </div>
             <div className='mid_form_cont'>
               <p className='form-title'>案件新規登録</p>
@@ -291,21 +284,33 @@ const ProjectDataRegistration = () => {
                         </div>
                         <div className='start_date-div'>
                           <label className='start_yyyymm'>開始年月</label>
-                          <input
-                            type='text'
+                          <select
+                            className='select-option'
                             name='start_yyyymm'
                             value={form.start_yyyymm}
                             onChange={(e) => handleChange(index, e)}
-                          />
+                          >
+                            <option value=""></option>
+                            {years.map((year) => (
+                              <option key={year} value={year}>
+                                {year}
+                              </option>
+                            ))}
+                          </select>
                         </div>
                         <div className='end_date-div'>
                           <label className='end_yyyymm'>終了年月</label>
-                          <input
-                            type='text'
-                            name='end_yyyymm'
+                          <select
+                            className='select-option'
+                            name="month"
                             value={form.end_yyyymm}
                             onChange={(e) => handleChange(index, e)}
-                          />
+                          >
+                            <option value=""></option>
+                              {months.map((month, idx) => (
+                                <option key={idx} value={month}>{month}</option>
+                              ))}
+                          </select>
                         </div>
                       </div>
                       <div className='middle-form-div calc'>

@@ -61,7 +61,7 @@
                                 margin-left: 5%;
                                 display: flex;
                                 gap: 2%;
-                                .personnel_btn{
+                                .body-btn{
                                     margin-top: 15px;
                                     border: 1px solid #808080;
                                     width: 10rem;
@@ -69,12 +69,12 @@
                                     border-radius: 5px !important;
                                     background-color: #fff;
                                     color: #000;
-                                    &:hover{
-                                        background-color: #808080;
-                                        color: #fff;
-                                    }
                                 }
-                                .personnel_btn.active{
+                                .body-btn:hover{
+                                    background-color: #808080;
+                                    color: #fff;
+                                }
+                                .body-btn-active{
                                     background-color: #808080;
                                     color: #fff;
                                 }
@@ -86,7 +86,7 @@
                                 margin-left: 5%;
                                 display: flex;
                                 gap: 2%;
-                                .personnel_btn{
+                                .body-btn{
                                     margin-top: 15px;
                                     border: 1px solid #808080;
                                     width: 10rem;
@@ -94,12 +94,12 @@
                                     border-radius: 5px !important;
                                     background-color: #fff;
                                     color: #000;
-                                    &:hover{
-                                        background-color: #808080;
-                                        color: #fff;
-                                    }
                                 }
-                                .personnel_btn.active{
+                                .body-btn:hover{
+                                    background-color: #808080;
+                                    color: #fff;
+                                }
+                                .body-btn-active{
                                     background-color: #808080;
                                     color: #fff;
                                 }
