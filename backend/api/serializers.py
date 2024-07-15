@@ -173,7 +173,7 @@ class GetPlanningAssignSerializer(serializers.ModelSerializer):
     planning_project = GetPlanningProjectDataSerializers(source='planning_project_id' , read_only=True, )
     class Meta:
         model = PlanningAssignData
-        fields = ["planning_assign_id", "client_id", "assignment_ratio", "assignment_unit_price", "year", "month", "registration_date", "registration_user", "planning_project"]
+        fields = ["planning_project_id","planning_assign_id", "client_id", "assignment_ratio", "assignment_unit_price","assignment_user_id", "year", "month", "registration_date", "registration_user", "planning_project"]
 
 class GetUserMasterSerializer(serializers.ModelSerializer):
     planning_assign = GetPlanningAssignSerializer(many=True, read_only=True, source='user')
