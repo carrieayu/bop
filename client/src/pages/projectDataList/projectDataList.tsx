@@ -164,11 +164,12 @@ const ProjectDataList: React.FC = () => {
                                             <table className='table is-bordered is-hoverable'>
                                             <thead>
                                                 <tr className="proj_table_title ">
-                                                <th className="proj_table_title_content_vertical has-text-centered">顧客名</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">顧客</th>
                                                 <th className="proj_table_title_content_vertical has-text-centered">案件名</th>
-                                                <th className="proj_table_title_content_vertical has-text-centered">計上期間</th>
-                                                <th className="proj_table_title_content_vertical has-text-centered">売上高</th>
-                                                <th className="proj_table_title_content_vertical has-text-centered">計上利益</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">受注事業部</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">月</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">営業外収益</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">営業外費用</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="proj_table_body">
@@ -178,6 +179,7 @@ const ProjectDataList: React.FC = () => {
                                                     <td className="proj_table_body_content_vertical">{project.planning_project_name}</td>
                                                     <td className="proj_table_body_content_vertical has-text-centered">{project.year}/{project.month}</td>
                                                     <td className="proj_table_body_content_vertical has-text-right">{project.sales_revenue}</td>
+                                                    <td className="proj_table_body_content_vertical has-text-right">{project.operating_profit}</td>
                                                     <td className="proj_table_body_content_vertical has-text-right">{project.operating_profit}</td>
                                                     </tr>
                                                 ))}
