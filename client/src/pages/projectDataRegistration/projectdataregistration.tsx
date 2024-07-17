@@ -6,7 +6,7 @@ import Sidebar from '../../components/SideBar/Sidebar'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const months = [
-  '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月', '1月', '2月', '3月'
+  '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
 ];
 
 const ProjectDataRegistration = () => {
@@ -24,8 +24,8 @@ const ProjectDataRegistration = () => {
       client_name: '',
       business_division_name: '',
       project_name: '',
-      start_yyyymm: '',
-      end_yyyymm: '',
+      year: '',
+      month: '',
       sales_revenue: '',
       cost_of_goods_sold: '',
       personnel_expenses: '',
@@ -47,8 +47,8 @@ const ProjectDataRegistration = () => {
         client_name: '',
         business_division_name: '',
         project_name: '',
-        start_yyyymm: '',
-        end_yyyymm: '',
+        year: '',
+        month: '',
         sales_revenue: '',
         cost_of_goods_sold: '',
         personnel_expenses: '',
@@ -119,8 +119,8 @@ const ProjectDataRegistration = () => {
       },
       planning: {
         project_name: formData.map((c) => c.project_name),
-        start_yyyymm: formData.map((c) => c.start_yyyymm),
-        end_yyyymm: formData.map((c) => c.end_yyyymm),
+        year: formData.map((c) => c.year),
+        month: formData.map((c) => c.month),
         sales_revenue: formData.map((c) => c.sales_revenue),
         cost_of_goods_sold: formData.map((c) => c.cost_of_goods_sold),
         personnel_expenses: formData.map((c) => c.personnel_expenses),
@@ -147,15 +147,14 @@ const ProjectDataRegistration = () => {
           Authorization: `Bearer ${token}`,
         },
       })
-      console.log(response.data)
       alert('Sucessfully Saved')
       setFormData([
         {
           client_name: '',
           business_division_name: '',
           project_name: '',
-          start_yyyymm: '',
-          end_yyyymm: '',
+          year: '',
+          month: '',
           sales_revenue: '',
           cost_of_goods_sold: '',
           personnel_expenses: '',
@@ -286,8 +285,8 @@ const ProjectDataRegistration = () => {
                           <label className='start_yyyymm'>開始年月</label>
                           <select
                             className='select-option'
-                            name='start_yyyymm'
-                            value={form.start_yyyymm}
+                            name='year'
+                            value={form.year}
                             onChange={(e) => handleChange(index, e)}
                           >
                             <option value=""></option>
@@ -303,7 +302,7 @@ const ProjectDataRegistration = () => {
                           <select
                             className='select-option'
                             name="month"
-                            value={form.end_yyyymm}
+                            value={form.month}
                             onChange={(e) => handleChange(index, e)}
                           >
                             <option value=""></option>

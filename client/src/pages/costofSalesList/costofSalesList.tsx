@@ -68,6 +68,7 @@ const CostOfSalesList: React.FC = () => {
               }
             });
             setProjects(response.data);
+            console.log("cost of sales: ", response.data);
           } catch (error) {
             if (error.response && error.response.status === 401) {
               window.location.href = '/login';  // Redirect to login if unauthorized
@@ -166,7 +167,7 @@ const CostOfSalesList: React.FC = () => {
                                                     <tr key={project.planning_project_id} className="proj_table_body_content_horizantal">
                                                     <td className="proj_table_body_content_vertical has-text-centered">{project.client.client_name}</td>
                                                     <td className="proj_table_body_content_vertical">{project.planning_project_name}</td>
-                                                    <td className="proj_table_body_content_vertical has-text-centered">{project.start_yyyymm} - {project.end_yyyymm}</td>
+                                                    <td className="proj_table_body_content_vertical has-text-centered">{project.year}/{project.month}</td>
                                                     <td className="proj_table_body_content_vertical has-text-right">{project.sales_revenue}</td>
                                                     <td className="proj_table_body_content_vertical has-text-right">{project.operating_profit}</td>
                                                     <td className="proj_table_body_content_vertical has-text-right">{project.operating_profit}</td>

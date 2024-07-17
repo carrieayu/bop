@@ -10,6 +10,7 @@ export default class PlanningAssignEntity {
   assignment_ratio: number | undefined
   assignment_unit_price: number | undefined
   year: string | undefined
+  month: string | undefined
   registration_date: Date | undefined
   registration_user: number | undefined
   planning_project: CardEntity[] | undefined
@@ -24,6 +25,7 @@ export default class PlanningAssignEntity {
     this.assignment_ratio = data.assignment_ratio
     this.assignment_unit_price = data.assignment_unit_price
     this.year = data.year
+    this.month = data.month
     this.registration_date = data.registration_date
     this.registration_user = data.registration_user
     this.planning_project = data.planning_project

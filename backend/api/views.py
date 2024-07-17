@@ -424,8 +424,8 @@ class StorePlanningProject(generics.CreateAPIView):
         for i in range(len(planning_data.get("project_name", []))):
             planning_instance_data = {
                 'planning_project_name': planning_data.get("project_name")[i],
-                'start_yyyymm': planning_data.get("start_yyyymm")[i],
-                'end_yyyymm': planning_data.get("end_yyyymm")[i],
+                'year': planning_data.get("year")[i],
+                'month': planning_data.get("month")[i],
                 'sales_revenue': float(planning_data.get("sales_revenue")[i] or 0),
                 'cost_of_goods_sold': float(planning_data.get("cost_of_goods_sold")[i] or 0),
                 'personnel_expenses': float(planning_data.get("personnel_expenses")[i] or 0),
