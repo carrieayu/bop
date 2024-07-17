@@ -6,7 +6,11 @@ from rest_framework import generics, status
 from django.http import JsonResponse
 from rest_framework.parsers import JSONParser
 from .serializers import (
+    AllPlanningSerializer,
+    CostOfSalesSerializer,
     CreateTableListSerializers,
+    ExpensesSerializer,
+    GetPlanningProjectDataSerializers,
     GetUserMasterSerializer,
     PersonnelUserSerializer,
     PlanningAssignPersonnelDataSerializer,
@@ -27,6 +31,8 @@ from .serializers import (
 from .serializers import CreateTableListSerializers, UserSerializer, NoteSerializer, AccountMasterSerializer, ClientMasterSerializer, BusinessDivisionMasterSerializer, CompanyMasterSerializers, CreatePerformanceProjectDataSerializers, CreatePlanningProjectDataSerializers, UpdateCompanyMasterSerializers, UpdatePerformanceProjectDataSerializers, UpdatePlanningProjectDataSerializers, AuthenticationSerializer,CreateOtherPlanningSerializers
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import (
+    CostOfSales,
+    Expenses,
     User,
     Note,
     AccountMaster,
@@ -549,3 +555,21 @@ class StorePersonnelPlanning(generics.CreateAPIView):
                 return JsonResponse({"messagessss": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
         return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
+    
+class ViewAllPlanning(generics.ListAPIView):
+    def get(self, request):
+        expenses = Expenses.objects.all()
+        cost_of_sales = CostOfSales.objects.all()
+        planning_project_data = PlanningProjectData.objects.all()
+
+        expenses_serializer = ExpensesSerializer(expenses, many=True)
+        cost_of_sales_serializer = CostOfSalesSerializer(cost_of_sales, many=True)
+        planning_project_data_serializer = GetPlanningProjectDataSerializers(planning_project_data, many=True)
+
+        combined_data = {
+            'expenses': expenses_serializer.data,
+            'cost_of_sales': cost_of_sales_serializer.data,
+            'planning_project_data': planning_project_data_serializer.data
+        }
+
+        return Response(combined_data)

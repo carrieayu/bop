@@ -207,3 +207,7 @@ class ExpensesSerializer(serializers.ModelSerializer):
         model = Expenses
         fields = '__all__'
 
+class AllPlanningSerializer(serializers.Serializer):
+    cost_of_sales = CostOfSalesSerializer()
+    planning_project_data = GetPlanningProjectDataSerializers()
+    expenses = ExpensesSerializer()
