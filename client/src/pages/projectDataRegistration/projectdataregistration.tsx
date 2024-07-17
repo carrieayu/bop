@@ -24,19 +24,11 @@ const ProjectDataRegistration = () => {
       client_name: '',
       business_division_name: '',
       project_name: '',
-      year: '',
       month: '',
       sales_revenue: '',
-      cost_of_goods_sold: '',
-      personnel_expenses: '',
-      indirect_personnel_cost: '',
-      expenses: '',
       non_operating_income: '',
-      operating_income: '',
-      ordinary_income: '',
-      ordinary_income_margin: '',
+      non_operating_expenses: '',
       registered_user_id: storedUserID,
-      company_id: '',
     },
   ])
 
@@ -47,19 +39,11 @@ const ProjectDataRegistration = () => {
         client_name: '',
         business_division_name: '',
         project_name: '',
-        year: '',
         month: '',
         sales_revenue: '',
-        cost_of_goods_sold: '',
-        personnel_expenses: '',
-        indirect_personnel_cost: '',
-        expenses: '',
         non_operating_income: '',
-        operating_income: '',
-        ordinary_income: '',
-        ordinary_income_margin: '',
+        non_operating_expenses: '',
         registered_user_id: storedUserID,
-        company_id: '',
       })
       setFormData(newFormData)
       console.log('add:' + formData)
@@ -119,17 +103,10 @@ const ProjectDataRegistration = () => {
       },
       planning: {
         project_name: formData.map((c) => c.project_name),
-        year: formData.map((c) => c.year),
         month: formData.map((c) => c.month),
         sales_revenue: formData.map((c) => c.sales_revenue),
-        cost_of_goods_sold: formData.map((c) => c.cost_of_goods_sold),
-        personnel_expenses: formData.map((c) => c.personnel_expenses),
-        indirect_personnel_cost: formData.map((c) => c.indirect_personnel_cost),
-        expenses: formData.map((c) => c.expenses),
         non_operating_income: formData.map((c) => c.non_operating_income),
-        operating_income: formData.map((c) => c.operating_income),
-        ordinary_income: formData.map((c) => c.ordinary_income),
-        ordinary_income_margin: formData.map((c) => c.ordinary_income_margin),
+        non_operating_expenses: formData.map((c) => c.non_operating_expenses),
       },
       registered_user_id: formData.map((c) => c.registered_user_id),
     }
@@ -141,8 +118,8 @@ const ProjectDataRegistration = () => {
     }
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/projectplanning/create/', postData, {
-        // const response = await axios.post('http://54.178.202.58:8000/api/projectplanning/create/', postData, {
+      // const response = await axios.post('http://127.0.0.1:8000/api/projectplanning/create/', postData, {
+        const response = await axios.post('http://54.178.202.58:8000/api/projectplanning/create/', postData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -153,24 +130,16 @@ const ProjectDataRegistration = () => {
           client_name: '',
           business_division_name: '',
           project_name: '',
-          year: '',
           month: '',
           sales_revenue: '',
-          cost_of_goods_sold: '',
-          personnel_expenses: '',
-          indirect_personnel_cost: '',
-          expenses: '',
           non_operating_income: '',
-          operating_income: '',
-          ordinary_income: '',
-          ordinary_income_margin: '',
+          non_operating_expenses: '',
           registered_user_id: localStorage.getItem('userID'),
-          company_id: '',
         },
       ])
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        window.location.href = '/login'
+        // window.location.href = '/login'
       } else {
         console.error('There was an error creating the project planning data!', error)
       }
@@ -178,67 +147,55 @@ const ProjectDataRegistration = () => {
   }
 
   return (
-    <div className="project_wrapper">
-      <div className="header_cont">
-          <Btn
-            label="分析"
-            onClick={() => handleTabClick("/dashboard")}
-            className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
-          />
-          <Btn
-            label="計画"
-            onClick={() => handleTabClick("/planning")}
-            className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
-          />
-          <Btn
-            label="実績"
-            onClick={() => handleTabClick("/result")}
-            className={activeTab === "/result" ? "h-btn-active header-btn" : "header-btn"}
-          />
+    <div className='project_wrapper'>
+      <div className='header_cont'>
+        <Btn
+          label='分析'
+          onClick={() => handleTabClick('/dashboard')}
+          className={activeTab === '/dashboard' ? 'h-btn-active header-btn' : 'header-btn'}
+        />
+        <Btn
+          label='計画'
+          onClick={() => handleTabClick('/planning')}
+          className={activeTab === '/planning' ? 'h-btn-active header-btn' : 'header-btn'}
+        />
+        <Btn
+          label='実績'
+          onClick={() => handleTabClick('/result')}
+          className={activeTab === '/result' ? 'h-btn-active header-btn' : 'header-btn'}
+        />
       </div>
       <div className='proj_content_wrapper'>
         <div className='sidebar'>
           <Sidebar />
         </div>
         <div className='project_data_content'>
-          <div className='top_body_cont'>
-          </div>
+          <div className='top_body_cont'></div>
           <div className='mid_body_cont'>
             <div className='mid_btn_cont'>
-                {[...Array(4)].map((_, index) => (
-                  <Btn
-                    key={index}
-                    label={
-                    index === 0
-                      ? '案件'
-                    : index === 1
-                      ? '人件費'
-                    : index === 2
-                      ? '經費': '売上原価'
-                    }
-                    onClick={() =>
+              {[...Array(4)].map((_, index) => (
+                <Btn
+                  key={index}
+                  label={index === 0 ? '案件' : index === 1 ? '人件費' : index === 2 ? '經費' : '売上原価'}
+                  onClick={() =>
                     handleTabsClick(
                       index === 0
-                      ? 'case'
-                    : index === 1
-                      ? 'personnel_cost'
-                    : index === 2
-                      ? 'expenses': 'cost_purchase'
-                      )
-                    }
-                    className={
-                    activeTabOther ===
-                    (index === 0
                         ? 'case'
-                    : index === 1
-                        ? 'personnel_cost'
-                    : index === 2
-                        ? 'expenses': 'cost_purchase')
-                        ? 'body-btn-active body-btn'
-                    : 'body-btn'
-                    }
-                  />
-                ))}
+                        : index === 1
+                          ? 'personnel_cost'
+                          : index === 2
+                            ? 'expenses'
+                            : 'cost_purchase',
+                    )
+                  }
+                  className={
+                    activeTabOther ===
+                    (index === 0 ? 'case' : index === 1 ? 'personnel_cost' : index === 2 ? 'expenses' : 'cost_purchase')
+                      ? 'body-btn-active body-btn'
+                      : 'body-btn'
+                  }
+                />
+              ))}
             </div>
             <div className='mid_form_cont'>
               <p className='form-title'>案件新規登録</p>
@@ -266,18 +223,18 @@ const ProjectDataRegistration = () => {
                         <div className='business_division_name-div'>
                           <label className='business_division_name'>売上高</label>
                           <input
-                            type='text'
-                            name='business_division_name'
-                            value={form.business_division_name}
+                            type='number'
+                            name='sales_revenue'
+                            value={form.sales_revenue}
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
                         <div className='project_name-div'>
                           <label className='project_name'>営業外費用</label>
                           <input
-                            type='text'
-                            name='project_name'
-                            value={form.project_name}
+                            type='number'
+                            name='non_operating_expenses'
+                            value={form.non_operating_expenses}
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
@@ -286,9 +243,9 @@ const ProjectDataRegistration = () => {
                         <div className='net-sales-div'>
                           <label className='net_sales'>案件名</label>
                           <input
-                            type='number'
-                            name='sales_revenue'
-                            value={form.sales_revenue}
+                            type='text'
+                            name='project_name'
+                            value={form.project_name}
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
@@ -296,33 +253,35 @@ const ProjectDataRegistration = () => {
                           <label className='end_yyyymm'>月</label>
                           <select
                             className='select-option'
-                            name="month"
+                            name='month'
                             value={form.month}
                             onChange={(e) => handleChange(index, e)}
                           >
-                            <option value=""></option>
-                              {months.map((month, idx) => (
-                                <option key={idx} value={month}>{month}</option>
-                              ))}
+                            <option value=''></option>
+                            {months.map((month, idx) => (
+                              <option key={idx} value={month}>
+                                {month}
+                              </option>
+                            ))}
                           </select>
                         </div>
                       </div>
                       <div className='right-form-div calc'>
                         <div className='non-operating-income-div'>
-                          <label className='non_operating_income'>営業外収益</label>
+                          <label className='non_operating_income'>受注事業部</label>
                           <input
-                            type='number'
-                            name='non_operating_income'
-                            value={form.non_operating_income}
+                            type='text'
+                            name='business_division_name'
+                            value={form.business_division_name}
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
                         <div className='operating-income-div'>
-                          <label className='operating_income'>受注事業部</label>
+                          <label className='operating_income'>営業外収益</label>
                           <input
                             type='number'
-                            name='operating_income'
-                            value={form.operating_income}
+                            name='non_operating_income'
+                            value={form.non_operating_income}
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
