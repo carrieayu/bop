@@ -139,7 +139,7 @@ const ProjectDataRegistration = () => {
       ])
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        // window.location.href = '/login'
+        window.location.href = '/login'
       } else {
         console.error('There was an error creating the project planning data!', error)
       }
