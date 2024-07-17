@@ -264,7 +264,7 @@ const ProjectDataRegistration = () => {
                           </select>
                         </div>
                         <div className='business_division_name-div'>
-                          <label className='business_division_name'>受注事業部</label>
+                          <label className='business_division_name'>売上高</label>
                           <input
                             type='text'
                             name='business_division_name'
@@ -273,7 +273,7 @@ const ProjectDataRegistration = () => {
                           />
                         </div>
                         <div className='project_name-div'>
-                          <label className='project_name'>案件名</label>
+                          <label className='project_name'>営業外費用</label>
                           <input
                             type='text'
                             name='project_name'
@@ -281,24 +281,19 @@ const ProjectDataRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='start_date-div'>
-                          <label className='start_yyyymm'>開始年月</label>
-                          <select
-                            className='select-option'
-                            name='year'
-                            value={form.year}
+                      </div>
+                      <div className='middle-form-div calc'>
+                        <div className='net-sales-div'>
+                          <label className='net_sales'>案件名</label>
+                          <input
+                            type='number'
+                            name='sales_revenue'
+                            value={form.sales_revenue}
                             onChange={(e) => handleChange(index, e)}
-                          >
-                            <option value=""></option>
-                            {years.map((year) => (
-                              <option key={year} value={year}>
-                                {year}
-                              </option>
-                            ))}
-                          </select>
+                          />
                         </div>
                         <div className='end_date-div'>
-                          <label className='end_yyyymm'>終了年月</label>
+                          <label className='end_yyyymm'>月</label>
                           <select
                             className='select-option'
                             name="month"
@@ -312,53 +307,6 @@ const ProjectDataRegistration = () => {
                           </select>
                         </div>
                       </div>
-                      <div className='middle-form-div calc'>
-                        <div className='net-sales-div'>
-                          <label className='net_sales'>売上高</label>
-                          <input
-                            type='number'
-                            name='sales_revenue'
-                            value={form.sales_revenue}
-                            onChange={(e) => handleChange(index, e)}
-                          />
-                        </div>
-                        <div className='cost-of-sales-div'>
-                          <label className='cost_of_goods_sold'>売上原価</label>
-                          <input
-                            type='number'
-                            name='cost_of_goods_sold'
-                            value={form.cost_of_goods_sold}
-                            onChange={(e) => handleChange(index, e)}
-                          />
-                        </div>
-                        <div className='personnel-expenses-div'>
-                          <label className='personnel_expenses'>人件費</label>
-                          <input
-                            type='number'
-                            name='personnel_expenses'
-                            value={form.personnel_expenses}
-                            onChange={(e) => handleChange(index, e)}
-                          />
-                        </div>
-                        <div className='indirect-personnel-cost-div'>
-                          <label className='indirect_personnel_cost'>間接人件費</label>
-                          <input
-                            type='number'
-                            name='indirect_personnel_cost'
-                            value={form.indirect_personnel_cost}
-                            onChange={(e) => handleChange(index, e)}
-                          />
-                        </div>
-                        <div className='expenses-div'>
-                          <label className='expenses'>経費</label>
-                          <input
-                            type='number'
-                            name='expenses'
-                            value={form.expenses}
-                            onChange={(e) => handleChange(index, e)}
-                          />
-                        </div>
-                      </div>
                       <div className='right-form-div calc'>
                         <div className='non-operating-income-div'>
                           <label className='non_operating_income'>営業外収益</label>
@@ -370,29 +318,11 @@ const ProjectDataRegistration = () => {
                           />
                         </div>
                         <div className='operating-income-div'>
-                          <label className='operating_income'>営業利益</label>
+                          <label className='operating_income'>受注事業部</label>
                           <input
                             type='number'
                             name='operating_income'
                             value={form.operating_income}
-                            onChange={(e) => handleChange(index, e)}
-                          />
-                        </div>
-                        <div className='ordinary-income-div'>
-                          <label className='ordinary_income'>経常利益</label>
-                          <input
-                            type='number'
-                            name='ordinary_income'
-                            value={form.ordinary_income}
-                            onChange={(e) => handleChange(index, e)}
-                          />
-                        </div>
-                        <div className='ordinary-income-margin-div'>
-                          <label className='ordinary_income_margin'>経常利益率</label>
-                          <input
-                            type='number'
-                            name='ordinary_income_margin'
-                            value={form.ordinary_income_margin}
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
