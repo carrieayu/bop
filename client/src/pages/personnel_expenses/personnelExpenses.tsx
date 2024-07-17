@@ -14,6 +14,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 const PersonnelExpensesList: React.FC = () => {
     const personnel = useAppSelector((state: RootState) => state.personnel.personnelList)
+    const itemsPerRow = 4
     const dispatch = useDispatch()
     const [activeTab, setActiveTab] = useState('/planning')
     const navigate = useNavigate()
@@ -125,35 +126,42 @@ const PersonnelExpensesList: React.FC = () => {
                             </tr>
                           </thead>
                           <tbody className='personnel_table_body'>
-                            {personnel.map((user, index) => (
-                              <tr key={index} className='user_name'>
-                                <td>{user.username}</td>
-                                <td>
-                                  {user.planning_assign?.map((assign, index) =>
-                                    index === 0 ? (
-                                      <div key={index}>{assign.planning_project_id}</div>
-                                    ) : null,
-                                  )}
-                                </td>
-                                <td>
-                                  {user.planning_assign?.map((assign, index) =>
-                                    index === 1 ? <div key={index}>{assign.month}</div> : null,
-                                  )}
-                                </td>
-                                <td>
-                                  {user.planning_assign?.map((assign, index) =>
-                                    index === 1 ? <div key={index}>{assign.assignment_ratio}</div> : null,
-                                  )}
-                                </td>
-                                <td>
-                                  {user.planning_assign?.map((assign, index) =>
-                                    index === 2 ? (
-                                      <div key={index}>{Intl.NumberFormat().format(assign.assignment_unit_price)}</div>
-                                    ) : null,
-                                  )}
-                                </td>
-                              </tr>
-                            ))}
+                            {personnel.map((user, userIndex) => {
+                              const chunks = []
+                              for (let i = 0; i < user.planning_assign?.length; i += itemsPerRow) {
+                                chunks.push(user.planning_assign.slice(i, i + itemsPerRow))
+                              }
+                              return (
+                                <React.Fragment key={userIndex}>
+                                  {chunks.map((chunk, chunkIndex) => (
+                                    <tr key={chunkIndex} className='user_name'>
+                                      {chunkIndex === 0 && <td rowSpan={chunks.length}>{user.username}</td>}
+                                      {chunk.map((assign, assignIndex) => (
+                                        <td key={assignIndex}>
+                                          <div style={{ textAlign: 'center' }} className='txt0'>
+                                            {assign.planning_project['planning_project_name']}
+                                          </div>
+                                          <div style={{ display: 'flex' }}>
+                                            <div style={{ width: '100%', textAlign: 'center' }} className='txt1'>
+                                              人件費
+                                            </div>
+                                            <div style={{ width: '100%', textAlign: 'center' }} className='txt2'>
+                                              {assign.planning_project['personal_expenses']}
+                                            </div>
+                                            <div style={{ width: '100%', textAlign: 'center' }} className='txt3'>
+                                              割合
+                                            </div>
+                                            <div style={{ width: '100%', textAlign: 'center' }} className='txt4'>
+                                              {assign.assignment_ratio}
+                                            </div>
+                                          </div>
+                                        </td>
+                                      ))}
+                                    </tr>
+                                  ))}
+                                </React.Fragment>
+                              )
+                            })}
                           </tbody>
                         </table>
                       </div>
