@@ -146,59 +146,126 @@
                 margin-top: 20px;
                 width: 100%;
                 padding: 5px;
-                .table_bg{
+                .right-content{
+                    padding: 10px 10px 10px 10px;
+                    .paginate{
+                        gap: 10px;
+                        display: flex;
+                        justify-content: flex-end;
+                        margin-right: 20px;
+                        .pl-label{
+                            display: inline-block;
+                        }
+                        .switch{
+                            margin-top: 2px;
+                            position: relative;
+                            display: inline-block;
+                            width: 40px;
+                            height: 20px;
+                            margin-left: 2px;
+                            input{
+                                opacity: 0;
+                                width: 0;
+                                height: 0;
+              
+                                &:checked + .slider {
+                                  background-color: #2196F3;
+                                }
+              
+                                &:focus + .slider {
+                                  box-shadow: 0 0 1px #2196F3;
+                                }
+              
+                                &:checked + .slider:before {
+                                  transform: translateX(20px);
+                                }
+                            }
+                            .slider{
+                                position: absolute;
+                                cursor: pointer;
+                                height: 21px;
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                bottom: 0;
+                                background-color: #ccc;
+                                border-radius: 10px;
+                                transition: background-color 0.4s;
+              
+                                &:before {
+                                  position: absolute;
+                                  content: "";
+                                  height: 16px;
+                                  width: 16px;
+                                  left: 2px;
+                                  bottom: 2px;
+                                  background-color: #fff;
+                                  border-radius: 50%;
+                                  transition: transform 0.4s;
+                                }
+                            }
+                        }
+                    }
+                }
+                .planning_tbl_cont{
                     background-color: #fff;
-                    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-                    .pagination_cont{
-                        max-width: 1700px;
-                        @media only screen and (max-width: 1000px){
-                            max-width: 1000px;
-                        }
-                        .paginate{
-                            width: 100%;
-                            padding: 30px 50px 0px 0px;
-                            @media only screen and (max-width: 426px){
-                                padding: 30px 0px 0px 0px;
-                            }
+                    .table_content_planning{
+                        .table-planning-container{
                         }
                     }
-                    .table_cont{
+                    .hidden {
+                        display: none;
+                      }
+                    .table_content_props{
+                        height: 82vh;
+
+                        .planning_scrollable {
+                          max-height: 80vh;
+                        }
+                    }
+                    table {
+                        border-collapse: collapse;
                         width: 100%;
-                        .table_container{
-                            width: 100% !important;
-                            margin: 0px !important;
-                            padding: 0px 35px 0px 35px;
+            
+                        thead {
+                          th {
+                            border: 1px solid #ccc;
+                            padding: 8px;
+                            text-align: left;
+            
+                            &:first-child {
+                              border-left: none;
+                            }
+            
+                            &:last-child {
+                              border-right: none;
+                            }
+                          }
                         }
-                        table.table_header{
-                            width: 100% !important;
-                            display: block !important;
-                            .tr_header{
-                                width: 100%;
-                                display: flex;
-                                justify-content: center;
+            
+                        tbody {
+                          tr {
+                            border-bottom: 1px solid #ccc;
+            
+                            // &:nth-child(odd) {
+                            //   background-color: #f9f9f9;
+                            // }
+            
+                            &:hover {
+                              background-color: #f1f1f1;
                             }
-                            .tr_title{
-                                width: 100%;
-                                display: flex;
-                                justify-content: space-between;
+            
+                            td {
+                              border-left: 1px solid #ccc;
+                              padding: 8px;
+            
+                              &:first-child {
+                                border-left: none;
+                              }
                             }
-                            .tr_dates{
-                                width: 100%;
-                                display: flex;
-                                justify-content: space-around;
-                            }
-                            .tr_underline{
-                                width: 100%;
-                                display: flex;
-                                justify-content: space-between;
-                            }
-                            .tr_input_underline{
-                                width: 100%;
-                                display: flex;
-                                justify-content: space-between;
-                            }
+                          }
                         }
-                    }
+                      }
                 }
             }
         }

@@ -16,14 +16,15 @@
           border: 1px solid #ddd;
           padding: 2px;
           text-align: right;
-          font-size: 12px;
+          font-size: 10px;
           &.indented-label {
             text-align: right;
+            font-size: 10px;
             font-weight: bold;
           }
           &.no-indent {
             text-align: left;
-            font-size: 12px;
+            font-size: 10px;
             font-weight: bold;
           }
          

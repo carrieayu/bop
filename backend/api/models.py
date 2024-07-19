@@ -155,6 +155,9 @@ class PlanningProjectData(models.Model):
     non_operating_income = models.DecimalField(
         max_digits=12, decimal_places=2, default=0.0
     )
+    non_operating_expenses = models.DecimalField(
+        max_digits=12, decimal_places=2, default=0.0
+    )
     ordinary_profit = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
     ordinary_profit_margin = models.FloatField(default=0.0)
 
