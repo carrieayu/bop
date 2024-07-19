@@ -6,7 +6,11 @@ from rest_framework import generics, status
 from django.http import JsonResponse
 from rest_framework.parsers import JSONParser
 from .serializers import (
+    AllPlanningSerializer,
+    CostOfSalesSerializer,
     CreateTableListSerializers,
+    ExpensesSerializer,
+    GetPlanningProjectDataSerializers,
     GetUserMasterSerializer,
     PersonnelUserSerializer,
     PlanningAssignPersonnelDataSerializer,
@@ -27,6 +31,8 @@ from .serializers import (
 from .serializers import CreateTableListSerializers, UserSerializer, NoteSerializer, AccountMasterSerializer, ClientMasterSerializer, BusinessDivisionMasterSerializer, CompanyMasterSerializers, CreatePerformanceProjectDataSerializers, CreatePlanningProjectDataSerializers, UpdateCompanyMasterSerializers, UpdatePerformanceProjectDataSerializers, UpdatePlanningProjectDataSerializers, AuthenticationSerializer,CreateOtherPlanningSerializers
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import (
+    CostOfSales,
+    Expenses,
     User,
     Note,
     AccountMaster,
@@ -424,18 +430,10 @@ class StorePlanningProject(generics.CreateAPIView):
         for i in range(len(planning_data.get("project_name", []))):
             planning_instance_data = {
                 'planning_project_name': planning_data.get("project_name")[i],
-                'start_yyyymm': planning_data.get("start_yyyymm")[i],
-                'end_yyyymm': planning_data.get("end_yyyymm")[i],
+                'month': planning_data.get("month")[i],
                 'sales_revenue': float(planning_data.get("sales_revenue")[i] or 0),
-                'cost_of_goods_sold': float(planning_data.get("cost_of_goods_sold")[i] or 0),
-                'personnel_expenses': float(planning_data.get("personnel_expenses")[i] or 0),
-                'indirect_personnel_cost': float(planning_data.get("indirect_personnel_cost")[i] or 0),
-                'expenses': float(planning_data.get("expenses")[i] or 0),
                 'non_operating_income': float(planning_data.get("non_operating_income")[i] or 0),
-                'operating_income': float(planning_data.get("operating_income")[i] or 0),
-                'ordinary_income': float(planning_data.get("ordinary_income")[i] or 0),
-                'ordinary_income_margin': float(planning_data.get("ordinary_income_margin")[i] or 0),
-                'planning_date': timezone.now().date(),
+                'non_operating_expenses': float(planning_data.get("non_operating_expenses")[i] or 0),
                 'planning_project_type': "Type A",
                 'client_id': "0001",
             }
@@ -557,3 +555,21 @@ class StorePersonnelPlanning(generics.CreateAPIView):
                 return JsonResponse({"messagessss": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
         return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
+    
+class ViewAllPlanning(generics.ListAPIView):
+    def get(self, request):
+        expenses = Expenses.objects.all()
+        cost_of_sales = CostOfSales.objects.all()
+        planning_project_data = PlanningProjectData.objects.all()
+
+        expenses_serializer = ExpensesSerializer(expenses, many=True)
+        cost_of_sales_serializer = CostOfSalesSerializer(cost_of_sales, many=True)
+        planning_project_data_serializer = GetPlanningProjectDataSerializers(planning_project_data, many=True)
+
+        combined_data = {
+            'expenses': expenses_serializer.data,
+            'cost_of_sales': cost_of_sales_serializer.data,
+            'planning_project_data': planning_project_data_serializer.data
+        }
+
+        return Response(combined_data)

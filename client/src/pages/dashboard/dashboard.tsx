@@ -15,6 +15,7 @@ import { HeaderDashboard } from '../../components/header/header'
 import Sidebar from '../../components/SideBar/Sidebar'
 import Btn from '../../components/Button/Button'
 import { useLocation, useNavigate } from 'react-router-dom'
+import TablePlanning from '../../components/Table/tablePlanning'
 
 function formatNumberWithCommas(number: number): string {
   return number.toLocaleString();
@@ -47,6 +48,7 @@ const Dashboard = () => {
   const select = [5, 10, 100]
   const [paginatedData, setPaginatedData] = useState<any[]>([])
   const [activeTab, setActiveTab] = useState('/planning')
+  const [isSwitchActive, setIsSwitchActive] = useState(false); // State for switch
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -153,6 +155,10 @@ const Dashboard = () => {
     setRowsPerPage(numRows)
     setCurrentPage(0)
   }
+
+  const handleSwitchToggle = () => {
+    setIsSwitchActive(prevState => !prevState);
+  };
 
   return (
     <div className='wrapper'>
@@ -284,18 +290,28 @@ const Dashboard = () => {
             </div>
           </div>
           <div className='bottom_cont'>
-            <div className='pagination_cont'>
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-                options={select}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={handleRowsPerPageChange}
-              />
-            </div>
-            <div className='table_cont'>
-              <TableComponentProps data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
+            <div className="right-content">
+              <div className="paginate">
+                <p className="pl-label">案件別表示</p>
+                  <label className="switch">
+                    <input type="checkbox" checked={isSwitchActive} onChange={handleSwitchToggle} />
+                      <span className="slider"></span>
+                    </label>
+                      <p className="pl-label">千円</p>
+                      <label className="switch">
+                        <input type="checkbox" />
+                        <span className="slider"></span>
+                      </label>
+                </div>
+              </div>
+            <div className='planning_tbl_cont'>
+                  <div className={`table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
+                          {/* Render the TablePlanning component here */}
+                          <TablePlanning />
+                  </div>
+                  <div className={`table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
+                    <TableComponentProps data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
+                  </div>
             </div>
           </div>
         </div>

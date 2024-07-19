@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import ClientMasterTableList, CreateOtherPlanningData, CreatePerformanceProjectData, CreatePersonnelView, CreatePlanningProjectData, CreateUserView , CreateCompanyMaster, DeleteCompanyMaster, DeletePerformanceProjectData, DeletePlanningProjectData, FetchPersonnelView, ForgotPasswordView, NoteDelete, NoteListCreate, PlanningProjectDataList, StorePersonnelPlanning, StorePlanningProject, UpdateCompanyMaster, UpdateCreateNote, UpdatePerformanceProjectData, UpdatePlanningProjectData
+from api.views import ClientMasterTableList, CreateOtherPlanningData, CreatePerformanceProjectData, CreatePersonnelView, CreatePlanningProjectData, CreateUserView , CreateCompanyMaster, DeleteCompanyMaster, DeletePerformanceProjectData, DeletePlanningProjectData, FetchPersonnelView, ForgotPasswordView, NoteDelete, NoteListCreate, PlanningProjectDataList, StorePersonnelPlanning, StorePlanningProject, UpdateCompanyMaster, UpdateCreateNote, UpdatePerformanceProjectData, UpdatePlanningProjectData, ViewAllPlanning
 from api.views import ClientMasterTableList, CreateOtherPlanningData, CreatePerformanceProjectData, CreatePlanningProjectData, CreateUserView , CreateCompanyMaster, DeleteCompanyMaster, DeletePerformanceProjectData, DeletePlanningProjectData, NoteDelete, NoteListCreate, PersonnelExpensesList, PlanningProjectDataList, StorePlanningProject, UpdateCompanyMaster, UpdateCreateNote, UpdatePerformanceProjectData, UpdatePlanningProjectData
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -33,5 +33,6 @@ urlpatterns = [
     path('api/create-personnel/', CreatePersonnelView.as_view()),
     path('api/fetch-personnel/', FetchPersonnelView.as_view()),
     path('api/personnelplanning/add/', StorePersonnelPlanning.as_view()),
+    path('api/planning/all/', ViewAllPlanning.as_view()),
     
 ]
