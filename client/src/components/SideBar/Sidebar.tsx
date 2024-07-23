@@ -28,6 +28,18 @@ const Sidebar = () => {
           <li className="sub_menu">
           <span className="icons"><FaTableList /></span><Link to="/personnel-expenses-list">人件費一覧</Link>
           </li>
+          <li className="sub_menu">
+            <span className="icons"><AiFillFileAdd /></span><Link to="/expenses-registration">経費登録</Link>
+          </li>
+          <li className="sub_menu">
+          <span className="icons"><FaTableList /></span><Link to="/expenses-list">経費一覧</Link>
+          </li>
+          <li className="sub_menu">
+          <span className="icons"><AiFillFileAdd /></span><Link to="/cost-of-sales-registration">売上原価登録</Link>
+          </li>
+          <li className="sub_menu">
+          <span className="icons"><FaTableList /></span><Link to="/cost-of-sales-list">売上原価一覧</Link>
+          </li>
           <li>
             <span className="icons"><MdDashboard /></span><Link to="/*">実績</Link>
           </li>
