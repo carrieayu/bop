@@ -1,0 +1,84 @@
+.start_date-div{ 
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    .start_yyyymm{
+        margin-bottom: 5px;
+    }
+    input{
+        width: 80%;
+        height: 40px;
+        border: 1px solid #000;
+        border-radius: 10px;
+    }
+}
+.cost-of-sales-div{ 
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    .cost_of_goods_sold{
+        margin-bottom: 5px;
+    }
+    input{
+        width: 80%;
+        height: 40px;
+        border: 1px solid #000;
+        border-radius: 10px;
+    }
+}
+.personnel-expenses-div{ 
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    .personnel_expenses{
+        margin-bottom: 5px;
+    }
+    input{
+        width: 80%;
+        height: 40px;
+        border: 1px solid #000;
+        border-radius: 10px;
+    }
+}
+.indirect-personnel-cost-div{ 
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    .indirect_personnel_cost{
+        margin-bottom: 5px;
+    }
+    input{
+        width: 80%;
+        height: 40px;
+        border: 1px solid #000;
+        border-radius: 10px;
+    }
+}
+.ordinary-income-div{ 
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    .ordinary_income{
+        margin-bottom: 5px;
+    }
+    input{
+        width: 80%;
+        height: 40px;
+        border: 1px solid #000;
+        border-radius: 10px;
+    }
+}
+.ordinary-income-margin-div{ 
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    .ordinary_income_margin{
+        margin-bottom: 5px;
+    }
+    input{
+        width: 80%;
+        height: 40px;
+        border: 1px solid #000;
+        border-radius: 10px;
+    }
+}
