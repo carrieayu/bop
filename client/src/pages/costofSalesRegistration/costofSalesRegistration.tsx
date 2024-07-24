@@ -5,7 +5,7 @@ import Sidebar from '../../components/SideBar/Sidebar'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const months = [
-   '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月', '1月', '2月', '3月'
+   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
 ];
 
 const CostOfSales = () => {
@@ -170,7 +170,7 @@ const CostOfSales = () => {
                           >
                             <option value=''></option>
                               {months.map((month, idx) => (
-                                <option key={idx} value={month}>{month}</option>
+                                <option key={idx} value={month}>{month}月</option>
                               ))}
                           </select>
                         </div>
