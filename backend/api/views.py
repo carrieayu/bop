@@ -581,3 +581,9 @@ class ViewAllPlanning(generics.ListAPIView):
         }
 
         return Response(combined_data)
+    
+class CostOfSalesList(generics.ListAPIView):
+    queryset = CostOfSales.objects.all()
+    serializer_class = CostOfSalesSerializer
+    permission_classes = [AllowAny]
+    
