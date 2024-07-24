@@ -188,7 +188,8 @@ const ProjectDataList: React.FC = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="proj_pagination_wrapper">
+                            </div>
+                            <div className="proj_pagination_wrapper">
                                   <div className="proj_pagination_cont">
                                       <Pagination
                                         currentPage={currentPage}
@@ -200,8 +201,6 @@ const ProjectDataList: React.FC = () => {
                                       />
                                   </div>
                                 </div>
-                            </div>
-
                         </div>
                     </div>
             </div>

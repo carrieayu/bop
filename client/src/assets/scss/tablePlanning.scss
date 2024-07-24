@@ -2,11 +2,13 @@
     padding: 10px;
     width: 180vh;
     height: 85vh; // Adjust the height as needed
-    overflow: auto; // Enable scrolling
+    overflow-y: auto; 
+    overflow-x: hidden;
+    scrollbar-width: none;
   
     .table-planning {
       width: 100%;
-      overflow: auto; // Enable horizontal scrolling
+      // overflow: auto; // Enable horizontal scrolling
       table {
         width: 100%;
         border-collapse: collapse;

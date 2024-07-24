@@ -304,8 +304,8 @@ const Dashboard = () => {
                       </label>
                 </div>
               </div>
-            <div className='planning_tbl_cont'>
-                  <div className={`table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
+            <div className='dashboard_tbl_cont'>
+                  <div className={`table_content_planning dash_board ${isSwitchActive ? 'hidden' : ''}`}>
                           {/* Render the TablePlanning component here */}
                           <TablePlanning />
                   </div>
