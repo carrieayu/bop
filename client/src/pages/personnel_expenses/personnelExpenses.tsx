@@ -47,7 +47,7 @@ const PersonnelExpensesList: React.FC = () => {
       }
     }, [location.pathname]);
 
-    console.log("data: ", personnel)
+    console.log("personnel ni bai: ", personnel)
 
     return (
       <div className='personnel_wrapper'>
@@ -123,26 +123,34 @@ const PersonnelExpensesList: React.FC = () => {
                           <thead>
                             <tr className='personnel_table_title'>
                               <th className='personnel_table_title_content_vertical has-text-centered'></th>
-                                {months.map((month, index) => (
-                                  <th key={index} className='personnel_table_title_content_vertical has-text-centered'>{month}</th>
-                                ))}
+                              {months.map((month, index) => (
+                                <th key={index} className='personnel_table_title_content_vertical has-text-centered'>
+                                  {month}
+                                </th>
+                              ))}
                             </tr>
                           </thead>
                           <tbody className='personnel_table_body'>
-                                <tr className="user_name">
-                                  Joshua Mendoza
-                                  <td>
-                                    <div className='txt0'>フィリピン事業支援業務</div>
-                                    <div className="txt1_txt2_flex">
-                                      <div className="txt1">人件費</div>
-                                      <div className="txt2">2000</div>
-                                    </div>
-                                    <div className="txt3_txt4_flex">
-                                      <div className="txt3">割合</div>
-                                      <div className="txt4">100%</div>
-                                    </div>
-                                  </td>
+                            {personnel.map((user, userIndex) => {
+                              return (
+                                <tr className='user_name'>
+                                  {user.username}
+                                  {user.planning_assign?.map((planning, planningIndex) => (
+                                    <td>
+                                      <div className='txt0'>フィリピン事業支援業務</div>
+                                      <div className='txt1_txt2_flex'>
+                                        <div className='txt1'>人件費</div>
+                                        <div className='txt2'>{planning.planning_project['personal_expenses']}</div>
+                                      </div>
+                                      <div className='txt3_txt4_flex'>
+                                        <div className='txt3'>割合</div>
+                                        <div className='txt4'>{planning.assignment_ratio}%</div>
+                                      </div>
+                                    </td>
+                                  ))}
                                 </tr>
+                              )
+                            })}
                           </tbody>
                         </table>
                       </div>
