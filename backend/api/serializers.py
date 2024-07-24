@@ -114,7 +114,7 @@ class CreatePlanningProjectDataSerializers(serializers.ModelSerializer):
 
 
 class ClientMasterPlanningProjectDataSerializer(serializers.ModelSerializer):
-    other_planning_data = CreateOtherPlanningSerializers(many=True, read_only=True, source='other_planning')
+    # other_planning_data = CreateOtherPlanningSerializers(many=True, read_only=True, source='other_planning')
     class Meta:
         model = PlanningProjectData
         fields = '__all__'
@@ -153,21 +153,22 @@ class AuthenticationSerializer(serializers.Serializer):
 class GetPlanningProjectDataSerializers(serializers.ModelSerializer):
     class Meta:
         model = PlanningProjectData
-        fields = [
-            "planning_project_name",
-            "planning_project_type",
-            "planning",
-            "sales_revenue",
-            "cost_of_goods_sold",
-            "dispatched_personnel_expenses",
-            "personal_expenses",
-            "indirect_personal_expenses",
-            "expenses",
-            "operating_profit",
-            "non_operating_income",
-            "ordinary_profit",
-            "ordinary_profit_margin"
-            ]
+        fields = '__all__'
+        # fields = [
+        #     "planning_project_name",
+        #     "planning_project_type",
+        #     "planning",
+        #     "sales_revenue",
+        #     "cost_of_goods_sold",
+        #     "dispatched_personnel_expenses",
+        #     "personal_expenses",
+        #     "indirect_personal_expenses",
+        #     "expenses",
+        #     "operating_profit",
+        #     "non_operating_income",
+        #     "ordinary_profit",
+        #     "ordinary_profit_margin"
+        #     ]
 
 class GetPlanningAssignSerializer(serializers.ModelSerializer):
     planning_project = GetPlanningProjectDataSerializers(source='planning_project_id' , read_only=True, )
@@ -209,5 +210,6 @@ class ExpensesSerializer(serializers.ModelSerializer):
 
 class AllPlanningSerializer(serializers.Serializer):
     cost_of_sales = CostOfSalesSerializer()
+    # planning_project_data = GetPlanningProjectDataSerializers()
     planning_project_data = GetPlanningProjectDataSerializers()
     expenses = ExpensesSerializer()
