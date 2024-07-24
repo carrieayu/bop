@@ -11,6 +11,10 @@ import Sidebar from '../../components/SideBar/Sidebar'
 import { HeaderDashboard } from '../../components/header/header'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+const months: string[] = [
+  '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月', '1月', '2月', '3月'
+];
+
 
 const PersonnelExpensesList: React.FC = () => {
     const personnel = useAppSelector((state: RootState) => state.personnel.personnelList)
@@ -118,50 +122,27 @@ const PersonnelExpensesList: React.FC = () => {
                         <table className='table is-bordered is-hoverable'>
                           <thead>
                             <tr className='personnel_table_title'>
-                              <th className='personnel_table_title_content_vertical has-text-centered'>從業員</th>
-                              <th className='personnel_table_title_content_vertical has-text-centered'>案件</th>
-                              <th className='personnel_table_title_content_vertical has-text-centered'>月</th>
-                              <th className='personnel_table_title_content_vertical has-text-centered'>人件費</th>
-                              <th className='personnel_table_title_content_vertical has-text-centered'>割合</th>
+                              <th className='personnel_table_title_content_vertical has-text-centered'></th>
+                                {months.map((month, index) => (
+                                  <th key={index} className='personnel_table_title_content_vertical has-text-centered'>{month}</th>
+                                ))}
                             </tr>
                           </thead>
                           <tbody className='personnel_table_body'>
-                            {personnel.map((user, userIndex) => {
-                              const chunks = []
-                              for (let i = 0; i < user.planning_assign?.length; i += itemsPerRow) {
-                                chunks.push(user.planning_assign.slice(i, i + itemsPerRow))
-                              }
-                              return (
-                                <React.Fragment key={userIndex}>
-                                  {chunks.map((chunk, chunkIndex) => (
-                                    <tr key={chunkIndex} className='user_name'>
-                                      {chunkIndex === 0 && <td rowSpan={chunks.length}>{user.username}</td>}
-                                      {chunk.map((assign, assignIndex) => (
-                                        <td key={assignIndex}>
-                                          <div style={{ textAlign: 'center' }} className='txt0'>
-                                            {assign.planning_project['planning_project_name']}
-                                          </div>
-                                          <div style={{ display: 'flex' }}>
-                                            <div style={{ width: '100%', textAlign: 'center' }} className='txt1'>
-                                              人件費
-                                            </div>
-                                            <div style={{ width: '100%', textAlign: 'center' }} className='txt2'>
-                                              {assign.planning_project['personal_expenses']}
-                                            </div>
-                                            <div style={{ width: '100%', textAlign: 'center' }} className='txt3'>
-                                              割合
-                                            </div>
-                                            <div style={{ width: '100%', textAlign: 'center' }} className='txt4'>
-                                              {assign.assignment_ratio}
-                                            </div>
-                                          </div>
-                                        </td>
-                                      ))}
-                                    </tr>
-                                  ))}
-                                </React.Fragment>
-                              )
-                            })}
+                                <tr className="user_name">
+                                  Joshua Mendoza
+                                  <td>
+                                    <div className='txt0'>フィリピン事業支援業務</div>
+                                    <div className="txt1_txt2_flex">
+                                      <div className="txt1">人件費</div>
+                                      <div className="txt2">2000</div>
+                                    </div>
+                                    <div className="txt3_txt4_flex">
+                                      <div className="txt3">割合</div>
+                                      <div className="txt4">100%</div>
+                                    </div>
+                                  </td>
+                                </tr>
                           </tbody>
                         </table>
                       </div>

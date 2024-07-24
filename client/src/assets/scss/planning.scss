@@ -1,5 +1,5 @@
 .planning_wrapper {
-  width: 100%;
+  width: 86%;
   height: 97vh;
   padding: 10px 30px 10px 30px;
 
@@ -15,16 +15,18 @@
         .planning_header {
           display: flex;
           width: 100%;
+          justify-content: space-between;
 
           .left-content {
             font-weight: bold;
-            padding: 10px 10px 10px 10px;
-            margin-left: 5px;
+            // padding: 10px 10px 10px 10px;
+            margin-top: 13px;
+            margin-left: 10px;
           }
 
           .right-content {
-            padding: 10px 10px 10px 10px;
-            margin-left: 74%;
+            // padding: 10px 10px 10px 10px;
+            // margin-left: 74%;
 
             .paginate {
               gap: 10px;
@@ -108,10 +110,12 @@
             }
           }
 
-          table {
-            border-collapse: collapse;
-            width: 100%;
-
+          .plan {
+            // border-collapse: collapse;
+            width: 93%;
+            @media only screen and (min-width: 1875px){
+              width: 91%;
+            }
             thead {
               th {
                 border: 1px solid #ccc;

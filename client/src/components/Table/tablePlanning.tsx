@@ -562,7 +562,7 @@ const TablePlanning = () => {
   return (
     <div className="table-planning-container">
       <div className="table-planning">
-        <table>
+        <table className="plan">
           <thead>
             <tr>
               <th>項目</th>
