@@ -130,11 +130,12 @@ const PersonnelExpenseCreate = () => {
 
     const token = localStorage.getItem('accessToken');
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/personnelplanning/add/', transformedData, {
+      // const response = await axios.post('http://127.0.0.1:8000/api/personnelplanning/add/', transformedData, {
+      const response = await axios.post('http:///54.178.202.58:8000/api/personnelplanning/add/', transformedData, {
         headers: {
-          'Authorization': `Bearer ${token}`  // Add token to request headers
-        }
-      });
+          Authorization: `Bearer ${token}`, // Add token to request headers
+        },
+      })
       console.log(response.data);
       alert('Saved');
       window.location.reload();
