@@ -6,6 +6,7 @@ import { HeaderDashboard } from "../../components/header/header";
 import Sidebar from "../../components/SideBar/Sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
 
+
 const header: string[] = ['月', '消耗品費', '賃借料', '租税公課', '減価償却費', '旅費交通費', '通信費', '水道光熱費', '支払手数料', '広告宣伝費', '接待交際費', '支払報酬']
 
 const ExpensesList: React.FC = () => {
@@ -33,7 +34,9 @@ const ExpensesList: React.FC = () => {
       setCurrentPage(page);
     };
 
+
     const [expenses, setExpensesList] = useState([]);
+
 
 
     const handleRowsPerPageChange = (numRows: number) => {
