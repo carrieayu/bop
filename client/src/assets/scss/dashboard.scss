@@ -207,10 +207,11 @@
                         }
                     }
                 }
-                .planning_tbl_cont{
+                .dashboard_tbl_cont{
                     background-color: #fff;
                     .table_content_planning{
                         .table-planning-container{
+                            width: auto !important;
                         }
                     }
                     .hidden {
@@ -221,6 +222,7 @@
 
                         .planning_scrollable {
                           max-height: 80vh;
+                          margin-top: 15px;
                         }
                     }
                     table {

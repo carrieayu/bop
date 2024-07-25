@@ -33,7 +33,7 @@ const CostOfSalesList: React.FC = () => {
     };
 
 
-    const [projects, setProjects] = useState([]);
+    const [costOfSales, setCostOfSales] = useState([]);
 
 
     const handleRowsPerPageChange = (numRows: number) => {
@@ -51,13 +51,13 @@ const CostOfSalesList: React.FC = () => {
           }
     
           try {
-            // const response = await axios.get('http://127.0.0.1:8000/api/planningprojects/', {
-            const response = await axios.get('http://54.178.202.58:8000/api/planningprojects/', {
+            // const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales/', {
+            const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales/', {
               headers: {
                 'Authorization': `Bearer ${token}`  // Add token to request headers
               }
             });
-            setProjects(response.data);
+            setCostOfSales(response.data);
             console.log("cost of sales: ", response.data);
           } catch (error) {
             if (error.response && error.response.status === 401) {
@@ -73,8 +73,8 @@ const CostOfSalesList: React.FC = () => {
 
       useEffect(() => {
         const startIndex = currentPage * rowsPerPage
-        setPaginatedData(projects.slice(startIndex, startIndex + rowsPerPage))
-      }, [currentPage, rowsPerPage, projects])
+        setPaginatedData(costOfSales.slice(startIndex, startIndex + rowsPerPage))
+      }, [currentPage, rowsPerPage, costOfSales])
 
       useEffect(() => {
         const path = location.pathname;
@@ -178,17 +178,17 @@ const CostOfSalesList: React.FC = () => {
                                                 </tr>
                                             </thead>
                                             <tbody className="proj_table_body">
-                                                {projects.map((project) => (
-                                                    <tr key={project.planning_project_id} className="proj_table_body_content_horizantal">
-                                                    <td className="proj_table_body_content_vertical has-text-centered">{project.client.client_name}</td>
-                                                    <td className="proj_table_body_content_vertical">{project.planning_project_name}</td>
-                                                    <td className="proj_table_body_content_vertical has-text-centered">{project.year}/{project.month}</td>
-                                                    <td className="proj_table_body_content_vertical has-text-right">{project.sales_revenue}</td>
-                                                    <td className="proj_table_body_content_vertical has-text-right">{project.operating_profit}</td>
-                                                    <td className="proj_table_body_content_vertical has-text-right">{project.operating_profit}</td>
-                                                    <td className="proj_table_body_content_vertical has-text-right">{project.operating_profit}</td>
-                                                    <td className="proj_table_body_content_vertical has-text-right">{project.operating_profit}</td>
-                                                    <td className="proj_table_body_content_vertical has-text-right">{project.operating_profit}</td>
+                                            {costOfSales.map((project) => (
+                                                    <tr key={project.id} className="proj_table_body_content_horizantal">
+                                                      <td className="proj_table_body_content_vertical has-text-centered">{project.month}</td>
+                                                      <td className="proj_table_body_content_vertical has-text-centered">{project.cost_of_sales}</td>
+                                                      <td className="proj_table_body_content_vertical has-text-centered">{project.purchases}</td>
+                                                      <td className="proj_table_body_content_vertical has-text-centered">{project.outsourcing_costs}</td>
+                                                      <td className="proj_table_body_content_vertical has-text-centered">{project.product_purchases}</td>
+                                                      <td className="proj_table_body_content_vertical has-text-centered">{project.dispatch_labor_costs}</td>
+                                                      <td className="proj_table_body_content_vertical has-text-centered">{project.communication_costs}</td>
+                                                      <td className="proj_table_body_content_vertical has-text-centered">{project.work_in_progress}</td>
+                                                      <td className="proj_table_body_content_vertical has-text-centered">{project.amortization}</td>
                                                     </tr>
                                                 ))}
                                             </tbody>

@@ -260,7 +260,7 @@ const ProjectDataRegistration = () => {
                             <option value=''></option>
                             {months.map((month, idx) => (
                               <option key={idx} value={month}>
-                                {month}
+                                {month}月
                               </option>
                             ))}
                           </select>

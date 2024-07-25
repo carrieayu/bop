@@ -345,6 +345,14 @@ class PlanningProjectDataList(generics.ListCreateAPIView):
     def get_queryset(self):
         return PlanningProjectData.objects.all()
 
+class ExpensesDataList(generics.ListCreateAPIView):
+    queryset = Expenses.objects.all()
+    serializer_class = ExpensesSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Expenses.objects.all()
+
 
 class ClientMasterTableList(generics.ListCreateAPIView):
     queryset = ClientMaster.objects.all()
@@ -573,3 +581,9 @@ class ViewAllPlanning(generics.ListAPIView):
         }
 
         return Response(combined_data)
+    
+class CostOfSalesList(generics.ListAPIView):
+    queryset = CostOfSales.objects.all()
+    serializer_class = CostOfSalesSerializer
+    permission_classes = [IsAuthenticated]
+    

@@ -11,7 +11,7 @@ import Sidebar from '../../components/SideBar/Sidebar';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const months = [
-  '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月', '1月', '2月', '3月'
+  '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
 ];
 
 const PersonnelExpenseCreate = () => {
@@ -130,11 +130,12 @@ const PersonnelExpenseCreate = () => {
 
     const token = localStorage.getItem('accessToken');
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/personnelplanning/add/', transformedData, {
+      // const response = await axios.post('http://127.0.0.1:8000/api/personnelplanning/add/', transformedData, {
+      const response = await axios.post('http://54.178.202.58:8000/api/personnelplanning/add/', transformedData, {
         headers: {
-          'Authorization': `Bearer ${token}`  // Add token to request headers
-        }
-      });
+          Authorization: `Bearer ${token}`, // Add token to request headers
+        },
+      })
       console.log(response.data);
       alert('Saved');
       window.location.reload();
@@ -276,7 +277,7 @@ const PersonnelExpenseCreate = () => {
                                               >
                                                 <option value=""></option>
                                                   {months.map((month, idx) => (
-                                                    <option key={idx} value={month}>{month}</option>
+                                                    <option key={idx} value={month}>{month}月</option>
                                                   ))}
                                               </select>
                                             </div>
