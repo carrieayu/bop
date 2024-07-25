@@ -585,5 +585,5 @@ class ViewAllPlanning(generics.ListAPIView):
 class CostOfSalesList(generics.ListAPIView):
     queryset = CostOfSales.objects.all()
     serializer_class = CostOfSalesSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     
