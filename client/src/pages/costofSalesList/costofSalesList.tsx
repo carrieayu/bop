@@ -71,6 +71,8 @@ const CostOfSalesList: React.FC = () => {
         fetchProjects();
       }, []);
 
+      console.log("cost of sales: ", setCostOfSales);
+
       useEffect(() => {
         const startIndex = currentPage * rowsPerPage
         setPaginatedData(costOfSales.slice(startIndex, startIndex + rowsPerPage))
@@ -82,6 +84,28 @@ const CostOfSalesList: React.FC = () => {
           setActiveTab(path);
         }
       }, [location.pathname]);
+
+      // Fixed months array
+    const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3];
+
+    // Combine static months with dynamic data
+    const combinedData = months.map((month) => {
+        const data = costOfSales.find(item => parseInt(item.month, 10) === month) || {
+            cost_of_sales: 0,
+            purchases: 0,
+            outsourcing_costs: 0,
+            product_purchases: 0,
+            dispatch_labor_costs: 0,
+            communication_costs: 0,
+            work_in_progress: 0,
+            amortization: 0
+        };
+        return {
+            month,
+            ...data
+        };
+    });
+    console.log("Combined Data: ", combinedData)
 
   return (
     <div className='proj_wrapper'>
@@ -178,19 +202,19 @@ const CostOfSalesList: React.FC = () => {
                                                 </tr>
                                             </thead>
                                             <tbody className="proj_table_body">
-                                            {costOfSales.map((project) => (
-                                                    <tr key={project.id} className="proj_table_body_content_horizantal">
-                                                      <td className="proj_table_body_content_vertical has-text-centered">{project.month}</td>
-                                                      <td className="proj_table_body_content_vertical has-text-centered">{project.cost_of_sales}</td>
-                                                      <td className="proj_table_body_content_vertical has-text-centered">{project.purchases}</td>
-                                                      <td className="proj_table_body_content_vertical has-text-centered">{project.outsourcing_costs}</td>
-                                                      <td className="proj_table_body_content_vertical has-text-centered">{project.product_purchases}</td>
-                                                      <td className="proj_table_body_content_vertical has-text-centered">{project.dispatch_labor_costs}</td>
-                                                      <td className="proj_table_body_content_vertical has-text-centered">{project.communication_costs}</td>
-                                                      <td className="proj_table_body_content_vertical has-text-centered">{project.work_in_progress}</td>
-                                                      <td className="proj_table_body_content_vertical has-text-centered">{project.amortization}</td>
-                                                    </tr>
-                                                ))}
+                                            {combinedData.map((project, index) => (
+                                                        <tr key={index} className="proj_table_body_content_horizantal">
+                                                            <td className="proj_table_body_content_vertical has-text-centered">{project.month}</td>
+                                                            <td className="proj_table_body_content_vertical has-text-centered">{project.cost_of_sales || 0}</td>
+                                                            <td className="proj_table_body_content_vertical has-text-centered">{project.purchases || 0}</td>
+                                                            <td className="proj_table_body_content_vertical has-text-centered">{project.outsourcing_costs || 0}</td>
+                                                            <td className="proj_table_body_content_vertical has-text-centered">{project.product_purchases || 0}</td>
+                                                            <td className="proj_table_body_content_vertical has-text-centered">{project.dispatch_labor_costs || 0}</td>
+                                                            <td className="proj_table_body_content_vertical has-text-centered">{project.communication_costs || 0}</td>
+                                                            <td className="proj_table_body_content_vertical has-text-centered">{project.work_in_progress || 0}</td>
+                                                            <td className="proj_table_body_content_vertical has-text-centered">{project.amortization || 0}</td>
+                                                        </tr>
+                                                    ))}
                                             </tbody>
                                             </table>
                                         </div>
