@@ -586,4 +586,45 @@ class CostOfSalesList(generics.ListAPIView):
     queryset = CostOfSales.objects.all()
     serializer_class = CostOfSalesSerializer
     permission_classes = [IsAuthenticated]
+
+
+
+class CreateCostOfSales(generics.CreateAPIView):
+    serializer_class = CostOfSalesSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        data = JSONParser().parse(request)
+        if not isinstance(data, list):
+            return JsonResponse(status=status.HTTP_400_BAD_REQUEST)
+        
+        responses = []
+        
+        for item in data:
+            try:
+                cos = {
+                    'year' : datetime.now().year,
+                    'month': item['month'],
+                    'outsourcing_costs': item['outsourcing_costs'],
+                    'communication_costs': item['communication_costs'],
+                    'cost_of_sales': item['cost_of_sales'],
+                    'product_purchases': item['product_purchases'],
+                    'work_in_progress': item['work_in_progress'],
+                    'purchases': item['purchases'],
+                    'dispatch_labor_costs': item['dispatch_labor_costs'],
+                    'amortization': item['amortization'],
+                }
+                serializer = CostOfSalesSerializer(data=cos)
+                if serializer.is_valid():
+                    print("print: ", serializer)
+                    serializer.save()
+                    responses.append({"message": "Created successfully."})
+                else:
+                    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                return JsonResponse({"messagessss": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
+    
+
     
