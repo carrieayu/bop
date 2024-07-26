@@ -588,6 +588,7 @@ class CostOfSalesList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
 
+
 class CreateCostOfSales(generics.CreateAPIView):
     serializer_class = CostOfSalesSerializer
     permission_classes = [IsAuthenticated]
@@ -625,4 +626,5 @@ class CreateCostOfSales(generics.CreateAPIView):
         
         return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
     
+
     

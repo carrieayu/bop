@@ -37,5 +37,6 @@ urlpatterns = [
     path('api/expenseslist/', ExpensesDataList.as_view()),
     path('api/cost-of-sales/', CostOfSalesList.as_view()),
     path('api/costofsale/create/', CreateCostOfSales.as_view()),
+
     
 ]
