@@ -89,11 +89,11 @@ const CostOfSales = () => {
 
     try {
       // const response = await axios.post('http://127.0.0.1:8000/api/costofsale/create/', formData, {
-        const response = await axios.post('http://54.178.202.58:8000/api/projectplanning/create/', formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+        const response = await axios.post('http://54.178.202.58:8000/api/costofsale/create/', formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
       alert('Sucessfully Saved')
       setFormData([
         {
