@@ -78,6 +78,48 @@ const CostOfSales = () => {
     setFormData(newFormData)
   }
 
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const token = localStorage.getItem('accessToken')
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
+
+    try {
+      // const response = await axios.post('http://127.0.0.1:8000/api/costofsale/create/', formData, {
+        const response = await axios.post('http://54.178.202.58:8000/api/projectplanning/create/', formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      alert('Sucessfully Saved')
+      setFormData([
+        {
+          month: '',
+          outsourcing_costs: '',
+          communication_costs: '',
+          cost_of_sales: '',
+          product_purchases: '',
+          work_in_progress: '',
+          purchases: '',
+          dispatch_labor_costs: '',
+          amortization: '',
+          ordinary_income_margin: '',
+          registered_user_id: localStorage.getItem('userID'),
+        },
+      ])
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        window.location.href = '/login'
+      } else {
+        console.error('There was an error creating the project planning data!', error)
+      }
+    }
+  }
+
+
   useEffect(() => {
   }, [formData])
 
@@ -153,7 +195,7 @@ const CostOfSales = () => {
             </div>
             <div className='mid_form_cont costSales'>
               <p className='form-title'>売上原価登録</p>
-              {/* <form onSubmit={handleSubmit}> */}
+              <form onSubmit={handleSubmit}>
                 {formData.map((form, index) => (
                   <div key={index} className={`form-content ${index > 0 ? 'form-content-special' : ''}`}>
                     <div className={`form-content ${index > 0 ? 'form-line' : ''}`}></div>
@@ -273,7 +315,7 @@ const CostOfSales = () => {
                     </button>
                   </div>
                 </div>
-              {/* </form> */}
+              </form>
             </div>
           </div>
         </div>
