@@ -94,6 +94,7 @@ const CostOfSales = () => {
             Authorization: `Bearer ${token}`,
           },
         })
+
       alert('Sucessfully Saved')
       setFormData([
         {
