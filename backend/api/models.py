@@ -2,6 +2,7 @@ from urllib import response
 from django.db import models
 from django.contrib.auth.models import User, AbstractBaseUser
 from django.utils import timezone
+from django.db.models import Max
 
 
 
@@ -271,7 +272,7 @@ class CostOfSales(models.Model):
         return self.id
     
 class Expenses(models.Model):
-    id = models.AutoField(max_length=10, primary_key=True)
+    id = models.CharField(max_length=10, primary_key=True)
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
     consumables_expenses = models.IntegerField(max_length=12)
@@ -285,6 +286,17 @@ class Expenses(models.Model):
     advertising_expenses = models.IntegerField(max_length=12)
     entertainment_expenses = models.IntegerField(max_length=12)
     remuneration = models.IntegerField(max_length=12)
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            max_id = Expenses.objects.aggregate(max_id=Max("id"))["max_id"]
+            if max_id:
+                numeric_part = int(max_id[1:]) + 1
+            else:
+                numeric_part = 1
+            self.id = f'B{numeric_part:09d}'
+        
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.id
