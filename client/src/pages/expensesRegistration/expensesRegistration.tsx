@@ -72,6 +72,48 @@ const ExpensesRegistration = () => {
     setActiveTabOther(tab)
   }
 
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const token = localStorage.getItem('accessToken')
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
+    try {
+      // const response = await axios.post('http://127.0.0.1:8000/api/expenses-registration/create/', formData, {
+        const response = await axios.post('http://54.178.202.58:8000/api/expenses-registration/create/', formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      alert('Sucessfully Saved')
+      setFormData([
+        {
+          month: '',
+          taxes_and_public_charges: '',
+          communication_expenses: '',
+          advertising_expenses: '',
+          consumables_expenses: '',
+          depreciation_expenses: '',
+          utilities_expenses: '',
+          entertainment_expenses: '',
+          rent: '',
+          travel_expenses: '',
+          payment_fees: '',
+          remuneration: '',
+          registered_user_id: localStorage.getItem('userID'),
+        },
+      ])
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        window.location.href = '/login'
+      } else {
+        console.error('There was an error with expenses registration!', error)
+      }
+    }
+  }
+
   const handleChange = (index, event) => {
     const { name, value } = event.target
     const newFormData = [...formData]
@@ -157,7 +199,7 @@ const ExpensesRegistration = () => {
             </div>
             <div className='mid_form_cont'>
               <p className='form-title'>経費登錄</p>
-              {/* <form onSubmit={handleSubmit}> */}
+              <form onSubmit={handleSubmit}>
                 {formData.map((form, index) => (
                 <div key={index} className={`form-content ${index > 0 ? 'form-content-special' : ''}`}>
                     <div className={`form-content ${index > 0 ? 'form-line' : ''}`}></div>
@@ -181,7 +223,7 @@ const ExpensesRegistration = () => {
                         <div className='business_division_name-div'>
                             <label className='business_division_name'>租税公課</label>
                             <input
-                            type='text'
+                            type='number'
                             name='taxes_and_public_charges'
                             value={form.taxes_and_public_charges}
                             onChange={(e) => handleChange(index, e)}
@@ -190,7 +232,7 @@ const ExpensesRegistration = () => {
                         <div className='project_name-div'>
                             <label className='project_name'>通信費</label>
                             <input
-                            type='text'
+                            type='number'
                             name='communication_expenses'
                             value={form.communication_expenses}
                             onChange={(e) => handleChange(index, e)}
@@ -199,7 +241,7 @@ const ExpensesRegistration = () => {
                         <div className='start_date-div'>
                             <label className='start_yyyymm'>広告宣伝費</label>
                             <input
-                            type='text'
+                            type='number'
                             name='advertising_expenses'
                             value={form.advertising_expenses}
                             onChange={(e) => handleChange(index, e)}
@@ -304,7 +346,7 @@ const ExpensesRegistration = () => {
                     </button>
                   </div>
                 </div>
-              {/* </form> */}
+              </form>
             </div>
           </div>
         </div>
