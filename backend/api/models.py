@@ -271,7 +271,7 @@ class CostOfSales(models.Model):
         return self.id
     
 class Expenses(models.Model):
-    id = models.CharField(max_length=10, primary_key=True, editable=False)
+    id = models.AutoField(max_length=10, primary_key=True)
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
     consumables_expenses = models.IntegerField(max_length=12)

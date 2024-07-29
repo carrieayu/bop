@@ -47,7 +47,6 @@ const PersonnelExpensesList: React.FC = () => {
       }
     }, [location.pathname]);
 
-    console.log("personnel ni bai: ", personnel)
 
     return (
       <div className='personnel_wrapper'>

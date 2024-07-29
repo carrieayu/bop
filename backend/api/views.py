@@ -627,4 +627,42 @@ class CreateCostOfSales(generics.CreateAPIView):
         return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
     
 
+class CreateExpenses(generics.CreateAPIView):
+    serializer_class = ExpensesSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        data = JSONParser().parse(request)
+        if not isinstance(data, list):
+            return JsonResponse(status=status.HTTP_400_BAD_REQUEST)
+        responses = []
+        
+        for item in data:
+            try:
+                exp = {
+                    'year' : datetime.now().year,
+                    'month': item['month'],
+                    'taxes_and_public_charges': item['taxes_and_public_charges'],
+                    'communication_expenses': item['communication_expenses'],
+                    'advertising_expenses': item['advertising_expenses'],
+                    'consumables_expenses': item['consumables_expenses'],
+                    'depreciation_expenses': item['depreciation_expenses'],
+                    'utilities_expenses': item['utilities_expenses'],
+                    'entertainment_expenses': item['entertainment_expenses'],
+                    'rent': item['rent'],
+                    'travel_expenses': item['travel_expenses'],
+                    'payment_fees': item['payment_fees'],
+                    'remuneration': item['remuneration'],
+                }
+                serializer = ExpensesSerializer(data=exp)
+                if serializer.is_valid():
+                    serializer.save()
+                    responses.append({"message": "Created successfully."})
+                else:
+                    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                return JsonResponse({"messagessss": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
+
     
