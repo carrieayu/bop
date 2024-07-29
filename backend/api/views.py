@@ -630,7 +630,7 @@ class CreateCostOfSales(generics.CreateAPIView):
 
 class CreateExpenses(generics.CreateAPIView):
     serializer_class = CustomExpensesSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     
     def post(self, request):
         data = JSONParser().parse(request)
