@@ -9,6 +9,7 @@ from .serializers import (
     AllPlanningSerializer,
     CostOfSalesSerializer,
     CreateTableListSerializers,
+    CustomExpensesSerializer,
     ExpensesSerializer,
     GetPlanningProjectDataSerializers,
     GetUserMasterSerializer,
@@ -622,13 +623,13 @@ class CreateCostOfSales(generics.CreateAPIView):
                 else:
                     return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             except Exception as e:
-                return JsonResponse({"messagessss": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                return JsonResponse({"messages": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
         return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
     
 
 class CreateExpenses(generics.CreateAPIView):
-    serializer_class = ExpensesSerializer
+    serializer_class = CustomExpensesSerializer
     permission_classes = [IsAuthenticated]
     
     def post(self, request):
@@ -636,7 +637,6 @@ class CreateExpenses(generics.CreateAPIView):
         if not isinstance(data, list):
             return JsonResponse(status=status.HTTP_400_BAD_REQUEST)
         responses = []
-        
         for item in data:
             try:
                 exp = {
@@ -654,7 +654,7 @@ class CreateExpenses(generics.CreateAPIView):
                     'payment_fees': item['payment_fees'],
                     'remuneration': item['remuneration'],
                 }
-                serializer = ExpensesSerializer(data=exp)
+                serializer = CustomExpensesSerializer(data=exp)
                 if serializer.is_valid():
                     serializer.save()
                     responses.append({"message": "Created successfully."})

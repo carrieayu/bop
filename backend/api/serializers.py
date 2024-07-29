@@ -208,6 +208,25 @@ class ExpensesSerializer(serializers.ModelSerializer):
         model = Expenses
         fields = '__all__'
 
+class CustomExpensesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Expenses
+        fields = [
+            'year',
+            'month',
+            'taxes_and_public_charges',
+            'communication_expenses',
+            'advertising_expenses',
+            'consumables_expenses',
+            'depreciation_expenses',
+            'utilities_expenses',
+            'entertainment_expenses',
+            'rent',
+            'travel_expenses',
+            'payment_fees',
+            'remuneration',
+        ]
+
 class AllPlanningSerializer(serializers.Serializer):
     cost_of_sales = CostOfSalesSerializer()
     # planning_project_data = GetPlanningProjectDataSerializers()

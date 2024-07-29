@@ -117,10 +117,10 @@ const LoginForm = ({ onSubmit }) => {
                     <p className='control has-text-centered'>
                       <button className='button' type='submit'>Login</button>
                       <div className='link'>
-                        <a href='#'>No account? Sign up here!</a>
+                        {/* <a href='#'>No account? Sign up here!</a> */}
                       </div>
                       <div className='link'>
-                        <a href='/forgot'>Forgot your password?</a>
+                        <a href='/forgot'>パスワードを忘れた場合</a>
                       </div>
                     </p>
                   </div>
