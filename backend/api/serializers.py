@@ -202,6 +202,23 @@ class CostOfSalesSerializer(serializers.ModelSerializer):
         model = CostOfSales
         fields = '__all__'
 
+class CustomCostOfSalesSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CostOfSales
+        fields = [
+            'year', 
+            'month',
+            'outsourcing_costs',
+            'communication_costs',
+            'cost_of_sales',
+            'product_purchases',
+            'work_in_progress',
+            'purchases',
+            'dispatch_labor_costs',
+            'amortization'
+        ]
+
 class ExpensesSerializer(serializers.ModelSerializer):
 
     class Meta:

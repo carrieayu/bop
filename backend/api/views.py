@@ -9,6 +9,7 @@ from .serializers import (
     AllPlanningSerializer,
     CostOfSalesSerializer,
     CreateTableListSerializers,
+    CustomCostOfSalesSerializer,
     CustomExpensesSerializer,
     ExpensesSerializer,
     GetPlanningProjectDataSerializers,
@@ -591,7 +592,7 @@ class CostOfSalesList(generics.ListAPIView):
 
 
 class CreateCostOfSales(generics.CreateAPIView):
-    serializer_class = CostOfSalesSerializer
+    serializer_class = CustomCostOfSalesSerializer
     permission_classes = [IsAuthenticated]
     
     def post(self, request):
@@ -615,9 +616,8 @@ class CreateCostOfSales(generics.CreateAPIView):
                     'dispatch_labor_costs': item['dispatch_labor_costs'],
                     'amortization': item['amortization'],
                 }
-                serializer = CostOfSalesSerializer(data=cos)
+                serializer = CustomCostOfSalesSerializer(data=cos)
                 if serializer.is_valid():
-                    print("print: ", serializer)
                     serializer.save()
                     responses.append({"message": "Created successfully."})
                 else:

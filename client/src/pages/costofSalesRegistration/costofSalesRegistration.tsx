@@ -25,7 +25,6 @@ const CostOfSales = () => {
       purchases: '',
       dispatch_labor_costs: '',
       amortization: '',
-      ordinary_income_margin: '',
       registered_user_id: storedUserID,
     },
   ])
@@ -43,7 +42,6 @@ const CostOfSales = () => {
         purchases: '',
         dispatch_labor_costs: '',
         amortization: '',
-        ordinary_income_margin: '',
         registered_user_id: storedUserID,
       })
       setFormData(newFormData)
@@ -107,7 +105,6 @@ const CostOfSales = () => {
           purchases: '',
           dispatch_labor_costs: '',
           amortization: '',
-          ordinary_income_margin: '',
           registered_user_id: localStorage.getItem('userID'),
         },
       ])
