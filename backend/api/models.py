@@ -256,7 +256,7 @@ class PlanningAssignData(models.Model):
         return self.planning_assign_id
     
 class CostOfSales(models.Model):
-    id = models.AutoField(max_length=10, primary_key=True)
+    id = models.CharField(max_length=10, primary_key=True)
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
     cost_of_sales = models.IntegerField(max_length=12)
@@ -267,6 +267,17 @@ class CostOfSales(models.Model):
     communication_costs = models.IntegerField(max_length=12)
     work_in_progress = models.IntegerField(max_length=12)
     amortization = models.IntegerField(max_length=12)
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            max_id = CostOfSales.objects.aggregate(max_id=Max("id"))["max_id"]
+            if max_id:
+                numeric_part = int(max_id[1:]) + 1
+            else:
+                numeric_part = 1
+            self.id = f'A{numeric_part:09d}'
+        
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.id
