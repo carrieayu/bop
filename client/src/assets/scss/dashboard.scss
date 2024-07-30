@@ -211,61 +211,22 @@
                     background-color: #fff;
                     .table_content_planning{
                         .table-planning-container{
-                            width: auto !important;
+                          width: 100% !important;
+                          .table-planning{
+                            table{
+                              
+                            }
+                          }
                         }
-                    }
-                    .hidden {
+                      }
+                      .hidden {
                         display: none;
                       }
-                    .table_content_props{
+                      .table_content_props{
                         height: 82vh;
-
-                        .planning_scrollable {
+                        .planning_scrollable{
                           max-height: 80vh;
                           margin-top: 15px;
-                        }
-                    }
-                    table {
-                        border-collapse: collapse;
-                        width: 100%;
-            
-                        thead {
-                          th {
-                            border: 1px solid #ccc;
-                            padding: 8px;
-                            text-align: left;
-            
-                            &:first-child {
-                              border-left: none;
-                            }
-            
-                            &:last-child {
-                              border-right: none;
-                            }
-                          }
-                        }
-            
-                        tbody {
-                          tr {
-                            border-bottom: 1px solid #ccc;
-            
-                            // &:nth-child(odd) {
-                            //   background-color: #f9f9f9;
-                            // }
-            
-                            &:hover {
-                              background-color: #f1f1f1;
-                            }
-            
-                            td {
-                              border-left: 1px solid #ccc;
-                              padding: 8px;
-            
-                              &:first-child {
-                                border-left: none;
-                              }
-                            }
-                          }
                         }
                       }
                 }
