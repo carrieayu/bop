@@ -12,6 +12,7 @@ from .serializers import (
     CustomCostOfSalesSerializer,
     CustomExpensesSerializer,
     ExpensesSerializer,
+    GetPlanningAssignSerializer,
     GetPlanningProjectDataSerializers,
     GetUserMasterSerializer,
     PersonnelUserSerializer,
@@ -567,20 +568,25 @@ class StorePersonnelPlanning(generics.CreateAPIView):
         return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
     
 class ViewAllPlanning(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         expenses = Expenses.objects.all()
         cost_of_sales = CostOfSales.objects.all()
+        planning_assign = PlanningAssignData.objects.all()
         planning_project_data = PlanningProjectData.objects.all()
-
         expenses_serializer = ExpensesSerializer(expenses, many=True)
         cost_of_sales_serializer = CostOfSalesSerializer(cost_of_sales, many=True)
+        planning_assign_serializer = PlanningAssignData.objects.all()
         planning_project_data_serializer = GetPlanningProjectDataSerializers(planning_project_data, many=True)
 
         combined_data = {
             'expenses': expenses_serializer.data,
             'cost_of_sales': cost_of_sales_serializer.data,
+            'planning_assign_data': planning_assign_serializer.data,
             'planning_project_data': planning_project_data_serializer.data
         }
+        
+        print(combined_data)
 
         return Response(combined_data)
     

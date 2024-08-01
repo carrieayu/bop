@@ -57,8 +57,19 @@ const TablePlanning = () => {
       
         return acc;
       }, {});
+      const aggregatedPlanningAssign = response.data.planning_assign_data.reduce((acc, item) => {
+        const { month, ...values } = item;
+        if (!acc[month]) {
+          acc[month] = { month, ...values };  // Include month in the object
+        } else {
+          Object.keys(values).forEach(key => {
+            acc[month][key] += values[key];
+          });
+        }
+        return acc;
+      }, {});
 
-      console.log('Aggregated PlanningProject Data:', aggregatedPlanningProjectData);
+      console.log('Aggregated Planning Assign Data:', aggregatedPlanningAssign);
 
       const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3];
       //COST OF SALES
@@ -74,6 +85,7 @@ const TablePlanning = () => {
       //PLANNING ASSIGN
       const renumerationValues = months.map(month => aggregatedExpensesData[month]?.remuneration || 0);
       const consumableValues = months.map(month => aggregatedExpensesData[month]?.consumables_expenses || 0);
+      const assign_unit_priceValues = months.map(month => aggregatedPlanningAssign[month]?.assignment_unit_price || 0); //assignment_unit_price value data
       const travelExpenseValues = months.map(month => aggregatedExpensesData[month]?.travel_expenses || 0);
       const taxesPublicChargesValues = months.map(month => aggregatedExpensesData[month]?.taxes_and_public_charges || 0);
       const utilitiesValues = months.map(month => aggregatedExpensesData[month]?.utilities_expenses || 0);
@@ -90,9 +102,9 @@ const TablePlanning = () => {
       const nonOperatingIncomeValues = months.map(month => aggregatedPlanningProjectData[month]?.non_operating_income || 0);
       const nonOperatingExpensesValues = months.map(month => aggregatedPlanningProjectData[month]?.non_operating_expenses || 0);
 
-      console.log("Non Operating: " , nonOperatingIncomeValues)
+      // console.log("Non Operating: " , nonOperatingIncomeValues)
       const personnelExpensesValues = months.map(month => {
-        const totalExpenses = aggregatedExpensesData[month]?.remuneration + aggregatedExpensesData[month]?.consumables_expenses +
+        const totalExpenses = aggregatedExpensesData[month]?.remuneration + aggregatedPlanningAssign[month]?.assignment_unit_price +
         aggregatedExpensesData[month]?.travel_expenses + aggregatedExpensesData[month]?.taxes_and_public_charges + 
         aggregatedExpensesData[month]?.utilities_expenses || 0;
 
@@ -183,7 +195,7 @@ const TablePlanning = () => {
       };
       const cumulativeOrdinaryProfitValues = cumulativeSum(ordinaryProfitValues);
 
-      console.log("Cumulative: ", cumulativeOrdinaryProfitValues)
+      // console.log("Cumulative: ", cumulativeOrdinaryProfitValues)
 
       const data = [
         {
@@ -202,7 +214,8 @@ const TablePlanning = () => {
             firstHalfTotal(costOfSalesValues),
             secondHalfTotal(costOfSalesValues),
             total(costOfSalesValues),
-            `${(total(costOfSalesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(costOfSalesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            '0', 
           ],
         },
         {
@@ -212,7 +225,8 @@ const TablePlanning = () => {
             firstHalfTotal(purchasesValues),
             secondHalfTotal(purchasesValues),
             total(purchasesValues),
-            `${(total(purchasesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(purchasesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -222,7 +236,8 @@ const TablePlanning = () => {
             firstHalfTotal(outsourcingValues),
             secondHalfTotal(outsourcingValues),
             total(outsourcingValues),
-            `${(total(outsourcingValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(outsourcingValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -232,7 +247,8 @@ const TablePlanning = () => {
             firstHalfTotal(productPurchaseValues),
             secondHalfTotal(productPurchaseValues),
             total(productPurchaseValues),
-            `${(total(productPurchaseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(productPurchaseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -242,7 +258,8 @@ const TablePlanning = () => {
             firstHalfTotal(dispatchLaborValues),
             secondHalfTotal(dispatchLaborValues),
             total(dispatchLaborValues),
-            `${(total(dispatchLaborValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(dispatchLaborValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -252,7 +269,8 @@ const TablePlanning = () => {
             firstHalfTotal(communicationCostValues),
             secondHalfTotal(communicationCostValues),
             total(communicationCostValues),
-            `${(total(communicationCostValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(communicationCostValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -262,7 +280,8 @@ const TablePlanning = () => {
             firstHalfTotal(inProgressValues),
             secondHalfTotal(inProgressValues),
             total(inProgressValues),
-            `${(total(inProgressValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(inProgressValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -272,7 +291,8 @@ const TablePlanning = () => {
             firstHalfTotal(amortizationValues),
             secondHalfTotal(amortizationValues),
             total(amortizationValues),
-            `${(total(amortizationValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            // `${(total(amortizationValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            '0',
           ],
         },
         //end of cost of sales portion
@@ -285,7 +305,8 @@ const TablePlanning = () => {
             firstHalfTotal(personnelExpensesValues),
             secondHalfTotal(personnelExpensesValues),
             total(personnelExpensesValues),
-            `${(total(personnelExpensesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(personnelExpensesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -295,17 +316,19 @@ const TablePlanning = () => {
             firstHalfTotal(renumerationValues),
             secondHalfTotal(renumerationValues),
             total(renumerationValues),
-            `${(total(renumerationValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(renumerationValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
          {
           label: '給与手当',
           values: [
-            ...consumableValues,
-            firstHalfTotal(consumableValues),
-            secondHalfTotal(consumableValues),
-            total(consumableValues),
-            `${(total(consumableValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            ...assign_unit_priceValues,
+            firstHalfTotal(assign_unit_priceValues),
+            secondHalfTotal(assign_unit_priceValues),
+            total(assign_unit_priceValues),
+            // `${(total(consumableValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -315,7 +338,8 @@ const TablePlanning = () => {
             firstHalfTotal(travelExpenseValues),
             secondHalfTotal(travelExpenseValues),
             total(travelExpenseValues),
-            `${(total(travelExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(travelExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -325,7 +349,8 @@ const TablePlanning = () => {
             firstHalfTotal(taxesPublicChargesValues),
             secondHalfTotal(taxesPublicChargesValues),
             total(taxesPublicChargesValues),
-            `${(total(taxesPublicChargesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(taxesPublicChargesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -335,7 +360,8 @@ const TablePlanning = () => {
             firstHalfTotal(utilitiesValues),
             secondHalfTotal(utilitiesValues),
             total(utilitiesValues),
-            `${(total(utilitiesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(utilitiesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         //end for planning portion
@@ -347,7 +373,8 @@ const TablePlanning = () => {
             firstHalfTotal(expenseTotalValues),
             secondHalfTotal(expenseTotalValues),
             total(expenseTotalValues),
-            `${(total(expenseTotalValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(expenseTotalValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -358,7 +385,8 @@ const TablePlanning = () => {
             firstHalfTotal(consumableValues),
             secondHalfTotal(consumableValues),
             total(consumableValues),
-            `${(total(consumableValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(consumableValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -368,7 +396,8 @@ const TablePlanning = () => {
             firstHalfTotal(rentValues),
             secondHalfTotal(rentValues),
             total(rentValues),
-            `${(total(rentValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(rentValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -378,7 +407,8 @@ const TablePlanning = () => {
             firstHalfTotal(paymentFeeValues),
             secondHalfTotal(paymentFeeValues),
             total(paymentFeeValues),
-            `${(total(paymentFeeValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(paymentFeeValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -389,7 +419,8 @@ const TablePlanning = () => {
             firstHalfTotal(taxesPublicChargesValues),
             secondHalfTotal(taxesPublicChargesValues),
             total(taxesPublicChargesValues),
-            `${(total(taxesPublicChargesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(taxesPublicChargesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -399,7 +430,8 @@ const TablePlanning = () => {
             firstHalfTotal(depreciationExpensesValues),
             secondHalfTotal(depreciationExpensesValues),
             total(depreciationExpensesValues),
-            `${(total(depreciationExpensesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(depreciationExpensesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -409,7 +441,8 @@ const TablePlanning = () => {
             firstHalfTotal(travelExpenseValues),
             secondHalfTotal(travelExpenseValues),
             total(travelExpenseValues),
-            `${(total(travelExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(travelExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -419,7 +452,8 @@ const TablePlanning = () => {
             firstHalfTotal(communicationExpenseValues),
             secondHalfTotal(communicationExpenseValues),
             total(communicationExpenseValues),
-            `${(total(communicationExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(communicationExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -429,7 +463,8 @@ const TablePlanning = () => {
             firstHalfTotal(utilitiesValues),
             secondHalfTotal(utilitiesValues),
             total(utilitiesValues),
-            `${(total(utilitiesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(utilitiesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -439,7 +474,8 @@ const TablePlanning = () => {
             firstHalfTotal(advertisingExpenseValues),
             secondHalfTotal(advertisingExpenseValues),
             total(advertisingExpenseValues),
-            `${(total(advertisingExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(advertisingExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -449,7 +485,8 @@ const TablePlanning = () => {
             firstHalfTotal(advertisingExpenseValues),
             secondHalfTotal(advertisingExpenseValues),
             total(advertisingExpenseValues),
-            `${(total(advertisingExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(advertisingExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -459,7 +496,8 @@ const TablePlanning = () => {
             firstHalfTotal(entertainmentExpenseValues),
             secondHalfTotal(entertainmentExpenseValues),
             total(entertainmentExpenseValues),
-            `${(total(entertainmentExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(entertainmentExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -469,7 +507,8 @@ const TablePlanning = () => {
             firstHalfTotal(paymentFeeValues),
             secondHalfTotal(paymentFeeValues),
             total(paymentFeeValues),
-            `${(total(paymentFeeValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            // `${(total(paymentFeeValues) / total(costOfSalesValues) * 100).toFixed(2)}%`, 
+            '0',
           ],
         },
         {
@@ -481,7 +520,7 @@ const TablePlanning = () => {
             firstHalfTotal(generalExpenseValues.map(item => item.generalTotal)),
             secondHalfTotal(generalExpenseValues.map(item => item.generalTotal)),
             total(generalExpenseValues.map(item => item.generalTotal)),
-            ''
+            '0',
           ],
         },
         //Operating income 営業利益 ①
@@ -492,7 +531,7 @@ const TablePlanning = () => {
             firstHalfTotal(operatingProfitValues),
             secondHalfTotal(operatingProfitValues),
             total(operatingProfitValues),
-            ''
+            '0',
           ],
         },
         {
@@ -502,7 +541,7 @@ const TablePlanning = () => {
             firstHalfTotal(nonOperatingIncomeValues),
             secondHalfTotal(nonOperatingIncomeValues),
             total(nonOperatingIncomeValues),
-            ''
+            '0',
           ],
         },
         {
@@ -512,7 +551,7 @@ const TablePlanning = () => {
             firstHalfTotal(nonOperatingExpensesValues),
             secondHalfTotal(nonOperatingExpensesValues),
             total(nonOperatingExpensesValues),
-            ''
+            '0',
           ],
         },
         {
@@ -522,7 +561,7 @@ const TablePlanning = () => {
             firstHalfTotal(ordinaryProfitValues ),
             secondHalfTotal(ordinaryProfitValues ),
             total(ordinaryProfitValues ),
-            '' 
+            '0', 
           ],
         },
         {
@@ -532,7 +571,7 @@ const TablePlanning = () => {
             firstHalfTotal(cumulativeOrdinaryProfitValues ),
             secondHalfTotal(cumulativeOrdinaryProfitValues ),
             total(cumulativeOrdinaryProfitValues ),
-            '' 
+            '0', 
           ],
         },
       ];
@@ -562,7 +601,7 @@ const TablePlanning = () => {
   return (
     <div className="table-planning-container">
       <div className="table-planning">
-        <table className="plan">
+        <table>
           <thead>
             <tr>
               <th>項目</th>
