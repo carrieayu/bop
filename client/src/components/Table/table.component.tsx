@@ -11,29 +11,15 @@ type TableProps = {
 
 const objectEntity = [
   'sales_revenue',
-  'cost_of_goods_sold',
-  'dispatched_personnel_expenses',
-  'personal_expenses',
-  'indirect_personal_expenses',
-  'expenses',
+  'assignment_unit_price',
   'operating_profit',
   'non_operating_income',
+  'non_operating_expenses',
   'ordinary_profit',
-  'ordinary_profit_margin'
+  'ordinary_profit_margin',
 ]
 
-const headerTitle = [
-  '売上高',
-  '売上原価',
-  '派遣人件費',
-  '人件費',
-  '間接人件費',
-  '経費',
-  '営業利益',
-  '營業外收益',
-  '経常利益',
-  '経常利益率',
-]
+const headerTitle = ['売上高', '人件費', '営業利益', '営業外収益', '営業外費用', '経常利益', '経常利益率']
 
 interface EntityGrid {
   clientName: string
@@ -53,17 +39,64 @@ useEffect(() => {
   }))
 
   props.data?.forEach((entity, entityIndex) => {
-    if (entity && entity.planning_project_data && entity.planning_project_data?.length > 0) {
-      entity.planning_project_data?.forEach((project) => {
-        if (project.planning && project.sales_revenue !== undefined) {
-          const date = new Date(project.planning)
-          const month = date.getMonth()
-          const adjustedMonth = (month + 8 + 1) % 12
+    if (entity && entity.planning_project_data && entity.planning_project_data.length > 0) {
+      const monthlyAccumulations = {
+        sales_revenue: Array(12).fill(0),
+        assignment_unit_price: Array(12).fill(0),
+        operating_profit: Array(12).fill(0),
+        non_operating_income: Array(12).fill(0),
+        non_operating_expenses: Array(12).fill(0),
+        ordinary_profit: Array(12).fill(0),
+        ordinary_profit_margin: Array(12).fill(0),
+      }
 
-          objectEntity?.forEach((header, index) => {
-            if (project[header] !== undefined) {
-              entityGrids[entityIndex].grid[index][adjustedMonth] = project[header].toString()
+      entity.planning_project_data.forEach((project) => {
+        const month = project.month - 1
+        const adjustedMonth = (month + 9) % 12 
 
+        ;[
+          'sales_revenue',
+          'assignment_unit_price',
+          'operating_profit',
+          'non_operating_income',
+          'non_operating_expenses',
+          'ordinary_profit',
+          'ordinary_profit_margin',
+        ].forEach((field) => {
+          if (project[field] !== undefined) {
+            const fieldValue = parseFloat(project[field])
+            if (!isNaN(fieldValue)) {
+              monthlyAccumulations[field][adjustedMonth] += fieldValue
+            }
+          }
+        })
+
+        objectEntity.forEach((header, index) => {
+          if (
+            ![
+              'sales_revenue',
+              'assignment_unit_price',
+              'operating_profit',
+              'non_operating_income',
+              'non_operating_expenses',
+              'ordinary_profit',
+              'ordinary_profit_margin',
+            ].includes(header) &&
+            project[header] !== undefined
+          ) {
+            entityGrids[entityIndex].grid[index][adjustedMonth] = project[header].toString()
+          }
+        })
+      })
+
+      Object.keys(monthlyAccumulations).forEach((field) => {
+        const fieldIndex = objectEntity.indexOf(field)
+        if (fieldIndex !== -1) {
+          monthlyAccumulations[field].forEach((total, monthIndex) => {
+            if (['operating_profit', 'ordinary_profit', 'ordinary_profit_margin'].includes(field)) {
+              entityGrids[entityIndex].grid[fieldIndex][monthIndex] = '-'
+            } else {
+              entityGrids[entityIndex].grid[fieldIndex][monthIndex] = total.toString()
             }
           })
         }
@@ -71,15 +104,23 @@ useEffect(() => {
     }
   })
 
-    entityGrids?.forEach((entityGrid) => {
-      entityGrid.grid?.forEach((row) => {
-        const total = row?.slice(0, gridCols - 1).reduce((acc, val) => acc + parseInt(val, 10), 0)
-        row[gridCols - 1] = total.toString()
-      })
+  entityGrids.forEach((entityGrid) => {
+    entityGrid.grid.forEach((row, rowIndex) => {
+      const fieldName = objectEntity[rowIndex]
+      if (['operating_profit', 'ordinary_profit', 'ordinary_profit_margin'].includes(fieldName)) {
+        row[gridCols - 1] = '-' // Set last column for totals to hyphen
+      } else {
+        const total = row.slice(0, gridCols - 1).reduce((acc, val) => acc + parseFloat(val), 0)
+        row[gridCols - 1] = total.toString() // Last column for totals
+      }
     })
+  })
 
   setGrid(entityGrids)
 }, [props.data])
+
+
+
 
   return (
     <div className='table_container'>

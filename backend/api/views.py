@@ -574,12 +574,9 @@ class ViewAllPlanning(generics.ListAPIView):
         cost_of_sales = CostOfSales.objects.all()
         planning_assign = PlanningAssignData.objects.all()
         planning_project_data = PlanningProjectData.objects.all()
-        
-       
-
         expenses_serializer = ExpensesSerializer(expenses, many=True)
         cost_of_sales_serializer = CostOfSalesSerializer(cost_of_sales, many=True)
-        planning_assign_serializer = PlanningAssignPersonnelDataSerializer(planning_assign, many=True)
+        planning_assign_serializer = PlanningAssignData.objects.all()
         planning_project_data_serializer = GetPlanningProjectDataSerializers(planning_project_data, many=True)
 
         combined_data = {
