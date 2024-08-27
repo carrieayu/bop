@@ -90,6 +90,7 @@ const CostOfSales = () => {
         const response = await axios.post('http://54.178.202.58:8000/api/costofsale/create/', formData, {
           headers: {
             Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
           },
         })
 
@@ -109,10 +110,38 @@ const CostOfSales = () => {
         },
       ])
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        window.location.href = '/login'
+      if (error.response && error.response.status === 409) {
+        // If there's a conflict (month already exists), prompt the user
+        const confirmOverwrite = window.confirm("選択された月は既にデータが登録されています。 \n上書きしますか？");
+        if (confirmOverwrite) {
+          try {
+            // const response = await axios.put('http://127.0.0.1:8000/api/costofsale/update/', formData, {
+            const response = await axios.put('http://54.178.202.58:8000/api/costofsale/update/', formData, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              },
+            });
+            // alert('Data successfully saved/overwritten.');
+            setFormData([{
+              month: '',
+              outsourcing_costs: '',
+              communication_costs: '',
+              cost_of_sales: '',
+              product_purchases: '',
+              work_in_progress: '',
+              purchases: '',
+              dispatch_labor_costs: '',
+              amortization: '',
+              registered_user_id: localStorage.getItem('userID'),
+            }]);
+        } catch (overwriteError) {
+            console.error('Error overwriting data:', overwriteError);
+        }
+        
+        }
       } else {
-        console.error('There was an error creating the project planning data!', error)
+        console.error('There was an error with expenses registration!', error);
       }
     }
   }
