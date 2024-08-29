@@ -21,9 +21,9 @@ root.render(
     <Provider store={store}>
       <HelmetProvider>
         <BrowserRouter>
-        <LanguageProvider>
-          <App />
-        </LanguageProvider>
+          <LanguageProvider>
+            <App />
+          </LanguageProvider>
         </BrowserRouter>
       </HelmetProvider>
     </Provider>
