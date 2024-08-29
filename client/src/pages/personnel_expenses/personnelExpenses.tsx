@@ -10,9 +10,11 @@ import { fetchPersonnel } from '../../reducers/personnel/personnelExpensesSlice'
 import Sidebar from '../../components/SideBar/Sidebar'
 import { HeaderDashboard } from '../../components/header/header'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { translate } from '../../utils/translationUtil'
 
 const months: string[] = [
-  '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月', '1月', '2月', '3月'
+  '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
 ];
 
 
@@ -24,6 +26,8 @@ const PersonnelExpensesList: React.FC = () => {
     const navigate = useNavigate()
     const location = useLocation()
     const [activeTabOther, setActiveTabOther] = useState('case')
+    const { language, setLanguage } = useLanguage()
+    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translations
 
 
     const handleTabClick = (tab) => {
@@ -42,31 +46,49 @@ const PersonnelExpensesList: React.FC = () => {
     
     useEffect(() => {
       const path = location.pathname;
-      if (path === '/dashboard' || path === '/planning' || path === '/result') {
+      if (path === '/dashboard' || path === '/planning' || path === '/*') {
         setActiveTab(path);
       }
     }, [location.pathname]);
+
+    useEffect(() => {
+      setIsTranslateSwitchActive(language === 'en');
+    }, [language]);
+  
+    const handleTranslationSwitchToggle = () => {
+      const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
+      setLanguage(newLanguage);
+    };
 
 
     return (
       <div className='personnel_wrapper'>
         <div className='header_cont'>
           <div className='personnel_top_btn_cont'>
-            <Btn
-              label='分析'
-              onClick={() => handleTabClick('/dashboard')}
-              className={activeTab === '/dashboard' ? 'h-btn-active header-btn' : 'header-btn'}
-            />
-            <Btn
-              label='計画'
-              onClick={() => handleTabClick('/planning')}
-              className={activeTab === '/planning' ? 'h-btn-active header-btn' : 'header-btn'}
-            />
-            <Btn
-              label='実績'
-              onClick={() => handleTabClick('/result')}
-              className={activeTab === '/result' ? 'h-btn-active header-btn' : 'header-btn'}
-            />
+          <div className="header-buttons">
+          <Btn
+            label={translate('analyze', language)}
+            onClick={() => handleTabClick("/dashboard")}
+            className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
+          />
+          <Btn
+            label={translate('plan', language)}
+            onClick={() => handleTabClick("/planning")}
+            className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
+          />
+          <Btn
+            label={translate('results', language)}
+            onClick={() => handleTabClick("/*")}
+            className={activeTab === "/*" ? "h-btn-active header-btn" : "header-btn"}
+          />
+        </div>
+        <div className="language-toggle">
+          <p className="pl-label">English</p>
+            <label className="switch">
+              <input type="checkbox" checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle}/>
+              <span className="slider"></span>
+            </label>
+        </div>
           </div>
         </div>
         <div className='personnel_cont_wrapper'>
@@ -83,7 +105,7 @@ const PersonnelExpensesList: React.FC = () => {
                   {[...Array(4)].map((_, index) => (
                     <Btn
                       key={index}
-                      label={index === 0 ? '案件' : index === 1 ? '人件費' : index === 2 ? '經費' : '売上原価'}
+                      label={translate(index === 0 ? 'project' : index === 1 ? 'personnelExpenses' : index === 2 ? 'budget' : 'costOfgoodSold', language)}
                       onClick={() =>
                         handleTabsClick(
                           index === 0
@@ -111,8 +133,8 @@ const PersonnelExpensesList: React.FC = () => {
                   ))}
                 </div>
                 <div className='personnel_title_table_cont'>
-                  <p className='personnel_title'>人件費一覧</p>
-                  <Btn label='新規登録' size='normal' onClick={() => ''} className='personnel_btn' />
+                  <p className='personnel_title'>{translate('personnelExpensesList', language)}</p>
+                  <Btn label={translate('newRegistration', language)} size='normal' onClick={() => ''} className='personnel_btn' />
                 </div>
                 <div className='personnel_table_wrapper'>
                   <div className='personnel_table_cont'>
@@ -124,7 +146,7 @@ const PersonnelExpensesList: React.FC = () => {
                               <th className='personnel_table_title_content_vertical has-text-centered'></th>
                               {months.map((month, index) => (
                                 <th key={index} className='personnel_table_title_content_vertical has-text-centered'>
-                                  {month}
+                                  {month}{translate('month', language)}
                                 </th>
                               ))}
                             </tr>
@@ -136,13 +158,13 @@ const PersonnelExpensesList: React.FC = () => {
                                   {user.username}
                                   {user.planning_assign?.map((planning, planningIndex) => (
                                     <td>
-                                      <div className='txt0'>フィリピン事業支援業務</div>
+                                      <div className='txt0'>{translate('philbusinessSupportServices', language)}</div>
                                       <div className='txt1_txt2_flex'>
-                                        <div className='txt1'>人件費</div>
+                                        <div className='txt1'>{translate('personnelExpenses', language)}</div>
                                         <div className='txt2'>{planning.planning_project['personal_expenses']}</div>
                                       </div>
                                       <div className='txt3_txt4_flex'>
-                                        <div className='txt3'>割合</div>
+                                        <div className='txt3'>{translate('ratio', language)}</div>
                                         <div className='txt4'>{planning.assignment_ratio}%</div>
                                       </div>
                                     </td>

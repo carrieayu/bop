@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../app/store'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { translate } from '../../utils/translationUtil'
 
 type TableProps = {
   header: string[]
@@ -19,7 +21,7 @@ const objectEntity = [
   'ordinary_profit_margin',
 ]
 
-const headerTitle = ['売上高', '人件費', '営業利益', '営業外収益', '営業外費用', '経常利益', '経常利益率']
+const headerTitle = ['salesRevenue', 'assignmentUnitPrice', 'operatingProfit', 'nonOperatingIncome', 'nonOperatingExpenses', 'ordinaryProfit', 'ordinaryProfitmargin']
 
 interface EntityGrid {
   clientName: string
@@ -31,6 +33,9 @@ const gridRows = objectEntity?.length
 const gridCols = 13
 
 const [grid, setGrid] = useState<EntityGrid[]>([])
+
+const { language, setLanguage } = useLanguage()
+const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translation
 
 useEffect(() => {
   const entityGrids: EntityGrid[] = props.data?.map((entity) => ({
@@ -119,8 +124,26 @@ useEffect(() => {
   setGrid(entityGrids)
 }, [props.data])
 
+useEffect(() => {
+  setIsTranslateSwitchActive(language === 'en');
+}, [language]);
 
+const handleTranslationSwitchToggle = () => {
+  const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
+  setLanguage(newLanguage);
+};
 
+const formatDate = (item: string) => {
+  // Extract numeric part and month suffix
+  const monthMatch = item.match(/^(\d{1,2})(月)$/);
+  if (monthMatch) {
+    const numericMonth = monthMatch[1].padStart(2, '0'); 
+    const monthSuffix = monthMatch[2]; 
+    const translatedMonth = translate('month', language); 
+    return `${numericMonth}${translatedMonth}`;
+  }
+  return item;  
+};
 
   return (
     <div className='table_container'>
@@ -142,19 +165,19 @@ useEffect(() => {
                         <th style={{ borderRight: '1px solid black' }}></th>
                         <th colSpan={5}></th>
                         {props.header?.map((item, index) => (
-                          <th key={index}>{item}</th>
+                          <th key={index}>{translate('planning', language)}</th>
                         ))}
                         <th colSpan={6}></th>
                         <th style={{ borderLeft: '1px solid black' }}></th>
                       </tr>
                       <tr className='tr_title'>
-                        <th style={{ width: 100, textAlign: 'center', borderRight: '1px solid black' }}>No.</th>
-                        <th style={{ width: 100, textAlign: 'center' }}>クライアント</th>
+                        <th style={{ width: 100, textAlign: 'center', borderRight: '1px solid black' }}>{translate('No.', language)}</th>
+                        <th style={{ width: 100, textAlign: 'center' }}>{translate('client', language)}</th>
                         <th className='header_center' style={{ width: 100, borderRight: '1px solid black' }}>
-                          勘定科目
+                          {translate('accountTitle', language)}
                         </th>
                         <th colSpan={12}></th>
-                        <th className='header_center'>合計</th>
+                        <th className='header_center'>{translate('totalTable', language)}</th>
                       </tr>
                       <tr className='tr_dates'>
                         <td className='td_border'></td>
@@ -166,10 +189,10 @@ useEffect(() => {
                             className='td_right'
                             style={{ width: 100, overflow: 'hidden', whiteSpace: 'nowrap' }}
                           >
-                            {item}
+                            {formatDate(item)}
                           </td>
                         ))}
-                        <td style={{ width: 100 }}></td>
+                        <td style={{ width: 100 }}>{translate('totalTable', language)}</td>
                       </tr>
                     </>
                   )}
@@ -182,7 +205,7 @@ useEffect(() => {
                         {rowIndex === 5 ? <div>{entityGrid.clientName}</div> : rowIndex === 0 && <></>}
                       </td>
                       <td style={{ width: 100, border: '1px solid black', textAlign: 'center' }}>
-                        {headerTitle[rowIndex]}
+                      {translate(headerTitle[rowIndex], language)}
                       </td>
                       {Array.isArray(row)
                         ? row?.map((cell, colIndex) => (

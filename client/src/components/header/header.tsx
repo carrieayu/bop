@@ -86,6 +86,12 @@ export const HeaderDashboard: React.FC<headerProps> = (props) => {
             </div>
           </div>
         </div>
+
+        <div className='language-toggle'>
+          <button className='language-toggle-btn'>
+            English
+          </button>
+        </div>
       </div>
     )
 }

@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { translate } from '../../utils/translationUtil';
 
 const TablePlanning = () => {
   const [data, setData] = useState([]);
+  const { language, setLanguage } = useLanguage()
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translation
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
@@ -167,7 +171,7 @@ const TablePlanning = () => {
       });
 
       const grossProfitData = {
-        label: '売上総利益',
+        label: 'grossProfit',
         values: [
           ...grossProfitValues,
           firstHalfTotal(grossProfitValues),
@@ -199,16 +203,16 @@ const TablePlanning = () => {
 
       const data = [
         {
-          label: '売上高',
+          label: 'salesRevenue',
           values: Array(16).fill(0),
         },
         {
-          label: '売上',
+          label: 'sales',
           values: Array(16).fill(0),
         },
         //start of cost of sales portion
         {
-          label: '売上原価',
+          label: 'costofGoodSold',
           values: [
             ...costOfSalesValues,
             firstHalfTotal(costOfSalesValues),
@@ -219,7 +223,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '仕入高',
+          label: 'purchases',
           values: [
             ...purchasesValues,
             firstHalfTotal(purchasesValues),
@@ -230,7 +234,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '外注加工費',
+          label: 'outsourcingCosts',
           values: [
             ...outsourcingValues,
             firstHalfTotal(outsourcingValues),
@@ -241,7 +245,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '商品仕入',
+          label: 'merchandisePurchases',
           values: [
             ...productPurchaseValues,
             firstHalfTotal(productPurchaseValues),
@@ -252,7 +256,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '派遣人件費',
+          label: 'temporaryStaffCost',
           values: [
             ...dispatchLaborValues,
             firstHalfTotal(dispatchLaborValues),
@@ -263,7 +267,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '通信費',
+          label: 'communicationExpenses',
           values: [
             ...communicationCostValues,
             firstHalfTotal(communicationCostValues),
@@ -274,7 +278,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '仕掛計上',
+          label: 'workinProgressExpense',
           values: [
             ...inProgressValues,
             firstHalfTotal(inProgressValues),
@@ -285,7 +289,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '償却計上',
+          label: 'postingdepreciationExpense',
           values: [
             ...amortizationValues,
             firstHalfTotal(amortizationValues),
@@ -299,7 +303,7 @@ const TablePlanning = () => {
         //start for planning assign data portion
          grossProfitData, //gross profit
          {
-          label: '人件費',
+          label: 'laborCosts',
           values: [
             ...personnelExpensesValues,
             firstHalfTotal(personnelExpensesValues),
@@ -310,7 +314,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '役員報酬',
+          label: 'executiveCompensation',
           values: [
             ...renumerationValues,
             firstHalfTotal(renumerationValues),
@@ -321,7 +325,7 @@ const TablePlanning = () => {
           ],
         },
          {
-          label: '給与手当',
+          label: 'salaryAndallowances',
           values: [
             ...assign_unit_priceValues,
             firstHalfTotal(assign_unit_priceValues),
@@ -332,7 +336,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '賞与・燃料手当',
+          label: 'bonusesAndfuelallowances',
           values: [
             ...travelExpenseValues,
             firstHalfTotal(travelExpenseValues),
@@ -343,7 +347,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '法定福利費',
+          label: 'statutoryWelfareCosts',
           values: [
             ...taxesPublicChargesValues,
             firstHalfTotal(taxesPublicChargesValues),
@@ -354,7 +358,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '福利厚生費',
+          label: 'welfareExpenses',
           values: [
             ...utilitiesValues,
             firstHalfTotal(utilitiesValues),
@@ -367,7 +371,7 @@ const TablePlanning = () => {
         //end for planning portion
         //start for expenses portion
         {
-          label: '経費',
+          label: 'expenses',
           values: [
             ...expenseTotalValues,
             firstHalfTotal(expenseTotalValues),
@@ -379,7 +383,7 @@ const TablePlanning = () => {
         },
         {
           //same value to " 給与手当 " ?
-          label: '消耗品費',
+          label: 'suppliesExpense',
           values: [
             ...consumableValues,
             firstHalfTotal(consumableValues),
@@ -390,7 +394,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '賃借料',
+          label: 'rentExpense',
           values: [
             ...rentValues,
             firstHalfTotal(rentValues),
@@ -401,7 +405,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '保険料',
+          label: 'insurancePremiums',
           values: [
             ...paymentFeeValues,
             firstHalfTotal(paymentFeeValues),
@@ -413,7 +417,7 @@ const TablePlanning = () => {
         },
         {
           //same " 法定福利費 "
-          label: '租税公課',
+          label: 'taxesAndpublicdues',
           values: [
             ...taxesPublicChargesValues,
             firstHalfTotal(taxesPublicChargesValues),
@@ -424,7 +428,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '減価償却費',
+          label: 'depreciationExpense',
           values: [
             ...depreciationExpensesValues,
             firstHalfTotal(depreciationExpensesValues),
@@ -435,7 +439,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '旅費交通費',
+          label: 'travelAndtransportationexpenses',
           values: [
             ...travelExpenseValues,
             firstHalfTotal(travelExpenseValues),
@@ -446,7 +450,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '通信費',
+          label: 'communicationExpenses',
           values: [
             ...communicationExpenseValues,
             firstHalfTotal(communicationExpenseValues),
@@ -457,7 +461,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '水道光熱費',
+          label: 'utilities',
           values: [
             ...utilitiesValues,
             firstHalfTotal(utilitiesValues),
@@ -468,7 +472,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '支払手数料',
+          label: 'paymentFees',
           values: [
             ...advertisingExpenseValues,
             firstHalfTotal(advertisingExpenseValues),
@@ -479,7 +483,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '広告宣伝費',
+          label: 'advertisingAndpromotionexpenses',
           values: [
             ...advertisingExpenseValues,
             firstHalfTotal(advertisingExpenseValues),
@@ -490,7 +494,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '接待交際費',
+          label: 'entertainmentAndhospitalityexpenses',
           values: [
             ...entertainmentExpenseValues,
             firstHalfTotal(entertainmentExpenseValues),
@@ -501,7 +505,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '支払報酬',
+          label: 'paymentForcompensation',
           values: [
             ...paymentFeeValues,
             firstHalfTotal(paymentFeeValues),
@@ -513,7 +517,7 @@ const TablePlanning = () => {
         },
         {
           //add 人件費 + 経費 field
-          label: '販売及び一般管理費',
+          label: 'sellingAndgeneraladministrativeexpenses',
           // values: Array(16).fill(0),
           values: [
             ...generalExpenseValues.map(item => item.generalTotal),
@@ -525,7 +529,7 @@ const TablePlanning = () => {
         },
         //Operating income 営業利益 ①
         {
-          label: '営業利益 ①',
+          label: 'operatingProfit',
           values: [
             ...operatingProfitValues,
             firstHalfTotal(operatingProfitValues),
@@ -535,7 +539,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '営業外収益',
+          label: 'nonOperatingIncome',
           values: [
             ...nonOperatingIncomeValues,
             firstHalfTotal(nonOperatingIncomeValues),
@@ -545,7 +549,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '営業外費用',
+          label: 'nonOperatingExpenses',
           values: [
             ...nonOperatingExpensesValues,
             firstHalfTotal(nonOperatingExpensesValues),
@@ -555,7 +559,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '経常利益',
+          label: 'ordinaryProfit',
           values: [
             ...ordinaryProfitValues ,
             firstHalfTotal(ordinaryProfitValues ),
@@ -565,7 +569,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: '累計経常利益',
+          label: 'cumulativeOrdinaryProfit',
           values: [
             ...cumulativeOrdinaryProfitValues ,
             firstHalfTotal(cumulativeOrdinaryProfitValues ),
@@ -583,20 +587,43 @@ const TablePlanning = () => {
     });
   }, []);
 
+  useEffect(() => {
+    setIsTranslateSwitchActive(language === 'en');
+  }, [language]);
+
+  const handleTranslationSwitchToggle = () => {
+    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
+    setLanguage(newLanguage);
+  };
+
   const noIndentLabels = [
-    '売上高',
-    '売上原価',
-    '売上総利益',
-    '人件費',
-    '経費',
-    '販売及び一般管理費',
-    '営業利益 ①',
-    '経常利益',
-    '累計経常利益',
+    'salesRevenue',
+    'costofGoodSold',
+    'grossProfit',
+    'personal expenses',
+    'laborCosts',
+    'sellingAndgeneraladministrativeexpenses',
+    'operatingProfit ①',
+    'ordinaryProfit',
+    'cumulativeOrdinaryProfit',
   ];
 
   const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3];
-  const halfYears = ['上期計', '下期計', '合計'];
+  const monthNames: { [key: number]: { en: string; jp: string } } = {
+    1: { en: "January", jp: "1月" },
+    2: { en: "February", jp: "2月" },
+    3: { en: "March", jp: "3月" },
+    4: { en: "April", jp: "4月" },
+    5: { en: "May", jp: "5月" },
+    6: { en: "June", jp: "6月" },
+    7: { en: "July", jp: "7月" },
+    8: { en: "August", jp: "8月" },
+    9: { en: "September", jp: "9月" },
+    10: { en: "October", jp: "10月" },
+    11: { en: "November", jp: "11月" },
+    12: { en: "December", jp: "12月" },
+  };
+  const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable'];
 
   return (
     <div className="table-planning-container">
@@ -604,33 +631,33 @@ const TablePlanning = () => {
         <table>
           <thead>
             <tr>
-              <th>項目</th>
+              <th>{translate('item', language)}</th>
               {months.map((month, index) => (
                 <th key={index} className={(month >= 10 || month <= 3) ? 'light-txt' : 'orange-txt'}>
-                  {month}月
+                  {language === "en" ? monthNames[month].en : monthNames[month].jp}
                 </th>
               ))}
               {halfYears.map((halfYear, index) => (
                 <th key={index} className="sky-txt">
-                  {halfYear}
+                  {translate('planning', language)}
                 </th>
               ))}
-              <th className='total-txt'>売上比</th>
+              <th className='total-txt'>{translate('sales', language)}</th>
             </tr>
             <tr className='scnd-row'>
               <th className='borderless'></th>
               {months.map((month, index) => (
-                <th key={index}>計画</th>
+                <th key={index}>{translate('planning', language)}</th>
               ))}
               {halfYears.map((_, index) => (
-                <th key={index} className=''>計画</th>
+                <th key={index} className=''>{translate('planning', language)}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {data.map((item, index) => (
               <tr key={index}>
-                <td className={noIndentLabels.includes(item.label) ? 'no-indent' : 'indented-label'}>{item.label}</td>
+                <td className={noIndentLabels.includes(item.label) ? 'no-indent' : 'indented-label'}>{translate(item.label, language)}</td>
                 {item.values.map((value, valueIndex) => (
                   <td key={valueIndex}>{value.toLocaleString()}</td>
                 ))}

@@ -9,6 +9,7 @@ import App from './App'
 import 'bulma/css/bulma.min.css'
 import './assets/scss/main.scss'
 import 'react-datepicker/dist/react-datepicker.css'
+import { LanguageProvider } from './contexts/LanguageContext'
 
 // import dotenv from "dotenv";
 
@@ -20,7 +21,9 @@ root.render(
     <Provider store={store}>
       <HelmetProvider>
         <BrowserRouter>
+        <LanguageProvider>
           <App />
+        </LanguageProvider>
         </BrowserRouter>
       </HelmetProvider>
     </Provider>

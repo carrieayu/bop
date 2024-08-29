@@ -1,0 +1,16 @@
+{
+    "project": "案件",
+    "personnelExpenses": "人件費",
+    "budget": "經費",
+    "costOfgoodSold": "売上原価",
+    "projectList": "案件一覧",
+    "newRegistration": "新規登録",
+    "customer": "顧客",
+    "projectName": "案件名",
+    "month": "月",
+    "salesRevenue": "売上高",
+    "nonOperationalRevenue": "宮業外收益",
+    "noneOperationalExpenses": "宮業外费用",
+    "newProjectRegistration": "案件新規登録",
+    "departmentIncharge": "受注事業部"
+}
