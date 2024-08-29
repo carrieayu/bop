@@ -1,0 +1,15 @@
+{
+    "expenseRegistration": "経費登録",
+    "suppliesExpenses": "消耗品費",
+    "rentalExpenses": "賃借料",
+    "taxesAndpublicDues": "租税公課",
+    "depreciationExpenses": "減価償却費",
+    "travelAndtransportationExpenses": "旅費交通費",
+    "communicationExpenses": "通信費",
+    "utilitiesExpenses": "水道光熱費",
+    "paymentFees": "支払手数料",
+    "advertisingAndpromotionExpenses": "広告宣伝費",
+    "entertainmentAndhospitalityExpenses": "接待交際費",
+    "compensationPayment": "支払報酬",
+    "expenseList": "経費一覽"
+}

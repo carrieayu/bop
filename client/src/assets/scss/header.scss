@@ -128,6 +128,23 @@ select.options {
     left: 0;
     z-index: 1000;
 }
+.language-toggle {
+    margin-top: 20px;
+  }
+  
+  .language-toggle-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .language-toggle-btn:hover {
+    background-color: #0056b3;
+  }
 /* Media query */
 @media only screen and (max-width: 1190px) {
     .header_div_right {

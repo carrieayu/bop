@@ -1,0 +1,12 @@
+{
+    "dashboard": "Dashboard",
+    "planning": "Planning",
+    "projectdatalist": "Project Data List",
+    "projectcreate": "Project Data Registration",
+    "personnel-expense-create": "Personnel Expenses Registration",
+    "personnel-expenses-list": "Personnel Expenses List",
+    "expenses-registration": "Expenses Registration",
+    "expenses-list": "Expenses list",
+    "cost-of-sales-registration": "Cost of Sales Registration",
+    "cost-of-sales-list": "Cost of Sales List"
+}

@@ -7,6 +7,8 @@ import Btn from '../../components/Button/Button';
 import { useLocation, useNavigate } from 'react-router-dom';
 import TablePlanning from '../../components/Table/tablePlanning'; // Import TablePlanning component
 import { TableComponentProps } from '../../components/Table/table.component';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { translate } from '../../utils/translationUtil';
 
 const header = ['計画'];
 const smallDate = ['2022/24月', '2022/25月', '2022/26月'];
@@ -24,6 +26,9 @@ const Planning = () => {
   const [isSwitchActive, setIsSwitchActive] = useState(false); // State for switch
   const navigate = useNavigate();
   const location = useLocation();
+  const { language, setLanguage } = useLanguage()
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translation
+
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -50,7 +55,7 @@ const Planning = () => {
 
   useEffect(() => {
     const path = location.pathname;
-    if (path === '/dashboard' || path === '/planning' || path === '/result') {
+    if (path === '/dashboard' || path === '/planning' || path === '/*') {
       setActiveTab(path);
     }
   }, [location.pathname]);
@@ -68,24 +73,42 @@ const Planning = () => {
     setIsSwitchActive(prevState => !prevState);
   };
 
+  useEffect(() => {
+    setIsTranslateSwitchActive(language === 'en');
+  }, [language]);
+
+  const handleTranslationSwitchToggle = () => {
+    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
+    setLanguage(newLanguage);
+  };
+
   return (
     <div className='wrapper'>
       <div className='header_cont'>
-        <Btn
-          label="分析"
-          onClick={() => handleTabClick("/dashboard")}
-          className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
-        />
-        <Btn
-          label="計画"
-          onClick={() => handleTabClick("/planning")}
-          className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
-        />
-        <Btn
-          label="実績"
-          onClick={() => handleTabClick("/result")}
-          className={activeTab === "/result" ? "h-btn-active header-btn" : "header-btn"}
-        />
+      <div className="header-buttons">
+          <Btn
+            label={translate('analyze', language)}
+            onClick={() => handleTabClick("/dashboard")}
+            className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
+          />
+          <Btn
+            label={translate('plan', language)}
+            onClick={() => handleTabClick("/planning")}
+            className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
+          />
+          <Btn
+            label={translate('results', language)}
+            onClick={() => handleTabClick("/*")}
+            className={activeTab === "/*" ? "h-btn-active header-btn" : "header-btn"}
+          />
+        </div>
+        <div className="language-toggle">
+          <p className="pl-label">English</p>
+            <label className="switch">
+              <input type="checkbox" checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle}/>
+              <span className="slider"></span>
+            </label>
+        </div>
       </div>
       <div className='content_wrapper'>
         <div className='sidebar'>
@@ -97,16 +120,16 @@ const Planning = () => {
               <div className='bottom_cont planning_btm'>
                 <div className='pagination_cont planning_header'>
                   <div className="left-content">
-                    <p>PL計画</p>
+                    <p>{translate('profitAndlossPlan', language)}</p>
                   </div>
                   <div className="right-content">
                     <div className="paginate">
-                      <p className="pl-label">案件別表示</p>
+                      <p className="pl-label">{translate('casesDisplay', language)}</p>
                       <label className="switch">
                         <input type="checkbox" checked={isSwitchActive} onChange={handleSwitchToggle} />
                         <span className="slider"></span>
                       </label>
-                      <p className="pl-label">千円</p>
+                      <p className="pl-label">{translate('thousandYen', language)}</p>
                       <label className="switch">
                         <input type="checkbox" />
                         <span className="slider"></span>
