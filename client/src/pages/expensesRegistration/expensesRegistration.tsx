@@ -85,35 +85,66 @@ const ExpensesRegistration = () => {
     }
     try {
       // const response = await axios.post('http://127.0.0.1:8000/api/expenses-registration/create/', formData, {
-        const response = await axios.post('http://54.178.202.58:8000/api/expenses-registration/create/', formData, {
+      const response = await axios.post('http://54.178.202.58:8000/api/expenses-registration/create/', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
-      })
-
-      alert('Sucessfully Saved')
-      setFormData([
-        {
-          month: '',
-          taxes_and_public_charges: '',
-          communication_expenses: '',
-          advertising_expenses: '',
-          consumables_expenses: '',
-          depreciation_expenses: '',
-          utilities_expenses: '',
-          entertainment_expenses: '',
-          rent: '',
-          travel_expenses: '',
-          payment_fees: '',
-          remuneration: '',
-          registered_user_id: localStorage.getItem('userID'),
-        },
-      ])
+      });
+    
+      alert('Successfully Saved');
+      // Reset form data after successful submission
+      setFormData([{
+        month: '',
+        taxes_and_public_charges: '',
+        communication_expenses: '',
+        advertising_expenses: '',
+        consumables_expenses: '',
+        depreciation_expenses: '',
+        utilities_expenses: '',
+        entertainment_expenses: '',
+        rent: '',
+        travel_expenses: '',
+        payment_fees: '',
+        remuneration: '',
+        registered_user_id: localStorage.getItem('userID'),
+      }]);
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        window.location.href = '/login'
+      if (error.response && error.response.status === 409) {
+        // If there's a conflict (month already exists), prompt the user
+        const confirmOverwrite = window.confirm("選択された月は既にデータが登録されています。 \n上書きしますか？");
+        if (confirmOverwrite) {
+          try {
+            // const response = await axios.put('http://127.0.0.1:8000/api/expenses-registration/update/', formData, {
+            const response = await axios.put('http://54.178.202.58:8000/api/expenses-registration/update/', formData, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              },
+            });
+            // alert('Data successfully saved/overwritten.');
+            setFormData([{
+              month: '',
+              taxes_and_public_charges: '',
+              communication_expenses: '',
+              advertising_expenses: '',
+              consumables_expenses: '',
+              depreciation_expenses: '',
+              utilities_expenses: '',
+              entertainment_expenses: '',
+              rent: '',
+              travel_expenses: '',
+              payment_fees: '',
+              remuneration: '',
+              registered_user_id: localStorage.getItem('userID'),
+            }]);
+        } catch (overwriteError) {
+            console.error('Error overwriting data:', overwriteError);
+        }
+        
+        }
       } else {
-        console.error('There was an error with expenses registration!', error)
+        console.error('There was an error with expenses registration!', error);
       }
     }
   }

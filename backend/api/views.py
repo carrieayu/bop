@@ -622,6 +622,16 @@ class CreateCostOfSales(generics.CreateAPIView):
                     'dispatch_labor_costs': item['dispatch_labor_costs'],
                     'amortization': item['amortization'],
                 }
+                
+                existing_entry = CostOfSales.objects.filter(
+                    year=cos['year'],
+                    month=cos['month']
+                ).first()
+                
+                if existing_entry:
+                    print("Month Exist")
+                    return JsonResponse({"detail": "選択された月は既にデータが登録されています。 \n 上書きしますか？"}, status=status.HTTP_409_CONFLICT) 
+                    
                 serializer = CustomCostOfSalesSerializer(data=cos)
                 if serializer.is_valid():
                     serializer.save()
@@ -632,6 +642,58 @@ class CreateCostOfSales(generics.CreateAPIView):
                 return JsonResponse({"messages": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
         return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
+
+class UpdateCostOfSales(generics.CreateAPIView):
+    serializer_class = CustomCostOfSalesSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request):
+        data = JSONParser().parse(request)
+        if not isinstance(data, list):
+            return JsonResponse(status=status.HTTP_400_BAD_REQUEST, data={"detail": "Invalid input format."})
+        
+        responses = []
+        
+        for item in data:
+            try:
+                year = datetime.now().year
+                month = item['month']
+                
+                existing_entry = CostOfSales.objects.filter(year=year, month=month).first()
+                
+                if existing_entry:
+                    # Update existing entry
+                    serializer = CustomCostOfSalesSerializer(existing_entry, data=item, partial=True)
+                    if serializer.is_valid():
+                        serializer.save()
+                        responses.append({"message": f"Updated successfully for month {month}."})
+                    else:
+                        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    # Create new entry if none exists
+                    cos = {
+                        'year' : datetime.now().year,
+                        'month': item['month'],
+                        'outsourcing_costs': item['outsourcing_costs'],
+                        'communication_costs': item['communication_costs'],
+                        'cost_of_sales': item['cost_of_sales'],
+                        'product_purchases': item['product_purchases'],
+                        'work_in_progress': item['work_in_progress'],
+                        'purchases': item['purchases'],
+                        'dispatch_labor_costs': item['dispatch_labor_costs'],
+                        'amortization': item['amortization'],
+                    }
+                    
+                    serializer = CustomCostOfSalesSerializer(data=cos)
+                    if serializer.is_valid():
+                        serializer.save()
+                        responses.append({"message": f"Created successfully for month {month}."})
+                    else:
+                        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        return JsonResponse(responses, safe=False, status=status.HTTP_200_OK)
     
 
 class CreateExpenses(generics.CreateAPIView):
@@ -660,6 +722,17 @@ class CreateExpenses(generics.CreateAPIView):
                     'payment_fees': item['payment_fees'],
                     'remuneration': item['remuneration'],
                 }
+                
+                existing_entry = Expenses.objects.filter(
+                    year=exp['year'],
+                    month=exp['month'],
+                ).first()
+                
+                if existing_entry:
+                    print('exist already')
+                    # If an entry exists, return a specific response
+                    return JsonResponse({"detail": "選択された月は既にデータが登録されています。 \n 上書きしますか？"}, status=status.HTTP_409_CONFLICT)
+                
                 serializer = CustomExpensesSerializer(data=exp)
                 if serializer.is_valid():
                     serializer.save()
@@ -670,5 +743,62 @@ class CreateExpenses(generics.CreateAPIView):
                 return JsonResponse({"messagessss": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
         return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
+    
+class UpdateExpenses(generics.CreateAPIView):
+    serializer_class = CustomExpensesSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request):
+        data = JSONParser().parse(request)
+        if not isinstance(data, list):
+            return JsonResponse(status=status.HTTP_400_BAD_REQUEST, data={"detail": "Invalid input format."})
+        
+        responses = []
+        
+        for item in data:
+            try:
+                year = datetime.now().year
+                month = item['month']
+                
+                existing_entry = Expenses.objects.filter(year=year, month=month).first()
+                
+                if existing_entry:
+                    # Update existing entry
+                    serializer = CustomExpensesSerializer(existing_entry, data=item, partial=True)
+                    if serializer.is_valid():
+                        serializer.save()
+                        responses.append({"message": f"Updated successfully for month {month}."})
+                    else:
+                        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    # Create new entry if none exists
+                    exp = {
+                        'year': year,
+                        'month': month,
+                        'taxes_and_public_charges': item['taxes_and_public_charges'],
+                        'communication_expenses': item['communication_expenses'],
+                        'advertising_expenses': item['advertising_expenses'],
+                        'consumables_expenses': item['consumables_expenses'],
+                        'depreciation_expenses': item['depreciation_expenses'],
+                        'utilities_expenses': item['utilities_expenses'],
+                        'entertainment_expenses': item['entertainment_expenses'],
+                        'rent': item['rent'],
+                        'travel_expenses': item['travel_expenses'],
+                        'payment_fees': item['payment_fees'],
+                        'remuneration': item['remuneration'],
+                    }
+                    
+                    serializer = CustomExpensesSerializer(data=exp)
+                    if serializer.is_valid():
+                        serializer.save()
+                        responses.append({"message": f"Created successfully for month {month}."})
+                    else:
+                        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        return JsonResponse(responses, safe=False, status=status.HTTP_200_OK)
+        
+    
 
     
