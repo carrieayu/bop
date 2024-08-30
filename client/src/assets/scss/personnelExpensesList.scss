@@ -221,6 +221,7 @@
                                             .personnel_table_title_content_vertical{
                                                 color: #fff;
                                                 border: none;
+                                                font-size: 14px;
                                             }
                                         }
                                         .personnel_table_body{
@@ -235,28 +236,27 @@
                                             .txt0{
                                                 margin-bottom: 5px;
                                                 text-align: center;
-                                                // font-size: 14px;
+                                                font-size: 14px;
                                             }
                                             .txt1_txt2_flex{
                                                 margin-top: 20px;
                                                 display: flex;
-                                                // justify-content: space-between;
-                                                width: 100%;
+                                                flex-direction: column;
                                                 .txt1{
-                                                    font-size: 12px;
+                                                    font-size: 10px;
                                                     padding: 5px 0px;
                                                     background-color: #C6D4E7;
                                                     color: #000;
                                                     border-radius: 5px;
                                                     text-align: center;
-                                                    width: 100% !important;
+                                                    // width: 100% !important;
                                                     @media only screen and (max-width: 1875px){
                                                         font-size: 10px;
                                                     }
                                                 }
                                                 .txt2{
                                                     margin-left: 5px;
-                                                    font-size: 12px;
+                                                    font-size: 10px;
                                                     padding: 5px 0px;
                                                     text-align: center;
                                                 }
@@ -264,8 +264,7 @@
                                             .txt3_txt4_flex{
                                                 margin-top: 30px;
                                                 display: flex;
-                                                // justify-content: space-between;
-                                                width: 100%;
+                                                flex-direction: column;
                                                 .txt3{
                                                     font-size: 12px;
                                                     padding: 5px 0px;
@@ -273,7 +272,7 @@
                                                     color: #000;
                                                     border-radius: 5px;
                                                     text-align: center;
-                                                    width: 100% !important;
+                                                    // width: 100% !important;
                                                     @media only screen and (max-width: 1875px){
                                                         font-size: 10px;
                                                     }
