@@ -9,18 +9,21 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import { translate } from "../../utils/translationUtil";
 
 
-const header: string[] = ['month', 
-  'suppliesExpenses', 
-  'rentalExpenses', 
-  'taxesAndpublicDues', 
-  'depreciationExpenses', 
-  'travelAndtransportationExpenses', 
-  'communicationExpenses', 
-  'utilitiesExpenses', 
-  'paymentFees', 
-  'advertisingAndpromotionExpenses', 
-  'entertainmentAndhospitalityExpenses', 
-  'compensationPayment']
+const header: string[] = 
+  [
+    'month', 
+    'suppliesExpenses', 
+    'rentExpenses', 
+    'taxesAndpublicCharges', 
+    'depreciationExpenses', 
+    'travelExpenses', 
+    'communicationExpenses', 
+    'utilitiesExpenses', 
+    'transactionFees', 
+    'advertisingExpenses', 
+    'entertainmentExpenses', 
+    'professionalServicesFees'
+  ];
 
 const ExpensesList: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning')
@@ -115,17 +118,17 @@ const ExpensesList: React.FC = () => {
         <div className='proj_top_btn_cont'>
         <div className="header-buttons">
           <Btn
-            label={translate('analyze', language)}
+            label={translate('analysis', language)}
             onClick={() => handleTabClick("/dashboard")}
             className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
           />
           <Btn
-            label={translate('plan', language)}
+            label={translate('profitAndlossPlanning', language)}
             onClick={() => handleTabClick("/planning")}
             className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
           />
           <Btn
-            label={translate('plan', language)}
+            label={translate('results', language)}
             onClick={() => handleTabClick("/*")}
             className={activeTab === "/*" ? "h-btn-active header-btn" : "header-btn"}
           />
@@ -151,7 +154,7 @@ const ExpensesList: React.FC = () => {
                 {[...Array(4)].map((_, index) => (
                   <Btn
                     key={index}
-                    label={translate(index === 0 ? 'project' : index === 1 ? 'personnelExpenses' : index === 2 ? 'budget' : 'costOfgoodSold', language)}
+                    label={translate(index === 0 ? 'project' : index === 1 ? 'personalExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
                     onClick={() =>
                       handleTabsClick(
                         index === 0
@@ -179,7 +182,7 @@ const ExpensesList: React.FC = () => {
                 ))}
               </div>
               <div className='proj_title_table_cont'>
-                <p className='proj_title'>{translate('expenseList', language)}</p>
+                <p className='proj_title'>{translate('expensesList', language)}</p>
                 <Btn label={translate('newRegistration', language)} size='normal' onClick={() => ''} className='proj_btn' />
               </div>
               <div className='proj_table_wrapper'>

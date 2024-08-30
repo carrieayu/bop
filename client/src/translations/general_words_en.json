@@ -5,6 +5,7 @@
     "checkbox": "Checkbox",
     "cancel": "Cancel",
     "click": "Click",
+    "client": "Client",
     "clientName": "Client Name",
     "confirmPassword": "Confirm Password",
     "download": "Download",
@@ -27,7 +28,7 @@
     "navigation": "Navigation",
     "newRegistration": "New Registration",
     "nextPage": "Next Page",
-    "no": "No.",
+    "itemNumber": "No.",
     "paginator": "Paginator",
     "password": "Password",
     "previousPage": "Previous Page",
@@ -38,5 +39,13 @@
     "toggleAmountOfRecordsDisplayed": "Toggle Amount of Records Displayed",
     "totalPage": "Total Page",
     "unknown": "Unknown",
-    "username": "Username"
+    "username": "Username",
+    "thousandYen": "Thousand Yen",
+    "switchDisplayMode": "Switch Display Mode",
+    "switchEditMode": "Switch Edit Mode",
+    "update": "Update",
+    "projectName": "Project Name",
+    "newProjectRegistration": "New Project Registration",
+    "newPersonnelRegistration": "New Personnel Registration",
+    "selectEmployee": "Select Employee"
 }

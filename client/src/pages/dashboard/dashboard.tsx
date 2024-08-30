@@ -123,7 +123,7 @@ const Dashboard = () => {
       },
       {
         type: 'bar' as const,
-        label: translate('operatingProfit', language),
+        label: translate('operatingIncome', language),
         data: datePlanning?.map(date => totalOperatingProfitByDate[date]),
         backgroundColor: '#b8cbe2',
         borderColor: 'black',
@@ -132,7 +132,7 @@ const Dashboard = () => {
       },
       {
         type: 'bar' as const,
-        label: translate('netProfit', language),
+        label: translate('cumulativeOrdinaryIncome', language),
         data: datePlanning?.map(date => totalNetProfitPeriodByDate[date]),
         backgroundColor: '#bde386',
         borderColor: 'black',
@@ -180,12 +180,12 @@ const Dashboard = () => {
       <div className='header_cont'>
         <div className="header-buttons">
           <Btn
-            label={translate('analyze', language)}
+            label={translate('analysis', language)}
             onClick={() => handleTabClick("/dashboard")}
             className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
           />
           <Btn
-            label={translate('plan', language)}
+            label={translate('profitAndlossPlanning', language)}
             onClick={() => handleTabClick("/planning")}
             className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
           />
@@ -234,7 +234,7 @@ const Dashboard = () => {
                   height='120px'
                 >
                   <div className='custom-card-content'>
-                    <p className='text1'>{translate('operatingProfit', language)}</p>
+                    <p className='text1'>{translate('operatingIncome', language)}</p>
                     <p className='numTxt'>
                       {formatNumberWithCommas(totalOperatingProfit)}&nbsp;<span className='totalTxt'>{translate('Yen', language)}</span>
                     </p>
@@ -282,7 +282,7 @@ const Dashboard = () => {
                   height='120px'
                 >
                   <div className='custom-card-content'>
-                    <p className='text1'>{translate('netProfit', language)}</p>
+                    <p className='text1'>{translate('cumulativeOrdinaryIncome', language)}</p>
                     <p className='numTxt'>
                       {formatNumberWithCommas(totalNetProfitPeriod)}&nbsp;<span className='totalTxt'>{translate('Yen', language)}</span>
                     </p>
@@ -316,7 +316,7 @@ const Dashboard = () => {
           <div className='bottom_cont'>
             <div className="right-content">
               <div className="paginate">
-                <p className="pl-label">{translate('casesDisplay', language)}</p>
+                <p className="pl-label">{translate('displayByProject', language)}</p>
                   <label className="switch">
                     <input type="checkbox" checked={isSwitchActive} onChange={handleSwitchToggle} />
                       <span className="slider"></span>

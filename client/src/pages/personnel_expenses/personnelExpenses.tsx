@@ -60,6 +60,21 @@ const PersonnelExpensesList: React.FC = () => {
       setLanguage(newLanguage);
     };
 
+    const monthNames: { [key: number]: { en: string; jp: string } } = {
+      1: { en: "January", jp: "1月" },
+      2: { en: "February", jp: "2月" },
+      3: { en: "March", jp: "3月" },
+      4: { en: "April", jp: "4月" },
+      5: { en: "May", jp: "5月" },
+      6: { en: "June", jp: "6月" },
+      7: { en: "July", jp: "7月" },
+      8: { en: "August", jp: "8月" },
+      9: { en: "September", jp: "9月" },
+      10: { en: "October", jp: "10月" },
+      11: { en: "November", jp: "11月" },
+      12: { en: "December", jp: "12月" },
+    };
+
 
     return (
       <div className='personnel_wrapper'>
@@ -67,12 +82,12 @@ const PersonnelExpensesList: React.FC = () => {
           <div className='personnel_top_btn_cont'>
           <div className="header-buttons">
           <Btn
-            label={translate('analyze', language)}
+            label={translate('analysis', language)}
             onClick={() => handleTabClick("/dashboard")}
             className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
           />
           <Btn
-            label={translate('plan', language)}
+            label={translate('profitAndlossPlanning', language)}
             onClick={() => handleTabClick("/planning")}
             className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
           />
@@ -105,7 +120,7 @@ const PersonnelExpensesList: React.FC = () => {
                   {[...Array(4)].map((_, index) => (
                     <Btn
                       key={index}
-                      label={translate(index === 0 ? 'project' : index === 1 ? 'personnelExpenses' : index === 2 ? 'budget' : 'costOfgoodSold', language)}
+                      label={translate(index === 0 ? 'project' : index === 1 ? 'personalExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
                       onClick={() =>
                         handleTabsClick(
                           index === 0
@@ -146,7 +161,7 @@ const PersonnelExpensesList: React.FC = () => {
                               <th className='personnel_table_title_content_vertical has-text-centered'></th>
                               {months.map((month, index) => (
                                 <th key={index} className='personnel_table_title_content_vertical has-text-centered'>
-                                  {month}{translate('month', language)}
+                                  {language === "en" ? monthNames[month].en : monthNames[month].jp}
                                 </th>
                               ))}
                             </tr>
@@ -158,13 +173,13 @@ const PersonnelExpensesList: React.FC = () => {
                                   {user.username}
                                   {user.planning_assign?.map((planning, planningIndex) => (
                                     <td>
-                                      <div className='txt0'>{translate('philbusinessSupportServices', language)}</div>
+                                      <div className='txt0'>フィリピン事業支援業務</div>
                                       <div className='txt1_txt2_flex'>
-                                        <div className='txt1'>{translate('personnelExpenses', language)}</div>
+                                        <div className='txt1'>{translate('personalExpenses', language)}</div>
                                         <div className='txt2'>{planning.planning_project['personal_expenses']}</div>
                                       </div>
                                       <div className='txt3_txt4_flex'>
-                                        <div className='txt3'>{translate('ratio', language)}</div>
+                                        <div className='txt3'>{translate('assignmentRatio', language)}</div>
                                         <div className='txt4'>{planning.assignment_ratio}%</div>
                                       </div>
                                     </td>

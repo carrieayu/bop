@@ -24,6 +24,7 @@ const ProjectDataList: React.FC = () => {
     const [changes, setChanges] = useState({})
     const [projects, setProjects] = useState([])
     const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
+    const [initialLanguage, setInitialLanguage] = useState(language);
 
     const totalPages = Math.ceil(100 / 10);
 
@@ -46,7 +47,14 @@ const ProjectDataList: React.FC = () => {
     }
 
     const handleClick = () => {
-      setIsEditing((prevState) => !prevState)
+      setIsEditing((prevState) => {
+        const newEditingState = !prevState;
+        if (newEditingState) {
+          setLanguage(initialLanguage);
+        }
+    
+        return newEditingState;
+      });
     }
 
 
@@ -142,8 +150,11 @@ const ProjectDataList: React.FC = () => {
       }, [language]);
     
       const handleTranslationSwitchToggle = () => {
-        const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
-        setLanguage(newLanguage);
+        if (!isEditing) {
+          const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
+          setInitialLanguage(language); 
+          setLanguage(newLanguage);
+        }
       };
 
   return (
@@ -152,12 +163,12 @@ const ProjectDataList: React.FC = () => {
         <div className='proj_top_btn_cont'>
           <div className='header-buttons'>
             <Btn
-              label={translate('analyze', language)}
+              label={translate('analysis', language)}
               onClick={() => handleTabClick('/dashboard')}
               className={activeTab === '/dashboard' ? 'h-btn-active header-btn' : 'header-btn'}
             />
             <Btn
-              label={translate('plan', language)}
+              label={translate('profitAndlossPlanning', language)}
               onClick={() => handleTabClick('/planning')}
               className={activeTab === '/planning' ? 'h-btn-active header-btn' : 'header-btn'}
             />
@@ -170,7 +181,7 @@ const ProjectDataList: React.FC = () => {
           <div className='language-toggle'>
             <p className='pl-label'>English</p>
             <label className='switch'>
-              <input type='checkbox' checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle} />
+              <input type='checkbox' checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle} disabled={isEditing}/>
               <span className='slider'></span>
             </label>
           </div>
@@ -185,7 +196,7 @@ const ProjectDataList: React.FC = () => {
             <div className='proj_top_body_cont'>
               <div className='mode_switch_datalist'>
                 <button className='mode_switch' onClick={handleClick}>
-                  {isEditing ? '表示モード切り替え' : '編集モード切替'}
+                  {isEditing ? '表示モード切り替え' : translate('switchEditMode', language)}
                 </button>
               </div>
             </div>
@@ -198,10 +209,10 @@ const ProjectDataList: React.FC = () => {
                       index === 0
                         ? 'project'
                         : index === 1
-                          ? 'personnelExpenses'
+                          ? 'personalExpenses'
                           : index === 2
-                            ? 'budget'
-                            : 'costOfgoodSold',
+                            ? 'expenses'
+                            : 'costOfSales',
                       language,
                     )}
                     onClick={() =>
@@ -231,7 +242,7 @@ const ProjectDataList: React.FC = () => {
                 ))}
               </div>
               <div className='proj_title_table_cont'>
-                <p className='proj_title'>{translate('projectList', language)}</p>
+                <p className='proj_title'>{translate('projectsList', language)}</p>
                 <Btn
                   label={translate('newRegistration', language)}
                   size='normal'
@@ -249,7 +260,7 @@ const ProjectDataList: React.FC = () => {
                             <thead>
                               <tr className='proj_table_title '>
                                 <th className='proj_table_title_content_vertical has-text-centered'>
-                                  {translate('customer', language)}
+                                  {translate('client', language)}
                                 </th>
                                 <th className='proj_table_title_content_vertical has-text-centered'>
                                   {translate('projectName', language)}
@@ -262,10 +273,10 @@ const ProjectDataList: React.FC = () => {
                                   {translate('salesRevenue', language)}
                                 </th>
                                 <th className='proj_table_title_content_vertical has-text-centered'>
-                                  {translate('nonOperationalRevenue', language)}
+                                  {translate('nonOperatingIncome', language)}
                                 </th>
                                 <th className='proj_table_title_content_vertical has-text-centered'>
-                                  {translate('noneOperationalExpenses', language)}
+                                  {translate('nonOperatingExpenses', language)}
                                 </th>
                               </tr>
                             </thead>
@@ -338,7 +349,7 @@ const ProjectDataList: React.FC = () => {
                           <thead>
                             <tr className='proj_table_title '>
                               <th className='proj_table_title_content_vertical has-text-centered'>
-                                {translate('customer', language)}
+                                {translate('client', language)}
                               </th>
                               <th className='proj_table_title_content_vertical has-text-centered'>
                                 {translate('projectName', language)}
@@ -351,10 +362,10 @@ const ProjectDataList: React.FC = () => {
                                 {translate('salesRevenue', language)}
                               </th>
                               <th className='proj_table_title_content_vertical has-text-centered'>
-                                {translate('nonOperationalRevenue', language)}
+                                {translate('nonOperatingIncome', language)}
                               </th>
                               <th className='proj_table_title_content_vertical has-text-centered'>
-                                {translate('noneOperationalExpenses', language)}
+                                {translate('nonOperatingExpenses', language)}
                               </th>
                             </tr>
                           </thead>

@@ -32,10 +32,18 @@ const Planning = () => {
 
 
   const [isEditing, setIsEditing] = useState(false)
+  const [initialLanguage, setInitialLanguage] = useState(language);
 
   const handleClick = () => {
-    setIsEditing((prevState) => !prevState)
-  }
+    setIsEditing((prevState) => {
+      const newEditingState = !prevState;
+      if (newEditingState) {
+        setLanguage(initialLanguage);
+      }
+  
+      return newEditingState;
+    });
+  };
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -85,8 +93,11 @@ const Planning = () => {
   }, [language]);
 
   const handleTranslationSwitchToggle = () => {
-    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
-    setLanguage(newLanguage);
+    if (!isEditing) {
+      const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
+      setInitialLanguage(language); 
+      setLanguage(newLanguage);
+    }
   };
 
   return (
@@ -94,12 +105,12 @@ const Planning = () => {
       <div className='header_cont'>
         <div className='header-buttons'>
           <Btn
-            label={translate('analyze', language)}
+            label={translate('analysis', language)}
             onClick={() => handleTabClick('/dashboard')}
             className={activeTab === '/dashboard' ? 'h-btn-active header-btn' : 'header-btn'}
           />
           <Btn
-            label={translate('plan', language)}
+            label={translate('profitAndlossPlanning', language)}
             onClick={() => handleTabClick('/planning')}
             className={activeTab === '/planning' ? 'h-btn-active header-btn' : 'header-btn'}
           />
@@ -112,7 +123,7 @@ const Planning = () => {
         <div className='language-toggle'>
           <p className='pl-label'>English</p>
           <label className='switch'>
-            <input type='checkbox' checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle} />
+            <input type='checkbox' checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle} disabled={isEditing}/>
             <span className='slider'></span>
           </label>
         </div>
@@ -127,13 +138,12 @@ const Planning = () => {
               <div className='bottom_cont planning_btm'>
                 <div className='pagination_cont planning_header'>
                   <div className='left-content'>
-                    <p>{translate('profitAndlossPlan', language)}</p>
+                    <p>{translate('profitAndlossPlanning', language)}</p>
                   </div>
                   <div className='right-content'>
                     <div className='paginate'>
-                      <p className='pl-label'>{translate('casesDisplay', language)}</p>
-                      <button className='mode_switch' onClick={handleClick}>{isEditing ? '表示モード切り替え' : '編集モード切替'}</button>
-                      <p className='pl-label'>案件別表示</p>
+                    <button className='mode_switch' onClick={handleClick}>{isEditing ? '表示モード切り替え' : translate('switchEditMode', language)}</button>
+                      <p className='pl-label'>{translate('displayByProject', language)}</p>
                       <label className='switch'>
                         <input type='checkbox' checked={isSwitchActive} onChange={handleSwitchToggle} />
                         <span className='slider'></span>

@@ -120,23 +120,38 @@ const CostOfSalesList: React.FC = () => {
       setLanguage(newLanguage);
     };
 
+    const monthNames: { [key: number]: { en: string; jp: string } } = {
+      1: { en: "January", jp: "1月" },
+      2: { en: "February", jp: "2月" },
+      3: { en: "March", jp: "3月" },
+      4: { en: "April", jp: "4月" },
+      5: { en: "May", jp: "5月" },
+      6: { en: "June", jp: "6月" },
+      7: { en: "July", jp: "7月" },
+      8: { en: "August", jp: "8月" },
+      9: { en: "September", jp: "9月" },
+      10: { en: "October", jp: "10月" },
+      11: { en: "November", jp: "11月" },
+      12: { en: "December", jp: "12月" },
+    };
+
   return (
     <div className='proj_wrapper'>
        <div className="header_cont">
         <div className="proj_top_btn_cont">
         <div className="header-buttons">
           <Btn
-            label={translate('analyze', language)}
+            label={translate('analysis', language)}
             onClick={() => handleTabClick("/dashboard")}
             className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
           />
           <Btn
-            label={translate('plan', language)}
+            label={translate('profitAndlossPlanning', language)}
             onClick={() => handleTabClick("/planning")}
             className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
           />
           <Btn
-            label={translate('plan', language)}
+            label={translate('results', language)}
             onClick={() => handleTabClick("/*")}
             className={activeTab === "/*" ? "h-btn-active header-btn" : "header-btn"}
           />
@@ -164,7 +179,7 @@ const CostOfSalesList: React.FC = () => {
                             {[...Array(4)].map((_, index) => (
                                   <Btn
                                     key={index}
-                                    label={translate(index === 0 ? 'project' : index === 1 ? 'personnelExpenses' : index === 2 ? 'budget' : 'costOfgoodSold', language)}
+                                    label={translate(index === 0 ? 'project' : index === 1 ? 'personalExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
                                     onClick={() =>
                                       handleTabsClick(
                                         index === 0
@@ -190,7 +205,7 @@ const CostOfSalesList: React.FC = () => {
                                 ))}
                             </div>
                             <div className="proj_title_table_cont">
-                                <p className="proj_title">{translate('costofSalesList', language)}</p>
+                                <p className="proj_title">{translate('costOfsalesList', language)}</p>
                                 <Btn 
                                     label={translate('newRegistration', language)}
                                     size="normal"
@@ -206,14 +221,14 @@ const CostOfSalesList: React.FC = () => {
                                             <thead>
                                                 <tr className="proj_table_title ">
                                                 <th className="proj_table_title_content_vertical has-text-centered">{translate('month', language)}</th>
-                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('costofSales', language)}</th>
-                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('purchaseAmount', language)}</th>
-                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('outsourcingProcessingCosts', language)}</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('costOfSales', language)}</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('purchases', language)}</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('outsourcingExpenses', language)}</th>
                                                 <th className="proj_table_title_content_vertical has-text-centered">{translate('productPurchases', language)}</th>
-                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('temporaryStaffingpersonnelExpenses', language)}</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('dispatchLabourExpenses', language)}</th>
                                                 <th className="proj_table_title_content_vertical has-text-centered">{translate('communicationExpenses', language)}</th>
-                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('work-inProgressEntry', language)}</th>
-                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('depreciationEntry', language)}</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('workInProgressExpenses', language)}</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('amortizationExpenses', language)}</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="proj_table_body">

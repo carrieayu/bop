@@ -212,7 +212,7 @@ const TablePlanning = () => {
         },
         //start of cost of sales portion
         {
-          label: 'costofGoodSold',
+          label: 'costOfSales',
           values: [
             ...costOfSalesValues,
             firstHalfTotal(costOfSalesValues),
@@ -234,7 +234,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'outsourcingCosts',
+          label: 'outsourcingExpenses',
           values: [
             ...outsourcingValues,
             firstHalfTotal(outsourcingValues),
@@ -245,7 +245,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'merchandisePurchases',
+          label: 'productPurchases',
           values: [
             ...productPurchaseValues,
             firstHalfTotal(productPurchaseValues),
@@ -256,7 +256,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'temporaryStaffCost',
+          label: 'dispatchLabourExpenses',
           values: [
             ...dispatchLaborValues,
             firstHalfTotal(dispatchLaborValues),
@@ -278,7 +278,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'workinProgressExpense',
+          label: 'workInProgressExpenses',
           values: [
             ...inProgressValues,
             firstHalfTotal(inProgressValues),
@@ -289,7 +289,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'postingdepreciationExpense',
+          label: 'amortizationExpenses',
           values: [
             ...amortizationValues,
             firstHalfTotal(amortizationValues),
@@ -303,7 +303,7 @@ const TablePlanning = () => {
         //start for planning assign data portion
         grossProfitData, //gross profit
         {
-          label: 'laborCosts',
+          label: 'personalExpenses',
           values: [
             ...personnelExpensesValues,
             firstHalfTotal(personnelExpensesValues),
@@ -314,7 +314,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'executiveCompensation',
+          label: 'executiveRenumeration',
           values: [
             ...renumerationValues,
             firstHalfTotal(renumerationValues),
@@ -325,7 +325,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'salaryAndallowances',
+          label: 'salary',
           values: [
             ...assign_unit_priceValues,
             firstHalfTotal(assign_unit_priceValues),
@@ -336,7 +336,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'bonusesAndfuelallowances',
+          label: 'fuelAllowance',
           values: [
             ...travelExpenseValues,
             firstHalfTotal(travelExpenseValues),
@@ -347,7 +347,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'statutoryWelfareCosts',
+          label: 'statutoryWelfareExpenses',
           values: [
             ...taxesPublicChargesValues,
             firstHalfTotal(taxesPublicChargesValues),
@@ -383,7 +383,7 @@ const TablePlanning = () => {
         },
         {
           //same value to " 給与手当 " ?
-          label: 'suppliesExpense',
+          label: 'suppliesExpenses',
           values: [
             ...consumableValues,
             firstHalfTotal(consumableValues),
@@ -394,7 +394,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'rentExpense',
+          label: 'rentExpenses',
           values: [
             ...rentValues,
             firstHalfTotal(rentValues),
@@ -417,7 +417,7 @@ const TablePlanning = () => {
         },
         {
           //same " 法定福利費 "
-          label: 'taxesAndpublicdues',
+          label: 'taxesAndpublicCharges',
           values: [
             ...taxesPublicChargesValues,
             firstHalfTotal(taxesPublicChargesValues),
@@ -428,7 +428,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'depreciationExpense',
+          label: 'depreciationExpenses',
           values: [
             ...depreciationExpensesValues,
             firstHalfTotal(depreciationExpensesValues),
@@ -439,7 +439,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'travelAndtransportationexpenses',
+          label: 'travelExpenses',
           values: [
             ...travelExpenseValues,
             firstHalfTotal(travelExpenseValues),
@@ -461,7 +461,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'utilities',
+          label: 'utilitiesExpenses',
           values: [
             ...utilitiesValues,
             firstHalfTotal(utilitiesValues),
@@ -472,7 +472,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'paymentFees',
+          label: 'transactionFees',
           values: [
             ...advertisingExpenseValues,
             firstHalfTotal(advertisingExpenseValues),
@@ -483,7 +483,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'advertisingAndpromotionexpenses',
+          label: 'advertisingExpenses',
           values: [
             ...advertisingExpenseValues,
             firstHalfTotal(advertisingExpenseValues),
@@ -494,7 +494,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'entertainmentAndhospitalityexpenses',
+          label: 'entertainmentExpenses',
           values: [
             ...entertainmentExpenseValues,
             firstHalfTotal(entertainmentExpenseValues),
@@ -505,7 +505,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'paymentForcompensation',
+          label: 'professionalServicesFees',
           values: [
             ...paymentFeeValues,
             firstHalfTotal(paymentFeeValues),
@@ -517,7 +517,7 @@ const TablePlanning = () => {
         },
         {
           //add 人件費 + 経費 field
-          label: 'sellingAndgeneraladministrativeexpenses',
+          label: 'sellingAndGeneralAdminExpenses',
           // values: Array(16).fill(0),
           values: [
             ...generalExpenseValues.map((item) => item.generalTotal),
@@ -529,7 +529,7 @@ const TablePlanning = () => {
         },
         //Operating income 営業利益 ①
         {
-          label: 'operatingProfit',
+          label: 'operatingIncome',
           values: [
             ...operatingProfitValues,
             firstHalfTotal(operatingProfitValues),
@@ -559,7 +559,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'ordinaryProfit',
+          label: 'ordinaryIncome',
           values: [
             ...ordinaryProfitValues,
             firstHalfTotal(ordinaryProfitValues),
@@ -569,7 +569,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'cumulativeOrdinaryProfit',
+          label: 'cumulativeOrdinaryIncome',
           values: [
             ...cumulativeOrdinaryProfitValues,
             firstHalfTotal(cumulativeOrdinaryProfitValues),
@@ -598,14 +598,14 @@ const TablePlanning = () => {
 
   const noIndentLabels = [
     'salesRevenue',
-    'costofGoodSold',
+    'costOfSales',
     'grossProfit',
-    'personal expenses',
-    'laborCosts',
-    'sellingAndgeneraladministrativeexpenses',
-    'operatingProfit ①',
-    'ordinaryProfit',
-    'cumulativeOrdinaryProfit',
+    'dispatchLabourExpenses',
+    'personalExpenses',
+    'sellingAndGeneralAdminExpenses',
+    'operatingIncome',
+    'ordinaryIncome',
+    'cumulativeOrdinaryIncome',
   ];
 
   const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3];
@@ -642,7 +642,7 @@ const TablePlanning = () => {
                   {translate('planning', language)}
                 </th>
               ))}
-              <th className='total-txt'>{translate('sales', language)}</th>
+              <th className='total-txt'>{translate('salesRatio', language)}</th>
             </tr>
             <tr className='scnd-row'>
               <th className='borderless'></th>

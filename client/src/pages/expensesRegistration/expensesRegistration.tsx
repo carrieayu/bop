@@ -178,17 +178,32 @@ const ExpensesRegistration = () => {
     setLanguage(newLanguage);
   };
 
+  const monthNames: { [key: number]: { en: string; jp: string } } = {
+    1: { en: "January", jp: "1月" },
+    2: { en: "February", jp: "2月" },
+    3: { en: "March", jp: "3月" },
+    4: { en: "April", jp: "4月" },
+    5: { en: "May", jp: "5月" },
+    6: { en: "June", jp: "6月" },
+    7: { en: "July", jp: "7月" },
+    8: { en: "August", jp: "8月" },
+    9: { en: "September", jp: "9月" },
+    10: { en: "October", jp: "10月" },
+    11: { en: "November", jp: "11月" },
+    12: { en: "December", jp: "12月" },
+  };
+
   return (
     <div className="project_wrapper">
       <div className="header_cont">
       <div className="header-buttons">
           <Btn
-            label={translate('analyze', language)}
+            label={translate('analysis', language)}
             onClick={() => handleTabClick("/dashboard")}
             className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
           />
           <Btn
-            label={translate('plan', language)}
+            label={translate('profitAndlossPlanning', language)}
             onClick={() => handleTabClick("/planning")}
             className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
           />
@@ -218,7 +233,7 @@ const ExpensesRegistration = () => {
               {[...Array(4)].map((_, index) => (
                 <Btn
                   key={index}
-                  label={translate(index === 0 ? 'project' : index === 1 ? 'personnelExpenses' : index === 2 ? 'budget' : 'costOfgoodSold', language)}
+                  label={translate(index === 0 ? 'project' : index === 1 ? 'personalExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
                   onClick={() =>
                     handleTabsClick(
                       index === 0
@@ -244,7 +259,7 @@ const ExpensesRegistration = () => {
               ))}
             </div>
             <div className='mid_form_cont'>
-              <p className='form-title'>{translate('expenseRegistration', language)}</p>
+              <p className='form-title'>{translate('expensesRegistration', language)}</p>
               <form onSubmit={handleSubmit}>
                 {formData.map((form, index) => (
                 <div key={index} className={`form-content ${index > 0 ? 'form-content-special' : ''}`}>
@@ -262,12 +277,12 @@ const ExpensesRegistration = () => {
                             >
                             <option value=''></option>
                                 {months.map((month, idx) => (
-                                    <option key={idx} value={month}>{month}{translate('month', language)}</option>
+                                    <option key={idx} value={month}>{language === "en" ? monthNames[month].en : monthNames[month].jp}</option>
                                 ))}
                             </select>
                         </div>
                         <div className='business_division_name-div'>
-                            <label className='business_division_name'>{translate('taxesAndpublicDues', language)}</label>
+                            <label className='business_division_name'>{translate('taxesAndpublicCharges', language)}</label>
                             <input
                             type='number'
                             name='taxes_and_public_charges'
@@ -285,7 +300,7 @@ const ExpensesRegistration = () => {
                             />
                         </div>
                         <div className='start_date-div'>
-                            <label className='start_yyyymm'>{translate('advertisingAndpromotionExpenses', language)}</label>
+                            <label className='start_yyyymm'>{translate('advertisingExpenses', language)}</label>
                             <input
                             type='number'
                             name='advertising_expenses'
@@ -323,7 +338,7 @@ const ExpensesRegistration = () => {
                             />
                         </div>
                         <div className='indirect-personnel-cost-div'>
-                            <label className='indirect_personnel_cost'>{translate('entertainmentAndhospitalityExpenses', language)}</label>
+                            <label className='indirect_personnel_cost'>{translate('entertainmentExpenses', language)}</label>
                             <input
                             type='number'
                             name='entertainment_expenses'
@@ -334,7 +349,7 @@ const ExpensesRegistration = () => {
                         </div>
                         <div className='right-form-div calc'>
                         <div className='non-operating-income-div'>
-                            <label className='non_operating_income'>{translate('rentalExpenses', language)}</label>
+                            <label className='non_operating_income'>{translate('rentExpenses', language)}</label>
                             <input
                             type='number'
                             name='rent'
@@ -343,7 +358,7 @@ const ExpensesRegistration = () => {
                             />
                         </div>
                         <div className='operating-income-div'>
-                            <label className='operating_income'>{translate('travelAndtransportationExpenses', language)}</label>
+                            <label className='operating_income'>{translate('travelExpenses', language)}</label>
                             <input
                             type='number'
                             name='travel_expenses'
@@ -352,7 +367,7 @@ const ExpensesRegistration = () => {
                             />
                         </div>
                         <div className='ordinary-income-div'>
-                            <label className='ordinary_income'>{translate('paymentFees', language)}</label>
+                            <label className='ordinary_income'>{translate('transactionFees', language)}</label>
                             <input
                             type='number'
                             name='payment_fees'
@@ -361,7 +376,7 @@ const ExpensesRegistration = () => {
                             />
                         </div>
                         <div className='ordinary-income-margin-div'>
-                            <label className='ordinary_income_margin'>{translate('compensationPayment', language)}</label>
+                            <label className='ordinary_income_margin'>{translate('professionalServicesFees', language)}</label>
                             <input
                             type='number'
                             name='remuneration'
