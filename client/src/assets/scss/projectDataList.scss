@@ -119,7 +119,25 @@
                         .proj_top_body_cont{
                             background-color: #fff;
                             height: 4rem;
-                           
+                        }
+                        button.mode_switch {
+                            border: 1px solid;
+                            padding: 3px 21px;
+                            border-radius: 5px;
+                            font-weight: 500;
+                            background-color: #f3f3f3;
+                        }
+                        .mode_switch_datalist{
+                            float: right;
+                            padding: 40px 70px;
+                        }
+                        button.edit_submit_btn {
+                            border: 2px solid #fdd7b3;
+                            padding: 2px 13px;
+                            border-radius: 7px;
+                            margin-top: 6px;
+                            background: #2e2eff;
+                            color: white;
                         }
                         .proj_mid_body_cont{
                             height: 87vh;

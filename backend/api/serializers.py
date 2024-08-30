@@ -249,3 +249,13 @@ class AllPlanningSerializer(serializers.Serializer):
     # planning_project_data = GetPlanningProjectDataSerializers()
     planning_project_data = GetPlanningProjectDataSerializers()
     expenses = ExpensesSerializer()
+
+class UpdateProjectDataListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlanningProjectData
+        fields =  '__all__'
+
+class UpdatePlanningSerailizer(serializers.ModelSerializer):
+    class Meta:
+        model = CostOfSales
+        fields =  '__all__'
