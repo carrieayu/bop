@@ -1,6 +1,6 @@
 import json
 from django.shortcuts import render
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User as AuthUser
 from rest_framework.response import Response
 from rest_framework import generics, status
 from django.http import JsonResponse
@@ -17,6 +17,8 @@ from .serializers import (
     GetUserMasterSerializer,
     PersonnelUserSerializer,
     PlanningAssignPersonnelDataSerializer,
+    UpdatePlanningSerailizer,
+    UpdateProjectDataListSerializer,
     UserSerializer,
     NoteSerializer,
     AccountMasterSerializer,
@@ -460,11 +462,10 @@ class ForgotPasswordView(generics.CreateAPIView):
     permission_classes = [AllowAny]
     
     def post(self, request):
-        email = request.data.get('email')
-        
-        # Check if email exists in the database
+        email = request.data.get('email').strip()
+
         try:
-            user = User.objects.get(email=email)
+            user = AuthUser.objects.get(email__iexact=email)
         except User.DoesNotExist:
             return Response({"message": "Email does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -585,8 +586,6 @@ class ViewAllPlanning(generics.ListAPIView):
             'planning_assign_data': planning_assign_serializer.data,
             'planning_project_data': planning_project_data_serializer.data
         }
-        
-        print(combined_data)
 
         return Response(combined_data)
     
@@ -801,4 +800,113 @@ class UpdateExpenses(generics.CreateAPIView):
         
     
 
+class UpdateProjectDataList(generics.UpdateAPIView):
+    serializer_class = UpdateProjectDataListSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = PlanningProjectData.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        received_data = request.data
+        for project_id, changes in received_data.items():
+            try:
+                project = PlanningProjectData.objects.get(planning_project_id=int(project_id))
+                for field, value in changes.items():
+                    if field.startswith("client."):
+                        nested_field = field.split('.')[1]
+                        setattr(project.client_id, nested_field, value)
+                        project.client_id.save() 
+                    else:
+                        setattr(project, field, value)
+                
+                project.save()
+            
+            except PlanningProjectData.DoesNotExist:
+                return Response({"error": f"Project with ID {project_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({"message": "Data updated successfully"}, status=status.HTTP_200_OK)
     
+class UpdatePlanning(generics.UpdateAPIView):
+    serializer_class = UpdatePlanningSerailizer
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        costofsales_data = request.data
+        expenses_data = request.data
+
+        for item in costofsales_data:
+            ids = item.get('id', [])
+            values = item.get('values', [])
+            label = item.get('label', '')
+
+            if not ids or not values:
+                continue
+
+            for idx, record_id in enumerate(ids):
+                if record_id:
+                    try:
+                        cost_of_sales_instance = CostOfSales.objects.get(id=record_id)
+                        if label == "purchases":
+                            cost_of_sales_instance.purchases = values[idx] if idx < len(values) else 0
+                        if label == "outsourcingCosts":
+                            cost_of_sales_instance.outsourcing_costs = values[idx] if idx < len(values) else 0
+                        if label == "merchandisePurchases":
+                            cost_of_sales_instance.product_purchases = values[idx] if idx < len(values) else 0
+                        if label == "temporaryStaffCost":
+                            cost_of_sales_instance.dispatch_labor_costs = values[idx] if idx < len(values) else 0
+                        if label == "communicationExpenses":
+                            cost_of_sales_instance.communication_costs = values[idx] if idx < len(values) else 0
+                        if label == "workinProgressExpense":
+                            cost_of_sales_instance.work_in_progress = values[idx] if idx < len(values) else 0
+                        if label == "postingdepreciationExpense":
+                            cost_of_sales_instance.amortization = values[idx] if idx < len(values) else 0
+                        cost_of_sales_instance.save()
+                    except CostOfSales.DoesNotExist:
+                        continue
+            
+            for item in expenses_data:
+                ids = item.get('id', [])
+                values = item.get('values', [])
+                label = item.get('label', '')
+
+                if not ids or not values:
+                    continue
+
+                for idx, record_id in enumerate(ids):
+                    if record_id:
+                        try:
+                            expenses_instance = Expenses.objects.get(id=record_id)
+                            if label == "executiveCompensation":
+                                expenses_instance.remuneration = values[idx] if idx < len(values) else 0
+                            if label == "bonusesAndfuelallowances":
+                                expenses_instance.travel_expenses = values[idx] if idx < len(values) else 0
+                            if label == "statutoryWelfareCosts":
+                                expenses_instance.taxes_and_public_charges = values[idx] if idx < len(values) else 0
+                            if label == "welfareExpenses":
+                                expenses_instance.utilities_expenses = values[idx] if idx < len(values) else 0
+                            if label == "suppliesExpense":
+                                expenses_instance.consumables_expenses = values[idx] if idx < len(values) else 0
+                            if label == "rentExpense":
+                                expenses_instance.rent = values[idx] if idx < len(values) else 0
+                            if label == "taxesAndpublicdues":
+                                expenses_instance.taxes_and_public_charges = values[idx] if idx < len(values) else 0
+                            if label == "depreciationExpense":
+                                expenses_instance.depreciation_expenses = values[idx] if idx < len(values) else 0
+                            if label == "travelAndtransportationexpenses":
+                                expenses_instance.travel_expenses = values[idx] if idx < len(values) else 0
+                            if label == "communicationExpenses":
+                                expenses_instance.communication_expenses = values[idx] if idx < len(values) else 0
+                            if label == "utilities":
+                                expenses_instance.utilities_expenses = values[idx] if idx < len(values) else 0
+                            if label == "paymentFees":
+                                expenses_instance.advertising_expenses = values[idx] if idx < len(values) else 0
+                            if label == "paymentFees":
+                                expenses_instance.advertising_expenses = values[idx] if idx < len(values) else 0
+                            if label == "entertainmentAndhospitalityexpenses":
+                                expenses_instance.entertainment_expenses = values[idx] if idx < len(values) else 0
+                            if label == "paymentForcompensation":
+                                expenses_instance.payment_fees = values[idx] if idx < len(values) else 0
+                            expenses_instance.save()
+                        except Expenses.DoesNotExist:
+                            continue
+
+        return Response({"message": "Data updated successfully"}, status=status.HTTP_200_OK)

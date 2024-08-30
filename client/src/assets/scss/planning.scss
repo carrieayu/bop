@@ -28,6 +28,13 @@
               .pl-label{
                 display: inline-block;
               }
+              button.mode_switch {
+                  border: 1px solid;
+                  padding: 3px 21px;
+                  border-radius: 5px;
+                  font-weight: 500;
+                  background-color: #f3f3f3;
+              }
               .switch{
                 margin-top: 2px;
                 position: relative;
@@ -99,6 +106,18 @@
             .planning_scrollable{
               max-height: 80vh;
             }
+          }
+          .div_submit {
+              float: right;
+              padding: 0px 8px;
+          }
+          button.edit_submit_btn {
+              border: 2px solid #fdd7b3;
+              padding: 2px 13px;
+              border-radius: 7px;
+              margin-top: 6px;
+              background: #2e2eff;
+              color: white;
           }
         }
       }
