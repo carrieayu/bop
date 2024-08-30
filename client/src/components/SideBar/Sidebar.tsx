@@ -23,31 +23,31 @@ const Sidebar = () => {
             <span className="icons"><MdDashboard /></span><Link to="/dashboard">{translate('dashboard', language)}</Link>
           </li>
           <li>
-            <span className="icons"><MdDashboard /></span><Link to="/planning">{translate('planning', language)}</Link>
+            <span className="icons"><MdDashboard /></span><Link to="/planning">{translate('profitAndlossPlanning', language)}</Link>
           </li>
           <li className="sub_menu">
-            <span className="icons"><FaTableList /></span><Link to="/projectdatalist">{translate('projectdatalist', language)}</Link>
+            <span className="icons"><FaTableList /></span><Link to="/projectdatalist">{translate('projectsList', language)}</Link>
           </li>
           <li className="sub_menu">
-          <span className="icons"><AiFillFileAdd /></span><Link to="/projectcreate">{translate('projectcreate', language)}</Link>
+          <span className="icons"><AiFillFileAdd /></span><Link to="/projectcreate">{translate('projectsRegistration', language)}</Link>
           </li>
           <li className="sub_menu">
-          <span className="icons"><BsPersonFillAdd /></span><Link to="/personnel-expense-create">{translate('personnel-expense-create', language)}</Link>
+          <span className="icons"><BsPersonFillAdd /></span><Link to="/personnel-expense-create">{translate('personnelExpensesRegistration', language)}</Link>
           </li>
           <li className="sub_menu">
-          <span className="icons"><FaTableList /></span><Link to="/personnel-expenses-list">{translate('personnel-expenses-list', language)}</Link>
+          <span className="icons"><FaTableList /></span><Link to="/personnel-expenses-list">{translate('personnelExpensesList', language)}</Link>
           </li>
           <li className="sub_menu">
-            <span className="icons"><AiFillFileAdd /></span><Link to="/expenses-registration">{translate('expenses-registration', language)}</Link>
+            <span className="icons"><AiFillFileAdd /></span><Link to="/expenses-registration">{translate('expensesRegistration', language)}</Link>
           </li>
           <li className="sub_menu">
-          <span className="icons"><FaTableList /></span><Link to="/expenses-list">{translate('expenses-list', language)}</Link>
+          <span className="icons"><FaTableList /></span><Link to="/expenses-list">{translate('expensesList', language)}</Link>
           </li>
           <li className="sub_menu">
-          <span className="icons"><AiFillFileAdd /></span><Link to="/cost-of-sales-registration">{translate('cost-of-sales-registration', language)}</Link>
+          <span className="icons"><AiFillFileAdd /></span><Link to="/cost-of-sales-registration">{translate('costOfsalesRegistration', language)}</Link>
           </li>
           <li className="sub_menu">
-          <span className="icons"><FaTableList /></span><Link to="/cost-of-sales-list">{translate('cost-of-sales-list', language)}</Link>
+          <span className="icons"><FaTableList /></span><Link to="/cost-of-sales-list">{translate('costOfsalesList', language)}</Link>
           </li>
           <li>
             <span className="icons"><MdDashboard /></span><Link to="/*">{translate('results', language)}</Link>

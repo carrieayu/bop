@@ -21,7 +21,7 @@ const objectEntity = [
   'ordinary_profit_margin',
 ]
 
-const headerTitle = ['salesRevenue', 'assignmentUnitPrice', 'operatingProfit', 'nonOperatingIncome', 'nonOperatingExpenses', 'ordinaryProfit', 'ordinaryProfitmargin']
+const headerTitle = ['salesRevenue', 'personalExpenses', 'operatingIncome', 'nonOperatingIncome', 'nonOperatingExpenses', 'ordinaryIncome', 'ordinaryIncomeProfitMargin']
 
 interface EntityGrid {
   clientName: string
@@ -133,16 +133,20 @@ const handleTranslationSwitchToggle = () => {
   setLanguage(newLanguage);
 };
 
-const formatDate = (item: string) => {
-  // Extract numeric part and month suffix
-  const monthMatch = item.match(/^(\d{1,2})(月)$/);
-  if (monthMatch) {
-    const numericMonth = monthMatch[1].padStart(2, '0'); 
-    const monthSuffix = monthMatch[2]; 
-    const translatedMonth = translate('month', language); 
-    return `${numericMonth}${translatedMonth}`;
-  }
-  return item;  
+const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3];
+const monthNames: { [key: number]: { en: string; jp: string } } = {
+  1: { en: "January", jp: "1月" },
+  2: { en: "February", jp: "2月" },
+  3: { en: "March", jp: "3月" },
+  4: { en: "April", jp: "4月" },
+  5: { en: "May", jp: "5月" },
+  6: { en: "June", jp: "6月" },
+  7: { en: "July", jp: "7月" },
+  8: { en: "August", jp: "8月" },
+  9: { en: "September", jp: "9月" },
+  10: { en: "October", jp: "10月" },
+  11: { en: "November", jp: "11月" },
+  12: { en: "December", jp: "12月" },
 };
 
   return (
@@ -171,28 +175,28 @@ const formatDate = (item: string) => {
                         <th style={{ borderLeft: '1px solid black' }}></th>
                       </tr>
                       <tr className='tr_title'>
-                        <th style={{ width: 100, textAlign: 'center', borderRight: '1px solid black' }}>{translate('No.', language)}</th>
+                        <th style={{ width: 100, textAlign: 'center', borderRight: '1px solid black' }}>{translate('itemNumber', language)}</th>
                         <th style={{ width: 100, textAlign: 'center' }}>{translate('client', language)}</th>
                         <th className='header_center' style={{ width: 100, borderRight: '1px solid black' }}>
-                          {translate('accountTitle', language)}
+                          {translate('accountCategories', language)}
                         </th>
                         <th colSpan={12}></th>
-                        <th className='header_center'>{translate('totalTable', language)}</th>
+                        <th className='header_center'>{translate('totalAmount', language)}</th>
                       </tr>
                       <tr className='tr_dates'>
                         <td className='td_border'></td>
                         <td className='td_border'></td>
                         <td className='td_border'></td>
-                        {props.dates?.map((item, index) => (
+                        {months.map((month, index) => (
                           <td
                             key={index}
                             className='td_right'
                             style={{ width: 100, overflow: 'hidden', whiteSpace: 'nowrap' }}
                           >
-                            {formatDate(item)}
+                            {language === "en" ? monthNames[month].en : monthNames[month].jp}
                           </td>
                         ))}
-                        <td style={{ width: 100 }}>{translate('totalTable', language)}</td>
+                        <td style={{ width: 100 }}></td>
                       </tr>
                     </>
                   )}

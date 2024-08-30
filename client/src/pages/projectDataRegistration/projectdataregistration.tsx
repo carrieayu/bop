@@ -159,17 +159,32 @@ const ProjectDataRegistration = () => {
     setLanguage(newLanguage);
   };
 
+  const monthNames: { [key: number]: { en: string; jp: string } } = {
+    1: { en: "January", jp: "1月" },
+    2: { en: "February", jp: "2月" },
+    3: { en: "March", jp: "3月" },
+    4: { en: "April", jp: "4月" },
+    5: { en: "May", jp: "5月" },
+    6: { en: "June", jp: "6月" },
+    7: { en: "July", jp: "7月" },
+    8: { en: "August", jp: "8月" },
+    9: { en: "September", jp: "9月" },
+    10: { en: "October", jp: "10月" },
+    11: { en: "November", jp: "11月" },
+    12: { en: "December", jp: "12月" },
+  };
+
   return (
     <div className='project_wrapper'>
       <div className='header_cont'>
       <div className="header-buttons">
           <Btn
-            label={translate('analyze', language)}
+            label={translate('analysis', language)}
             onClick={() => handleTabClick("/dashboard")}
             className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
           />
           <Btn
-            label={translate('plan', language)}
+            label={translate('profitAndlossPlanning', language)}
             onClick={() => handleTabClick("/planning")}
             className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
           />
@@ -198,7 +213,7 @@ const ProjectDataRegistration = () => {
               {[...Array(4)].map((_, index) => (
                 <Btn
                   key={index}
-                  label={translate(index === 0 ? 'project' : index === 1 ? 'personnelExpenses' : index === 2 ? 'budget' : 'costOfgoodSold', language)}
+                  label={translate(index === 0 ? 'project' : index === 1 ? 'personalExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
                   onClick={() =>
                     handleTabsClick(
                       index === 0
@@ -228,7 +243,7 @@ const ProjectDataRegistration = () => {
                     <div className='form-content-div'>
                       <div className='left-form-div calc'>
                         <div className='client-name-div'>
-                          <label className='client_name'>{translate('customer', language)}</label>
+                          <label className='client_name'>{translate('client', language)}</label>
                           <select
                             className='select-option'
                             name='client_name'
@@ -252,7 +267,7 @@ const ProjectDataRegistration = () => {
                           />
                         </div>
                         <div className='project_name-div'>
-                          <label className='project_name'>{translate('noneOperationalExpenses', language)}</label>
+                          <label className='project_name'>{translate('nonOperatingExpenses', language)}</label>
                           <input
                             type='number'
                             name='non_operating_expenses'
@@ -282,7 +297,7 @@ const ProjectDataRegistration = () => {
                             <option value=''></option>
                             {months.map((month, idx) => (
                               <option key={idx} value={month}>
-                                {month}{translate('month', language)}
+                               {language === "en" ? monthNames[month].en : monthNames[month].jp}
                               </option>
                             ))}
                           </select>
@@ -290,7 +305,7 @@ const ProjectDataRegistration = () => {
                       </div>
                       <div className='right-form-div calc'>
                         <div className='non-operating-income-div'>
-                          <label className='non_operating_income'>{translate('departmentIncharge', language)}</label>
+                          <label className='non_operating_income'>{translate('businessDivision', language)}</label>
                           <input
                             type='text'
                             name='business_division_name'

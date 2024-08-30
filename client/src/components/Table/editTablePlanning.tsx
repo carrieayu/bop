@@ -405,7 +405,7 @@ const EditTablePlanning = () => {
           //start of cost of sales portion
           {
             id: '',
-            label: 'costofGoodSold',
+            label: 'costOfSales',
             values: [
               ...costOfSalesValues,
               firstHalfTotal(costOfSalesValues),
@@ -428,7 +428,7 @@ const EditTablePlanning = () => {
           },
           {
             id: outsourcingValues.map((outsource) => outsource.id),
-            label: 'outsourcingCosts',
+            label: 'outsourcingExpenses',
             values: [
               ...outsourcingValues.map((outsource) => outsource.outsourcing_costs),
               firstHalfTotal(outsourcingValues.map((outsource) => outsource.outsourcing_costs)),
@@ -439,7 +439,7 @@ const EditTablePlanning = () => {
           },
           {
             id: outsourcingValues.map((productPurchaseValues) => productPurchaseValues.id),
-            label: 'merchandisePurchases',
+            label: 'productPurchases',
             values: [
               ...productPurchaseValues.map((productPurchaseValues) => productPurchaseValues.product_purchases),
               firstHalfTotal(
@@ -454,7 +454,7 @@ const EditTablePlanning = () => {
           },
           {
             id: dispatchLaborValues.map((dispatchLaborValues) => dispatchLaborValues.id),
-            label: 'temporaryStaffCost',
+            label: 'dispatchLabourExpenses',
             values: [
               ...dispatchLaborValues.map((dispatch) => dispatch.dispatch_labor_costs),
               firstHalfTotal(dispatchLaborValues.map((dispatch) => dispatch.dispatch_labor_costs)),
@@ -476,7 +476,7 @@ const EditTablePlanning = () => {
           },
           {
             id: inProgressValues.map((inProgressValues) => inProgressValues.id),
-            label: 'workinProgressExpense',
+            label: 'workInProgressExpenses',
             values: [
               ...inProgressValues.map((inProgress) => inProgress.work_in_progress),
               firstHalfTotal(inProgressValues.map((inProgress) => inProgress.work_in_progress)),
@@ -487,7 +487,7 @@ const EditTablePlanning = () => {
           },
           {
             id: amortizationValues.map((amortization) => amortization.id),
-            label: 'postingdepreciationExpense',
+            label: 'amortizationExpenses',
             values: [
               ...amortizationValues.map((amortizationValues) => amortizationValues.amortization),
               firstHalfTotal(amortizationValues.map((amortizationValues) => amortizationValues.amortization)),
@@ -501,7 +501,7 @@ const EditTablePlanning = () => {
           grossProfitData, //gross profit
           {
             id: '',
-            label: 'laborCosts',
+            label: 'personalExpenses',
             values: [
               ...personnelExpensesValues,
               firstHalfTotal(personnelExpensesValues),
@@ -513,7 +513,7 @@ const EditTablePlanning = () => {
           },
           {
             id: renumerationValues.map((renumerationValues) => renumerationValues.id),
-            label: 'executiveCompensation',
+            label: 'executiveRenumeration',
             values: [
               ...renumerationValues.map((remuneration) => remuneration.remuneration),
               firstHalfTotal(renumerationValues.map((remuneration) => remuneration.remuneration)),
@@ -524,7 +524,7 @@ const EditTablePlanning = () => {
           },
           {
             id: '',
-            label: 'salaryAndallowances',
+            label: 'salary',
             values: [
               ...assign_unit_priceValues,
               firstHalfTotal(assign_unit_priceValues),
@@ -536,7 +536,7 @@ const EditTablePlanning = () => {
           },
           {
             id: travelExpenseValues.map((travelExpenseValues) => travelExpenseValues.id),
-            label: 'bonusesAndfuelallowances',
+            label: 'fuelAllowance',
             values: [
               ...travelExpenseValues.map((travel) => travel.travel_expenses),
               firstHalfTotal(travelExpenseValues.map((travel) => travel.travel_expenses)),
@@ -547,7 +547,7 @@ const EditTablePlanning = () => {
           },
           {
             id: taxesPublicChargesValues.map((taxesPublicChargesValues) => taxesPublicChargesValues.id),
-            label: 'statutoryWelfareCosts',
+            label: 'statutoryWelfareExpenses',
             values: [
               ...taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges),
               firstHalfTotal(taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges)),
@@ -584,7 +584,7 @@ const EditTablePlanning = () => {
           {
             id: consumableValues.map((consumableValues) => consumableValues.id),
             //same value to " 給与手当 " ?
-            label: 'suppliesExpense',
+            label: 'suppliesExpenses',
             values: [
               ...consumableValues.map((consumable) => consumable.consumables_expenses),
               firstHalfTotal(consumableValues.map((consumable) => consumable.consumables_expenses)),
@@ -595,7 +595,7 @@ const EditTablePlanning = () => {
           },
           {
             id: rentValues.map((rentValues) => rentValues.id),
-            label: 'rentExpense',
+            label: 'rentExpenses',
             values: [
               ...rentValues.map((rent) => rent.rent),
               firstHalfTotal(rentValues.map((rent) => rent.rent)),
@@ -618,7 +618,7 @@ const EditTablePlanning = () => {
           {
             id: taxesPublicChargesValues.map((taxesPublicChargesValues) => taxesPublicChargesValues.id),
             //same "法定福利費 "
-            label: 'taxesAndpublicdues',
+            label: 'taxesAndpublicCharges',
             values: [
               ...taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges),
               firstHalfTotal(taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges)),
@@ -637,7 +637,7 @@ const EditTablePlanning = () => {
           },
           {
             id: depreciationExpensesValues.map((depreciationExpensesValues) => depreciationExpensesValues.id),
-            label: 'depreciationExpense',
+            label: 'depreciationExpenses',
             values: [
               ...depreciationExpensesValues.map((depreciation) => depreciation.depreciation_expenses),
               firstHalfTotal(depreciationExpensesValues.map((depreciation) => depreciation.depreciation_expenses)),
@@ -648,7 +648,7 @@ const EditTablePlanning = () => {
           },
           {
             id: travelExpenseValues.map((travelExpenseValues) => travelExpenseValues.id),
-            label: 'travelAndtransportationexpenses',
+            label: 'travelExpenses',
             values: [
               ...travelExpenseValues.map((travel) => travel.travel_expenses),
               firstHalfTotal(travelExpenseValues.map((travel) => travel.travel_expenses)),
@@ -670,7 +670,7 @@ const EditTablePlanning = () => {
           },
           {
             id: utilitiesValues.map((utilitiesValues) => utilitiesValues.id),
-            label: 'utilities',
+            label: 'utilitiesExpenses',
             values: [
               ...utilitiesValues.map((utility) => utility.utilities_expenses),
               firstHalfTotal(utilitiesValues.map((utility) => utility.utilities_expenses)),
@@ -681,7 +681,7 @@ const EditTablePlanning = () => {
           },
           {
             id: advertisingExpenseValues.map((advertisingExpenseValues) => advertisingExpenseValues.id),
-            label: 'paymentFees',
+            label: 'transactionFees',
             values: [
               ...advertisingExpenseValues.map((advertising) => advertising.advertising_expenses),
               firstHalfTotal(advertisingExpenseValues.map((advertising) => advertising.advertising_expenses)),
@@ -692,7 +692,7 @@ const EditTablePlanning = () => {
           },
           {
             id: advertisingExpenseValues.map((advertisingExpenseValues) => advertisingExpenseValues.id),
-            label: 'paymentFees',
+            label: 'advertisingExpenses',
             values: [
               ...advertisingExpenseValues.map((advertising) => advertising.advertising_expenses),
               firstHalfTotal(advertisingExpenseValues.map((advertising) => advertising.advertising_expenses)),
@@ -703,7 +703,7 @@ const EditTablePlanning = () => {
           },
           {
             id: entertainmentExpenseValues.map((entertainmentExpenseValues) => entertainmentExpenseValues.id),
-            label: 'entertainmentAndhospitalityexpenses',
+            label: 'entertainmentExpenses',
             values: [
               ...entertainmentExpenseValues.map((entertainment) => entertainment.entertainment_expenses),
               firstHalfTotal(entertainmentExpenseValues.map((entertainment) => entertainment.entertainment_expenses)),
@@ -714,7 +714,7 @@ const EditTablePlanning = () => {
           },
           {
             id: paymentFeeValues.map((paymentFeeValues) => paymentFeeValues.id),
-            label: 'paymentForcompensation',
+            label: 'professionalServicesFees',
             values: [
               ...paymentFeeValues.map((payment) => payment.payment_fees),
               firstHalfTotal(paymentFeeValues.map((payment) => payment.payment_fees)),
@@ -726,7 +726,7 @@ const EditTablePlanning = () => {
           {
             id: '',
             //add 人件費 + 経費 field
-            label: 'sellingAndgeneraladministrativeexpenses',
+            label: 'sellingAndGeneralAdminExpenses',
             // values: Array(16).fill(0),
             values: [
               ...generalExpenseValues.map((item) => item.generalTotal),
@@ -739,7 +739,7 @@ const EditTablePlanning = () => {
           //Operating income 営業利益 ①
           {
             id: '',
-            label: 'operatingProfit',
+            label: 'operatingIncome',
             values: [
               ...operatingProfitValues,
               firstHalfTotal(operatingProfitValues),
@@ -772,7 +772,7 @@ const EditTablePlanning = () => {
           },
           {
             id: '',
-            label: 'ordinaryProfit',
+            label: 'ordinaryIncome',
             values: [
               ...ordinaryProfitValues,
               firstHalfTotal(ordinaryProfitValues),
@@ -783,7 +783,7 @@ const EditTablePlanning = () => {
           },
           {
             id: '',
-            label: 'cumulativeOrdinaryProfit',
+            label: 'cumulativeOrdinaryIncome',
             values: [
               ...cumulativeOrdinaryProfitValues,
               firstHalfTotal(cumulativeOrdinaryProfitValues),
@@ -807,43 +807,43 @@ const EditTablePlanning = () => {
 
   const noIndentLabels = [
     'salesRevenue',
-    'costofGoodSold',
+    'costOfSales',
     'grossProfit',
-    'personal expenses',
-    'laborCosts',
-    'sellingAndgeneraladministrativeexpenses',
-    'operatingProfit ①',
-    'ordinaryProfit',
-    'cumulativeOrdinaryProfit',
+    'dispatchLabourExpenses',
+    'personalExpenses',
+    'sellingAndGeneralAdminExpenses',
+    'operatingIncome',
+    'ordinaryIncome',
+    'cumulativeOrdinaryIncome',
   ]
 
 
   const editableLabels = [
     'purchases',
-    'outsourcingCosts',
-    'merchandisePurchases',
-    'temporaryStaffCost',
+    'outsourcingExpenses',
+    'productPurchases',
+    'dispatchLabourExpenses',
     'communicationExpenses',
-    'workinProgressExpense',
-    'postingdepreciationExpense',
-    'executiveCompensation',
-    'bonusesAndfuelallowances',
+    'workInProgressExpenses',
+    'amortizationExpenses',
+    'executiveRenumeration',
+    'fuelAllowance',
     'welfareExpenses',
-    'statutoryWelfareCosts',
-    'suppliesExpense',
-    'rentExpense',
-    'taxesAndpublicdues',
-    'depreciationExpense',
-    'travelAndtransportationexpenses',
-    'utilities',
-    'paymentFees',
-    'paymentFees',
-    'entertainmentAndhospitalityexpenses',
-    'paymentForcompensation',
+    'statutoryWelfareExpenses',
+    'suppliesExpenses',
+    'rentExpenses',
+    'taxesAndpublicCharges',
+    'depreciationExpenses',
+    'travelExpenses',
+    'utilitiesExpenses',
+    'transactionFees',
+    'advertisingExpenses',
+    'entertainmentExpenses',
+    'professionalServicesFees',
   ]
 
   const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
-  const halfYears = ['上期計', '下期計', '合計']
+  const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable']
   const [editableData, setEditableData] = useState(data)
   const isRowEditable = (label) => editableLabels.includes(label)
 
@@ -965,7 +965,7 @@ const handleSubmit = (event) => {
           </tbody>
         </table>
         <div className='div_submit'>
-          <button className='edit_submit_btn' onClick={handleSubmit}>更新する</button>
+          <button className='edit_submit_btn' onClick={handleSubmit}>{translate('update', language)}</button>
         </div>
       </div>
     </div>

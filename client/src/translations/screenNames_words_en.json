@@ -1,0 +1,20 @@
+{
+    "passwordForgot": "Password Forgot",
+    "passwordReset": "Password Reset",
+    "analysis": "Analysis",
+    "profitAndlossPlanning": "Profit and Loss Planning",
+    "results": "Results",
+    "projectsRegistration": "Projects Registration",
+    "projectsList": "Projects List",
+    "personnelExpensesRegistration": "Personnel Expenses Registration",
+    "personnelExpensesList": "Personnel Expenses List",
+    "expensesRegistration": "Expenses Registration",
+    "expensesList": "Expenses List",
+    "costOfsalesRegistration": "Cost of Sales Registration",
+    "costOfsalesList": "Cost of Sales List",
+    "clientsRegistration": "Clients Registration",
+    "clientsList": "Clients List",
+    "employeesRegistration": "Employees Registration",
+    "employeesList": "Employees List",
+    "dashboard": "Dashboard"
+}
