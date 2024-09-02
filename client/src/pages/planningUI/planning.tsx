@@ -7,6 +7,9 @@ import Btn from '../../components/Button/Button';
 import { useLocation, useNavigate } from 'react-router-dom';
 import TablePlanning from '../../components/Table/tablePlanning'; // Import TablePlanning component
 import { TableComponentProps } from '../../components/Table/table.component';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { translate } from '../../utils/translationUtil';
+import EditTablePlanning from '../../components/Table/editTablePlanning';
 
 const header = ['計画'];
 const smallDate = ['2022/24月', '2022/25月', '2022/26月'];
@@ -24,6 +27,23 @@ const Planning = () => {
   const [isSwitchActive, setIsSwitchActive] = useState(false); // State for switch
   const navigate = useNavigate();
   const location = useLocation();
+  const { language, setLanguage } = useLanguage()
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translation
+
+
+  const [isEditing, setIsEditing] = useState(false)
+  const [initialLanguage, setInitialLanguage] = useState(language);
+
+  const handleClick = () => {
+    setIsEditing((prevState) => {
+      const newEditingState = !prevState;
+      if (newEditingState) {
+        setLanguage(initialLanguage);
+      }
+  
+      return newEditingState;
+    });
+  };
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -50,7 +70,7 @@ const Planning = () => {
 
   useEffect(() => {
     const path = location.pathname;
-    if (path === '/dashboard' || path === '/planning' || path === '/result') {
+    if (path === '/dashboard' || path === '/planning' || path === '/*') {
       setActiveTab(path);
     }
   }, [location.pathname]);
@@ -68,48 +88,70 @@ const Planning = () => {
     setIsSwitchActive(prevState => !prevState);
   };
 
+  useEffect(() => {
+    setIsTranslateSwitchActive(language === 'en');
+  }, [language]);
+
+  const handleTranslationSwitchToggle = () => {
+    if (!isEditing) {
+      const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
+      setInitialLanguage(language); 
+      setLanguage(newLanguage);
+    }
+  };
+
   return (
     <div className='wrapper'>
       <div className='header_cont'>
-        <Btn
-          label="分析"
-          onClick={() => handleTabClick("/dashboard")}
-          className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
-        />
-        <Btn
-          label="計画"
-          onClick={() => handleTabClick("/planning")}
-          className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
-        />
-        <Btn
-          label="実績"
-          onClick={() => handleTabClick("/result")}
-          className={activeTab === "/result" ? "h-btn-active header-btn" : "header-btn"}
-        />
+        <div className='header-buttons'>
+          <Btn
+            label={translate('analysis', language)}
+            onClick={() => handleTabClick('/dashboard')}
+            className={activeTab === '/dashboard' ? 'h-btn-active header-btn' : 'header-btn'}
+          />
+          <Btn
+            label={translate('profitAndlossPlanning', language)}
+            onClick={() => handleTabClick('/planning')}
+            className={activeTab === '/planning' ? 'h-btn-active header-btn' : 'header-btn'}
+          />
+          <Btn
+            label={translate('results', language)}
+            onClick={() => handleTabClick('/*')}
+            className={activeTab === '/*' ? 'h-btn-active header-btn' : 'header-btn'}
+          />
+        </div>
+        <div className='language-toggle'>
+          <p className='pl-label'>English</p>
+          <label className='switch'>
+            <input type='checkbox' checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle} disabled={isEditing}/>
+            <span className='slider'></span>
+          </label>
+        </div>
       </div>
       <div className='content_wrapper'>
         <div className='sidebar'>
           <Sidebar />
         </div>
-        <div className="projectlist_wrapper planning_wrapper">
-          <div className="proj_top_content plan_top_cont">
+        <div className='projectlist_wrapper planning_wrapper'>
+          <div className='proj_top_content plan_top_cont'>
             <div className='dashboard_content planning'>
               <div className='bottom_cont planning_btm'>
                 <div className='pagination_cont planning_header'>
-                  <div className="left-content">
-                    <p>PL計画</p>
+                  <div className='left-content'>
+                    <p>{translate('profitAndlossPlanning', language)}</p>
                   </div>
-                  <div className="right-content">
-                    <div className="paginate">
-                      <p className="pl-label">案件別表示</p>
-                      <label className="switch">
-                        <input type="checkbox" checked={isSwitchActive} onChange={handleSwitchToggle} />
-                        <span className="slider"></span>
+                  <div className='right-content'>
+                    <div className='paginate'>
+                    <button className='mode_switch' onClick={handleClick}>{isEditing ? '表示モード切り替え' : translate('switchEditMode', language)}</button>
+                      <p className='pl-label'>{translate('displayByProject', language)}</p>
+                      <label className='switch'>
+                        <input type='checkbox' checked={isSwitchActive} onChange={handleSwitchToggle} />
+                        <span className='slider'></span>
                       </label>
-                      <p className="pl-label">千円</p>
-                      <label className="switch">
-                        <input type="checkbox" />
-                        <span className="slider"></span>
+                      <p className='pl-label'>{translate('thousandYen', language)}</p>
+                      <label className='switch'>
+                        <input type='checkbox' />
+                        <span className='slider'></span>
                       </label>
                     </div>
                   </div>
@@ -117,7 +159,7 @@ const Planning = () => {
                 <div className='planning_tbl_cont'>
                   <div className={`table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
                     {/* Render the TablePlanning component here */}
-                    <TablePlanning />
+                    {isEditing ? <EditTablePlanning /> : <TablePlanning />}
                   </div>
                   <div className={`table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
                     <TableComponentProps data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
@@ -126,10 +168,10 @@ const Planning = () => {
               </div>
             </div>
           </div>
-        </div> 
+        </div>
       </div>
     </div>
-  );
+  )
 };
 
 export default Planning;

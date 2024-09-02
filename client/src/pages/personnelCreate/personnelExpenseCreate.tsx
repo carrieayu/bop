@@ -9,6 +9,8 @@ import axios from 'axios';
 import { HeaderDashboard } from '../../components/header/header';
 import Sidebar from '../../components/SideBar/Sidebar';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { translate } from '../../utils/translationUtil';
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -23,6 +25,8 @@ const PersonnelExpenseCreate = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [activeTabOther, setActiveTabOther] = useState('case')
+  const { language, setLanguage } = useLanguage()
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translations
 
 
   const handleTabClick = (tab) => {
@@ -58,7 +62,7 @@ const PersonnelExpenseCreate = () => {
 
   useEffect(() => {
     const path = location.pathname;
-    if (path === '/dashboard' || path === '/planning' || path === '/result') {
+    if (path === '/dashboard' || path === '/planning' || path === '/*') {
       setActiveTab(path);
     }
   }, [location.pathname]);
@@ -146,25 +150,58 @@ const PersonnelExpenseCreate = () => {
     }
   };
 
+  useEffect(() => {
+    setIsTranslateSwitchActive(language === 'en');
+  }, [language]);
+
+  const handleTranslationSwitchToggle = () => {
+    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
+    setLanguage(newLanguage);
+  };
+
+  const monthNames: { [key: number]: { en: string; jp: string } } = {
+    1: { en: "January", jp: "1月" },
+    2: { en: "February", jp: "2月" },
+    3: { en: "March", jp: "3月" },
+    4: { en: "April", jp: "4月" },
+    5: { en: "May", jp: "5月" },
+    6: { en: "June", jp: "6月" },
+    7: { en: "July", jp: "7月" },
+    8: { en: "August", jp: "8月" },
+    9: { en: "September", jp: "9月" },
+    10: { en: "October", jp: "10月" },
+    11: { en: "November", jp: "11月" },
+    12: { en: "December", jp: "12月" },
+  };
+
   return (
     <div className='personnel_wrapper'>
     <div className="header_cont">
       <div className="personnel_top_btn_cont">
-            <Btn
-                label="分析"
-                onClick={() => handleTabClick("/dashboard")}
-                className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
-            />
-            <Btn
-                label="計画"
-                onClick={() => handleTabClick("/planning")}
-                className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
-            />
-            <Btn
-                label="実績"
-                onClick={() => handleTabClick("/result")}
-                className={activeTab === "/result" ? "h-btn-active header-btn" : "header-btn"}
-            />
+      <div className="header-buttons">
+          <Btn
+            label={translate('analysis', language)}
+            onClick={() => handleTabClick("/dashboard")}
+            className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
+          />
+          <Btn
+            label={translate('profitAndlossPlanning', language)}
+            onClick={() => handleTabClick("/planning")}
+            className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
+          />
+          <Btn
+            label={translate('results', language)}
+            onClick={() => handleTabClick("/*")}
+            className={activeTab === "/*" ? "h-btn-active header-btn" : "header-btn"}
+          />
+        </div>
+        <div className="language-toggle">
+          <p className="pl-label">English</p>
+            <label className="switch">
+              <input type="checkbox" checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle}/>
+              <span className="slider"></span>
+            </label>
+        </div>
       </div>
      </div>
      <div className="personnel_cont_wrapper">
@@ -183,14 +220,7 @@ const PersonnelExpenseCreate = () => {
                                 {[...Array(4)].map((_, index) => (
                                   <Btn
                                     key={index}
-                                    label={
-                                      index === 0
-                                        ? '案件'
-                                        : index === 1
-                                          ? '人件費'
-                                          : index === 2
-                                            ? '經費': '売上原価'
-                                    }
+                                    label={translate(index === 0 ? 'project' : index === 1 ? 'personalExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
                                     onClick={() =>
                                       handleTabsClick(
                                         index === 0
@@ -216,7 +246,7 @@ const PersonnelExpenseCreate = () => {
                                 ))}
                          </div>
                          <div className="personnel_title_table_cont">
-                             <p className="personnel_title">人件費新規登録</p>
+                             <p className="personnel_title">{translate('newPersonnelRegistration', language)}</p>
                          </div>
                          <div className="personnel_table_wrapper">
                           <form onSubmit={handleSubmit} className="personnel-wrapper">
@@ -225,7 +255,7 @@ const PersonnelExpenseCreate = () => {
                                   <div className="personnel-cont-body">
                                     <div className="personnel-row">
                                       <div className="personnel-label">
-                                        <p>従業員</p>
+                                        <p>{translate('employee', language)}</p>
                                       </div>
                                       <div className="personnel-card-box">
                                         <select
@@ -234,7 +264,7 @@ const PersonnelExpenseCreate = () => {
                                           value={container.employeeName}
                                           onChange={(e) => handleInputChange(containerIndex, null, e)}
                                         >
-                                          <option value="">従業員の選択</option>
+                                          <option value="">{translate('selectEmployee', language)}</option>
                                           {personnel.map((person, index) => (
                                             <option key={index} value={person.username}>
                                               {person.username}
@@ -248,7 +278,7 @@ const PersonnelExpenseCreate = () => {
                                         <div className="project-group" key={projectIndex}>
                                           <div className="personnel-row">
                                             <div className="personnel-label">
-                                              <p>案件</p>
+                                              <p>{translate('project', language)}</p>
                                             </div>
                                             <div className="personnel-card-box">
                                               <select
@@ -267,7 +297,7 @@ const PersonnelExpenseCreate = () => {
                                           </div>
                                           <div className="personnel-row">
                                             <div className="personnel-label">
-                                              <p>月</p>
+                                              <p>{translate('month', language)}</p>
                                             </div>
                                             <div className="personnel-card-box">
                                               <select
@@ -277,14 +307,14 @@ const PersonnelExpenseCreate = () => {
                                               >
                                                 <option value=""></option>
                                                   {months.map((month, idx) => (
-                                                    <option key={idx} value={month}>{month}月</option>
+                                                    <option key={idx} value={month}>{language === "en" ? monthNames[month].en : monthNames[month].jp}</option>
                                                   ))}
                                               </select>
                                             </div>
                                           </div>
                                           <div className="personnel-row">
                                             <div className="personnel-label">
-                                              <p>人件費</p>
+                                              <p>{translate('personalExpenses', language)}</p>
                                             </div>
                                             <div className="personnel-card-box">
                                               <input
@@ -297,7 +327,7 @@ const PersonnelExpenseCreate = () => {
                                           </div>
                                           <div className="personnel-row">
                                             <div className="personnel-label">
-                                              <p>割合</p>
+                                              <p>{translate('assignmentRatio', language)}</p>
                                             </div>
                                             <div className="personnel-card-box">
                                               <input
@@ -313,7 +343,7 @@ const PersonnelExpenseCreate = () => {
                                       <div className="button-box">
                                         {container.projects.length < 5 && (
                                           <Btn
-                                            label="追加"
+                                            label={translate('add', language)}
                                             className="button"
                                             type="button"
                                             onClick={() => handleAddProject(containerIndex)}
@@ -330,8 +360,8 @@ const PersonnelExpenseCreate = () => {
                                   <Btn label="-" className="minus-btn" type="button" onClick={handleRemoveContainer} />
                                 </div>
                                 <div className="personnel-btn-subcancel">
-                                  <Btn label="キャンセル" className="cancel-btn is-light" type="button" onClick={() => alert('cancel')} />
-                                  <Btn label="登録" className="submit-btn is-info" type="submit" onClick={() => ''} />
+                                  <Btn label={translate('cancel', language)} className="cancel-btn is-light" type="button" onClick={() => alert('cancel')} />
+                                  <Btn label={translate('submit', language)} className="submit-btn is-info" type="submit" onClick={() => ''} />
                                 </div>
                                 {/* <button className="save-btn" type='submit'>Save</button> */}
                               </div>

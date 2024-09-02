@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import ClientMasterTableList, CostOfSalesList, CreateCostOfSales, CreateExpenses, CreateOtherPlanningData, CreatePerformanceProjectData, CreatePersonnelView, CreatePlanningProjectData, CreateUserView , CreateCompanyMaster, DeleteCompanyMaster, DeletePerformanceProjectData, DeletePlanningProjectData, ExpensesDataList, FetchPersonnelView, ForgotPasswordView, NoteDelete, NoteListCreate, PlanningProjectDataList, StorePersonnelPlanning, StorePlanningProject, UpdateCompanyMaster, UpdateCreateNote, UpdatePerformanceProjectData, UpdatePlanningProjectData, ViewAllPlanning
+from api.views import ClientMasterTableList, CostOfSalesList, CreateCostOfSales, CreateExpenses, CreateOtherPlanningData, CreatePerformanceProjectData, CreatePersonnelView, CreatePlanningProjectData, CreateUserView , CreateCompanyMaster, DeleteCompanyMaster, DeletePerformanceProjectData, DeletePlanningProjectData, ExpensesDataList, FetchPersonnelView, ForgotPasswordView, NoteDelete, NoteListCreate, PlanningProjectDataList, StorePersonnelPlanning, StorePlanningProject, UpdateCompanyMaster, UpdateCostOfSales, UpdateCreateNote, UpdateExpenses, UpdatePerformanceProjectData, UpdatePlanningProjectData, ViewAllPlanning
+from api.views import ClientMasterTableList, CostOfSalesList, CreateCostOfSales, CreateExpenses, CreateOtherPlanningData, CreatePerformanceProjectData, CreatePersonnelView, CreatePlanningProjectData, CreateUserView , CreateCompanyMaster, DeleteCompanyMaster, DeletePerformanceProjectData, DeletePlanningProjectData, ExpensesDataList, FetchPersonnelView, ForgotPasswordView, NoteDelete, NoteListCreate, PlanningProjectDataList, StorePersonnelPlanning, StorePlanningProject, UpdateCompanyMaster, UpdateCreateNote, UpdatePerformanceProjectData, UpdatePlanning, UpdatePlanningProjectData, UpdateProjectDataList, ViewAllPlanning
 from api.views import ClientMasterTableList, CreateOtherPlanningData, CreatePerformanceProjectData, CreatePlanningProjectData, CreateUserView , CreateCompanyMaster, DeleteCompanyMaster, DeletePerformanceProjectData, DeletePlanningProjectData, NoteDelete, NoteListCreate, PersonnelExpensesList, PlanningProjectDataList, StorePlanningProject, UpdateCompanyMaster, UpdateCreateNote, UpdatePerformanceProjectData, UpdatePlanningProjectData
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -36,8 +37,11 @@ urlpatterns = [
     path('api/planning/all/', ViewAllPlanning.as_view()),
     path('api/expenseslist/', ExpensesDataList.as_view()),
     path('api/expenses-registration/create/', CreateExpenses.as_view()),
+    path('api/expenses-registration/update/', UpdateExpenses.as_view()),
     path('api/cost-of-sales/', CostOfSalesList.as_view()),
     path('api/costofsale/create/', CreateCostOfSales.as_view()),
-
+    path('api/costofsale/update/', UpdateCostOfSales.as_view()),
+    path('api/projectdatalist/update/', UpdateProjectDataList.as_view()),
+    path('api/planning/update/', UpdatePlanning.as_view()),
     
 ]

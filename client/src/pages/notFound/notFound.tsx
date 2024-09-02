@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Btn from "../../components/Button/Button";
 import Sidebar from "../../components/SideBar/Sidebar";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface ButtonData {
   label: string
@@ -9,33 +9,43 @@ interface ButtonData {
 }
 
 const NotFound = () => {
-  const [activeTab, setActiveTab] = useState('plan')
+  const [activeTab, setActiveTab] = useState('/planning')
   const navigate = useNavigate()
+  const location = useLocation()
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
   }
   
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === '/dashboard' || path === '/planning' || path === '/*') {
+      setActiveTab(path);
+    }
+  }, [location.pathname]);
+  
   return (
     <div className='personnel_wrapper'>
     <div className="header_cont">
       <div className="personnel_top_btn_cont">
-        <Btn
-            label="分析"
-            onClick={() => handleTabClick("/dashboard")}
-            className={activeTab === "analysis" ? "h-btn-active header-btn" : "header-btn"}
-          />
+        <div className="header-buttons">
           <Btn
-            label="計画"
-            onClick={() => handleTabClick("/planning")}
-            className={activeTab === "plan" ? "h-btn-active header-btn" : "header-btn"}
-          />
-          <Btn
-            label="実績"
-            onClick={() => handleTabClick("result")}
-            className={activeTab === "result" ? "h-btn-active header-btn" : "header-btn"}
-          />
+              label="分析"
+              onClick={() => handleTabClick("/dashboard")}
+              className={activeTab === "analysis" ? "h-btn-active header-btn" : "header-btn"}
+            />
+            <Btn
+              label="計画"
+              onClick={() => handleTabClick("/planning")}
+              className={activeTab === "plan" ? "h-btn-active header-btn" : "header-btn"}
+            />
+            <Btn
+              label="実績"
+              onClick={() => handleTabClick("/*")}
+              className={activeTab === "/*" ? "h-btn-active header-btn" : "header-btn"}
+            />
+        </div>
       </div>
      </div>
      <div className="personnel_cont_wrapper">

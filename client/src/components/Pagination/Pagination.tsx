@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import DropDown from '../DropDown/DropDown';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { translate } from '../../utils/translationUtil';
 
 interface PaginationProps {
   currentPage: number
@@ -21,6 +23,8 @@ const Pagination: React.FC<PaginationProps> = ({
   const [activeButton, setActiveButton] = useState<string>('prevButton')
   const [dropdownValue, setDropdownValue] = useState<number>(5)
   const [selectedClient, setSelectedClient] = useState('')
+  const { language, setLanguage } = useLanguage()
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translation
 
   const handleButtonClick = (page: number, buttonId: string) => {
     onPageChange(page)
@@ -35,10 +39,16 @@ const Pagination: React.FC<PaginationProps> = ({
   useEffect(() => {
     setActiveButton('prevButton')
   }, [])
+
+  useEffect(() => {
+    setIsTranslateSwitchActive(language === 'en');
+  }, [language]);
+
+
   return (
     <div className='content'>
       <div className='paginate'>
-        <p className='txt1'>0円行动作表示</p>
+        <p className='txt1'>{translate('paginator', language)}</p>
         <label className='switch'>
           <input type='checkbox' />
           <span className='slider'></span>
@@ -57,7 +67,7 @@ const Pagination: React.FC<PaginationProps> = ({
             disabled={currentPage === 0} // Disable the button if currentPage is 1
             className={activeButton === 'prevButton' ? 'activeButton' : ''}
           >
-            同
+            {translate('previousPage', language)}
           </button>
           <button
             id='nextButton'
@@ -65,7 +75,7 @@ const Pagination: React.FC<PaginationProps> = ({
             disabled={currentPage === totalPages} // Disable the button if currentPage is equal to totalPages
             className={activeButton === 'nextButton' ? 'activeButton' : ''}
           >
-            千円
+            {translate('nextPage', language)}
           </button>
           <button
             id='lastButton'
@@ -73,7 +83,7 @@ const Pagination: React.FC<PaginationProps> = ({
             disabled={currentPage === totalPages} // Disable the button if currentPage is already on the last page
             className={activeButton === 'lastButton' ? 'activeButton' : ''}
           >
-            百万円
+            {translate('lastPage', language)}
           </button>
           <select id='optionNumber' value={rowsPerPage} onChange={handleDropdownChange}>
             {options.map((option, index) => (

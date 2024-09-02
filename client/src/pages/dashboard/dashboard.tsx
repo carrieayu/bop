@@ -16,6 +16,8 @@ import Sidebar from '../../components/SideBar/Sidebar'
 import Btn from '../../components/Button/Button'
 import { useLocation, useNavigate } from 'react-router-dom'
 import TablePlanning from '../../components/Table/tablePlanning'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { translate } from '../../utils/translationUtil'
 
 function formatNumberWithCommas(number: number): string {
   return number.toLocaleString();
@@ -48,7 +50,9 @@ const Dashboard = () => {
   const select = [5, 10, 100]
   const [paginatedData, setPaginatedData] = useState<any[]>([])
   const [activeTab, setActiveTab] = useState('/planning')
-  const [isSwitchActive, setIsSwitchActive] = useState(false); // State for switch
+  const [isSwitchActive, setIsSwitchActive] = useState(false); // State for switch in table changing
+  const { language, setLanguage } = useLanguage()
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translations
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -76,7 +80,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     const path = location.pathname;
-    if (path === '/dashboard' || path === '/planning' || path === '/result') {
+    if (path === '/dashboard' || path === '/planning' || path === '/*') {
       setActiveTab(path);
     }
   }, [location.pathname]);
@@ -86,12 +90,22 @@ const Dashboard = () => {
     setPaginatedData(tableList?.slice(startIndex, startIndex + rowsPerPage))
   }, [currentPage, rowsPerPage, tableList])
 
+  useEffect(() => {
+    setIsTranslateSwitchActive(language === 'en');
+  }, [language]);
+
+  const handleTranslationSwitchToggle = () => {
+    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
+    setLanguage(newLanguage);
+  };
+
+
   const graphData = {
     labels: datePlanning,
     datasets: [
       {
         type: 'bar' as const,
-        label: '売上高',
+        label: translate('sales', language),
         data: datePlanning?.map(date => totalSalesByDate[date]),
         backgroundColor: '#6e748c',
         borderColor: 'black',
@@ -100,7 +114,7 @@ const Dashboard = () => {
       },
       {
         type: 'bar' as const,
-        label: '売上総利益',
+        label: translate('grossProfit', language),
         data: datePlanning?.map(date => totalGrossProfitByDate[date]),
         backgroundColor: '#7696c6',
         borderColor: 'black',
@@ -109,7 +123,7 @@ const Dashboard = () => {
       },
       {
         type: 'bar' as const,
-        label: '営業利益',
+        label: translate('operatingIncome', language),
         data: datePlanning?.map(date => totalOperatingProfitByDate[date]),
         backgroundColor: '#b8cbe2',
         borderColor: 'black',
@@ -118,7 +132,7 @@ const Dashboard = () => {
       },
       {
         type: 'bar' as const,
-        label: '当期純利益',
+        label: translate('cumulativeOrdinaryIncome', language),
         data: datePlanning?.map(date => totalNetProfitPeriodByDate[date]),
         backgroundColor: '#bde386',
         borderColor: 'black',
@@ -127,7 +141,7 @@ const Dashboard = () => {
       },
       {
         type: 'line' as const,
-        label: '売上総利益率',
+        label: translate('grossProfitMargin', language),
         data: datePlanning?.map(date => totalGrossProfitMarginByDate[date]),
         backgroundColor: '#ff8e13',
         borderColor: '#ff8e13',
@@ -137,7 +151,7 @@ const Dashboard = () => {
       },
       {
         type: 'line' as const,
-        label: '営業利益率',
+        label: translate('operatingProfitMargin', language),
         data: datePlanning?.map(date => totalOperatingProfitMarginByDate[date]),
         backgroundColor: '#ec3e4a',
         borderColor: '#ec3e4a',
@@ -147,6 +161,7 @@ const Dashboard = () => {
       },
     ],
   }
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
   }
@@ -163,21 +178,30 @@ const Dashboard = () => {
   return (
     <div className='wrapper'>
       <div className='header_cont'>
-        <Btn
-          label="分析"
-          onClick={() => handleTabClick("/dashboard")}
-          className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
-        />
-        <Btn
-          label="計画"
-          onClick={() => handleTabClick("/planning")}
-          className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
-        />
-        <Btn
-          label="実績"
-          onClick={() => handleTabClick("/result")}
-          className={activeTab === "/result" ? "h-btn-active header-btn" : "header-btn"}
-        />
+        <div className="header-buttons">
+          <Btn
+            label={translate('analysis', language)}
+            onClick={() => handleTabClick("/dashboard")}
+            className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
+          />
+          <Btn
+            label={translate('profitAndlossPlanning', language)}
+            onClick={() => handleTabClick("/planning")}
+            className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
+          />
+          <Btn
+            label={translate('results', language)}
+            onClick={() => handleTabClick("/*")}
+            className={activeTab === "/*" ? "h-btn-active header-btn" : "header-btn"}
+          />
+        </div>
+        <div className="language-toggle">
+          <p className="pl-label">English</p>
+            <label className="switch">
+              <input type="checkbox" checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle}/>
+              <span className="slider"></span>
+            </label>
+        </div>
       </div>
       <div className='content_wrapper'>
         <div className='sidebar'>
@@ -195,11 +219,11 @@ const Dashboard = () => {
                   height='120px'
                 >
                   <div className='custom-card-content'>
-                    <p className='text1'>売上高</p>
+                    <p className='text1'>{translate('sales', language)}</p>
                     <p className='numTxt'>
-                      {formatNumberWithCommas(totalSales)}&nbsp;<span className='totalTxt'>円</span>
+                      {formatNumberWithCommas(totalSales)}&nbsp;<span className='totalTxt'>{translate('Yen', language)}</span>
                     </p>
-                    <p className='text2'>トータル</p>
+                    <p className='text2'>{translate('total', language)}</p>
                   </div>
                 </Card>
                 <Card
@@ -210,11 +234,11 @@ const Dashboard = () => {
                   height='120px'
                 >
                   <div className='custom-card-content'>
-                    <p className='text1'>営業利益</p>
+                    <p className='text1'>{translate('operatingIncome', language)}</p>
                     <p className='numTxt'>
-                      {formatNumberWithCommas(totalOperatingProfit)}&nbsp;<span className='totalTxt'>円</span>
+                      {formatNumberWithCommas(totalOperatingProfit)}&nbsp;<span className='totalTxt'>{translate('Yen', language)}</span>
                     </p>
-                    <p className='text2'>トータル</p>
+                    <p className='text2'>{translate('total', language)}</p>
                   </div>
                 </Card>
                 <Card
@@ -225,11 +249,11 @@ const Dashboard = () => {
                   height='120px'
                 >
                   <div className='custom-card-content'>
-                    <p className='text1'>売上総利益率</p>
+                    <p className='text1'>{translate('grossProfitMargin', language)}</p>
                     <p className='numTxt'>
                       {totalGrossProfitMargin}&nbsp;<span className='totalTxt'>%</span>
                     </p>
-                    <p className='text2'>トータル</p>
+                    <p className='text2'>{translate('total', language)}</p>
                   </div>
                 </Card>
               </div>
@@ -243,11 +267,11 @@ const Dashboard = () => {
                   height='120px'
                 >
                   <div className='custom-card-content'>
-                    <p className='text1'>売上総利益</p>
+                    <p className='text1'>{translate('grossProfit', language)}</p>
                     <p className='numTxt'>
-                      {formatNumberWithCommas(totalGrossProfit)}&nbsp;<span className='totalTxt'>円</span>
+                      {formatNumberWithCommas(totalGrossProfit)}&nbsp;<span className='totalTxt'>{translate('Yen', language)}</span>
                     </p>
-                    <p className='text2'>トータル</p>
+                    <p className='text2'>{translate('total', language)}</p>
                   </div>
                 </Card>
                 <Card
@@ -258,11 +282,11 @@ const Dashboard = () => {
                   height='120px'
                 >
                   <div className='custom-card-content'>
-                    <p className='text1'>当期純利益</p>
+                    <p className='text1'>{translate('cumulativeOrdinaryIncome', language)}</p>
                     <p className='numTxt'>
-                      {formatNumberWithCommas(totalNetProfitPeriod)}&nbsp;<span className='totalTxt'>円</span>
+                      {formatNumberWithCommas(totalNetProfitPeriod)}&nbsp;<span className='totalTxt'>{translate('Yen', language)}</span>
                     </p>
-                    <p className='text2'>トータル</p>
+                    <p className='text2'>{translate('total', language)}</p>
                   </div>
                 </Card>
                 <Card
@@ -273,11 +297,11 @@ const Dashboard = () => {
                   height='120px'
                 >
                   <div className='custom-card-content'>
-                    <p className='text1'>営業利益率</p>
+                    <p className='text1'>{translate('operatingProfitMargin', language)}</p>
                     <p className='numTxt'>
                       {totalOperatingProfitMargin}&nbsp;<span className='totalTxt'>%</span>
                     </p>
-                    <p className='text2'>トータル</p>
+                    <p className='text2'>{translate('total', language)}</p>
                   </div>
                 </Card>
               </div>
@@ -292,12 +316,12 @@ const Dashboard = () => {
           <div className='bottom_cont'>
             <div className="right-content">
               <div className="paginate">
-                <p className="pl-label">案件別表示</p>
+                <p className="pl-label">{translate('displayByProject', language)}</p>
                   <label className="switch">
                     <input type="checkbox" checked={isSwitchActive} onChange={handleSwitchToggle} />
                       <span className="slider"></span>
                     </label>
-                      <p className="pl-label">千円</p>
+                      <p className="pl-label">{translate('thousandYen', language)}</p>
                       <label className="switch">
                         <input type="checkbox" />
                         <span className="slider"></span>
