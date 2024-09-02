@@ -102,7 +102,7 @@ class BusinessDivisionMaster(models.Model):
 class User(AbstractBaseUser):
     user_id = models.CharField(max_length=10, primary_key=True, editable=False)
     username = models.TextField()
-    email = models.EmailField(unique=True)
+    email = models.EmailField()
     affiliated_company_id = models.ForeignKey(CompanyMaster, on_delete=models.CASCADE)
     affiliated_business_division_id = models.ForeignKey(
         BusinessDivisionMaster, on_delete=models.CASCADE
