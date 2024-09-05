@@ -501,7 +501,7 @@ const EditTablePlanning = () => {
           grossProfitData, //gross profit
           {
             id: '',
-            label: 'personalExpenses',
+            label: 'personnelExpenses',
             values: [
               ...personnelExpensesValues,
               firstHalfTotal(personnelExpensesValues),
@@ -584,7 +584,7 @@ const EditTablePlanning = () => {
           {
             id: consumableValues.map((consumableValues) => consumableValues.id),
             //same value to " 給与手当 " ?
-            label: 'suppliesExpenses',
+            label: 'consumableExpenses',
             values: [
               ...consumableValues.map((consumable) => consumable.consumables_expenses),
               firstHalfTotal(consumableValues.map((consumable) => consumable.consumables_expenses)),
@@ -810,7 +810,7 @@ const EditTablePlanning = () => {
     'costOfSales',
     'grossProfit',
     'dispatchLabourExpenses',
-    'personalExpenses',
+    'personnelExpenses',
     'sellingAndGeneralAdminExpenses',
     'operatingIncome',
     'ordinaryIncome',
@@ -830,7 +830,7 @@ const EditTablePlanning = () => {
     'fuelAllowance',
     'welfareExpenses',
     'statutoryWelfareExpenses',
-    'suppliesExpenses',
+    'consumableExpenses',
     'rentExpenses',
     'taxesAndpublicCharges',
     'depreciationExpenses',

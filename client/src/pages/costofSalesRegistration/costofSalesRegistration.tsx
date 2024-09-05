@@ -225,7 +225,7 @@ const CostOfSales = () => {
               {[...Array(4)].map((_, index) => (
                 <Btn
                   key={index}
-                  label={translate(index === 0 ? 'project' : index === 1 ? 'personalExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
+                  label={translate(index === 0 ? 'project' : index === 1 ? 'personnelExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
                   onClick={() =>
                     handleTabsClick(
                       index === 0

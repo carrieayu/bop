@@ -120,7 +120,7 @@ const PersonnelExpensesList: React.FC = () => {
                   {[...Array(4)].map((_, index) => (
                     <Btn
                       key={index}
-                      label={translate(index === 0 ? 'project' : index === 1 ? 'personalExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
+                      label={translate(index === 0 ? 'project' : index === 1 ? 'personnelExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
                       onClick={() =>
                         handleTabsClick(
                           index === 0
@@ -148,7 +148,7 @@ const PersonnelExpensesList: React.FC = () => {
                   ))}
                 </div>
                 <div className='personnel_title_table_cont'>
-                  <p className='personnel_title'>{translate('personnelExpensesList', language)}</p>
+                  <p className='personnel_title'>{translate('employeeExpensesList', language)}</p>
                   <Btn label={translate('newRegistration', language)} size='normal' onClick={() => ''} className='personnel_btn' />
                 </div>
                 <div className='personnel_table_wrapper'>
@@ -175,7 +175,7 @@ const PersonnelExpensesList: React.FC = () => {
                                     <td>
                                       <div className='txt0'>フィリピン事業支援業務</div>
                                       <div className='txt1_txt2_flex'>
-                                        <div className='txt1'>{translate('personalExpenses', language)}</div>
+                                        <div className='txt1'>{translate('personnelExpenses', language)}</div>
                                         <div className='txt2'>{planning.planning_project['personal_expenses']}</div>
                                       </div>
                                       <div className='txt3_txt4_flex'>

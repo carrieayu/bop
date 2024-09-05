@@ -303,7 +303,7 @@ const TablePlanning = () => {
         //start for planning assign data portion
         grossProfitData, //gross profit
         {
-          label: 'personalExpenses',
+          label: 'personnelExpenses',
           values: [
             ...personnelExpensesValues,
             firstHalfTotal(personnelExpensesValues),
@@ -383,7 +383,7 @@ const TablePlanning = () => {
         },
         {
           //same value to " 給与手当 " ?
-          label: 'suppliesExpenses',
+          label: 'consumableExpenses',
           values: [
             ...consumableValues,
             firstHalfTotal(consumableValues),
@@ -601,7 +601,7 @@ const TablePlanning = () => {
     'costOfSales',
     'grossProfit',
     'dispatchLabourExpenses',
-    'personalExpenses',
+    'personnelExpenses',
     'sellingAndGeneralAdminExpenses',
     'operatingIncome',
     'ordinaryIncome',

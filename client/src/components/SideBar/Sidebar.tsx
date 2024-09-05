@@ -32,10 +32,10 @@ const Sidebar = () => {
           <span className="icons"><AiFillFileAdd /></span><Link to="/projectcreate">{translate('projectsRegistration', language)}</Link>
           </li>
           <li className="sub_menu">
-          <span className="icons"><BsPersonFillAdd /></span><Link to="/personnel-expense-create">{translate('personnelExpensesRegistration', language)}</Link>
+          <span className="icons"><BsPersonFillAdd /></span><Link to="/personnel-expense-create">{translate('employeeExpensesRegistration', language)}</Link>
           </li>
           <li className="sub_menu">
-          <span className="icons"><FaTableList /></span><Link to="/personnel-expenses-list">{translate('personnelExpensesList', language)}</Link>
+          <span className="icons"><FaTableList /></span><Link to="/personnel-expenses-list">{translate('employeeExpensesList', language)}</Link>
           </li>
           <li className="sub_menu">
             <span className="icons"><AiFillFileAdd /></span><Link to="/expenses-registration">{translate('expensesRegistration', language)}</Link>

@@ -41,11 +41,13 @@
     "unknown": "Unknown",
     "username": "Username",
     "thousandYen": "Thousand Yen",
-    "switchDisplayMode": "Switch Display Mode",
-    "switchEditMode": "Switch Edit Mode",
     "update": "Update",
     "projectName": "Project Name",
     "newProjectRegistration": "New Project Registration",
-    "newPersonnelRegistration": "New Personnel Registration",
-    "selectEmployee": "Select Employee"
+    "newEmployeeExpensesRegistration": "New Employee Expenses Registration",
+    "selectEmployee": "Select Employee",
+    "switchtoEditMode": "Switch to Edit Mode",
+    "switchtoDisplayMode": "Switch to Display Mode",
+    "cannotSwitchLanguagesinEditMode": "Cannot switch languages in Edit Mode",
+    "alertMessageAbove": "The selected month already has data registered. Do you want to overwrite it?"
 }

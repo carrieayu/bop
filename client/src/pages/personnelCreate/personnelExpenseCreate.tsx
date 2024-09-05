@@ -220,7 +220,7 @@ const PersonnelExpenseCreate = () => {
                                 {[...Array(4)].map((_, index) => (
                                   <Btn
                                     key={index}
-                                    label={translate(index === 0 ? 'project' : index === 1 ? 'personalExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
+                                    label={translate(index === 0 ? 'project' : index === 1 ? 'personnelExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
                                     onClick={() =>
                                       handleTabsClick(
                                         index === 0
@@ -246,7 +246,7 @@ const PersonnelExpenseCreate = () => {
                                 ))}
                          </div>
                          <div className="personnel_title_table_cont">
-                             <p className="personnel_title">{translate('newPersonnelRegistration', language)}</p>
+                             <p className="personnel_title">{translate('newEmployeeExpensesRegistration', language)}</p>
                          </div>
                          <div className="personnel_table_wrapper">
                           <form onSubmit={handleSubmit} className="personnel-wrapper">
@@ -314,7 +314,7 @@ const PersonnelExpenseCreate = () => {
                                           </div>
                                           <div className="personnel-row">
                                             <div className="personnel-label">
-                                              <p>{translate('personalExpenses', language)}</p>
+                                              <p>{translate('personnelExpenses', language)}</p>
                                             </div>
                                             <div className="personnel-card-box">
                                               <input
