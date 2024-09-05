@@ -196,7 +196,7 @@ const ProjectDataList: React.FC = () => {
             <div className='proj_top_body_cont'>
               <div className='mode_switch_datalist'>
                 <button className='mode_switch' onClick={handleClick}>
-                  {isEditing ? '表示モード切り替え' : translate('switchEditMode', language)}
+                  {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
                 </button>
               </div>
             </div>
@@ -209,7 +209,7 @@ const ProjectDataList: React.FC = () => {
                       index === 0
                         ? 'project'
                         : index === 1
-                          ? 'personalExpenses'
+                          ? 'employeeExpenses'
                           : index === 2
                             ? 'expenses'
                             : 'costOfSales',
