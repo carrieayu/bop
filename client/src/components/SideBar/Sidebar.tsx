@@ -44,10 +44,10 @@ const Sidebar = () => {
           <span className="icons"><FaTableList /></span><Link to="/expenses-list">{translate('expensesList', language)}</Link>
           </li>
           <li className="sub_menu">
-          <span className="icons"><AiFillFileAdd /></span><Link to="/cost-of-sales-registration">{translate('costOfsalesRegistration', language)}</Link>
+          <span className="icons"><AiFillFileAdd /></span><Link to="/cost-of-sales-registration">{translate('costOfSalesRegistration', language)}</Link>
           </li>
           <li className="sub_menu">
-          <span className="icons"><FaTableList /></span><Link to="/cost-of-sales-list">{translate('costOfsalesList', language)}</Link>
+          <span className="icons"><FaTableList /></span><Link to="/cost-of-sales-list">{translate('costOfSalesList', language)}</Link>
           </li>
           <li>
             <span className="icons"><MdDashboard /></span><Link to="/*">{translate('results', language)}</Link>

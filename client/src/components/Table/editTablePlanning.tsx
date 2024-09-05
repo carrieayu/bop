@@ -501,7 +501,7 @@ const EditTablePlanning = () => {
           grossProfitData, //gross profit
           {
             id: '',
-            label: 'personnelExpenses',
+            label: 'employeeExpenses',
             values: [
               ...personnelExpensesValues,
               firstHalfTotal(personnelExpensesValues),
@@ -810,7 +810,7 @@ const EditTablePlanning = () => {
     'costOfSales',
     'grossProfit',
     'dispatchLabourExpenses',
-    'personnelExpenses',
+    'employeeExpenses',
     'sellingAndGeneralAdminExpenses',
     'operatingIncome',
     'ordinaryIncome',

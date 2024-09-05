@@ -46,8 +46,8 @@
     "newProjectRegistration": "New Project Registration",
     "newEmployeeExpensesRegistration": "New Employee Expenses Registration",
     "selectEmployee": "Select Employee",
-    "switchtoEditMode": "Switch to Edit Mode",
-    "switchtoDisplayMode": "Switch to Display Mode",
-    "cannotSwitchLanguagesinEditMode": "Cannot switch languages in Edit Mode",
+    "switchToEditMode": "Switch to Edit Mode",
+    "switchToDisplayMode": "Switch to Display Mode",
+    "cannotSwitchLanguagesInEditMode": "Cannot switch languages in Edit Mode",
     "alertMessageAbove": "The selected month already has data registered. Do you want to overwrite it?"
 }

@@ -303,7 +303,7 @@ const TablePlanning = () => {
         //start for planning assign data portion
         grossProfitData, //gross profit
         {
-          label: 'personnelExpenses',
+          label: 'employeeExpenses',
           values: [
             ...personnelExpensesValues,
             firstHalfTotal(personnelExpensesValues),
@@ -601,7 +601,7 @@ const TablePlanning = () => {
     'costOfSales',
     'grossProfit',
     'dispatchLabourExpenses',
-    'personnelExpenses',
+    'employeeExpenses',
     'sellingAndGeneralAdminExpenses',
     'operatingIncome',
     'ordinaryIncome',

@@ -120,7 +120,7 @@ const PersonnelExpensesList: React.FC = () => {
                   {[...Array(4)].map((_, index) => (
                     <Btn
                       key={index}
-                      label={translate(index === 0 ? 'project' : index === 1 ? 'personnelExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
+                      label={translate(index === 0 ? 'project' : index === 1 ? 'employeeExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
                       onClick={() =>
                         handleTabsClick(
                           index === 0
@@ -175,7 +175,7 @@ const PersonnelExpensesList: React.FC = () => {
                                     <td>
                                       <div className='txt0'>フィリピン事業支援業務</div>
                                       <div className='txt1_txt2_flex'>
-                                        <div className='txt1'>{translate('personnelExpenses', language)}</div>
+                                        <div className='txt1'>{translate('employeeExpenses', language)}</div>
                                         <div className='txt2'>{planning.planning_project['personal_expenses']}</div>
                                       </div>
                                       <div className='txt3_txt4_flex'>

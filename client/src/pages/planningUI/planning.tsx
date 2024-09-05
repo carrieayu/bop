@@ -142,7 +142,7 @@ const Planning = () => {
                   </div>
                   <div className='right-content'>
                     <div className='paginate'>
-                    <button className='mode_switch' onClick={handleClick}>{isEditing ? translate('switchtoDisplayMode', language) : translate('switchtoEditMode', language)}</button>
+                    <button className='mode_switch' onClick={handleClick}>{isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}</button>
                       <p className='pl-label'>{translate('displayByProject', language)}</p>
                       <label className='switch'>
                         <input type='checkbox' checked={isSwitchActive} onChange={handleSwitchToggle} />
