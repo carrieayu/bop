@@ -22,8 +22,6 @@ const TablePlanning = () => {
       }
     })
     .then(response => {
-      console.log('All Data:', response.data); // Log the response data to inspect in the console
-
       const aggregatedData = response.data.cost_of_sales.reduce((acc, item) => {
         const { month, ...values } = item;
         if (!acc[month]) {
@@ -72,8 +70,6 @@ const TablePlanning = () => {
         }
         return acc;
       }, {});
-
-      console.log('Aggregated Planning Assign Data:', aggregatedPlanningAssign);
 
       const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3];
       //COST OF SALES

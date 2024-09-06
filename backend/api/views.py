@@ -847,17 +847,17 @@ class UpdatePlanning(generics.UpdateAPIView):
                         cost_of_sales_instance = CostOfSales.objects.get(id=record_id)
                         if label == "purchases":
                             cost_of_sales_instance.purchases = values[idx] if idx < len(values) else 0
-                        if label == "outsourcingCosts":
+                        if label == "outsourcingExpenses":
                             cost_of_sales_instance.outsourcing_costs = values[idx] if idx < len(values) else 0
-                        if label == "merchandisePurchases":
+                        if label == "productPurchases":
                             cost_of_sales_instance.product_purchases = values[idx] if idx < len(values) else 0
-                        if label == "temporaryStaffCost":
+                        if label == "dispatchLabourExpenses":
                             cost_of_sales_instance.dispatch_labor_costs = values[idx] if idx < len(values) else 0
                         if label == "communicationExpenses":
                             cost_of_sales_instance.communication_costs = values[idx] if idx < len(values) else 0
-                        if label == "workinProgressExpense":
+                        if label == "workInProgressExpenses":
                             cost_of_sales_instance.work_in_progress = values[idx] if idx < len(values) else 0
-                        if label == "postingdepreciationExpense":
+                        if label == "amortizationExpenses":
                             cost_of_sales_instance.amortization = values[idx] if idx < len(values) else 0
                         cost_of_sales_instance.save()
                     except CostOfSales.DoesNotExist:
@@ -875,35 +875,35 @@ class UpdatePlanning(generics.UpdateAPIView):
                     if record_id:
                         try:
                             expenses_instance = Expenses.objects.get(id=record_id)
-                            if label == "executiveCompensation":
+                            if label == "executiveRenumeration":
                                 expenses_instance.remuneration = values[idx] if idx < len(values) else 0
-                            if label == "bonusesAndfuelallowances":
+                            if label == "travelExpenses": #duplicate
                                 expenses_instance.travel_expenses = values[idx] if idx < len(values) else 0
-                            if label == "statutoryWelfareCosts":
+                            if label == "statutoryWelfareExpenses": #duplicate
                                 expenses_instance.taxes_and_public_charges = values[idx] if idx < len(values) else 0
-                            if label == "welfareExpenses":
+                            if label == "welfareExpenses": #duplicate
                                 expenses_instance.utilities_expenses = values[idx] if idx < len(values) else 0
-                            if label == "suppliesExpense":
+                            if label == "suppliesExpenses":
                                 expenses_instance.consumables_expenses = values[idx] if idx < len(values) else 0
-                            if label == "rentExpense":
+                            if label == "rentExpenses":
                                 expenses_instance.rent = values[idx] if idx < len(values) else 0
-                            if label == "taxesAndpublicdues":
+                            if label == "statutoryWelfareExpenses": #duplicate
                                 expenses_instance.taxes_and_public_charges = values[idx] if idx < len(values) else 0
-                            if label == "depreciationExpense":
+                            if label == "depreciationExpenses":
                                 expenses_instance.depreciation_expenses = values[idx] if idx < len(values) else 0
-                            if label == "travelAndtransportationexpenses":
+                            if label == "fuelAllowance": #duplicate
                                 expenses_instance.travel_expenses = values[idx] if idx < len(values) else 0
                             if label == "communicationExpenses":
                                 expenses_instance.communication_expenses = values[idx] if idx < len(values) else 0
-                            if label == "utilities":
+                            if label == "utilitiesExpenses": 
                                 expenses_instance.utilities_expenses = values[idx] if idx < len(values) else 0
-                            if label == "paymentFees":
+                            if label == "transactionFees": #duplicate
                                 expenses_instance.advertising_expenses = values[idx] if idx < len(values) else 0
-                            if label == "paymentFees":
+                            if label == "advertisingExpenses":
                                 expenses_instance.advertising_expenses = values[idx] if idx < len(values) else 0
-                            if label == "entertainmentAndhospitalityexpenses":
+                            if label == "entertainmentExpenses":
                                 expenses_instance.entertainment_expenses = values[idx] if idx < len(values) else 0
-                            if label == "paymentForcompensation":
+                            if label == "professionalServicesFees":
                                 expenses_instance.payment_fees = values[idx] if idx < len(values) else 0
                             expenses_instance.save()
                         except Expenses.DoesNotExist:
