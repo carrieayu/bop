@@ -13,7 +13,7 @@ const ProjectDataList: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning')
     const navigate = useNavigate()
     const location = useLocation()
-    const [activeTabOther, setActiveTabOther] = useState('case')
+    const [activeTabOther, setActiveTabOther] = useState('project')
     const [currentPage, setCurrentPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5)
     const [paginatedData, setPaginatedData] = useState<any[]>([])
@@ -158,10 +158,10 @@ const ProjectDataList: React.FC = () => {
       };
 
   return (
-    <div className='proj_wrapper'>
-      <div className='header_cont'>
-        <div className='proj_top_btn_cont'>
-          <div className='header-buttons'>
+    <div className='projectsList_wrapper'>
+      <div className='projectsList_header_cont'>
+        <div className='projectsList_top_btn_cont'>
+          <div className='projectsList_header-buttons'>
             <Btn
               label={translate('analysis', language)}
               onClick={() => handleTabClick('/dashboard')}
@@ -178,30 +178,30 @@ const ProjectDataList: React.FC = () => {
               className={activeTab === '/*' ? 'h-btn-active header-btn' : 'header-btn'}
             />
           </div>
-          <div className='language-toggle'>
-            <p className='pl-label'>English</p>
-            <label className='switch'>
+          <div className='projectsList_language-toggle'>
+            <p className='projectsList_pl-label'>English</p>
+            <label className='projectsList_switch'>
               <input type='checkbox' checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle} disabled={isEditing}/>
-              <span className='slider'></span>
+              <span className='projectsList_slider'></span>
             </label>
           </div>
         </div>
       </div>
-      <div className='projectlist_cont_wrapper'>
-        <div className='sidebar'>
+      <div className='projectsList_cont_wrapper'>
+        <div className='projectsList_sidebar'>
           <Sidebar />
         </div>
-        <div className='projectlist_wrapper'>
-          <div className='proj_top_content'>
-            <div className='proj_top_body_cont'>
-              <div className='mode_switch_datalist'>
-                <button className='mode_switch' onClick={handleClick}>
+        <div className='projectsList_wrapper'>
+          <div className='projectsList_top_content'>
+            <div className='projectsList_top_body_cont'>
+              <div className='projectsList_mode_switch_datalist'>
+                <button className='projectsList_mode_switch' onClick={handleClick}>
                   {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
                 </button>
               </div>
             </div>
-            <div className='proj_mid_body_cont'>
-              <div className='proj_mid_btn_cont'>
+            <div className='projectsList_mid_body_cont'>
+              <div className='projectsList_mid_btn_cont'>
                 {[...Array(4)].map((_, index) => (
                   <Btn
                     key={index}
@@ -218,72 +218,72 @@ const ProjectDataList: React.FC = () => {
                     onClick={() =>
                       handleTabsClick(
                         index === 0
-                          ? 'case'
+                          ? 'project'
                           : index === 1
-                            ? 'personnel_cost'
+                            ? 'employeeExpenses'
                             : index === 2
                               ? 'expenses'
-                              : 'cost_purchase',
+                              : 'costOfSales',
                       )
                     }
                     className={
                       activeTabOther ===
                       (index === 0
-                        ? 'case'
+                        ? 'project'
                         : index === 1
-                          ? 'personnel_cost'
+                          ? 'employeeExpenses'
                           : index === 2
                             ? 'expenses'
-                            : 'cost_purchase')
+                            : 'costOfSales')
                         ? 'body-btn-active body-btn'
                         : 'body-btn'
                     }
                   />
                 ))}
               </div>
-              <div className='proj_title_table_cont'>
-                <p className='proj_title'>{translate('projectsList', language)}</p>
+              <div className='projectsList_title_table_cont'>
+                <p className='projectsList_title'>{translate('projectsList', language)}</p>
                 <Btn
                   label={translate('newRegistration', language)}
                   size='normal'
                   onClick={() => ''}
-                  className='proj_btn'
+                  className='projectsList_btn'
                 />
               </div>
-              <div className='proj_table_wrapper'>
-                <div className='proj_table_cont'>
+              <div className='projectsList_table_wrapper'>
+                <div className='projectsList_table_cont'>
                   <div className='columns is-mobile'>
                     <div className='column'>
                       {isEditing ? (
                         <div>
                           <table className='table is-bordered is-hoverable'>
                             <thead>
-                              <tr className='proj_table_title '>
-                                <th className='proj_table_title_content_vertical has-text-centered'>
+                              <tr className='projectsList_table_title '>
+                                <th className='projectsList_table_title_content_vertical has-text-centered'>
                                   {translate('client', language)}
                                 </th>
-                                <th className='proj_table_title_content_vertical has-text-centered'>
+                                <th className='projectsList_table_title_content_vertical has-text-centered'>
                                   {translate('projectName', language)}
                                 </th>
-                                {/* <th className="proj_table_title_content_vertical has-text-centered">受注事業部</th> */}
-                                <th className='proj_table_title_content_vertical has-text-centered'>
+                                {/* <th className="projectsList_table_title_content_vertical has-text-centered">受注事業部</th> */}
+                                <th className='projectsList_table_title_content_vertical has-text-centered'>
                                   {translate('month', language)}
                                 </th>
-                                <th className='proj_table_title_content_vertical has-text-centered'>
+                                <th className='projectsList_table_title_content_vertical has-text-centered'>
                                   {translate('salesRevenue', language)}
                                 </th>
-                                <th className='proj_table_title_content_vertical has-text-centered'>
+                                <th className='projectsList_table_title_content_vertical has-text-centered'>
                                   {translate('nonOperatingIncome', language)}
                                 </th>
-                                <th className='proj_table_title_content_vertical has-text-centered'>
+                                <th className='projectsList_table_title_content_vertical has-text-centered'>
                                   {translate('nonOperatingExpenses', language)}
                                 </th>
                               </tr>
                             </thead>
-                            <tbody className='proj_table_body'>
+                            <tbody className='projectsList_table_body'>
                               {projects.map((project, index) => (
-                                <tr key={project.planning_project_id} className='proj_table_body_content_horizantal'>
-                                  <td className='proj_table_body_content_vertical'>
+                                <tr key={project.planning_project_id} className='projectsList_table_body_content_horizantal'>
+                                  <td className='projectsList_table_body_content_vertical'>
                                     <input
                                       type='text'
                                       name='client.client_name'
@@ -291,7 +291,7 @@ const ProjectDataList: React.FC = () => {
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
-                                  <td className='proj_table_body_content_vertical'>
+                                  <td className='projectsList_table_body_content_vertical'>
                                     <input
                                       type='text'
                                       name='planning_project_name'
@@ -299,7 +299,7 @@ const ProjectDataList: React.FC = () => {
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
-                                  <td className='proj_table_body_content_vertical'>
+                                  <td className='projectsList_table_body_content_vertical'>
                                     <select
                                       className='select-option'
                                       name='month'
@@ -315,7 +315,7 @@ const ProjectDataList: React.FC = () => {
                                     </select>
                                     {}
                                   </td>
-                                  <td className='proj_table_body_content_vertical'>
+                                  <td className='projectsList_table_body_content_vertical'>
                                     <input
                                       type='number'
                                       name='sales_revenue'
@@ -323,7 +323,7 @@ const ProjectDataList: React.FC = () => {
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
-                                  <td className='proj_table_body_content_vertical'>
+                                  <td className='projectsList_table_body_content_vertical'>
                                     <input
                                       type='number'
                                       name='non_operating_income'
@@ -331,7 +331,7 @@ const ProjectDataList: React.FC = () => {
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
-                                  <td className='proj_table_body_content_vertical'>
+                                  <td className='projectsList_table_body_content_vertical'>
                                     <input
                                       type='number'
                                       name='non_operating_expenses'
@@ -347,39 +347,39 @@ const ProjectDataList: React.FC = () => {
                       ) : (
                         <table className='table is-bordered is-hoverable'>
                           <thead>
-                            <tr className='proj_table_title '>
-                              <th className='proj_table_title_content_vertical has-text-centered'>
+                            <tr className='projectsList_table_title '>
+                              <th className='projectsList_table_title_content_vertical has-text-centered'>
                                 {translate('client', language)}
                               </th>
-                              <th className='proj_table_title_content_vertical has-text-centered'>
+                              <th className='projectsList_table_title_content_vertical has-text-centered'>
                                 {translate('projectName', language)}
                               </th>
-                              {/* <th className="proj_table_title_content_vertical has-text-centered">受注事業部</th> */}
-                              <th className='proj_table_title_content_vertical has-text-centered'>
+                              {/* <th className="projectsList_table_title_content_vertical has-text-centered">受注事業部</th> */}
+                              <th className='projectsList_table_title_content_vertical has-text-centered'>
                                 {translate('month', language)}
                               </th>
-                              <th className='proj_table_title_content_vertical has-text-centered'>
+                              <th className='projectsList_table_title_content_vertical has-text-centered'>
                                 {translate('salesRevenue', language)}
                               </th>
-                              <th className='proj_table_title_content_vertical has-text-centered'>
+                              <th className='projectsList_table_title_content_vertical has-text-centered'>
                                 {translate('nonOperatingIncome', language)}
                               </th>
-                              <th className='proj_table_title_content_vertical has-text-centered'>
+                              <th className='projectsList_table_title_content_vertical has-text-centered'>
                                 {translate('nonOperatingExpenses', language)}
                               </th>
                             </tr>
                           </thead>
-                          <tbody className='proj_table_body'>
+                          <tbody className='projectsList_table_body'>
                             {projects.map((project) => (
-                              <tr key={project.planning_project_id} className='proj_table_body_content_horizantal'>
-                                <td className='proj_table_body_content_vertical'>{project.client.client_name}</td>
-                                <td className='proj_table_body_content_vertical'>{project.planning_project_name}</td>
-                                <td className='proj_table_body_content_vertical'>
+                              <tr key={project.planning_project_id} className='projectsList_table_body_content_horizantal'>
+                                <td className='projectsList_table_body_content_vertical'>{project.client.client_name}</td>
+                                <td className='projectsList_table_body_content_vertical'>{project.planning_project_name}</td>
+                                <td className='projectsList_table_body_content_vertical'>
                                   {project.year}/{project.month}
                                 </td>
-                                <td className='proj_table_body_content_vertical'>{project.sales_revenue}</td>
-                                <td className='proj_table_body_content_vertical'>{project.non_operating_income}</td>
-                                <td className='proj_table_body_content_vertical'>{project.non_operating_expenses}</td>
+                                <td className='projectsList_table_body_content_vertical'>{project.sales_revenue}</td>
+                                <td className='projectsList_table_body_content_vertical'>{project.non_operating_income}</td>
+                                <td className='projectsList_table_body_content_vertical'>{project.non_operating_expenses}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -389,8 +389,8 @@ const ProjectDataList: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className='proj_pagination_wrapper'>
-                <div className='proj_pagination_cont'>
+              <div className='projectsList_pagination_wrapper'>
+                <div className='projectsList_pagination_cont'>
                   {/* <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
@@ -400,8 +400,8 @@ const ProjectDataList: React.FC = () => {
                     onRowsPerPageChange={handleRowsPerPageChange}
                   /> */}
                   {isEditing ? (
-                    <div className='mode_switch_datalist'>
-                      <button className='edit_submit_btn' onClick={handleSubmit}>
+                    <div className='projectsList_mode_switch_datalist'>
+                      <button className='projectsList_edit_submit_btn' onClick={handleSubmit}>
                         更新する
                       </button>
                     </div>
