@@ -16,6 +16,11 @@
     "clientsList": "顧客一覧",
     "employeesRegistration": "従業員登録",
     "employeesList": "従業員一覧",
-    "dashboard": "ダッシュボード"
+    "businessDivisionsRegistration": "受注事業部登録",
+    "businessDivisionsList": "受注事業部一覧",
+    "usersRegistration": "ユーザー登録",
+    "usersList": "ユーザー一覧",
+    "dashboard": "ダッシュボード",
+    "masterMaintenance": "マスタメンテナンス"
 }
   
