@@ -15,7 +15,7 @@ const ProjectDataRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('case')
+  const [activeTabOther, setActiveTabOther] = useState('project')
   const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translations
@@ -175,9 +175,9 @@ const ProjectDataRegistration = () => {
   };
 
   return (
-    <div className='project_wrapper'>
-      <div className='header_cont'>
-      <div className="header-buttons">
+    <div className='projectsRegistration_wrapper'>
+      <div className='projectsRegistration_header_cont'>
+      <div className="projectsRegistration_header-buttons">
           <Btn
             label={translate('analysis', language)}
             onClick={() => handleTabClick("/dashboard")}
@@ -194,22 +194,22 @@ const ProjectDataRegistration = () => {
             className={activeTab === "/*" ? "h-btn-active header-btn" : "header-btn"}
           />
         </div>
-        <div className="language-toggle">
-          <p className="pl-label">English</p>
-            <label className="switch">
+        <div className="projectsRegistration_language-toggle">
+          <p className="projectsRegistration_pl-label">English</p>
+            <label className="projectsRegistration_switch">
               <input type="checkbox" checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle}/>
-              <span className="slider"></span>
+              <span className="projectsRegistration_slider"></span>
             </label>
         </div>
       </div>
-      <div className='proj_content_wrapper'>
-        <div className='sidebar'>
+      <div className='projectsRegistration_content_wrapper'>
+        <div className='projectsRegistration_sidebar'>
           <Sidebar />
         </div>
-        <div className='project_data_content'>
-          <div className='top_body_cont'></div>
-          <div className='mid_body_cont'>
-            <div className='mid_btn_cont'>
+        <div className='projectsRegistration_data_content'>
+          <div className='projectsRegistration_top_body_cont'></div>
+          <div className='projectsRegistration_mid_body_cont'>
+            <div className='projectsRegistration_mid_btn_cont'>
               {[...Array(4)].map((_, index) => (
                 <Btn
                   key={index}
@@ -217,36 +217,36 @@ const ProjectDataRegistration = () => {
                   onClick={() =>
                     handleTabsClick(
                       index === 0
-                        ? 'case'
+                        ? 'project'
                         : index === 1
-                          ? 'personnel_cost'
+                          ? 'employeeExpenses'
                           : index === 2
                             ? 'expenses'
-                            : 'cost_purchase',
+                            : 'costOfSales',
                     )
                   }
                   className={
                     activeTabOther ===
-                    (index === 0 ? 'case' : index === 1 ? 'personnel_cost' : index === 2 ? 'expenses' : 'cost_purchase')
-                      ? 'body-btn-active body-btn'
-                      : 'body-btn'
+                    (index === 0 ? 'project' : index === 1 ? 'employeeExpenses' : index === 2 ? 'expenses' : 'costOfSales')
+                      ? 'projectsRegistration_body-btn-active projectsRegistration_body-btn'
+                      : 'projectsRegistration_body-btn'
                   }
                 />
               ))}
             </div>
-            <div className='mid_form_cont'>
-              <p className='form-title'>{translate('newProjectRegistration', language)}</p>
+            <div className='projectsRegistration_mid_form_cont'>
+              <p className='projectsRegistration_form-title'>{translate('projectsRegistration', language)}</p>
               <form onSubmit={handleSubmit}>
                 {formData.map((form, index) => (
-                  <div key={index} className={`form-content ${index > 0 ? 'form-content-special' : ''}`}>
-                    <div className={`form-content ${index > 0 ? 'form-line' : ''}`}></div>
-                    <div className='form-content-div'>
-                      <div className='left-form-div calc'>
-                        <div className='client-name-div'>
-                          <label className='client_name'>{translate('client', language)}</label>
+                  <div key={index} className={`projectsRegistration_form-content ${index > 0 ? 'projectsRegistration_form-content-special' : ''}`}>
+                    <div className={`projectsRegistration_form-content ${index > 0 ? 'projectsRegistration_form-line' : ''}`}></div>
+                    <div className='projectsRegistration_form-content-div'>
+                      <div className='projectsRegistration_left-form-div projectsRegistration_calc'>
+                        <div className='projectsRegistration_client-div'>
+                          <label className='projectsRegistration_client'>{translate('client', language)}</label>
                           <select
-                            className='select-option'
-                            name='client_name'
+                            className='projectsRegistration_select-option'
+                            name='client'
                             value={form.client_name}
                             onChange={(e) => handleChange(index, e)}
                           >
@@ -257,8 +257,8 @@ const ProjectDataRegistration = () => {
                             <option value='ソルトワークス'>ソルトワークス</option>
                           </select>
                         </div>
-                        <div className='business_division_name-div'>
-                          <label className='business_division_name'>{translate('salesRevenue', language)}</label>
+                        <div className='projectsRegistration_sales_revenue-div'>
+                          <label className='projectsRegistration_sales_revenue'>{translate('salesRevenue', language)}</label>
                           <input
                             type='number'
                             name='sales_revenue'
@@ -266,8 +266,8 @@ const ProjectDataRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='project_name-div'>
-                          <label className='project_name'>{translate('nonOperatingExpenses', language)}</label>
+                        <div className='projectsRegistration_non-operating-expenses-div'>
+                          <label className='projectsRegistration_non-operating-expenses'>{translate('nonOperatingExpenses', language)}</label>
                           <input
                             type='number'
                             name='non_operating_expenses'
@@ -276,9 +276,9 @@ const ProjectDataRegistration = () => {
                           />
                         </div>
                       </div>
-                      <div className='middle-form-div calc'>
-                        <div className='net-sales-div'>
-                          <label className='net_sales'>{translate('projectName', language)}</label>
+                      <div className='projectsRegistration_middle-form-div projectsRegistration_calc'>
+                        <div className='projectsRegistration_project_name-div'>
+                          <label className='projectsRegistration_project_name'>{translate('projectName', language)}</label>
                           <input
                             type='text'
                             name='project_name'
@@ -286,10 +286,10 @@ const ProjectDataRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='end_date-div'>
-                          <label className='end_yyyymm'>{translate('month', language)}</label>
+                        <div className='projectsRegistration_month-div'>
+                          <label className='projectsRegistration_month'>{translate('month', language)}</label>
                           <select
-                            className='select-option'
+                            className='projectsRegistration_select-option'
                             name='month'
                             value={form.month}
                             onChange={(e) => handleChange(index, e)}
@@ -303,9 +303,9 @@ const ProjectDataRegistration = () => {
                           </select>
                         </div>
                       </div>
-                      <div className='right-form-div calc'>
-                        <div className='non-operating-income-div'>
-                          <label className='non_operating_income'>{translate('businessDivision', language)}</label>
+                      <div className='projectsRegistration_right-form-div projectsRegistration_calc'>
+                        <div className='projectsRegistration_business_division_name-div'>
+                          <label className='projectsRegistration_business_division_name'>{translate('businessDivision', language)}</label>
                           <input
                             type='text'
                             name='business_division_name'
@@ -313,8 +313,8 @@ const ProjectDataRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='operating-income-div'>
-                          <label className='operating_income'>{translate('nonOperatingIncome', language)}</label>
+                        <div className='projectsRegistration_operating-income-div'>
+                          <label className='projectsRegistration_operating_income'>{translate('nonOperatingIncome', language)}</label>
                           <input
                             type='number'
                             name='non_operating_income'
@@ -327,16 +327,16 @@ const ProjectDataRegistration = () => {
                     <input type='hidden' name='registered_user_id' value={form.registered_user_id} />
                   </div>
                 ))}
-                <div className='form-content'>
-                  <div className='plus-btn'>
-                    <button className='inc' type='button' onClick={handleAdd}>
+                <div className='projectsRegistration_form-content'>
+                  <div className='projectsRegistration_plus-btn'>
+                    <button className='projectsRegistration_inc' type='button' onClick={handleAdd}>
                       +
                     </button>
-                    <button className='dec' type='button' onClick={handleMinus}>
+                    <button className='projectsRegistration_dec' type='button' onClick={handleMinus}>
                       -
                     </button>
                   </div>
-                  <div className='options-btn'>
+                  <div className='projectsRegistration_options-btn'>
                     <button type='button' className='button is-light'>
                       {translate('cancel', language)}
                     </button>
