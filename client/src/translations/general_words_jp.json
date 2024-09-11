@@ -54,5 +54,11 @@
     "updatedAt": "更新日",
     "deleteMessage": "この顧客を削除してもよろしいですか？",
     "delete": "削除",
-    "confirm": "確認"
+    "confirm": "確認",
+    "firstName": "名",
+    "lastName": "姓",
+    "email": "メールアドレス",
+    "companyName": "会社名",
+    "company": "会社",
+    "companyID": "会社ID"
 }
