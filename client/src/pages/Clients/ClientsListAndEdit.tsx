@@ -288,37 +288,37 @@ const ClientsListAndEdit: React.FC = () => {
                                     {translate('clientName', language)}
                                 </th>
                                 <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('authUserID', language)}
+                                    {translate('createdBy', language)}
                                 </th>
                                 <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('created_at', language)}
+                                    {translate('createdAt', language)}
                                 </th>
                                 <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('updated_at', language)}
+                                    {translate('updatedAt', language)}
                                 </th>
                                 <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'></th>
                               </tr>
                             </thead>
                             <tbody className='ClientsListAndEdit_table_body'>
-                              {projects.map((project, index) => (
-                                <tr key={project.planning_project_id} className='ClientsListAndEdit_table_body_content_horizantal'>
+                              {/* {projects.map((project, index) => ( */}
+                                <tr key='{project.planning_project_id}' className='ClientsListAndEdit_table_body_content_horizantal'>
                                   <td className='ClientsListAndEdit_table_body_content_vertical has-text-left'></td>
                                   <td className='ClientsListAndEdit_table_body_content_vertical'>
                                     <input
                                       type='text'
                                       name='client.client_name'
-                                      value={project.client.client_name}
-                                      onChange={(e) => handleChange(index, e)}
+                                      value=''
+                                      // onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
                                   <td className='ClientsListAndEdit_table_body_content_vertical'></td>
                                   <td className='ClientsListAndEdit_table_body_content_vertical'></td>
                                   <td className='ClientsListAndEdit_table_body_content_vertical'></td>
                                   <td className='ClientsListAndEdit_table_body_content_vertical delete_icon'>
-                                    <RiDeleteBin6Fill className='delete-icon' onClick={() => openModal(project)}/>
+                                    <RiDeleteBin6Fill className='delete-icon' onClick={() => openModal('project')}/>
                                   </td>
                                 </tr>
-                              ))}
+                              {/* ))} */}
                             </tbody>
                           </table>
                         </div>
@@ -333,26 +333,26 @@ const ClientsListAndEdit: React.FC = () => {
                                   {translate('clientName', language)}
                               </th>
                               <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('authUserID', language)}
+                                  {translate('createdBy', language)}
                               </th>
                               <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('created_at', language)}
+                                  {translate('createdAt', language)}
                               </th>
                               <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('updated_at', language)}
+                                  {translate('updatedAt', language)}
                               </th>
                             </tr>
                           </thead>
                           <tbody className='ClientsListAndEdit_table_body'>
-                            {projects.map((project) => (
-                              <tr key={project.planning_project_id} className='ClientsListAndEdit_table_body_content_horizantal'>
+                            {/* {projects.map((project) => ( */}
+                              <tr key='{project.planning_project_id}' className='ClientsListAndEdit_table_body_content_horizantal'>
                                 <td className='ClientsListAndEdit_table_body_content_vertical has-text-left'></td>
                                 <td className='ClientsListAndEdit_table_body_content_vertical'></td>
                                 <td className='ClientsListAndEdit_table_body_content_vertical'></td>
                                 <td className='ClientsListAndEdit_table_body_content_vertical'></td>
                                 <td className='ClientsListAndEdit_table_body_content_vertical'></td>
                               </tr>
-                            ))}
+                            {/* ))} */}
                           </tbody>
                         </table>
                       )}

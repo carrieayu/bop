@@ -49,9 +49,9 @@
     "switchToDisplayMode": "Switch to Display Mode",
     "cannotSwitchLanguagesInEditMode": "Cannot switch languages in Edit Mode",
     "alertMessageAbove": "The selected month already has data registered. Do you want to overwrite it?",
-    "authUserID": "Created By",
-    "created_at": "Created At",
-    "updated_at": "Updated At",
+    "createdBy": "Created By",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
     "deleteMessage": "Are you sure you would like to delete this client?",
     "delete": "Delete",
     "confirm": "Confirm"
