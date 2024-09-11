@@ -304,18 +304,18 @@ const ClientsListAndEdit: React.FC = () => {
                                 <tr key='{project.planning_project_id}' className='ClientsListAndEdit_table_body_content_horizantal'>
                                   <td className='ClientsListAndEdit_table_body_content_vertical has-text-left'></td>
                                   <td className='ClientsListAndEdit_table_body_content_vertical'>
-                                    <input
+                                    {/* <input
                                       type='text'
                                       name='client.client_name'
                                       value=''
                                       // onChange={(e) => handleChange(index, e)}
-                                    />
+                                    /> */}
                                   </td>
                                   <td className='ClientsListAndEdit_table_body_content_vertical'></td>
                                   <td className='ClientsListAndEdit_table_body_content_vertical'></td>
                                   <td className='ClientsListAndEdit_table_body_content_vertical'></td>
                                   <td className='ClientsListAndEdit_table_body_content_vertical delete_icon'>
-                                    <RiDeleteBin6Fill className='delete-icon' onClick={() => openModal('project')}/>
+                                    {/* <RiDeleteBin6Fill className='delete-icon' onClick={() => openModal('project')}/> */}
                                   </td>
                                 </tr>
                               {/* ))} */}
