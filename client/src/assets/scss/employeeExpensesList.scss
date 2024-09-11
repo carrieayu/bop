@@ -1,6 +1,6 @@
-.personnel_wrapper{
+.employeeExpensesList_wrapper{
     max-width: 2560px;
-    .header_cont{
+    .employeeExpensesList_header_cont{
         margin: 0px 0px 0px 0px;
         height: 60px;
         .header_container{
@@ -8,11 +8,11 @@
             padding: 5px 5px 10px 5px;
             box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
         }
-        .personnel_top_btn_cont{
+        .employeeExpensesList_top_btn_cont{
             margin-left: 5%;
             display: flex;
             justify-content: space-between;
-            .header-buttons{
+            .employeeExpensesList_header-buttons{
                 display: flex;
                 gap: 30px;
                 .header-btn{                        
@@ -33,14 +33,15 @@
                     color: #fff;
                 }
             }
-            .language-toggle{
+            .employeeExpensesList_language-toggle{
                 gap: 10px;
                 display: flex;
                 padding-right: 50px;
-                .pl-label{
+                align-items: center;
+                .employeeExpensesList_pl-label{
                     display: inline-block;
                 }
-                .switch{
+                .employeeExpensesList_switch{
                     margin-top: 2px;
                     position: relative;
                     display: inline-block;
@@ -52,19 +53,19 @@
                         width: 0;
                         height: 0;
       
-                        &:checked + .slider {
+                        &:checked + .employeeExpensesList_slider {
                           background-color: #2196F3;
                         }
       
-                        &:focus + .slider {
+                        &:focus + .employeeExpensesList_slider {
                           box-shadow: 0 0 1px #2196F3;
                         }
       
-                        &:checked + .slider:before {
+                        &:checked + .employeeExpensesList_slider:before {
                           transform: translateX(20px);
                         }
                     }
-                    .slider{
+                    .employeeExpensesList_slider{
                         position: absolute;
                         cursor: pointer;
                         height: 21px;
@@ -92,13 +93,13 @@
             }
         }
     }
-    .personnel_cont_wrapper{
+    .employeeExpensesList_cont_wrapper{
         display: flex;
         background-color: #EFEDEA;
         @media only screen and (max-width: 1000px){
             flex-direction: column;
         }
-        .sidebar{
+        .employeeExpensesList_sidebar{
             flex: 0 0 205px;
             background-color: #1c302c;
             @media only screen and (max-width: 1000px){
@@ -107,18 +108,18 @@
                 display: none;
             }
         }
-        .personnel_wrapper_div{
+        .employeeExpensesList_wrapper_div{
                     width: 100%;
                     height: 100vh;
                     padding: 10px 30px 10px 30px;
-                    .personnel_top_content{
+                    .employeeExpensesList_top_content{
                         border: 1px solid #fff;
                         border-radius: 5px;
                         background-color: #fff;
-                        .personnel_top_body_cont{
+                        .employeeExpensesList_top_body_cont{
                             background-color: #fff;
                             height: 4rem;
-                            .personnel_top_btn_cont{
+                            .employeeExpensesList_top_btn_cont{
                                 margin-left: 5%;
                                 display: flex;
                                 gap: 2%;
@@ -141,9 +142,9 @@
                                 }
                             }
                         }
-                        .personnel_mid_body_cont{
+                        .employeeExpensesList_mid_body_cont{
                             height: 87vh;
-                            .personnel_mid_btn_cont{
+                            .employeeExpensesList_mid_btn_cont{
                                 margin-left: 5%;
                                 display: flex;
                                 gap: 2%;
@@ -165,16 +166,16 @@
                                     color: #fff;
                                 }
                             }
-                            .personnel_title_table_cont{
+                            .employeeExpensesList_title_table_cont{
                                         display: flex;
                                         gap: 8%;
                                         padding: 40px 70px;
-                                        .personnel_title{
+                                        .employeeExpensesList_title{
                                             letter-spacing: 2px;
                                             font-weight: bold;
                                             color: #000;
                                         }
-                                        .personnel_btn{
+                                        .employeeExpensesList_btn{
                                             border: 1px solid #808080;
                                             width: 12rem;
                                             height: 35px;
@@ -184,9 +185,9 @@
                                             margin-left: 14px;
                                         }
                             }
-                            .personnel_table_wrapper{
+                            .employeeExpensesList_table_wrapper{
                                 width: 100%;
-                                height: 50vh;
+                                height: 60vh;
                                 overflow-y: auto; 
                                 overflow-x: hidden;
                                 scrollbar-width: none;
@@ -212,20 +213,20 @@
                                 &::-webkit-scrollbar-thumb:hover {
                                     background-color: transparent;
                                 }
-                                .personnel_table_cont{
+                                .employeeExpensesList_table_cont{
                                     padding: 0px 0px 0px 70px;
                                     .table{
                                         width: 97%;
-                                        .personnel_table_title{
+                                        .employeeExpensesList_table_title{
                                             background-color: #808080;
-                                            .personnel_table_title_content_vertical{
+                                            .employeeExpensesList_table_title_content_vertical{
                                                 color: #fff;
                                                 border: none;
                                                 font-size: 14px;
                                             }
                                         }
-                                        .personnel_table_body{
-                                            .user_name{
+                                        .employeeExpensesList_table_body{
+                                            .employeeExpensesList_user_name{
                                                 &:nth-child(odd){
                                                     background-color: #f9f9f9;
                                                 }
@@ -233,16 +234,16 @@
                                                     background-color: #e0e0e0;
                                                 }
                                             }
-                                            .txt0{
+                                            .employeeExpensesList_txt0{
                                                 margin-bottom: 5px;
                                                 text-align: center;
                                                 font-size: 14px;
                                             }
-                                            .txt1_txt2_flex{
+                                            .employeeExpensesList_txt1_txt2_flex{
                                                 margin-top: 20px;
                                                 display: flex;
                                                 flex-direction: column;
-                                                .txt1{
+                                                .employeeExpensesList_txt1{
                                                     font-size: 10px;
                                                     padding: 5px 0px;
                                                     background-color: #C6D4E7;
@@ -254,18 +255,18 @@
                                                         font-size: 10px;
                                                     }
                                                 }
-                                                .txt2{
+                                                .employeeExpensesList_txt2{
                                                     margin-left: 5px;
                                                     font-size: 10px;
                                                     padding: 5px 0px;
                                                     text-align: center;
                                                 }
                                             }
-                                            .txt3_txt4_flex{
+                                            .employeeExpensesList_txt3_txt4_flex{
                                                 margin-top: 30px;
                                                 display: flex;
                                                 flex-direction: column;
-                                                .txt3{
+                                                .employeeExpensesList_txt3{
                                                     font-size: 12px;
                                                     padding: 5px 0px;
                                                     background-color: #C6D4E7;
@@ -277,7 +278,7 @@
                                                         font-size: 10px;
                                                     }
                                                 }
-                                                .txt4{
+                                                .employeeExpensesList_txt4{
                                                     margin-left: 5px;
                                                     font-size: 12px;
                                                     padding: 5px 0px;
@@ -288,8 +289,8 @@
                                     }
                                 }
                             }
-                            .personnel_pagination_wrapper{
-                                .personnel_pagination_cont{
+                            .employeeExpensesList_pagination_wrapper{
+                                .employeeExpensesList_pagination_cont{
                                     display: flex;
                                     justify-content: flex-end;
                                     padding: 20px 20px 0px 20px;
