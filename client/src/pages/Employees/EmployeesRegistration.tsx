@@ -17,13 +17,12 @@ const EmployeesRegistration = () => {
 
     // const [formData, setFormData] = useState([
     //     {
-    //       client_name: '',
+    //       last_name: '',
+    //       first_name: '',
+    //       email: '',
+    //       salary: '',
     //       business_division_name: '',
-    //       project_name: '',
-    //       month: '',
-    //       sales_revenue: '',
-    //       non_operating_income: '',
-    //       non_operating_expenses: '',
+    //       company_name: '',
     //       registered_user_id: storedUserID,
     //     },
     //   ])
@@ -89,13 +88,12 @@ const EmployeesRegistration = () => {
     //       alert('Sucessfully Saved')
     //       setFormData([
     //         {
-    //           client_name: '',
+    //           last_name: '',
+    //           first_name: '',
+    //           email: '',
+    //           salary: '',
     //           business_division_name: '',
-    //           project_name: '',
-    //           month: '',
-    //           sales_revenue: '',
-    //           non_operating_income: '',
-    //           non_operating_expenses: '',
+    //           company_name: '',
     //           registered_user_id: localStorage.getItem('userID'),
     //         },
     //       ])
