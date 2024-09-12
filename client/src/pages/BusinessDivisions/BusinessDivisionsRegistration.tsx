@@ -19,7 +19,7 @@ const BusinessDivisionsRegistration = () => {
     //     {
     //       business_division_name: '',
     //       company_name: '',
-    //       registered_user_id: storedUserID,
+    //       auth_user_id: storedUserID,
     //     },
     //   ])
 
@@ -86,7 +86,7 @@ const BusinessDivisionsRegistration = () => {
     //         {
     //           business_division_name: '',
     //           company_name: '',
-    //           registered_user_id: localStorage.getItem('userID'),
+    //           auth_user_id: localStorage.getItem('userID'),
     //         },
     //       ])
     //     } catch (error) {
@@ -194,7 +194,7 @@ const BusinessDivisionsRegistration = () => {
                         </div>
                       </div>
                     </div>
-                    <input type='hidden' name='registered_user_id' value='' />
+                    <input type='hidden' name='auth_user_id' value='' />
                   </div>
                 <div className='BusinessDivisionsRegistration_form-btn-content'>
                   <div className='BusinessDivisionsRegistration_plus-btn'>
