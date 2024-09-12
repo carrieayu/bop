@@ -23,7 +23,7 @@ const EmployeesRegistration = () => {
     //       salary: '',
     //       business_division_name: '',
     //       company_name: '',
-    //       registered_user_id: storedUserID,
+    //       auth_user_id: storedUserID,
     //     },
     //   ])
 
@@ -55,12 +55,12 @@ const EmployeesRegistration = () => {
     //     const postData = {
     //       client: {
     //         client_name: formData.map((c) => c.client_name),
-    //         registered_user_id: formData.map((c) => c.registered_user_id),
+    //         auth_user_id: formData.map((c) => c.auth_user_id),
     //       },
     //       business: {
     //         business_division_name: formData.map((c) => c.business_division_name),
-    //         registered_user_id: formData.map((c) => c.registered_user_id),
-    //         company_id: formData.map((c) => c.registered_user_id),
+    //         auth_user_id: formData.map((c) => c.auth_user_id),
+    //         company_id: formData.map((c) => c.auth_user_id),
     //       },
     //       planning: {
     //         project_name: formData.map((c) => c.project_name),
@@ -69,7 +69,7 @@ const EmployeesRegistration = () => {
     //         non_operating_income: formData.map((c) => c.non_operating_income),
     //         non_operating_expenses: formData.map((c) => c.non_operating_expenses),
     //       },
-    //       registered_user_id: formData.map((c) => c.registered_user_id),
+    //       auth_user_id: formData.map((c) => c.auth_user_id),
     //     }
     
     //     const token = localStorage.getItem('accessToken')
@@ -94,7 +94,7 @@ const EmployeesRegistration = () => {
     //           salary: '',
     //           business_division_name: '',
     //           company_name: '',
-    //           registered_user_id: localStorage.getItem('userID'),
+    //           auth_user_id: localStorage.getItem('userID'),
     //         },
     //       ])
     //     } catch (error) {
