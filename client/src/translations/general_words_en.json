@@ -41,18 +41,11 @@
     "unknown": "Unknown",
     "username": "Username",
     "thousandYen": "Thousand Yen",
-    "yen": "Yen",
+    "switchDisplayMode": "Switch Display Mode",
+    "switchEditMode": "Switch Edit Mode",
     "update": "Update",
     "projectName": "Project Name",
-    "selectEmployee": "Select Employee",
-    "switchToEditMode": "Switch to Edit Mode",
-    "switchToDisplayMode": "Switch to Display Mode",
-    "cannotSwitchLanguagesInEditMode": "Cannot switch languages in Edit Mode",
-    "alertMessageAbove": "The selected month already has data registered. Do you want to overwrite it?",
-    "createdBy": "Created By",
-    "createdAt": "Created At",
-    "updatedAt": "Updated At",
-    "deleteMessage": "Are you sure you would like to delete this client?",
-    "delete": "Delete",
-    "confirm": "Confirm"
+    "newProjectRegistration": "New Project Registration",
+    "newPersonnelRegistration": "New Personnel Registration",
+    "selectEmployee": "Select Employee"
 }

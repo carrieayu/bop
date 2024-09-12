@@ -12,7 +12,7 @@ import { translate } from "../../utils/translationUtil";
 const header: string[] = 
   [
     'month', 
-    'consumableExpenses', 
+    'suppliesExpenses', 
     'rentExpenses', 
     'taxesAndpublicCharges', 
     'depreciationExpenses', 
@@ -29,7 +29,7 @@ const ExpensesList: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning')
     const navigate = useNavigate()
     const location = useLocation()
-    const [activeTabOther, setActiveTabOther] = useState('project')
+    const [activeTabOther, setActiveTabOther] = useState('case')
     const [currentPage, setCurrentPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5)
     const [paginatedData, setPaginatedData] = useState<any[]>([])
@@ -113,10 +113,10 @@ const ExpensesList: React.FC = () => {
       };
 
   return (
-    <div className='expensesList_wrapper'>
-      <div className='expensesList_header_cont'>
-        <div className='expensesList_top_btn_cont'>
-        <div className="expensesList_header-buttons">
+    <div className='proj_wrapper'>
+      <div className='header_cont'>
+        <div className='proj_top_btn_cont'>
+        <div className="header-buttons">
           <Btn
             label={translate('analysis', language)}
             onClick={() => handleTabClick("/dashboard")}
@@ -133,99 +133,99 @@ const ExpensesList: React.FC = () => {
             className={activeTab === "/*" ? "h-btn-active header-btn" : "header-btn"}
           />
         </div>
-        <div className="expensesList_language-toggle">
-          <p className="expensesList_pl-label">English</p>
-            <label className="expensesList_switch">
+        <div className="language-toggle">
+          <p className="pl-label">English</p>
+            <label className="switch">
               <input type="checkbox" checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle}/>
-              <span className="expensesList_slider"></span>
+              <span className="slider"></span>
             </label>
         </div>
         </div>
       </div>
-      <div className='expensesList_cont_wrapper'>
-        <div className='expensesList_sidebar'>
+      <div className='projectlist_cont_wrapper'>
+        <div className='sidebar'>
           <Sidebar />
         </div>
-        <div className='expensesList_btn_cont_wrapper'>
-          <div className='expensesList_top_content'>
-            <div className='expensesList_top_body_cont'></div>
-            <div className='expensesList_mid_body_cont'>
-              <div className='expensesList_mid_btn_cont'>
+        <div className='projectlist_wrapper'>
+          <div className='proj_top_content'>
+            <div className='proj_top_body_cont'></div>
+            <div className='proj_mid_body_cont'>
+              <div className='proj_mid_btn_cont'>
                 {[...Array(4)].map((_, index) => (
                   <Btn
                     key={index}
-                    label={translate(index === 0 ? 'project' : index === 1 ? 'employeeExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
+                    label={translate(index === 0 ? 'project' : index === 1 ? 'personalExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
                     onClick={() =>
                       handleTabsClick(
                         index === 0
-                          ? 'project'
+                          ? 'case'
                           : index === 1
-                            ? 'employeeExpenses'
+                            ? 'personnel_cost'
                             : index === 2
                               ? 'expenses'
-                              : 'costOfSales',
+                              : 'cost_purchase',
                       )
                     }
                     className={
                       activeTabOther ===
                       (index === 0
-                        ? 'project'
+                        ? 'case'
                         : index === 1
-                          ? 'employeeExpenses'
+                          ? 'personnel_cost'
                           : index === 2
                             ? 'expenses'
-                            : 'costOfSales')
+                            : 'cost_purchase')
                         ? 'body-btn-active body-btn'
                         : 'body-btn'
                     }
                   />
                 ))}
               </div>
-              <div className='expensesList_title_table_cont'>
-                <p className='expensesList_title'>{translate('expensesList', language)}</p>
-                <Btn label={translate('newRegistration', language)} size='normal' onClick={() => ''} className='expensesList_btn' />
+              <div className='proj_title_table_cont'>
+                <p className='proj_title'>{translate('expensesList', language)}</p>
+                <Btn label={translate('newRegistration', language)} size='normal' onClick={() => ''} className='proj_btn' />
               </div>
-              <div className='expensesList_table_wrapper'>
-                <div className='expensesList_table_cont'>
+              <div className='proj_table_wrapper'>
+                <div className='proj_table_cont'>
                   <div className='columns is-mobile'>
                     <div className='column'>
                       <table className='table is-bordered is-hoverable'>
                         <thead>
-                          <tr className='expensesList_table_title '>
+                          <tr className='proj_table_title '>
                             {header.map((head, index) => (
-                              <th key={index} className='expensesList_table_title_content_vertical has-text-centered'>
+                              <th key={index} className='proj_table_title_content_vertical has-text-centered'>
                                 {translate(head, language)}
                               </th>
                             ))}
                           </tr>
                         </thead>
-                        <tbody className='expensesList_table_body'>
+                        <tbody className='proj_table_body'>
                           {expenses.map((ex) => (
-                            <tr key={ex.planning_project_id} className='expensesList_table_body_content_horizantal'>
-                              <td className='expensesList_table_body_content_vertical has-text-centered'>{ex.month}</td>
-                              <td className='expensesList_table_body_content_vertical'>{ex.consumables_expenses}</td>
-                              <td className='expensesList_table_body_content_vertical has-text-centered'>{ex.rent}</td>
-                              <td className='expensesList_table_body_content_vertical has-text-right'>
+                            <tr key={ex.planning_project_id} className='proj_table_body_content_horizantal'>
+                              <td className='proj_table_body_content_vertical has-text-centered'>{ex.month}</td>
+                              <td className='proj_table_body_content_vertical'>{ex.consumables_expenses}</td>
+                              <td className='proj_table_body_content_vertical has-text-centered'>{ex.rent}</td>
+                              <td className='proj_table_body_content_vertical has-text-right'>
                                 {ex.taxes_and_public_charges}
                               </td>
-                              <td className='expensesList_table_body_content_vertical has-text-right'>
+                              <td className='proj_table_body_content_vertical has-text-right'>
                                 {ex.depreciation_expenses}
                               </td>
-                              <td className='expensesList_table_body_content_vertical has-text-right'>{ex.travel_expenses}</td>
-                              <td className='expensesList_table_body_content_vertical has-text-right'>
+                              <td className='proj_table_body_content_vertical has-text-right'>{ex.travel_expenses}</td>
+                              <td className='proj_table_body_content_vertical has-text-right'>
                                 {ex.communication_expenses}
                               </td>
-                              <td className='expensesList_table_body_content_vertical has-text-right'>
+                              <td className='proj_table_body_content_vertical has-text-right'>
                                 {ex.utilities_expenses}
                               </td>
-                              <td className='expensesList_table_body_content_vertical has-text-right'>{ex.payment_fees}</td>
-                              <td className='expensesList_table_body_content_vertical has-text-right'>
+                              <td className='proj_table_body_content_vertical has-text-right'>{ex.payment_fees}</td>
+                              <td className='proj_table_body_content_vertical has-text-right'>
                                 {ex.advertising_expenses}
                               </td>
-                              <td className='expensesList_table_body_content_vertical has-text-right'>
+                              <td className='proj_table_body_content_vertical has-text-right'>
                                 {ex.entertainment_expenses}
                               </td>
-                              <td className='expensesList_table_body_content_vertical has-text-right'>{ex.remuneration}</td>
+                              <td className='proj_table_body_content_vertical has-text-right'>{ex.remuneration}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -234,8 +234,8 @@ const ExpensesList: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className='expensesList_pagination_wrapper'>
-                <div className='expensesList_pagination_cont'>
+              <div className='proj_pagination_wrapper'>
+                <div className='proj_pagination_cont'>
                   <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
