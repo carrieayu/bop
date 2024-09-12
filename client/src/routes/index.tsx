@@ -43,16 +43,13 @@ const ExpensesList = Loader(lazy(() => import("../pages/expensesList/expensesLis
 const ClientsRegistration = Loader(lazy(() => import("../pages/Clients/ClientsRegistration")))
 const ClientsListAndEdit = Loader(lazy(() => import("../pages/Clients/ClientsListAndEdit")))
 
-
-//Business Divisions Pages
-const BusinessDivisionsRegistration = Loader(lazy(() => import("../pages/BusinessDivisions/BusinessDivisionsRegistration")))
-const BusinessDivisionsListAndEdit = Loader(lazy(() => import("../pages/BusinessDivisions/BusinessDivisionsListAndEdit")))
-
 //Employees Pages
 const EmployeesRegistration = Loader(lazy(() => import("../pages/Employees/EmployeesRegistration")))
 const EmployeesListAndEdit = Loader(lazy(() => import("../pages/Employees/EmployeesListAndEdit")))
 
-
+//Business Divisions Pages
+const BusinessDivisionsRegistration = Loader(lazy(() => import("../pages/BusinessDivisions/BusinessDivisionsRegistration")))
+const BusinessDivisionsListAndEdit = Loader(lazy(() => import("../pages/BusinessDivisions/BusinessDivisionsListAndEdit")))
 
 const Logout = () => {
   localStorage.clear();
@@ -185,32 +182,34 @@ const routes: RouteObject[] = [
         )
       },
       {
-
-        path: "business-divisions-registration",
-        element: (
-          <ProtectedRoutes>
-            <BusinessDivisionsRegistration />
-
         path: "employees-registration",
         element: (
           <ProtectedRoutes>
             <EmployeesRegistration />
-
           </ProtectedRoutes>
         )
       },
       {
-
-        path: "business-divisions-list",
-        element: (
-          <ProtectedRoutes>
-            <BusinessDivisionsListAndEdit />
-
         path: "employees-list",
         element: (
           <ProtectedRoutes>
             <EmployeesListAndEdit />
-
+          </ProtectedRoutes>
+        )
+      },
+      {
+        path: "business-divisions-registration",
+        element: (
+          <ProtectedRoutes>
+            <BusinessDivisionsRegistration />
+          </ProtectedRoutes>
+        )
+      },
+      {
+        path: "business-divisions-list",
+        element: (
+          <ProtectedRoutes>
+            <BusinessDivisionsListAndEdit />
           </ProtectedRoutes>
         )
       }
