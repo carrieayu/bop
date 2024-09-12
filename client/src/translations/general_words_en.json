@@ -54,5 +54,11 @@
     "updatedAt": "Updated At",
     "deleteMessage": "Are you sure you would like to delete this client?",
     "delete": "Delete",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "companyName": "Company Name",
+    "company": "Company",
+    "companyID": "Company ID"
 }

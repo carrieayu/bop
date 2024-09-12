@@ -62,10 +62,10 @@ const Sidebar = () => {
               <span className="icons"><AiFillFileAdd /></span><Link to="/clients-registration">{translate('clientsRegistration', language)}</Link>
             </li>
             <li className="sub_menu">
-              <span className="icons"><FaTableList /></span><Link to="/*">{translate('employeesList', language)}</Link>
+              <span className="icons"><FaTableList /></span><Link to="/employees-list">{translate('employeesList', language)}</Link>
             </li>
             <li className="sub_menu">
-              <span className="icons"><BsPersonFillAdd /></span><Link to="/*">{translate('employeesRegistration', language)}</Link>
+              <span className="icons"><BsPersonFillAdd /></span><Link to="/employees-registration">{translate('employeesRegistration', language)}</Link>
             </li>
             <li className="sub_menu">
               <span className="icons"><FaTableList /></span><Link to="/*">{translate('businessDivisionsList', language)}</Link>
