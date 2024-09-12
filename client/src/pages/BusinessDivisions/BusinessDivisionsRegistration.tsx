@@ -17,13 +17,8 @@ const BusinessDivisionsRegistration = () => {
 
     // const [formData, setFormData] = useState([
     //     {
-    //       client_name: '',
     //       business_division_name: '',
-    //       project_name: '',
-    //       month: '',
-    //       sales_revenue: '',
-    //       non_operating_income: '',
-    //       non_operating_expenses: '',
+    //       company_name: '',
     //       registered_user_id: storedUserID,
     //     },
     //   ])
@@ -89,13 +84,8 @@ const BusinessDivisionsRegistration = () => {
     //       alert('Sucessfully Saved')
     //       setFormData([
     //         {
-    //           client_name: '',
     //           business_division_name: '',
-    //           project_name: '',
-    //           month: '',
-    //           sales_revenue: '',
-    //           non_operating_income: '',
-    //           non_operating_expenses: '',
+    //           company_name: '',
     //           registered_user_id: localStorage.getItem('userID'),
     //         },
     //       ])

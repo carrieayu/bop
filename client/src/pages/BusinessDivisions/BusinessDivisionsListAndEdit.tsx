@@ -282,16 +282,16 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                             <thead>
                               <tr className='BusinessDivisionsListAndEdit_table_title '>
                                 <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-left'>
-                                  ID
+                                    ID
                                 </th>
                                 <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
                                     {translate('businessDivision', language)}
                                 </th>
                                 <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('createdBy', language)}
+                                    {translate('companyName', language)}
                                 </th>
                                 <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('companyName', language)}
+                                    {translate('createdBy', language)}
                                 </th>
                                 <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
                                     {translate('createdAt', language)}
@@ -315,7 +315,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                                       // onChange={(e) => handleChange(index, e)}
                                     /> */}
                                   </td>
-                                  <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'></td>
                                   <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
                                       {/* <select
                                       className="edit_select"
@@ -332,6 +331,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                                   </td>
                                   <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'></td>
                                   <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'></td>
+                                  <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'></td>
                                   <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
                                     {/* <RiDeleteBin6Fill className='delete-icon' onClick={() => openModal('project')}/> */}
                                   </td>
@@ -345,19 +345,16 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                           <thead>
                             <tr className='BusinessDivisionsListAndEdit_table_title '>
                               <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-left'>
-                                ID
+                                  ID
                               </th>
                               <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
                                   {translate('businessDivision', language)}
                               </th>
                               <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('createdBy', language)}
-                              </th>
-                              <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('createdBy', language)}
-                              </th>
-                              <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
                                   {translate('companyName', language)}
+                              </th>
+                              <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('createdBy', language)}
                               </th>
                               <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
                                   {translate('createdAt', language)}
