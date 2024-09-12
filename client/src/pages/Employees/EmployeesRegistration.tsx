@@ -245,7 +245,7 @@ const EmployeesRegistration = () => {
                         </div>
                       </div>
                     </div>
-                    <input type='hidden' name='registered_user_id' value='' />
+                    <input type='hidden' name='auth_user_id' value='' />
                   </div>
                 <div className='EmployeesRegistration_form-btn-content'>
                   <div className='EmployeesRegistration_plus-btn'>
