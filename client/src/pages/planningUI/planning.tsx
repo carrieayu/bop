@@ -101,9 +101,9 @@ const Planning = () => {
   };
 
   return (
-    <div className='wrapper'>
-      <div className='header_cont'>
-        <div className='header-buttons'>
+    <div className='planning_wrapper'>
+      <div className='planning_header_cont'>
+        <div className='planning_header-buttons'>
           <Btn
             label={translate('analysis', language)}
             onClick={() => handleTabClick('/dashboard')}
@@ -120,38 +120,38 @@ const Planning = () => {
             className={activeTab === '/*' ? 'h-btn-active header-btn' : 'header-btn'}
           />
         </div>
-        <div className='language-toggle'>
-          <p className='pl-label'>English</p>
-          <label className='switch'>
+        <div className='planning_language-toggle'>
+          <p className='planning_pl-label_translate'>English</p>
+          <label className='planning_switch_translate'>
             <input type='checkbox' checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle} disabled={isEditing}/>
-            <span className='slider'></span>
+            <span className='planning_slider_translate'></span>
           </label>
         </div>
       </div>
-      <div className='content_wrapper'>
-        <div className='sidebar'>
+      <div className='planning_content_wrapper'>
+        <div className='planning_sidebar'>
           <Sidebar />
         </div>
-        <div className='projectlist_wrapper planning_wrapper'>
-          <div className='proj_top_content plan_top_cont'>
-            <div className='dashboard_content planning'>
-              <div className='bottom_cont planning_btm'>
-                <div className='pagination_cont planning_header'>
-                  <div className='left-content'>
+        <div className='planning_table_wrapper'>
+          <div className='planning_top_cont'>
+            <div className='planning_content'>
+              <div className='planning_btm'>
+                <div className='planning_header_text'>
+                  <div className='planning_left-content'>
                     <p>{translate('profitAndlossPlanning', language)}</p>
                   </div>
-                  <div className='right-content'>
-                    <div className='paginate'>
-                    <button className='mode_switch' onClick={handleClick}>{isEditing ? '表示モード切り替え' : translate('switchEditMode', language)}</button>
-                      <p className='pl-label'>{translate('displayByProject', language)}</p>
-                      <label className='switch'>
+                  <div className='planning_right-content'>
+                    <div className='planning_paginate'>
+                    <button className='planning_mode_switch' onClick={handleClick}>{isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}</button>
+                      <p className='planning_pl-label'>{translate('displayByProject', language)}</p>
+                      <label className='planning_switch'>
                         <input type='checkbox' checked={isSwitchActive} onChange={handleSwitchToggle} />
-                        <span className='slider'></span>
+                        <span className='planning_slider'></span>
                       </label>
-                      <p className='pl-label'>{translate('thousandYen', language)}</p>
-                      <label className='switch'>
+                      <p className='planning_pl-label'>{translate('thousandYen', language)}</p>
+                      <label className='planning_switch'>
                         <input type='checkbox' />
-                        <span className='slider'></span>
+                        <span className='planning_slider'></span>
                       </label>
                     </div>
                   </div>

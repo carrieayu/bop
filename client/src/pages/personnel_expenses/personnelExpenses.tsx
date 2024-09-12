@@ -25,7 +25,7 @@ const PersonnelExpensesList: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning')
     const navigate = useNavigate()
     const location = useLocation()
-    const [activeTabOther, setActiveTabOther] = useState('case')
+    const [activeTabOther, setActiveTabOther] = useState('project')
     const { language, setLanguage } = useLanguage()
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translations
 
@@ -77,10 +77,10 @@ const PersonnelExpensesList: React.FC = () => {
 
 
     return (
-      <div className='personnel_wrapper'>
-        <div className='header_cont'>
-          <div className='personnel_top_btn_cont'>
-          <div className="header-buttons">
+      <div className='employeeExpensesList_wrapper'>
+        <div className='employeeExpensesList_header_cont'>
+          <div className='employeeExpensesList_top_btn_cont'>
+          <div className="employeeExpensesList_header-buttons">
           <Btn
             label={translate('analysis', language)}
             onClick={() => handleTabClick("/dashboard")}
@@ -97,34 +97,34 @@ const PersonnelExpensesList: React.FC = () => {
             className={activeTab === "/*" ? "h-btn-active header-btn" : "header-btn"}
           />
         </div>
-        <div className="language-toggle">
-          <p className="pl-label">English</p>
-            <label className="switch">
+        <div className="employeeExpensesList_language-toggle">
+          <p className="employeeExpensesList_pl-label">English</p>
+            <label className="employeeExpensesList_switch">
               <input type="checkbox" checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle}/>
-              <span className="slider"></span>
+              <span className="employeeExpensesList_slider"></span>
             </label>
         </div>
           </div>
         </div>
-        <div className='personnel_cont_wrapper'>
-          <div className='sidebar'>
+        <div className='employeeExpensesList_cont_wrapper'>
+          <div className='employeeExpensesList_sidebar'>
             <Sidebar />
           </div>
-          <div className='personnel_wrapper_div'>
-            <div className='personnel_top_content'>
-              <div className='personnel_top_body_cont'>
-                <div className='personnel_top_btn_cont'></div>
+          <div className='employeeExpensesList_wrapper_div'>
+            <div className='employeeExpensesList_top_content'>
+              <div className='employeeExpensesList_top_body_cont'>
+                <div className='employeeExpensesList_top_btn_cont'></div>
               </div>
-              <div className='personnel_mid_body_cont'>
-                <div className='personnel_mid_btn_cont'>
+              <div className='employeeExpensesList_mid_body_cont'>
+                <div className='employeeExpensesList_mid_btn_cont'>
                   {[...Array(4)].map((_, index) => (
                     <Btn
                       key={index}
-                      label={translate(index === 0 ? 'project' : index === 1 ? 'personalExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
+                      label={translate(index === 0 ? 'project' : index === 1 ? 'employeeExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
                       onClick={() =>
                         handleTabsClick(
                           index === 0
-                            ? 'case'
+                            ? 'project'
                             : index === 1
                               ? 'personnel_cost'
                               : index === 2
@@ -135,7 +135,7 @@ const PersonnelExpensesList: React.FC = () => {
                       className={
                         activeTabOther ===
                         (index === 0
-                          ? 'case'
+                          ? 'project'
                           : index === 1
                             ? 'personnel_cost'
                             : index === 2
@@ -147,40 +147,40 @@ const PersonnelExpensesList: React.FC = () => {
                     />
                   ))}
                 </div>
-                <div className='personnel_title_table_cont'>
-                  <p className='personnel_title'>{translate('personnelExpensesList', language)}</p>
-                  <Btn label={translate('newRegistration', language)} size='normal' onClick={() => ''} className='personnel_btn' />
+                <div className='employeeExpensesList_title_table_cont'>
+                  <p className='employeeExpensesList_title'>{translate('employeeExpensesList', language)}</p>
+                  <Btn label={translate('newRegistration', language)} size='normal' onClick={() => ''} className='employeeExpensesList_btn' />
                 </div>
-                <div className='personnel_table_wrapper'>
-                  <div className='personnel_table_cont'>
+                <div className='employeeExpensesList_table_wrapper'>
+                  <div className='employeeExpensesList_table_cont'>
                     <div className='columns is-mobile'>
                       <div className='column'>
                         <table className='table is-bordered is-hoverable'>
                           <thead>
-                            <tr className='personnel_table_title'>
-                              <th className='personnel_table_title_content_vertical has-text-centered'></th>
+                            <tr className='employeeExpensesList_table_title'>
+                              <th className='employeeExpensesList_table_title_content_vertical has-text-centered'></th>
                               {months.map((month, index) => (
-                                <th key={index} className='personnel_table_title_content_vertical has-text-centered'>
+                                <th key={index} className='employeeExpensesList_table_title_content_vertical has-text-centered'>
                                   {language === "en" ? monthNames[month].en : monthNames[month].jp}
                                 </th>
                               ))}
                             </tr>
                           </thead>
-                          <tbody className='personnel_table_body'>
+                          <tbody className='employeeExpensesList_table_body'>
                             {personnel.map((user, userIndex) => {
                               return (
-                                <tr className='user_name'>
+                                <tr className='employeeExpensesList_user_name'>
                                   {user.username}
                                   {user.planning_assign?.map((planning, planningIndex) => (
                                     <td>
-                                      <div className='txt0'>フィリピン事業支援業務</div>
-                                      <div className='txt1_txt2_flex'>
-                                        <div className='txt1'>{translate('personalExpenses', language)}</div>
-                                        <div className='txt2'>{planning.planning_project['personal_expenses']}</div>
+                                      <div className='employeeExpensesList_txt0'>フィリピン事業支援業務</div>
+                                      <div className='employeeExpensesList_txt1_txt2_flex'>
+                                        <div className='employeeExpensesList_txt1'>{translate('employeeExpenses', language)}</div>
+                                        <div className='employeeExpensesList_txt2'>{planning.planning_project['personal_expenses']}</div>
                                       </div>
-                                      <div className='txt3_txt4_flex'>
-                                        <div className='txt3'>{translate('assignmentRatio', language)}</div>
-                                        <div className='txt4'>{planning.assignment_ratio}%</div>
+                                      <div className='employeeExpensesList_txt3_txt4_flex'>
+                                        <div className='employeeExpensesList_txt3'>{translate('assignmentRatio', language)}</div>
+                                        <div className='employeeExpensesList_txt4'>{planning.assignment_ratio}%</div>
                                       </div>
                                     </td>
                                   ))}
@@ -193,8 +193,8 @@ const PersonnelExpensesList: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className='proj_pagination_wrapper'>
-                  <div className='proj_pagination_cont'>
+                <div className='employeeExpensesList_pagination_wrapper'>
+                  <div className='employeeExpensesList_pagination_cont'>
                     {/* <Pagination
                                      currentPage={currentPage}
                                      totalPages={totalPages}

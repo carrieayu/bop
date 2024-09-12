@@ -11,13 +11,21 @@
 @import './dashboard.scss';
 @import './messageAlert.scss';
 @import './projectDataList.scss';
-@import './projectDataCreate.scss';
+@import './projectDataRegistration.scss';
 @import './sidebar.scss';
-@import './personnelExpensesList.scss';
-@import './personnelExpenseCreate.scss';
+@import './employeeExpensesList.scss';
+@import './employeeExpensesRegistration.scss';
 @import './notFound.scss';
 @import './planning.scss';
 @import './tablePlanning.scss';
-@import './costofSalesRegistration.scss';
+@import './costOfSalesRegistration.scss';
+@import './costOfSalesList.scss';
 @import './expensesRegistration.scss';
+@import './Clients/ClientsRegistration.scss';
+@import './Clients/ClientsListAndEdit.scss';
+@import './AlertModal.scss';
+@import './expensesList.scss';
+@import './BusinessDivisions/BusinessDivisionsRegistration.scss';
+@import './BusinessDivisions/BusinessDivisionsListAndEdit.scss';
+
 

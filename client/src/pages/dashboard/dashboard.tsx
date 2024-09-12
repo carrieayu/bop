@@ -176,9 +176,9 @@ const Dashboard = () => {
   };
 
   return (
-    <div className='wrapper'>
-      <div className='header_cont'>
-        <div className="header-buttons">
+    <div className='dashboard_wrapper'>
+      <div className='dashboard_header_cont'>
+        <div className="dashboard_header-buttons">
           <Btn
             label={translate('analysis', language)}
             onClick={() => handleTabClick("/dashboard")}
@@ -195,22 +195,22 @@ const Dashboard = () => {
             className={activeTab === "/*" ? "h-btn-active header-btn" : "header-btn"}
           />
         </div>
-        <div className="language-toggle">
-          <p className="pl-label">English</p>
-            <label className="switch">
+        <div className="dashboard_language-toggle">
+          <p className="dashboard_pl-label_translate">English</p>
+            <label className="dashboard_switch_translate">
               <input type="checkbox" checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle}/>
-              <span className="slider"></span>
+              <span className="dashboard_slider_translate"></span>
             </label>
         </div>
       </div>
-      <div className='content_wrapper'>
-        <div className='sidebar'>
+      <div className='dashboard_content_wrapper'>
+        <div className='dashboard_sidebar'>
           <Sidebar />
         </div>
         <div className='dashboard_content'>
-          <div className='body_cont'>
-            <div className='card_cont'>
-              <div className='left_card'>
+          <div className='dashboard_body_cont'>
+            <div className='dashboard_card_cont'>
+              <div className='dashboard_left_card'>
                 <Card
                   backgroundColor='#fff'
                   shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
@@ -218,12 +218,12 @@ const Dashboard = () => {
                   width='auto'
                   height='120px'
                 >
-                  <div className='custom-card-content'>
-                    <p className='text1'>{translate('sales', language)}</p>
-                    <p className='numTxt'>
-                      {formatNumberWithCommas(totalSales)}&nbsp;<span className='totalTxt'>{translate('Yen', language)}</span>
+                  <div className='dashboard_custom-card-content'>
+                    <p className='dashboard_text1'>{translate('sales', language)}</p>
+                    <p className='dashboard_numTxt'>
+                      {formatNumberWithCommas(totalSales)}&nbsp;<span className='dashboard_totalTxt'>{translate('yen', language)}</span>
                     </p>
-                    <p className='text2'>{translate('total', language)}</p>
+                    <p className='dashboard_text2'>{translate('total', language)}</p>
                   </div>
                 </Card>
                 <Card
@@ -233,12 +233,12 @@ const Dashboard = () => {
                   width='auto'
                   height='120px'
                 >
-                  <div className='custom-card-content'>
-                    <p className='text1'>{translate('operatingIncome', language)}</p>
-                    <p className='numTxt'>
-                      {formatNumberWithCommas(totalOperatingProfit)}&nbsp;<span className='totalTxt'>{translate('Yen', language)}</span>
+                  <div className='dashboard_custom-card-content'>
+                    <p className='dashboard_text1'>{translate('operatingIncome', language)}</p>
+                    <p className='dashboard_numTxt'>
+                      {formatNumberWithCommas(totalOperatingProfit)}&nbsp;<span className='dashboard_totalTxt'>{translate('yen', language)}</span>
                     </p>
-                    <p className='text2'>{translate('total', language)}</p>
+                    <p className='dashboard_text2'>{translate('total', language)}</p>
                   </div>
                 </Card>
                 <Card
@@ -248,17 +248,17 @@ const Dashboard = () => {
                   width='auto'
                   height='120px'
                 >
-                  <div className='custom-card-content'>
-                    <p className='text1'>{translate('grossProfitMargin', language)}</p>
-                    <p className='numTxt'>
-                      {totalGrossProfitMargin}&nbsp;<span className='totalTxt'>%</span>
+                  <div className='dashboard_custom-card-content'>
+                    <p className='dashboard_text1'>{translate('grossProfitMargin', language)}</p>
+                    <p className='dashboard_numTxt'>
+                      {totalGrossProfitMargin}&nbsp;<span className='dashboard_totalTxt'>%</span>
                     </p>
-                    <p className='text2'>{translate('total', language)}</p>
+                    <p className='dashboard_text2'>{translate('total', language)}</p>
                   </div>
                 </Card>
               </div>
               &nbsp;&nbsp;&nbsp;
-              <div className='right_card'>
+              <div className='dashboard_right_card'>
                 <Card
                   backgroundColor='#fff'
                   shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
@@ -266,12 +266,12 @@ const Dashboard = () => {
                   width='auto'
                   height='120px'
                 >
-                  <div className='custom-card-content'>
-                    <p className='text1'>{translate('grossProfit', language)}</p>
-                    <p className='numTxt'>
-                      {formatNumberWithCommas(totalGrossProfit)}&nbsp;<span className='totalTxt'>{translate('Yen', language)}</span>
+                  <div className='dashboard_custom-card-content'>
+                    <p className='dashboard_text1'>{translate('grossProfit', language)}</p>
+                    <p className='dashboard_numTxt'>
+                      {formatNumberWithCommas(totalGrossProfit)}&nbsp;<span className='dashboard_totalTxt'>{translate('yen', language)}</span>
                     </p>
-                    <p className='text2'>{translate('total', language)}</p>
+                    <p className='dashboard_text2'>{translate('total', language)}</p>
                   </div>
                 </Card>
                 <Card
@@ -281,12 +281,12 @@ const Dashboard = () => {
                   width='auto'
                   height='120px'
                 >
-                  <div className='custom-card-content'>
-                    <p className='text1'>{translate('cumulativeOrdinaryIncome', language)}</p>
-                    <p className='numTxt'>
-                      {formatNumberWithCommas(totalNetProfitPeriod)}&nbsp;<span className='totalTxt'>{translate('Yen', language)}</span>
+                  <div className='dashboard_custom-card-content'>
+                    <p className='dashboard_text1'>{translate('cumulativeOrdinaryIncome', language)}</p>
+                    <p className='dashboard_numTxt'>
+                      {formatNumberWithCommas(totalNetProfitPeriod)}&nbsp;<span className='dashboard_totalTxt'>{translate('yen', language)}</span>
                     </p>
-                    <p className='text2'>{translate('total', language)}</p>
+                    <p className='dashboard_text2'>{translate('total', language)}</p>
                   </div>
                 </Card>
                 <Card
@@ -296,44 +296,44 @@ const Dashboard = () => {
                   width='auto'
                   height='120px'
                 >
-                  <div className='custom-card-content'>
-                    <p className='text1'>{translate('operatingProfitMargin', language)}</p>
-                    <p className='numTxt'>
-                      {totalOperatingProfitMargin}&nbsp;<span className='totalTxt'>%</span>
+                  <div className='dashboard_custom-card-content'>
+                    <p className='dashboard_text1'>{translate('operatingProfitMargin', language)}</p>
+                    <p className='dashboard_numTxt'>
+                      {totalOperatingProfitMargin}&nbsp;<span className='dashboard_totalTxt'>%</span>
                     </p>
-                    <p className='text2'>{translate('total', language)}</p>
+                    <p className='dashboard_text2'>{translate('total', language)}</p>
                   </div>
                 </Card>
               </div>
             </div>
             &nbsp;&nbsp;&nbsp;
-            <div className='graph_cont'>
-              <div className='graph_wrap'>
+            <div className='dashboard_graph_cont'>
+              <div className='dashboard_graph_wrap'>
                 <GraphDashboard data={graphData} />
               </div>
             </div>
           </div>
-          <div className='bottom_cont'>
-            <div className="right-content">
-              <div className="paginate">
-                <p className="pl-label">{translate('displayByProject', language)}</p>
-                  <label className="switch">
+          <div className='dashboard_bottom_cont'>
+            <div className="dashboard_right-content">
+              <div className="dashboard_paginate">
+                <p className="dashboard_pl-label">{translate('displayByProject', language)}</p>
+                  <label className="dashboard_switch">
                     <input type="checkbox" checked={isSwitchActive} onChange={handleSwitchToggle} />
-                      <span className="slider"></span>
+                      <span className="dashboard_slider"></span>
                     </label>
-                      <p className="pl-label">{translate('thousandYen', language)}</p>
-                      <label className="switch">
+                      <p className="dashboard_pl-label">{translate('thousandYen', language)}</p>
+                      <label className="dashboard_switch">
                         <input type="checkbox" />
-                        <span className="slider"></span>
+                        <span className="dashboard_slider"></span>
                       </label>
                 </div>
               </div>
             <div className='dashboard_tbl_cont'>
-                  <div className={`table_content_planning dash_board ${isSwitchActive ? 'hidden' : ''}`}>
+                  <div className={`dashboard_table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
                           {/* Render the TablePlanning component here */}
                           <TablePlanning />
                   </div>
-                  <div className={`table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
+                  <div className={`dashboard_table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
                     <TableComponentProps data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
                   </div>
             </div>

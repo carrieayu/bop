@@ -35,9 +35,17 @@ const Planning = Loader(lazy(() => import("../pages/planningUI/planning")))
 const CostOfSales = Loader(lazy(() => import("../pages/costofSalesRegistration/costofSalesRegistration")))
 const CostOfSalesList = Loader(lazy(() => import("../pages/costofSalesList/costofSalesList")))
 
-//Expenses Page
+//Expenses Pages
 const ExpensesRegistration = Loader(lazy(() => import("../pages/expensesRegistration/expensesRegistration")))
 const ExpensesList = Loader(lazy(() => import("../pages/expensesList/expensesList")))
+
+//Clients Pages
+const ClientsRegistration = Loader(lazy(() => import("../pages/Clients/ClientsRegistration")))
+const ClientsListAndEdit = Loader(lazy(() => import("../pages/Clients/ClientsListAndEdit")))
+
+//Business Divisions Pages
+const BusinessDivisionsRegistration = Loader(lazy(() => import("../pages/BusinessDivisions/BusinessDivisionsRegistration")))
+const BusinessDivisionsListAndEdit = Loader(lazy(() => import("../pages/BusinessDivisions/BusinessDivisionsListAndEdit")))
 
 const Logout = () => {
   localStorage.clear();
@@ -150,6 +158,38 @@ const routes: RouteObject[] = [
         element: (
           <ProtectedRoutes>
             <ExpensesList />
+          </ProtectedRoutes>
+        )
+      },
+      {
+        path: "clients-registration",
+        element: (
+          <ProtectedRoutes>
+            <ClientsRegistration />
+          </ProtectedRoutes>
+        )
+      },
+      {
+        path: "clients-list",
+        element: (
+          <ProtectedRoutes>
+            <ClientsListAndEdit />
+          </ProtectedRoutes>
+        )
+      },
+      {
+        path: "business-divisions-registration",
+        element: (
+          <ProtectedRoutes>
+            <BusinessDivisionsRegistration />
+          </ProtectedRoutes>
+        )
+      },
+      {
+        path: "business-divisions-list",
+        element: (
+          <ProtectedRoutes>
+            <BusinessDivisionsListAndEdit />
           </ProtectedRoutes>
         )
       }

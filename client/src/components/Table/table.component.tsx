@@ -21,7 +21,7 @@ const objectEntity = [
   'ordinary_profit_margin',
 ]
 
-const headerTitle = ['salesRevenue', 'personalExpenses', 'operatingIncome', 'nonOperatingIncome', 'nonOperatingExpenses', 'ordinaryIncome', 'ordinaryIncomeProfitMargin']
+const headerTitle = ['salesRevenue', 'employeeExpenses', 'operatingIncome', 'nonOperatingIncome', 'nonOperatingExpenses', 'ordinaryIncome', 'ordinaryIncomeProfitMargin']
 
 interface EntityGrid {
   clientName: string
