@@ -43,6 +43,10 @@ const ExpensesList = Loader(lazy(() => import("../pages/expensesList/expensesLis
 const ClientsRegistration = Loader(lazy(() => import("../pages/Clients/ClientsRegistration")))
 const ClientsListAndEdit = Loader(lazy(() => import("../pages/Clients/ClientsListAndEdit")))
 
+//Business Divisions Pages
+const BusinessDivisionsRegistration = Loader(lazy(() => import("../pages/BusinessDivisions/BusinessDivisionsRegistration")))
+const BusinessDivisionsListAndEdit = Loader(lazy(() => import("../pages/BusinessDivisions/BusinessDivisionsListAndEdit")))
+
 const Logout = () => {
   localStorage.clear();
   return <Navigate to="/login" />;
@@ -170,6 +174,22 @@ const routes: RouteObject[] = [
         element: (
           <ProtectedRoutes>
             <ClientsListAndEdit />
+          </ProtectedRoutes>
+        )
+      },
+      {
+        path: "business-divisions-registration",
+        element: (
+          <ProtectedRoutes>
+            <BusinessDivisionsRegistration />
+          </ProtectedRoutes>
+        )
+      },
+      {
+        path: "business-divisions-list",
+        element: (
+          <ProtectedRoutes>
+            <BusinessDivisionsListAndEdit />
           </ProtectedRoutes>
         )
       }
