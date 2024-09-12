@@ -24,7 +24,7 @@ const PersonnelExpenseCreate = () => {
   const [activeTab, setActiveTab] = useState('/planning')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('project')
+  const [activeTabOther, setActiveTabOther] = useState('case')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translations
 
@@ -175,10 +175,10 @@ const PersonnelExpenseCreate = () => {
   };
 
   return (
-    <div className='employeeExpensesRegistration_wrapper'>
-    <div className="employeeExpensesRegistration_header_cont">
-      <div className="employeeExpensesRegistration_top_btn_cont">
-      <div className="employeeExpensesRegistration_header-buttons">
+    <div className='personnel_wrapper'>
+    <div className="header_cont">
+      <div className="personnel_top_btn_cont">
+      <div className="header-buttons">
           <Btn
             label={translate('analysis', language)}
             onClick={() => handleTabClick("/dashboard")}
@@ -195,71 +195,72 @@ const PersonnelExpenseCreate = () => {
             className={activeTab === "/*" ? "h-btn-active header-btn" : "header-btn"}
           />
         </div>
-        <div className="employeeExpensesRegistration_language-toggle">
-          <p className="employeeExpensesRegistration_pl-label">English</p>
-            <label className="employeeExpensesRegistration_switch">
+        <div className="language-toggle">
+          <p className="pl-label">English</p>
+            <label className="switch">
               <input type="checkbox" checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle}/>
-              <span className="employeeExpensesRegistration_slider"></span>
+              <span className="slider"></span>
             </label>
         </div>
       </div>
      </div>
-     <div className="employeeExpensesRegistration_cont_wrapper">
-         <div className="employeeExpensesRegistration_sidebar">
+     <div className="personnel_cont_wrapper">
+         <div className="sidebar">
              <Sidebar />
          </div>
-         <div className="employeeExpensesRegistration_wrapper_div">
-                 <div className="employeeExpensesRegistration_top_content">
-                     <div className="employeeExpensesRegistration_top_body_cont">
-                         <div className="employeeExpensesRegistration_top_btn_cont"></div>
+         <div className="personnel_wrapper_div">
+                 <div className="personnel_top_content">
+                     <div className="personnel_top_body_cont">
+                         <div className="personnel_top_btn_cont">
+                          
+                         </div>
                      </div>
-                     <div className="employeeExpensesRegistration_mid_body_cont">
-                         <div className="employeeExpensesRegistration_mid_btn_cont">
+                     <div className="personnel_mid_body_cont">
+                         <div className="personnel_mid_btn_cont">
                                 {[...Array(4)].map((_, index) => (
                                   <Btn
                                     key={index}
-                                    label={translate(index === 0 ? 'project' : index === 1 ? 'employeeExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
+                                    label={translate(index === 0 ? 'project' : index === 1 ? 'personalExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
                                     onClick={() =>
                                       handleTabsClick(
                                         index === 0
-                                          ? 'project'
+                                          ? 'case'
                                           : index === 1
-                                            ? 'employeeExpenses'
+                                            ? 'personnel_cost'
                                             : index === 2
-                                              ? 'expenses': 'costOfSales'
+                                              ? 'expenses': 'cost_purchase'
                                       )
                                     }
                                     className={
                                       activeTabOther ===
                                       (index === 0
-                                        ? 'project'
+                                        ? 'case'
                                         : index === 1
-                                          ? 'employeeExpenses'
+                                          ? 'personnel_cost'
                                           : index === 2
-                                            ? 'expenses': 'costOfSales')
+                                            ? 'expenses': 'cost_purchase')
                                         ? 'body-btn-active body-btn'
                                         : 'body-btn'
                                     }
                                   />
                                 ))}
                          </div>
-                         <div className="employeeExpensesRegistration_title_table_cont">
-                             <p className="employeeExpensesRegistration_title">{translate('employeeExpensesRegistration', language)}</p>
+                         <div className="personnel_title_table_cont">
+                             <p className="personnel_title">{translate('newPersonnelRegistration', language)}</p>
                          </div>
-                         <div className="employeeExpensesRegistration_table_wrapper">
-                          <form onSubmit={handleSubmit} className="employeeExpensesRegistration_form_wrapper">
+                         <div className="personnel_table_wrapper">
+                          <form onSubmit={handleSubmit} className="personnel-wrapper">
                               {containers.map((container, containerIndex) => (
-                                <div className="employeeExpensesRegistration_container" key={containerIndex}>
-                                  <div className={`employeeExpensesRegistration_form-content ${containerIndex > 0 ? 'employeeExpensesRegistration_form-line' : ''}`}></div>
-                                  <div className="employeeExpensesRegistration_cont-body">
-                                    <div className="employeeExpensesRegistration_row">
-                                      <div className="employeeExpensesRegistration_label">
+                                <div className="personnel-container" key={containerIndex}>
+                                  <div className="personnel-cont-body">
+                                    <div className="personnel-row">
+                                      <div className="personnel-label">
                                         <p>{translate('employee', language)}</p>
                                       </div>
-                                      <div className="employeeExpensesRegistration_card-box">
+                                      <div className="personnel-card-box">
                                         <select
                                           name="employeeName"
-                                          className="employeeExpensesRegistration_emp-select"
+                                          className="emp-select"
                                           value={container.employeeName}
                                           onChange={(e) => handleInputChange(containerIndex, null, e)}
                                         >
@@ -272,14 +273,14 @@ const PersonnelExpenseCreate = () => {
                                         </select>
                                       </div>
                                     </div>
-                                    <div className="employeeExpensesRegistration_project-fields">
+                                    <div className="project-fields">
                                       {container.projects.map((project, projectIndex) => (
-                                        <div className="employeeExpensesRegistration_project-group" key={projectIndex}>
-                                          <div className="employeeExpensesRegistration_row">
-                                            <div className="employeeExpensesRegistration_label">
+                                        <div className="project-group" key={projectIndex}>
+                                          <div className="personnel-row">
+                                            <div className="personnel-label">
                                               <p>{translate('project', language)}</p>
                                             </div>
-                                            <div className="employeeExpensesRegistration_card-box">
+                                            <div className="personnel-card-box">
                                               <select
                                                 name="projectName"
                                                 value={project.projectName}
@@ -294,11 +295,11 @@ const PersonnelExpenseCreate = () => {
                                               </select>
                                             </div>
                                           </div>
-                                          <div className="employeeExpensesRegistration_row">
-                                            <div className="employeeExpensesRegistration_label">
+                                          <div className="personnel-row">
+                                            <div className="personnel-label">
                                               <p>{translate('month', language)}</p>
                                             </div>
-                                            <div className="employeeExpensesRegistration_card-box">
+                                            <div className="personnel-card-box">
                                               <select
                                                 name="month"
                                                 value={''}
@@ -311,11 +312,11 @@ const PersonnelExpenseCreate = () => {
                                               </select>
                                             </div>
                                           </div>
-                                          <div className="employeeExpensesRegistration_row">
-                                            <div className="employeeExpensesRegistration_label">
-                                              <p>{translate('employeeExpenses', language)}</p>
+                                          <div className="personnel-row">
+                                            <div className="personnel-label">
+                                              <p>{translate('personalExpenses', language)}</p>
                                             </div>
-                                            <div className="employeeExpensesRegistration_card-box">
+                                            <div className="personnel-card-box">
                                               <input
                                                 type="number"
                                                 name="unit_price"
@@ -324,11 +325,11 @@ const PersonnelExpenseCreate = () => {
                                               />
                                             </div>
                                           </div>
-                                          <div className="employeeExpensesRegistration_row">
-                                            <div className="employeeExpensesRegistration_label">
+                                          <div className="personnel-row">
+                                            <div className="personnel-label">
                                               <p>{translate('assignmentRatio', language)}</p>
                                             </div>
-                                            <div className="employeeExpensesRegistration_card-box">
+                                            <div className="personnel-card-box">
                                               <input
                                                 type="number"
                                                 name="ratio"
@@ -339,11 +340,11 @@ const PersonnelExpenseCreate = () => {
                                           </div>
                                         </div>
                                       ))}
-                                      <div className="employeeExpensesRegistration_button-box">
+                                      <div className="button-box">
                                         {container.projects.length < 5 && (
                                           <Btn
                                             label={translate('add', language)}
-                                            className="employeeExpensesRegistration_button"
+                                            className="button"
                                             type="button"
                                             onClick={() => handleAddProject(containerIndex)}
                                           />
@@ -351,17 +352,16 @@ const PersonnelExpenseCreate = () => {
                                     </div>
                                     </div>
                                   </div>
-
                                 </div>
                               ))}
-                              <div className="employeeExpensesRegistration_cont-footer">
-                                <div className="employeeExpensesRegistration_btn-plusminus">
-                                  <Btn label="+" className="employeeExpensesRegistration_plus-btn" type="button" onClick={handleAddContainer} />
-                                  <Btn label="-" className="employeeExpensesRegistration_minus-btn" type="button" onClick={handleRemoveContainer} />
+                              <div className="personnel-cont-footer">
+                                <div className="personnel-btn-plusminus">
+                                  <Btn label="+" className="plus-btn" type="button" onClick={handleAddContainer} />
+                                  <Btn label="-" className="minus-btn" type="button" onClick={handleRemoveContainer} />
                                 </div>
-                                <div className="employeeExpensesRegistration_btn-subcancel">
-                                  <Btn label={translate('cancel', language)} className="employeeExpensesRegistration_cancel-btn is-light" type="button" onClick={() => alert('cancel')} />
-                                  <Btn label={translate('submit', language)} className="employeeExpensesRegistration_submit-btn is-info" type="submit" onClick={() => ''} />
+                                <div className="personnel-btn-subcancel">
+                                  <Btn label={translate('cancel', language)} className="cancel-btn is-light" type="button" onClick={() => alert('cancel')} />
+                                  <Btn label={translate('submit', language)} className="submit-btn is-info" type="submit" onClick={() => ''} />
                                 </div>
                                 {/* <button className="save-btn" type='submit'>Save</button> */}
                               </div>

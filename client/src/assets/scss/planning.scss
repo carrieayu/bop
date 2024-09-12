@@ -1,218 +1,123 @@
 .planning_wrapper{
-  max-width: 2560px;
-  .planning_header_cont{
-    margin-left: 5%;
-    height: 60px;
-    display: flex;
-    justify-content: space-between;
-    .planning_header_container{
-      background-color: #fff;
-      padding: 5px 5px 10px 5px;
-      box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    }
-    .planning_header-buttons{
-      display: flex;
-      gap: 30px;
-      .header-btn{
-        margin-top: 15px;
-        border: 1px solid #808080;
-        width: 12rem;
-        height: 30px;
-        border-radius: 5px !important;
-        background-color: #fff;
-        color: #000;
-      }
-      .header-btn:hover{
-        background-color: #808080;
-        color: #fff;
-      }
-      .h-btn-active{
-          background-color: #808080;
-          color: #fff;
-      }
-    }
-    .planning_language-toggle{
-      gap: 10px;
-      display: flex;
-      padding-right: 50px;
-      align-items: center;
-      .planning_pl-label_translate{
-        display: inline-block;
-      }
-      .planning_switch_translate{
-        margin-top: 2px;
-        position: relative;
-        display: inline-block;
-        width: 40px;
-        height: 20px;
-        margin-left: 2px;
-        input{
-          opacity: 0;
-          width: 0;
-          height: 0;
-          &:checked + .planning_slider_translate{
-            background-color: #2196F3;
-          }
-          &:focus + .planning_slider_translate{
-            box-shadow: 0 0 1px #2196F3;
-          }
-          &:checked + .planning_slider_translate:before{
-            transform: translateX(20px);
-          }
-        }
-        .planning_slider_translate{
-          position: absolute;
-          cursor: pointer;
-          height: 20px; 
-          width: 40px;   
-          background-color: #ccc;
-          border-radius: 10px;
-          transition: background-color 0.4s;
-          &:before {
-            position: absolute;
-            content: "";
-            height: 16px;  
-            width: 16px;   
-            left: 2px;
-            bottom: 2px;
-            background-color: #fff;
-            border-radius: 50%;
-            transition: transform 0.4s;
-          }
-        }
-      }
-    }
+  width: 86%;
+  height: 97vh;
+  padding: 10px 10px 10px 10px;
+  @media only screen and (min-width: 1875px){
+    width: 89%;
   }
-  .planning_content_wrapper{
-    display: flex;
-    background-color: #EFEDEA;
-    @media only screen and (max-width: 1000px){
-        flex-direction: column;
-    }
-    .planning_sidebar{
-      flex: 0 0 205px;
-      background-color: #1c302c;
-      @media only screen and (max-width: 1000px){
-          flex: 0 0 auto;
+  .plan_top_cont{
+    border: 1px solid #fff;
+    border-radius: 5px;
+    background-color: #fff;
+    .planning{
+      .planning_btm{
+        .planning_header{
+          display: flex;
           width: 100%;
-          display: none;
-      }
-    }
-    .planning_table_wrapper{
-      width: 100%;
-      height: 100vh;
-      padding: 10px 30px 10px 30px;
-      .planning_top_cont{
-        border: 1px solid #fff;
-        border-radius: 5px;
-        background-color: #fff;
-        height: 97vh;
-        .planning_content{
-          .planning_btm{
-            .planning_header_text{
+          justify-content: space-between;
+          .left-content{
+            font-weight: bold;
+            // padding: 10px 10px 10px 10px;
+            margin-top: 13px;
+            margin-left: 10px;
+          }
+          .right-content{
+            .paginate{
+              gap: 10px;
               display: flex;
-              width: 100%;
-              justify-content: space-between;
-              .planning_left-content{
-                font-weight: bold;
-                margin-top: 13px;
-                margin-left: 10px;
+              .pl-label{
+                display: inline-block;
               }
-              .planning_right-content{
-                padding: 10px 10px 5px 0px;
-                .planning_paginate{
-                  gap: 10px;
-                  display: flex;
-                  .planning_pl-label{
-                    display: inline-block;
+              button.mode_switch {
+                  border: 1px solid;
+                  padding: 3px 21px;
+                  border-radius: 5px;
+                  font-weight: 500;
+                  background-color: #f3f3f3;
+              }
+              .switch{
+                margin-top: 2px;
+                position: relative;
+                display: inline-block;
+                width: 40px;
+                height: 20px;
+                margin-left: 2px;
+                input{
+                  opacity: 0;
+                  width: 0;
+                  height: 0;
+
+                  &:checked + .slider {
+                    background-color: #2196F3;
                   }
-                  button.planning_mode_switch {
-                    border: 1px solid;
-                    padding: 3px 21px;
-                    border-radius: 5px;
-                    font-weight: 500;
-                    background-color: #f3f3f3;
+
+                  &:focus + .slider {
+                    box-shadow: 0 0 1px #2196F3;
                   }
-                  .planning_switch{
-                    margin-top: 2px;
-                    position: relative;
-                    display: inline-block;
-                    width: 40px;
-                    height: 20px;
-                    margin-left: 2px;
-                    input{
-                      opacity: 0;
-                      width: 0;
-                      height: 0;
-    
-                      &:checked + .planning_slider {
-                        background-color: #2196F3;
-                      }
-    
-                      &:focus + .planning_slider {
-                        box-shadow: 0 0 1px #2196F3;
-                      }
-    
-                      &:checked + .planning_slider:before {
-                        transform: translateX(20px);
-                      }
-                    }
-                    .planning_slider{
-                      position: absolute;
-                      cursor: pointer;
-                      height: 21px;
-                      top: 0;
-                      left: 0;
-                      right: 0;
-                      bottom: 0;
-                      background-color: #ccc;
-                      border-radius: 10px;
-                      transition: background-color 0.4s;
-                      &:before {
-                        position: absolute;
-                        content: "";
-                        height: 16px;
-                        width: 16px;
-                        left: 2px;
-                        bottom: 2px;
-                        background-color: #fff;
-                        border-radius: 50%;
-                        transition: transform 0.4s;
-                      }
-                    }
+
+                  &:checked + .slider:before {
+                    transform: translateX(20px);
+                  }
+                }
+                .slider{
+                  position: absolute;
+                  cursor: pointer;
+                  height: 21px;
+                  top: 0;
+                  left: 0;
+                  right: 0;
+                  bottom: 0;
+                  background-color: #ccc;
+                  border-radius: 10px;
+                  transition: background-color 0.4s;
+
+                  &:before {
+                    position: absolute;
+                    content: "";
+                    height: 16px;
+                    width: 16px;
+                    left: 2px;
+                    bottom: 2px;
+                    background-color: #fff;
+                    border-radius: 50%;
+                    transition: transform 0.4s;
                   }
                 }
               }
             }
-            .planning_tbl_cont{
-              .table_content_planning{
-                .table-planning-container{
-                  width: 100% !important;
-                  height: 90vh;
+          }
+        }
+        .planning_tbl_cont{
+          .table_content_planning{
+            .table-planning-container{
+              width: 100% !important;
+              .table-planning{
+                table{
+                  
                 }
-              }
-              .hidden{
-                display: none;
-              }
-              .table_content_props{
-                height: 82vh;
-                .planning_scrollable{
-                  max-height: 87vh;
-                }
-              }
-              .div_submit {
-                float: right;
-                padding: 0px 8px;
-              }
-              button.edit_submit_btn {
-                border: 2px solid #fdd7b3;
-                padding: 2px 13px;
-                border-radius: 7px;
-                margin-top: 6px;
-                background: #2e2eff;
-                color: white;
               }
             }
+          }
+          .hidden {
+            display: none;
+          }
+          .table_content_props{
+            height: 82vh;
+            .planning_scrollable{
+              max-height: 80vh;
+            }
+          }
+          .div_submit {
+              float: right;
+              padding: 0px 8px;
+          }
+          button.edit_submit_btn {
+              border: 2px solid #fdd7b3;
+              padding: 2px 13px;
+              border-radius: 7px;
+              margin-top: 6px;
+              background: #2e2eff;
+              color: white;
           }
         }
       }

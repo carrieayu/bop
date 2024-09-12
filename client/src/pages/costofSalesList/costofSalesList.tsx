@@ -13,7 +13,7 @@ const CostOfSalesList: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning')
     const navigate = useNavigate()
     const location = useLocation()
-    const [activeTabOther, setActiveTabOther] = useState('project')
+    const [activeTabOther, setActiveTabOther] = useState('case')
     const [currentPage, setCurrentPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5)
     const [paginatedData, setPaginatedData] = useState<any[]>([])
@@ -136,10 +136,10 @@ const CostOfSalesList: React.FC = () => {
     };
 
   return (
-    <div className='costOfSalesList_wrapper'>
-       <div className="costOfSalesList_header_cont">
-        <div className="costOfSalesList_proj_top_btn_cont">
-        <div className="costOfSalesList_header-buttons">
+    <div className='proj_wrapper'>
+       <div className="header_cont">
+        <div className="proj_top_btn_cont">
+        <div className="header-buttons">
           <Btn
             label={translate('analysis', language)}
             onClick={() => handleTabClick("/dashboard")}
@@ -156,91 +156,93 @@ const CostOfSalesList: React.FC = () => {
             className={activeTab === "/*" ? "h-btn-active header-btn" : "header-btn"}
           />
         </div>
-        <div className="costOfSalesList_language-toggle">
-          <p className="costOfSalesList_pl-label">English</p>
-            <label className="costOfSalesList_switch">
+        <div className="language-toggle">
+          <p className="pl-label">English</p>
+            <label className="switch">
               <input type="checkbox" checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle}/>
-              <span className="costOfSalesList_slider"></span>
+              <span className="slider"></span>
             </label>
         </div>
         </div>
         </div>
-        <div className="costOfSalesList_cont_wrapper">
-            <div className="costOfSalesList_sidebar">
+        <div className="projectlist_cont_wrapper">
+            <div className="sidebar">
                 <Sidebar />
             </div>
-            <div className="costOfSalesList_btn_wrapper">
-                    <div className="costOfSalesList_top_content">
-                        <div className="costOfSalesList_top_body_cont"></div>
-                        <div className="costOfSalesList_mid_body_cont">
-                            <div className="costOfSalesList_mid_btn_cont">
+            <div className="projectlist_wrapper">
+                    <div className="proj_top_content">
+                        <div className="proj_top_body_cont">
+                          
+                        </div>
+                        <div className="proj_mid_body_cont">
+                            <div className="proj_mid_btn_cont">
                             {[...Array(4)].map((_, index) => (
                                   <Btn
                                     key={index}
-                                    label={translate(index === 0 ? 'project' : index === 1 ? 'employeeExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
+                                    label={translate(index === 0 ? 'project' : index === 1 ? 'personalExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
                                     onClick={() =>
                                       handleTabsClick(
                                         index === 0
-                                          ? 'project'
+                                          ? 'case'
                                           : index === 1
-                                            ? 'employeeExpenses'
+                                            ? 'personnel_cost'
                                             : index === 2
-                                              ? 'expenses': 'costOfSales'
+                                              ? 'expenses': 'cost_purchase'
                                       )
                                     }
                                     className={
                                       activeTabOther ===
                                       (index === 0
-                                        ? 'project'
+                                        ? 'case'
                                         : index === 1
-                                          ? 'employeeExpenses'
+                                          ? 'personnel_cost'
                                           : index === 2
-                                            ? 'expenses': 'costOfSales')
+                                            ? 'expenses': 'cost_purchase')
                                         ? 'body-btn-active body-btn'
                                         : 'body-btn'
                                     }
                                   />
                                 ))}
                             </div>
-                            <div className="costOfSalesList_title_table_cont">
-                                <p className="costOfSalesList_title">{translate('costOfSalesList', language)}</p>
+                            <div className="proj_title_table_cont">
+                                <p className="proj_title">{translate('costOfsalesList', language)}</p>
                                 <Btn 
                                     label={translate('newRegistration', language)}
                                     size="normal"
                                     onClick={() =>("")}
-                                    className="costOfSalesList_btn"
+                                    className="proj_btn"
                                 />
                             </div>
-                            <div className="costOfSalesList_table_wrapper">
-                                <div className="costOfSalesList_table_cont">
+                            <div className="proj_table_wrapper">
+                                <div className="proj_table_cont">
                                     <div className='columns is-mobile'>
                                         <div className='column'>
                                             <table className='table is-bordered is-hoverable'>
                                             <thead>
-                                                <tr className="costOfSalesList_table_title ">
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('month', language)}</th>
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('costOfSales', language)}</th>
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('purchases', language)}</th>
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('outsourcingExpenses', language)}</th>
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('productPurchases', language)}</th>
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('dispatchLabourExpenses', language)}</th>
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('communicationExpenses', language)}</th>
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('workInProgressExpenses', language)}</th>
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('amortizationExpenses', language)}</th>
+                                                <tr className="proj_table_title ">
+                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('month', language)}</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('costOfSales', language)}</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('purchases', language)}</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('outsourcingExpenses', language)}</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('productPurchases', language)}</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('dispatchLabourExpenses', language)}</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('communicationExpenses', language)}</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('workInProgressExpenses', language)}</th>
+                                                <th className="proj_table_title_content_vertical has-text-centered">{translate('amortizationExpenses', language)}</th>
                                                 </tr>
                                             </thead>
-                                            <tbody className="costOfSalesList_table_body">
+                                            <tbody className="proj_table_body">
                                             {combinedData.map((project, index) => (
-                                                        <tr key={index} className="costOfSalesList_table_body_content_horizantal">
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.month}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.cost_of_sales || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.purchases || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.outsourcing_costs || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.product_purchases || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.dispatch_labor_costs || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.communication_costs || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.work_in_progress || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.amortization || 0}</td>
+                                                        <tr key={index} className="proj_table_body_content_horizantal">
+                                                            <td className="proj_table_body_content_vertical has-text-centered">{project.month}</td>
+                                                            <td className="proj_table_body_content_vertical has-text-centered">{project.cost_of_sales || 0}</td>
+                                                            <td className="proj_table_body_content_vertical has-text-centered">{project.purchases || 0}</td>
+                                                            <td className="proj_table_body_content_vertical has-text-centered">{project.outsourcing_costs || 0}</td>
+                                                            <td className="proj_table_body_content_vertical has-text-centered">{project.product_purchases || 0}</td>
+                                                            <td className="proj_table_body_content_vertical has-text-centered">{project.dispatch_labor_costs || 0}</td>
+                                                            <td className="proj_table_body_content_vertical has-text-centered">{project.communication_costs || 0}</td>
+                                                            <td className="proj_table_body_content_vertical has-text-centered">{project.work_in_progress || 0}</td>
+                                                            <td className="proj_table_body_content_vertical has-text-centered">{project.amortization || 0}</td>
                                                         </tr>
                                                     ))}
                                             </tbody>
@@ -249,8 +251,8 @@ const CostOfSalesList: React.FC = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="costOfSalesList_pagination_wrapper">
-                                <div className="costOfSalesList_pagination_cont">
+                            <div className="proj_pagination_wrapper">
+                                <div className="proj_pagination_cont">
                                     <Pagination
                                       currentPage={currentPage}
                                       totalPages={totalPages}

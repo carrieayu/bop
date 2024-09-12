@@ -1,7 +1,7 @@
 // custom scss for dashboard
-.dashboard_wrapper{
+.wrapper{
     max-width: 2560px;
-    .dashboard_header_cont{
+    .header_cont{
         margin-left: 5%;
         height: 60px;
         display: flex;
@@ -12,7 +12,7 @@
             box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
             
         }
-        .dashboard_header-buttons{
+        .header-buttons{
             display: flex;
             gap: 30px;
             .header-btn{                        
@@ -52,48 +52,55 @@
                 display: none;
             }
           }
-          .dashboard_language-toggle {
+          .language-toggle {
             gap: 10px;
             display: flex;
             padding-right: 50px;
-            align-items: center;
-            .dashboard_pl-label_translate {
+            
+            .pl-label {
               display: inline-block;
             }
-            .dashboard_switch_translate {
+            
+            .switch {
               margin-top: 2px;
               position: relative;
               display: inline-block;
               width: 40px;
               height: 20px;
               margin-left: 2px;
+              
               input {
                 opacity: 0;
                 width: 0;
                 height: 0;
-                &:checked + .dashboard_slider_translate {
+          
+                &:checked + .slider {
                   background-color: #2196F3;
                 }
-                &:focus + .dashboard_slider_translate {
+          
+                &:focus + .slider {
                   box-shadow: 0 0 1px #2196F3;
                 }
-                &:checked + .dashboard_slider_translate:before {
+          
+                &:checked + .slider:before {
                   transform: translateX(20px);
                 }
               }
-              .dashboard_slider_translate {
+              
+              .slider {
                 position: absolute;
                 cursor: pointer;
-                height: 20px; 
-                width: 40px;   
+                height: 20px;  // Adjusted to match the height of the switch
+                width: 40px;   // Should match the width of the switch container
                 background-color: #ccc;
                 border-radius: 10px;
                 transition: background-color 0.4s;
+                
                 &:before {
                   position: absolute;
                   content: "";
-                  height: 16px;  
-                  width: 16px;   
+                  height: 16px;  // Slightly smaller than the switch height
+                  width: 16px;   // Matches the height of the circle
                   left: 2px;
                   bottom: 2px;
                   background-color: #fff;
@@ -102,15 +109,16 @@
                 }
               }
             }
-          } 
+          }
+          
     }
-    .dashboard_content_wrapper{
+    .content_wrapper{
         display: flex;
         background-color: #EFEDEA;
         @media only screen and (max-width: 1000px){
             flex-direction: column;
         }
-        .dashboard_sidebar{
+        .sidebar{
             flex: 0 0 205px;
             background-color: #1c302c;
             @media only screen and (max-width: 1000px){
@@ -123,13 +131,13 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            .dashboard_body_cont{
+            .body_cont{
                 display: flex;
                 margin-top: 10px;
                 @media only screen and (max-width: 1000px){
                     display: block;
                 }
-                .dashboard_card_cont{
+                .card_cont{
                     width: 100%;
                     display: flex;
                     padding: 5px;
@@ -146,36 +154,36 @@
                             width: auto;
                         }
                     }
-                    .dashboard_left_card{
+                    .left_card{
                         width: 50%;
                         @media only screen and (max-width: 451px){
                             width: 100%;
                         }
                     }
-                    .dashboard_right_card{
+                    .right_card{
                         width: 50%;
                         @media only screen and (max-width: 451px){
                             width: 100%;
                         }
                     }
-                    .dashboard_custom-card-content{
+                    .custom-card-content{
                         margin: 10px 0px 10px 10px;
-                        .dashboard_text1{
+                        .text1{
                             font-weight: 800;
                         }
-                        .dashboard_numTxt{
+                        .numTxt{
                             font-size: 24px;
                             font-weight: bolder;
-                            .dashboard_totalTxt{
+                            .totalTxt{
                                 font-size: 12px;
                             }
                         }
-                        .dashboard_text2{
+                        .text2{
                             font-weight: 800;
                         }
                     }
                 }
-                .dashboard_graph_cont{
+                .graph_cont{
                     width: 100%;
                     padding: 5px;
                     @media only screen and (max-width: 1000px){
@@ -183,7 +191,7 @@
                         margin: 0 auto;
                         padding: 10px;
                     }
-                    .dashboard_graph_wrap{
+                    .graph_wrap{
                         .card-custom{
                             margin-left: 0 !important;
                             margin-top: 0 !important;
@@ -197,21 +205,21 @@
                     }
                 }
             }
-            .dashboard_bottom_cont{
+            .bottom_cont{
                 margin-top: 20px;
                 width: 100%;
                 padding: 5px;
-                .dashboard_right-content{
+                .right-content{
                     padding: 10px 10px 10px 10px;
-                    .dashboard_paginate{
+                    .paginate{
                         gap: 10px;
                         display: flex;
                         justify-content: flex-end;
                         margin-right: 20px;
-                        .dashboard_pl-label{
+                        .pl-label{
                             display: inline-block;
                         }
-                        .dashboard_switch{
+                        .switch{
                             margin-top: 2px;
                             position: relative;
                             display: inline-block;
@@ -223,19 +231,19 @@
                                 width: 0;
                                 height: 0;
               
-                                &:checked + .dashboard_slider {
+                                &:checked + .slider {
                                   background-color: #2196F3;
                                 }
               
-                                &:focus + .dashboard_slider {
+                                &:focus + .slider {
                                   box-shadow: 0 0 1px #2196F3;
                                 }
               
-                                &:checked + .dashboard_slider:before {
+                                &:checked + .slider:before {
                                   transform: translateX(20px);
                                 }
                             }
-                            .dashboard_slider{
+                            .slider{
                                 position: absolute;
                                 cursor: pointer;
                                 height: 21px;
@@ -264,7 +272,7 @@
                 }
                 .dashboard_tbl_cont{
                     background-color: #fff;
-                    .dashboard_table_content_planning{
+                    .table_content_planning{
                         .table-planning-container{
                           width: 100% !important;
                           .table-planning{
@@ -277,7 +285,7 @@
                       .hidden {
                         display: none;
                       }
-                      .dashboard_table_content_props{
+                      .table_content_props{
                         height: 82vh;
                         .planning_scrollable{
                           max-height: 80vh;
