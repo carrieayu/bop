@@ -48,5 +48,17 @@
     "switchToEditMode": "Switch to Edit Mode",
     "switchToDisplayMode": "Switch to Display Mode",
     "cannotSwitchLanguagesInEditMode": "Cannot switch languages in Edit Mode",
-    "alertMessageAbove": "The selected month already has data registered. Do you want to overwrite it?"
+    "alertMessageAbove": "The selected month already has data registered. Do you want to overwrite it?",
+    "createdBy": "Created By",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "deleteMessage": "Are you sure you would like to delete this client?",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "companyName": "Company Name",
+    "company": "Company",
+    "companyID": "Company ID"
 }

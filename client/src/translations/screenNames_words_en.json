@@ -16,5 +16,10 @@
     "clientsList": "Clients List",
     "employeesRegistration": "Employees Registration",
     "employeesList": "Employees List",
-    "dashboard": "Dashboard"
+    "businessDivisionsRegistration": "Business Divisions Registration",
+    "businessDivisionsList": "Business Divisions List",
+    "usersRegistration": "Users Registration",
+    "usersList": "Users List",
+    "dashboard": "Dashboard",
+    "masterMaintenance": "Master Maintenance"
 }

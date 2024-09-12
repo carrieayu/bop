@@ -7,24 +7,26 @@ import Sidebar from "../../components/SideBar/Sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { translate } from "../../utils/translationUtil";
+import { RiDeleteBin6Fill } from "react-icons/ri";
+import AlertModal from "../../components/AlertModal/AlertModal";
 
-
-const ProjectDataList: React.FC = () => {
+const ClientsListAndEdit: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning')
     const navigate = useNavigate()
     const location = useLocation()
-    const [activeTabOther, setActiveTabOther] = useState('project')
+    const [activeTabOther, setActiveTabOther] = useState('')
     const [currentPage, setCurrentPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5)
     const [paginatedData, setPaginatedData] = useState<any[]>([])
     const select = [5, 10, 100]
     const { language, setLanguage } = useLanguage()
-    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translations
+    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
     const [isEditing, setIsEditing] = useState(false)
     const [changes, setChanges] = useState({})
     const [projects, setProjects] = useState([])
-    const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
     const [initialLanguage, setInitialLanguage] = useState(language);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [selectedProject, setSelectedProject] = useState<any>(null);
 
     const totalPages = Math.ceil(100 / 10);
 
@@ -157,11 +159,31 @@ const ProjectDataList: React.FC = () => {
         }
       };
 
+      const openModal = (project) => {
+        setSelectedProject(project);
+        setModalIsOpen(true);
+    };
+
+    const closeModal = () => {
+        setSelectedProject(null);
+        setModalIsOpen(false);
+    };
+
+    const handleConfirm = () => {
+      // Currently no delete logic
+      console.log('Confirmed action for project:', selectedProject);
+      closeModal();
+    };
+
+    const handleNewRegistrationClick = () => {
+      navigate('/clients-registration');
+    };
+
   return (
-    <div className='projectsList_wrapper'>
-      <div className='projectsList_header_cont'>
-        <div className='projectsList_top_btn_cont'>
-          <div className='projectsList_header-buttons'>
+    <div className='ClientsListAndEdit_wrapper'>
+      <div className='ClientsListAndEdit_header_cont'>
+        <div className='ClientsListAndEdit_top_btn_cont'>
+          <div className='ClientsListAndEdit_header-buttons'>
             <Btn
               label={translate('analysis', language)}
               onClick={() => handleTabClick('/dashboard')}
@@ -178,30 +200,30 @@ const ProjectDataList: React.FC = () => {
               className={activeTab === '/*' ? 'h-btn-active header-btn' : 'header-btn'}
             />
           </div>
-          <div className='projectsList_language-toggle'>
-            <p className='projectsList_pl-label'>English</p>
-            <label className='projectsList_switch'>
+          <div className='ClientsListAndEdit_language-toggle'>
+            <p className='ClientsListAndEdit_pl-label'>English</p>
+            <label className='ClientsListAndEdit_switch'>
               <input type='checkbox' checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle} disabled={isEditing}/>
-              <span className='projectsList_slider'></span>
+              <span className='ClientsListAndEdit_slider'></span>
             </label>
           </div>
         </div>
       </div>
-      <div className='projectsList_cont_wrapper'>
-        <div className='projectsList_sidebar'>
+      <div className='ClientsListAndEdit_cont_wrapper'>
+        <div className='ClientsListAndEdit_sidebar'>
           <Sidebar />
         </div>
-        <div className='projectsList_wrapper'>
-          <div className='projectsList_top_content'>
-            <div className='projectsList_top_body_cont'>
-              <div className='projectsList_mode_switch_datalist'>
-                <button className='projectsList_mode_switch' onClick={handleClick}>
+        <div className='ClientsListAndEdit_maincontent_wrapper'>
+          <div className='ClientsListAndEdit_top_content'>
+            <div className='ClientsListAndEdit_top_body_cont'>
+              <div className='ClientsListAndEdit_mode_switch_datalist'>
+                <button className='ClientsListAndEdit_mode_switch' onClick={handleClick}>
                   {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
                 </button>
               </div>
             </div>
-            <div className='projectsList_mid_body_cont'>
-              <div className='projectsList_mid_btn_cont'>
+            <div className='ClientsListAndEdit_mid_body_cont'>
+              <div className='ClientsListAndEdit_mid_btn_cont'>
                 {[...Array(4)].map((_, index) => (
                   <Btn
                     key={index}
@@ -241,147 +263,96 @@ const ProjectDataList: React.FC = () => {
                   />
                 ))}
               </div>
-              <div className='projectsList_title_table_cont'>
-                <p className='projectsList_title'>{translate('projectsList', language)}</p>
+              <div className='ClientsListAndEdit_title_table_cont'>
+                <p className='ClientsListAndEdit_title'>{translate('clientsList', language)}</p>
                 <Btn
                   label={translate('newRegistration', language)}
                   size='normal'
-                  onClick={() => ''}
-                  className='projectsList_btn'
+                  onClick={handleNewRegistrationClick}
+                  className='ClientsListAndEdit_btn'
                 />
               </div>
-              <div className='projectsList_table_wrapper'>
-                <div className='projectsList_table_cont'>
+              <div className='ClientsListAndEdit_table_wrapper'>
+                <div className='ClientsListAndEdit_table_cont'>
                   <div className='columns is-mobile'>
                     <div className='column'>
                       {isEditing ? (
                         <div>
                           <table className='table is-bordered is-hoverable'>
                             <thead>
-                              <tr className='projectsList_table_title '>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                  {translate('client', language)}
+                              <tr className='ClientsListAndEdit_table_title '>
+                                <th className='ClientsListAndEdit_table_title_content_vertical has-text-left'>
+                                  ID
                                 </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                  {translate('projectName', language)}
+                                <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
+                                    {translate('clientName', language)}
                                 </th>
-                                {/* <th className="projectsList_table_title_content_vertical has-text-centered">受注事業部</th> */}
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                  {translate('month', language)}
+                                <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
+                                    {translate('createdBy', language)}
                                 </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                  {translate('salesRevenue', language)}
+                                <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
+                                    {translate('createdAt', language)}
                                 </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                  {translate('nonOperatingIncome', language)}
+                                <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
+                                    {translate('updatedAt', language)}
                                 </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                  {translate('nonOperatingExpenses', language)}
-                                </th>
+                                <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'></th>
                               </tr>
                             </thead>
-                            <tbody className='projectsList_table_body'>
-                              {projects.map((project, index) => (
-                                <tr key={project.planning_project_id} className='projectsList_table_body_content_horizantal'>
-                                  <td className='projectsList_table_body_content_vertical'>
-                                    <input
+                            <tbody className='ClientsListAndEdit_table_body'>
+                              {/* {projects.map((project, index) => ( */}
+                                <tr key='{project.planning_project_id}' className='ClientsListAndEdit_table_body_content_horizantal'>
+                                  <td className='ClientsListAndEdit_table_body_content_vertical has-text-left'></td>
+                                  <td className='ClientsListAndEdit_table_body_content_vertical'>
+                                    {/* <input
                                       type='text'
                                       name='client.client_name'
-                                      value={project.client.client_name}
-                                      onChange={(e) => handleChange(index, e)}
-                                    />
+                                      value=''
+                                      // onChange={(e) => handleChange(index, e)}
+                                    /> */}
                                   </td>
-                                  <td className='projectsList_table_body_content_vertical'>
-                                    <input
-                                      type='text'
-                                      name='planning_project_name'
-                                      value={project.planning_project_name}
-                                      onChange={(e) => handleChange(index, e)}
-                                    />
-                                  </td>
-                                  <td className='projectsList_table_body_content_vertical'>
-                                    <select
-                                      className='select-option'
-                                      name='month'
-                                      value={project.month}
-                                      onChange={(e) => handleChange(index, e)}
-                                    >
-                                      <option value=''></option>
-                                      {months.map((month, idx) => (
-                                        <option key={idx} value={month}>
-                                          {month}月
-                                        </option>
-                                      ))}
-                                    </select>
-                                    {}
-                                  </td>
-                                  <td className='projectsList_table_body_content_vertical'>
-                                    <input
-                                      type='number'
-                                      name='sales_revenue'
-                                      value={project.sales_revenue}
-                                      onChange={(e) => handleChange(index, e)}
-                                    />
-                                  </td>
-                                  <td className='projectsList_table_body_content_vertical'>
-                                    <input
-                                      type='number'
-                                      name='non_operating_income'
-                                      value={project.non_operating_income}
-                                      onChange={(e) => handleChange(index, e)}
-                                    />
-                                  </td>
-                                  <td className='projectsList_table_body_content_vertical'>
-                                    <input
-                                      type='number'
-                                      name='non_operating_expenses'
-                                      value={project.non_operating_expenses}
-                                      onChange={(e) => handleChange(index, e)}
-                                    />
+                                  <td className='ClientsListAndEdit_table_body_content_vertical'></td>
+                                  <td className='ClientsListAndEdit_table_body_content_vertical'></td>
+                                  <td className='ClientsListAndEdit_table_body_content_vertical'></td>
+                                  <td className='ClientsListAndEdit_table_body_content_vertical delete_icon'>
+                                    {/* <RiDeleteBin6Fill className='delete-icon' onClick={() => openModal('project')}/> */}
                                   </td>
                                 </tr>
-                              ))}
+                              {/* ))} */}
                             </tbody>
                           </table>
                         </div>
                       ) : (
                         <table className='table is-bordered is-hoverable'>
                           <thead>
-                            <tr className='projectsList_table_title '>
-                              <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                {translate('client', language)}
+                            <tr className='ClientsListAndEdit_table_title '>
+                              <th className='ClientsListAndEdit_table_title_content_vertical has-text-left'>
+                                ID
                               </th>
-                              <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                {translate('projectName', language)}
+                              <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('clientName', language)}
                               </th>
-                              {/* <th className="projectsList_table_title_content_vertical has-text-centered">受注事業部</th> */}
-                              <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                {translate('month', language)}
+                              <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('createdBy', language)}
                               </th>
-                              <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                {translate('salesRevenue', language)}
+                              <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('createdAt', language)}
                               </th>
-                              <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                {translate('nonOperatingIncome', language)}
-                              </th>
-                              <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                {translate('nonOperatingExpenses', language)}
+                              <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('updatedAt', language)}
                               </th>
                             </tr>
                           </thead>
-                          <tbody className='projectsList_table_body'>
-                            {projects.map((project) => (
-                              <tr key={project.planning_project_id} className='projectsList_table_body_content_horizantal'>
-                                <td className='projectsList_table_body_content_vertical'>{project.client.client_name}</td>
-                                <td className='projectsList_table_body_content_vertical'>{project.planning_project_name}</td>
-                                <td className='projectsList_table_body_content_vertical'>
-                                  {project.year}/{project.month}
-                                </td>
-                                <td className='projectsList_table_body_content_vertical'>{project.sales_revenue}</td>
-                                <td className='projectsList_table_body_content_vertical'>{project.non_operating_income}</td>
-                                <td className='projectsList_table_body_content_vertical'>{project.non_operating_expenses}</td>
+                          <tbody className='ClientsListAndEdit_table_body'>
+                            {/* {projects.map((project) => ( */}
+                              <tr key='{project.planning_project_id}' className='ClientsListAndEdit_table_body_content_horizantal'>
+                                <td className='ClientsListAndEdit_table_body_content_vertical has-text-left'></td>
+                                <td className='ClientsListAndEdit_table_body_content_vertical'></td>
+                                <td className='ClientsListAndEdit_table_body_content_vertical'></td>
+                                <td className='ClientsListAndEdit_table_body_content_vertical'></td>
+                                <td className='ClientsListAndEdit_table_body_content_vertical'></td>
                               </tr>
-                            ))}
+                            {/* ))} */}
                           </tbody>
                         </table>
                       )}
@@ -389,8 +360,8 @@ const ProjectDataList: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className='projectsList_pagination_wrapper'>
-                <div className='projectsList_pagination_cont'>
+              <div className='ClientsListAndEdit_pagination_wrapper'>
+                <div className='ClientsListAndEdit_pagination_cont'>
                   {/* <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
@@ -400,9 +371,9 @@ const ProjectDataList: React.FC = () => {
                     onRowsPerPageChange={handleRowsPerPageChange}
                   /> */}
                   {isEditing ? (
-                    <div className='mode_switch_datalist'>
-                      <button className='edit_submit_btn' onClick={handleSubmit}>
-                          更新
+                    <div className='ClientsListAndEdit_mode_switch_datalist'>
+                      <button className='ClientsListAndEdit_edit_submit_btn' onClick={handleSubmit}>
+                        更新
                       </button>
                     </div>
                   ) : (
@@ -414,8 +385,14 @@ const ProjectDataList: React.FC = () => {
           </div>
         </div>
       </div>
+      <AlertModal
+        isOpen={modalIsOpen}
+        onConfirm={handleConfirm}
+        onCancel={closeModal}
+        message={translate('deleteMessage', language)}
+      />
     </div>
   )
 };
 
-export default ProjectDataList;
+export default ClientsListAndEdit;
