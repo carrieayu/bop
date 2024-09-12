@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import CostOfSales, Expenses, PlanningAssignData, User as UserApi, User as PersonnelUser , ClientMaster, BusinessDivisionMaster, CompanyMaster, PerformanceProjectData, PlanningProjectData, OtherPlanningData
+from .models import CostOfSales, Expenses, PlanningAssignData, User as UserApi, User as PersonnelUser , ClientMaster, BusinessDivisionMaster, CompanyMaster, PerformanceProjectData, PlanningProjectData
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -88,13 +88,9 @@ class UpdatePerformanceProjectDataSerializers(serializers.ModelSerializer):
             "ordinary_profit_margin",
             ]
         
-class CreateOtherPlanningSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = OtherPlanningData
-        fields = '__all__'
+
 
 class CreatePlanningProjectDataSerializers(serializers.ModelSerializer):
-    other_planning = CreateOtherPlanningSerializers(many=True, read_only=True)
     client = ClientMasterSerializer(source='client_id', read_only=True)
     class Meta:
         model = PlanningProjectData

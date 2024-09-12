@@ -9,8 +9,8 @@ from django.db.models import Max
 class ClientMaster(models.Model):
     client_id = models.CharField(max_length=10, primary_key=True, editable=False)
     client_name = models.CharField(max_length=100)
+    auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    auth_user_id = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     updated_at = models.DateTimeField(auto_now_add=True)
     class Meta :
         db_table = u'mst_clients'
@@ -40,7 +40,7 @@ class CompanyMaster(models.Model):
     company_id = models.CharField(max_length=10, primary_key=True, editable=False)
     company_name = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
-    auth_user_id = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
+    auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     updated_at = models.DateTimeField(auto_now_add=True)
     class Meta :
         db_table = u'mst_companies'
@@ -64,9 +64,9 @@ class CompanyMaster(models.Model):
 class BusinessDivisionMaster(models.Model):
     business_division_id = models.CharField(max_length=10, primary_key=True, editable=False)
     business_division_name = models.CharField(max_length=100)
-    company_id = models.ForeignKey(CompanyMaster, on_delete=models.CASCADE)
+    company = models.ForeignKey(CompanyMaster, on_delete=models.CASCADE)
+    auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    auth_user_id = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     updated_at = models.DateTimeField(auto_now_add=True)
     class Meta :
         db_table = u'mst_business_divisions'
@@ -89,15 +89,16 @@ class BusinessDivisionMaster(models.Model):
 
 class User(AbstractBaseUser):
     employee_id = models.CharField(max_length=10, primary_key=True, editable=False)
-    firstname = models.CharField(max_length=100)
-    lastname = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
     salary = models.IntegerField(max_length=12)
-    company_id = models.ForeignKey(CompanyMaster, on_delete=models.CASCADE)
-    business_division_id = models.ForeignKey(
+    company = models.ForeignKey(CompanyMaster, on_delete=models.CASCADE)
+    business_division = models.ForeignKey(
         BusinessDivisionMaster, on_delete=models.CASCADE
     )
     created_at = models.DateTimeField(auto_now_add=True)
-    auth_user_id =  models.ForeignKey(AuthUser, on_delete=models.CASCADE)
+    auth_user =  models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     updated_at = models.DateTimeField(auto_now_add=True)
     class Meta :
         db_table = u'employees'
@@ -124,7 +125,7 @@ class PlanningProjectData(models.Model):
     )
     project_name = models.CharField(max_length=100)
     project_type = models.CharField(max_length=50, null=True)
-    client_id = models.ForeignKey(
+    client = models.ForeignKey(
         "ClientMaster", on_delete=models.CASCADE, related_name="planning_project"
     )
     planning = models.DateField(null=True, default=timezone.now)
@@ -236,43 +237,17 @@ class PerformanceProjectData(models.Model):
         super().save(*args, **kwargs)
 
 
-class OtherPlanningData(models.Model):
-    analysis_id = models.CharField(max_length=10, primary_key=True, editable=False)
-    project_id = models.ForeignKey(
-        PlanningProjectData, on_delete=models.CASCADE, related_name="other_planning"
-    )
-    gross_profit = models.IntegerField(max_length=12)
-    net_profit_for_the_period = models.IntegerField(max_length=12)
-    gross_profit_margin = models.FloatField(max_length=10)
-    operating_profit_margin = models.FloatField(max_length=10)
-    created_At = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.planning_project_id
-    
-    def save(self, *args, **kwargs):
-        if not self.planning_project_id:
-            max_planning_project_id = (
-                BusinessDivisionMaster.objects.aggregate(
-                    max_planning_project_id=models.Max("planning_project_id")
-                )["max_planning_project_id"]
-                or "00000000"
-            )
-            new_planning_project_id = str(int(max_planning_project_id) + 1).zfill(8)
-            self.planning_project_id = new_planning_project_id
-        super().save(*args, **kwargs)
     
 class PlanningAssignData(models.Model):
     employee_expense_id = models.BigAutoField(primary_key=True)
-    client_id = models.ForeignKey(ClientMaster, on_delete=models.CASCADE)
+    client = models.ForeignKey(ClientMaster, on_delete=models.CASCADE)
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
-    project_id = models.ForeignKey(
+    project = models.ForeignKey(
         PlanningProjectData, on_delete=models.CASCADE
     )
-    employee_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    auth_user_id = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
+    employee = models.ForeignKey(User, on_delete=models.CASCADE)
+    auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_At = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     class Meta :
@@ -282,7 +257,7 @@ class PlanningAssignData(models.Model):
         return self.planning_assign_id
     
 class CostOfSales(models.Model):
-    cost_of_sales_id = models.CharField(max_length=10, primary_key=True)
+    cost_of_sale_id = models.CharField(max_length=10, primary_key=True)
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
     purchase = models.IntegerField(max_length=12)
@@ -312,7 +287,7 @@ class CostOfSales(models.Model):
         return self.id
     
 class Expenses(models.Model):
-    expenses_id = models.CharField(max_length=10, primary_key=True)
+    expense_id = models.CharField(max_length=10, primary_key=True)
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
     consumable_expense = models.IntegerField(max_length=12)
