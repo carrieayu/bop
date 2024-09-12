@@ -39,8 +39,8 @@ class ClientMaster(models.Model):
 class CompanyMaster(models.Model):
     company_id = models.CharField(max_length=10, primary_key=True, editable=False)
     company_name = models.CharField(max_length=100)
-    created_at = models.DateTimeField(auto_now_add=True)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     class Meta :
         db_table = u'mst_companies'
@@ -97,8 +97,8 @@ class User(AbstractBaseUser):
     business_division = models.ForeignKey(
         BusinessDivisionMaster, on_delete=models.CASCADE
     )
-    created_at = models.DateTimeField(auto_now_add=True)
     auth_user =  models.ForeignKey(AuthUser, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     class Meta :
         db_table = u'employees'
@@ -248,7 +248,7 @@ class PlanningAssignData(models.Model):
     )
     employee = models.ForeignKey(User, on_delete=models.CASCADE)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
-    created_At = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     class Meta :
         db_table = u'employee_expenses'
@@ -267,7 +267,7 @@ class CostOfSales(models.Model):
     communication_expense = models.IntegerField(max_length=12)
     work_in_progress_expense = models.IntegerField(max_length=12)
     amortization_expense = models.IntegerField(max_length=12)
-    created_At = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     class Meta :
         db_table = u'cost_of_sales'
@@ -301,7 +301,7 @@ class Expenses(models.Model):
     advertising_expense = models.IntegerField(max_length=12)
     entertainment_expense = models.IntegerField(max_length=12)
     professional_service_fee = models.IntegerField(max_length=12)
-    created_At = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     class Meta :
         db_table = u'expenses'
