@@ -24,7 +24,7 @@ const UsersRegistration = () => {
     //       first_name: '',
     //       confirm_password: '',
     //       confirm_email: '',
-    //       registered_user_id: storedUserID,
+    //       auth_user_id: storedUserID,
     //     },
     //   ])
 
@@ -66,12 +66,12 @@ const UsersRegistration = () => {
     //     const postData = {
     //       client: {
     //         client_name: formData.map((c) => c.client_name),
-    //         registered_user_id: formData.map((c) => c.registered_user_id),
+    //         auth_user_id: formData.map((c) => c.auth_user_id),
     //       },
     //       business: {
     //         business_division_name: formData.map((c) => c.business_division_name),
-    //         registered_user_id: formData.map((c) => c.registered_user_id),
-    //         company_id: formData.map((c) => c.registered_user_id),
+    //         auth_user_id: formData.map((c) => c.auth_user_id),
+    //         company_id: formData.map((c) => c.auth_user_id),
     //       },
     //       planning: {
     //         project_name: formData.map((c) => c.project_name),
@@ -80,7 +80,7 @@ const UsersRegistration = () => {
     //         non_operating_income: formData.map((c) => c.non_operating_income),
     //         non_operating_expenses: formData.map((c) => c.non_operating_expenses),
     //       },
-    //       registered_user_id: formData.map((c) => c.registered_user_id),
+    //       auth_user_id: formData.map((c) => c.auth_user_id),
     //     }
     
     //     const token = localStorage.getItem('accessToken')
@@ -105,7 +105,7 @@ const UsersRegistration = () => {
     //           first_name: '',
     //           confirm_password: '',
     //           confirm_email: '',
-    //           registered_user_id: localStorage.getItem('userID'),
+    //           auth_user_id: localStorage.getItem('userID'),
     //         },
     //       ])
     //     } catch (error) {
@@ -273,7 +273,7 @@ const UsersRegistration = () => {
                         </div>
                       </div>
                     </div>
-                    <input type='hidden' name='registered_user_id' value='' />
+                    <input type='hidden' name='auth_user_id' value='' />
                   </div>
                 <div className='UsersRegistration_form-btn-content'>
                   <div className='UsersRegistration_options-btn'>
