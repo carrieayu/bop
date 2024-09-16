@@ -55,6 +55,12 @@
     "deleteMessage": "Are you sure you would like to delete this client?",
     "delete": "Delete",
     "confirm": "Confirm",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "companyName": "Company Name",
+    "company": "Company",
+    "companyID": "Company ID"
     "eg": "Eg.",
     "usersValidationText1": "Please enter your last name and first name using the English alphabet, with an underscore between them.",
     "usersValidationText2": "Please enter your last and first name (kanji if Japanese name).",

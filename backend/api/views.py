@@ -20,8 +20,6 @@ from .serializers import (
     UpdatePlanningSerailizer,
     UpdateProjectDataListSerializer,
     UserSerializer,
-    NoteSerializer,
-    AccountMasterSerializer,
     ClientMasterSerializer,
     BusinessDivisionMasterSerializer,
     CompanyMasterSerializers,
@@ -31,23 +29,19 @@ from .serializers import (
     UpdatePerformanceProjectDataSerializers,
     UpdatePlanningProjectDataSerializers,
     AuthenticationSerializer,
-    CreateOtherPlanningSerializers,
 )
-from .serializers import CreateTableListSerializers, UserSerializer, NoteSerializer, AccountMasterSerializer, ClientMasterSerializer, BusinessDivisionMasterSerializer, CompanyMasterSerializers, CreatePerformanceProjectDataSerializers, CreatePlanningProjectDataSerializers, UpdateCompanyMasterSerializers, UpdatePerformanceProjectDataSerializers, UpdatePlanningProjectDataSerializers, AuthenticationSerializer,CreateOtherPlanningSerializers
+from .serializers import CreateTableListSerializers, UserSerializer, ClientMasterSerializer, BusinessDivisionMasterSerializer, CompanyMasterSerializers, CreatePerformanceProjectDataSerializers, CreatePlanningProjectDataSerializers, UpdateCompanyMasterSerializers, UpdatePerformanceProjectDataSerializers, UpdatePlanningProjectDataSerializers, AuthenticationSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import (
     CostOfSales,
     Expenses,
     User,
-    Note,
-    AccountMaster,
     ClientMaster,
     BusinessDivisionMaster,
     CompanyMaster,
     PerformanceProjectData,
     PlanningProjectData,
     User as PersonnelUser,
-    OtherPlanningData,
     PlanningAssignData
 )
 from functools import reduce
@@ -59,61 +53,6 @@ from django.utils.translation import gettext as _
 from django.core.mail import send_mail
 from django.utils import timezone
 from django.db.models import Max
-
-class NoteListCreate(generics.ListCreateAPIView):
-    serializer_class = NoteSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        return Note.objects.filter(author=user)
-
-    def perform_create(self, serializer):
-        if serializer.is_valid():
-            serializer.save(author=self.request.user)
-        else:
-            print(serializer.errors)
-
-
-class CreateNote(generics.CreateAPIView):
-    serializer_class = NoteSerializer
-    permission_classes = [IsAuthenticated]
-
-
-class UpdateCreateNote(generics.UpdateAPIView):
-    serializer_class = NoteSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        return Note.objects.filter(author=user)
-
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response({"message": "note data updated !!!"}, status=status.HTTP_200_OK)
-
-
-class NoteDelete(generics.DestroyAPIView):
-    serializer_class = NoteSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        return Note.objects.filter(author=user)
-
-    def destroy(self, request, *args, **kwargs):
-        try:
-            instance = self.get_object()
-            instance.delete()
-            return Response(
-                {"message": "note deleted successfully"}, status=status.HTTP_200_OK
-            )
-        except:
-            return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
-
 
 # Create your views here.
 class CreateUserView(generics.CreateAPIView):
@@ -130,30 +69,6 @@ class CreatePersonnelView(generics.CreateAPIView):
 class CreateCompanyMaster(generics.CreateAPIView):
     serializer_class = CompanyMasterSerializers
     permission_classes = [AllowAny]
-
-
-# CRUD for AccountMaster
-class AccountMasterListCreate(generics.ListCreateAPIView):
-    serializer_class = AccountMasterSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return AccountMaster.objects.all()
-
-    def perform_create(self, serializer):
-        if serializer.is_valid():
-            serializer.save()
-        else:
-            print(serializer.errors)
-
-
-class AccountMasterRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = AccountMasterSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return AccountMaster.objects.all()
-
 
 # CRUD for BusinessDivisionMaster
 
@@ -326,21 +241,6 @@ class UpdatePlanningProjectData(generics.UpdateAPIView):
         return Response(
             {"message": "planning data updated !!!"}, status=status.HTTP_200_OK
         )
-
-
-# OtherPlanning Data for card
-class CreateOtherPlanningData(generics.CreateAPIView):
-    serializer_class = CreateOtherPlanningSerializers
-    permission_classes = [IsAuthenticated]
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        return Response(
-            {"message": "other planning created!"}, status=status.HTTP_200_OK
-        )
-
 
 class PlanningProjectDataList(generics.ListCreateAPIView):
     queryset = PlanningProjectData.objects.all()
