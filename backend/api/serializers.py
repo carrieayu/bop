@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import CostOfSales, Expenses, MasterBusinessDivision, MasterClient, MasterCompany, PlanningAssignData, Projects, Results, User as UserApi, User as PersonnelUser , ClientMaster, BusinessDivisionMaster, CompanyMaster, PerformanceProjectData, PlanningProjectData
+from .models import CostOfSales, Expenses, MasterBusinessDivision, MasterClient, MasterCompany, Projects, Results, Employees as EmployeesApi, EmployeeExpenses
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -21,9 +21,9 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         return user
     
-class PersonnelUserSerializer(serializers.ModelSerializer):
+class EmployeesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PersonnelUser
+        model = EmployeesApi
         fields = [
             "user_id",
             "username",
@@ -35,7 +35,7 @@ class PersonnelUserSerializer(serializers.ModelSerializer):
         ]
         
     def create(self, validated_data):
-        personnel_user = PersonnelUser.objects.create(**validated_data)
+        personnel_user = EmployeesApi.objects.create(**validated_data)
         return personnel_user
 
 class MasterCompanySerializers(serializers.ModelSerializer):
@@ -104,7 +104,7 @@ class CreateProjectsSerializers(serializers.ModelSerializer):
 class ClientMasterPlanningProjectDataSerializer(serializers.ModelSerializer):
     # other_planning_data = CreateOtherPlanningSerializers(many=True, read_only=True, source='other_planning')
     class Meta:
-        model = PlanningProjectData
+        model = Projects
         fields = '__all__'
 
 
@@ -138,9 +138,9 @@ class AuthenticationSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
 
-class GetPlanningProjectDataSerializers(serializers.ModelSerializer):
+class GetProjectsSerializers(serializers.ModelSerializer):
     class Meta:
-        model = PlanningProjectData
+        model = Projects
         fields = '__all__'
         # fields = [
         #     "planning_project_name",
@@ -158,29 +158,29 @@ class GetPlanningProjectDataSerializers(serializers.ModelSerializer):
         #     "ordinary_profit_margin"
         #     ]
 
-class GetPlanningAssignSerializer(serializers.ModelSerializer):
-    planning_project = GetPlanningProjectDataSerializers(source='planning_project_id' , read_only=True, )
+class GetEmployeeExpensesSerializer(serializers.ModelSerializer):
+    planning_project = GetProjectsSerializers(source='planning_project_id' , read_only=True, )
     class Meta:
-        model = PlanningAssignData
+        model = EmployeeExpenses
         fields = ["planning_project_id","planning_assign_id", "client_id", "assignment_ratio", "assignment_unit_price","assignment_user_id", "year", "month", "registration_date", "registration_user", "planning_project"]
 
 class GetUserMasterSerializer(serializers.ModelSerializer):
-    planning_assign = GetPlanningAssignSerializer(many=True, read_only=True, source='user')
+    planning_assign = GetEmployeeExpensesSerializer(many=True, read_only=True, source='user')
     class Meta:
-        model = UserApi
+        model = EmployeesApi
         fields = ["username", "email", "last_login", "created_at", "registered_user_id" , "planning_assign"]
 
 class GetBusinessDivisionMasterSerializer(serializers.ModelSerializer):
     company = MasterCompanySerializers(source='company_id', read_only=True)
 
     class Meta:
-        model = BusinessDivisionMaster
+        model = MasterBusinessDivision
         fields = ["business_division_id", "business_division_name", "created_at", "registered_user_id", "company"]
         
-class PlanningAssignPersonnelDataSerializer(serializers.ModelSerializer):
+class EmployeeExpensesDataSerializer(serializers.ModelSerializer):
     
     class Meta:
-        model = PlanningAssignData
+        model = EmployeeExpenses
         fields = '__all__'
 
 
@@ -234,16 +234,16 @@ class CustomExpensesSerializer(serializers.ModelSerializer):
 
 class AllPlanningSerializer(serializers.Serializer):
     cost_of_sales = CostOfSalesSerializer()
-    # planning_project_data = GetPlanningProjectDataSerializers()
-    planning_project_data = GetPlanningProjectDataSerializers()
+    # planning_project_data = GetProjectsSerializers()
+    planning_project_data = GetProjectsSerializers()
     expenses = ExpensesSerializer()
 
-class UpdateProjectDataListSerializer(serializers.ModelSerializer):
+class ProjectsUpdateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PlanningProjectData
+        model = Projects
         fields =  '__all__'
 
-class UpdatePlanningSerailizer(serializers.ModelSerializer):
+class UpdatePlanningSerializer(serializers.ModelSerializer):
     class Meta:
         model = CostOfSales
         fields =  '__all__'
