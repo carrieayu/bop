@@ -39,7 +39,7 @@
     "toggleAmountOfRecordsDisplayed": "レコードの表示量を切り替える",
     "totalPage": "全ページ",
     "unknown": "不明",
-    "username": "ユーザー名",
+    "username": "ユーザーID",
     "thousandYen": "千円",
     "yen": "円",
     "update": "更新する",
@@ -60,5 +60,12 @@
     "email": "メールアドレス",
     "companyName": "会社名",
     "company": "会社",
-    "companyID": "会社ID"
+    "companyID": "会社ID",
+    "eg": "例",
+    "usersValidationText1": "姓と名を英字で入力し、間にアンダーバーを入れてください",
+    "usersValidationText2": "姓と名（日本名の場合は漢字）を入力してください",
+    "usersValidationText3": "パスワードは8文字以上で、大文字、小文字、数字、特殊文字をそれぞれ1つ以上含めてください",
+    "usersValidationText4": "有効なメールアドレスを入力してください ",
+    "confirmEmailAddress": "メールアドレス確認",
+    "dateJoined": "入社日"
 }

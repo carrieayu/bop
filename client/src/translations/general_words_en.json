@@ -60,5 +60,12 @@
     "email": "Email",
     "companyName": "Company Name",
     "company": "Company",
-    "companyID": "Company ID"
+    "companyID": "Company ID",
+    "eg": "Eg.",
+    "usersValidationText1": "Please enter your last name and first name using the English alphabet, with an underscore between them.",
+    "usersValidationText2": "Please enter your last and first name (kanji if Japanese name).",
+    "usersValidationText3": "Passwords must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character.",
+    "usersValidationText4": "Please enter a valid email address. ",
+    "confirmEmailAddress": "Confirm Email Address",
+    "dateJoined": "Date Joined"
 }
