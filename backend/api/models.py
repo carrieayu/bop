@@ -1,7 +1,6 @@
 from urllib import response
 from django.db import models
 from django.contrib.auth.models import User as AuthUser, AbstractBaseUser
-from django.contrib.auth.models import User, AbstractBaseUser
 from django.utils import timezone
 from django.db.models import Max
 
@@ -87,7 +86,7 @@ class MasterBusinessDivision(models.Model):
         super(MasterBusinessDivision, self).save(*args, **kwargs)
 
 
-class User(AbstractBaseUser):
+class Employees(AbstractBaseUser):
     employee_id = models.CharField(max_length=10, primary_key=True, editable=False)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
@@ -126,7 +125,7 @@ class Projects(models.Model):
     project_name = models.CharField(max_length=100)
     project_type = models.CharField(max_length=50, null=True)
     client = models.ForeignKey(
-        "ClientMaster", on_delete=models.CASCADE, related_name="planning_project"
+        "MasterClient", on_delete=models.CASCADE, related_name="planning_project"
     )
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
@@ -237,7 +236,7 @@ class Results(models.Model):
 
 
     
-class PlanningAssignData(models.Model):
+class EmployeeExpenses(models.Model):
     employee_expense_id = models.BigAutoField(primary_key=True)
     client = models.ForeignKey(MasterClient, on_delete=models.CASCADE)
     year = models.CharField(max_length=4, default="2001")
@@ -245,7 +244,7 @@ class PlanningAssignData(models.Model):
     project = models.ForeignKey(
         Projects, on_delete=models.CASCADE
     )
-    employee = models.ForeignKey(User, on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employees, on_delete=models.CASCADE)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
