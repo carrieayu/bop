@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import CostOfSales, Expenses, PlanningAssignData, User as UserApi, User as PersonnelUser , ClientMaster, BusinessDivisionMaster, CompanyMaster, PerformanceProjectData, PlanningProjectData
+from .models import CostOfSales, Expenses, MasterBusinessDivision, MasterClient, MasterCompany, PlanningAssignData, Projects, Results, User as UserApi, User as PersonnelUser , ClientMaster, BusinessDivisionMaster, CompanyMaster, PerformanceProjectData, PlanningProjectData
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -38,43 +38,47 @@ class PersonnelUserSerializer(serializers.ModelSerializer):
         personnel_user = PersonnelUser.objects.create(**validated_data)
         return personnel_user
 
-class CompanyMasterSerializers(serializers.ModelSerializer):
+class MasterCompanySerializers(serializers.ModelSerializer):
     class Meta:
-        model = CompanyMaster
+        model = MasterCompany
         fields = '__all__'
         
-class BusinessDivisionMasterSerializer(serializers.ModelSerializer):
+class MasterBusinessDivisionSerializer(serializers.ModelSerializer):
     # company_id = serializers.PrimaryKeyRelatedField(queryset=CompanyMaster.objects.all())
     # company = CompanyMasterSerializers(source='company_id', read_only=True)
     class Meta:
-        model = BusinessDivisionMaster
+        model = MasterBusinessDivision
         fields = ["business_division_name", "company_id", "registered_user_id"]
         # fields = ["business_division_id", "business_division_name", "company_id", "company", "created_at", "registered_user_id"]
 
 
-class ClientMasterSerializer(serializers.ModelSerializer):
+class MasterClientSerializer(serializers.ModelSerializer):
      
      class Meta:
-        model = ClientMaster
+        model = MasterClient
         fields = ["client_id", "client_name", "created_at", "registered_user_id"]
         
-class UpdateCompanyMasterSerializers(serializers.ModelSerializer):
+class UpdateMasterCompanySerializers(serializers.ModelSerializer):
     class Meta:
-        model = CompanyMaster
+        model = MasterCompany
         fields = [
             "company_name",
             "created_at", 
             "registered_user_id"
             ]
         
-class CreatePerformanceProjectDataSerializers(serializers.ModelSerializer):
+class ResultListsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PerformanceProjectData
+        model = Results
+        fields = '__all__'
+class CreateResultsSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Results
         fields = '__all__'
 
-class UpdatePerformanceProjectDataSerializers(serializers.ModelSerializer):
+class UpdateResultsSerializers(serializers.ModelSerializer):
     class Meta:
-        model = PerformanceProjectData
+        model = Results
         fields = [
             "sales_revenue",
             "cost_of_goods_sold",
@@ -90,10 +94,10 @@ class UpdatePerformanceProjectDataSerializers(serializers.ModelSerializer):
         
 
 
-class CreatePlanningProjectDataSerializers(serializers.ModelSerializer):
-    client = ClientMasterSerializer(source='client_id', read_only=True)
+class CreateProjectsSerializers(serializers.ModelSerializer):
+    client = MasterClientSerializer(source='client_id', read_only=True)
     class Meta:
-        model = PlanningProjectData
+        model = Projects
         fields = '__all__'
 
 
@@ -107,12 +111,12 @@ class ClientMasterPlanningProjectDataSerializer(serializers.ModelSerializer):
 class CreateTableListSerializers(serializers.ModelSerializer):
     planning_project_data = ClientMasterPlanningProjectDataSerializer(many=True, read_only=True, source='planning_project')
     class Meta:
-        model = ClientMaster
+        model = MasterClient
         fields = '__all__'     
 
-class UpdatePlanningProjectDataSerializers(serializers.ModelSerializer):
+class UpdateProjectsSerializers(serializers.ModelSerializer):
     class Meta:
-        model = PlanningProjectData
+        model = Projects
         fields = [
             "planning_project_name",
             "planning_project_type",
@@ -167,7 +171,7 @@ class GetUserMasterSerializer(serializers.ModelSerializer):
         fields = ["username", "email", "last_login", "created_at", "registered_user_id" , "planning_assign"]
 
 class GetBusinessDivisionMasterSerializer(serializers.ModelSerializer):
-    company = CompanyMasterSerializers(source='company_id', read_only=True)
+    company = MasterCompanySerializers(source='company_id', read_only=True)
 
     class Meta:
         model = BusinessDivisionMaster

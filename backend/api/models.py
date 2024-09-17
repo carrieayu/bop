@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.db.models import Max
 
 
-class ClientMaster(models.Model):
+class MasterClient(models.Model):
     client_id = models.CharField(max_length=10, primary_key=True, editable=False)
     client_name = models.CharField(max_length=100)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
@@ -20,7 +20,7 @@ class ClientMaster(models.Model):
 
     def generate_client_id(self):
         max_client_id = (
-            ClientMaster.objects.all()
+            MasterClient.objects.all()
             .aggregate(max_client_id=models.Max("client_id"))
             .get("max_client_id")
         )
@@ -36,7 +36,7 @@ class ClientMaster(models.Model):
         super().save(*args, **kwargs)
 
 
-class CompanyMaster(models.Model):
+class MasterCompany(models.Model):
     company_id = models.CharField(max_length=10, primary_key=True, editable=False)
     company_name = models.CharField(max_length=100)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
@@ -51,7 +51,7 @@ class CompanyMaster(models.Model):
     def save(self, *args, **kwargs):
         if not self.company_id:
             max_company_id = (
-                BusinessDivisionMaster.objects.aggregate(
+                MasterBusinessDivision.objects.aggregate(
                     max_company_id=models.Max("company_id")
                 )["max_company_id"]
                 or "000"
@@ -61,10 +61,10 @@ class CompanyMaster(models.Model):
         super().save(*args, **kwargs)
 
 
-class BusinessDivisionMaster(models.Model):
+class MasterBusinessDivision(models.Model):
     business_division_id = models.CharField(max_length=10, primary_key=True, editable=False)
     business_division_name = models.CharField(max_length=100)
-    company = models.ForeignKey(CompanyMaster, on_delete=models.CASCADE)
+    company = models.ForeignKey(MasterCompany, on_delete=models.CASCADE)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
@@ -77,14 +77,14 @@ class BusinessDivisionMaster(models.Model):
     def save(self, *args, **kwargs):
         if not self.business_division_id:
             max_business_division_id = (
-                BusinessDivisionMaster.objects.aggregate(
+                MasterBusinessDivision.objects.aggregate(
                     max_business_division_id=models.Max("business_division_id")
                 )["max_business_division_id"]
                 or "0000"
             )
             new_business_division_id = str(int(max_business_division_id) + 1).zfill(4)
             self.business_division_id = new_business_division_id
-        super(BusinessDivisionMaster, self).save(*args, **kwargs)
+        super(MasterBusinessDivision, self).save(*args, **kwargs)
 
 
 class User(AbstractBaseUser):
@@ -93,9 +93,9 @@ class User(AbstractBaseUser):
     last_name = models.CharField(max_length=100)
     email = models.EmailField()
     salary = models.IntegerField(max_length=12)
-    company = models.ForeignKey(CompanyMaster, on_delete=models.CASCADE)
+    company = models.ForeignKey(MasterCompany, on_delete=models.CASCADE)
     business_division = models.ForeignKey(
-        BusinessDivisionMaster, on_delete=models.CASCADE
+        MasterBusinessDivision, on_delete=models.CASCADE
     )
     auth_user =  models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -109,7 +109,7 @@ class User(AbstractBaseUser):
     def save(self, *args, **kwargs):
         if not self.user_id:
             max_user_id = (
-                BusinessDivisionMaster.objects.aggregate(
+                MasterBusinessDivision.objects.aggregate(
                     max_user_id=models.Max("user_id")
                 )["max_user_id"]
                 or "00000"
@@ -119,7 +119,7 @@ class User(AbstractBaseUser):
         super().save(*args, **kwargs)
 
 
-class PlanningProjectData(models.Model):
+class Projects(models.Model):
     project_id = models.CharField(
         max_length=10, primary_key=True, editable=False
     )
@@ -163,7 +163,7 @@ class PlanningProjectData(models.Model):
 
     def generate_planning_project_id(self):
         max_project_id = (
-            PlanningProjectData.objects.aggregate(
+            Projects.objects.aggregate(
                 max_project_id=models.Max("project_id")
             )["max_project_id"]
             or "000000"
@@ -176,8 +176,8 @@ class PlanningProjectData(models.Model):
             self.planning_project_id = self.generate_planning_project_id()
         super().save(*args, **kwargs)
 
-
-class PerformanceProjectData(models.Model):
+# Performance Data -> Results
+class Results(models.Model):
     result_id = models.CharField(max_length=10, primary_key=True, editable=False)
     sales_revenue = models.IntegerField(max_length=12)
     sales = models.IntegerField(max_length=12)
@@ -226,7 +226,7 @@ class PerformanceProjectData(models.Model):
     def save(self, *args, **kwargs):
         if not self.project_id:
             max_project_id = (
-                BusinessDivisionMaster.objects.aggregate(
+                MasterBusinessDivision.objects.aggregate(
                     max_project_id=models.Max("project_id")
                 )["max_project_id"]
                 or "0000000"
@@ -239,11 +239,11 @@ class PerformanceProjectData(models.Model):
     
 class PlanningAssignData(models.Model):
     employee_expense_id = models.BigAutoField(primary_key=True)
-    client = models.ForeignKey(ClientMaster, on_delete=models.CASCADE)
+    client = models.ForeignKey(MasterClient, on_delete=models.CASCADE)
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
     project = models.ForeignKey(
-        PlanningProjectData, on_delete=models.CASCADE
+        Projects, on_delete=models.CASCADE
     )
     employee = models.ForeignKey(User, on_delete=models.CASCADE)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
