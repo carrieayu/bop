@@ -4,7 +4,7 @@ import dattLogo from  '../../assets/images/logo.png'
 import {FaUser, FaEye} from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux'
 import { login } from '../../reducers/user/userSlice'
-import { fetchApi } from '../../components/Localhost/localhost'
+import { fetchApi } from '../../components/Localhost/Localhost'
 import { jwtDecode } from "jwt-decode";
 
 interface LoginFormProps {
