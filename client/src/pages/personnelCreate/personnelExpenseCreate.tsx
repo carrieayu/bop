@@ -24,7 +24,7 @@ const PersonnelExpenseCreate = () => {
   const [activeTab, setActiveTab] = useState('/planning')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('project')
+  const [activeTabOther, setActiveTabOther] = useState('employeeExpenses')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translations
 
@@ -36,6 +36,23 @@ const PersonnelExpenseCreate = () => {
   
   const handleTabsClick = (tab) => {
     setActiveTabOther(tab)
+
+    switch (tab) {
+      case 'project':
+        navigate('/projectcreate');
+        break;
+      case 'employeeExpenses':
+        navigate('/personnel-expense-create');
+        break;
+      case 'expenses':
+        navigate('/expenses-registration');
+        break;
+      case 'costOfSales':
+        navigate('/cost-of-sales-registration');
+        break;
+      default:
+        break;
+    }
   }
 
   const [containers, setContainers] = useState([{

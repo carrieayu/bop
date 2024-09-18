@@ -35,6 +35,23 @@ const ProjectDataList: React.FC = () => {
       
       const handleTabsClick = (tab) => {
         setActiveTabOther(tab)
+
+        switch (tab) {
+          case 'project':
+            navigate('/projectdatalist');
+            break;
+          case 'employeeExpenses':
+            navigate('/personnel-expenses-list');
+            break;
+          case 'expenses':
+            navigate('/expenses-list');
+            break;
+          case 'costOfSales':
+            navigate('/cost-of-sales-list');
+            break;
+          default:
+            break;
+        }
       }
     
     const handlePageChange = (page: number) => {

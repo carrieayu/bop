@@ -69,6 +69,23 @@ const ProjectDataRegistration = () => {
   }
   const handleTabsClick = (tab) => {
     setActiveTabOther(tab)
+
+    switch (tab) {
+      case 'project':
+        navigate('/projectcreate');
+        break;
+      case 'employeeExpenses':
+        navigate('/personnel-expense-create');
+        break;
+      case 'expenses':
+        navigate('/expenses-registration');
+        break;
+      case 'costOfSales':
+        navigate('/cost-of-sales-registration');
+        break;
+      default:
+        break;
+    }
   }
 
   const handleChange = (index, event) => {

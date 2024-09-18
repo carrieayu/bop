@@ -25,7 +25,7 @@ const PersonnelExpensesList: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning')
     const navigate = useNavigate()
     const location = useLocation()
-    const [activeTabOther, setActiveTabOther] = useState('project')
+    const [activeTabOther, setActiveTabOther] = useState('employeeExpenses')
     const { language, setLanguage } = useLanguage()
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translations
 
@@ -37,6 +37,23 @@ const PersonnelExpensesList: React.FC = () => {
 
       const handleTabsClick = (tab) => {
         setActiveTabOther(tab)
+
+        switch (tab) {
+          case 'project':
+            navigate('/projectdatalist');
+            break;
+          case 'employeeExpenses':
+            navigate('/personnel-expenses-list');
+            break;
+          case 'expenses':
+            navigate('/expenses-list');
+            break;
+          case 'costOfSales':
+            navigate('/cost-of-sales-list');
+            break;
+          default:
+            break;
+        }
       }
   
 
@@ -126,10 +143,10 @@ const PersonnelExpensesList: React.FC = () => {
                           index === 0
                             ? 'project'
                             : index === 1
-                              ? 'personnel_cost'
+                              ? 'employeeExpenses'
                               : index === 2
                                 ? 'expenses'
-                                : 'cost_purchase',
+                                : 'costOfSales',
                         )
                       }
                       className={
@@ -137,10 +154,10 @@ const PersonnelExpensesList: React.FC = () => {
                         (index === 0
                           ? 'project'
                           : index === 1
-                            ? 'personnel_cost'
+                            ? 'employeeExpenses'
                             : index === 2
                               ? 'expenses'
-                              : 'cost_purchase')
+                              : 'costOfSales')
                           ? 'body-btn-active body-btn'
                           : 'body-btn'
                       }

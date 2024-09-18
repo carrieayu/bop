@@ -29,7 +29,7 @@ const ExpensesList: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning')
     const navigate = useNavigate()
     const location = useLocation()
-    const [activeTabOther, setActiveTabOther] = useState('project')
+    const [activeTabOther, setActiveTabOther] = useState('expenses')
     const [currentPage, setCurrentPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5)
     const [paginatedData, setPaginatedData] = useState<any[]>([])
@@ -46,6 +46,23 @@ const ExpensesList: React.FC = () => {
      
     const handleTabsClick = (tab) => {
       setActiveTabOther(tab)
+
+      switch (tab) {
+        case 'project':
+          navigate('/projectdatalist');
+          break;
+        case 'employeeExpenses':
+          navigate('/personnel-expenses-list');
+          break;
+        case 'expenses':
+          navigate('/expenses-list');
+          break;
+        case 'costOfSales':
+          navigate('/cost-of-sales-list');
+          break;
+        default:
+          break;
+      }
     }  
 
     const handlePageChange = (page: number) => {
