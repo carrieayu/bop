@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import NProgress from "nprogress";
 
-function SuspenseLoader() {
+function SuspendLoader() {
   useEffect(() => {
     NProgress.start();
 
@@ -23,4 +23,4 @@ function SuspenseLoader() {
   );
 }
 
-export default SuspenseLoader;
+export default SuspendLoader;

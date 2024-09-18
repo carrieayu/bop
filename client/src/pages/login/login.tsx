@@ -16,7 +16,7 @@ interface LoginData {
   password: string;
 }
 
-const LoginForm = ({ onSubmit }) => {
+const Login = ({ onSubmit }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -133,4 +133,4 @@ const LoginForm = ({ onSubmit }) => {
   )
 };
 
-export default LoginForm;
+export default Login;
