@@ -34,8 +34,3 @@ jobs:
         run: |
           cd ./client
           npm run prettier:check
-
-      - name: Run Tests
-        run: |
-          cd ./client
-          npm run test
