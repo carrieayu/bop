@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 import { fetchPersonnel } from '../../reducers/personnel/personnelExpensesSlice'
 import Sidebar from '../../components/SideBar/Sidebar'
-import { HeaderDashboard } from '../../components/header/header'
+import { HeaderDashboard } from "../../components/Header/Header";
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'

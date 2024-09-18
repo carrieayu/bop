@@ -12,9 +12,17 @@ const Loader = (Component: any) => (props: any) =>
 
 // Dashboard
 const Dashboard = Loader(lazy(() => import("../pages/Dashboard/Dashboard")));
+
+// Login
 const Login = Loader(lazy(() => import("../pages/Login/Login")));
+
+// Register
 const Register = Loader(lazy(() => import("../pages/Register/Register")));
+
+// Forgot
 const Forgot = Loader(lazy(() => import("../pages/Forgot/Forgot")));
+
+// Reset Password
 const ResetPassword = Loader(lazy(() => import("../pages/ResetPassword/ResetPassword")));
 
 // Not Found Page
