@@ -9,7 +9,7 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import { translate } from "../../utils/translationUtil";
 
 
-const ProjectDataList: React.FC = () => {
+const ProjectsListAndEdit: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning')
     const navigate = useNavigate()
     const location = useLocation()
@@ -418,4 +418,4 @@ const ProjectDataList: React.FC = () => {
   )
 };
 
-export default ProjectDataList;
+export default ProjectsListAndEdit;

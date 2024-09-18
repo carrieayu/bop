@@ -16,7 +16,7 @@ const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
 ];
 
-const PersonnelExpenseCreate = () => {
+const EmployeeExpensesRegistration = () => {
   const dispatch = useDispatch();
   const [personnelList, setPersonnelList] = useState<any>([]);
   const personnel = useSelector((state: RootState) => state.personnelData.personnel);
@@ -375,4 +375,4 @@ const PersonnelExpenseCreate = () => {
   );
 };
 
-export default PersonnelExpenseCreate;
+export default EmployeeExpensesRegistration;

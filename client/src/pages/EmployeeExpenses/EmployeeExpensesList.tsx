@@ -18,7 +18,7 @@ const months: string[] = [
 ];
 
 
-const PersonnelExpensesList: React.FC = () => {
+const EmployeeExpensesList: React.FC = () => {
     const personnel = useAppSelector((state: RootState) => state.personnel.personnelList)
     const itemsPerRow = 4
     const dispatch = useDispatch()
@@ -213,5 +213,5 @@ const PersonnelExpensesList: React.FC = () => {
     )
 }
 
-export default PersonnelExpensesList
+export default EmployeeExpensesList
 

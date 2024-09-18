@@ -1,6 +1,6 @@
 import React, { Component, Suspense, lazy } from "react";
 import { Navigate, RouteObject } from "react-router-dom";
-import SuspenseLoader from "../components/SuspendLoader/suspendLoader";
+import SuspenseLoader from "../components/SuspendLoader/SuspendLoader";
 import ProtectedRoutes from "./ProtectedRoutes";
 
 const Loader = (Component: any) => (props: any) =>
@@ -11,33 +11,33 @@ const Loader = (Component: any) => (props: any) =>
   );
 
 // Dashboard
-const Dashboard = Loader(lazy(() => import("../pages/dashboard/dashboard")));
-const Login = Loader(lazy(() => import("../pages/login/login")));
-const Register = Loader(lazy(() => import("../pages/register/register")));
-const Forgot = Loader(lazy(() => import("../pages/forgot/forgot")));
-const ResetPassword = Loader(lazy(() => import("../pages/resetPassword/resetPassword")));
+const Dashboard = Loader(lazy(() => import("../pages/Dashboard/Dashboard")));
+const Login = Loader(lazy(() => import("../pages/Login/Login")));
+const Register = Loader(lazy(() => import("../pages/Register/Register")));
+const Forgot = Loader(lazy(() => import("../pages/Forgot/Forgot")));
+const ResetPassword = Loader(lazy(() => import("../pages/ResetPassword/ResetPassword")));
 
 // Not Found Page
-const NotFound = Loader(lazy(() => import("../pages/notFound/notFound")));
+const NotFound = Loader(lazy(() => import("../pages/NotFound/NotFound")));
 
-// Project Data Pages
-const ProjectDataList = Loader(lazy(() => import("../pages/projectDataList/projectDataList")));
-const ProjectDataRegistration = Loader(lazy(() => import("../pages/projectDataRegistration/projectdataregistration")))
+// Projects Pages
+const ProjectsListAndEdit = Loader(lazy(() => import("../pages/Projects/ProjectsListAndEdit")));
+const ProjectsRegistration = Loader(lazy(() => import("../pages/Projects/ProjectsRegistration")))
 
-//Personnel Expenses Pages
-const PersonnelExpenseCreate = Loader(lazy(() => import("../pages/personnelCreate/personnelExpenseCreate")))
-const PersonnelExpensesList = Loader(lazy(() => import("../pages/personnel_expenses/personnelExpenses")))
+//Employee Expenses Pages
+const EmployeeExpensesRegistration = Loader(lazy(() => import("../pages/EmployeeExpenses/EmployeeExpensesRegistration")))
+const EmployeeExpensesList = Loader(lazy(() => import("../pages/EmployeeExpenses/EmployeeExpensesList")))
 
 //Planning Page
-const Planning = Loader(lazy(() => import("../pages/planningUI/planning")))
+const PlanningListAndEdit = Loader(lazy(() => import("../pages/Planning/PlanningListAndEdit")))
 
 //Cost of Sales Pages
-const CostOfSales = Loader(lazy(() => import("../pages/costofSalesRegistration/costofSalesRegistration")))
-const CostOfSalesList = Loader(lazy(() => import("../pages/costofSalesList/costofSalesList")))
+const CostOfSalesRegistration = Loader(lazy(() => import("../pages/CostOfSales/CostOfSalesRegistration")))
+const CostOfSalesList = Loader(lazy(() => import("../pages/CostOfSales/CostOfSalesList")))
 
 //Expenses Pages
-const ExpensesRegistration = Loader(lazy(() => import("../pages/expensesRegistration/expensesRegistration")))
-const ExpensesList = Loader(lazy(() => import("../pages/expensesList/expensesList")))
+const ExpensesRegistration = Loader(lazy(() => import("../pages/Expenses/ExpensesRegistration")))
+const ExpensesList = Loader(lazy(() => import("../pages/Expenses/ExpensesList")))
 
 //Clients Pages
 const ClientsRegistration = Loader(lazy(() => import("../pages/Clients/ClientsRegistration")))
@@ -101,7 +101,7 @@ const routes: RouteObject[] = [
         path: 'projectdatalist',
         element: (
           <ProtectedRoutes>
-            <ProjectDataList />
+            <ProjectsListAndEdit />
           </ProtectedRoutes>
         ),
       },
@@ -109,7 +109,7 @@ const routes: RouteObject[] = [
         path: 'projectcreate',
         element: (
           <ProtectedRoutes>
-            <ProjectDataRegistration />
+            <ProjectsRegistration />
           </ProtectedRoutes>
         ),
       },
@@ -117,7 +117,7 @@ const routes: RouteObject[] = [
         path: 'personnel-expenses-list',
         element: (
           <ProtectedRoutes>
-            <PersonnelExpensesList />
+            <EmployeeExpensesList />
           </ProtectedRoutes>
         ),
       },
@@ -125,7 +125,7 @@ const routes: RouteObject[] = [
         path: "personnel-expense-create",
         element: (
           <ProtectedRoutes>
-            <PersonnelExpenseCreate />
+            <EmployeeExpensesRegistration />
           </ProtectedRoutes>
         )
       },
@@ -133,7 +133,7 @@ const routes: RouteObject[] = [
         path: "planning",
         element: (
           <ProtectedRoutes>
-            <Planning />
+            <PlanningListAndEdit />
           </ProtectedRoutes>
         )
       },
@@ -141,7 +141,7 @@ const routes: RouteObject[] = [
         path: "cost-of-sales-registration",
         element: (
           <ProtectedRoutes>
-            <CostOfSales />
+            <CostOfSalesRegistration />
           </ProtectedRoutes>
         )
       },

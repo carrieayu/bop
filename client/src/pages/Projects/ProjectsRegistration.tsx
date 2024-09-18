@@ -11,7 +11,7 @@ const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
 ];
 
-const ProjectDataRegistration = () => {
+const ProjectsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning')
   const navigate = useNavigate()
   const location = useLocation()
@@ -354,4 +354,4 @@ const ProjectDataRegistration = () => {
   )
 }
 
-export default ProjectDataRegistration
+export default ProjectsRegistration

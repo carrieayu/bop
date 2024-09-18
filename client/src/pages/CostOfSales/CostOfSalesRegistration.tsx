@@ -10,7 +10,7 @@ const months = [
    '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
 ];
 
-const CostOfSales = () => {
+const CostOfSalesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning')
   const navigate = useNavigate()
   const location = useLocation()
@@ -380,4 +380,4 @@ const CostOfSales = () => {
   )
 }
 
-export default CostOfSales
+export default CostOfSalesRegistration
