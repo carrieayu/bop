@@ -157,6 +157,10 @@ const ProjectDataList: React.FC = () => {
         }
       };
 
+      const handleNewRegistrationClick = () => {
+        navigate('/projectcreate');
+      };
+
   return (
     <div className='projectsList_wrapper'>
       <div className='projectsList_header_cont'>
@@ -246,7 +250,7 @@ const ProjectDataList: React.FC = () => {
                 <Btn
                   label={translate('newRegistration', language)}
                   size='normal'
-                  onClick={() => ''}
+                  onClick={handleNewRegistrationClick}
                   className='projectsList_btn'
                 />
               </div>
