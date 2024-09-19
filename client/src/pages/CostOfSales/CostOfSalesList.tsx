@@ -134,6 +134,10 @@ const CostOfSalesList: React.FC = () => {
       12: { en: "December", jp: "12月" },
     };
 
+    const handleNewRegistrationClick = () => {
+      navigate('/cost-of-sales-registration');
+    };
+
   return (
     <div className='costOfSalesList_wrapper'>
        <div className="costOfSalesList_header_cont">
@@ -206,7 +210,7 @@ const CostOfSalesList: React.FC = () => {
                                 <Btn 
                                     label={translate('newRegistration', language)}
                                     size="normal"
-                                    onClick={() =>("")}
+                                    onClick={handleNewRegistrationClick}
                                     className="costOfSalesList_btn"
                                 />
                             </div>

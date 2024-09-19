@@ -111,6 +111,10 @@ const ExpensesList: React.FC = () => {
         setLanguage(newLanguage);
       };
 
+      const handleNewRegistrationClick = () => {
+        navigate('/expenses-registration');
+      };
+
   return (
     <div className='expensesList_wrapper'>
       <div className='expensesList_header_cont'>
@@ -182,7 +186,7 @@ const ExpensesList: React.FC = () => {
               </div>
               <div className='expensesList_title_table_cont'>
                 <p className='expensesList_title'>{translate('expensesList', language)}</p>
-                <Btn label={translate('newRegistration', language)} size='normal' onClick={() => ''} className='expensesList_btn' />
+                <Btn label={translate('newRegistration', language)} size='normal' onClick={handleNewRegistrationClick} className='expensesList_btn' />
               </div>
               <div className='expensesList_table_wrapper'>
                 <div className='expensesList_table_cont'>

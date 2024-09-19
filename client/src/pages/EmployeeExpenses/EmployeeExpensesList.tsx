@@ -72,6 +72,10 @@ const EmployeeExpensesList: React.FC = () => {
       12: { en: "December", jp: "12月" },
     };
 
+    const handleNewRegistrationClick = () => {
+      navigate('/personnel-expense-create');
+    };
+
 
     return (
       <div className='employeeExpensesList_wrapper'>
@@ -146,7 +150,7 @@ const EmployeeExpensesList: React.FC = () => {
                 </div>
                 <div className='employeeExpensesList_title_table_cont'>
                   <p className='employeeExpensesList_title'>{translate('employeeExpensesList', language)}</p>
-                  <Btn label={translate('newRegistration', language)} size='normal' onClick={() => ''} className='employeeExpensesList_btn' />
+                  <Btn label={translate('newRegistration', language)} size='normal' onClick={handleNewRegistrationClick} className='employeeExpensesList_btn' />
                 </div>
                 <div className='employeeExpensesList_table_wrapper'>
                   <div className='employeeExpensesList_table_cont'>
