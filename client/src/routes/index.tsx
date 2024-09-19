@@ -14,19 +14,19 @@ const Loader = (Component: any) => (props: any) =>
 const Dashboard = Loader(lazy(() => import("../pages/Dashboard/Dashboard")));
 
 // Login Page
-const Login = Loader(lazy(() => import("../pages/Login/Login")));
+const Login = Loader(lazy(() => import("../pages/Login/Login")))
 
 // Register Page
-const Register = Loader(lazy(() => import("../pages/Register/Register")));
+const Register = Loader(lazy(() => import("../pages/Register/Register")))
 
 // Forgot Password Page
-const ForgotPassword = Loader(lazy(() => import("../pages/ForgotPassword/ForgotPassword")));
+const ForgotPassword = Loader(lazy(() => import("../pages/ForgotPassword/ForgotPassword")))
 
 // Reset Password Page
-const ResetPassword = Loader(lazy(() => import("../pages/ResetPassword/ResetPassword")));
+const ResetPassword = Loader(lazy(() => import("../pages/ResetPassword/ResetPassword")))
 
 // Not Found Page
-const NotFound = Loader(lazy(() => import("../pages/NotFound/NotFound")));
+const NotFound = Loader(lazy(() => import("../pages/NotFound/NotFound")))
 
 // Project Data Pages
 const ProjectsListAndEdit = Loader(lazy(() => import("../pages/Projects/ProjectsListAndEdit")));
@@ -41,7 +41,7 @@ const PlanningListAndEdit = Loader(lazy(() => import("../pages/Planning/Planning
 
 //Cost of Sales Pages
 const CostOfSalesRegistration = Loader(lazy(() => import("../pages/CostOfSales/CostOfSalesRegistration")))
-const CostOfSalesListAndEdit = Loader(lazy(() => import("../pages/CostOfSales/CostOfSalesList")))
+const CostOfSalesList = Loader(lazy(() => import("../pages/CostOfSales/CostOfSalesList")))
 
 //Expenses Pages
 const ExpensesRegistration = Loader(lazy(() => import("../pages/Expenses/ExpensesRegistration")))
@@ -157,7 +157,7 @@ const routes: RouteObject[] = [
         path: "cost-of-sales-list",
         element: (
           <ProtectedRoutes>
-            <CostOfSalesListAndEdit />
+            <CostOfSalesList />
           </ProtectedRoutes>
         )
       },
