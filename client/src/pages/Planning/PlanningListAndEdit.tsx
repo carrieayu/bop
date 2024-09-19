@@ -9,7 +9,7 @@ import TablePlanningA from '../../components/Table/TablePlanningA';
 import { TablePlanningB } from '../../components/Table/TablePlanningB.component'
 import { useLanguage } from '../../contexts/LanguageContext';
 import { translate } from '../../utils/translationUtil';
-import EditTablePlanning from '../../components/Table/EditTablePlanning';
+import EditTablePlanning from '../../components/Table/temp_editTablePlanning';
 
 const header = ['計画'];
 const smallDate = ['2022/24月', '2022/25月', '2022/26月'];

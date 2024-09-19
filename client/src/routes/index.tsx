@@ -11,10 +11,10 @@ const Loader = (Component: any) => (props: any) =>
   );
 
 // Dashboard Page
-const Dashboard = Loader(lazy(() => import("../pages/Dashboard/Dashboard")));
+const Dashboard = Loader(lazy(() => import("../pages/temp_dashboard/temp_dashboard")));
 
 // Login Page
-const Login = Loader(lazy(() => import("../pages/Login/Login")))
+const Login = Loader(lazy(() => import("../pages/temp_login/temp_login")))
 
 // Register Page
 const Register = Loader(lazy(() => import("../pages/Register/Register")))
@@ -23,10 +23,10 @@ const Register = Loader(lazy(() => import("../pages/Register/Register")))
 const ForgotPassword = Loader(lazy(() => import("../pages/ForgotPassword/ForgotPassword")))
 
 // Reset Password Page
-const ResetPassword = Loader(lazy(() => import("../pages/ResetPassword/ResetPassword")))
+const ResetPassword = Loader(lazy(() => import("../pages/temp_resetPassword/temp_resetPassword")))
 
 // Not Found Page
-const NotFound = Loader(lazy(() => import("../pages/NotFound/NotFound")))
+const NotFound = Loader(lazy(() => import("../pages/temp_notFound/temp_notFound")))
 
 // Project Data Pages
 const ProjectsListAndEdit = Loader(lazy(() => import("../pages/Projects/ProjectsListAndEdit")));
