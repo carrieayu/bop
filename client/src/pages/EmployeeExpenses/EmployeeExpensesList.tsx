@@ -5,7 +5,7 @@ import { useAppSelector } from '../../actions/hooks'
 import { RootState } from '../../app/store'
 import { useDispatch } from 'react-redux'
 import { fetchPersonnel } from '../../reducers/personnel/personnelExpensesSlice'
-import Sidebar from '../../components/temp_SideBar/Sidebar'
+import Sidebar from '../../components/Sidebar/Sidebar'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
@@ -22,7 +22,7 @@ const EmployeeExpensesList: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning')
     const navigate = useNavigate()
     const location = useLocation()
-    const [activeTabOther, setActiveTabOther] = useState('project')
+    const [activeTabOther, setActiveTabOther] = useState('employeeExpenses')
     const { language, setLanguage } = useLanguage()
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
 
@@ -34,6 +34,22 @@ const EmployeeExpensesList: React.FC = () => {
 
       const handleTabsClick = (tab) => {
         setActiveTabOther(tab)
+        switch (tab) {
+          case 'project':
+            navigate('/projects-list');
+            break;
+          case 'employeeExpenses':
+            navigate('/employee-expenses-list');
+            break;
+          case 'expenses':
+            navigate('/expenses-list');
+            break;
+          case 'costOfSales':
+            navigate('/cost-of-sales-list');
+            break;
+          default:
+            break;
+        }
       }
   
 
@@ -73,7 +89,7 @@ const EmployeeExpensesList: React.FC = () => {
     };
 
     const handleNewRegistrationClick = () => {
-      navigate('/personnel-expense-create');
+      navigate('/employee-expenses-registration');
     };
 
 
@@ -127,10 +143,10 @@ const EmployeeExpensesList: React.FC = () => {
                           index === 0
                             ? 'project'
                             : index === 1
-                              ? 'personnel_cost'
+                              ? 'employeeExpenses'
                               : index === 2
                                 ? 'expenses'
-                                : 'cost_purchase',
+                                : 'costOfSales',
                         )
                       }
                       className={
@@ -138,10 +154,10 @@ const EmployeeExpensesList: React.FC = () => {
                         (index === 0
                           ? 'project'
                           : index === 1
-                            ? 'personnel_cost'
+                            ? 'employeeExpenses'
                             : index === 2
                               ? 'expenses'
-                              : 'cost_purchase')
+                              : 'costOfSales')
                           ? 'body-btn-active body-btn'
                           : 'body-btn'
                       }

@@ -11,22 +11,22 @@ const Loader = (Component: any) => (props: any) =>
   );
 
 // Dashboard Page
-const Dashboard = Loader(lazy(() => import("../pages/temp_dashboard/temp_dashboard")));
+const Dashboard = Loader(lazy(() => import("../pages/Dashboard/Dashboard")));
 
 // Login Page
-const Login = Loader(lazy(() => import("../pages/temp_login/temp_login")))
+const Login = Loader(lazy(() => import("../pages/Login/Login")))
 
 // Register Page
-const Register = Loader(lazy(() => import("../pages/temp_register/temp_register")))
+const Register = Loader(lazy(() => import("../pages/Register/Register")))
 
 // Forgot Password Page
 const ForgotPassword = Loader(lazy(() => import("../pages/ForgotPassword/ForgotPassword")))
 
 // Reset Password Page
-const ResetPassword = Loader(lazy(() => import("../pages/temp_resetPassword/temp_resetPassword")))
+const ResetPassword = Loader(lazy(() => import("../pages/ResetPassword/ResetPassword")))
 
 // Not Found Page
-const NotFound = Loader(lazy(() => import("../pages/temp_notFound/temp_notFound")))
+const NotFound = Loader(lazy(() => import("../pages/NotFound/NotFound")))
 
 // Project Data Pages
 const ProjectsListAndEdit = Loader(lazy(() => import("../pages/Projects/ProjectsListAndEdit")));
@@ -106,7 +106,7 @@ const routes: RouteObject[] = [
         element: <Logout />,
       },
       {
-        path: 'projectdatalist',
+        path: 'projects-list',
         element: (
           <ProtectedRoutes>
             <ProjectsListAndEdit />
@@ -114,7 +114,7 @@ const routes: RouteObject[] = [
         ),
       },
       {
-        path: 'projectcreate',
+        path: 'projects-registration',
         element: (
           <ProtectedRoutes>
             <ProjectsRegistration />
@@ -122,7 +122,7 @@ const routes: RouteObject[] = [
         ),
       },
       {
-        path: 'personnel-expenses-list',
+        path: 'employee-expenses-list',
         element: (
           <ProtectedRoutes>
             <EmployeeExpensesList />
@@ -130,7 +130,7 @@ const routes: RouteObject[] = [
         ),
       },
       {
-        path: "personnel-expense-create",
+        path: "employee-expenses-registration",
         element: (
           <ProtectedRoutes>
             <EmployeeExpensesRegistration />
@@ -138,7 +138,7 @@ const routes: RouteObject[] = [
         )
       },
       {
-        path: "planning",
+        path: "planning-list",
         element: (
           <ProtectedRoutes>
             <PlanningListAndEdit />

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Btn from "../../components/Button/Button";
 import axios from "axios";
-import Sidebar from "../../components/temp_SideBar/Sidebar";
+import Sidebar from "../../components/Sidebar/Sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { translate } from "../../utils/translationUtil";
@@ -33,6 +33,22 @@ const ProjectsListAndEdit: React.FC = () => {
       
       const handleTabsClick = (tab) => {
         setActiveTabOther(tab)
+        switch (tab) {
+          case 'project':
+            navigate('/projects-list');
+            break;
+          case 'employeeExpenses':
+            navigate('/employee-expenses-list');
+            break;
+          case 'expenses':
+            navigate('/expenses-list');
+            break;
+          case 'costOfSales':
+            navigate('/cost-of-sales-list');
+            break;
+          default:
+            break;
+        }
       }
     
     const handlePageChange = (page: number) => {
@@ -156,7 +172,7 @@ const ProjectsListAndEdit: React.FC = () => {
       };
 
       const handleNewRegistrationClick = () => {
-        navigate('/projectcreate');
+        navigate('/projects-registration');
       };
 
   return (

@@ -23,19 +23,19 @@ const Sidebar = () => {
             <span className="icons"><MdDashboard /></span><Link to="/dashboard">{translate('dashboard', language)}</Link>
           </li>
           <li>
-            <span className="icons"><MdDashboard /></span><Link to="/planning">{translate('profitAndlossPlanning', language)}</Link>
+            <span className="icons"><MdDashboard /></span><Link to="/planning-list">{translate('profitAndlossPlanning', language)}</Link>
           </li>
             <li className="sub_menu">
-              <span className="icons"><FaTableList /></span><Link to="/projectdatalist">{translate('projectsList', language)}</Link>
+              <span className="icons"><FaTableList /></span><Link to="/projects-list">{translate('projectsList', language)}</Link>
             </li>
             <li className="sub_menu">
-              <span className="icons"><AiFillFileAdd /></span><Link to="/projectcreate">{translate('projectsRegistration', language)}</Link>
+              <span className="icons"><AiFillFileAdd /></span><Link to="/projects-registration">{translate('projectsRegistration', language)}</Link>
             </li>
             <li className="sub_menu">
-              <span className="icons"><BsPersonFillAdd /></span><Link to="/personnel-expense-create">{translate('employeeExpensesRegistration', language)}</Link>
+              <span className="icons"><BsPersonFillAdd /></span><Link to="/employee-expenses-registration">{translate('employeeExpensesRegistration', language)}</Link>
             </li>
             <li className="sub_menu">
-              <span className="icons"><FaTableList /></span><Link to="/personnel-expenses-list">{translate('employeeExpensesList', language)}</Link>
+              <span className="icons"><FaTableList /></span><Link to="/employee-expenses-list">{translate('employeeExpensesList', language)}</Link>
             </li>
             <li className="sub_menu">
               <span className="icons"><AiFillFileAdd /></span><Link to="/expenses-registration">{translate('expensesRegistration', language)}</Link>

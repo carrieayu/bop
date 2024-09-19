@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Btn from "../../components/Button/Button";
 import Pagination from "../../components/Pagination/Pagination";
 import axios from "axios";
-import Sidebar from "../../components/temp_SideBar/Sidebar";
+import Sidebar from "../../components/Sidebar/Sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { translate } from "../../utils/translationUtil";
@@ -28,7 +28,7 @@ const ExpensesList: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning')
     const navigate = useNavigate()
     const location = useLocation()
-    const [activeTabOther, setActiveTabOther] = useState('project')
+    const [activeTabOther, setActiveTabOther] = useState('expenses')
     const [currentPage, setCurrentPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5)
     const [paginatedData, setPaginatedData] = useState<any[]>([])
@@ -45,6 +45,22 @@ const ExpensesList: React.FC = () => {
      
     const handleTabsClick = (tab) => {
       setActiveTabOther(tab)
+      switch (tab) {
+        case 'project':
+          navigate('/projects-list');
+          break;
+        case 'employeeExpenses':
+          navigate('/employee-expenses-list');
+          break;
+        case 'expenses':
+          navigate('/expenses-list');
+          break;
+        case 'costOfSales':
+          navigate('/cost-of-sales-list');
+          break;
+        default:
+          break;
+      }
     }  
 
     const handlePageChange = (page: number) => {
