@@ -28,7 +28,7 @@ interface EntityGrid {
   grid: string[][]
 }
 
-export const TableComponentProps: React.FC<TableProps> = (props) => {
+export const TablePlanningB: React.FC<TableProps> = (props) => {
 const gridRows = objectEntity?.length
 const gridCols = 13
 

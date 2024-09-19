@@ -3,8 +3,7 @@ import Btn from '../../components/Button/Button'
 import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { useLocation, useNavigate } from 'react-router-dom'
-import Sidebar from '../../components/SideBar/Sidebar'
-import axios from 'axios'
+import Sidebar from '../../components/Sidebar/Sidebar'
 
 const EmployeesRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning')

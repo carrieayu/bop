@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Btn from "../../components/Button/Button";
-import Pagination from "../../components/Pagination/Pagination";
 import axios from "axios";
-import { HeaderDashboard } from "../../components/header/header";
-import Sidebar from "../../components/SideBar/Sidebar";
+import Sidebar from "../../components/Sidebar/Sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { translate } from "../../utils/translationUtil";
 
 
-const ProjectDataList: React.FC = () => {
+const ProjectsListAndEdit: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning')
     const navigate = useNavigate()
     const location = useLocation()
@@ -418,4 +416,4 @@ const ProjectDataList: React.FC = () => {
   )
 };
 
-export default ProjectDataList;
+export default ProjectsListAndEdit;

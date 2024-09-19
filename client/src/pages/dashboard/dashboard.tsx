@@ -1,21 +1,18 @@
-import React, { HtmlHTMLAttributes, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Card from '../../components/Card/Card'
 import GraphDashboard from '../../components/GraphDashboard/GraphDashboard'
-import Pagination from '../../components/Pagination/Pagination'
-import { GiHamburgerMenu } from 'react-icons/gi'
 import { useDispatch } from 'react-redux'
 import { fetchAllCards } from '../../reducers/card/cardSlice'
 import { UnknownAction } from '@reduxjs/toolkit'
 import { useAppSelector } from '../../actions/hooks'
 import { RootState } from '../../app/store'
-import { TableComponentProps } from '../../components/Table/table.component'
+import { TablePlanningB } from '../../components/Table/TablePlanningB.component'
 import { fetchAllClientData } from '../../reducers/table/tableSlice'
 import { fetchGraphData } from '../../reducers/graph/graphSlice'
-import { HeaderDashboard } from '../../components/header/header'
-import Sidebar from '../../components/SideBar/Sidebar'
+import Sidebar from '../../components/Sidebar/Sidebar'
 import Btn from '../../components/Button/Button'
 import { useLocation, useNavigate } from 'react-router-dom'
-import TablePlanning from '../../components/Table/tablePlanning'
+import TablePlanningA from '../../components/Table/TablePlanningA'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 
@@ -331,10 +328,10 @@ const Dashboard = () => {
             <div className='dashboard_tbl_cont'>
                   <div className={`dashboard_table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
                           {/* Render the TablePlanning component here */}
-                          <TablePlanning />
+                          <TablePlanningA />
                   </div>
                   <div className={`dashboard_table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
-                    <TableComponentProps data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
+                    <TablePlanningB data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
                   </div>
             </div>
           </div>

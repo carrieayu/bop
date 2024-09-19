@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { useForm } from "./login.component";
 import dattLogo from  '../../assets/images/logo.png'
 import {FaUser, FaEye} from 'react-icons/fa';
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { login } from '../../reducers/user/userSlice'
-import { fetchApi } from '../../components/Localhost/localhost'
+import { fetchApi } from '../../components/Localhost/Localhost'
 import { jwtDecode } from "jwt-decode";
 
 interface LoginFormProps {
@@ -16,7 +15,7 @@ interface LoginData {
   password: string;
 }
 
-const LoginForm = ({ onSubmit }) => {
+const Login = ({ onSubmit }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -133,4 +132,4 @@ const LoginForm = ({ onSubmit }) => {
   )
 };
 
-export default LoginForm;
+export default Login;

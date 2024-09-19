@@ -6,8 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
 import { UnknownAction } from 'redux';
 import axios from 'axios';
-import { HeaderDashboard } from '../../components/header/header';
-import Sidebar from '../../components/SideBar/Sidebar';
+import Sidebar from '../../components/Sidebar/Sidebar';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { translate } from '../../utils/translationUtil';
@@ -16,7 +15,7 @@ const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
 ];
 
-const PersonnelExpenseCreate = () => {
+const EmployeeExpensesRegistration = () => {
   const dispatch = useDispatch();
   const [personnelList, setPersonnelList] = useState<any>([]);
   const personnel = useSelector((state: RootState) => state.personnelData.personnel);
@@ -375,4 +374,4 @@ const PersonnelExpenseCreate = () => {
   );
 };
 
-export default PersonnelExpenseCreate;
+export default EmployeeExpensesRegistration;

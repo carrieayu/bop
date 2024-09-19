@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import Btn from '../../components/Button/Button'
-import Pagination from '../../components/Pagination/Pagination'
 import { UnknownAction } from 'redux'
 import { useAppSelector } from '../../actions/hooks'
 import { RootState } from '../../app/store'
 import { useDispatch } from 'react-redux'
-import { useSelector } from 'react-redux'
 import { fetchPersonnel } from '../../reducers/personnel/personnelExpensesSlice'
-import Sidebar from '../../components/SideBar/Sidebar'
-import { HeaderDashboard } from '../../components/header/header'
+import Sidebar from '../../components/Sidebar/Sidebar'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
@@ -18,7 +15,7 @@ const months: string[] = [
 ];
 
 
-const PersonnelExpensesList: React.FC = () => {
+const EmployeeExpensesList: React.FC = () => {
     const personnel = useAppSelector((state: RootState) => state.personnel.personnelList)
     const itemsPerRow = 4
     const dispatch = useDispatch()
@@ -213,5 +210,5 @@ const PersonnelExpensesList: React.FC = () => {
     )
 }
 
-export default PersonnelExpensesList
+export default EmployeeExpensesList
 
