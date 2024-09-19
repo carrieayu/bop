@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Btn from "../../components/Button/Button";
-import Sidebar from "../../components/Sidebar/Sidebar";
+import Sidebar from "../../components/temp_SideBar/Sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
 
 interface ButtonData {

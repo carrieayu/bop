@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Btn from "../../components/Button/Button";
 import Pagination from "../../components/Pagination/Pagination";
 import axios from "axios";
-import Sidebar from "../../components/Sidebar/Sidebar";
+import Sidebar from "../../components/temp_SideBar/Sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { translate } from "../../utils/translationUtil";

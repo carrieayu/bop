@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
 import { UnknownAction } from 'redux';
 import axios from 'axios';
-import Sidebar from '../../components/Sidebar/Sidebar';
+import Sidebar from '../../components/temp_SideBar/Sidebar';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { translate } from '../../utils/translationUtil';

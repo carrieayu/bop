@@ -3,7 +3,7 @@ import Btn from '../../components/Button/Button'
 import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { useLocation, useNavigate } from 'react-router-dom'
-import Sidebar from '../../components/Sidebar/Sidebar'
+import Sidebar from '../../components/temp_SideBar/Sidebar'
 
 const ClientsRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning')
