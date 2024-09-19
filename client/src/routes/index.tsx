@@ -17,7 +17,7 @@ const Dashboard = Loader(lazy(() => import("../pages/temp_dashboard/temp_dashboa
 const Login = Loader(lazy(() => import("../pages/temp_login/temp_login")))
 
 // Register Page
-const Register = Loader(lazy(() => import("../pages/Register/Register")))
+const Register = Loader(lazy(() => import("../pages/temp_register/temp_register")))
 
 // Forgot Password Page
 const ForgotPassword = Loader(lazy(() => import("../pages/ForgotPassword/ForgotPassword")))
