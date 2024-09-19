@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { UnknownAction } from '@reduxjs/toolkit';
 import { fetchAllClientData } from '../../reducers/table/tableSlice';
-import Sidebar from '../../components/Sidebar/Sidebar';
+import Sidebar from '../../components/temp_SideBar/Sidebar';
 import Btn from '../../components/Button/Button';
 import { useLocation, useNavigate } from 'react-router-dom';
 import TablePlanningA from '../../components/Table/TablePlanningA'; 
