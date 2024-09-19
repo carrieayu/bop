@@ -17,7 +17,7 @@ const ProjectsRegistration = () => {
   const [activeTabOther, setActiveTabOther] = useState('project')
   const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translations
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
   const years = [];
   for (let year = 2000; year <= new Date().getFullYear(); year++) {
     years.push(year);

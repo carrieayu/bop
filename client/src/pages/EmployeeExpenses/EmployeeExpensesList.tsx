@@ -24,7 +24,7 @@ const EmployeeExpensesList: React.FC = () => {
     const location = useLocation()
     const [activeTabOther, setActiveTabOther] = useState('project')
     const { language, setLanguage } = useLanguage()
-    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translations
+    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
 
 
     const handleTabClick = (tab) => {

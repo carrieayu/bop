@@ -24,11 +24,11 @@ const PlanningListAndEdit = () => {
   const select = [5, 10, 100];
   const [paginatedData, setPaginatedData] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState('/planning');
-  const [isSwitchActive, setIsSwitchActive] = useState(false); // State for switch
+  const [isSwitchActive, setIsSwitchActive] = useState(false); 
   const navigate = useNavigate();
   const location = useLocation();
   const { language, setLanguage } = useLanguage()
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translation
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
 
 
   const [isEditing, setIsEditing] = useState(false)

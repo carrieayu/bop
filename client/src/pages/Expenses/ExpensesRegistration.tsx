@@ -17,7 +17,7 @@ const ExpensesRegistration = () => {
   const [activeTabOther, setActiveTabOther] = useState('project')
   const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translations
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
   const [formData, setFormData] = useState([
     {
       month: '',

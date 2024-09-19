@@ -17,7 +17,7 @@ const ProjectsListAndEdit: React.FC = () => {
     const [paginatedData, setPaginatedData] = useState<any[]>([])
     const select = [5, 10, 100]
     const { language, setLanguage } = useLanguage()
-    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translations
+    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
     const [isEditing, setIsEditing] = useState(false)
     const [changes, setChanges] = useState({})
     const [projects, setProjects] = useState([])

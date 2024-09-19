@@ -17,7 +17,7 @@ const CostOfSalesList: React.FC = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5)
     const [paginatedData, setPaginatedData] = useState<any[]>([])
     const { language, setLanguage } = useLanguage()
-    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translations
+    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
     const select = [5, 10, 100]
 
     const totalPages = Math.ceil(100 / 10);
