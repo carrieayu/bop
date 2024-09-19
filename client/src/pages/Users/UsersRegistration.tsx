@@ -3,13 +3,13 @@ import Btn from '../../components/Button/Button'
 import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { useLocation, useNavigate } from 'react-router-dom'
-import Sidebar from '../../components/temp_SideBar/Sidebar'
+import Sidebar from '../../components/Sidebar/Sidebar'
 
 const UsersRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning')
     const navigate = useNavigate()
     const location = useLocation()
-    const [activeTabOther, setActiveTabOther] = useState('')
+    const [activeTabOther, setActiveTabOther] = useState('users')
     const storedUserID = localStorage.getItem('userID')
     const { language, setLanguage } = useLanguage()
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
@@ -34,6 +34,22 @@ const UsersRegistration = () => {
 
     const handleTabsClick = (tab) => {
         setActiveTabOther(tab)
+        switch (tab) {
+          case 'client':
+            navigate('/clients-registration');
+            break;
+          case 'employee':
+            navigate('/employees-registration');
+            break;
+          case 'businessDivision':
+            navigate('/business-divisions-registration');
+            break;
+          case 'users':
+            navigate('/users-registration');
+            break;
+          default:
+            break;
+        }
     }
 
     // const handleChange = (index, event) => {
@@ -159,21 +175,21 @@ const UsersRegistration = () => {
               {[...Array(4)].map((_, index) => (
                 <Btn
                   key={index}
-                  label={translate(index === 0 ? 'project' : index === 1 ? 'employeeExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
+                  label={translate(index === 0 ? 'client' : index === 1 ? 'employee' : index === 2 ? 'businessDivision' : 'users', language)}
                   onClick={() =>
                     handleTabsClick(
                       index === 0
-                        ? 'project'
+                        ? 'client'
                         : index === 1
-                          ? 'employeeExpenses'
+                          ? 'employee'
                           : index === 2
-                            ? 'expenses'
-                            : 'costOfSales',
+                            ? 'businessDivision'
+                            : 'users',
                     )
                   }
                   className={
                     activeTabOther ===
-                    (index === 0 ? 'project' : index === 1 ? 'employeeExpenses' : index === 2 ? 'expenses' : 'costOfSales')
+                    (index === 0 ? 'client' : index === 1 ? 'employee' : index === 2 ? 'businessDivision' : 'users')
                       ? 'body-btn-active body-btn'
                       : 'body-btn'
                   }

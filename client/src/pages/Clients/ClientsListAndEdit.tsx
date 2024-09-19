@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Btn from "../../components/Button/Button";
 import axios from "axios";
-import Sidebar from "../../components/temp_SideBar/Sidebar";
+import Sidebar from "../../components/Sidebar/Sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { translate } from "../../utils/translationUtil";
@@ -11,7 +11,7 @@ const ClientsListAndEdit: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning')
     const navigate = useNavigate()
     const location = useLocation()
-    const [activeTabOther, setActiveTabOther] = useState('')
+    const [activeTabOther, setActiveTabOther] = useState('client')
     const [currentPage, setCurrentPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5)
     const [paginatedData, setPaginatedData] = useState<any[]>([])
@@ -34,6 +34,22 @@ const ClientsListAndEdit: React.FC = () => {
       
       const handleTabsClick = (tab) => {
         setActiveTabOther(tab)
+        switch (tab) {
+          case 'client':
+            navigate('/clients-list');
+            break;
+          case 'employee':
+            navigate('/employees-list');
+            break;
+          case 'businessDivision':
+            navigate('/business-divisions-list');
+            break;
+          case 'users':
+            navigate('/users-list');
+            break;
+          default:
+            break;
+        }
       }
     
     const handlePageChange = (page: number) => {
@@ -226,34 +242,34 @@ const ClientsListAndEdit: React.FC = () => {
                     key={index}
                     label={translate(
                       index === 0
-                        ? 'project'
+                        ? 'client'
                         : index === 1
-                          ? 'employeeExpenses'
+                          ? 'employee'
                           : index === 2
-                            ? 'expenses'
-                            : 'costOfSales',
+                            ? 'businessDivision'
+                            : 'users',
                       language,
                     )}
                     onClick={() =>
                       handleTabsClick(
                         index === 0
-                          ? 'project'
+                          ? 'client'
                           : index === 1
-                            ? 'employeeExpenses'
+                            ? 'employee'
                             : index === 2
-                              ? 'expenses'
-                              : 'costOfSales',
+                              ? 'businessDivision'
+                              : 'users',
                       )
                     }
                     className={
                       activeTabOther ===
                       (index === 0
-                        ? 'project'
+                        ? 'client'
                         : index === 1
-                          ? 'employeeExpenses'
+                          ? 'employee'
                           : index === 2
-                            ? 'expenses'
-                            : 'costOfSales')
+                            ? 'businessDivision'
+                            : 'users')
                         ? 'body-btn-active body-btn'
                         : 'body-btn'
                     }

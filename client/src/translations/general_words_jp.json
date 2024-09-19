@@ -67,5 +67,6 @@
     "usersValidationText3": "パスワードは8文字以上で、大文字、小文字、数字、特殊文字をそれぞれ1つ以上含めてください",
     "usersValidationText4": "有効なメールアドレスを入力してください ",
     "confirmEmailAddress": "メールアドレス確認",
-    "dateJoined": "入社日"
+    "dateJoined": "入社日",
+    "users": "ユーアー"
 }

@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
 import { UnknownAction } from 'redux';
 import axios from 'axios';
-import Sidebar from '../../components/temp_SideBar/Sidebar';
+import Sidebar from '../../components/Sidebar/Sidebar';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { translate } from '../../utils/translationUtil';
@@ -23,7 +23,7 @@ const EmployeeExpensesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('project')
+  const [activeTabOther, setActiveTabOther] = useState('employeeExpenses')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
 
@@ -35,6 +35,22 @@ const EmployeeExpensesRegistration = () => {
   
   const handleTabsClick = (tab) => {
     setActiveTabOther(tab)
+    switch (tab) {
+      case 'project':
+        navigate('/projects-registration');
+        break;
+      case 'employeeExpenses':
+        navigate('/employee-expenses-registration');
+        break;
+      case 'expenses':
+        navigate('/expenses-registration');
+        break;
+      case 'costOfSales':
+        navigate('/cost-of-sales-registration');
+        break;
+      default:
+        break;
+    }
   }
 
   const [containers, setContainers] = useState([{
