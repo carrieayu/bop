@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import Btn from "../../components/Button/Button";
 import Pagination from "../../components/Pagination/Pagination";
 import axios from "axios";
-import { HeaderDashboard } from "../../components/header/header";
-import Sidebar from "../../components/SideBar/Sidebar";
+import Sidebar from "../../components/Sidebar/Sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { translate } from "../../utils/translationUtil";
@@ -34,7 +33,7 @@ const ExpensesList: React.FC = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5)
     const [paginatedData, setPaginatedData] = useState<any[]>([])
     const { language, setLanguage } = useLanguage()
-    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translations
+    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
     const select = [5, 10, 100]
 
     const totalPages = Math.ceil(100 / 10);

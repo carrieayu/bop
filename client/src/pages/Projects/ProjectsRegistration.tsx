@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Btn from '../../components/Button/Button'
 import axios from 'axios'
-import { HeaderDashboard } from '../../components/header/header'
-import Sidebar from '../../components/SideBar/Sidebar'
+import Sidebar from '../../components/Sidebar/Sidebar'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
@@ -11,14 +10,14 @@ const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
 ];
 
-const ProjectDataRegistration = () => {
+const ProjectsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning')
   const navigate = useNavigate()
   const location = useLocation()
   const [activeTabOther, setActiveTabOther] = useState('project')
   const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translations
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
   const years = [];
   for (let year = 2000; year <= new Date().getFullYear(); year++) {
     years.push(year);
@@ -354,4 +353,4 @@ const ProjectDataRegistration = () => {
   )
 }
 
-export default ProjectDataRegistration
+export default ProjectsRegistration

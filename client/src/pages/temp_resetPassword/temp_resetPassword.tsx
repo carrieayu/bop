@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import dattLogo from  '../../assets/images/logo.png'
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+
 const ResetPassword = () => {
     const { uid, token } = useParams();
     const navigate = useNavigate();

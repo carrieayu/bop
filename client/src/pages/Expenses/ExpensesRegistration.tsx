@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Btn from '../../components/Button/Button'
 import axios from 'axios'
-import Sidebar from '../../components/SideBar/Sidebar'
+import Sidebar from '../../components/Sidebar/Sidebar'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
@@ -17,7 +17,7 @@ const ExpensesRegistration = () => {
   const [activeTabOther, setActiveTabOther] = useState('project')
   const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translations
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
   const [formData, setFormData] = useState([
     {
       month: '',

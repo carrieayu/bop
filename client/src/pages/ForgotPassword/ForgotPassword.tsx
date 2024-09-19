@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import dattLogo from  '../../assets/images/logo.png'
 import axios from "axios";
 
-const Forgot = () => {
+const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -72,4 +72,4 @@ const Forgot = () => {
   );
 };
 
-export default Forgot;
+export default ForgotPassword;

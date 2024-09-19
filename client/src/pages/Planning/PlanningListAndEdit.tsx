@@ -2,20 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { UnknownAction } from '@reduxjs/toolkit';
 import { fetchAllClientData } from '../../reducers/table/tableSlice';
-import Sidebar from '../../components/SideBar/Sidebar';
+import Sidebar from '../../components/Sidebar/Sidebar';
 import Btn from '../../components/Button/Button';
 import { useLocation, useNavigate } from 'react-router-dom';
-import TablePlanning from '../../components/Table/tablePlanning'; // Import TablePlanning component
-import { TableComponentProps } from '../../components/Table/table.component';
+import TablePlanningA from '../../components/Table/TablePlanningA'; 
+import { TablePlanningB } from '../../components/Table/TablePlanningB.component'
 import { useLanguage } from '../../contexts/LanguageContext';
 import { translate } from '../../utils/translationUtil';
-import EditTablePlanning from '../../components/Table/editTablePlanning';
+import EditTablePlanning from '../../components/Table/temp_editTablePlanning';
 
 const header = ['計画'];
 const smallDate = ['2022/24月', '2022/25月', '2022/26月'];
 const dates = ['04月', '05月', '06月', '07月', '08月', '09月', '10月', '11月', '12月', '1月', '2月', '3月'];
 
-const Planning = () => {
+const PlanningListAndEdit = () => {
   const [tableList, setTableList] = useState<any>([]);
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(0);
@@ -24,11 +24,11 @@ const Planning = () => {
   const select = [5, 10, 100];
   const [paginatedData, setPaginatedData] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState('/planning');
-  const [isSwitchActive, setIsSwitchActive] = useState(false); // State for switch
+  const [isSwitchActive, setIsSwitchActive] = useState(false); 
   const navigate = useNavigate();
   const location = useLocation();
   const { language, setLanguage } = useLanguage()
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translation
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
 
 
   const [isEditing, setIsEditing] = useState(false)
@@ -159,10 +159,10 @@ const Planning = () => {
                 <div className='planning_tbl_cont'>
                   <div className={`table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
                     {/* Render the TablePlanning component here */}
-                    {isEditing ? <EditTablePlanning /> : <TablePlanning />}
+                    {isEditing ? <EditTablePlanning /> : <TablePlanningA />}
                   </div>
                   <div className={`table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
-                    <TableComponentProps data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
+                    <TablePlanningB data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
                   </div>
                 </div>
               </div>
@@ -174,4 +174,4 @@ const Planning = () => {
   )
 };
 
-export default Planning;
+export default PlanningListAndEdit;
