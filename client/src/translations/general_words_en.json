@@ -5,12 +5,12 @@
     "checkbox": "Checkbox",
     "cancel": "Cancel",
     "click": "Click",
-    "client": "Client",
+    "client": "Clients",
     "clientName": "Client Name",
     "confirmPassword": "Confirm Password",
     "download": "Download",
     "emailAddress": "Email Address",
-    "employee": "Employee",
+    "employee": "Employees",
     "enter": "Enter",
     "formTitle": "Form Title",
     "graphBar": "Graph (Bar)",
@@ -32,7 +32,7 @@
     "paginator": "Paginator",
     "password": "Password",
     "previousPage": "Previous Page",
-    "project": "Project",
+    "project": "Projects",
     "reenter": "Reenter",
     "remove": "Remove (-)",
     "submit": "Submit",
@@ -68,5 +68,5 @@
     "usersValidationText4": "Please enter a valid email address. ",
     "confirmEmailAddress": "Confirm Email Address",
     "dateJoined": "Date Joined",
-    "users": "User"
+    "users": "Users"
 }
