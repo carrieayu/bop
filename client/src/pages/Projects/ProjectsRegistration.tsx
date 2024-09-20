@@ -19,6 +19,8 @@ const ProjectsRegistration = () => {
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
   const years = [];
+  const token = localStorage.getItem('accessToken')
+  const [clients, setClients] = useState([]);
   for (let year = 2000; year <= new Date().getFullYear(); year++) {
     years.push(year);
   }
@@ -130,7 +132,7 @@ const ProjectsRegistration = () => {
       registered_user_id: formData.map((c) => c.registered_user_id),
     }
 
-    const token = localStorage.getItem('accessToken')
+    // const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login'
       return
@@ -173,6 +175,26 @@ const ProjectsRegistration = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
     setLanguage(newLanguage);
   };
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      try{
+        const response = await axios.get('http://127.0.0.1:8000/api/master-clients/', {
+        // const response = await axios.get('http://54.178.202.58:8000/api/master-clients/', {
+          headers: { 
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}` 
+          },
+        });
+        setClients(response.data);
+      }
+      catch (error) {
+        console.error('Error fetching clients:', error);
+      }
+    };
+
+    fetchClients();
+  }, []);
 
   const monthNames: { [key: number]: { en: string; jp: string } } = {
     1: { en: "January", jp: "1月" },
@@ -266,10 +288,12 @@ const ProjectsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           >
                             <option value=''></option>
-                            <option value='TVS'>TVS</option>
-                            <option value='TCM'>TCM</option>
-                            <option value='JR'>JR</option>
-                            <option value='ソルトワークス'>ソルトワークス</option>
+                            {/* Dynamically map the clients fetched from the database */}
+                            {clients.map((client) => (
+                              <option key={client.client_id} value={client.client_name}>
+                                {client.client_name}
+                              </option>
+                            ))}
                           </select>
                         </div>
                         <div className='projectsRegistration_sales_revenue-div'>

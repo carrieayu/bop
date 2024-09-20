@@ -4,6 +4,7 @@ import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar/Sidebar'
+import axios from 'axios'
 
 const BusinessDivisionsRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning')
@@ -12,6 +13,9 @@ const BusinessDivisionsRegistration = () => {
     const [activeTabOther, setActiveTabOther] = useState('businessDivision')
     const storedUserID = localStorage.getItem('userID')
     const { language, setLanguage } = useLanguage()
+    const [businessDivisions, setBusinessDivisions] = useState([]);
+    const [selectedCompany, setSelectedCompany] = useState('');
+    const token = localStorage.getItem('accessToken')
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
 
     // const [formData, setFormData] = useState([
@@ -113,6 +117,30 @@ const BusinessDivisionsRegistration = () => {
     //     }
     //   }
 
+    useEffect(() => {
+      const fetchBusiness = async () => {
+        try{
+          const response = await axios.get('http://127.0.0.1:8000/api/master-business-divisions/', {
+          // const response = await axios.get('http://54.178.202.58:8000/api/master-business-divisions/', {
+            headers: { 
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}` 
+            },
+          });
+          setBusinessDivisions(response.data);
+        }
+        catch (error) {
+          console.error('Error fetching business:', error);
+        }
+      };
+  
+      fetchBusiness();
+    }, [token]);
+
+    const handleCompanyChange = (e) => {
+      setSelectedCompany(e.target.value); // Update the selected company state
+    };
+
       useEffect(() => {
         setIsTranslateSwitchActive(language === 'en');
       }, [language]);
@@ -197,14 +225,16 @@ const BusinessDivisionsRegistration = () => {
                           <select
                             className='BusinessDivisionsRegistration_select-option'
                             name='company_name'
-                            value=''
+                            value={selectedCompany}
+                            onChange={handleCompanyChange}
                             // onChange={(e) => handleChange(index, e)}
                           >
                             <option value=''></option>
-                            <option value='TVS'>TVS</option>
-                            <option value='TCM'>TCM</option>
-                            <option value='JR'>JR</option>
-                            <option value='ソルトワークス'>ソルトワークス</option>
+                            {businessDivisions.map((division) => (
+                              <option key={division.business_division_id} value={division.business_division_name}>
+                                {division.business_division_name}
+                              </option>
+                            ))}
                           </select>
                         </div>
                       </div>
