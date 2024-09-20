@@ -300,7 +300,7 @@ const ProjectsListAndEdit: React.FC = () => {
                             </thead>
                             <tbody className='projectsList_table_body'>
                               {projects.map((project, index) => (
-                                <tr key={project.planning_project_id} className='projectsList_table_body_content_horizantal'>
+                                <tr key={project.planning_project_id} className='projectsList_table_body_content_horizontal'>
                                   <td className='projectsList_table_body_content_vertical'>
                                     <input
                                       type='text'
@@ -389,7 +389,7 @@ const ProjectsListAndEdit: React.FC = () => {
                           </thead>
                           <tbody className='projectsList_table_body'>
                             {projects.map((project) => (
-                              <tr key={project.planning_project_id} className='projectsList_table_body_content_horizantal'>
+                              <tr key={project.planning_project_id} className='projectsList_table_body_content_horizontal'>
                                 <td className='projectsList_table_body_content_vertical'>{project.client.client_name}</td>
                                 <td className='projectsList_table_body_content_vertical'>{project.planning_project_name}</td>
                                 <td className='projectsList_table_body_content_vertical'>
