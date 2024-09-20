@@ -48,15 +48,16 @@ class MasterBusinessDivisionSerializer(serializers.ModelSerializer):
     # company = CompanyMasterSerializers(source='company_id', read_only=True)
     class Meta:
         model = MasterBusinessDivision
-        fields = ["business_division_name", "company_id", "registered_user_id"]
-        # fields = ["business_division_id", "business_division_name", "company_id", "company", "created_at", "registered_user_id"]
+        # fields = ["business_division_name", "company_id", "registered_user_id"]
+        fields = '__all__'
 
 
 class MasterClientSerializer(serializers.ModelSerializer):
      
      class Meta:
         model = MasterClient
-        fields = ["client_id", "client_name", "created_at", "registered_user_id"]
+        # fields = ["client_id", "client_name", "created_at", "registered_user_id"]
+        fields = '__all__'
         
 class UpdateMasterCompanySerializers(serializers.ModelSerializer):
     class Meta:

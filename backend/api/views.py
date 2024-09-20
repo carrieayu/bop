@@ -82,6 +82,7 @@ class CreateMasterCompany(generics.CreateAPIView):
 class MasterBusinessDivisionList(generics.ListAPIView):
     queryset = MasterBusinessDivision.objects.all()
     serializer_class = MasterBusinessDivisionSerializer
+    permission_classes = [AllowAny]
     
 class BusinessDivisionMasterCreate(generics.CreateAPIView):
     serializer_class = MasterBusinessDivisionSerializer
