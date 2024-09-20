@@ -452,7 +452,7 @@ const EditTablePlanning = () => {
           },
           {
             id: dispatchLaborValues.map((dispatchLaborValues) => dispatchLaborValues.id),
-            label: 'dispatchLabourExpenses',
+            label: 'dispatchLaborExpenses',
             values: [
               ...dispatchLaborValues.map((dispatch) => dispatch.dispatch_labor_costs),
               firstHalfTotal(dispatchLaborValues.map((dispatch) => dispatch.dispatch_labor_costs)),
@@ -853,7 +853,7 @@ const EditTablePlanning = () => {
           },
           {
             id: dispatchLaborValues.map((dispatchLaborValues) => dispatchLaborValues.id),
-            label: 'dispatchLabourExpenses',
+            label: 'dispatchLaborExpenses',
             values: [
               ...dispatchLaborValues.map((dispatch) => dispatch.dispatch_labor_costs),
               firstHalfTotal(dispatchLaborValues.map((dispatch) => dispatch.dispatch_labor_costs)),
@@ -1208,7 +1208,7 @@ const EditTablePlanning = () => {
     'salesRevenue',
     'costOfSales',
     'grossProfit',
-    'dispatchLabourExpenses',
+    'dispatchLaborExpenses',
     'employeeExpenses',
     'sellingAndGeneralAdminExpenses',
     'operatingIncome',
@@ -1221,7 +1221,7 @@ const EditTablePlanning = () => {
     'purchases',
     'outsourcingExpenses',
     'productPurchases',
-    'dispatchLabourExpenses',
+    'dispatchLaborExpenses',
     'communicationExpenses',
     'workInProgressExpenses',
     'amortizationExpenses',

@@ -252,7 +252,7 @@ const TablePlanning = () => {
           ],
         },
         {
-          label: 'dispatchLabourExpenses',
+          label: 'dispatchLaborExpenses',
           values: [
             ...dispatchLaborValues,
             firstHalfTotal(dispatchLaborValues),
@@ -596,7 +596,7 @@ const TablePlanning = () => {
     'salesRevenue',
     'costOfSales',
     'grossProfit',
-    'dispatchLabourExpenses',
+    'dispatchLaborExpenses',
     'employeeExpenses',
     'sellingAndGeneralAdminExpenses',
     'operatingIncome',

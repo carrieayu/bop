@@ -188,11 +188,11 @@
                                     width: calc(100%/3);
                                 }
                                 .costOfSalesRegistration_left-form-div{
-                                    .costOfSalesRegistration_client-name-div{
+                                    .costOfSalesRegistration_month-div{
                                         display: flex;
                                         flex-direction: column;
                                         margin-bottom: 10px;
-                                        .costOfSalesRegistration_client_name{
+                                        .costOfSalesRegistration_month{
                                             margin-bottom: 5px;
                                         }
                                         .costOfSalesRegistration_select-option{
@@ -205,11 +205,11 @@
                                             }
                                         }
                                     }
-                                    .costOfSalesRegistration_business_division_name-div{
+                                    .costOfSalesRegistration_outsourcing_expenses-div{
                                         display: flex;
                                         flex-direction: column;
                                         margin-bottom: 10px;
-                                        .costOfSalesRegistration_business_division_name{
+                                        .costOfSalesRegistration_outsourcing_expenses{
                                             margin-bottom: 5px;
                                         }
                                         input{
@@ -219,11 +219,11 @@
                                             border-radius: 10px;
                                         }
                                     }
-                                    .costOfSalesRegistration_project_name-div{
+                                    .costOfSalesRegistration_communication_expenses-div{
                                         display: flex;
                                         flex-direction: column;
                                         margin-bottom: 10px;
-                                        .costOfSalesRegistration_project_name{
+                                        .costOfSalesRegistration_communication_expenses{
                                             margin-bottom: 5px;
                                         }
                                         input{
@@ -235,11 +235,11 @@
                                     }
                                 }
                                 .costOfSalesRegistration_middle-form-div{
-                                    .costOfSalesRegistration_net-sales-div{
+                                    .costOfSalesRegistration_cost_of_sales-div{
                                         display: flex;
                                         flex-direction: column;
                                         margin-bottom: 10px;
-                                        .costOfSalesRegistration_net_sales{
+                                        .costOfSalesRegistration_cost_of_sales{
                                             margin-bottom: 5px;
                                         }
                                         input{
@@ -249,11 +249,11 @@
                                             border-radius: 10px;
                                         }
                                     }
-                                    .costOfSalesRegistration_cost-of-sales-div{
+                                    .costOfSalesRegistration_product_purchases-div{
                                         display: flex;
                                         flex-direction: column;
                                         margin-bottom: 10px;
-                                        .costOfSalesRegistration_cost_of_goods_sold{
+                                        .costOfSalesRegistration_product_purchases{
                                             margin-bottom: 5px;
                                         }
                                         input{
@@ -263,11 +263,11 @@
                                             border-radius: 10px;
                                         }
                                     }
-                                    .costOfSalesRegistration_personnel-expenses-div{
+                                    .costOfSalesRegistration_work_in_progress_expenses-div{
                                         display: flex;
                                         flex-direction: column;
                                         margin-bottom: 10px;
-                                        .costOfSalesRegistration_personnel_expenses{
+                                        .costOfSalesRegistration_work_in_progress_expenses{
                                             margin-bottom: 5px;
                                         }
                                         input{
@@ -279,11 +279,11 @@
                                     }
                                 }
                                 .costOfSalesRegistration_right-form-div{
-                                    .costOfSalesRegistration_non-operating-income-div{
+                                    .costOfSalesRegistration_purchases-div{
                                         display: flex;
                                         flex-direction: column;
                                         margin-bottom: 10px;
-                                        .costOfSalesRegistration_non_operating_income{
+                                        .costOfSalesRegistration_purchases{
                                             margin-bottom: 5px;
                                         }
                                         input{
@@ -293,11 +293,11 @@
                                             border-radius: 10px;
                                         }
                                     }
-                                    .costOfSalesRegistration_operating-income-div{
+                                    .costOfSalesRegistration_dispatch_labor_expenses-div{
                                         display: flex;
                                         flex-direction: column;
                                         margin-bottom: 10px;
-                                        .costOfSalesRegistration_operating_income{
+                                        .costOfSalesRegistration_dispatch_labor_expenses{
                                             margin-bottom: 5px;
                                         }
                                         input{
@@ -307,11 +307,11 @@
                                             border-radius: 10px;
                                         }
                                     }
-                                    .costOfSalesRegistration_ordinary-income-div{
+                                    .costOfSalesRegistration_amortization_expenses-div{
                                         display: flex;
                                         flex-direction: column;
                                         margin-bottom: 10px;
-                                        .costOfSalesRegistration_ordinary_income{
+                                        .costOfSalesRegistration_amortization_expenses{
                                             margin-bottom: 5px;
                                         }
                                         input{

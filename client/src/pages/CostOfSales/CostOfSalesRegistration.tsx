@@ -273,8 +273,8 @@ const CostOfSalesRegistration = () => {
                     <div className={`costOfSalesRegistration_form-content ${index > 0 ? 'costOfSalesRegistration_form-line' : ''}`}></div>
                     <div className='costOfSalesRegistration_form-content-div'>
                       <div className='costOfSalesRegistration_left-form-div costOfSalesRegistration_calc'>
-                        <div className='costOfSalesRegistration_client-name-div'>
-                          <label className='costOfSalesRegistration_client_name'>{translate('month', language)}</label>
+                        <div className='costOfSalesRegistration_month-div'>
+                          <label className='costOfSalesRegistration_month'>{translate('month', language)}</label>
                           <select
                             className='costOfSalesRegistration_select-option'
                             name='month'
@@ -288,8 +288,8 @@ const CostOfSalesRegistration = () => {
                               ))}
                           </select>
                         </div>
-                        <div className='costOfSalesRegistration_business_division_name-div'>
-                          <label className='costOfSalesRegistration_business_division_name'>{translate('outsourcingExpenses', language)}</label>
+                        <div className='costOfSalesRegistration_outsourcing_expenses-div'>
+                          <label className='costOfSalesRegistration_outsourcing_expenses'>{translate('outsourcingExpenses', language)}</label>
                           <input
                             type='text'
                             name='outsourcing_costs'
@@ -297,8 +297,8 @@ const CostOfSalesRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='costOfSalesRegistration_project_name-div'>
-                          <label className='costOfSalesRegistration_project_name'>{translate('communicationExpenses', language)}</label>
+                        <div className='costOfSalesRegistration_communication_expenses-div'>
+                          <label className='costOfSalesRegistration_communication_expenses'>{translate('communicationExpenses', language)}</label>
                           <input
                             type='text'
                             name='communication_costs'
@@ -308,8 +308,8 @@ const CostOfSalesRegistration = () => {
                         </div>
                       </div>
                       <div className='costOfSalesRegistration_middle-form-div costOfSalesRegistration_calc'>
-                        <div className='costOfSalesRegistration_net-sales-div'>
-                          <label className='costOfSalesRegistration_net_sales'>{translate('costOfSales', language)}</label>
+                        <div className='costOfSalesRegistration_cost_of_sales-div'>
+                          <label className='costOfSalesRegistration_cost_of_sales'>{translate('costOfSales', language)}</label>
                           <input
                             type='number'
                             name='cost_of_sales'
@@ -317,8 +317,8 @@ const CostOfSalesRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='costOfSalesRegistration_cost-of-sales-div'>
-                          <label className='costOfSalesRegistration_cost_of_goods_sold'>{translate('productPurchases', language)}</label>
+                        <div className='costOfSalesRegistration_product_purchases-div'>
+                          <label className='costOfSalesRegistration_product_purchases'>{translate('productPurchases', language)}</label>
                           <input
                             type='number'
                             name='product_purchases'
@@ -326,8 +326,8 @@ const CostOfSalesRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='costOfSalesRegistration_personnel-expenses-div'>
-                          <label className='costOfSalesRegistration_personnel_expenses'>{translate('workInProgressExpenses', language)}</label>
+                        <div className='costOfSalesRegistration_work_in_progress_expenses-div'>
+                          <label className='costOfSalesRegistration_work_in_progress_expenses'>{translate('workInProgressExpenses', language)}</label>
                           <input
                             type='number'
                             name='work_in_progress'
@@ -337,8 +337,8 @@ const CostOfSalesRegistration = () => {
                         </div>
                       </div>
                       <div className='costOfSalesRegistration_right-form-div costOfSalesRegistration_calc'>
-                        <div className='costOfSalesRegistration_non-operating-income-div'>
-                          <label className='costOfSalesRegistration_non_operating_income'>{translate('purchases', language)}</label>
+                        <div className='costOfSalesRegistration_purchases-div'>
+                          <label className='costOfSalesRegistration_purchases'>{translate('purchases', language)}</label>
                           <input
                             type='number'
                             name='purchases'
@@ -346,8 +346,8 @@ const CostOfSalesRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='costOfSalesRegistration_operating-income-div'>
-                          <label className='costOfSalesRegistration_operating_income'>{translate('dispatchLabourExpenses', language)}</label>
+                        <div className='costOfSalesRegistration_dispatch_labor_expenses-div'>
+                          <label className='costOfSalesRegistration_dispatch_labor_expenses'>{translate('dispatchLaborExpenses', language)}</label>
                           <input
                             type='number'
                             name='dispatch_labor_costs'
@@ -355,8 +355,8 @@ const CostOfSalesRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='costOfSalesRegistration_ordinary-income-div'>
-                          <label className='costOfSalesRegistration_ordinary_income'>{translate('amortizationExpenses', language)}</label>
+                        <div className='costOfSalesRegistration_amortization_expenses-div'>
+                          <label className='costOfSalesRegistration_amortization_expenses'>{translate('amortizationExpenses', language)}</label>
                           <input
                             type='number'
                             name='amortization'
