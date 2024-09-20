@@ -220,7 +220,7 @@ const ExpensesList: React.FC = () => {
                         </thead>
                         <tbody className='expensesList_table_body'>
                           {expenses.map((ex) => (
-                            <tr key={ex.planning_project_id} className='expensesList_table_body_content_horizantal'>
+                            <tr key={ex.planning_project_id} className='expensesList_table_body_content_horizontal'>
                               <td className='expensesList_table_body_content_vertical has-text-centered'>{ex.month}</td>
                               <td className='expensesList_table_body_content_vertical'>{ex.consumables_expenses}</td>
                               <td className='expensesList_table_body_content_vertical has-text-centered'>{ex.rent}</td>

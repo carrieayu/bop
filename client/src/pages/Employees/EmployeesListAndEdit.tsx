@@ -329,7 +329,7 @@ const EmployeesListAndEdit: React.FC = () => {
                             </thead>
                             <tbody className='EmployeesListAndEdit_table_body'>
                               {/* {projects.map((project, index) => ( */}
-                                <tr key='{project.planning_project_id}' className='EmployeesListAndEdit_table_body_content_horizantal'>
+                                <tr key='{project.planning_project_id}' className='EmployeesListAndEdit_table_body_content_horizontal'>
                                   <td className='EmployeesListAndEdit_table_body_content_vertical has-text-left'></td>
                                   <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
                                     {/* <input
@@ -444,7 +444,7 @@ const EmployeesListAndEdit: React.FC = () => {
                           </thead>
                           <tbody className='EmployeesListAndEdit_table_body'>
                             {/* {projects.map((project) => ( */}
-                              <tr key='{project.planning_project_id}' className='EmployeesListAndEdit_table_body_content_horizantal'>
+                              <tr key='{project.planning_project_id}' className='EmployeesListAndEdit_table_body_content_horizontal'>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical has-text-left'></td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'></td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'></td>

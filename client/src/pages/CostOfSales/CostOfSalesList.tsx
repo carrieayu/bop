@@ -250,7 +250,7 @@ const CostOfSalesList: React.FC = () => {
                                             </thead>
                                             <tbody className="costOfSalesList_table_body">
                                             {combinedData.map((project, index) => (
-                                                        <tr key={index} className="costOfSalesList_table_body_content_horizantal">
+                                                        <tr key={index} className="costOfSalesList_table_body_content_horizontal">
                                                             <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.month}</td>
                                                             <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.cost_of_sales || 0}</td>
                                                             <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.purchases || 0}</td>
