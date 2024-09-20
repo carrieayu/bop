@@ -409,17 +409,9 @@ const ProjectsListAndEdit: React.FC = () => {
               </div>
               <div className='projectsList_pagination_wrapper'>
                 <div className='projectsList_pagination_cont'>
-                  {/* <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                    options={select}
-                    rowsPerPage={rowsPerPage}
-                    onRowsPerPageChange={handleRowsPerPageChange}
-                  /> */}
                   {isEditing ? (
-                    <div className='mode_switch_datalist'>
-                      <button className='edit_submit_btn' onClick={handleSubmit}>
+                    <div className='projectsList_mode_switch_datalist'>
+                      <button className='projectsList_edit_submit_btn' onClick={handleSubmit}>
                           更新
                       </button>
                     </div>

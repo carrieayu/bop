@@ -466,14 +466,6 @@ const EmployeesListAndEdit: React.FC = () => {
               </div>
               <div className='EmployeesListAndEdit_pagination_wrapper'>
                 <div className='EmployeesListAndEdit_pagination_cont'>
-                  {/* <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                    options={select}
-                    rowsPerPage={rowsPerPage}
-                    onRowsPerPageChange={handleRowsPerPageChange}
-                  /> */}
                   {isEditing ? (
                     <div className='EmployeesListAndEdit_mode_switch_datalist'>
                       <button className='EmployeesListAndEdit_edit_submit_btn' onClick={handleSubmit}>

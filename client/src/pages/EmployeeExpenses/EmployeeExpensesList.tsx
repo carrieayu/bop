@@ -210,18 +210,6 @@ const EmployeeExpensesList: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className='employeeExpensesList_pagination_wrapper'>
-                  <div className='employeeExpensesList_pagination_cont'>
-                    {/* <Pagination
-                                     currentPage={currentPage}
-                                     totalPages={totalPages}
-                                     onPageChange={handlePageChange}
-                                     options={select}
-                                     rowsPerPage={rowsPerPage}
-                                     onRowsPerPageChange={handleRowsPerPageChange}
-                                   /> */}
-                  </div>
-                </div>
               </div>
             </div>
           </div>

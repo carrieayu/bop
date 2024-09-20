@@ -268,18 +268,6 @@ const CostOfSalesList: React.FC = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="costOfSalesList_pagination_wrapper">
-                                <div className="costOfSalesList_pagination_cont">
-                                    <Pagination
-                                      currentPage={currentPage}
-                                      totalPages={totalPages}
-                                      onPageChange={handlePageChange}
-                                      options={select}
-                                      rowsPerPage={rowsPerPage}
-                                      onRowsPerPageChange={handleRowsPerPageChange}
-                                    />
-                                </div>
-                            </div>
                         </div>
                     </div>
             </div>
