@@ -409,16 +409,8 @@ const UsersListAndEdit: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className='UsersListAndEdit_pagination_wrapper'>
-                <div className='UsersListAndEdit_pagination_cont'>
-                  {/* <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                    options={select}
-                    rowsPerPage={rowsPerPage}
-                    onRowsPerPageChange={handleRowsPerPageChange}
-                  /> */}
+              <div className='UsersListAndEdit_is_editing_wrapper'>
+                <div className='UsersListAndEdit_is_editing_cont'>
                   {isEditing ? (
                     <div className='UsersListAndEdit_mode_switch_datalist'>
                       <button className='UsersListAndEdit_edit_submit_btn' onClick={handleSubmit}>

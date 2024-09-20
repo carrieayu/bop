@@ -253,18 +253,6 @@ const ExpensesList: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className='expensesList_pagination_wrapper'>
-                <div className='expensesList_pagination_cont'>
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                    options={select}
-                    rowsPerPage={rowsPerPage}
-                    onRowsPerPageChange={handleRowsPerPageChange}
-                  />
-                </div>
-              </div>
             </div>
           </div>
         </div>
