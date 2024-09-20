@@ -242,7 +242,7 @@ const CostOfSalesList: React.FC = () => {
                                                 <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('purchases', language)}</th>
                                                 <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('outsourcingExpenses', language)}</th>
                                                 <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('productPurchases', language)}</th>
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('dispatchLabourExpenses', language)}</th>
+                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('dispatchLaborExpenses', language)}</th>
                                                 <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('communicationExpenses', language)}</th>
                                                 <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('workInProgressExpenses', language)}</th>
                                                 <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('amortizationExpenses', language)}</th>
