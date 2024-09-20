@@ -407,8 +407,8 @@ const ProjectsListAndEdit: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className='projectsList_pagination_wrapper'>
-                <div className='projectsList_pagination_cont'>
+              <div className='projectsList_is_editing_wrapper'>
+                <div className='projectsList_is_editing_cont'>
                   {isEditing ? (
                     <div className='projectsList_mode_switch_datalist'>
                       <button className='projectsList_edit_submit_btn' onClick={handleSubmit}>

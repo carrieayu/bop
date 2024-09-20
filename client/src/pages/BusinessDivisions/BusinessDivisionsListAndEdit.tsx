@@ -395,8 +395,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className='BusinessDivisionsListAndEdit_pagination_wrapper'>
-                <div className='BusinessDivisionsListAndEdit_pagination_cont'>
+              <div className='BusinessDivisionsListAndEdit_is_editing_wrapper'>
+                <div className='BusinessDivisionsListAndEdit_is_editing_cont'>
                   {isEditing ? (
                     <div className='BusinessDivisionsListAndEdit_mode_switch_datalist'>
                       <button className='BusinessDivisionsListAndEdit_edit_submit_btn' onClick={handleSubmit}>

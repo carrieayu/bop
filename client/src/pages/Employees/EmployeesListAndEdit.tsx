@@ -464,8 +464,8 @@ const EmployeesListAndEdit: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className='EmployeesListAndEdit_pagination_wrapper'>
-                <div className='EmployeesListAndEdit_pagination_cont'>
+              <div className='EmployeesListAndEdit_is_editing_wrapper'>
+                <div className='EmployeesListAndEdit_is_editing_cont'>
                   {isEditing ? (
                     <div className='EmployeesListAndEdit_mode_switch_datalist'>
                       <button className='EmployeesListAndEdit_edit_submit_btn' onClick={handleSubmit}>
