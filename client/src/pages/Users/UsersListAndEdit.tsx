@@ -6,6 +6,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { translate } from "../../utils/translationUtil";
 import AlertModal from "../../components/AlertModal/AlertModal";
+import { RiDeleteBin6Fill } from 'react-icons/ri'
+import DatePicker from 'react-datepicker'
+
 
 const UsersListAndEdit: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning')
@@ -19,11 +22,11 @@ const UsersListAndEdit: React.FC = () => {
     const { language, setLanguage } = useLanguage()
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
     const [isEditing, setIsEditing] = useState(false)
-    const [changes, setChanges] = useState({})
-    const [projects, setProjects] = useState([])
+    const [userList, setUserList] = useState([])
     const [initialLanguage, setInitialLanguage] = useState(language);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedProject, setSelectedProject] = useState<any>(null);
+    const [deleteId, setDeleteUserId] = useState([])
 
     const totalPages = Math.ceil(100 / 10);
 
@@ -75,46 +78,39 @@ const UsersListAndEdit: React.FC = () => {
 
     // const handleChange = (index, event) => {
     //   const { name, value } = event.target
-    //   const updatedProjects = [...projects]
-    //   if (name.includes('client.client_name')) {
-    //     updatedProjects[index].client.client_name = value
-    //   } else {
-    //     updatedProjects[index][name] = value
-    //   }
-    //   setProjects(updatedProjects)
-    //   const projectId = updatedProjects[index].planning_project_id
-    //   setChanges((prevChanges) => ({
-    //     ...prevChanges,
-    //     [projectId]: {
-    //       ...prevChanges[projectId],
-    //       [name]: value,
-    //     },
-    //   }))
+    //   const updatedUsers = [...userList]
+    //   console.log(updatedUsers)
     // }
+    const handleChange = (index, event) => {
+      const { name, value } = event.target
+      const updatedUserData = [...userList]
+
+      updatedUserData[index] = {
+        ...updatedUserData[index],
+        [name]: value,
+      }
+      setUserList(updatedUserData) // Make sure you set the correct state
+    }
 
     const handleSubmit = async (e) => {
       event.preventDefault()
-      console.log('Changed Data:', changes)
+      console.log('Changed Data:', userList)
 
       const token = localStorage.getItem('accessToken')
       if (!token) {
         window.location.href = '/login'
         return
       }
-
       try {
-        // const response = await axios.put('http://127.0.0.1:8000/api/projectdatalist/update/', changes, {
-        const response = await axios.put('http://54.178.202.58:8000/api/projectdatalist/update/',  changes ,{
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const response = await axios.put('http://127.0.0.1:8000/api/user/update/', userList, {
+          // const response = await axios.put('http://54.178.202.58:8000/api/user/update/',  userList ,{
         })
         alert('Sucessfully updated')
       } catch (error) {
         if (error.response && error.response.status === 401) {
           window.location.href = '/login'
         } else {
-          console.error('There was an error updating the project planning data!', error)
+          console.error('There was an error updating the user data!', error)
         }
       }
 
@@ -129,16 +125,14 @@ const UsersListAndEdit: React.FC = () => {
         }
 
         try {
-          // const response = await axios.get('http://127.0.0.1:8000/api/planningprojects/', {
-          const response = await axios.get('http://54.178.202.58:8000/api/planningprojects/', {
-            headers: {
-              Authorization: `Bearer ${token}`, // Add token to request headers
-            },
+          const response = await axios.get('http://127.0.0.1:8000/api/user/list/', {
+            // const response = await axios.get('http://54.178.202.58:8000/api/user/list/', {
           })
-          setProjects(response.data)
+          setUserList(response.data)
         } catch (error) {
           if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
+            console.log(error)
+            // window.location.href = '/login' // Redirect to login if unauthorized
           } else {
             console.error('There was an error fetching the projects!', error)
           }
@@ -150,8 +144,8 @@ const UsersListAndEdit: React.FC = () => {
 
       useEffect(() => {
         const startIndex = currentPage * rowsPerPage
-        setPaginatedData(projects.slice(startIndex, startIndex + rowsPerPage))
-      }, [currentPage, rowsPerPage, projects])
+        setPaginatedData(userList.slice(startIndex, startIndex + rowsPerPage))
+      }, [currentPage, rowsPerPage, userList])
 
       useEffect(() => {
         const path = location.pathname;
@@ -172,9 +166,10 @@ const UsersListAndEdit: React.FC = () => {
         }
       };
 
-      const openModal = (project) => {
-        setSelectedProject(project);
+      const openModal = (users, id) => {
+        setSelectedProject(users)
         setModalIsOpen(true);
+        setDeleteUserId(id)
     };
 
     const closeModal = () => {
@@ -182,9 +177,30 @@ const UsersListAndEdit: React.FC = () => {
         setModalIsOpen(false);
     };
 
-    const handleConfirm = () => {
+    const formatDate = (dateString) => {
+      const date = new Date(dateString)
+      const month = String(date.getMonth() + 1).padStart(2, '0') // Get month (0-indexed, so +1)
+      const day = String(date.getDate()).padStart(2, '0') // Get day
+      const year = date.getFullYear() // Get full year
+      return `${month}/${day}/${year}`
+    }
+
+    const handleConfirm = async () => {
       // Currently no delete logic
-      console.log('Confirmed action for project:', selectedProject);
+      console.log('Confirmed action for project:', deleteId)
+      const token = localStorage.getItem('accessToken')
+      try {
+        const response = await axios.delete(`http://127.0.0.1:8000/api/user/list/${deleteId}/delete/`, {
+          // const response = await axios.get(`http://54.178.202.58:8000/api/user/list/${deleteId}/delete/`, {
+        })
+        setUserList((prevList) => prevList.filter((user) => user.id !== deleteId))
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login' // Redirect to login if unauthorized
+        } else {
+          console.error('Error deleting project:', error)
+        }
+      }
       closeModal();
     };
 
@@ -216,7 +232,12 @@ const UsersListAndEdit: React.FC = () => {
           <div className='UsersListAndEdit_language-toggle'>
             <p className='UsersListAndEdit_pl-label'>English</p>
             <label className='UsersListAndEdit_switch'>
-              <input type='checkbox' checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle} disabled={isEditing}/>
+              <input
+                type='checkbox'
+                checked={isTranslateSwitchActive}
+                onChange={handleTranslationSwitchToggle}
+                disabled={isEditing}
+              />
               <span className='UsersListAndEdit_slider'></span>
             </label>
           </div>
@@ -241,35 +262,17 @@ const UsersListAndEdit: React.FC = () => {
                   <Btn
                     key={index}
                     label={translate(
-                      index === 0
-                        ? 'client'
-                        : index === 1
-                          ? 'employee'
-                          : index === 2
-                            ? 'businessDivision'
-                            : 'users',
+                      index === 0 ? 'client' : index === 1 ? 'employee' : index === 2 ? 'businessDivision' : 'users',
                       language,
                     )}
                     onClick={() =>
                       handleTabsClick(
-                        index === 0
-                          ? 'client'
-                          : index === 1
-                            ? 'employee'
-                            : index === 2
-                              ? 'businessDivision'
-                              : 'users',
+                        index === 0 ? 'client' : index === 1 ? 'employee' : index === 2 ? 'businessDivision' : 'users',
                       )
                     }
                     className={
                       activeTabOther ===
-                      (index === 0
-                        ? 'client'
-                        : index === 1
-                          ? 'employee'
-                          : index === 2
-                            ? 'businessDivision'
-                            : 'users')
+                      (index === 0 ? 'client' : index === 1 ? 'employee' : index === 2 ? 'businessDivision' : 'users')
                         ? 'body-btn-active body-btn'
                         : 'body-btn'
                     }
@@ -294,9 +297,7 @@ const UsersListAndEdit: React.FC = () => {
                           <table className='table is-bordered is-hoverable'>
                             <thead>
                               <tr className='UsersListAndEdit_table_title '>
-                                <th className='UsersListAndEdit_table_title_content_vertical has-text-left'>
-                                  ID
-                                </th>
+                                <th className='UsersListAndEdit_table_title_content_vertical has-text-left'>ID</th>
                                 <th className='UsersListAndEdit_table_title_content_vertical has-text-centered'>
                                   {translate('username', language)}
                                 </th>
@@ -316,54 +317,59 @@ const UsersListAndEdit: React.FC = () => {
                               </tr>
                             </thead>
                             <tbody className='UsersListAndEdit_table_body'>
-                              {/* {projects.map((project, index) => ( */}
-                                <tr key='{project.planning_project_id}' className='UsersListAndEdit_table_body_content_horizontal'>
-                                  <td className='UsersListAndEdit_table_body_content_vertical has-text-left'></td>
+                              {userList.map((users, index) => (
+                                <tr key={users.id} className='UsersListAndEdit_table_body_content_horizantal'>
+                                  <td className='UsersListAndEdit_table_body_content_vertical has-text-left'>
+                                    {users.id}
+                                  </td>
                                   <td className='UsersListAndEdit_table_body_content_vertical'>
-                                    {/* <input
+                                    <input
                                       type='text'
-                                      name='id'
-                                      value=''
-                                      // onChange={(e) => handleChange(index, e)}
-                                    /> */}
+                                      name='username'
+                                      value={users.username}
+                                      onChange={(e) => handleChange(index, e)}
+                                    />
                                   </td>
                                   <td className='UsersListAndEdit_table_body_content_vertical'>
-                                    {/* <input
-                                        type='text'
-                                        name='last_name'
-                                        value=''
-                                        // onChange={(e) => handleChange(index, e)}
-                                      /> */}
+                                    <input
+                                      type='text'
+                                      name='last_name'
+                                      value={users.last_name}
+                                      onChange={(e) => handleChange(index, e)}
+                                    />
                                   </td>
                                   <td className='UsersListAndEdit_table_body_content_vertical'>
-                                    {/* <input
-                                        type='text'
-                                        name='first_name'
-                                        value=''
-                                        // onChange={(e) => handleChange(index, e)}
-                                      /> */}
-                                    </td>
-                                  <td className='UsersListAndEdit_table_body_content_vertical'>
-                                    {/* <input
-                                        type='text'
-                                        name='email'
-                                        value=''
-                                        // onChange={(e) => handleChange(index, e)}
-                                      /> */}
+                                    <input
+                                      type='text'
+                                      name='first_name'
+                                      value={users.first_name}
+                                      onChange={(e) => handleChange(index, e)}
+                                    />
                                   </td>
                                   <td className='UsersListAndEdit_table_body_content_vertical'>
-                                    {/* <input
-                                        type='text'
-                                        name='date_joined'
-                                        value=''
-                                        // onChange={(e) => handleChange(index, e)}
-                                      /> */}
+                                    <input
+                                      type='text'
+                                      name='email'
+                                      value={users.email}
+                                      onChange={(e) => handleChange(index, e)}
+                                    />
+                                  </td>
+                                  <td className='UsersListAndEdit_table_body_content_vertical'>
+                                    <input
+                                      type='date'
+                                      name='date_joined'
+                                      value={users.date_joined}
+                                      onChange={(e) => handleChange(index, e)}
+                                    />
                                   </td>
                                   <td className='UsersListAndEdit_table_body_content_vertical delete_icon'>
-                                    {/* <RiDeleteBin6Fill className='delete-icon' onClick={() => openModal('project')}/> */}
+                                    <RiDeleteBin6Fill
+                                      className='delete-icon'
+                                      onClick={() => openModal('users', users.id)}
+                                    />
                                   </td>
                                 </tr>
-                              {/* ))} */}
+                              ))}
                             </tbody>
                           </table>
                         </div>
@@ -371,37 +377,37 @@ const UsersListAndEdit: React.FC = () => {
                         <table className='table is-bordered is-hoverable'>
                           <thead>
                             <tr className='UsersListAndEdit_table_title '>
-                              <th className='UsersListAndEdit_table_title_content_vertical has-text-left'>
-                                ID
+                              <th className='UsersListAndEdit_table_title_content_vertical has-text-left'>ID</th>
+                              <th className='UsersListAndEdit_table_title_content_vertical has-text-centered'>
+                                {translate('username', language)}
                               </th>
                               <th className='UsersListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('username', language)}
+                                {translate('lastName', language)}
                               </th>
                               <th className='UsersListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('lastName', language)}
+                                {translate('firstName', language)}
                               </th>
                               <th className='UsersListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('firstName', language)}
+                                {translate('emailAddress', language)}
                               </th>
                               <th className='UsersListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('emailAddress', language)}
-                              </th>
-                              <th className='UsersListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('dateJoined', language)}
+                                {translate('dateJoined', language)}
                               </th>
                             </tr>
                           </thead>
                           <tbody className='UsersListAndEdit_table_body'>
-                            {/* {projects.map((project) => ( */}
-                              <tr key='{project.planning_project_id}' className='UsersListAndEdit_table_body_content_horizontal'>
-                                <td className='UsersListAndEdit_table_body_content_vertical has-text-left'></td>
-                                <td className='UsersListAndEdit_table_body_content_vertical'></td>
-                                <td className='UsersListAndEdit_table_body_content_vertical'></td>
-                                <td className='UsersListAndEdit_table_body_content_vertical'></td>
-                                <td className='UsersListAndEdit_table_body_content_vertical'></td>
-                                <td className='UsersListAndEdit_table_body_content_vertical'></td>
+                            {userList.map((users) => (
+                              <tr key={users.id} className='UsersListAndEdit_table_body_content_horizantal'>
+                                <td className='UsersListAndEdit_table_body_content_vertical has-text-left'>
+                                  {users.id}
+                                </td>
+                                <td className='UsersListAndEdit_table_body_content_vertical'>{users.username}</td>
+                                <td className='UsersListAndEdit_table_body_content_vertical'>{users.last_name}</td>
+                                <td className='UsersListAndEdit_table_body_content_vertical'>{users.first_name}</td>
+                                <td className='UsersListAndEdit_table_body_content_vertical'>{users.email}</td>
+                                <td className='UsersListAndEdit_table_body_content_vertical'>{formatDate(users.date_joined)}</td>
                               </tr>
-                            {/* ))} */}
+                            ))}
                           </tbody>
                         </table>
                       )}

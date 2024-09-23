@@ -1,18 +1,25 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import CostOfSalesList, CreateMasterCompany, CreateProjecstData, CreateResults, CreateUserView , DeleteMasterCompany, DeleteProjectsData, DeleteResults, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany,  UpdateProjectsData, UpdateResults,ForgotPasswordView
+from api.views import CostOfSalesList, CreateMasterCompany, CreateProjecstData, CreateResults, CreateUserView , DeleteMasterCompany, DeleteProjectsData, DeleteResults, DeleteUser, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany,  UpdateProjectsData, UpdateResults,ForgotPasswordView, UserList, UserUpdate
 from api.views import CostOfSalesCreate, CostOfSalesUpdate, CreateEmployeeExpenses, CreateEmployees,  EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
+    #Admin
     path("admin/", admin.site.urls),
     path("api/user/register/", CreateUserView.as_view(), name="register"),
+    path("api/user/list/", UserList.as_view(), name="user-list"),
+    path('api/user/list/<int:pk>/delete/', DeleteUser.as_view(), name="master-company-delete"),
+    path('api/user/update/', UserUpdate.as_view()),
+    #Token
     path("api/token/", TokenObtainPairView.as_view(), name="get_token"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"),
+
+    #Auth
     path("api-auth/", include("rest_framework.urls")),
     path("api/", include("api.urls")),
-    # Start
+
     # Master Company
     path('api/master-companies/', MasterCompanyList.as_view(), name="master-company-lists"), 
     path('api/master-company/create/', CreateMasterCompany.as_view(), name="master-company-create"),  
@@ -50,5 +57,5 @@ urlpatterns = [
     #COS
     path('api/cost-of-sales', CostOfSalesList.as_view()),
     path('api/cost-of-sales/create', CostOfSalesCreate.as_view()),
-    path('api/cost-of-sales/update', CostOfSalesUpdate.as_view()),   
+    path('api/cost-of-sales/update', CostOfSalesUpdate.as_view()),
 ]
