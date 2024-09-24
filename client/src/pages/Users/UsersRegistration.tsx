@@ -16,7 +16,7 @@ const UsersRegistration = () => {
     const [isUsernameValid, setIsUsernameValid] = useState(true)
     const [isPasswordValid, setIsPasswordValid] = useState(true)
     const [isPasswordMatch, setIsPasswordMatch] = useState(true)
-    const [isIsEmailMatch, setIsEmailMatch] = useState(true)
+    const [isEmailMatch, setIsEmailMatch] = useState(true)
     const [isEmailValid, setIsEmailValid] = useState(true)
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
     const [userData, setUserData] = useState(
@@ -79,10 +79,15 @@ const UsersRegistration = () => {
       const handleSubmit = async (e) => {
         e.preventDefault()
         const token = localStorage.getItem('accessToken')
-        const { username, password, confirm_password, email , confirm_email} = userData
+        const { username, first_name, last_name, password, confirm_password, email , confirm_email} = userData
 
         if (!username || !email || !password || !confirm_password) {
-          alert('All fields are required.')
+          alert(translate('usersValidationText6', language))
+          return
+        }
+
+        if (!first_name || !last_name) {
+          alert(translate('usersValidationText2', language))
           return
         }
 
@@ -90,7 +95,7 @@ const UsersRegistration = () => {
         if (!usernameRegex.test(username)) {
           setIsUsernameValid(usernameRegex.test(username))
           alert(
-            'Please enter your last name and first name using the English alphabet, with an underscore between them.',
+            translate('usersValidationText1', language),
           )
           return
         } else {
@@ -99,7 +104,7 @@ const UsersRegistration = () => {
 
         if (password !== confirm_password) {
             setIsPasswordMatch(false) 
-            alert('Passwords do not match.')
+            alert(translate('usersValidationText5', language))
           return
         } else {
             setIsPasswordMatch(true) 
@@ -108,9 +113,7 @@ const UsersRegistration = () => {
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/
         if (!passwordRegex.test(password)) {
           setIsPasswordValid(passwordRegex.test(password))
-          alert(
-            'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
-          )
+          alert(translate('usersValidationText3', language))
           return
         } else {
           setIsPasswordValid(true) 
@@ -119,7 +122,7 @@ const UsersRegistration = () => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
           setIsEmailValid(false)
-          alert('Please enter a valid email address.')
+          alert(translate('usersValidationText4', language))
           return
         } else {
           setIsEmailValid(true)
@@ -127,7 +130,7 @@ const UsersRegistration = () => {
 
         if (email !== confirm_email) {
           setIsEmailMatch(false)
-          alert('Email provided do not match.')
+          alert(translate('usersValidationText8', language))
           return
         } else {
           setIsEmailMatch(true)
@@ -153,7 +156,7 @@ const UsersRegistration = () => {
             confirm_email: '',
           })
         } catch (error) {
-          console.error('There was an error with user registration!', error)
+          console.error(translate('usersValidationText7', language))
         }
       }
 
@@ -316,7 +319,7 @@ const UsersRegistration = () => {
                             value={userData.confirm_email}
                             placeholder={`${translate('eg', language)} : takahashi_taro@gmail.com`}
                             style={{
-                              border: isEmailValid && isIsEmailMatch? '' : '2px solid red',
+                              border: isEmailValid && isEmailMatch? '' : '2px solid red',
                             }}
                             onChange={(e) => handleChange(e)}
                           />
