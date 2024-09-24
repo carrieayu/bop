@@ -364,6 +364,7 @@ const UsersListAndEdit: React.FC = () => {
                                     <RiDeleteBin6Fill
                                       className='delete-icon'
                                       onClick={() => openModal('users', users.id)}
+                                      style={{ color: 'red' }}
                                     />
                                   </td>
                                 </tr>

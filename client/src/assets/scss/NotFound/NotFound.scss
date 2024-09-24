@@ -1,29 +1,70 @@
-.personnel_top_btn_cont{
-    margin-left: 5%;
-    display: flex;
-    justify-content: space-between;
-    .header-buttons{
-        display: flex;
-        gap: 30px;
-        .header-btn{                        
-            margin-top: 15px;
-            border: 1px solid #808080;
-            width: 10rem;
-            height: 30px;
-            border-radius: 5px !important;
+.notFound_wrapper{
+    max-width: 2560px;
+    .notFound_header_cont{
+        margin: 0px 0px 0px 0px;
+        height: 60px;
+        .header_container{
             background-color: #fff;
-            color: #000;
+            padding: 5px 5px 10px 5px;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
         }
-        .header-btn:hover{
-            background-color: #808080;
-            color: #fff;
-        }
-        .h-btn-active{
-            background-color: #808080;
-            color: #fff;
+        .notFound_top_btn_cont{
+            margin-left: 5%;
+            display: flex;
+            justify-content: space-between;
+            .notFound_header-buttons{
+                display: flex;
+                gap: 30px;
+                .header-btn{                        
+                    margin-top: 15px;
+                    border: 1px solid #808080;
+                    width: 12rem;
+                    height: 30px;
+                    border-radius: 5px !important;
+                    background-color: #fff;
+                    color: #000;
+                }
+                .header-btn:hover{
+                    background-color: #808080;
+                    color: #fff;
+                }
+                .h-btn-active{
+                    background-color: #808080;
+                    color: #fff;
+                }
+            }
         }
     }
-}
-.not_found{
-    margin-top: 200px;
+    .notFound_cont_wrapper{
+        display: flex;
+        background-color: #EFEDEA;
+        width: 100vw;
+        height: 130vh;
+        .notFound_wrapper_div{
+            width: 84%;
+            height: 100vh;
+            padding: 10px 30px 10px 30px;
+            .notFound_top_content{
+                border: 1px solid #fff;
+                border-radius: 5px;
+                background-color: #fff;
+                .notFound_top_body_cont{
+                    background-color: #fff;
+                    height: 4rem;
+                }
+                .notFound_mid_body_cont{
+                    height: 118vh;
+                    .notFound_table_wrapper{
+                        .not_found{
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            padding-top: 300px;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

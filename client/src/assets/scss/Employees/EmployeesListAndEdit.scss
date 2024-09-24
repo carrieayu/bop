@@ -206,9 +206,6 @@
                         table{
                             width: 97%;
                             height: 80vh;
-                            @media only screen and (min-width: 1920px){
-                                height: 85vh;
-                            }
                             .EmployeesListAndEdit_table_title{
                                 text-align: center;
                                 background-color: #808080;

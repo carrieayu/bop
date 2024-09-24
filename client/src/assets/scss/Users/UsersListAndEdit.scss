@@ -205,10 +205,6 @@
                         padding: 0px 0px 0px 70px;
                         table{
                             width: 97%;
-                            height: 80vh;
-                            @media only screen and (min-width: 1920px){
-                                height: 85vh;
-                            }
                             .UsersListAndEdit_table_title{
                                 text-align: center;
                                 background-color: #808080;
@@ -230,10 +226,6 @@
                                     .UsersListAndEdit_table_body_content_vertical{
                                         border: none;
                                         text-align: center;
-                                        .delete-icon{
-                                            color: red;
-                                            cursor: pointer;
-                                        }
                                     }
                                 }
                             }
