@@ -6,9 +6,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { translate } from "../../utils/translationUtil";
 import AlertModal from "../../components/AlertModal/AlertModal";
+import { RiDeleteBin6Fill } from "react-icons/ri";
 
 const BusinessDivisionsListAndEdit: React.FC = () => {
-    const [activeTab, setActiveTab] = useState('/planning')
+    const [activeTab, setActiveTab] = useState('/planning-list')
     const navigate = useNavigate()
     const location = useLocation()
     const [activeTabOther, setActiveTabOther] = useState('businessDivision')
@@ -155,7 +156,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
 
       useEffect(() => {
         const path = location.pathname;
-        if (path === '/dashboard' || path === '/planning' || path === '/*') {
+        if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
           setActiveTab(path);
         }
       }, [location.pathname]);
@@ -204,8 +205,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
             />
             <Btn
               label={translate('profitAndlossPlanning', language)}
-              onClick={() => handleTabClick('/planning')}
-              className={activeTab === '/planning' ? 'h-btn-active header-btn' : 'header-btn'}
+              onClick={() => handleTabClick('/planning-list')}
+              className={activeTab === '/planning-list' ? 'h-btn-active header-btn' : 'header-btn'}
             />
             <Btn
               label={translate('results', language)}
@@ -223,9 +224,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         </div>
       </div>
       <div className='BusinessDivisionsListAndEdit_cont_wrapper'>
-        <div className='BusinessDivisionsListAndEdit_sidebar'>
           <Sidebar />
-        </div>
         <div className='BusinessDivisionsListAndEdit_maincontent_wrapper'>
           <div className='BusinessDivisionsListAndEdit_top_content'>
             <div className='BusinessDivisionsListAndEdit_top_body_cont'>

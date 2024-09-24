@@ -19,7 +19,7 @@ const EmployeeExpensesList: React.FC = () => {
     const personnel = useAppSelector((state: RootState) => state.personnel.personnelList)
     const itemsPerRow = 4
     const dispatch = useDispatch()
-    const [activeTab, setActiveTab] = useState('/planning')
+    const [activeTab, setActiveTab] = useState('/planning-list')
     const navigate = useNavigate()
     const location = useLocation()
     const [activeTabOther, setActiveTabOther] = useState('employeeExpenses')
@@ -59,7 +59,7 @@ const EmployeeExpensesList: React.FC = () => {
     
     useEffect(() => {
       const path = location.pathname;
-      if (path === '/dashboard' || path === '/planning' || path === '/*') {
+      if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
         setActiveTab(path);
       }
     }, [location.pathname]);
@@ -105,8 +105,8 @@ const EmployeeExpensesList: React.FC = () => {
           />
           <Btn
             label={translate('profitAndlossPlanning', language)}
-            onClick={() => handleTabClick("/planning")}
-            className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
+            onClick={() => handleTabClick("/planning-list")}
+            className={activeTab === "/planning-list" ? "h-btn-active header-btn" : "header-btn"}
           />
           <Btn
             label={translate('results', language)}
@@ -124,9 +124,7 @@ const EmployeeExpensesList: React.FC = () => {
           </div>
         </div>
         <div className='employeeExpensesList_cont_wrapper'>
-          <div className='employeeExpensesList_sidebar'>
             <Sidebar />
-          </div>
           <div className='employeeExpensesList_wrapper_div'>
             <div className='employeeExpensesList_top_content'>
               <div className='employeeExpensesList_top_body_cont'>

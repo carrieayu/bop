@@ -46,7 +46,7 @@ const Dashboard = () => {
   const datePlanning = useAppSelector((state: RootState) => state.graph.datePlanning)
   const select = [5, 10, 100]
   const [paginatedData, setPaginatedData] = useState<any[]>([])
-  const [activeTab, setActiveTab] = useState('/planning')
+  const [activeTab, setActiveTab] = useState('/dashboard')
   const [isSwitchActive, setIsSwitchActive] = useState(false); 
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
@@ -77,7 +77,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     const path = location.pathname;
-    if (path === '/dashboard' || path === '/planning' || path === '/*') {
+    if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
       setActiveTab(path);
     }
   }, [location.pathname]);
@@ -183,8 +183,8 @@ const Dashboard = () => {
           />
           <Btn
             label={translate('profitAndlossPlanning', language)}
-            onClick={() => handleTabClick("/planning")}
-            className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
+            onClick={() => handleTabClick("/planning-list")}
+            className={activeTab === "/planning-list" ? "h-btn-active header-btn" : "header-btn"}
           />
           <Btn
             label={translate('results', language)}
@@ -201,9 +201,7 @@ const Dashboard = () => {
         </div>
       </div>
       <div className='dashboard_content_wrapper'>
-        <div className='dashboard_sidebar'>
           <Sidebar />
-        </div>
         <div className='dashboard_content'>
           <div className='dashboard_body_cont'>
             <div className='dashboard_card_cont'>

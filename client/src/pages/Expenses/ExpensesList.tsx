@@ -25,7 +25,7 @@ const header: string[] =
   ];
 
 const ExpensesList: React.FC = () => {
-    const [activeTab, setActiveTab] = useState('/planning')
+    const [activeTab, setActiveTab] = useState('/planning-list')
     const navigate = useNavigate()
     const location = useLocation()
     const [activeTabOther, setActiveTabOther] = useState('expenses')
@@ -113,7 +113,7 @@ const ExpensesList: React.FC = () => {
 
       useEffect(() => {
         const path = location.pathname;
-        if (path === '/dashboard' || path === '/planning' || path === '/*') {
+        if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
           setActiveTab(path);
         }
       }, [location.pathname]);
@@ -143,8 +143,8 @@ const ExpensesList: React.FC = () => {
           />
           <Btn
             label={translate('profitAndlossPlanning', language)}
-            onClick={() => handleTabClick("/planning")}
-            className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
+            onClick={() => handleTabClick("/planning-list")}
+            className={activeTab === "/planning-list" ? "h-btn-active header-btn" : "header-btn"}
           />
           <Btn
             label={translate('results', language)}
@@ -162,9 +162,7 @@ const ExpensesList: React.FC = () => {
         </div>
       </div>
       <div className='expensesList_cont_wrapper'>
-        <div className='expensesList_sidebar'>
           <Sidebar />
-        </div>
         <div className='expensesList_btn_cont_wrapper'>
           <div className='expensesList_top_content'>
             <div className='expensesList_top_body_cont'></div>

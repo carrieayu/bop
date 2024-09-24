@@ -96,20 +96,13 @@
   .employeeExpensesRegistration_cont_wrapper{
     display: flex;
     background-color: #EFEDEA;
+    width: 100vw;
+    height: 130vh;
     @media only screen and (max-width: 1000px){
         flex-direction: column;
     }
-    .employeeExpensesRegistration_sidebar{
-      flex: 0 0 205px;
-      background-color: #1c302c;
-      @media only screen and (max-width: 1000px){
-          flex: 0 0 auto;
-          width: 100%;
-          display: none;
-      }
-    }
     .employeeExpensesRegistration_wrapper_div{
-      width: 100%;
+      width: 84%;
       height: 100vh;
       padding: 10px 30px 10px 30px;
       .employeeExpensesRegistration_top_content{
@@ -124,7 +117,7 @@
           }
         }
         .employeeExpensesRegistration_mid_body_cont{
-          height: 87vh;
+          height: 118vh;
           .employeeExpensesRegistration_mid_btn_cont{
             margin-left: 5%;
             display: flex;

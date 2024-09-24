@@ -9,7 +9,7 @@ interface ButtonData {
 }
 
 const NotFound = () => {
-  const [activeTab, setActiveTab] = useState('/planning')
+  const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -20,16 +20,16 @@ const NotFound = () => {
   
   useEffect(() => {
     const path = location.pathname;
-    if (path === '/dashboard' || path === '/planning' || path === '/*') {
+    if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
       setActiveTab(path);
     }
   }, [location.pathname]);
   
   return (
-    <div className='personnel_wrapper'>
-    <div className="header_cont">
-      <div className="personnel_top_btn_cont">
-        <div className="header-buttons">
+    <div className='notFound_wrapper'>
+    <div className="notFound_header_cont">
+      <div className="notFound_top_btn_cont">
+        <div className="notFound_header-buttons">
           <Btn
               label="分析"
               onClick={() => handleTabClick("/dashboard")}
@@ -37,7 +37,7 @@ const NotFound = () => {
             />
             <Btn
               label="計画"
-              onClick={() => handleTabClick("/planning")}
+              onClick={() => handleTabClick("/planning-list")}
               className={activeTab === "plan" ? "h-btn-active header-btn" : "header-btn"}
             />
             <Btn
@@ -48,17 +48,14 @@ const NotFound = () => {
         </div>
       </div>
      </div>
-     <div className="personnel_cont_wrapper">
-         <div className="sidebar">
+     <div className="notFound_cont_wrapper">
              <Sidebar />
-         </div>
-         <div className="personnel_wrapper_div">
-                 <div className="personnel_top_content">
-                     <div className="personnel_top_body_cont">
-                     </div>
-                     <div className="personnel_mid_body_cont">
-                         <div className="personnel_table_wrapper">
-                          <div className="has-text-centered not_found">
+         <div className="notFound_wrapper_div">
+                 <div className="notFound_top_content">
+                     <div className="notFound_top_body_cont"></div>
+                     <div className="notFound_mid_body_cont">
+                         <div className="notFound_table_wrapper">
+                          <div className="has-text-centered mt-10 not_found">
                               <h1 className="is-size-1 has-text-weight-bold has-text-primary">404</h1>
                               <p className="is-size-5 has-text-weight-medium">
                                 {" "}
