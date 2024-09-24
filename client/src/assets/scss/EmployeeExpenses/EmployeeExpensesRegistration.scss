@@ -99,15 +99,6 @@
     @media only screen and (max-width: 1000px){
         flex-direction: column;
     }
-    .employeeExpensesRegistration_sidebar{
-      flex: 0 0 205px;
-      background-color: #1c302c;
-      @media only screen and (max-width: 1000px){
-          flex: 0 0 auto;
-          width: 100%;
-          display: none;
-      }
-    }
     .employeeExpensesRegistration_wrapper_div{
       width: 100%;
       height: 100vh;

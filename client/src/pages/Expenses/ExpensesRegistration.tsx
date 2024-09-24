@@ -11,7 +11,7 @@ const months = [
 ];
 
 const ExpensesRegistration = () => {
-  const [activeTab, setActiveTab] = useState('/planning')
+  const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
   const [activeTabOther, setActiveTabOther] = useState('expenses')
@@ -180,7 +180,7 @@ const ExpensesRegistration = () => {
 
   useEffect(() => {
     const path = location.pathname;
-    if (path === '/dashboard' || path === '/planning' || path === '/*') {
+    if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
       setActiveTab(path);
     }
   }, [location.pathname]);
@@ -220,8 +220,8 @@ const ExpensesRegistration = () => {
           />
           <Btn
             label={translate('profitAndlossPlanning', language)}
-            onClick={() => handleTabClick("/planning")}
-            className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
+            onClick={() => handleTabClick("/planning-list")}
+            className={activeTab === "/planning-list" ? "h-btn-active header-btn" : "header-btn"}
           />
           <Btn
             label={translate('results', language)}
@@ -238,9 +238,7 @@ const ExpensesRegistration = () => {
         </div>
       </div>
       <div className='expensesRegistration_content_wrapper'>
-        <div className='expensesRegistration_sidebar'>
           <Sidebar />
-        </div>
         <div className='expensesRegistration_data_content'>
           <div className='expensesRegistration_top_body_cont'></div>
           <div className='expensesRegistration_mid_body_cont'>

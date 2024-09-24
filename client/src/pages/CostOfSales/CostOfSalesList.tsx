@@ -9,7 +9,7 @@ import { translate } from "../../utils/translationUtil";
 
 
 const CostOfSalesList: React.FC = () => {
-    const [activeTab, setActiveTab] = useState('/planning')
+    const [activeTab, setActiveTab] = useState('/planning-list')
     const navigate = useNavigate()
     const location = useLocation()
     const [activeTabOther, setActiveTabOther] = useState('costOfSales')
@@ -99,7 +99,7 @@ const CostOfSalesList: React.FC = () => {
 
       useEffect(() => {
         const path = location.pathname;
-        if (path === '/dashboard' || path === '/planning' || path === '/*') {
+        if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
           setActiveTab(path);
         }
       }, [location.pathname]);
@@ -166,8 +166,8 @@ const CostOfSalesList: React.FC = () => {
           />
           <Btn
             label={translate('profitAndlossPlanning', language)}
-            onClick={() => handleTabClick("/planning")}
-            className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
+            onClick={() => handleTabClick("/planning-list")}
+            className={activeTab === "/planning-list" ? "h-btn-active header-btn" : "header-btn"}
           />
           <Btn
             label={translate('results', language)}
@@ -185,9 +185,7 @@ const CostOfSalesList: React.FC = () => {
         </div>
         </div>
         <div className="costOfSalesList_cont_wrapper">
-            <div className="costOfSalesList_sidebar">
                 <Sidebar />
-            </div>
             <div className="costOfSalesList_btn_wrapper">
                     <div className="costOfSalesList_top_content">
                         <div className="costOfSalesList_top_body_cont"></div>

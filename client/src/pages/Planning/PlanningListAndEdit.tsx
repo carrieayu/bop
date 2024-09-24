@@ -23,7 +23,7 @@ const PlanningListAndEdit = () => {
   const totalPages = Math.ceil(tableList?.length / rowsPerPage);
   const select = [5, 10, 100];
   const [paginatedData, setPaginatedData] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState('/planning');
+  const [activeTab, setActiveTab] = useState('/planning-list');
   const [isSwitchActive, setIsSwitchActive] = useState(false); 
   const navigate = useNavigate();
   const location = useLocation();
@@ -70,7 +70,7 @@ const PlanningListAndEdit = () => {
 
   useEffect(() => {
     const path = location.pathname;
-    if (path === '/dashboard' || path === '/planning' || path === '/*') {
+    if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
       setActiveTab(path);
     }
   }, [location.pathname]);
@@ -111,8 +111,8 @@ const PlanningListAndEdit = () => {
           />
           <Btn
             label={translate('profitAndlossPlanning', language)}
-            onClick={() => handleTabClick('/planning')}
-            className={activeTab === '/planning' ? 'h-btn-active header-btn' : 'header-btn'}
+            onClick={() => handleTabClick('/planning-list')}
+            className={activeTab === '/planning-list' ? 'h-btn-active header-btn' : 'header-btn'}
           />
           <Btn
             label={translate('results', language)}
@@ -129,9 +129,7 @@ const PlanningListAndEdit = () => {
         </div>
       </div>
       <div className='planning_content_wrapper'>
-        <div className='planning_sidebar'>
           <Sidebar />
-        </div>
         <div className='planning_table_wrapper'>
           <div className='planning_top_cont'>
             <div className='planning_content'>

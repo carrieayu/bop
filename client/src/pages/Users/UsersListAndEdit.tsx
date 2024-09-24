@@ -11,7 +11,7 @@ import DatePicker from 'react-datepicker'
 
 
 const UsersListAndEdit: React.FC = () => {
-    const [activeTab, setActiveTab] = useState('/planning')
+    const [activeTab, setActiveTab] = useState('/planning-list')
     const navigate = useNavigate()
     const location = useLocation()
     const [activeTabOther, setActiveTabOther] = useState('users')
@@ -149,7 +149,7 @@ const UsersListAndEdit: React.FC = () => {
 
       useEffect(() => {
         const path = location.pathname;
-        if (path === '/dashboard' || path === '/planning' || path === '/*') {
+        if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
           setActiveTab(path);
         }
       }, [location.pathname]);
@@ -220,8 +220,8 @@ const UsersListAndEdit: React.FC = () => {
             />
             <Btn
               label={translate('profitAndlossPlanning', language)}
-              onClick={() => handleTabClick('/planning')}
-              className={activeTab === '/planning' ? 'h-btn-active header-btn' : 'header-btn'}
+              onClick={() => handleTabClick('/planning-list')}
+              className={activeTab === '/planning-list' ? 'h-btn-active header-btn' : 'header-btn'}
             />
             <Btn
               label={translate('results', language)}
@@ -244,9 +244,7 @@ const UsersListAndEdit: React.FC = () => {
         </div>
       </div>
       <div className='UsersListAndEdit_cont_wrapper'>
-        <div className='UsersListAndEdit_sidebar'>
           <Sidebar />
-        </div>
         <div className='UsersListAndEdit_maincontent_wrapper'>
           <div className='UsersListAndEdit_top_content'>
             <div className='UsersListAndEdit_top_body_cont'>

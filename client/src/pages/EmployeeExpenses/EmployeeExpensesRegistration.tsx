@@ -20,7 +20,7 @@ const EmployeeExpensesRegistration = () => {
   const [personnelList, setPersonnelList] = useState<any>([]);
   const personnel = useSelector((state: RootState) => state.personnelData.personnel);
   const personnelPlanning = useSelector((state: RootState) => state.personnelPlanning.personnelPlanning);
-  const [activeTab, setActiveTab] = useState('/planning')
+  const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
   const [activeTabOther, setActiveTabOther] = useState('employeeExpenses')
@@ -77,7 +77,7 @@ const EmployeeExpensesRegistration = () => {
 
   useEffect(() => {
     const path = location.pathname;
-    if (path === '/dashboard' || path === '/planning' || path === '/*') {
+    if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
       setActiveTab(path);
     }
   }, [location.pathname]);
@@ -201,8 +201,8 @@ const EmployeeExpensesRegistration = () => {
           />
           <Btn
             label={translate('profitAndlossPlanning', language)}
-            onClick={() => handleTabClick("/planning")}
-            className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
+            onClick={() => handleTabClick("/planning-list")}
+            className={activeTab === "/planning-list" ? "h-btn-active header-btn" : "header-btn"}
           />
           <Btn
             label={translate('results', language)}
@@ -220,9 +220,7 @@ const EmployeeExpensesRegistration = () => {
       </div>
      </div>
      <div className="employeeExpensesRegistration_cont_wrapper">
-         <div className="employeeExpensesRegistration_sidebar">
              <Sidebar />
-         </div>
          <div className="employeeExpensesRegistration_wrapper_div">
                  <div className="employeeExpensesRegistration_top_content">
                      <div className="employeeExpensesRegistration_top_body_cont">

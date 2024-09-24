@@ -8,7 +8,7 @@ import { translate } from "../../utils/translationUtil";
 
 
 const ProjectsListAndEdit: React.FC = () => {
-    const [activeTab, setActiveTab] = useState('/planning')
+    const [activeTab, setActiveTab] = useState('/planning-list')
     const navigate = useNavigate()
     const location = useLocation()
     const [activeTabOther, setActiveTabOther] = useState('project')
@@ -154,7 +154,7 @@ const ProjectsListAndEdit: React.FC = () => {
 
       useEffect(() => {
         const path = location.pathname;
-        if (path === '/dashboard' || path === '/planning' || path === '/*') {
+        if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
           setActiveTab(path);
         }
       }, [location.pathname]);
@@ -187,8 +187,8 @@ const ProjectsListAndEdit: React.FC = () => {
             />
             <Btn
               label={translate('profitAndlossPlanning', language)}
-              onClick={() => handleTabClick('/planning')}
-              className={activeTab === '/planning' ? 'h-btn-active header-btn' : 'header-btn'}
+              onClick={() => handleTabClick('/planning-list')}
+              className={activeTab === '/planning-list' ? 'h-btn-active header-btn' : 'header-btn'}
             />
             <Btn
               label={translate('results', language)}
@@ -206,9 +206,7 @@ const ProjectsListAndEdit: React.FC = () => {
         </div>
       </div>
       <div className='projectsList_cont_wrapper'>
-        <div className='projectsList_sidebar'>
           <Sidebar />
-        </div>
         <div className='projectsList_wrapper'>
           <div className='projectsList_top_content'>
             <div className='projectsList_top_body_cont'>

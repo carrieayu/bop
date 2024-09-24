@@ -96,20 +96,13 @@
     .expensesList_cont_wrapper{
         display: flex;
         background-color: #EFEDEA;
+        width: 100vw; 
+        height: 130vh;
         @media only screen and (max-width: 1000px){
             flex-direction: column;
         }
-        .expensesList_sidebar{
-            flex: 0 0 205px;
-            background-color: #1c302c;
-            @media only screen and (max-width: 1000px){
-                flex: 0 0 auto;
-                width: 100%;
-                display: none;
-            }
-        }
         .expensesList_btn_cont_wrapper{
-            width: 100%;
+            width: 84%;
             height: 100vh;
             padding: 10px 30px 10px 30px;
             .expensesList_top_content{
@@ -121,7 +114,7 @@
                     height: 4rem;
                 }
                 .expensesList_mid_body_cont{
-                    height: 87vh;
+                    height: 118vh;
                     .expensesList_mid_btn_cont{
                         margin-left: 5%;
                         display: flex;
@@ -165,12 +158,12 @@
                     }
                     .expensesList_table_wrapper{
                         width: 100%;
-                        height: 50vh;
+                        height: 80vh;
                         overflow-y: auto; 
                         overflow-x: hidden;
                         scrollbar-width: none;
-                        @media only screen and (min-width: 1875px){
-                            height: 55vh;
+                        @media only screen and (min-width: 1920px){
+                            height: 85vh;
                         }
                         &::-webkit-scrollbar {
                             width: 0;
@@ -191,6 +184,10 @@
                             padding: 0px 0px 0px 70px;
                             table{
                                 width: 97%;
+                                height: 80vh;
+                                @media only screen and (min-width: 1920px){
+                                    height: 85vh;
+                                }
                                 .expensesList_table_title{
                                     text-align: center;
                                     background-color: #808080;
