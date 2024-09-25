@@ -1,6 +1,9 @@
 .EmployeesRegistration_wrapper{
     display: flex;
     flex-direction: column;
+    .RegistrationButtons_title_container{
+        padding: 58.5px 70px 50px 70px !important;
+    }
     .EmployeesRegistration_content_wrapper{
         display: flex;
         background-color: #EFEDEA;

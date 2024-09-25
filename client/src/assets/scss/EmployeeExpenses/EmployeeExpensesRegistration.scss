@@ -1,5 +1,8 @@
 .employeeExpensesRegistration_wrapper{
   max-width: 2560px;
+  .RegistrationButtons_title_container{
+    padding: 54.5px 70px 50px 70px !important;
+  }
   .employeeExpensesRegistration_cont_wrapper{
     display: flex;
     background-color: #EFEDEA;
@@ -20,7 +23,7 @@
           background-color: #fff;
           height: 4rem;
           .employeeExpensesRegistration_top_btn_cont{
-
+            
           }
         }
         .employeeExpensesRegistration_mid_body_cont{

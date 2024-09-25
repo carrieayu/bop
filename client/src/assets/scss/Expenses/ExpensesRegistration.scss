@@ -1,6 +1,9 @@
 .expensesRegistration_wrapper{
     display: flex;
     flex-direction: column;
+    .RegistrationButtons_title_container{
+        padding: 54.5px 70px 50px 70px !important;
+    }
     .expensesRegistration_content_wrapper{
         display: flex;
         background-color: #EFEDEA;
