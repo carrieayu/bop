@@ -1,93 +1,10 @@
 .UsersRegistration_wrapper{
     display: flex;
     flex-direction: column;
-    .UsersRegistration_header_cont{
-        margin-left: 5%;
-        height: 60px;
-        display: flex;
-        justify-content: space-between;
-        .header_container{
-            background-color: #fff;
-            padding: 5px 5px 10px 5px;
-            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        .UsersRegistration_header-buttons{
-            display: flex;
-            gap: 30px;
-            .header-btn{                        
-                margin-top: 15px;
-                border: 1px solid #808080;
-                width: 12rem;
-                height: 30px;
-                border-radius: 5px !important;
-                background-color: #fff;
-                color: #000;
-            }
-            .header-btn:hover{
-                background-color: #808080;
-                color: #fff;
-            }
-            .h-btn-active{
-                background-color: #808080;
-                color: #fff;
-            }
-        }
-        .UsersRegistration_language-toggle{
-            gap: 10px;
-            display: flex;
-            padding-right: 50px;
-            align-items: center;
-            .UsersRegistration_pl-label{
-                display: inline-block;
-            }
-            .UsersRegistration_switch{
-                margin-top: 2px;
-                position: relative;
-                display: inline-block;
-                width: 40px;
-                height: 20px;
-                margin-left: 2px;
-                input{
-                    opacity: 0;
-                    width: 0;
-                    height: 0;
-  
-                    &:checked + .UsersRegistration_slider {
-                      background-color: #2196F3;
-                    }
-  
-                    &:focus + .UsersRegistration_slider {
-                      box-shadow: 0 0 1px #2196F3;
-                    }
-  
-                    &:checked + .UsersRegistration_slider:before {
-                      transform: translateX(20px);
-                    }
-                }
-                .UsersRegistration_slider{
-                    position: absolute;
-                    cursor: pointer;
-                    height: 21px;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background-color: #ccc;
-                    border-radius: 10px;
-                    transition: background-color 0.4s; 
-                    &:before {
-                      position: absolute;
-                      content: "";
-                      height: 16px;
-                      width: 16px;
-                      left: 2px;
-                      bottom: 2px;
-                      background-color: #fff;
-                      border-radius: 50%;
-                      transition: transform 0.4s;
-                    }
-                }
-            }
+    .RegistrationButtons_title_container{
+        padding: 58.5px 70px 50px 70px !important;
+        @media only screen and (min-width: 1920px){
+            padding: 59.5px 70px 50px 70px !important;
         }
     }
     .UsersRegistration_content_wrapper{
@@ -99,7 +16,7 @@
             flex-direction: column;
         }
         .UsersRegistration_data_content{
-            width: 84%;
+            width: 80%;
             margin: 10px 30px 10px 30px;
             border: 1px solid #fff;
             border-radius: 5px;
@@ -110,40 +27,13 @@
             }
             .UsersRegistration_mid_body_cont{
                 background-color: #fff;
-                max-height: 670px;
-                overflow-y: auto;
-                overflow-x: hidden;
-                scrollbar-width: thin;
-                scrollbar-color: #888 #f1f1f1;
-                .UsersRegistration_mid_btn_cont{
-                    margin-left: 5%;
-                    display: flex;
-                    gap: 2%;
-                    .body-btn{
-                        margin-top: 15px;
-                        border: 1px solid #808080;
-                        width: 10rem;
-                        height: 30px;
-                        border-radius: 5px !important;
-                        background-color: #fff;
-                        color: #000;
-                    }
-                    .body-btn:hover{
-                        background-color: #808080;
-                        color: #fff;
-                    }
-                    .body-btn-active{
-                        background-color: #808080;
-                        color: #fff;
-                    }
-                }
+                // max-height: 670px;
+                // overflow-y: auto;
+                // overflow-x: hidden;
+                // scrollbar-width: thin;
+                // scrollbar-color: #888 #f1f1f1;
                 .UsersRegistration_mid_form_cont{
-                    margin: 10px 50px;
-                    .UsersRegistration_form-title{
-                        padding: 10px 0px 9px 23px;
-                        font-weight: bold;
-                        color: #000;
-                    }
+                    margin: -20px 50px;
                     .UsersRegistration_top-form-input-div{
                         padding: 25px 0px 0px 20px;
                         .UsersRegistration_username-div{

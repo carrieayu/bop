@@ -4,6 +4,8 @@ import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar/Sidebar'
+import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
+import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 
 const EmployeesRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -127,64 +129,29 @@ const EmployeesRegistration = () => {
 
   return (
     <div className='EmployeesRegistration_wrapper'>
-      <div className='EmployeesRegistration_header_cont'>
-      <div className="EmployeesRegistration_header-buttons">
-          <Btn
-            label={translate('analysis', language)}
-            onClick={() => handleTabClick("/dashboard")}
-            className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
-          />
-          <Btn
-            label={translate('profitAndlossPlanning', language)}
-            onClick={() => handleTabClick("/planning-list")}
-            className={activeTab === "/planning-list" ? "h-btn-active header-btn" : "header-btn"}
-          />
-          <Btn
-            label={translate('results', language)}
-            onClick={() => handleTabClick("/*")}
-            className={activeTab === "/*" ? "h-btn-active header-btn" : "header-btn"}
-          />
-        </div>
-        <div className="EmployeesRegistration_language-toggle">
-          <p className="EmployeesRegistration_pl-label">English</p>
-            <label className="EmployeesRegistration_switch">
-              <input type="checkbox" checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle}/>
-              <span className="EmployeesRegistration_slider"></span>
-            </label>
-        </div>
-      </div>
+        <HeaderButtons 
+            activeTab={activeTab}
+            handleTabClick={handleTabClick}
+            isTranslateSwitchActive={isTranslateSwitchActive}
+            handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+        />
       <div className='EmployeesRegistration_content_wrapper'>
           <Sidebar />
         <div className='EmployeesRegistration_data_content'>
           <div className='EmployeesRegistration_top_body_cont'></div>
           <div className='EmployeesRegistration_mid_body_cont'>
-            <div className='EmployeesRegistration_mid_btn_cont'>
-              {[...Array(4)].map((_, index) => (
-                <Btn
-                  key={index}
-                  label={translate(index === 0 ? 'client' : index === 1 ? 'employee' : index === 2 ? 'businessDivision' : 'users', language)}
-                  onClick={() =>
-                    handleTabsClick(
-                      index === 0
-                        ? 'client'
-                        : index === 1
-                          ? 'employee'
-                          : index === 2
-                            ? 'businessDivision'
-                            : 'users',
-                    )
-                  }
-                  className={
-                    activeTabOther ===
-                    (index === 0 ? 'client' : index === 1 ? 'employee' : index === 2 ? 'businessDivision' : 'users')
-                      ? 'body-btn-active body-btn'
-                      : 'body-btn'
-                  }
+                <RegistrationButtons
+                  activeTabOther={activeTabOther}
+                  message={translate('employeesRegistration', language)}
+                  handleTabsClick={handleTabsClick}
+                  buttonConfig={[
+                    { labelKey: 'client', tabKey: 'client' },
+                    { labelKey: 'employee', tabKey: 'employee' },
+                    { labelKey: 'businessDivision', tabKey: 'businessDivision' },
+                    { labelKey: 'users', tabKey: 'users' },
+                  ]}
                 />
-              ))}
-            </div>
             <div className='EmployeesRegistration_mid_form_cont'>
-              <p className='EmployeesRegistration_form-title'>{translate('employeesRegistration', language)}</p>
               {/* <form onSubmit={handleSubmit}> */}
                   <div key='' className='EmployeesRegistration_form-content EmployeesRegistration_ForImplementationOfPlusAndMinus'>
                     <div className='EmployeesRegistration_form-content EmployeesRegistration_ForImplementationOfHorizontalLineBelow'></div>
