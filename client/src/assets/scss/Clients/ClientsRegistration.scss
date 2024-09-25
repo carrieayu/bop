@@ -3,6 +3,9 @@
     flex-direction: column;
     .RegistrationButtons_title_container{
         padding: 58.5px 70px 50px 70px !important;
+        @media only screen and (min-width: 1920px){
+            padding: 59.5px 70px 50px 70px !important;
+        }
     }
     .ClientsRegistration_content_wrapper{
         display: flex;
