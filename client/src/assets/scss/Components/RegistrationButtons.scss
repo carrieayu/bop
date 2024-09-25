@@ -1,0 +1,42 @@
+.RegistrationButtons_btn_cont {
+    margin-left: 5%;
+    display: flex;
+    gap: 2%;
+    .body-btn {
+      margin-top: 15px;
+      border: 1px solid #808080;
+      width: 10rem;
+      height: 30px;
+      border-radius: 5px !important;
+      background-color: #fff;
+      color: #000;
+    }
+    .body-btn:hover {
+      background-color: #808080;
+      color: #fff;
+    }
+    .body-btn-active {
+      background-color: #808080;
+      color: #fff;
+    }
+  }
+  
+  .RegistrationButtons_title_container {
+    display: flex;
+    width: 100%;
+    padding: 50px 70px;
+    gap: 7.8%;
+    align-items: center;
+  
+    .RegistrationButtons_title_table_cont {
+      .RegistrationButtons_title {
+        letter-spacing: 2px;
+        font-weight: bold;
+        color: #000;
+        @media only screen and (min-width: 1920px) {
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+  

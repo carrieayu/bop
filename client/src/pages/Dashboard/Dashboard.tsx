@@ -15,6 +15,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import TablePlanningA from '../../components/Table/TablePlanningA'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
+import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 
 function formatNumberWithCommas(number: number): string {
   return number.toLocaleString();
@@ -174,32 +175,12 @@ const Dashboard = () => {
 
   return (
     <div className='dashboard_wrapper'>
-      <div className='dashboard_header_cont'>
-        <div className="dashboard_header-buttons">
-          <Btn
-            label={translate('analysis', language)}
-            onClick={() => handleTabClick("/dashboard")}
-            className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
-          />
-          <Btn
-            label={translate('profitAndlossPlanning', language)}
-            onClick={() => handleTabClick("/planning-list")}
-            className={activeTab === "/planning-list" ? "h-btn-active header-btn" : "header-btn"}
-          />
-          <Btn
-            label={translate('results', language)}
-            onClick={() => handleTabClick("/*")}
-            className={activeTab === "/*" ? "h-btn-active header-btn" : "header-btn"}
-          />
-        </div>
-        <div className="dashboard_language-toggle">
-          <p className="dashboard_pl-label_translate">English</p>
-            <label className="dashboard_switch_translate">
-              <input type="checkbox" checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle}/>
-              <span className="dashboard_slider_translate"></span>
-            </label>
-        </div>
-      </div>
+        <HeaderButtons 
+            activeTab={activeTab}
+            handleTabClick={handleTabClick}
+            isTranslateSwitchActive={isTranslateSwitchActive}
+            handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+        />
       <div className='dashboard_content_wrapper'>
           <Sidebar />
         <div className='dashboard_content'>

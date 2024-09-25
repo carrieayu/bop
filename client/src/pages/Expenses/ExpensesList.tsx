@@ -6,6 +6,8 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { translate } from "../../utils/translationUtil";
+import ListButtons from "../../components/ListButtons/ListButtons";
+import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
 
 
 const header: string[] = 
@@ -133,75 +135,30 @@ const ExpensesList: React.FC = () => {
 
   return (
     <div className='expensesList_wrapper'>
-      <div className='expensesList_header_cont'>
-        <div className='expensesList_top_btn_cont'>
-        <div className="expensesList_header-buttons">
-          <Btn
-            label={translate('analysis', language)}
-            onClick={() => handleTabClick("/dashboard")}
-            className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
-          />
-          <Btn
-            label={translate('profitAndlossPlanning', language)}
-            onClick={() => handleTabClick("/planning-list")}
-            className={activeTab === "/planning-list" ? "h-btn-active header-btn" : "header-btn"}
-          />
-          <Btn
-            label={translate('results', language)}
-            onClick={() => handleTabClick("/*")}
-            className={activeTab === "/*" ? "h-btn-active header-btn" : "header-btn"}
-          />
-        </div>
-        <div className="expensesList_language-toggle">
-          <p className="expensesList_pl-label">English</p>
-            <label className="expensesList_switch">
-              <input type="checkbox" checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle}/>
-              <span className="expensesList_slider"></span>
-            </label>
-        </div>
-        </div>
-      </div>
+        <HeaderButtons 
+            activeTab={activeTab}
+            handleTabClick={handleTabClick}
+            isTranslateSwitchActive={isTranslateSwitchActive}
+            handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+        />
       <div className='expensesList_cont_wrapper'>
           <Sidebar />
         <div className='expensesList_btn_cont_wrapper'>
           <div className='expensesList_top_content'>
             <div className='expensesList_top_body_cont'></div>
             <div className='expensesList_mid_body_cont'>
-              <div className='expensesList_mid_btn_cont'>
-                {[...Array(4)].map((_, index) => (
-                  <Btn
-                    key={index}
-                    label={translate(index === 0 ? 'project' : index === 1 ? 'employeeExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
-                    onClick={() =>
-                      handleTabsClick(
-                        index === 0
-                          ? 'project'
-                          : index === 1
-                            ? 'employeeExpenses'
-                            : index === 2
-                              ? 'expenses'
-                              : 'costOfSales',
-                      )
-                    }
-                    className={
-                      activeTabOther ===
-                      (index === 0
-                        ? 'project'
-                        : index === 1
-                          ? 'employeeExpenses'
-                          : index === 2
-                            ? 'expenses'
-                            : 'costOfSales')
-                        ? 'body-btn-active body-btn'
-                        : 'body-btn'
-                    }
-                  />
-                ))}
-              </div>
-              <div className='expensesList_title_table_cont'>
-                <p className='expensesList_title'>{translate('expensesList', language)}</p>
-                <Btn label={translate('newRegistration', language)} size='normal' onClick={handleNewRegistrationClick} className='expensesList_btn' />
-              </div>
+              <ListButtons
+                  activeTabOther={activeTabOther}
+                  message={translate('expensesList', language)}
+                  handleTabsClick={handleTabsClick}
+                  handleNewRegistrationClick={handleNewRegistrationClick}
+                  buttonConfig={[
+                    { labelKey: 'project', tabKey: 'project' },
+                    { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
+                    { labelKey: 'expenses', tabKey: 'expenses' },
+                    { labelKey: 'costOfSales', tabKey: 'costOfSales' },
+                  ]}
+                />
               <div className='expensesList_table_wrapper'>
                 <div className='expensesList_table_cont'>
                   <div className='columns is-mobile'>

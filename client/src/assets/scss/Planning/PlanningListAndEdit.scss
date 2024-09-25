@@ -1,88 +1,5 @@
 .planning_wrapper{
   max-width: 2560px;
-  .planning_header_cont{
-    margin-left: 5%;
-    height: 60px;
-    display: flex;
-    justify-content: space-between;
-    .planning_header_container{
-      background-color: #fff;
-      padding: 5px 5px 10px 5px;
-      box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    }
-    .planning_header-buttons{
-      display: flex;
-      gap: 30px;
-      .header-btn{
-        margin-top: 15px;
-        border: 1px solid #808080;
-        width: 12rem;
-        height: 30px;
-        border-radius: 5px !important;
-        background-color: #fff;
-        color: #000;
-      }
-      .header-btn:hover{
-        background-color: #808080;
-        color: #fff;
-      }
-      .h-btn-active{
-          background-color: #808080;
-          color: #fff;
-      }
-    }
-    .planning_language-toggle{
-      gap: 10px;
-      display: flex;
-      padding-right: 50px;
-      align-items: center;
-      .planning_pl-label_translate{
-        display: inline-block;
-      }
-      .planning_switch_translate{
-        margin-top: 2px;
-        position: relative;
-        display: inline-block;
-        width: 40px;
-        height: 20px;
-        margin-left: 2px;
-        input{
-          opacity: 0;
-          width: 0;
-          height: 0;
-          &:checked + .planning_slider_translate{
-            background-color: #2196F3;
-          }
-          &:focus + .planning_slider_translate{
-            box-shadow: 0 0 1px #2196F3;
-          }
-          &:checked + .planning_slider_translate:before{
-            transform: translateX(20px);
-          }
-        }
-        .planning_slider_translate{
-          position: absolute;
-          cursor: pointer;
-          height: 20px; 
-          width: 40px;   
-          background-color: #ccc;
-          border-radius: 10px;
-          transition: background-color 0.4s;
-          &:before {
-            position: absolute;
-            content: "";
-            height: 16px;  
-            width: 16px;   
-            left: 2px;
-            bottom: 2px;
-            background-color: #fff;
-            border-radius: 50%;
-            transition: transform 0.4s;
-          }
-        }
-      }
-    }
-  }
   .planning_content_wrapper{
     display: flex;
     background-color: #EFEDEA;
@@ -184,7 +101,7 @@
                     height: 122vh;
                   }
                   table{
-
+                    width: 100%;
                   }
                 }
               }

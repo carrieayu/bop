@@ -1,98 +1,5 @@
 .ClientsListAndEdit_wrapper{
     max-width: 2560px;
-    .ClientsListAndEdit_header_cont{
-        margin: 0px 0px 0px 0px;
-        height: 60px;
-        .header_container{
-            background-color: #fff;
-            padding: 5px 5px 10px 5px;
-            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-            
-        }
-        .ClientsListAndEdit_top_btn_cont{
-            margin-left: 5%;
-            display: flex;
-            justify-content: space-between;
-            .ClientsListAndEdit_header-buttons{
-                display: flex;
-                gap: 30px;
-                .header-btn{                        
-                    margin-top: 15px;
-                    border: 1px solid #808080;
-                    width: 12rem;
-                    height: 30px;
-                    border-radius: 5px !important;
-                    background-color: #fff;
-                    color: #000;
-                }
-                .header-btn:hover{
-                    background-color: #808080;
-                    color: #fff;
-                }
-                .h-btn-active{
-                    background-color: #808080;
-                    color: #fff;
-                }
-            }
-            .ClientsListAndEdit_language-toggle{
-                gap: 10px;
-                display: flex;
-                padding-right: 50px;
-                align-items: center;
-                .ClientsListAndEdit_pl-label{
-                    display: inline-block;
-                }
-                .ClientsListAndEdit_switch{
-                    margin-top: 2px;
-                    position: relative;
-                    display: inline-block;
-                    width: 40px;
-                    height: 20px;
-                    margin-left: 2px;
-                    input{
-                        opacity: 0;
-                        width: 0;
-                        height: 0;
-      
-                        &:checked + .ClientsListAndEdit_slider {
-                          background-color: #2196F3;
-                        }
-      
-                        &:focus + .ClientsListAndEdit_slider {
-                          box-shadow: 0 0 1px #2196F3;
-                        }
-      
-                        &:checked + .ClientsListAndEdit_slider:before {
-                          transform: translateX(20px);
-                        }
-                    }
-                    .ClientsListAndEdit_slider{
-                        position: absolute;
-                        cursor: pointer;
-                        height: 21px;
-                        top: 0;
-                        left: 0;
-                        right: 0;
-                        bottom: 0;
-                        background-color: #ccc;
-                        border-radius: 10px;
-                        transition: background-color 0.4s;
-                        &:before {
-                          position: absolute;
-                          content: "";
-                          height: 16px;
-                          width: 16px;
-                          left: 2px;
-                          bottom: 2px;
-                          background-color: #fff;
-                          border-radius: 50%;
-                          transition: transform 0.4s;
-                        }
-                    }
-                }
-            }
-        }
-    }
     .ClientsListAndEdit_cont_wrapper{
         display: flex;
         background-color: #EFEDEA;
@@ -132,46 +39,8 @@
                 }
                 .ClientsListAndEdit_mid_body_cont{
                     height: 118vh;
-                    .ClientsListAndEdit_mid_btn_cont{
-                        margin-left: 5%;
-                        display: flex;
-                        gap: 2%;
-                        .body-btn{
-                            margin-top: 15px;
-                            border: 1px solid #808080;
-                            width: 10rem;
-                            height: 30px;
-                            border-radius: 5px !important;
-                            background-color: #fff;
-                            color: #000;
-                        }
-                        .body-btn:hover{
-                            background-color: #808080;
-                            color: #fff;
-                        }
-                        .body-btn-active{
-                            background-color: #808080;
-                            color: #fff;
-                        }
-                    }
-                    .ClientsListAndEdit_title_table_cont{
-                        display: flex;
-                        gap: 8%;
-                        padding: 40px 70px;
-                        .ClientsListAndEdit_title{
-                            letter-spacing: 2px;
-                            font-weight: bold;
-                            color: #000;
-                        }
-                        .ClientsListAndEdit_btn{
-                            border: 1px solid #808080;
-                            width: 12rem;
-                            height: 35px;
-                            border-radius: 5px !important;
-                            background-color: #808080;
-                            color: #fff;
-                            margin-left: 14px;
-                        }
+                    .ListButtons_btn{
+                        margin-left: 10px;
                     }
                 }
                 .ClientsListAndEdit_table_wrapper{

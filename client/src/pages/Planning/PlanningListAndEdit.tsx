@@ -10,6 +10,7 @@ import { TablePlanningB } from '../../components/Table/TablePlanningB.component'
 import { useLanguage } from '../../contexts/LanguageContext';
 import { translate } from '../../utils/translationUtil';
 import EditTablePlanning from '../../components/Table/EditTablePlanning';
+import HeaderButtons from '../../components/HeaderButtons/HeaderButtons';
 
 const header = ['計画'];
 const smallDate = ['2022/24月', '2022/25月', '2022/26月'];
@@ -102,32 +103,12 @@ const PlanningListAndEdit = () => {
 
   return (
     <div className='planning_wrapper'>
-      <div className='planning_header_cont'>
-        <div className='planning_header-buttons'>
-          <Btn
-            label={translate('analysis', language)}
-            onClick={() => handleTabClick('/dashboard')}
-            className={activeTab === '/dashboard' ? 'h-btn-active header-btn' : 'header-btn'}
-          />
-          <Btn
-            label={translate('profitAndlossPlanning', language)}
-            onClick={() => handleTabClick('/planning-list')}
-            className={activeTab === '/planning-list' ? 'h-btn-active header-btn' : 'header-btn'}
-          />
-          <Btn
-            label={translate('results', language)}
-            onClick={() => handleTabClick('/*')}
-            className={activeTab === '/*' ? 'h-btn-active header-btn' : 'header-btn'}
-          />
-        </div>
-        <div className='planning_language-toggle'>
-          <p className='planning_pl-label_translate'>English</p>
-          <label className='planning_switch_translate'>
-            <input type='checkbox' checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle} disabled={isEditing}/>
-            <span className='planning_slider_translate'></span>
-          </label>
-        </div>
-      </div>
+        <HeaderButtons 
+            activeTab={activeTab}
+            handleTabClick={handleTabClick}
+            isTranslateSwitchActive={isTranslateSwitchActive}
+            handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+        />
       <div className='planning_content_wrapper'>
           <Sidebar />
         <div className='planning_table_wrapper'>

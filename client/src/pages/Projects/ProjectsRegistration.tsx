@@ -5,6 +5,8 @@ import Sidebar from '../../components/Sidebar/Sidebar'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
+import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
+import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -191,64 +193,29 @@ const ProjectsRegistration = () => {
 
   return (
     <div className='projectsRegistration_wrapper'>
-      <div className='projectsRegistration_header_cont'>
-      <div className="projectsRegistration_header-buttons">
-          <Btn
-            label={translate('analysis', language)}
-            onClick={() => handleTabClick("/dashboard")}
-            className={activeTab === "/dashboard" ? "h-btn-active header-btn" : "header-btn"}
-          />
-          <Btn
-            label={translate('profitAndlossPlanning', language)}
-            onClick={() => handleTabClick("/planning-list")}
-            className={activeTab === "/planning-list" ? "h-btn-active header-btn" : "header-btn"}
-          />
-          <Btn
-            label={translate('results', language)}
-            onClick={() => handleTabClick("/*")}
-            className={activeTab === "/*" ? "h-btn-active header-btn" : "header-btn"}
-          />
-        </div>
-        <div className="projectsRegistration_language-toggle">
-          <p className="projectsRegistration_pl-label">English</p>
-            <label className="projectsRegistration_switch">
-              <input type="checkbox" checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle}/>
-              <span className="projectsRegistration_slider"></span>
-            </label>
-        </div>
-      </div>
+        <HeaderButtons 
+            activeTab={activeTab}
+            handleTabClick={handleTabClick}
+            isTranslateSwitchActive={isTranslateSwitchActive}
+            handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+        />
       <div className='projectsRegistration_content_wrapper'>
           <Sidebar />
         <div className='projectsRegistration_data_content'>
           <div className='projectsRegistration_top_body_cont'></div>
           <div className='projectsRegistration_mid_body_cont'>
-            <div className='projectsRegistration_mid_btn_cont'>
-              {[...Array(4)].map((_, index) => (
-                <Btn
-                  key={index}
-                  label={translate(index === 0 ? 'project' : index === 1 ? 'employeeExpenses' : index === 2 ? 'expenses' : 'costOfSales', language)}
-                  onClick={() =>
-                    handleTabsClick(
-                      index === 0
-                        ? 'project'
-                        : index === 1
-                          ? 'employeeExpenses'
-                          : index === 2
-                            ? 'expenses'
-                            : 'costOfSales',
-                    )
-                  }
-                  className={
-                    activeTabOther ===
-                    (index === 0 ? 'project' : index === 1 ? 'employeeExpenses' : index === 2 ? 'expenses' : 'costOfSales')
-                      ? 'projectsRegistration_body-btn-active projectsRegistration_body-btn'
-                      : 'projectsRegistration_body-btn'
-                  }
+                <RegistrationButtons
+                  activeTabOther={activeTabOther}
+                  message={translate('projectsRegistration', language)}
+                  handleTabsClick={handleTabsClick}
+                  buttonConfig={[
+                    { labelKey: 'project', tabKey: 'project' },
+                    { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
+                    { labelKey: 'expenses', tabKey: 'expenses' },
+                    { labelKey: 'costOfSales', tabKey: 'costOfSales' },
+                  ]}
                 />
-              ))}
-            </div>
             <div className='projectsRegistration_mid_form_cont'>
-              <p className='projectsRegistration_form-title'>{translate('projectsRegistration', language)}</p>
               <form onSubmit={handleSubmit}>
                 {formData.map((form, index) => (
                   <div key={index} className={`projectsRegistration_form-content ${index > 0 ? 'projectsRegistration_form-content-special' : ''}`}>

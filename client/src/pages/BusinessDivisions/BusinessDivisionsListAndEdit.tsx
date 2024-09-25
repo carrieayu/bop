@@ -7,6 +7,8 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import { translate } from "../../utils/translationUtil";
 import AlertModal from "../../components/AlertModal/AlertModal";
 import { RiDeleteBin6Fill } from "react-icons/ri";
+import ListButtons from "../../components/ListButtons/ListButtons";
+import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
 
 const BusinessDivisionsListAndEdit: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -195,34 +197,12 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
 
   return (
     <div className='BusinessDivisionsListAndEdit_wrapper'>
-      <div className='BusinessDivisionsListAndEdit_header_cont'>
-        <div className='BusinessDivisionsListAndEdit_top_btn_cont'>
-          <div className='BusinessDivisionsListAndEdit_header-buttons'>
-            <Btn
-              label={translate('analysis', language)}
-              onClick={() => handleTabClick('/dashboard')}
-              className={activeTab === '/dashboard' ? 'h-btn-active header-btn' : 'header-btn'}
-            />
-            <Btn
-              label={translate('profitAndlossPlanning', language)}
-              onClick={() => handleTabClick('/planning-list')}
-              className={activeTab === '/planning-list' ? 'h-btn-active header-btn' : 'header-btn'}
-            />
-            <Btn
-              label={translate('results', language)}
-              onClick={() => handleTabClick('/*')}
-              className={activeTab === '/*' ? 'h-btn-active header-btn' : 'header-btn'}
-            />
-          </div>
-          <div className='BusinessDivisionsListAndEdit_language-toggle'>
-            <p className='BusinessDivisionsListAndEdit_pl-label'>English</p>
-            <label className='BusinessDivisionsListAndEdit_switch'>
-              <input type='checkbox' checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle} disabled={isEditing}/>
-              <span className='BusinessDivisionsListAndEdit_slider'></span>
-            </label>
-          </div>
-        </div>
-      </div>
+        <HeaderButtons 
+            activeTab={activeTab}
+            handleTabClick={handleTabClick}
+            isTranslateSwitchActive={isTranslateSwitchActive}
+            handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+        />
       <div className='BusinessDivisionsListAndEdit_cont_wrapper'>
           <Sidebar />
         <div className='BusinessDivisionsListAndEdit_maincontent_wrapper'>
@@ -235,55 +215,18 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
               </div>
             </div>
             <div className='BusinessDivisionsListAndEdit_mid_body_cont'>
-              <div className='BusinessDivisionsListAndEdit_mid_btn_cont'>
-                {[...Array(4)].map((_, index) => (
-                  <Btn
-                    key={index}
-                    label={translate(
-                      index === 0
-                        ? 'client'
-                        : index === 1
-                          ? 'employee'
-                          : index === 2
-                            ? 'businessDivision'
-                            : 'users',
-                      language,
-                    )}
-                    onClick={() =>
-                      handleTabsClick(
-                        index === 0
-                          ? 'client'
-                          : index === 1
-                            ? 'employee'
-                            : index === 2
-                              ? 'businessDivision'
-                              : 'users',
-                      )
-                    }
-                    className={
-                      activeTabOther ===
-                      (index === 0
-                        ? 'client'
-                        : index === 1
-                          ? 'employee'
-                          : index === 2
-                            ? 'businessDivision'
-                            : 'users')
-                        ? 'body-btn-active body-btn'
-                        : 'body-btn'
-                    }
-                  />
-                ))}
-              </div>
-              <div className='BusinessDivisionsListAndEdit_title_table_cont'>
-                <p className='BusinessDivisionsListAndEdit_title'>{translate('businessDivisionsList', language)}</p>
-                <Btn
-                  label={translate('newRegistration', language)}
-                  size='normal'
-                  onClick={handleNewRegistrationClick}
-                  className='BusinessDivisionsListAndEdit_btn'
+                <ListButtons
+                  activeTabOther={activeTabOther}
+                  message={translate('businessDivisionsList', language)}
+                  handleTabsClick={handleTabsClick}
+                  handleNewRegistrationClick={handleNewRegistrationClick}
+                  buttonConfig={[
+                    { labelKey: 'client', tabKey: 'client' },
+                    { labelKey: 'employee', tabKey: 'employee' },
+                    { labelKey: 'businessDivision', tabKey: 'businessDivision' },
+                    { labelKey: 'users', tabKey: 'users' },
+                  ]}
                 />
-              </div>
               <div className='BusinessDivisionsListAndEdit_table_wrapper'>
                 <div className='BusinessDivisionsListAndEdit_table_cont'>
                   <div className='columns is-mobile'>
