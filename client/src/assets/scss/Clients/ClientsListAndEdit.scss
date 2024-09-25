@@ -96,21 +96,13 @@
     .ClientsListAndEdit_cont_wrapper{
         display: flex;
         background-color: #EFEDEA;
+        width: 100vw;
+        height: 130vh;
         @media only screen and (max-width: 1000px){
             flex-direction: column;
         }
-        .ClientsListAndEdit_sidebar{
-            flex: 0 0 205px;
-            background-color: #1c302c;
-            @media only screen and (max-width: 1000px){
-                flex: 0 0 auto;
-                width: 100%;
-                display: none;
-            }
-        }
         .ClientsListAndEdit_maincontent_wrapper{
-            width: 100%;
-            height: 100vh;
+            width: 84%;
             padding: 10px 30px 10px 30px;
             .ClientsListAndEdit_top_content{
                 border: 1px solid #fff;
@@ -139,10 +131,7 @@
                     color: white;
                 }
                 .ClientsListAndEdit_mid_body_cont{
-                    height: 115vh;
-                    @media only screen and (min-width: 1920px){
-                        height: 90vh;
-                    }
+                    height: 118vh;
                     .ClientsListAndEdit_mid_btn_cont{
                         margin-left: 5%;
                         display: flex;
@@ -187,12 +176,12 @@
                 }
                 .ClientsListAndEdit_table_wrapper{
                     width: 100%;
-                    height: 75vh;
+                    height: 80vh;
                     overflow-y: auto; 
                     overflow-x: hidden;
                     scrollbar-width: none;
                     @media only screen and (min-width: 1920px){
-                        height: 60vh;
+                        height: 85vh;
                     }
                     &::-webkit-scrollbar {
                         width: 0;

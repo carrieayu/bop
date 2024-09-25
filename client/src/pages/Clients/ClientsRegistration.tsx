@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar/Sidebar'
 
 const ClientsRegistration = () => {
-    const [activeTab, setActiveTab] = useState('/planning')
+    const [activeTab, setActiveTab] = useState('/planning-list')
     const navigate = useNavigate()
     const location = useLocation()
     const [activeTabOther, setActiveTabOther] = useState('client')
@@ -59,7 +59,7 @@ const ClientsRegistration = () => {
 
     useEffect(() => {
         const path = location.pathname;
-        if (path === '/dashboard' || path === '/planning' || path === '/*') {
+        if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
           setActiveTab(path);
         }
       }, [location.pathname]);
@@ -138,8 +138,8 @@ const ClientsRegistration = () => {
           />
           <Btn
             label={translate('profitAndlossPlanning', language)}
-            onClick={() => handleTabClick("/planning")}
-            className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
+            onClick={() => handleTabClick("/planning-list")}
+            className={activeTab === "/planning-list" ? "h-btn-active header-btn" : "header-btn"}
           />
           <Btn
             label={translate('results', language)}
@@ -156,9 +156,7 @@ const ClientsRegistration = () => {
         </div>
       </div>
       <div className='ClientsRegistration_content_wrapper'>
-        <div className='ClientsRegistration_sidebar'>
           <Sidebar />
-        </div>
         <div className='ClientsRegistration_data_content'>
           <div className='ClientsRegistration_top_body_cont'></div>
           <div className='ClientsRegistration_mid_body_cont'>

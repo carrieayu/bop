@@ -59,10 +59,55 @@ from django.db.models import Max
 
 # Create your views here.
 class CreateUserView(generics.CreateAPIView):
-    queryset = Employees.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
-    
+
+class UserList(generics.ListAPIView):
+    queryset = AuthUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [AllowAny]
+
+class DeleteUser(generics.DestroyAPIView):
+        queryset = AuthUser.objects.all()
+        permission_classes = [AllowAny]
+
+        def get_queryset(self):
+            id = self.kwargs.get("pk")
+            return AuthUser.objects.filter(id=id)
+
+        def destroy(self, request, *args, **kwargs):
+            try:
+                instance = self.get_object()
+                instance.delete()
+                return Response(
+                    {"message": "deleted successfully"}, status=status.HTTP_200_OK
+                )
+            except:
+                return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
+
+class UserUpdate(generics.UpdateAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [AllowAny]
+    queryset = AuthUser.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        received_data = request.data
+
+        for user_data in received_data: 
+            user_id = user_data.get('id')  
+            
+            try:
+                user = AuthUser.objects.get(id=int(user_id))
+                for field, value in user_data.items():
+                    if field != 'id':
+                        setattr(user, field, value) 
+                user.save() 
+
+            except AuthUser.DoesNotExist:
+                return Response({"error": f"User with ID {user_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({"success": "Users updated successfully."}, status=status.HTTP_200_OK)
+
 class CreateEmployees(generics.CreateAPIView):
     queryset = EmployeesApi.objects.all()
     serializer_class = EmployeesSerializer

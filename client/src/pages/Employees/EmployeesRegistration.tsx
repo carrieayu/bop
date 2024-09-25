@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar/Sidebar'
 
 const EmployeesRegistration = () => {
-    const [activeTab, setActiveTab] = useState('/planning')
+    const [activeTab, setActiveTab] = useState('/planning-list')
     const navigate = useNavigate()
     const location = useLocation()
     const [activeTabOther, setActiveTabOther] = useState('employee')
@@ -58,7 +58,7 @@ const EmployeesRegistration = () => {
 
     useEffect(() => {
         const path = location.pathname;
-        if (path === '/dashboard' || path === '/planning' || path === '/*') {
+        if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
           setActiveTab(path);
         }
       }, [location.pathname]);
@@ -136,8 +136,8 @@ const EmployeesRegistration = () => {
           />
           <Btn
             label={translate('profitAndlossPlanning', language)}
-            onClick={() => handleTabClick("/planning")}
-            className={activeTab === "/planning" ? "h-btn-active header-btn" : "header-btn"}
+            onClick={() => handleTabClick("/planning-list")}
+            className={activeTab === "/planning-list" ? "h-btn-active header-btn" : "header-btn"}
           />
           <Btn
             label={translate('results', language)}
@@ -154,9 +154,7 @@ const EmployeesRegistration = () => {
         </div>
       </div>
       <div className='EmployeesRegistration_content_wrapper'>
-        <div className='EmployeesRegistration_sidebar'>
           <Sidebar />
-        </div>
         <div className='EmployeesRegistration_data_content'>
           <div className='EmployeesRegistration_top_body_cont'></div>
           <div className='EmployeesRegistration_mid_body_cont'>
