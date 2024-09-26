@@ -49,8 +49,8 @@ class MasterBusinessDivisionSerializer(serializers.ModelSerializer):
     # company = CompanyMasterSerializers(source='company_id', read_only=True)
     class Meta:
         model = MasterBusinessDivision
-        fields = ["business_division_name", "company_id", "registered_user_id"]
-        # fields = ["business_division_id", "business_division_name", "company_id", "company", "created_at", "registered_user_id"]
+        # fields = ["business_division_name", "company_id", "auth_user_id"]
+        fields = '__all__'
 
 
 class MasterClientSerializer(serializers.ModelSerializer):

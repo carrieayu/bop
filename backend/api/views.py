@@ -128,15 +128,50 @@ class MasterBusinessDivisionList(generics.ListAPIView):
     queryset = MasterBusinessDivision.objects.all()
     serializer_class = MasterBusinessDivisionSerializer
     
-class BusinessDivisionMasterCreate(generics.CreateAPIView):
+class MasterBusinessDivisionCreate(generics.CreateAPIView):
     serializer_class = MasterBusinessDivisionSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
-    def perform_create(self, serializer):
-        if serializer.is_valid():
-            serializer.save()
-        else:
-            print(serializer.errors)
+    def create(self, request, *args, **kwargs):
+        data = request.data  # Retrieve the incoming data
+        if not isinstance(data, list):  # Ensure it's an array
+            return Response({"error": "Expected a list of data"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        created_business_divisions = []  # To store the successfully created divisions
+        
+        for business_division in data:
+            try:
+                # Get the related company and auth_user by their IDs
+                company = MasterCompany.objects.get(pk=business_division['company_id'])
+                auth_user = AuthUser.objects.get(pk=business_division['auth_user_id'])
+
+                # Create the business division
+                new_business_division = MasterBusinessDivision(
+                    business_division_name=business_division['business_division_name'],
+                    company=company,
+                    auth_user=auth_user
+                )
+                new_business_division.save()
+
+                # Serialize the saved object for the response
+                serializer = MasterBusinessDivisionSerializer(new_business_division)
+                created_business_divisions.append(serializer.data)
+                
+            except MasterCompany.DoesNotExist:
+                return Response({"error": f"Company with ID {business_division['company_id']} does not exist"},
+                                status=status.HTTP_404_NOT_FOUND)
+            except AuthUser.DoesNotExist:
+                return Response({"error": f"User with ID {business_division['auth_user_id']} does not exist"},
+                                status=status.HTTP_404_NOT_FOUND)
+
+        return Response({"message": "Business Divisions Created", "data": created_business_divisions},
+                        status=status.HTTP_201_CREATED)
+        
+    # def perform_create(self, serializer):
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #     else:
+    #         print(serializer.errors)
 
 
 class BusinessDivisionMasterRetrieve(
