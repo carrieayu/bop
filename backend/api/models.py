@@ -86,11 +86,11 @@ class MasterBusinessDivision(models.Model):
         super(MasterBusinessDivision, self).save(*args, **kwargs)
 
 
-class Employees(AbstractBaseUser):
+class Employees(models.Model):
     employee_id = models.CharField(max_length=10, primary_key=True, editable=False)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    email = models.EmailField()
+    email = models.EmailField(unique=True)
     salary = models.IntegerField(max_length=12)
     company = models.ForeignKey(MasterCompany, on_delete=models.CASCADE)
     business_division = models.ForeignKey(

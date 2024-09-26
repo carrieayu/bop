@@ -9,7 +9,7 @@ import AlertModal from "../../components/AlertModal/AlertModal";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import ListButtons from "../../components/ListButtons/ListButtons";
 import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
-import { fetchBusinessDivisions } from "../../reducers/businessdivisions/businessdivisionsSlice";
+import { fetchBusinessDivisions } from "../../reducers/businessDivisions/businessDivisionsSlice";
 import { fetchMasterCompany } from "../../reducers/company/companySlice";
 import { useDispatch } from "react-redux";
 import { UnknownAction } from "redux";
@@ -33,7 +33,7 @@ const EmployeesListAndEdit: React.FC = () => {
     const [selectedProject, setSelectedProject] = useState<any>(null);
     const [businessSelection, setBusinessSelection] = useState<any>([])
     const [companySelection, setCompanySelection] = useState<any>([])
-    const [deleteId, setDeleteUserId] = useState([])
+    const [deleteId, setDeleteEmployeeId] = useState([])
     const dispatch = useDispatch()
     const totalPages = Math.ceil(100 / 10);
 
@@ -215,7 +215,7 @@ const EmployeesListAndEdit: React.FC = () => {
       const openModal = (employee, id) => {
         setSelectedProject(employee)
         setModalIsOpen(true);
-        setDeleteUserId(id)
+        setDeleteEmployeeId(id)
     };
 
     const closeModal = () => {
@@ -254,14 +254,14 @@ const EmployeesListAndEdit: React.FC = () => {
 
   return (
     <div className='EmployeesListAndEdit_wrapper'>
-        <HeaderButtons 
-            activeTab={activeTab}
-            handleTabClick={handleTabClick}
-            isTranslateSwitchActive={isTranslateSwitchActive}
-            handleTranslationSwitchToggle={handleTranslationSwitchToggle}
-        />
+      <HeaderButtons
+        activeTab={activeTab}
+        handleTabClick={handleTabClick}
+        isTranslateSwitchActive={isTranslateSwitchActive}
+        handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+      />
       <div className='EmployeesListAndEdit_cont_wrapper'>
-          <Sidebar />
+        <Sidebar />
         <div className='EmployeesListAndEdit_maincontent_wrapper'>
           <div className='EmployeesListAndEdit_top_content'>
             <div className='EmployeesListAndEdit_top_body_cont'>
@@ -273,17 +273,17 @@ const EmployeesListAndEdit: React.FC = () => {
             </div>
             <div className='EmployeesListAndEdit_mid_body_cont'>
               <ListButtons
-                  activeTabOther={activeTabOther}
-                  message={translate('employeesList', language)}
-                  handleTabsClick={handleTabsClick}
-                  handleNewRegistrationClick={handleNewRegistrationClick}
-                  buttonConfig={[
-                    { labelKey: 'client', tabKey: 'client' },
-                    { labelKey: 'employee', tabKey: 'employee' },
-                    { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                    { labelKey: 'users', tabKey: 'users' },
-                  ]}
-                />
+                activeTabOther={activeTabOther}
+                message={translate('employeesList', language)}
+                handleTabsClick={handleTabsClick}
+                handleNewRegistrationClick={handleNewRegistrationClick}
+                buttonConfig={[
+                  { labelKey: 'client', tabKey: 'client' },
+                  { labelKey: 'employee', tabKey: 'employee' },
+                  { labelKey: 'businessDivision', tabKey: 'businessDivision' },
+                  { labelKey: 'users', tabKey: 'users' },
+                ]}
+              />
               <div className='EmployeesListAndEdit_table_wrapper'>
                 <div className='EmployeesListAndEdit_table_cont'>
                   <div className='columns is-mobile'>
@@ -376,11 +376,11 @@ const EmployeesListAndEdit: React.FC = () => {
                                       value={employee.business_division_id}
                                       onChange={(e) => handleChange(employeeIndex, e)}
                                     >
-                                      <option value=''>{}</option>
                                       {businessSelection.map((division) => (
                                         <option
                                           key={division.business_division_id}
                                           value={division.business_division_id}
+                                          selected={employee.business_division === division.business_division_name}
                                         >
                                           {division.business_division_name}
                                         </option>
@@ -394,9 +394,12 @@ const EmployeesListAndEdit: React.FC = () => {
                                       value={employee.company_id}
                                       onChange={(e) => handleChange(employeeIndex, e)}
                                     >
-                                      <option value=''></option>
                                       {companySelection.map((company) => (
-                                        <option key={company.company_id} value={company.company_id}>
+                                        <option
+                                          key={company.company_id}
+                                          value={company.company_id}
+                                          selected={employee.company === company.company_name}
+                                        >
                                           {company.company_name}
                                         </option>
                                       ))}
@@ -516,7 +519,7 @@ const EmployeesListAndEdit: React.FC = () => {
         isOpen={modalIsOpen}
         onConfirm={handleConfirm}
         onCancel={closeModal}
-        message={translate('deleteMessage', language)}
+        message={translate('deleteMessage2', language)}
       />
     </div>
   )

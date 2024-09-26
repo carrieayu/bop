@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
-import { fetchBusinessDivisions } from '../../reducers/businessdivisions/businessdivisionsSlice'
+import { fetchBusinessDivisions } from '../../reducers/businessDivisions/businessDivisionsSlice'
 import { useDispatch } from 'react-redux'
 import { UnknownAction } from 'redux'
 import { fetchMasterCompany } from '../../reducers/company/companySlice'
@@ -102,7 +102,6 @@ const EmployeesRegistration = () => {
 
       const handleSubmit = async (e) => {
         e.preventDefault()
-        
         const employeeData = employees.map((empl) => ({
           last_name: empl.last_name,
           first_name: empl.first_name,
@@ -110,9 +109,8 @@ const EmployeesRegistration = () => {
           salary: empl.salary,
           business_division: empl.business_division_name,
           company: empl.company_name,
-          auth_user: 1,
+          auth_user: localStorage.getItem('userID'),
           created_at: Date.now(),
-          password: '123', //Since the model is under AbstractBaseUser, it is required to have a password. But since the Employees model doesn't need password, I just put static data for it to work.
         }))
         
         if (!validateEmployees(employees)) {
@@ -133,7 +131,12 @@ const EmployeesRegistration = () => {
           window.location.reload()
           
         } catch (error) {
-          console.error('Error:', error.response.data)
+          if (error.response.data[0].email[0] && error.response.status === 400) {
+              alert(translate('email2', language))
+          }else{
+            console.error('Error:', error.response.data[0].email[0])
+          }
+          
         }
 
       }
@@ -202,7 +205,6 @@ const EmployeesRegistration = () => {
                   ]}
                 />
             <div className='EmployeesRegistration_mid_form_cont'>
-              <p className='EmployeesRegistration_form-title'>{translate('employeesRegistration', language)}</p>
               <form onSubmit={handleSubmit}>
                 <div
                   key=''
