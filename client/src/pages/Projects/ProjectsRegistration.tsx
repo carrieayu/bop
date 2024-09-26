@@ -37,7 +37,7 @@ const ProjectsRegistration = () => {
       sales_revenue: '',
       non_operating_income: '',
       non_operating_expense: '',
-      registered_user_id: storedUserID,
+      // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
     },
   ])
 
@@ -52,7 +52,7 @@ const ProjectsRegistration = () => {
         sales_revenue: '',
         non_operating_income: '',
         non_operating_expense: '',
-        registered_user_id: storedUserID,
+        // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
       }]);
     } else {
       console.log('You can only add up to 10 forms.');
@@ -125,7 +125,7 @@ const ProjectsRegistration = () => {
       sales_revenue: parseFloat(entry.sales_revenue),
       non_operating_income: parseFloat(entry.non_operating_income),
       non_operating_expense: parseFloat(entry.non_operating_expense),
-      registered_user_id: entry.registered_user_id,
+      // registered_user_id: entry.registered_user_id, //for testing and will be removed it not used for future use
     }));
 
     const token = localStorage.getItem('accessToken')
@@ -153,7 +153,7 @@ const ProjectsRegistration = () => {
           sales_revenue: '',
           non_operating_income: '',
           non_operating_expense: '',
-          registered_user_id: localStorage.getItem('userID'),
+          // registered_user_id: localStorage.getItem('userID'),  //for testing and will be removed it not used for future use
         },
       ])
     } catch (error) {
@@ -324,7 +324,8 @@ const ProjectsRegistration = () => {
                         </div>
                       </div>
                     </div>
-                    <input type='hidden' name='registered_user_id' value={form.registered_user_id} />
+                    {/* //for testing and will be removed it not used for future use */}
+                    {/* <input type='hidden' name='registered_user_id' value={form.registered_user_id} />  */}
                   </div>
                 ))}
                 <div className='projectsRegistration_form-content'>
