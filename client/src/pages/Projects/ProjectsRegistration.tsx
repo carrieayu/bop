@@ -21,49 +21,50 @@ const ProjectsRegistration = () => {
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
   const years = [];
+  const token = localStorage.getItem('accessToken')
+  const [clients, setClients] = useState([]);
+  const [selectedClient, setSelectedClient] = useState([]);
   for (let year = 2000; year <= new Date().getFullYear(); year++) {
     years.push(year);
   }
   const [formData, setFormData] = useState([
     {
-      client_name: '',
-      business_division_name: '',
+      client: '', //gets client_id
+      // business_division_name: '',
       project_name: '',
+      project_type: '', //temporary used for the input field "Business Divisions"
       month: '',
       sales_revenue: '',
       non_operating_income: '',
-      non_operating_expenses: '',
-      registered_user_id: storedUserID,
+      non_operating_expense: '',
+      // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
     },
   ])
 
   const handleAdd = () => {
     if (formData.length < 10) {
-      const newFormData = [...formData]
-      newFormData.push({
-        client_name: '',
-        business_division_name: '',
+      setFormData([...formData, {
+        client: '',
+        project_type: '', //temporary used for the input field "Business Divisions"
+        // business_division_name: '',
         project_name: '',
         month: '',
         sales_revenue: '',
         non_operating_income: '',
-        non_operating_expenses: '',
-        registered_user_id: storedUserID,
-      })
-      setFormData(newFormData)
-      console.log('add:' + formData)
+        non_operating_expense: '',
+        // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
+      }]);
     } else {
-      console.log('You can only add up to 10 forms.')
+      console.log('You can only add up to 10 forms.');
     }
-  }
+  };
 
   const handleMinus = () => {
     if (formData.length > 1) {
-      const newFormData = [...formData]
-      newFormData.pop()
-      setFormData(newFormData)
+      setFormData(formData.slice(0, -1));
     }
-  }
+  };
+
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
@@ -88,18 +89,22 @@ const ProjectsRegistration = () => {
     }
   }
 
+
   const handleChange = (index, event) => {
     const { name, value } = event.target
-    const newFormData = [...formData]
-    newFormData[index] = {
-      ...newFormData[index],
+    const updatedFormData = [...formData]
+    updatedFormData[index] = {
+      ...updatedFormData[index],
       [name]: value,
     }
-    setFormData(newFormData)
-  }
-
+    setFormData(updatedFormData)
+  } 
   useEffect(() => {
   }, [formData])
+
+  const HandleClientChange = (e) => {
+    setSelectedClient(e.target.value);
+  };
 
   useEffect(() => {
     const path = location.pathname;
@@ -112,25 +117,16 @@ const ProjectsRegistration = () => {
     e.preventDefault()
     console.log(formData)
 
-    const postData = {
-      client: {
-        client_name: formData.map((c) => c.client_name),
-        registered_user_id: formData.map((c) => c.registered_user_id),
-      },
-      business: {
-        business_division_name: formData.map((c) => c.business_division_name),
-        registered_user_id: formData.map((c) => c.registered_user_id),
-        company_id: formData.map((c) => c.registered_user_id),
-      },
-      planning: {
-        project_name: formData.map((c) => c.project_name),
-        month: formData.map((c) => c.month),
-        sales_revenue: formData.map((c) => c.sales_revenue),
-        non_operating_income: formData.map((c) => c.non_operating_income),
-        non_operating_expenses: formData.map((c) => c.non_operating_expenses),
-      },
-      registered_user_id: formData.map((c) => c.registered_user_id),
-    }
+    const postData = formData.map((entry) => ({
+      client: entry.client,
+      project_name: entry.project_name,
+      project_type: entry.project_type, //temporary used for the input field "Business Divisions"
+      month: entry.month,
+      sales_revenue: parseFloat(entry.sales_revenue),
+      non_operating_income: parseFloat(entry.non_operating_income),
+      non_operating_expense: parseFloat(entry.non_operating_expense),
+      // registered_user_id: entry.registered_user_id, //for testing and will be removed it not used for future use
+    }));
 
     const token = localStorage.getItem('accessToken')
     if (!token) {
@@ -139,27 +135,30 @@ const ProjectsRegistration = () => {
     }
 
     try {
-      // const response = await axios.post('http://127.0.0.1:8000/api/projectplanning/create/', postData, {
-        const response = await axios.post('http://54.178.202.58:8000/api/projectplanning/create/', postData, {
+      const response = await axios.post('http://127.0.0.1:8000/api/projects/create/', postData, {
+        // const response = await axios.post('http://54.178.202.58:8000/api/projectplanning/create/', postData, {
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       })
       alert('Sucessfully Saved')
       setFormData([
         {
-          client_name: '',
-          business_division_name: '',
+          client: '',
+          // business_division_name: '',
+          project_type: '', //temporary used for the input field "Business Divisions"
           project_name: '',
           month: '',
           sales_revenue: '',
           non_operating_income: '',
-          non_operating_expenses: '',
-          registered_user_id: localStorage.getItem('userID'),
+          non_operating_expense: '',
+          // registered_user_id: localStorage.getItem('userID'),  //for testing and will be removed it not used for future use
         },
       ])
     } catch (error) {
       if (error.response && error.response.status === 401) {
+        console.error('Validation error:', error.response.data);
         window.location.href = '/login'
       } else {
         console.error('There was an error creating the project planning data!', error)
@@ -175,7 +174,26 @@ const ProjectsRegistration = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
     setLanguage(newLanguage);
   };
+  useEffect(() => {
+    const fetchClients = async () => {
+      try{
+        const response = await axios.get('http://127.0.0.1:8000/api/master-clients/', {
+        // const response = await axios.get('http://54.178.202.58:8000/api/master-clients/', {
+          headers: { 
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}` 
+          },
+        });
+        console.log("clients: ", response.data)
+        setClients(response.data);
+      }
+      catch (error) {
+        console.error('Error fetching clients:', error);
+      }
+    };
 
+    fetchClients();
+  }, [token]);
   const monthNames: { [key: number]: { en: string; jp: string } } = {
     1: { en: "January", jp: "1月" },
     2: { en: "February", jp: "2月" },
@@ -227,14 +245,16 @@ const ProjectsRegistration = () => {
                           <select
                             className='projectsRegistration_select-option'
                             name='client'
-                            value={form.client_name}
+                            value={form.client}
                             onChange={(e) => handleChange(index, e)}
                           >
                             <option value=''></option>
-                            <option value='TVS'>TVS</option>
-                            <option value='TCM'>TCM</option>
-                            <option value='JR'>JR</option>
-                            <option value='ソルトワークス'>ソルトワークス</option>
+                            {/* Dynamically map the clients fetched from the database */}
+                            {clients.map((client) => (
+                              <option key={client.client_id} value={client.client_id}>
+                                {client.client_name}
+                              </option>
+                            ))}
                           </select>
                         </div>
                         <div className='projectsRegistration_sales_revenue-div'>
@@ -250,8 +270,8 @@ const ProjectsRegistration = () => {
                           <label className='projectsRegistration_non-operating-expenses'>{translate('nonOperatingExpenses', language)}</label>
                           <input
                             type='number'
-                            name='non_operating_expenses'
-                            value={form.non_operating_expenses}
+                            name='non_operating_expense'
+                            value={form.non_operating_expense}
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
@@ -288,8 +308,8 @@ const ProjectsRegistration = () => {
                           <label className='projectsRegistration_business_division_name'>{translate('businessDivision', language)}</label>
                           <input
                             type='text'
-                            name='business_division_name'
-                            value={form.business_division_name}
+                            name='project_type'
+                            value={form.project_type}
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
@@ -304,7 +324,8 @@ const ProjectsRegistration = () => {
                         </div>
                       </div>
                     </div>
-                    <input type='hidden' name='registered_user_id' value={form.registered_user_id} />
+                    {/* //for testing and will be removed it not used for future use */}
+                    {/* <input type='hidden' name='registered_user_id' value={form.registered_user_id} />  */}
                   </div>
                 ))}
                 <div className='projectsRegistration_form-content'>

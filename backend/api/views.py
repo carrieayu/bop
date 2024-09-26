@@ -293,16 +293,25 @@ class DeleteResults(generics.DestroyAPIView):
             return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
 
 
-class CreateProjecstData(generics.CreateAPIView):
+class CreateProjectsData(generics.CreateAPIView):
     serializer_class = CreateProjectsSerializers
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        # Check if the request data is a list (i.e., array of project data)
+        if isinstance(request.data, list):
+            # Set 'many=True' for handling multiple objects
+            serializer = self.get_serializer(data=request.data, many=True)
+        else:
+            # Single object creation
+            serializer = self.get_serializer(data=request.data)
+        # Validate the data
         serializer.is_valid(raise_exception=True)
+        # Save the validated data
         self.perform_create(serializer)
         return Response(
-            {"message": "planning data created !!!"}, status=status.HTTP_200_OK
+            {"message": "Projects created successfully!"}, 
+            status=status.HTTP_200_OK
         )
 
 
