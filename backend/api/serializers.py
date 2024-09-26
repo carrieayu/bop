@@ -57,7 +57,7 @@ class MasterClientSerializer(serializers.ModelSerializer):
      
      class Meta:
         model = MasterClient
-        fields = ["client_id", "client_name", "created_at", "registered_user_id"]
+        fields = '__all__'
         
 class UpdateMasterCompanySerializers(serializers.ModelSerializer):
     class Meta:
@@ -96,7 +96,8 @@ class UpdateResultsSerializers(serializers.ModelSerializer):
 
 
 class CreateProjectsSerializers(serializers.ModelSerializer):
-    client = MasterClientSerializer(source='client_id', read_only=True)
+    # client = MasterClientSerializer(source='client_id', read_only=True)
+    client = serializers.PrimaryKeyRelatedField(queryset=MasterClient.objects.all())
     class Meta:
         model = Projects
         fields = '__all__'

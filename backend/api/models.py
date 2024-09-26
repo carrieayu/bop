@@ -160,19 +160,19 @@ class Projects(models.Model):
     def __str__(self):
         return self.project_id
 
-    def generate_planning_project_id(self):
+    def generate_project_id(self):
         max_project_id = (
             Projects.objects.aggregate(
                 max_project_id=models.Max("project_id")
             )["max_project_id"]
             or "000000"
         )
-        new_planning_project_id = str(int(max_project_id) + 1).zfill(6)
-        return new_planning_project_id
+        new_project_id = str(int(max_project_id) + 1).zfill(6)
+        return new_project_id
 
     def save(self, *args, **kwargs):
-        if not self.planning_project_id:
-            self.planning_project_id = self.generate_planning_project_id()
+        if not self.project_id:
+            self.project_id = self.generate_project_id()
         super().save(*args, **kwargs)
 
 # Performance Data -> Results

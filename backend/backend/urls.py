@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import CostOfSalesList, CreateMasterCompany, CreateProjecstData, CreateResults, CreateUserView , DeleteMasterCompany, DeleteProjectsData, DeleteResults, DeleteUser, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany,  UpdateProjectsData, UpdateResults,ForgotPasswordView, UserList, UserUpdate
-from api.views import CostOfSalesCreate, CostOfSalesUpdate, CreateEmployeeExpenses, CreateEmployees,  EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
+from api.views import CostOfSalesList, CreateMasterCompany, CreateProjectsData, CreateResults, CreateUserView , DeleteMasterCompany, DeleteProjectsData, DeleteResults, DeleteUser, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany,  UpdateProjectsData, UpdateResults,ForgotPasswordView, UserList, UserUpdate
+from api.views import CostOfSalesCreate, CostOfSalesUpdate, CreateEmployeeExpenses, CreateEmployees,CreateProjectsData, EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -33,15 +33,16 @@ urlpatterns = [
     path('api/results/<int:pk>/delete/', DeleteResults.as_view(), name="results-delete"), 
     # PrpjectData -> Projects
     path('api/projects/', ProjectsList.as_view(), name="projects-list"), 
-    path('api/projects/create/', CreateProjecstData.as_view(), name="projects-create"), 
+    path('api/projects/create/', CreateProjectsData.as_view(), name="projects-create"), 
     path('api/projects/<int:pk>/update/', UpdateProjectsData.as_view(), name="projects-update"),   
     path('api/projects/<int:pk>/delete/', DeleteProjectsData.as_view(), name="projects-delete"), 
-    # Projects
-    path('api/projects/tablelist/', MasterClientTableList.as_view(), name="projects-table-lists"), 
-    path('api/projects/store/', StoreProjects.as_view(), name="projects-store"), #the nested views for storing projects
-    path('api/projects/update', ProjectsUpdate.as_view()),
-    path('api/forgot-password/', ForgotPasswordView.as_view(), name="forgot-password"),
-    path('api/reset-password/<uidb64>/<token>/', ForgotPasswordView.as_view(), name='reset-password'),
+    # Projects needs to trace on where it is used
+    # path('api/projects/tablelist/', MasterClientTableList.as_view(), name="projects-table-lists"), 
+    # path('api/projects/store/', StoreProjects.as_view(), name="projects-store"), #the nested views for storing projects
+    # path('api/projects/update', ProjectsUpdate.as_view()),
+    # path('api/forgot-password/', ForgotPasswordView.as_view(), name="forgot-password"),
+    # path('api/reset-password/<uidb64>/<token>/', ForgotPasswordView.as_view(), name='reset-password'),
+    # End
     #Employees
     path('api/employee-expenses', EmployeeExpensesList.as_view()),
     path('api/employee-expenses/create', CreateEmployeeExpenses.as_view()),
