@@ -59,6 +59,9 @@
                             table{
                                 width: 97%;
                                 .expensesList_table_title{
+                                    position: sticky;
+                                    top: 0;
+                                    z-index: 1;
                                     text-align: center;
                                     background-color: #808080;
                                     .expensesList_table_title_content_vertical{

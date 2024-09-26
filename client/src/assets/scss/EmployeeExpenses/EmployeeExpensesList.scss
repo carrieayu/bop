@@ -59,6 +59,10 @@
                                     .table{
                                         width: 97%;
                                         .employeeExpensesList_table_title{
+                                            position: sticky;
+                                            top: 0;
+                                            z-index: 1;
+                                            text-align: center;
                                             background-color: #808080;
                                             .employeeExpensesList_table_title_content_vertical{
                                                 color: #fff;
