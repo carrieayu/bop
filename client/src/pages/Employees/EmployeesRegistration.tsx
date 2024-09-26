@@ -6,6 +6,12 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
+import { fetchBusinessDivisions } from '../../reducers/businessdivisions/businessdivisionsSlice'
+import { useDispatch } from 'react-redux'
+import { UnknownAction } from 'redux'
+import { fetchMasterCompany } from '../../reducers/company/companySlice'
+import axios from 'axios'
+import { NULL } from 'sass'
 
 const EmployeesRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -15,18 +21,33 @@ const EmployeesRegistration = () => {
     const storedUserID = localStorage.getItem('userID')
     const { language, setLanguage } = useLanguage()
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
+    const dispatch = useDispatch()
+    const [businessSelection, setBusinessSelection] = useState<any>([])
+    const [companySelection, setCompanySelection] = useState<any>([])
+    const [employees, setEmployees] = useState([
+      {
+        last_name: '',
+        first_name: '',
+        email: '',
+        salary: '',
+        business_division_name: '',
+        company_name: '',
+        auth_id: '',
+        created_at: '',
+      },
+    ])
 
-    // const [formData, setFormData] = useState([
-    //     {
-    //       last_name: '',
-    //       first_name: '',
-    //       email: '',
-    //       salary: '',
-    //       business_division_name: '',
-    //       company_name: '',
-    //       auth_user_id: storedUserID,
-    //     },
-    //   ])
+    const fetchData = async () => {
+      try {
+        const resBusinessDivisions = await dispatch(fetchBusinessDivisions() as unknown as UnknownAction)
+        setBusinessSelection(resBusinessDivisions.payload)
+        const resMasterCompany = await dispatch(fetchMasterCompany() as unknown as UnknownAction)
+        setCompanySelection(resMasterCompany.payload)
+        
+      } catch (e) {
+        console.error(e)
+      }
+    }
 
     const handleTabClick = (tab) => {
         setActiveTab(tab)
@@ -58,6 +79,20 @@ const EmployeesRegistration = () => {
         setLanguage(newLanguage);
     };
 
+    const validateEmployees = (employees) => {
+      return employees.every((employee) => {
+        return (
+          employee.last_name.trim() !== '' &&
+          employee.first_name.trim() !== '' &&
+          /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(employee.email) && // Email validation
+          !isNaN(employee.salary) &&
+          employee.salary > 0 && // Salary should be a number and greater than 0
+          employee.business_division_name.trim() !== '' &&
+          employee.company_name.trim() !== ''
+        )
+      })
+    }
+
     useEffect(() => {
         const path = location.pathname;
         if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
@@ -65,66 +100,81 @@ const EmployeesRegistration = () => {
         }
       }, [location.pathname]);
 
-    //   const handleSubmit = async (e) => {
-    //     e.preventDefault()
-    //     console.log(formData)
-    
-    //     const postData = {
-    //       client: {
-    //         client_name: formData.map((c) => c.client_name),
-    //         auth_user_id: formData.map((c) => c.auth_user_id),
-    //       },
-    //       business: {
-    //         business_division_name: formData.map((c) => c.business_division_name),
-    //         auth_user_id: formData.map((c) => c.auth_user_id),
-    //         company_id: formData.map((c) => c.auth_user_id),
-    //       },
-    //       planning: {
-    //         project_name: formData.map((c) => c.project_name),
-    //         month: formData.map((c) => c.month),
-    //         sales_revenue: formData.map((c) => c.sales_revenue),
-    //         non_operating_income: formData.map((c) => c.non_operating_income),
-    //         non_operating_expenses: formData.map((c) => c.non_operating_expenses),
-    //       },
-    //       auth_user_id: formData.map((c) => c.auth_user_id),
-    //     }
-    
-    //     const token = localStorage.getItem('accessToken')
-    //     if (!token) {
-    //       window.location.href = '/login'
-    //       return
-    //     }
-    
-    //     try {
-    //       // const response = await axios.post('http://127.0.0.1:8000/api/projectplanning/create/', postData, {
-    //         const response = await axios.post('http://54.178.202.58:8000/api/projectplanning/create/', postData, {
-    //         headers: {
-    //           Authorization: `Bearer ${token}`,
-    //         },
-    //       })
-    //       alert('Sucessfully Saved')
-    //       setFormData([
-    //         {
-    //           last_name: '',
-    //           first_name: '',
-    //           email: '',
-    //           salary: '',
-    //           business_division_name: '',
-    //           company_name: '',
-    //           auth_user_id: localStorage.getItem('userID'),
-    //         },
-    //       ])
-    //     } catch (error) {
-    //       if (error.response && error.response.status === 401) {
-    //         window.location.href = '/login'
-    //       } else {
-    //         console.error('There was an error creating the project planning data!', error)
-    //       }
-    //     }
-    //   }
+      const handleSubmit = async (e) => {
+        e.preventDefault()
+        
+        const employeeData = employees.map((empl) => ({
+          last_name: empl.last_name,
+          first_name: empl.first_name,
+          email: empl.email,
+          salary: empl.salary,
+          business_division: empl.business_division_name,
+          company: empl.company_name,
+          auth_user: 1,
+          created_at: Date.now(),
+          password: '123', //Since the model is under AbstractBaseUser, it is required to have a password. But since the Employees model doesn't need password, I just put static data for it to work.
+        }))
+        
+        if (!validateEmployees(employees)) {
+          alert(translate('usersValidationText6', language))
+          return // Stop the submission
+        }
+
+        const token = localStorage.getItem('accessToken')
+        try {
+          const response = await axios.post('http://127.0.0.1:8000/api/employees/create', employeeData, {
+            // const response = await axios.post('http://54.178.202.58:8000/api/employees/create', employeeData, {
+            headers: {
+              Authorization: `Bearer ${token}`, // Add token to request headers
+            },
+          })
+          console.log(response.data)
+          alert('Saved')
+          window.location.reload()
+          
+        } catch (error) {
+          console.error('Error:', error.response.data)
+        }
+
+      }
+
+      const handleAddContainer = () => {
+          setEmployees([
+            ...employees,
+            {
+              last_name: '',
+              first_name: '',
+              email: '',
+              salary: '',
+              business_division_name: '',
+              company_name: '',
+              auth_id: '',
+              created_at: '',
+            },
+          ])
+      }
+
+      const handleRemoveContainer = () => {
+        if (employees.length > 1) {
+          const newContainers = [...employees]
+          newContainers.pop()
+          setEmployees(newContainers)
+        }
+      }
+
+      const handleInputChange = (containerIndex, projectIndex, event) => {
+        const { name, value } = event.target
+        const newContainers = [...employees]
+        newContainers[containerIndex] = {
+          ...newContainers[containerIndex],
+          [name]: value, 
+        }
+        setEmployees(newContainers) 
+      }
 
       useEffect(() => {
         setIsTranslateSwitchActive(language === 'en');
+        fetchData()
       }, [language]);
 
   return (
@@ -152,9 +202,14 @@ const EmployeesRegistration = () => {
                   ]}
                 />
             <div className='EmployeesRegistration_mid_form_cont'>
-              {/* <form onSubmit={handleSubmit}> */}
-                  <div key='' className='EmployeesRegistration_form-content EmployeesRegistration_ForImplementationOfPlusAndMinus'>
-                    <div className='EmployeesRegistration_form-content EmployeesRegistration_ForImplementationOfHorizontalLineBelow'></div>
+              <p className='EmployeesRegistration_form-title'>{translate('employeesRegistration', language)}</p>
+              <form onSubmit={handleSubmit}>
+                <div
+                  key=''
+                  className='EmployeesRegistration_form-content EmployeesRegistration_ForImplementationOfPlusAndMinus'
+                >
+                  <div className='EmployeesRegistration_form-content EmployeesRegistration_ForImplementationOfHorizontalLineBelow'></div>
+                  {employees.map((container, containerIndex) => (
                     <div className='EmployeesRegistration_form-div'>
                       <div className='EmployeesRegistration_left-form-content-div EmployeesRegistration_calc'>
                         <div className='EmployeesRegistration_last_name-div'>
@@ -162,15 +217,17 @@ const EmployeesRegistration = () => {
                           <input
                             type='text'
                             name='last_name'
-                            value=''
+                            value={container.last_name}
+                            onChange={(e) => handleInputChange(containerIndex, null, e)}
                           />
                         </div>
                         <div className='EmployeesRegistration_salary-div'>
                           <label className='salary'>{translate('salary', language)}</label>
                           <input
-                            type='text'
+                            type='number'
                             name='salary'
-                            value=''
+                            value={container.salary}
+                            onChange={(e) => handleInputChange(containerIndex, null, e)}
                           />
                         </div>
                       </div>
@@ -180,22 +237,26 @@ const EmployeesRegistration = () => {
                           <input
                             type='text'
                             name='first_name'
-                            value=''
+                            value={container.first_name}
+                            onChange={(e) => handleInputChange(containerIndex, null, e)}
                           />
                         </div>
                         <div className='EmployeesRegistration_business_division_name-div'>
-                          <label className='EmployeesRegistration_business_division_name'>{translate('businessDivision', language)}</label>
+                          <label className='EmployeesRegistration_business_division_name'>
+                            {translate('businessDivision', language)}
+                          </label>
                           <select
                             className='EmployeesRegistration_select-option'
                             name='business_division_name'
-                            value=''
-                            // onChange={(e) => handleChange(index, e)}
+                            value={container.business_division_name}
+                            onChange={(e) => handleInputChange(containerIndex, null, e)}
                           >
                             <option value=''></option>
-                            <option value=''>全社</option>
-                            <option value=''>CS事業部</option>
-                            <option value=''>PS事業部</option>
-                            <option value=''>HiPE</option>
+                            {businessSelection.map((division) => (
+                              <option key={division.business_division_id} value={division.business_division_id}>
+                                {division.business_division_name}
+                              </option>
+                            ))}
                           </select>
                         </div>
                       </div>
@@ -205,34 +266,39 @@ const EmployeesRegistration = () => {
                           <input
                             type='text'
                             name='email'
-                            value=''
+                            value={container.email}
+                            onChange={(e) => handleInputChange(containerIndex, null, e)}
                           />
                         </div>
                         <div className='EmployeesRegistration_company_name-div'>
-                          <label className='EmployeesRegistration_company_name'>{translate('companyName', language)}</label>
+                          <label className='EmployeesRegistration_company_name'>
+                            {translate('companyName', language)}
+                          </label>
                           <select
                             className='EmployeesRegistration_select-option'
                             name='company_name'
-                            value=''
-                            // onChange={(e) => handleChange(index, e)}
+                            value={container.company_name}
+                            onChange={(e) => handleInputChange(containerIndex, null, e)}
                           >
                             <option value=''></option>
-                            <option value=''>全社</option>
-                            <option value=''>CS事業部</option>
-                            <option value=''>PS事業部</option>
-                            <option value=''>HiPE</option>
+                            {companySelection.map((company) => (
+                              <option key={company.company_id} value={company.company_id}>
+                                {company.company_name}
+                              </option>
+                            ))}
                           </select>
                         </div>
                       </div>
                     </div>
-                    <input type='hidden' name='auth_user_id' value='' />
-                  </div>
+                  ))}
+                  <input type='hidden' name='auth_user_id' value='' />
+                </div>
                 <div className='EmployeesRegistration_form-btn-content'>
                   <div className='EmployeesRegistration_plus-btn'>
-                    <button className='EmployeesRegistration_inc' type='button'>
+                    <button className='EmployeesRegistration_inc' type='button' onClick={handleAddContainer}>
                       +
                     </button>
-                    <button className='EmployeesRegistration_dec' type='button'>
+                    <button className='EmployeesRegistration_dec' type='button' onClick={handleRemoveContainer}>
                       -
                     </button>
                   </div>
@@ -245,7 +311,7 @@ const EmployeesRegistration = () => {
                     </button>
                   </div>
                 </div>
-              {/* </form> */}
+              </form>
             </div>
           </div>
         </div>

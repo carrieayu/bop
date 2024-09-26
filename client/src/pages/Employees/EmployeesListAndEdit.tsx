@@ -9,6 +9,10 @@ import AlertModal from "../../components/AlertModal/AlertModal";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import ListButtons from "../../components/ListButtons/ListButtons";
 import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
+import { fetchBusinessDivisions } from "../../reducers/businessdivisions/businessdivisionsSlice";
+import { fetchMasterCompany } from "../../reducers/company/companySlice";
+import { useDispatch } from "react-redux";
+import { UnknownAction } from "redux";
 
 const EmployeesListAndEdit: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -22,12 +26,15 @@ const EmployeesListAndEdit: React.FC = () => {
     const { language, setLanguage } = useLanguage()
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
     const [isEditing, setIsEditing] = useState(false)
-    const [changes, setChanges] = useState({})
-    const [projects, setProjects] = useState([])
+    const [employeesList, setEmployeesList] = useState([])
+    const [originalEmployeesList, setOriginalEmployeesList] = useState(employeesList)
     const [initialLanguage, setInitialLanguage] = useState(language);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedProject, setSelectedProject] = useState<any>(null);
-
+    const [businessSelection, setBusinessSelection] = useState<any>([])
+    const [companySelection, setCompanySelection] = useState<any>([])
+    const [deleteId, setDeleteUserId] = useState([])
+    const dispatch = useDispatch()
     const totalPages = Math.ceil(100 / 10);
 
     const handleTabClick = (tab) => {
@@ -55,6 +62,17 @@ const EmployeesListAndEdit: React.FC = () => {
         }
       }
     
+    const fetchData = async () => {
+      try {
+        const resBusinessDivisions = await dispatch(fetchBusinessDivisions() as unknown as UnknownAction)
+        setBusinessSelection(resBusinessDivisions.payload)
+        const resMasterCompany = await dispatch(fetchMasterCompany() as unknown as UnknownAction)
+        setCompanySelection(resMasterCompany.payload)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    
     const handlePageChange = (page: number) => {
       setCurrentPage(page);
     };
@@ -76,48 +94,64 @@ const EmployeesListAndEdit: React.FC = () => {
     }
 
 
-    const handleChange = (index, event) => {
-      const { name, value } = event.target
-      const updatedProjects = [...projects]
-      if (name.includes('client.client_name')) {
-        updatedProjects[index].client.client_name = value
-      } else {
-        updatedProjects[index][name] = value
-      }
-      setProjects(updatedProjects)
-      const projectId = updatedProjects[index].planning_project_id
-      setChanges((prevChanges) => ({
-        ...prevChanges,
-        [projectId]: {
-          ...prevChanges[projectId],
-          [name]: value,
-        },
-      }))
+    const handleChange = (index, e) => {
+      const { name, value } = e.target
+      setEmployeesList((prevState) => {
+        const updatedEmployeeData = [...prevState]
+        updatedEmployeeData[index] = {
+          ...updatedEmployeeData[index],
+          [name]: value, 
+        }
+        return updatedEmployeeData
+      })
     }
 
     const handleSubmit = async (e) => {
       event.preventDefault()
-      console.log('Changed Data:', changes)
+      const getModifiedFields = (original, updated) => {
+        const modifiedFields = []
+
+        updated.forEach((updatedEmployee) => {
+          const originalEmployee = original.find((emp) => emp.employee_id === updatedEmployee.employee_id)
+
+          if (originalEmployee) {
+            const changes = { employee_id: updatedEmployee.employee_id } 
+
+            for (const key in updatedEmployee) {
+              if (updatedEmployee[key] !== originalEmployee[key]) {
+                changes[key] = updatedEmployee[key] 
+              }
+            }
+
+            if (Object.keys(changes).length > 1) {
+              modifiedFields.push(changes) 
+            }
+          }
+        })
+
+        return modifiedFields
+      }
+      const modifiedFields = getModifiedFields(originalEmployeesList, employeesList)
 
       const token = localStorage.getItem('accessToken')
       if (!token) {
         window.location.href = '/login'
         return
       }
-
       try {
-        // const response = await axios.put('http://127.0.0.1:8000/api/projectdatalist/update/', changes, {
-        const response = await axios.put('http://54.178.202.58:8000/api/projectdatalist/update/',  changes ,{
+        const response = await axios.put('http://127.0.0.1:8000/api/employees/update/', modifiedFields, {
+          // const response = await axios.put('http://54.178.202.58:8000/api/employees/update/',  modifiedFields ,{
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
         alert('Sucessfully updated')
+        window.location.reload()
       } catch (error) {
         if (error.response && error.response.status === 401) {
           window.location.href = '/login'
         } else {
-          console.error('There was an error updating the project planning data!', error)
+          console.error('There was an error updating the employeesg data!', error)
         }
       }
 
@@ -132,13 +166,15 @@ const EmployeesListAndEdit: React.FC = () => {
         }
 
         try {
-          // const response = await axios.get('http://127.0.0.1:8000/api/planningprojects/', {
-          const response = await axios.get('http://54.178.202.58:8000/api/planningprojects/', {
+          const response = await axios.get('http://127.0.0.1:8000/api/employees', {
+            // const response = await axios.get('http://54.178.202.58:8000/api/employees', {
             headers: {
               Authorization: `Bearer ${token}`, // Add token to request headers
             },
           })
-          setProjects(response.data)
+          console.log(response.data)
+          setEmployeesList(response.data)
+          setOriginalEmployeesList(response.data)
         } catch (error) {
           if (error.response && error.response.status === 401) {
             window.location.href = '/login' // Redirect to login if unauthorized
@@ -149,12 +185,13 @@ const EmployeesListAndEdit: React.FC = () => {
       }
 
       fetchProjects()
+      fetchData()
     }, [])
 
-      useEffect(() => {
-        const startIndex = currentPage * rowsPerPage
-        setPaginatedData(projects.slice(startIndex, startIndex + rowsPerPage))
-      }, [currentPage, rowsPerPage, projects])
+      // useEffect(() => {
+      //   const startIndex = currentPage * rowsPerPage
+      //   setPaginatedData(projects.slice(startIndex, startIndex + rowsPerPage))
+      // }, [currentPage, rowsPerPage, projects])
 
       useEffect(() => {
         const path = location.pathname;
@@ -175,9 +212,10 @@ const EmployeesListAndEdit: React.FC = () => {
         }
       };
 
-      const openModal = (project) => {
-        setSelectedProject(project);
+      const openModal = (employee, id) => {
+        setSelectedProject(employee)
         setModalIsOpen(true);
+        setDeleteUserId(id)
     };
 
     const closeModal = () => {
@@ -185,11 +223,30 @@ const EmployeesListAndEdit: React.FC = () => {
         setModalIsOpen(false);
     };
 
-    const handleConfirm = () => {
-      // Currently no delete logic
-      console.log('Confirmed action for project:', selectedProject);
-      closeModal();
-    };
+    const handleConfirm = async () => {
+      console.log('Confirmed action for project:', deleteId)
+      try {
+        const response = await axios.delete(`http://127.0.0.1:8000/api/employees/list/${deleteId}/delete/`, {
+          // const response = await axios.get(`http://54.178.202.58:8000/api/employees/list/<int:pk>/delete/`, {
+        })
+        setEmployeesList((prevList) => prevList.filter((employee) => employee.employee_id !== deleteId))
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login'
+        } else {
+          console.error('Error deleting project:', error)
+        }
+      }
+      closeModal()
+    }
+
+    const formatDate = (dateString) => {
+      const date = new Date(dateString)
+      const month = String(date.getMonth() + 1).padStart(2, '0') // Get month (0-indexed, so +1)
+      const day = String(date.getDate()).padStart(2, '0') // Get day
+      const year = date.getFullYear() // Get full year
+      return `${month}/${day}/${year}`
+    }
 
     const handleNewRegistrationClick = () => {
       navigate('/employees-registration');
@@ -236,115 +293,132 @@ const EmployeesListAndEdit: React.FC = () => {
                           <table className='table is-bordered is-hoverable'>
                             <thead>
                               <tr className='EmployeesListAndEdit_table_title '>
-                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-left'>
-                                    ID
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-left'>ID</th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('lastName', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('lastName', language)}
+                                  {translate('firstName', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('firstName', language)}
+                                  {translate('email', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('email', language)}
-                                </th>
-                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('salary', language)}
+                                  {translate('salary', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-left'>
-                                    {translate('businessDivision', language)}
+                                  {translate('businessDivision', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-left'>
-                                    {translate('companyName', language)}
+                                  {translate('companyName', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('createdBy', language)}
+                                  {translate('createdBy', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('createdAt', language)}
+                                  {translate('createdAt', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('updatedAt', language)}
+                                  {translate('updatedAt', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'></th>
                               </tr>
                             </thead>
                             <tbody className='EmployeesListAndEdit_table_body'>
-                              {/* {projects.map((project, index) => ( */}
-                                <tr key='{project.planning_project_id}' className='EmployeesListAndEdit_table_body_content_horizontal'>
-                                  <td className='EmployeesListAndEdit_table_body_content_vertical has-text-left'></td>
+                              {employeesList.map((employee, employeeIndex) => (
+                                <tr
+                                  key={employee.employee_id}
+                                  className='EmployeesListAndEdit_table_body_content_horizontal'
+                                >
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical has-text-left'>
+                                    {employee.employee_id}
+                                  </td>
                                   <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
-                                    {/* <input
-                                      className="edit_input"
+                                    <input
+                                      className='edit_input'
                                       type='text'
                                       name='last_name'
-                                      value=''
-                                      // onChange={(e) => handleChange(index, e)}
-                                    /> */}
+                                      value={employee.last_name}
+                                      onChange={(e) => handleChange(employeeIndex, e)}
+                                    />
                                   </td>
                                   <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
-                                    {/* <input
-                                      className="edit_input"
+                                    <input
+                                      className='edit_input'
                                       type='text'
                                       name='first_name'
-                                      value=''
-                                      // onChange={(e) => handleChange(index, e)}
-                                    /> */}
+                                      value={employee.first_name}
+                                      onChange={(e) => handleChange(employeeIndex, e)}
+                                    />
                                   </td>
                                   <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
-                                    {/* <input
-                                      className="edit_input"
+                                    <input
+                                      className='edit_input'
                                       type='text'
                                       name='email'
-                                      value=''
-                                      // onChange={(e) => handleChange(index, e)}
-                                    /> */}
+                                      value={employee.email}
+                                      onChange={(e) => handleChange(employeeIndex, e)}
+                                    />
                                   </td>
                                   <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
-                                    {/* <input
-                                      className="edit_input"
-                                      type='text'
+                                    <input
+                                      className='edit_input'
+                                      type='number'
                                       name='salary'
-                                      value=''
-                                      // onChange={(e) => handleChange(index, e)}
-                                    /> */}
+                                      value={employee.salary}
+                                      onChange={(e) => handleChange(employeeIndex, e)}
+                                    />
                                   </td>
                                   <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_select'>
-                                    {/* <select
-                                      className="edit_select"
-                                      name='business_division_name'
-                                      value=''
-                                      // onChange={(e) => handleChange(index, e)}
+                                    <select
+                                      className='edit_select'
+                                      name='business_division'
+                                      value={employee.business_division_id}
+                                      onChange={(e) => handleChange(employeeIndex, e)}
+                                    >
+                                      <option value=''>{}</option>
+                                      {businessSelection.map((division) => (
+                                        <option
+                                          key={division.business_division_id}
+                                          value={division.business_division_id}
+                                        >
+                                          {division.business_division_name}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_select'>
+                                    <select
+                                      className='edit_select'
+                                      name='company'
+                                      value={employee.company_id}
+                                      onChange={(e) => handleChange(employeeIndex, e)}
                                     >
                                       <option value=''></option>
-                                      <option value=''>全社</option>
-                                      <option value=''>CS事業部</option>
-                                      <option value=''>PS事業部</option>
-                                      <option value=''>HiPE</option>
-                                    </select> */}
+                                      {companySelection.map((company) => (
+                                        <option key={company.company_id} value={company.company_id}>
+                                          {company.company_name}
+                                        </option>
+                                      ))}
+                                    </select>
                                   </td>
-                                  <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_select'>
-                                    {/* <select
-                                        className="edit_select"
-                                        name='business_division_name'
-                                        value=''
-                                        // onChange={(e) => handleChange(index, e)}
-                                      >
-                                      <option value=''></option>
-                                      <option value=''>全社</option>
-                                      <option value=''>CS事業部</option>
-                                      <option value=''>PS事業部</option>
-                                      <option value=''>HiPE</option>
-                                    </select> */}
-                                  </td>
-                                  <td className='EmployeesListAndEdit_table_body_content_vertical'></td>
-                                  <td className='EmployeesListAndEdit_table_body_content_vertical'></td>
-                                  <td className='EmployeesListAndEdit_table_body_content_vertical'></td>
                                   <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                    {/* <RiDeleteBin6Fill className='delete-icon' onClick={() => openModal('project')}/> */}
+                                    {employee.auth_user}
+                                  </td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                    {formatDate(employee.created_at)}
+                                  </td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                    {formatDate(employee.updated_at)}
+                                  </td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                    <RiDeleteBin6Fill
+                                      className='delete-icon'
+                                      onClick={() => openModal('project', employee.employee_id)}
+                                    />
                                   </td>
                                 </tr>
-                              {/* ))} */}
+                              ))}
                             </tbody>
                           </table>
                         </div>
@@ -352,53 +426,68 @@ const EmployeesListAndEdit: React.FC = () => {
                         <table className='table is-bordered is-hoverable'>
                           <thead>
                             <tr className='EmployeesListAndEdit_table_title '>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-left'>
-                                  ID
+                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-left'>ID</th>
+                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                {translate('lastName', language)}
                               </th>
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('lastName', language)}
+                                {translate('firstName', language)}
                               </th>
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('firstName', language)}
+                                {translate('email', language)}
                               </th>
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('email', language)}
+                                {translate('salary', language)}
                               </th>
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('salary', language)}
+                                {translate('businessDivision', language)}
                               </th>
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('businessDivision', language)}
+                                {translate('companyName', language)}
                               </th>
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('companyName', language)}
+                                {translate('createdBy', language)}
                               </th>
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('createdBy', language)}
+                                {translate('createdAt', language)}
                               </th>
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('createdAt', language)}
-                              </th>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('updatedAt', language)}
+                                {translate('updatedAt', language)}
                               </th>
                             </tr>
                           </thead>
                           <tbody className='EmployeesListAndEdit_table_body'>
-                            {/* {projects.map((project) => ( */}
-                              <tr key='{project.planning_project_id}' className='EmployeesListAndEdit_table_body_content_horizontal'>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical has-text-left'></td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'></td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'></td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'></td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'></td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'></td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'></td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'></td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'></td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'></td>
+                            {employeesList.map((employee) => (
+                              <tr
+                                key={employee.employee_id}
+                                className='EmployeesListAndEdit_table_body_content_horizontal'
+                              >
+                                <td className='EmployeesListAndEdit_table_body_content_vertical has-text-left'>
+                                  {employee.employee_id}
+                                </td>
+                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                  {employee.last_name}
+                                </td>
+                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                  {employee.first_name}
+                                </td>
+                                <td className='EmployeesListAndEdit_table_body_content_vertical'>{employee.email}</td>
+                                <td className='EmployeesListAndEdit_table_body_content_vertical'>{employee.salary}</td>
+                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                  {employee.business_division}
+                                </td>
+                                <td className='EmployeesListAndEdit_table_body_content_vertical'>{employee.company}</td>
+                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                  {employee.auth_user}
+                                </td>
+                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                  {formatDate(employee.created_at)}
+                                </td>
+                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                  {formatDate(employee.updated_at)}
+                                </td>
                               </tr>
-                            {/* ))} */}
+                            ))}
                           </tbody>
                         </table>
                       )}

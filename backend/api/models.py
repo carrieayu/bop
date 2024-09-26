@@ -45,7 +45,7 @@ class MasterCompany(models.Model):
         db_table = u'mst_companies'
 
     def __str__(self):
-        return self.company_id
+        return self.company_name
     
     def save(self, *args, **kwargs):
         if not self.company_id:
@@ -102,19 +102,17 @@ class Employees(AbstractBaseUser):
     class Meta :
         db_table = u'employees'
 
-    def __str__(self):
-        return self.user_id
-    
+    STARTING_EMPLOYEE_ID = 3000000001
+
+    def _generate_employee_id(self):
+        last_employee = Employees.objects.filter(employee_id__startswith='300').order_by('-employee_id').first()
+        if last_employee:
+            return str(int(last_employee.employee_id) + 1)
+        return str(self.STARTING_EMPLOYEE_ID)
+
     def save(self, *args, **kwargs):
-        if not self.user_id:
-            max_user_id = (
-                MasterBusinessDivision.objects.aggregate(
-                    max_user_id=models.Max("user_id")
-                )["max_user_id"]
-                or "00000"
-            )
-            new_user_id = str(int(max_user_id) + 1).zfill(5)
-            self.user_id = new_user_id
+        if not self.employee_id:
+            self.employee_id = self._generate_employee_id()
         super().save(*args, **kwargs)
 
 

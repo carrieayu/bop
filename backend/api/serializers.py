@@ -25,19 +25,31 @@ class UserSerializer(serializers.ModelSerializer):
 class EmployeesSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmployeesApi
-        fields = [
-            "user_id",
-            "username",
-            "email",
-            "affiliated_company_id",
-            "affiliated_business_division_id",
-            "created_at",
-            "registered_user_id"
-        ]
+        fields = '__all__'
         
     def create(self, validated_data):
-        personnel_user = EmployeesApi.objects.create(**validated_data)
-        return personnel_user
+        employee = EmployeesApi.objects.create(**validated_data)
+        return employee
+
+class EmployeesListSerializer(serializers.ModelSerializer):
+    business_division = serializers.StringRelatedField()
+    company = serializers.StringRelatedField()
+    auth_user = serializers.StringRelatedField()
+    class Meta:
+        model = EmployeesApi
+        fields = [
+            'employee_id',
+            'last_name',
+            'first_name',
+            'email',
+            'salary',
+            'auth_user_id',
+            'created_at',
+            'updated_at',
+            'business_division', 
+            'company',
+            'auth_user', 
+        ]
 
 class MasterCompanySerializers(serializers.ModelSerializer):
     class Meta:
@@ -49,7 +61,7 @@ class MasterBusinessDivisionSerializer(serializers.ModelSerializer):
     # company = CompanyMasterSerializers(source='company_id', read_only=True)
     class Meta:
         model = MasterBusinessDivision
-        fields = ["business_division_name", "company_id", "registered_user_id"]
+        fields = '__all__'
         # fields = ["business_division_id", "business_division_name", "company_id", "company", "created_at", "registered_user_id"]
 
 
