@@ -35,28 +35,29 @@
                 max-height: 670px;
                 overflow-y: auto; 
                 overflow-x: hidden;
-                scrollbar-width: none;
+                scrollbar-width: thin; 
+                scrollbar-color: transparent transparent;
                 @media only screen and (min-width: 1875px){
                     height: 55vh;
                 }
-            
+                &:hover {
+                    scrollbar-color: #888 #EFEDEA; 
+                }
                 &::-webkit-scrollbar {
-                    width: 0;
-                    height: 0;
+                    width: 8px;
                 }
-            
                 &::-webkit-scrollbar-track {
-                    background: transparent;
+                    background: transparent; 
                 }
-            
                 &::-webkit-scrollbar-thumb {
-                    background-color: transparent;
-                    border-radius: 0;
-                    border: none;
+                    background-color: transparent; 
+                    border-radius: 10px;
                 }
-            
-                &::-webkit-scrollbar-thumb:hover {
-                    background-color: transparent;
+                &:hover::-webkit-scrollbar-thumb {
+                    background-color: #888;
+                }
+                &:hover::-webkit-scrollbar-thumb:hover {
+                    background-color: #555; 
                 }
                 .projectsRegistration_mid_form_cont{
                     margin: -20px 50px;
