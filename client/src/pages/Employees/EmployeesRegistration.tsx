@@ -132,7 +132,7 @@ const EmployeesRegistration = () => {
           
         } catch (error) {
           if (error.response.data[0].email[0] && error.response.status === 400) {
-              alert(translate('email2', language))
+              alert(translate('emailExistsMessage', language))
           }else{
             console.error('Error:', error.response.data[0].email[0])
           }

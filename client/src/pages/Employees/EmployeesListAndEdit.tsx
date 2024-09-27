@@ -519,7 +519,7 @@ const EmployeesListAndEdit: React.FC = () => {
         isOpen={modalIsOpen}
         onConfirm={handleConfirm}
         onCancel={closeModal}
-        message={translate('deleteMessage2', language)}
+        message={translate('deleteEmployeeMessage', language)}
       />
     </div>
   )
