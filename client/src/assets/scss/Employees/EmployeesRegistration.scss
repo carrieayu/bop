@@ -55,12 +55,13 @@
                     background-color: #555; 
                 }
                 .EmployeesRegistration_mid_form_cont{
-                    margin: -20px 50px;
+                    margin: -14px 50px;
                     .EmployeesRegistration_form-content.EmployeesRegistration_ForImplementationOfPlusAndMinus{
                         padding: 50px 0px 0px 20px;
                     }
                     .EmployeesRegistration_form-content.EmployeesRegistration_ForImplementationOfHorizontalLineBelow{
-                        // border-top: 4px solid rgb(183, 183, 183);
+                        border-top: 4px solid rgb(183, 183, 183);
+                        opacity: 30%;
                     }
                     .EmployeesRegistration_form-content{
                         padding: 15px 0px 0px 20px;
