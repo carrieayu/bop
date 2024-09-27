@@ -226,7 +226,7 @@ const EmployeesListAndEdit: React.FC = () => {
     const handleConfirm = async () => {
       console.log('Confirmed action for project:', deleteId)
       try {
-        const response = await axios.delete(`http://127.0.0.1:8000/api/employees/list/${deleteId}/delete/`, {
+        const response = await axios.delete(`http://127.0.0.1:8000/api/employees/${deleteId}/delete/`, {
           // const response = await axios.get(`http://54.178.202.58:8000/api/employees/list/<int:pk>/delete/`, {
         })
         setEmployeesList((prevList) => prevList.filter((employee) => employee.employee_id !== deleteId))
