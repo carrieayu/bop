@@ -214,12 +214,6 @@ const EmployeesRegistration = () => {
                     <div
                       className={`EmployeesRegistration_form-content ${containerIndex > 0 ? 'EmployeesRegistration_ForImplementationOfHorizontalLineBelow' : ''}`}
                     ></div>
-                    <div
-                      className={`projectsRegistration_form-content ${containerIndex > 0 ? 'projectsRegistration_form-content-special' : ''}`}
-                    >
-                      <div
-                        className={`projectsRegistration_form-content ${containerIndex > 0 ? 'projectsRegistration_form-line' : ''}`}
-                      ></div>
                       <div className='EmployeesRegistration_form-div'>
                         <div className='EmployeesRegistration_left-form-content-div EmployeesRegistration_calc'>
                           <div className='EmployeesRegistration_last_name-div'>
@@ -300,7 +294,7 @@ const EmployeesRegistration = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
+                   
                   </div>
                 ))}
 

@@ -109,7 +109,7 @@ class UserUpdate(generics.UpdateAPIView):
 
         return Response({"success": "Users updated successfully."}, status=status.HTTP_200_OK)
 
-class CreateEmployees(generics.CreateAPIView):
+class EmployeesCreate(generics.CreateAPIView):
     queryset = EmployeesApi.objects.all()
     serializer_class = EmployeesSerializer
     permission_classes = [IsAuthenticated]
@@ -126,7 +126,7 @@ class CreateEmployees(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save()
 
-class DeleteEmployee(generics.DestroyAPIView):
+class EmployeesDelete(generics.DestroyAPIView):
         queryset = EmployeesApi.objects.all()
         permission_classes = [AllowAny]
 
@@ -144,7 +144,7 @@ class DeleteEmployee(generics.DestroyAPIView):
             except:
                 return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
             
-class UpdateEmployee(generics.UpdateAPIView):
+class EmployeesUpdate(generics.UpdateAPIView):
     serializer_class = EmployeesSerializer
     permission_classes = [AllowAny]
     queryset = EmployeesApi.objects.all()

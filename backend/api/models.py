@@ -112,8 +112,6 @@ class Employees(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.employee_id:
-            self.first_name = self.first_name.capitalize()  
-            self.last_name = self.last_name.capitalize()   
             self.employee_id = self._generate_employee_id()
         super().save(*args, **kwargs)
 

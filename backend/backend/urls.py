@@ -1,9 +1,9 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import CostOfSalesList, CreateMasterCompany, CreateProjectsData, CreateResults, CreateUserView , DeleteMasterCompany, DeleteProjectsData, DeleteResults, DeleteUser, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany,  UpdateProjectsData, UpdateResults,ForgotPasswordView, UserList, UserUpdate
-from api.views import CostOfSalesCreate, CostOfSalesUpdate, CreateEmployeeExpenses, CreateEmployees,CreateProjectsData, EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
-from api.views import CostOfSalesList, CreateMasterCompany, CreateResults, CreateUserView, DeleteEmployee , DeleteMasterCompany, DeleteProjectsData, DeleteResults, DeleteUser, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateEmployee, UpdateMasterCompany,  UpdateProjectsData, UpdateResults,ForgotPasswordView, UserList, UserUpdate
-from api.views import CostOfSalesCreate, CostOfSalesUpdate, CreateEmployeeExpenses, CreateEmployees,  EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
+from api.views import CostOfSalesList, CreateMasterCompany, CreateProjectsData, CreateResults, CreateUserView , DeleteMasterCompany, DeleteProjectsData, DeleteResults, DeleteUser, EmployeesCreate, EmployeesDelete, EmployeesUpdate, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany,  UpdateProjectsData, UpdateResults,ForgotPasswordView, UserList, UserUpdate
+from api.views import CostOfSalesCreate, CostOfSalesUpdate, CreateEmployeeExpenses,CreateProjectsData, EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
+from api.views import CostOfSalesList, CreateMasterCompany, CreateResults, CreateUserView , DeleteMasterCompany, DeleteProjectsData, DeleteResults, DeleteUser, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany,  UpdateProjectsData, UpdateResults,ForgotPasswordView, UserList, UserUpdate
+from api.views import CostOfSalesCreate, CostOfSalesUpdate, CreateEmployeeExpenses,  EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -49,9 +49,9 @@ urlpatterns = [
     path('api/employee-expenses', EmployeeExpensesList.as_view()),
     path('api/employee-expenses/create', CreateEmployeeExpenses.as_view()),
     path('api/employees', Employees.as_view()),
-    path('api/employees/create', CreateEmployees.as_view()),
-    path('api/employees/list/<int:pk>/delete/', DeleteEmployee.as_view()),
-    path('api/employees/update/', UpdateEmployee.as_view()),
+    path('api/employees/create', EmployeesCreate.as_view()),
+    path('api/employees/<int:pk>/delete/', EmployeesDelete.as_view()),
+    path('api/employees/update/', EmployeesUpdate.as_view()),
     #Planning
     path('api/planning', Planning.as_view()),
     path('api/planning/update', PlanningUpdate.as_view()),
