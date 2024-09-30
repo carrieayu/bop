@@ -65,11 +65,27 @@ class MasterBusinessDivisionSerializer(serializers.ModelSerializer):
         # fields = ["business_division_id", "business_division_name", "company_id", "company", "created_at", "registered_user_id"]
 
 
-class MasterClientSerializer(serializers.ModelSerializer):
-     
+class MasterClientCreateSerializer(serializers.ModelSerializer):
      class Meta:
         model = MasterClient
-        fields = '__all__'
+        fields = [
+            'client_id',
+            'client_name',
+            'created_at',
+            'updated_at',
+            'auth_user',
+        ]
+class MasterClientSerializer(serializers.ModelSerializer):
+     auth_user = serializers.StringRelatedField()
+     class Meta:
+        model = MasterClient
+        fields = [
+            'client_id',
+            'client_name',
+            'created_at',
+            'updated_at',
+            'auth_user',
+        ]
         
 class UpdateMasterCompanySerializers(serializers.ModelSerializer):
     class Meta:
