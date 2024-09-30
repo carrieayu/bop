@@ -6,6 +6,8 @@ import tableSlice from "../reducers/table/tableSlice";
 import graphSlice from "../reducers/graph/graphSlice";
 import personnelExpensesSlice from "../reducers/personnel/personnelExpensesSlice";
 import personnelSlice from "../reducers/personnel/personnelSlice";
+import businessDivisionsSlice from "../reducers/businessDivisions/businessDivisionsSlice";
+import masterCompanySlice from '../reducers/company/companySlice';
 import personnelPlanningSlice from "../reducers/personnel/personnelPlanningSlice";
 export const store = configureStore({
   reducer: {
@@ -16,7 +18,9 @@ export const store = configureStore({
     graph: graphSlice,
     personnel: personnelExpensesSlice,
     personnelData: personnelSlice,
-    personnelPlanning: personnelPlanningSlice
+    personnelPlanning: personnelPlanningSlice,
+    businessDivisionsSlice: businessDivisionsSlice,
+    masterCompanySlice: masterCompanySlice,
   },
 })
 
