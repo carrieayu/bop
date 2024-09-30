@@ -74,5 +74,6 @@
     "usersValidationText8": "メールアドレスが一致しません",
     "confirmEmailAddress": "メールアドレス確認",
     "dateJoined": "入社日",
-    "users": "ユーザー"
+    "users": "ユーザー",
+    "clientExistMessage": "このクライアント名はすでに存在します。"
 }

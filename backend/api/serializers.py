@@ -75,6 +75,16 @@ class MasterClientCreateSerializer(serializers.ModelSerializer):
             'updated_at',
             'auth_user',
         ]
+class MasterClientUpdateSerializer(serializers.ModelSerializer):
+     class Meta:
+        model = MasterClient
+        fields = [
+            'client_id',
+            'client_name',
+            'created_at',
+            'updated_at',
+            'auth_user',
+        ]
 class MasterClientSerializer(serializers.ModelSerializer):
      auth_user = serializers.StringRelatedField()
      class Meta:

@@ -96,7 +96,13 @@ const ClientsRegistration = () => {
           alert('Saved')
           window.location.reload()
         } catch (error) {
-            console.error('Error:', error.response)
+          console.log()
+        if (error.response.data[0].client_name[0] && error.response.status === 400) {
+          alert(translate('clientExistMessage', language))
+        } else {
+          console.error('Error:', error.response)
+        }
+            
         }
         
       }

@@ -7,7 +7,7 @@ from django.db.models import Max
 
 class MasterClient(models.Model):
     client_id = models.CharField(max_length=10, primary_key=True, editable=False)
-    client_name = models.CharField(max_length=100)
+    client_name = models.CharField(unique=True,max_length=100)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
@@ -24,7 +24,7 @@ class MasterClient(models.Model):
             .get("max_client_id")
         )
         if max_client_id is None or max_client_id == '':
-            new_client_id = "0001"  
+            new_client_id = "1000000001"  
         else:
             new_client_id = str(int(max_client_id) + 1).zfill(4) 
         self.client_id = new_client_id

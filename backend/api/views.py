@@ -22,6 +22,7 @@ from .serializers import (
     MasterBusinessDivisionSerializer,
     MasterClientCreateSerializer,
     MasterClientSerializer,
+    MasterClientUpdateSerializer,
     MasterCompanySerializers,
     EmployeesSerializer,
     ResultListsSerializer,
@@ -268,26 +269,31 @@ class MasterClientRetrieve(generics.RetrieveAPIView):
    
 class MasterClientUpdate(generics.UpdateAPIView):
     queryset = MasterClient.objects.all()
-    serializer_class = MasterClientSerializer
+    serializer_class = MasterClientUpdateSerializer
     permission_classes = [IsAuthenticated]
     
     def update(self, request, *args, **kwargs):
         received_data = request.data
         print(received_data)
-        for client_data in received_data: 
-            client_id = client_data.get('client_id')  
-            
-            try:
-                client = MasterClient.objects.get(client_id=int(client_id))
-                for field, value in client_data.items():
-                    if field != 'client_id':
-                        setattr(client, field, value) 
-                client.save() 
+        try: 
+            for client_data in received_data: 
+                client_id = client_data.get('client_id')  
+                
+                try:
+                    client = MasterClient.objects.get(client_id=int(client_id))
+                    for field, value in client_data.items():
+                        if field != 'client_id':
+                            setattr(client, field, value) 
+                    client.save() 
 
-            except AuthUser.DoesNotExist:
-                return Response({"error": f"Client with ID {client_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
+                except AuthUser.DoesNotExist:
+                    return Response({"error": f"Client with ID {client_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
-        return Response({"success": "Users updated successfully."}, status=status.HTTP_200_OK)
+            return Response({"success": "Users updated successfully."}, status=status.HTTP_200_OK)
+        except IntegrityError as e:
+            if 'Duplicate entry' in str(e):
+                return Response({'error': 'Client name already exists.'}, status=400)
+            return Response({'error': str(e)}, status=400)
     
 class MasterClientDelete(generics.DestroyAPIView):
     queryset = MasterClient.objects.all()
