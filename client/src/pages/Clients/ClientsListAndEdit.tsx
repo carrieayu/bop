@@ -396,7 +396,7 @@ const ClientsListAndEdit: React.FC = () => {
         isOpen={modalIsOpen}
         onConfirm={handleConfirm}
         onCancel={closeModal}
-        message={translate('deleteMessage', language)}
+        message={translate('clientDeleteMessage', language)}
       />
     </div>
   )

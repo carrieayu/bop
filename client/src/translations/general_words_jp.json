@@ -75,5 +75,6 @@
     "confirmEmailAddress": "メールアドレス確認",
     "dateJoined": "入社日",
     "users": "ユーザー",
-    "clientExistMessage": "このクライアント名はすでに存在します。"
+    "clientExistMessage": "このクライアント名はすでに存在します。",
+    "clientDeleteMessage": "このクライアントを削除してもよろしいですか？"
 }

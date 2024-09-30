@@ -75,5 +75,6 @@
     "confirmEmailAddress": "Confirm Email Address",
     "dateJoined": "Date Joined",
     "users": "Users",
-    "clientExistMessage": "This client name already exists."
+    "clientExistMessage": "This client name already exists.",
+    "clientDeleteMessage": "Are you sure you want to delete this client?"
 }
