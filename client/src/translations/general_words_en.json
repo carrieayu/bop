@@ -74,5 +74,7 @@
     "usersValidationText8": "Emails do not match..",
     "confirmEmailAddress": "Confirm Email Address",
     "dateJoined": "Date Joined",
-    "users": "Users"
+    "users": "Users",
+    "clientExistMessage": "This client name already exists.",
+    "clientDeleteMessage": "Are you sure you want to delete this client?"
 }

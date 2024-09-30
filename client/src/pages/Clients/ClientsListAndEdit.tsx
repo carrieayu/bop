@@ -22,11 +22,12 @@ const ClientsListAndEdit: React.FC = () => {
     const { language, setLanguage } = useLanguage()
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
     const [isEditing, setIsEditing] = useState(false)
-    const [changes, setChanges] = useState({})
-    const [projects, setProjects] = useState([])
+    const [updatedClients, setUpdatedClients] = useState([])
+    const [originalClientsList, setOriginalClientsList] = useState(updatedClients)
+    const [deleteId, setDeleteClientId] = useState([])
     const [initialLanguage, setInitialLanguage] = useState(language);
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [selectedProject, setSelectedProject] = useState<any>(null);
+    const [selectedClient, setSelectedClient] = useState<any>(null);
 
     const totalPages = Math.ceil(100 / 10);
 
@@ -76,29 +77,45 @@ const ClientsListAndEdit: React.FC = () => {
     }
 
 
-    const handleChange = (index, event) => {
-      const { name, value } = event.target
-      const updatedProjects = [...projects]
-      if (name.includes('client.client_name')) {
-        updatedProjects[index].client.client_name = value
-      } else {
-        updatedProjects[index][name] = value
-      }
-      setProjects(updatedProjects)
-      const projectId = updatedProjects[index].planning_project_id
-      setChanges((prevChanges) => ({
-        ...prevChanges,
-        [projectId]: {
-          ...prevChanges[projectId],
+    const handleChange = (index, e) => {
+      const { name, value } = e.target
+      setUpdatedClients((prevState) => {
+        const updatedClientData = [...prevState]
+        updatedClientData[index] = {
+          ...updatedClientData[index],
           [name]: value,
-        },
-      }))
+        }
+        return updatedClientData
+      })
     }
 
     const handleSubmit = async (e) => {
       event.preventDefault()
-      console.log('Changed Data:', changes)
+      const getModifiedFields = (original, updated) => {
+        const modifiedFields = []
 
+        updated.forEach((updatedClient) => {
+          const originalClient = original.find((emp) => emp.client_id === updatedClient.client_id)
+
+          if (originalClient) {
+            const changes = { client_id: updatedClient.client_id }
+
+            for (const key in updatedClient) {
+              if (updatedClient[key] !== originalClient[key]) {
+                changes[key] = updatedClient[key]
+              }
+            }
+
+            if (Object.keys(changes).length > 1) {
+              modifiedFields.push(changes)
+            }
+          }
+        })
+
+        return modifiedFields
+      }
+      const modifiedFields = getModifiedFields(originalClientsList, updatedClients)
+      console.log('Data:', modifiedFields)
       const token = localStorage.getItem('accessToken')
       if (!token) {
         window.location.href = '/login'
@@ -106,21 +123,24 @@ const ClientsListAndEdit: React.FC = () => {
       }
 
       try {
-        // const response = await axios.put('http://127.0.0.1:8000/api/projectdatalist/update/', changes, {
-        const response = await axios.put('http://54.178.202.58:8000/api/projectdatalist/update/',  changes ,{
+        const response = await axios.put('http://127.0.0.1:8000/api/master-client/update/', modifiedFields, {
+          // const response = await axios.put('http://54.178.202.58:8000/api/master-client/update/', modifiedFields, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
         alert('Sucessfully updated')
+        window.location.reload()
       } catch (error) {
+        if (error && error.response.status === 400) {
+          alert(translate('clientExistMessage', language))
+        }
         if (error.response && error.response.status === 401) {
           window.location.href = '/login'
         } else {
-          console.error('There was an error updating the project planning data!', error)
+          console.error('There was an error updating the clients data!', error)
         }
       }
-
     }
 
     useEffect(() => {
@@ -132,13 +152,14 @@ const ClientsListAndEdit: React.FC = () => {
         }
 
         try {
-          // const response = await axios.get('http://127.0.0.1:8000/api/planningprojects/', {
-          const response = await axios.get('http://54.178.202.58:8000/api/planningprojects/', {
+          const response = await axios.get('http://127.0.0.1:8000/api/master-clients/', {
+            // const response = await axios.get('http://54.178.202.58:8000/api/master-clients/', {
             headers: {
-              Authorization: `Bearer ${token}`, // Add token to request headers
+              Authorization: `Bearer ${token}`, 
             },
           })
-          setProjects(response.data)
+          setUpdatedClients(response.data)
+          setOriginalClientsList(response.data)
         } catch (error) {
           if (error.response && error.response.status === 401) {
             window.location.href = '/login' // Redirect to login if unauthorized
@@ -153,8 +174,8 @@ const ClientsListAndEdit: React.FC = () => {
 
       useEffect(() => {
         const startIndex = currentPage * rowsPerPage
-        setPaginatedData(projects.slice(startIndex, startIndex + rowsPerPage))
-      }, [currentPage, rowsPerPage, projects])
+        setPaginatedData(updatedClients.slice(startIndex, startIndex + rowsPerPage))
+      }, [currentPage, rowsPerPage, updatedClients])
 
       useEffect(() => {
         const path = location.pathname;
@@ -175,36 +196,57 @@ const ClientsListAndEdit: React.FC = () => {
         }
       };
 
-      const openModal = (project) => {
-        setSelectedProject(project);
+      const openModal = (project , id) => {
+        setDeleteClientId(id)
+        setSelectedClient(project);
         setModalIsOpen(true);
     };
 
     const closeModal = () => {
-        setSelectedProject(null);
+        setSelectedClient(null);
         setModalIsOpen(false);
     };
 
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
       // Currently no delete logic
-      console.log('Confirmed action for project:', selectedProject);
-      closeModal();
-    };
+      console.log('Confirmed action for project:', deleteId)
+      try {
+        const response = await axios.delete(`http://127.0.0.1:8000/api/master-client/${deleteId}/delete/`, {
+          // const response = await axios.get(`http://54.178.202.58:8000/api/master-client/${deleteId}/delete/`, {
+        })
+        setUpdatedClients((prevList) => prevList.filter((client) => client.client_id !== deleteId))
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login'
+        } else {
+          console.error('Error deleting client:', error)
+        }
+      }
+      closeModal()
+    }
 
     const handleNewRegistrationClick = () => {
       navigate('/clients-registration');
     };
 
+    const formatDate = (dateString) => {
+      const date = new Date(dateString)
+      const month = String(date.getMonth() + 1).padStart(2, '0') // Get month (0-indexed, so +1)
+      const day = String(date.getDate()).padStart(2, '0') // Get day
+      const year = date.getFullYear() // Get full year
+      return `${year}/${month}/${day}`
+    }
+
   return (
     <div className='ClientsListAndEdit_wrapper'>
-        <HeaderButtons 
-            activeTab={activeTab}
-            handleTabClick={handleTabClick}
-            isTranslateSwitchActive={isTranslateSwitchActive}
-            handleTranslationSwitchToggle={handleTranslationSwitchToggle}
-        />
+      <HeaderButtons
+        activeTab={activeTab}
+        handleTabClick={handleTabClick}
+        isTranslateSwitchActive={isTranslateSwitchActive}
+        handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+      />
       <div className='ClientsListAndEdit_cont_wrapper'>
-          <Sidebar />
+        <Sidebar />
         <div className='ClientsListAndEdit_maincontent_wrapper'>
           <div className='ClientsListAndEdit_top_content'>
             <div className='ClientsListAndEdit_top_body_cont'>
@@ -215,18 +257,18 @@ const ClientsListAndEdit: React.FC = () => {
               </div>
             </div>
             <div className='ClientsListAndEdit_mid_body_cont'>
-                <ListButtons
-                  activeTabOther={activeTabOther}
-                  message={translate('clientsList', language)}
-                  handleTabsClick={handleTabsClick}
-                  handleNewRegistrationClick={handleNewRegistrationClick}
-                  buttonConfig={[
-                    { labelKey: 'client', tabKey: 'client' },
-                    { labelKey: 'employee', tabKey: 'employee' },
-                    { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                    { labelKey: 'users', tabKey: 'users' },
-                  ]}
-                />
+              <ListButtons
+                activeTabOther={activeTabOther}
+                message={translate('clientsList', language)}
+                handleTabsClick={handleTabsClick}
+                handleNewRegistrationClick={handleNewRegistrationClick}
+                buttonConfig={[
+                  { labelKey: 'client', tabKey: 'client' },
+                  { labelKey: 'employee', tabKey: 'employee' },
+                  { labelKey: 'businessDivision', tabKey: 'businessDivision' },
+                  { labelKey: 'users', tabKey: 'users' },
+                ]}
+              />
               <div className='ClientsListAndEdit_table_wrapper'>
                 <div className='ClientsListAndEdit_table_cont'>
                   <div className='columns is-mobile'>
@@ -236,44 +278,56 @@ const ClientsListAndEdit: React.FC = () => {
                           <table className='table is-bordered is-hoverable'>
                             <thead>
                               <tr className='ClientsListAndEdit_table_title '>
-                                <th className='ClientsListAndEdit_table_title_content_vertical has-text-left'>
-                                  ID
+                                <th className='ClientsListAndEdit_table_title_content_vertical has-text-left'>ID</th>
+                                <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('clientName', language)}
                                 </th>
                                 <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('clientName', language)}
+                                  {translate('createdBy', language)}
                                 </th>
                                 <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('createdBy', language)}
+                                  {translate('createdAt', language)}
                                 </th>
                                 <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('createdAt', language)}
-                                </th>
-                                <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('updatedAt', language)}
+                                  {translate('updatedAt', language)}
                                 </th>
                                 <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'></th>
                               </tr>
                             </thead>
                             <tbody className='ClientsListAndEdit_table_body'>
-                              {/* {projects.map((project, index) => ( */}
-                                <tr key='{project.planning_project_id}' className='ClientsListAndEdit_table_body_content_horizontal'>
-                                  <td className='ClientsListAndEdit_table_body_content_vertical has-text-left'></td>
-                                  <td className='ClientsListAndEdit_table_body_content_vertical'>
-                                    {/* <input
-                                      type='text'
-                                      name='client.client_name'
-                                      value=''
-                                      // onChange={(e) => handleChange(index, e)}
-                                    /> */}
+                              {updatedClients.map((clients, index) => (
+                                <tr
+                                  key={clients.client_id}
+                                  className='ClientsListAndEdit_table_body_content_horizontal'
+                                >
+                                  <td className='ClientsListAndEdit_table_body_content_vertical has-text-left'>
+                                    {clients.client_id}
                                   </td>
-                                  <td className='ClientsListAndEdit_table_body_content_vertical'></td>
-                                  <td className='ClientsListAndEdit_table_body_content_vertical'></td>
-                                  <td className='ClientsListAndEdit_table_body_content_vertical'></td>
+                                  <td className='ClientsListAndEdit_table_body_content_vertical'>
+                                    <input
+                                      type='text'
+                                      name='client_name'
+                                      value={clients.client_name}
+                                      onChange={(e) => handleChange(index, e)}
+                                    />
+                                  </td>
+                                  <td className='ClientsListAndEdit_table_body_content_vertical'>
+                                    {clients.auth_user}
+                                  </td>
+                                  <td className='ClientsListAndEdit_table_body_content_vertical'>
+                                    {formatDate(clients.created_at)}
+                                  </td>
+                                  <td className='ClientsListAndEdit_table_body_content_vertical'>
+                                    {formatDate(clients.updated_at)}
+                                  </td>
                                   <td className='ClientsListAndEdit_table_body_content_vertical delete_icon'>
-                                    {/* <RiDeleteBin6Fill className='delete-icon' onClick={() => openModal('project')}/> */}
+                                    <RiDeleteBin6Fill
+                                      className='delete-icon'
+                                      onClick={() => openModal('project', clients.client_id)}
+                                    />
                                   </td>
                                 </tr>
-                              {/* ))} */}
+                              ))}
                             </tbody>
                           </table>
                         </div>
@@ -281,33 +335,39 @@ const ClientsListAndEdit: React.FC = () => {
                         <table className='table is-bordered is-hoverable'>
                           <thead>
                             <tr className='ClientsListAndEdit_table_title '>
-                              <th className='ClientsListAndEdit_table_title_content_vertical has-text-left'>
-                                ID
+                              <th className='ClientsListAndEdit_table_title_content_vertical has-text-left'>ID</th>
+                              <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
+                                {translate('clientName', language)}
                               </th>
                               <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('clientName', language)}
+                                {translate('createdBy', language)}
                               </th>
                               <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('createdBy', language)}
+                                {translate('createdAt', language)}
                               </th>
                               <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('createdAt', language)}
-                              </th>
-                              <th className='ClientsListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('updatedAt', language)}
+                                {translate('updatedAt', language)}
                               </th>
                             </tr>
                           </thead>
                           <tbody className='ClientsListAndEdit_table_body'>
-                            {/* {projects.map((project) => ( */}
-                              <tr key='{project.planning_project_id}' className='ClientsListAndEdit_table_body_content_horizontal'>
-                                <td className='ClientsListAndEdit_table_body_content_vertical has-text-left'></td>
-                                <td className='ClientsListAndEdit_table_body_content_vertical'></td>
-                                <td className='ClientsListAndEdit_table_body_content_vertical'></td>
-                                <td className='ClientsListAndEdit_table_body_content_vertical'></td>
-                                <td className='ClientsListAndEdit_table_body_content_vertical'></td>
+                            {updatedClients.map((clients) => (
+                              <tr key={clients.client_id} className='ClientsListAndEdit_table_body_content_horizontal'>
+                                <td className='ClientsListAndEdit_table_body_content_vertical has-text-left'>
+                                  {clients.client_id}
+                                </td>
+                                <td className='ClientsListAndEdit_table_body_content_vertical'>
+                                  {clients.client_name}
+                                </td>
+                                <td className='ClientsListAndEdit_table_body_content_vertical'>{clients.auth_user}</td>
+                                <td className='ClientsListAndEdit_table_body_content_vertical'>
+                                  {formatDate(clients.created_at)}
+                                </td>
+                                <td className='ClientsListAndEdit_table_body_content_vertical'>
+                                  {formatDate(clients.updated_at)}
+                                </td>
                               </tr>
-                            {/* ))} */}
+                            ))}
                           </tbody>
                         </table>
                       )}
@@ -336,7 +396,7 @@ const ClientsListAndEdit: React.FC = () => {
         isOpen={modalIsOpen}
         onConfirm={handleConfirm}
         onCancel={closeModal}
-        message={translate('deleteMessage', language)}
+        message={translate('clientDeleteMessage', language)}
       />
     </div>
   )
