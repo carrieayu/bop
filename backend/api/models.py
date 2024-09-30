@@ -62,7 +62,7 @@ class MasterCompany(models.Model):
 
 class MasterBusinessDivision(models.Model):
     business_division_id = models.CharField(max_length=10, primary_key=True, editable=False)
-    business_division_name = models.CharField(max_length=100, unique=True)
+    business_division_name = models.CharField(max_length=100)
     company = models.ForeignKey(MasterCompany, on_delete=models.CASCADE)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
