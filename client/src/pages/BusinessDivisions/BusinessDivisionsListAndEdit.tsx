@@ -92,35 +92,48 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
     
 
     const handleSubmit = async (e) => {
-      e.preventDefault()
-      console.log('Changed Data:', business)
-
-      const token = localStorage.getItem('accessToken')
-      if (!token) {
-        window.location.href = '/login'
-        return
+      e.preventDefault();
+    
+      // Check for duplicated entries
+      const isDuplicate = business.some((currentBusiness, index) => {
+        return business.some((otherBusiness, otherIndex) => 
+          index !== otherIndex &&
+          currentBusiness.business_division_name.trim() === otherBusiness.business_division_name.trim() &&
+          currentBusiness.company === otherBusiness.company
+        );
+      });
+    
+      if (isDuplicate) {
+        alert('Cannot Update Data: Duplicate business division name found for the same company!');
+        return;
       }
-
+    
+      console.log('Changed Data:', business);
+    
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        window.location.href = '/login';
+        return;
+      }
+    
       try {
         const response = await axios.put('http://127.0.0.1:8000/api/master-business-division/bulk-update/', business, {
-        // const response = await axios.put('http://127.0.0.1:8000/api/projectdatalist/update/', changes, {
-        // const response = await axios.put('http://54.178.202.58:8000/api/projectdatalist/update/',  changes ,{
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-        })
-        alert('Sucessfully updated')
+        });
+        alert('Successfully updated');
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          window.location.href = '/login'
+          window.location.href = '/login';
         } else {
-          console.error('There was an error updating the project planning data!', error)
-          alert('Cannot Update Data because of duplicated entry!!')
+          console.error('There was an error updating the data!', error);
+          alert('Cannot Update Data due to an error!');
         }
       }
-
-    }
+    };
+    
 
     useEffect(() => {
         const fetchCompanyAndUserData = async () => {
