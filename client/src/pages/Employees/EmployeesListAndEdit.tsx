@@ -150,7 +150,9 @@ const EmployeesListAndEdit: React.FC = () => {
       } catch (error) {
         if (error.response && error.response.status === 401) {
           window.location.href = '/login'
-        } else {
+        }if (error && error.response.status === 400) {
+              alert(translate('emailExistsMessage', language))
+        }else {
           console.error('There was an error updating the employeesg data!', error)
         }
       }

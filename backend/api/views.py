@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import generics, status
 from django.http import JsonResponse
 from rest_framework.parsers import JSONParser
+from django.db import IntegrityError
 from .serializers import (
     AllPlanningSerializer,
     CostOfSalesSerializer,
@@ -151,34 +152,39 @@ class EmployeesUpdate(generics.UpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         received_data = request.data
-        for employee_data in received_data: 
-            employee_id = employee_data.get('employee_id')
-            try:
-                employee = EmployeesApi.objects.get(employee_id=int(employee_id))
-                business_division_id = employee_data.get('business_division')
-                company_id = employee_data.get('company_id')
-                if business_division_id:
-                    try:
-                        business_division_instance = MasterBusinessDivision.objects.get(pk=business_division_id)
-                        employee.business_division = business_division_instance
-                    except MasterBusinessDivision.DoesNotExist:
-                        return Response({"error": f"Business division with ID {business_division_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
-                if company_id:
-                    try:
-                        company_instance = MasterCompany.objects.get(pk=company_id)
-                        employee.company = company_instance
-                    except MasterCompany.DoesNotExist:
-                        return Response({"error": f"Company with ID {company_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
-                for field, value in employee_data.items():
-                    if field not in ['employee_id', 'auth_user', 'auth_user_id' , 'business_division', 'company']:
-                        setattr(employee, field, value)
-                        
-                employee.save()
+        try: 
+            for employee_data in received_data: 
+                employee_id = employee_data.get('employee_id')
+                try:
+                    employee = EmployeesApi.objects.get(employee_id=int(employee_id))
+                    business_division_id = employee_data.get('business_division')
+                    company_id = employee_data.get('company_id')
+                    if business_division_id:
+                        try:
+                            business_division_instance = MasterBusinessDivision.objects.get(pk=business_division_id)
+                            employee.business_division = business_division_instance
+                        except MasterBusinessDivision.DoesNotExist:
+                            return Response({"error": f"Business division with ID {business_division_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
+                    if company_id:
+                        try:
+                            company_instance = MasterCompany.objects.get(pk=company_id)
+                            employee.company = company_instance
+                        except MasterCompany.DoesNotExist:
+                            return Response({"error": f"Company with ID {company_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
+                    for field, value in employee_data.items():
+                        if field not in ['employee_id', 'auth_user', 'auth_user_id' , 'business_division', 'company']:
+                            setattr(employee, field, value)
+                            
+                    employee.save()
 
-            except AuthUser.DoesNotExist:
-                return Response({"error": f"Employee with ID {employee_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
+                except AuthUser.DoesNotExist:
+                    return Response({"error": f"Employee with ID {employee_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
-        return Response({"success": "Employee updated successfully."}, status=status.HTTP_200_OK)
+            return Response({"success": "Employee updated successfully."}, status=status.HTTP_200_OK)
+        except IntegrityError as e:
+            if 'Duplicate entry' in str(e):
+                return Response({'error': 'Email already exists.'}, status=400)
+            return Response({'error': str(e)}, status=400)
 
 
 class MasterCompanyList(generics.ListAPIView):
