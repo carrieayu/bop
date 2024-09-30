@@ -23,10 +23,13 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
     const [isEditing, setIsEditing] = useState(false)
     const [changes, setChanges] = useState({})
-    const [projects, setProjects] = useState([])
+    const [business, setBusiness] = useState([])
     const [initialLanguage, setInitialLanguage] = useState(language);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedProject, setSelectedProject] = useState<any>(null);
+    const [companyMap, setCompanyMap] = useState({});
+    const [userMap, setUserMap] = useState({});
+    const [selectedCompany, setSelectedCompany] = useState('');
 
     const totalPages = Math.ceil(100 / 10);
 
@@ -74,30 +77,23 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         return newEditingState;
       });
     }
-
-
     const handleChange = (index, event) => {
-      const { name, value } = event.target
-      const updatedProjects = [...projects]
-      if (name.includes('client.client_name')) {
-        updatedProjects[index].client.client_name = value
-      } else {
-        updatedProjects[index][name] = value
+      const { name, value } = event.target;
+      const updatedBusiness = [...business]; // Create a copy of the current state
+      // Update the relevant field in the business array
+      if (name === 'business_division_name') {
+        updatedBusiness[index].business_division_name = value;
+      } else if (name === 'company_name') {
+        updatedBusiness[index].company = value; // Update the company field
       }
-      setProjects(updatedProjects)
-      const projectId = updatedProjects[index].planning_project_id
-      setChanges((prevChanges) => ({
-        ...prevChanges,
-        [projectId]: {
-          ...prevChanges[projectId],
-          [name]: value,
-        },
-      }))
-    }
+      // Update state with the modified array
+      setBusiness(updatedBusiness);
+    };
+    
 
     const handleSubmit = async (e) => {
-      event.preventDefault()
-      console.log('Changed Data:', changes)
+      e.preventDefault()
+      console.log('Changed Data:', business)
 
       const token = localStorage.getItem('accessToken')
       if (!token) {
@@ -106,9 +102,11 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
       }
 
       try {
+        const response = await axios.put('http://127.0.0.1:8000/api/master-business-division/bulk-update/', business, {
         // const response = await axios.put('http://127.0.0.1:8000/api/projectdatalist/update/', changes, {
-        const response = await axios.put('http://54.178.202.58:8000/api/projectdatalist/update/',  changes ,{
+        // const response = await axios.put('http://54.178.202.58:8000/api/projectdatalist/update/',  changes ,{
           headers: {
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         })
@@ -118,27 +116,68 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
           window.location.href = '/login'
         } else {
           console.error('There was an error updating the project planning data!', error)
+          alert('Cannot Update Data because of duplicated entry!!')
         }
       }
 
     }
 
     useEffect(() => {
-      const fetchProjects = async () => {
+        const fetchCompanyAndUserData = async () => {
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                window.location.href = '/login'; 
+                return;
+            }
+            try {
+                // Fetch companies
+                const companyResponse = await axios.get('http://127.0.0.1:8000/api/master-companies/', {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const companies = companyResponse.data;
+                console.log("Companies: ", companies)
+                const companyMapping = companies.reduce((map, company) => {
+                    map[company.company_id] = company.company_name;
+                    return map;
+                }, {});
+                console.log("Comp Mapping: ", companyMapping)
+                setCompanyMap(companyMapping);
+                // Fetch users
+                const userResponse = await axios.get('http://127.0.0.1:8000/api/user/list/', {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const users = userResponse.data;
+                const userMapping = users.reduce((map, user) => {
+                    map[user.user_id] = user.first_name;
+                    return map;
+                }, {});
+                setUserMap(userMapping);
+            } catch (error) {
+                if (error.response && error.response.status === 401) {
+                    window.location.href = '/login';
+                } else {
+                    console.error('Error fetching company or user data!', error);
+                }
+            }
+        };
+        fetchCompanyAndUserData();
+    }, []);
+
+    useEffect(() => {
+      const fetchBusinessDivision = async () => {
         const token = localStorage.getItem('accessToken')
         if (!token) {
           window.location.href = '/login' // Redirect to login if no token found
           return
         }
-
         try {
-          // const response = await axios.get('http://127.0.0.1:8000/api/planningprojects/', {
-          const response = await axios.get('http://54.178.202.58:8000/api/planningprojects/', {
+          const response = await axios.get('http://127.0.0.1:8000/api/master-business-divisions/', {
+          // const response = await axios.get('http://54.178.202.58:8000/api/planningprojects/', {
             headers: {
               Authorization: `Bearer ${token}`, // Add token to request headers
             },
           })
-          setProjects(response.data)
+          setBusiness(response.data)
         } catch (error) {
           if (error.response && error.response.status === 401) {
             window.location.href = '/login' // Redirect to login if unauthorized
@@ -148,36 +187,40 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         }
       }
 
-      fetchProjects()
+      fetchBusinessDivision()
     }, [])
 
-      useEffect(() => {
-        const startIndex = currentPage * rowsPerPage
-        setPaginatedData(projects.slice(startIndex, startIndex + rowsPerPage))
-      }, [currentPage, rowsPerPage, projects])
+    const handleCompanyChange = (event) => {
+      setSelectedCompany(event.target.value); // Set selected company ID
+  };
 
-      useEffect(() => {
-        const path = location.pathname;
-        if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
-          setActiveTab(path);
-        }
-      }, [location.pathname]);
+    useEffect(() => {
+      const startIndex = currentPage * rowsPerPage
+      setPaginatedData(business.slice(startIndex, startIndex + rowsPerPage))
+    }, [currentPage, rowsPerPage, business])
 
-      useEffect(() => {
-        setIsTranslateSwitchActive(language === 'en');
-      }, [language]);
-    
-      const handleTranslationSwitchToggle = () => {
-        if (!isEditing) {
-          const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
-          setInitialLanguage(language); 
-          setLanguage(newLanguage);
-        }
-      };
+    useEffect(() => {
+      const path = location.pathname;
+      if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
+        setActiveTab(path);
+      }
+    }, [location.pathname]);
 
-      const openModal = (project) => {
-        setSelectedProject(project);
-        setModalIsOpen(true);
+    useEffect(() => {
+      setIsTranslateSwitchActive(language === 'en');
+    }, [language]);
+  
+    const handleTranslationSwitchToggle = () => {
+      if (!isEditing) {
+        const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
+        setInitialLanguage(language); 
+        setLanguage(newLanguage);
+      }
+    };
+
+    const openModal = (project) => {
+      setSelectedProject(project);
+      setModalIsOpen(true);
     };
 
     const closeModal = () => {
@@ -194,6 +237,14 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
     const handleNewRegistrationClick = () => {
       navigate('/business-divisions-registration');
     };
+
+    const formatDate = (dateString) => {
+      const date = new Date(dateString)
+      const month = String(date.getMonth() + 1).padStart(2, '0') // Get month (0-indexed, so +1)
+      const day = String(date.getDate()).padStart(2, '0') // Get day
+      const year = date.getFullYear() // Get full year
+      return `${month}/${day}/${year}`
+    }
 
   return (
     <div className='BusinessDivisionsListAndEdit_wrapper'>
@@ -258,40 +309,41 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                               </tr>
                             </thead>
                             <tbody className='BusinessDivisionsListAndEdit_table_body'>
-                              {/* {projects.map((project, index) => ( */}
-                                <tr key='{project.planning_project_id}' className='BusinessDivisionsListAndEdit_table_body_content_horizontal'>
-                                  <td className='BusinessDivisionsListAndEdit_table_body_content_vertical has-text-left'></td>
+                            {business.map((business_data, index) => (
+                                <tr key={business_data.business_division_id} className='BusinessDivisionsListAndEdit_table_body_content_horizontal'>
+                                  <td className='BusinessDivisionsListAndEdit_table_body_content_vertical has-text-left'>{business_data.business_division_id}</td>
                                   <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
-                                    {/* <input
+                                    <input
                                       className="edit_input"
                                       type='text'
                                       name='business_division_name'
-                                      value=''
-                                      // onChange={(e) => handleChange(index, e)}
-                                    /> */}
+                                      value={business_data.business_division_name || ''}
+                                      onChange={(e) => handleChange(index, e)}
+                                    />
                                   </td>
                                   <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
-                                      {/* <select
+                                  <select
                                       className="edit_select"
                                       name='company_name'
-                                      value=''
-                                      // onChange={(e) => handleChange(index, e)}
+                                      value={business_data.company || null} // Set value to null if company is undefined
+                                      onChange={(e) => handleChange(index, e)}
                                     >
-                                      <option value=''></option>
-                                      <option value=''>全社</option>
-                                      <option value=''>CS事業部</option>
-                                      <option value=''>PS事業部</option>
-                                      <option value=''>HiPE</option>
-                                    </select> */}
+                                      <option value={null}>Select a company</option>
+                                      {Object.entries(companyMap).map(([companyId, companyName]) => (
+                                        <option key={companyId} value={companyId}>
+                                          {companyName as string}
+                                        </option>
+                                      ))}
+                                    </select>
                                   </td>
-                                  <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'></td>
-                                  <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'></td>
-                                  <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'></td>
+                                  <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>{userMap[business_data.auth_user_id] || 'Unknown User'}</td>
+                                  <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>{formatDate(business_data.created_at)}</td>
+                                  <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>{formatDate(business_data.updated_at)}</td>
                                   <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
                                     {/* <RiDeleteBin6Fill className='delete-icon' onClick={() => openModal('project')}/> */}
                                   </td>
                                 </tr>
-                              {/* ))} */}
+                              ))}
                             </tbody>
                           </table>
                         </div>
@@ -320,16 +372,16 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                             </tr>
                           </thead>
                           <tbody className='BusinessDivisionsListAndEdit_table_body'>
-                            {/* {projects.map((project) => ( */}
-                              <tr key='{project.planning_project_id}' className='BusinessDivisionsListAndEdit_table_body_content_horizontal'>
-                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical has-text-left'></td>
-                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'></td>
-                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'></td>
-                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'></td>
-                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'></td>
-                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'></td>
+                            {business.map((business_data) => (
+                              <tr key={business_data.business_division_id} className='BusinessDivisionsListAndEdit_table_body_content_horizontal'>
+                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical has-text-left'>{business_data.business_division_id}</td>
+                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>{business_data.business_division_name}</td>
+                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>{companyMap[business_data.company] || 'Unknown Company'}</td>
+                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>{userMap[business_data.auth_user_id] || 'Unknown User'}</td>
+                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>{formatDate(business_data.created_at)}</td>
+                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>{formatDate(business_data.updated_at)}</td>
                               </tr>
-                            {/* ))} */}
+                            ))}
                           </tbody>
                         </table>
                       )}
