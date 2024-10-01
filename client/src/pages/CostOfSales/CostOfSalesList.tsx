@@ -8,6 +8,8 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import { translate } from "../../utils/translationUtil";
 import ListButtons from "../../components/ListButtons/ListButtons";
 import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
+import AlertModal from "../../components/AlertModal/AlertModal";
+import { RiDeleteBin6Fill } from "react-icons/ri";
 
 
 const CostOfSalesList: React.FC = () => {
@@ -21,6 +23,12 @@ const CostOfSalesList: React.FC = () => {
     const { language, setLanguage } = useLanguage()
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
     const select = [5, 10, 100]
+    const [isEditing, setIsEditing] = useState(false)
+    const [userList, setUserList] = useState([])
+    const [initialLanguage, setInitialLanguage] = useState(language);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [selectedProject, setSelectedProject] = useState<any>(null);
+    const [deleteId, setDeleteUserId] = useState([])
 
     const totalPages = Math.ceil(100 / 10);
 
@@ -62,6 +70,59 @@ const CostOfSalesList: React.FC = () => {
         setCurrentPage(0) 
     }
 
+    const handleClick = () => {
+      setIsEditing((prevState) => {
+        const newEditingState = !prevState;
+        if (newEditingState) {
+          setLanguage(initialLanguage);
+        }
+    
+        return newEditingState;
+      });
+    }
+
+    const handleChange = (index, e) => {
+      const { name, value } = e.target;
+      const updatedData = [...combinedData];
+      updatedData[index] = {
+        ...updatedData[index],
+        [name]: value,
+      };
+      setCostOfSales(updatedData);
+    };
+
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+  
+      // Use validData instead of combinedData
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+          window.location.href = '/login';
+          return;
+      }
+      try {
+          const response = await axios.put('http://127.0.0.1:8000/api/cost-of-sales/update', validData, {
+            // const response = await axios.put('http://54.178.202.58:8000/api/cost-of-sales/update', validData, {
+              headers: {
+                  'Authorization': `Bearer ${token}`,
+              },
+          });
+          alert('Successfully updated');
+      } catch (error) {
+          if (error.response) {
+              console.error('Error response:', error.response.data);
+              if (error.response.status === 401) {
+                  window.location.href = '/login';
+              } else {
+                  console.error('There was an error updating the cost of sales data!', error.response.data);
+              }
+          } else {
+              console.error('Error', error.message);
+          }
+      }
+  };
+  
+
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -72,19 +133,21 @@ const CostOfSalesList: React.FC = () => {
           }
     
           try {
-            // const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales/', {
-            const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales/', {
+            const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales', {
+            // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales', {
               headers: {
                 'Authorization': `Bearer ${token}`  // Add token to request headers
               }
             });
             setCostOfSales(response.data);
             console.log("cost of sales: ", response.data);
+            
+            console.log("combijned: ", combinedData);
           } catch (error) {
             if (error.response && error.response.status === 401) {
               window.location.href = '/login';  // Redirect to login if unauthorized
             } else {
-              console.error('There was an error fetching the projects!', error);
+              console.error('There was an error fetching the cost of sales data!', error);
             }
           }
         };
@@ -111,22 +174,23 @@ const CostOfSalesList: React.FC = () => {
 
     // Combine static months with dynamic data
     const combinedData = months.map((month) => {
-        const data = costOfSales.find(item => parseInt(item.month, 10) === month) || {
-            cost_of_sales: 0,
-            purchases: 0,
-            outsourcing_costs: 0,
-            product_purchases: 0,
-            dispatch_labor_costs: 0,
-            communication_costs: 0,
-            work_in_progress: 0,
-            amortization: 0
-        };
-        return {
-            month,
-            ...data
-        };
-    });
-    console.log("Combined Data: ", combinedData)
+      const foundData = costOfSales.find(item => parseInt(item.month, 10) === month);
+      
+      return {
+          cost_of_sale_id: foundData ? foundData.cost_of_sale_id : null,
+          month,  
+          year: foundData ? foundData.year : '',
+          purchase: foundData ? foundData.purchase : '',
+          outsourcing_expense: foundData ? foundData.outsourcing_expense : '',
+          product_purchase: foundData ? foundData.product_purchase : '',
+          dispatch_labor_expense: foundData ? foundData.dispatch_labor_expense : '',
+          communication_expense: foundData ? foundData.communication_expense : '',
+          work_in_progress_expense: foundData ? foundData.work_in_progress_expense : '',
+          amortization_expense: foundData ? foundData.amortization_expense : ''
+      };
+  });
+
+  const validData = combinedData.filter(data => data.cost_of_sale_id !== null);
 
     useEffect(() => {
       setIsTranslateSwitchActive(language === 'en');
@@ -136,6 +200,18 @@ const CostOfSalesList: React.FC = () => {
       const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
       setLanguage(newLanguage);
     };
+
+    const openModal = (users, id) => {
+      setSelectedProject(users)
+      setModalIsOpen(true);
+      setDeleteUserId(id)
+  };
+  
+
+  const closeModal = () => {
+      setSelectedProject(null);
+      setModalIsOpen(false);
+  };
 
     const monthNames: { [key: number]: { en: string; jp: string } } = {
       1: { en: "January", jp: "1月" },
@@ -150,6 +226,33 @@ const CostOfSalesList: React.FC = () => {
       10: { en: "October", jp: "10月" },
       11: { en: "November", jp: "11月" },
       12: { en: "December", jp: "12月" },
+    };
+
+    const handleConfirm = async () => {
+      // Currently no delete logic
+      console.log('Confirmed action for cost of sale:', deleteId)
+      const token = localStorage.getItem('accessToken')
+      try {
+        await axios.delete(`http://127.0.0.1:8000/api/cost-of-sales/${deleteId}/delete/`, {
+          // const response = await axios.get(`http://54.178.202.58:8000/api/user/list/${deleteId}/delete/`, {
+              headers: {
+                'Authorization': `Bearer ${token}`  // Add token to request headers
+              }
+        })
+        // setUserList((prevList) => prevList.filter((user) => user.id !== deleteId))
+        setIsEditing(false);
+
+        const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales');
+        // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales');
+        setCostOfSales(response.data);
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login' // Redirect to login if unauthorized
+        } else {
+          console.error('Error deleting cost of sale:', error)
+        }
+      }
+      closeModal();
     };
 
     const handleNewRegistrationClick = () => {
@@ -168,7 +271,13 @@ const CostOfSalesList: React.FC = () => {
                 <Sidebar />
             <div className="costOfSalesList_btn_wrapper">
                     <div className="costOfSalesList_top_content">
-                        <div className="costOfSalesList_top_body_cont"></div>
+                        <div className="costOfSalesList_top_body_cont">
+                          <div className='costOfSalesList_mode_switch_datalist'>
+                            <button className='costOfSalesList_mode_switch' onClick={handleClick}>
+                              {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
+                            </button>
+                          </div>
+                        </div>
                         <div className="costOfSalesList_mid_body_cont">
                             <ListButtons
                               activeTabOther={activeTabOther}
@@ -186,11 +295,112 @@ const CostOfSalesList: React.FC = () => {
                                 <div className="costOfSalesList_table_cont">
                                     <div className='columns is-mobile'>
                                         <div className='column'>
+                                          {isEditing ? (
+                                            <div>
+                                            <table className='table is-bordered is-hoverable'>
+                                              <thead>
+                                                  <tr className="costOfSalesList_table_title ">
+                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('year', language)}</th>
+                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('month', language)}</th>
+                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('purchases', language)}</th>
+                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('outsourcingExpenses', language)}</th>
+                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('productPurchases', language)}</th>
+                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('dispatchLaborExpenses', language)}</th>
+                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('communicationExpenses', language)}</th>
+                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('workInProgressExpenses', language)}</th>
+                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('amortizationExpenses', language)}</th>
+                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered"></th>
+                                                  </tr>
+                                              </thead>
+                                              <tbody className="costOfSalesList_table_body">
+                                              {combinedData.map((project, index) => (
+                                                 project ? (
+                                                          <tr key={index} className="costOfSalesList_table_body_content_horizontal">
+                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                  {/* <input
+                                                                    type='number'
+                                                                    name='year'
+                                                                    value={project.year}
+                                                                    onChange={(e) => handleChange(index, e)}
+                                                                  /> */}
+                                                                  {project.year}
+                                                              </td>
+                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.month}</td>
+                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                <input
+                                                                    type='number'
+                                                                    name='purchase'
+                                                                    value={project.purchase}
+                                                                    onChange={(e) => handleChange(index, e)}
+                                                                  />
+                                                              </td>
+                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                <input
+                                                                    type='number'
+                                                                    name='outsourcing_expense'
+                                                                    value={project.outsourcing_expense}
+                                                                    onChange={(e) => handleChange(index, e)}
+                                                                  />
+                                                              </td>
+                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                  <input
+                                                                    type='number'
+                                                                    name='product_purchase'
+                                                                    value={project.product_purchase}
+                                                                    onChange={(e) => handleChange(index, e)}
+                                                                  />
+                                                              </td>
+                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                  <input
+                                                                    type='number'
+                                                                    name='dispatch_labor_expense'
+                                                                    value={project.dispatch_labor_expense}
+                                                                    onChange={(e) => handleChange(index, e)}
+                                                                  />
+                                                              </td>
+                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                  <input
+                                                                    type='number'
+                                                                    name='communication_expense'
+                                                                    value={project.communication_expense}
+                                                                    onChange={(e) => handleChange(index, e)}
+                                                                  />
+                                                              </td>
+                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                  <input
+                                                                    type='number'
+                                                                    name='work_in_progress_expense'
+                                                                    value={project.work_in_progress_expense}
+                                                                    onChange={(e) => handleChange(index, e)}
+                                                                  />
+                                                              </td>
+                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                  <input
+                                                                    type='number'
+                                                                    name='amortization_expense'
+                                                                    value={project.amortization_expense}
+                                                                    onChange={(e) => handleChange(index, e)}
+                                                                  />
+                                                              </td>
+                                                              <td className='costOfSalesList_table_body_content_vertical delete_icon'>
+                                                                <RiDeleteBin6Fill
+                                                                  className='delete-icon'
+                                                                  onClick={() => openModal('costOfSales', project.cost_of_sale_id)}
+                                                                  style={{ color: 'red' }}
+                                                                />
+                                                              </td>
+                                                          </tr>
+                                                          ) : null
+                                                      ))}
+                                              </tbody>
+                                            </table>
+                                            </div>
+                                          ):(
                                             <table className='table is-bordered is-hoverable'>
                                             <thead>
                                                 <tr className="costOfSalesList_table_title ">
+                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('year', language)}</th>
                                                 <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('month', language)}</th>
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('costOfSales', language)}</th>
                                                 <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('purchases', language)}</th>
                                                 <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('outsourcingExpenses', language)}</th>
                                                 <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('productPurchases', language)}</th>
@@ -203,27 +413,47 @@ const CostOfSalesList: React.FC = () => {
                                             <tbody className="costOfSalesList_table_body">
                                             {combinedData.map((project, index) => (
                                                         <tr key={index} className="costOfSalesList_table_body_content_horizontal">
+                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.year || 0}</td>
                                                             <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.month}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.cost_of_sales || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.purchases || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.outsourcing_costs || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.product_purchases || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.dispatch_labor_costs || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.communication_costs || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.work_in_progress || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.amortization || 0}</td>
+                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.purchase || 0}</td>
+                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.outsourcing_expense || 0}</td>
+                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.product_purchase || 0}</td>
+                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.dispatch_labor_expense || 0}</td>
+                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.communication_expense || 0}</td>
+                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.work_in_progress_expense || 0}</td>
+                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.amortization_expense || 0}</td>
                                                         </tr>
                                                     ))}
                                             </tbody>
                                             </table>
+                                          )}
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            <div className='costOfSalesList_is_editing_wrapper'>
+                              <div className='costOfSalesList_is_editing_cont'>
+                                {isEditing ? (
+                                  <div className='costOfSalesList_mode_switch_datalist'>
+                                    <button className='costOfSalesList_edit_submit_btn' onClick={handleSubmit}>
+                                      更新
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div></div>
+                                )}
+                              </div>
                             </div>
                         </div>
                     </div>
             </div>
         </div>
+        <AlertModal
+          isOpen={modalIsOpen}
+          onConfirm={handleConfirm}
+          onCancel={closeModal}
+          message={translate('deleteMessage', language)}
+        />
     </div>
   )
 };
