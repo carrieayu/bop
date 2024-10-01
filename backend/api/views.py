@@ -288,25 +288,22 @@ class MasterBusinessDivisionUpdate(generics.UpdateAPIView):
 
         return Response({'message': 'Business divisions updated successfully'}, status=status.HTTP_200_OK)
 class MasterBusinessDivisionDestroy(generics.DestroyAPIView):
-    # serializer_class = MasterBusinessDivisionSerializer
-    # permission_classes = [IsAuthenticated]
-    # lookup_field = 'pk'
-        queryset = MasterBusinessDivision.objects.all()
-        permission_classes = [AllowAny]
+    queryset = MasterBusinessDivision.objects.all()
+    permission_classes = [AllowAny]
 
-        def get_queryset(self):
-            business_division_id = self.kwargs.get("pk")
-            return MasterBusinessDivision.objects.filter(business_division_id=business_division_id)
+    def get_queryset(self):
+        business_division_id = self.kwargs.get("pk")
+        return MasterBusinessDivision.objects.filter(business_division_id=business_division_id)
 
-        def destroy(self, request, *args, **kwargs):
-            try:
-                instance = self.get_object()
-                instance.delete()
-                return Response(
-                    {"message": "deleted successfully"}, status=status.HTTP_200_OK
-                )
-            except:
-                return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            instance.delete()
+            return Response(
+                {"message": "deleted successfully"}, status=status.HTTP_200_OK
+            )
+        except:
+            return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
 
 
 # CRUD for ClientMaster
