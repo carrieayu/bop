@@ -118,12 +118,13 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
     
       try {
         const response = await axios.put('http://127.0.0.1:8000/api/master-business-division/bulk-update/', business, {
-          // headers: {
-          //   'Content-Type': 'application/json',
-          //   Authorization: `Bearer ${token}`,
-          // },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
         });
         alert('Successfully updated');
+        window.location.reload();
       } catch (error) {
         if (error.response && error.response.status === 401) {
           window.location.href = '/login';
