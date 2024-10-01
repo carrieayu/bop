@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
+import axios from 'axios'
 
 const BusinessDivisionsRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -14,15 +15,20 @@ const BusinessDivisionsRegistration = () => {
     const [activeTabOther, setActiveTabOther] = useState('businessDivision')
     const storedUserID = localStorage.getItem('userID')
     const { language, setLanguage } = useLanguage()
+    const token = localStorage.getItem('accessToken')
+    const [companyList, setCompanyList] = useState([]);
+    const [selectedCompany, setSelectedCompany] = useState('');
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
-
-    // const [formData, setFormData] = useState([
-    //     {
-    //       business_division_name: '',
-    //       company_name: '',
-    //       auth_user_id: storedUserID,
-    //     },
-    //   ])
+    
+    const [businessDivisionName, setBusinessDivisionName] = useState('');
+    const [authUserID] = useState(storedUserID);
+    const [formData, setFormData] = useState([
+        {
+          business_division_name: '',
+          company_id: '',
+          auth_user_id: authUserID,
+        },
+      ])
 
     const handleTabClick = (tab) => {
         setActiveTab(tab)
@@ -54,6 +60,35 @@ const BusinessDivisionsRegistration = () => {
         setLanguage(newLanguage);
     };
 
+    const handleChange = (index, event) => {
+      const {name, value} = event.target
+      const updatedFormData = [...formData]
+      updatedFormData[index] = {
+        ...updatedFormData[index],
+        [name]: value,
+      }
+      setFormData(updatedFormData)
+    }
+
+    const handleAdd = () => {
+      if (formData.length < 10){
+        setFormData([...formData, {
+          business_division_name: '',
+          company_id: '',
+          auth_user_id: authUserID
+        }]);
+      }
+      else {
+        console.log("business limits to 10")
+      }
+    }
+
+    const handleMinus = () => {
+      if (formData.length > 1) {
+        setFormData(formData.slice(0, -1));
+      }
+    }
+
     useEffect(() => {
         const path = location.pathname;
         if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
@@ -61,59 +96,75 @@ const BusinessDivisionsRegistration = () => {
         }
       }, [location.pathname]);
 
-    //   const handleSubmit = async (e) => {
-    //     e.preventDefault()
-    //     console.log(formData)
     
-    //     const postData = {
-    //       client: {
-    //         client_name: formData.map((c) => c.client_name),
-    //         auth_user_id: formData.map((c) => c.auth_user_id),
-    //       },
-    //       business: {
-    //         business_division_name: formData.map((c) => c.business_division_name),
-    //         auth_user_id: formData.map((c) => c.auth_user_id),
-    //         company_id: formData.map((c) => c.auth_user_id),
-    //       },
-    //       planning: {
-    //         project_name: formData.map((c) => c.project_name),
-    //         month: formData.map((c) => c.month),
-    //         sales_revenue: formData.map((c) => c.sales_revenue),
-    //         non_operating_income: formData.map((c) => c.non_operating_income),
-    //         non_operating_expenses: formData.map((c) => c.non_operating_expenses),
-    //       },
-    //       auth_user_id: formData.map((c) => c.auth_user_id),
-    //     }
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        console.log(formData)
+  
+        const postData = formData.map((business) => ({
+          business_division_name: business.business_division_name,
+          company_id: business.company_id,
+          auth_user_id: business.auth_user_id
+        }));
+  
+        if(!token){
+          window.location.href = '/login'
+          return
+        }
+  
+        try {
+          const response = await axios.post('http://127.0.0.1:8000/api/master-business-division/create', postData, {
+          // const response = await axios.post('http://54.178.202.58:8000/api/master-business-division/create', postData, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          alert('Sucessfully Saved')
+          setFormData([
+            {
+             business_division_name: '',
+             company_id: '',
+             auth_user_id: authUserID
+            },
+          ])
+        }
+        catch (error)
+        {
+          if (error.response && error.response.status === 401) {
+            console.error('Validation error:', error.response.data);
+            window.location.href = '/login'
+          } else {
+            console.error('There was an error creating the project planning data!', error)
+            alert('Business name already exists')
+          }
+        }
+      }
+
+      useEffect(() => {
+        const fetchCompany = async () => {
+          try{
+            const response = await axios.get('http://127.0.0.1:8000/api/master-companies/', {
+            // const response = await axios.get('http://54.178.202.58:8000/api/master-companies/', {
+              headers: { 
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}` 
+              },
+            });
+            setCompanyList(response.data);
+          }
+          catch (error) {
+            console.error('Error fetching business:', error);
+          }
+        };
     
-    //     const token = localStorage.getItem('accessToken')
-    //     if (!token) {
-    //       window.location.href = '/login'
-    //       return
-    //     }
-    
-    //     try {
-    //       // const response = await axios.post('http://127.0.0.1:8000/api/projectplanning/create/', postData, {
-    //         const response = await axios.post('http://54.178.202.58:8000/api/projectplanning/create/', postData, {
-    //         headers: {
-    //           Authorization: `Bearer ${token}`,
-    //         },
-    //       })
-    //       alert('Sucessfully Saved')
-    //       setFormData([
-    //         {
-    //           business_division_name: '',
-    //           company_name: '',
-    //           auth_user_id: localStorage.getItem('userID'),
-    //         },
-    //       ])
-    //     } catch (error) {
-    //       if (error.response && error.response.status === 401) {
-    //         window.location.href = '/login'
-    //       } else {
-    //         console.error('There was an error creating the project planning data!', error)
-    //       }
-    //     }
-    //   }
+        fetchCompany();
+      }, [token]);
+  
+      const handleCompanyChange = (e) => {
+        setSelectedCompany(e.target.value); // Update the selected company state
+      };
+   
 
       useEffect(() => {
         setIsTranslateSwitchActive(language === 'en');
@@ -144,44 +195,49 @@ const BusinessDivisionsRegistration = () => {
                   ]}
                 />
             <div className='BusinessDivisionsRegistration_mid_form_cont'>
-              {/* <form onSubmit={handleSubmit}> */}
-                  <div key='' className='BusinessDivisionsRegistration_form-content BusinessDivisionsRegistration_ForImplementationOfPlusAndMinus'>
-                    <div className='BusinessDivisionsRegistration_form-content BusinessDivisionsRegistration_ForImplementationOfHorizontalLineBelow'></div>
-                    <div className='BusinessDivisionsRegistration_form-div'>
-                      <div className='BusinessDivisionsRegistration_form-content-div'>
-                        <div className='BusinessDivisionsRegistration_business_division_name-div'>
-                          <label className='business_division_name'>{translate('businessDivision', language)}</label>
-                          <input
-                            type='text'
-                            name='business_division_name'
-                            value=''
-                          />
-                        </div>
-                        <div className='BusinessDivisionsRegistration_company_name-div'>
-                          <label className='BusinessDivisionsRegistration_company_name'>{translate('companyName', language)}</label>
-                          <select
-                            className='BusinessDivisionsRegistration_select-option'
-                            name='company_name'
-                            value=''
-                            // onChange={(e) => handleChange(index, e)}
-                          >
-                            <option value=''></option>
-                            <option value='TVS'>TVS</option>
-                            <option value='TCM'>TCM</option>
-                            <option value='JR'>JR</option>
-                            <option value='ソルトワークス'>ソルトワークス</option>
-                          </select>
+              <form onSubmit={handleSubmit}>
+              {formData.map((form, index) => (
+                    <div key={index} className='BusinessDivisionsRegistration_form-content BusinessDivisionsRegistration_ForImplementationOfPlusAndMinus'>
+                      <div className='BusinessDivisionsRegistration_form-content BusinessDivisionsRegistration_ForImplementationOfHorizontalLineBelow'></div>
+                      <div className='BusinessDivisionsRegistration_form-div'>
+                        <div className='BusinessDivisionsRegistration_form-content-div'>
+                          <div className='BusinessDivisionsRegistration_business_division_name-div'>
+                            <label className='business_division_name'>{translate('businessDivision', language)}</label>
+                            <input
+                              type='text'
+                              name='business_division_name'
+                              value={form.business_division_name}
+                              onChange={(e) => handleChange(index, e)}
+                            />
+                          </div>
+                          <div className='BusinessDivisionsRegistration_company_name-div'>
+                            <label className='BusinessDivisionsRegistration_company_name'>{translate('companyName', language)}</label>
+                            <select
+                              className='BusinessDivisionsRegistration_select-option'
+                              name='company_id'
+                              value={form.company_id}
+                              // onChange={handleCompanyChange}
+                              onChange={(e) => handleChange(index, e)}
+                            >
+                              <option value=''></option>
+                            {companyList.map((company) => (
+                                <option key={company.company_id} value={company.company_id}>
+                                  {company.company_name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
                         </div>
                       </div>
+                      <input type='hidden' name='auth_user_id' value={form.auth_user_id} />
                     </div>
-                    <input type='hidden' name='auth_user_id' value='' />
-                  </div>
+                  ))}
                 <div className='BusinessDivisionsRegistration_form-btn-content'>
                   <div className='BusinessDivisionsRegistration_plus-btn'>
-                    <button className='BusinessDivisionsRegistration_inc' type='button'>
+                    <button className='BusinessDivisionsRegistration_inc' type='button' onClick={handleAdd}>
                       +
                     </button>
-                    <button className='BusinessDivisionsRegistration_dec' type='button'>
+                    <button className='BusinessDivisionsRegistration_dec' type='button' onClick={handleMinus}>
                       -
                     </button>
                   </div>
@@ -194,7 +250,7 @@ const BusinessDivisionsRegistration = () => {
                     </button>
                   </div>
                 </div>
-              {/* </form> */}
+              </form>
             </div>
           </div>
         </div>

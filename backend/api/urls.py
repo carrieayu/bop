@@ -5,8 +5,8 @@ urlpatterns = [
     path("master-business-divisions/", views.MasterBusinessDivisionList.as_view(), name="master-business-division-list"),
     path("master-business-division/create", views.BusinessDivisionMasterCreate.as_view(), name="master-business-division-create"),
     path("master-business-division/<int:pk>", views.BusinessDivisionMasterRetrieve.as_view(), name="master-business-division-detail"),
-    path("master-business-division/<int:pk>/update/", views.MasterBusinessDivisionUpdate.as_view(), name="master-business-division-update"),
-    path("master-business-division/<int:pk>/delete/", views.MasterBusinessDivisionDestroy.as_view(), name="master-business-division-delete"),
+    path("master-business-division/bulk-update/", views.MasterBusinessDivisionUpdate.as_view(), name="master-business-division-update"),
+    path("master-business-division/<str:pk>/delete/", views.MasterBusinessDivisionDestroy.as_view(), name="master-business-division-delete"),
     
     
     path("master-clients/", views.MasterClientList.as_view(), name="master-client-lists"),

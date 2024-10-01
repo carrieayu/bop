@@ -202,16 +202,58 @@ class CreateMasterCompany(generics.CreateAPIView):
 class MasterBusinessDivisionList(generics.ListAPIView):
     queryset = MasterBusinessDivision.objects.all()
     serializer_class = MasterBusinessDivisionSerializer
+    permission_classes = [AllowAny]
     
 class BusinessDivisionMasterCreate(generics.CreateAPIView):
     serializer_class = MasterBusinessDivisionSerializer
     permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
-        if serializer.is_valid():
-            serializer.save()
-        else:
-            print(serializer.errors)
+    def create(self, request, *args, **kwargs):
+        data = request.data  # Retrieve the incoming data
+        if not isinstance(data, list):  # Ensure it's an array
+            return Response({"error": "Expected a list of data"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        created_business_divisions = []  # To store the successfully created divisions
+        
+        for business_division in data:
+            try:
+                # Get the related company and auth_user by their IDs
+                company = MasterCompany.objects.get(pk=business_division['company_id'])
+                auth_user = AuthUser.objects.get(pk=business_division['auth_user_id'])
+                
+                if MasterBusinessDivision.objects.filter(business_division_name=business_division['business_division_name'], company=company).exists():
+                    return Response(
+                    {"error": f"Business division with name '{business_division['business_division_name']}' already exists for this company."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+                # Create the business division
+                new_business_division = MasterBusinessDivision(
+                    business_division_name=business_division['business_division_name'],
+                    company=company,
+                    auth_user=auth_user
+                )
+                new_business_division.save()
+
+                # Serialize the saved object for the response
+                serializer = MasterBusinessDivisionSerializer(new_business_division)
+                created_business_divisions.append(serializer.data)
+                
+            except MasterCompany.DoesNotExist:
+                return Response({"error": f"Company with ID {business_division['company_id']} does not exist"},
+                                status=status.HTTP_404_NOT_FOUND)
+            except AuthUser.DoesNotExist:
+                return Response({"error": f"User with ID {business_division['auth_user_id']} does not exist"},
+                                status=status.HTTP_404_NOT_FOUND)
+
+        return Response({"message": "Business Divisions Created", "data": created_business_divisions},
+                        status=status.HTTP_201_CREATED)
+        
+    # def perform_create(self, serializer):
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #     else:
+    #         print(serializer.errors)
 
 
 class BusinessDivisionMasterRetrieve(
@@ -228,9 +270,40 @@ class MasterBusinessDivisionUpdate(generics.UpdateAPIView):
     serializer_class = MasterBusinessDivisionSerializer
     permission_classes = [IsAuthenticated]
     
+    def put(self, request, *args, **kwargs):
+        data = request.data
+        if not isinstance(data, list):
+            return Response({'error': 'Invalid data format'}, status=status.HTTP_400_BAD_REQUEST)
+
+        for item in data:
+            try:
+                business_division = MasterBusinessDivision.objects.get(business_division_id=item['business_division_id'])
+                serializer = MasterBusinessDivisionSerializer(business_division, data=item, partial=True)
+                if serializer.is_valid():
+                    serializer.save()
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except MasterBusinessDivision.DoesNotExist:
+                return Response({'error': 'Business division not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'message': 'Business divisions updated successfully'}, status=status.HTTP_200_OK)
 class MasterBusinessDivisionDestroy(generics.DestroyAPIView):
-    serializer_class = MasterBusinessDivisionSerializer
-    permission_classes = [IsAuthenticated]
+    queryset = MasterBusinessDivision.objects.all()
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        business_division_id = self.kwargs.get("pk")
+        return MasterBusinessDivision.objects.filter(business_division_id=business_division_id)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            instance.delete()
+            return Response(
+                {"message": "deleted successfully"}, status=status.HTTP_200_OK
+            )
+        except:
+            return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
 
 
 # CRUD for ClientMaster
