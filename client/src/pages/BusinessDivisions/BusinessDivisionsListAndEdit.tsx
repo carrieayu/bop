@@ -187,9 +187,9 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         try {
           const response = await axios.get('http://127.0.0.1:8000/api/master-business-divisions/', {
           // const response = await axios.get('http://54.178.202.58:8000/api/planningprojects/', {
-            // headers: {
-            //   Authorization: `Bearer ${token}`, // Add token to request headers
-            // },
+            headers: {
+              Authorization: `Bearer ${token}`, // Add token to request headers
+            },
           })
           setBusiness(response.data)
         } catch (error) {
