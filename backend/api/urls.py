@@ -7,7 +7,7 @@ urlpatterns = [
     path("master-business-division/<int:pk>", views.BusinessDivisionMasterRetrieve.as_view(), name="master-business-division-detail"),
     path("master-business-division/bulk-update/", views.MasterBusinessDivisionUpdate.as_view(), name="master-business-division-update"),
     # path("master-business-division/<int:pk>/update/", views.MasterBusinessDivisionUpdate.as_view(), name="master-business-division-update"), #temporary commented currently using bulk-update
-    path("master-business-division/<int:pk>/delete/", views.MasterBusinessDivisionDestroy.as_view(), name="master-business-division-delete"),
+    path("master-business-division/<str:pk>/delete/", views.MasterBusinessDivisionDestroy.as_view(), name="master-business-division-delete"),
     
     
     path("master-clients/", views.MasterClientList.as_view(), name="master-client-lists"),
