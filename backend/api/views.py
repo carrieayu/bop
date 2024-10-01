@@ -20,7 +20,9 @@ from .serializers import (
     GetProjectsSerializers,
     GetUserMasterSerializer,
     MasterBusinessDivisionSerializer,
+    MasterClientCreateSerializer,
     MasterClientSerializer,
+    MasterClientUpdateSerializer,
     MasterCompanySerializers,
     EmployeesSerializer,
     ResultListsSerializer,
@@ -152,7 +154,7 @@ class EmployeesUpdate(generics.UpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         received_data = request.data
-        try: 
+        try :
             for employee_data in received_data: 
                 employee_id = employee_data.get('employee_id')
                 try:
@@ -300,14 +302,21 @@ class MasterClientList(generics.ListAPIView):
 
     
 class MasterClientCreate(generics.CreateAPIView):
-    serializer_class = MasterClientSerializer
+    queryset = MasterClient.objects.all()
+    serializer_class = MasterClientCreateSerializer
     permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
-        if serializer.is_valid():
-            serializer.save()
+    def create(self, request, *args, **kwargs):
+        if isinstance(request.data, list):
+            serializer = self.get_serializer(data=request.data, many=True)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            print(serializer.errors)
+            return super().create(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        serializer.save()
 
 class MasterClientRetrieve(generics.RetrieveAPIView):
     serializer_class = MasterClientSerializer
@@ -319,19 +328,50 @@ class MasterClientRetrieve(generics.RetrieveAPIView):
    
 class MasterClientUpdate(generics.UpdateAPIView):
     queryset = MasterClient.objects.all()
-    serializer_class = MasterClientSerializer
+    serializer_class = MasterClientUpdateSerializer
     permission_classes = [IsAuthenticated]
     
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        return Response({"message": "data created !!!"}, status=status.HTTP_200_OK)
+    def update(self, request, *args, **kwargs):
+        received_data = request.data
+        print(received_data)
+        try: 
+            for client_data in received_data: 
+                client_id = client_data.get('client_id')  
+                
+                try:
+                    client = MasterClient.objects.get(client_id=int(client_id))
+                    for field, value in client_data.items():
+                        if field != 'client_id':
+                            setattr(client, field, value) 
+                    client.save() 
+
+                except AuthUser.DoesNotExist:
+                    return Response({"error": f"Client with ID {client_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+            return Response({"success": "Users updated successfully."}, status=status.HTTP_200_OK)
+        except IntegrityError as e:
+            if 'Duplicate entry' in str(e):
+                return Response({'error': 'Client name already exists.'}, status=400)
+            return Response({'error': str(e)}, status=400)
     
-class MasterClientDestroy(generics.DestroyAPIView):
+class MasterClientDelete(generics.DestroyAPIView):
     queryset = MasterClient.objects.all()
     serializer_class = MasterClientSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+            id = self.kwargs.get("pk")
+            return MasterClient.objects.filter(client_id=id)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            instance.delete()
+            return Response(
+                {"message": "deleted successfully"}, status=status.HTTP_200_OK
+            )
+        except:
+            return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class UpdateMasterCompany(generics.UpdateAPIView):

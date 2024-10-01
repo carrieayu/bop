@@ -13,6 +13,6 @@ urlpatterns = [
     path("master-clients/", views.MasterClientList.as_view(), name="master-client-lists"),
     path("master-client/create/", views.MasterClientCreate.as_view(), name="master-client-create"),
     path("master-client/<int:pk>/", views.MasterClientRetrieve.as_view(), name="master-client-detail"),
-    path("master-client/<int:pk>/update/", views.MasterClientUpdate.as_view(), name="master-client-update"),
-    path("master-client/<int:pk>/destroy/", views.MasterClientDestroy.as_view(), name="master-client-destroy"),
+    path("master-client/update/", views.MasterClientUpdate.as_view(), name="master-client-update"),
+    path("master-client/<int:pk>/delete/", views.MasterClientDelete.as_view(), name="master-client-destroy"),
 ]
