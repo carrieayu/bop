@@ -4,6 +4,8 @@ from api.views import CostOfSalesList, CreateMasterCompany, CreateProjectsData, 
 from api.views import CostOfSalesCreate, CostOfSalesUpdate, CreateEmployeeExpenses,CreateProjectsData, EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
 from api.views import CostOfSalesList, CreateMasterCompany, CreateResults, CreateUserView , DeleteMasterCompany, DeleteProjectsData, DeleteResults, DeleteUser, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany,  UpdateProjectsData, UpdateResults,ForgotPasswordView, UserList, UserUpdate
 from api.views import CostOfSalesCreate, CostOfSalesUpdate, CreateEmployeeExpenses,  EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
+from api.views import CostOfSalesDelete, CostOfSalesList, CostOfSalesOverWrite, CostOfSalesUpdate, CreateMasterCompany, CreateProjectsData, CreateResults, CreateUserView , DeleteMasterCompany, DeleteProjectsData, DeleteResults, DeleteUser, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany,  UpdateProjectsData, UpdateResults,ForgotPasswordView, UserList, UserUpdate
+from api.views import CostOfSalesCreate, CreateEmployeeExpenses, CreateEmployees,CreateProjectsData, EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -62,5 +64,7 @@ urlpatterns = [
     #COS
     path('api/cost-of-sales', CostOfSalesList.as_view()),
     path('api/cost-of-sales/create', CostOfSalesCreate.as_view()),
+    path('api/cost-of-sales/overwrite', CostOfSalesOverWrite.as_view()),
     path('api/cost-of-sales/update', CostOfSalesUpdate.as_view()),
+    path('api/cost-of-sales/<str:pk>/delete/', CostOfSalesDelete.as_view(), name='cost_of_sales_delete'),
 ]

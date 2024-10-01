@@ -766,12 +766,12 @@ class Planning(generics.ListAPIView):
 class CostOfSalesList(generics.ListAPIView):
     queryset = CostOfSales.objects.all()
     serializer_class = CostOfSalesSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
 
 
 class CostOfSalesCreate(generics.CreateAPIView):
-    serializer_class = CustomCostOfSalesSerializer
+    serializer_class = CostOfSalesSerializer
     permission_classes = [IsAuthenticated]
     
     def post(self, request):
@@ -784,16 +784,15 @@ class CostOfSalesCreate(generics.CreateAPIView):
         for item in data:
             try:
                 cos = {
-                    'year' : datetime.now().year,
+                    'year' : item['year'],
                     'month': item['month'],
-                    'outsourcing_costs': item['outsourcing_costs'],
-                    'communication_costs': item['communication_costs'],
-                    'cost_of_sales': item['cost_of_sales'],
-                    'product_purchases': item['product_purchases'],
-                    'work_in_progress': item['work_in_progress'],
-                    'purchases': item['purchases'],
-                    'dispatch_labor_costs': item['dispatch_labor_costs'],
-                    'amortization': item['amortization'],
+                    'purchase': item['purchase'],
+                    'outsourcing_expense': item['outsourcing_expense'],
+                    'product_purchase': item['product_purchase'],
+                    'dispatch_labor_expense': item['dispatch_labor_expense'],
+                    'communication_expense': item['communication_expense'],
+                    'work_in_progress_expense': item['work_in_progress_expense'],
+                    'amortization_expense': item['amortization_expense'],
                 }
                 
                 existing_entry = CostOfSales.objects.filter(
@@ -805,7 +804,7 @@ class CostOfSalesCreate(generics.CreateAPIView):
                     print("Month Exist")
                     return JsonResponse({"detail": "選択された月は既にデータが登録されています。 \n 上書きしますか？"}, status=status.HTTP_409_CONFLICT) 
                     
-                serializer = CustomCostOfSalesSerializer(data=cos)
+                serializer = CostOfSalesSerializer(data=cos)
                 if serializer.is_valid():
                     serializer.save()
                     responses.append({"message": "Created successfully."})
@@ -816,8 +815,8 @@ class CostOfSalesCreate(generics.CreateAPIView):
         
         return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
 
-class CostOfSalesUpdate(generics.CreateAPIView):
-    serializer_class = CustomCostOfSalesSerializer
+class CostOfSalesOverWrite(generics.CreateAPIView):
+    serializer_class = CostOfSalesSerializer
     permission_classes = [IsAuthenticated]
     
     def put(self, request):
@@ -836,7 +835,7 @@ class CostOfSalesUpdate(generics.CreateAPIView):
                 
                 if existing_entry:
                     # Update existing entry
-                    serializer = CustomCostOfSalesSerializer(existing_entry, data=item, partial=True)
+                    serializer = CostOfSalesSerializer(existing_entry, data=item, partial=True)
                     if serializer.is_valid():
                         serializer.save()
                         responses.append({"message": f"Updated successfully for month {month}."})
@@ -847,17 +846,16 @@ class CostOfSalesUpdate(generics.CreateAPIView):
                     cos = {
                         'year' : datetime.now().year,
                         'month': item['month'],
-                        'outsourcing_costs': item['outsourcing_costs'],
-                        'communication_costs': item['communication_costs'],
-                        'cost_of_sales': item['cost_of_sales'],
-                        'product_purchases': item['product_purchases'],
-                        'work_in_progress': item['work_in_progress'],
-                        'purchases': item['purchases'],
-                        'dispatch_labor_costs': item['dispatch_labor_costs'],
-                        'amortization': item['amortization'],
+                        'purchase': item['purchase'],
+                        'outsourcing_expense': item['outsourcing_expense'],
+                        'product_purchase': item['product_purchase'],
+                        'dispatch_labor_expense': item['dispatch_labor_expense'],
+                        'communication_expense': item['communication_expense'],
+                        'work_in_progress_expense': item['work_in_progress_expense'],
+                        'amortization_expense': item['amortization_expense'],
                     }
                     
-                    serializer = CustomCostOfSalesSerializer(data=cos)
+                    serializer = CostOfSalesSerializer(data=cos)
                     if serializer.is_valid():
                         serializer.save()
                         responses.append({"message": f"Created successfully for month {month}."})
@@ -867,6 +865,53 @@ class CostOfSalesUpdate(generics.CreateAPIView):
                 return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
         return JsonResponse(responses, safe=False, status=status.HTTP_200_OK)
+
+
+class CostOfSalesUpdate(generics.UpdateAPIView):  # Change to UpdateAPIView for update actions
+    serializer_class = CostOfSalesSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = CostOfSales.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        received_data = request.data  # This is expected to be a list of cost_of_sales data
+
+        for cost_data in received_data:
+            cost_of_sale_id = cost_data.get('cost_of_sale_id')  # Adjusted to match your model
+
+            try:
+                # Fetch the existing record based on cost_of_sale_id
+                cost_of_sale = CostOfSales.objects.get(cost_of_sale_id=cost_of_sale_id)
+                
+                # Update each field except for the primary key
+                for field, value in cost_data.items():
+                    if field not in ['cost_of_sale_id', 'month']:  # Skip primary key and month field
+                        setattr(cost_of_sale, field, value)
+                
+                cost_of_sale.save()  # Save the updated record
+
+            except CostOfSales.DoesNotExist:
+                return Response({"error": f"Cost of Sale with ID {cost_of_sale_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({"success": "Cost of Sales updated successfully."}, status=status.HTTP_200_OK)
+
+    
+class CostOfSalesDelete(generics.DestroyAPIView):
+    queryset = CostOfSales.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        pk = self.kwargs.get("pk")
+        return CostOfSales.objects.filter(cost_of_sale_id=pk)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            instance.delete()
+            return Response({"message": "deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        except CostOfSales.DoesNotExist:
+            return Response({"message": "Cost of sale not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"message": "failed", "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
 
 class ExpensesCreate(generics.CreateAPIView):
