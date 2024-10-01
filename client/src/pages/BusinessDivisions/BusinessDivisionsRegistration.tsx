@@ -136,7 +136,7 @@ const BusinessDivisionsRegistration = () => {
             window.location.href = '/login'
           } else {
             console.error('There was an error creating the project planning data!', error)
-            alert('Business Name Already Exist')
+            alert('Business name already exists')
           }
         }
       }
