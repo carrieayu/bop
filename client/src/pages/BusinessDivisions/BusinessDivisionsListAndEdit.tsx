@@ -26,7 +26,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
     const [business, setBusiness] = useState([])
     const [initialLanguage, setInitialLanguage] = useState(language);
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [selectedProject, setSelectedProject] = useState<any>(null);
+    const [selectedBusiness, setselectedBusiness] = useState<any>(null);
     const [companyMap, setCompanyMap] = useState({});
     const [userMap, setUserMap] = useState({});
     const [selectedCompany, setSelectedCompany] = useState('');
@@ -118,10 +118,10 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
     
       try {
         const response = await axios.put('http://127.0.0.1:8000/api/master-business-division/bulk-update/', business, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
+          // headers: {
+          //   'Content-Type': 'application/json',
+          //   Authorization: `Bearer ${token}`,
+          // },
         });
         alert('Successfully updated');
       } catch (error) {
@@ -145,7 +145,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
             try {
                 // Fetch companies
                 const companyResponse = await axios.get('http://127.0.0.1:8000/api/master-companies/', {
-                    headers: { Authorization: `Bearer ${token}` },
+                    // headers: { Authorization: `Bearer ${token}` },
                 });
                 const companies = companyResponse.data;
                 console.log("Companies: ", companies)
@@ -157,7 +157,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                 setCompanyMap(companyMapping);
                 // Fetch users
                 const userResponse = await axios.get('http://127.0.0.1:8000/api/user/list/', {
-                    headers: { Authorization: `Bearer ${token}` },
+                    // headers: { Authorization: `Bearer ${token}` },
                 });
                 const users = userResponse.data;
                 const userMapping = users.reduce((map, user) => {
@@ -186,9 +186,9 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         try {
           const response = await axios.get('http://127.0.0.1:8000/api/master-business-divisions/', {
           // const response = await axios.get('http://54.178.202.58:8000/api/planningprojects/', {
-            headers: {
-              Authorization: `Bearer ${token}`, // Add token to request headers
-            },
+            // headers: {
+            //   Authorization: `Bearer ${token}`, // Add token to request headers
+            // },
           })
           setBusiness(response.data)
         } catch (error) {
@@ -231,19 +231,40 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
       }
     };
 
-    const openModal = (project) => {
-      setSelectedProject(project);
+    const openModal = (business, business_division_id) => {
+      setselectedBusiness(business_division_id);
       setModalIsOpen(true);
     };
 
     const closeModal = () => {
-        setSelectedProject(null);
+        setselectedBusiness(null);
         setModalIsOpen(false);
     };
 
-    const handleConfirm = () => {
-      // Currently no delete logic
-      console.log('Confirmed action for project:', selectedProject);
+    const handleConfirm = async () => {
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        window.location.href = '/login';
+        return;
+      }
+    
+      try {
+        const response = await axios.delete(`http://127.0.0.1:8000/api/master-business-division/${selectedBusiness}/delete/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log('Deleted successfully');
+        // Update the business data after deletion
+        const updatedBusiness = business.filter((item) => item.business_division_id !== selectedBusiness);
+        setBusiness(updatedBusiness);
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login';
+        } else {
+          console.error('Error deleting data:', error);
+        }
+      }
       closeModal();
     };
 
@@ -353,7 +374,10 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                                   <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>{formatDate(business_data.created_at)}</td>
                                   <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>{formatDate(business_data.updated_at)}</td>
                                   <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
-                                    {/* <RiDeleteBin6Fill className='delete-icon' onClick={() => openModal('project')}/> */}
+                                    <RiDeleteBin6Fill 
+                                      className='delete-icon' 
+                                      onClick={() => openModal('business', business_data.business_division_id)}
+                                    />
                                   </td>
                                 </tr>
                               ))}
