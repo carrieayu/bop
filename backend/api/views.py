@@ -10,7 +10,7 @@ from .serializers import (
     AllPlanningSerializer,
     CostOfSalesSerializer,
     ProjectsCreateSerializer,
-    CreateResultsSerializers,
+    ResultsCreateSerializers,
     CreateTableListSerializers,
     CustomCostOfSalesSerializer,
     CustomExpensesSerializer,
@@ -26,9 +26,9 @@ from .serializers import (
     MasterCompanySerializers,
     EmployeesSerializer,
     ResultListsSerializer,
-    UpdateMasterCompanySerializers,
-    UpdateProjectsSerializers,
-    UpdateResultsSerializers,
+    MasterCompanyUpdateSerializer,
+    ProjectsUpdateSerializers,
+    ResultsUpdateSerializers,
     ProjectsUpdateSerializer,
     UpdatePlanningSerializer,
     UserSerializer,
@@ -60,7 +60,7 @@ from django.utils import timezone
 from django.db.models import Max
 
 # Create your views here.
-class CreateUserView(generics.CreateAPIView):
+class UserCreateView(generics.CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
@@ -191,7 +191,7 @@ class MasterCompanyList(generics.ListAPIView):
     queryset = MasterCompany.objects.all()
     serializer_class = MasterCompanySerializers
     permission_classes = [AllowAny]
-class CreateMasterCompany(generics.CreateAPIView):
+class MasterCompanyCreate(generics.CreateAPIView):
     serializer_class = MasterCompanySerializers
     permission_classes = [AllowAny]
 
@@ -386,8 +386,8 @@ class MasterClientDelete(generics.DestroyAPIView):
             return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
 
 
-class UpdateMasterCompany(generics.UpdateAPIView):
-    serializer_class = UpdateMasterCompanySerializers
+class MasterCompanyUpdate(generics.UpdateAPIView):
+    serializer_class = MasterCompanyUpdateSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -402,7 +402,7 @@ class UpdateMasterCompany(generics.UpdateAPIView):
         return Response({"message": "data updated !!!"}, status=status.HTTP_200_OK)
 
 
-class DeleteMasterCompany(generics.DestroyAPIView):
+class MasterCompanyDelete(generics.DestroyAPIView):
     queryset = MasterCompany.objects.all()
     permission_classes = [IsAuthenticated]
 
@@ -426,8 +426,8 @@ class ResultsLists(generics.ListAPIView):
     serializer_class = ResultListsSerializer
     permission_classes = [IsAuthenticated]
     
-class CreateResults(generics.CreateAPIView):
-    serializer_class = CreateResultsSerializers
+class ResultsCreate(generics.CreateAPIView):
+    serializer_class = ResultsCreateSerializers
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
@@ -439,8 +439,8 @@ class CreateResults(generics.CreateAPIView):
         )
 
 
-class UpdateResults(generics.UpdateAPIView):
-    serializer_class = UpdateResultsSerializers
+class ResultsUpdate(generics.UpdateAPIView):
+    serializer_class = ResultsUpdateSerializers
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -457,7 +457,7 @@ class UpdateResults(generics.UpdateAPIView):
         )
 
 
-class DeleteResults(generics.DestroyAPIView):
+class ResultsDelete(generics.DestroyAPIView):
     queryset = Results.objects.all()
     permission_classes = [IsAuthenticated]
 
@@ -477,7 +477,7 @@ class DeleteResults(generics.DestroyAPIView):
             return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
 
 
-class CreateProjects(generics.CreateAPIView):
+class ProjectsCreate(generics.CreateAPIView):
     serializer_class = ProjectsCreateSerializer
     permission_classes = [IsAuthenticated]
 
@@ -499,8 +499,8 @@ class CreateProjects(generics.CreateAPIView):
         )
 
 
-class UpdateProjects(generics.UpdateAPIView):
-    serializer_class = UpdateProjectsSerializers
+class ProjectsUpdate(generics.UpdateAPIView):
+    serializer_class = ProjectsUpdateSerializers
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -542,7 +542,7 @@ class MasterClientTableList(generics.ListAPIView):
         return MasterClient.objects.all()
 
 
-class DeleteProjects(generics.DestroyAPIView):
+class ProjectsDelete(generics.DestroyAPIView):
     queryset = Projects.objects.all()
     permission_classes = [IsAuthenticated]
 

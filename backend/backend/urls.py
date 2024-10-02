@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import CostOfSalesList, CreateMasterCompany, CreateProjects, CreateResults, CreateUserView , DeleteMasterCompany, DeleteProjects, DeleteResults, DeleteUser, EmployeeExpensesCreate, EmployeesCreate, EmployeesDelete, EmployeesUpdate, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany, UpdateProjects, UpdateResults,ForgotPasswordView, UserList, UserUpdate
+from api.views import CostOfSalesList, MasterCompanyCreate, ProjectsCreate, ResultsCreate, UserCreateView , MasterCompanyDelete, ProjectsDelete, ResultsDelete, DeleteUser, EmployeeExpensesCreate, EmployeesCreate, EmployeesDelete, EmployeesUpdate, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, MasterCompanyUpdate, ProjectsUpdate, ResultsUpdate,ForgotPasswordView, UserList, UserUpdate
 from api.views import CostOfSalesCreate, CostOfSalesUpdate, EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
-from api.views import CostOfSalesList, CreateMasterCompany, CreateResults, CreateUserView , DeleteMasterCompany, DeleteResults, DeleteUser, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany, UpdateResults,ForgotPasswordView, UserList, UserUpdate
+from api.views import CostOfSalesList, MasterCompanyCreate, ResultsCreate, UserCreateView , MasterCompanyDelete, ResultsDelete, DeleteUser, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, MasterCompanyUpdate, ResultsUpdate,ForgotPasswordView, UserList, UserUpdate
 from api.views import CostOfSalesCreate, CostOfSalesUpdate,  EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -10,7 +10,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 urlpatterns = [
     #Admin
     path("admin/", admin.site.urls),
-    path("api/user/register/", CreateUserView.as_view(), name="register"),
+    path("api/user/register/", UserCreateView.as_view(), name="register"),
     path("api/users/", UserList.as_view(), name="user-list"),
     # path("api/user/list/", UserList.as_view(), name="user-list"),
     path('api/user/list/<int:pk>/delete/', DeleteUser.as_view(), name="users-delete"),
@@ -25,20 +25,20 @@ urlpatterns = [
 
     # Master Company
     path('api/master-companies/', MasterCompanyList.as_view(), name="master-company-lists"), 
-    path('api/master-company/create/', CreateMasterCompany.as_view(), name="master-company-create"),  
-    path('api/master-company/<int:pk>/update/', UpdateMasterCompany.as_view(), name="master-company-update"),  
-    path('api/companymaster/<int:pk>/delete/', DeleteMasterCompany.as_view(), name="master-company-delete"),  
+    path('api/master-company/create/', MasterCompanyCreate.as_view(), name="master-company-create"),  
+    path('api/master-company/<int:pk>/update/', MasterCompanyUpdate.as_view(), name="master-company-update"),  
+    path('api/companymaster/<int:pk>/delete/', MasterCompanyDelete.as_view(), name="master-company-delete"),  
     
     # Performance Data -> Results
     path('api/results/', ResultsLists.as_view(), name="results"),
-    path('api/results/create/', CreateResults.as_view(), name="results-create"),   
-    path('api/results/<int:pk>/update/', UpdateResults.as_view(), name="results-update"),  
-    path('api/results/<int:pk>/delete/', DeleteResults.as_view(), name="results-delete"), 
+    path('api/results/create/', ResultsCreate.as_view(), name="results-create"),   
+    path('api/results/<int:pk>/update/', ResultsUpdate.as_view(), name="results-update"),  
+    path('api/results/<int:pk>/delete/', ResultsDelete.as_view(), name="results-delete"), 
     # PrpjectData -> Projects
     path('api/projects/', ProjectsList.as_view(), name="projects-list"), 
-    path('api/projects/create/', CreateProjects.as_view(), name="projects-create"), 
-    path('api/projects/<int:pk>/update/', UpdateProjects.as_view(), name="projects-update"),   
-    path('api/projects/<int:pk>/delete/', DeleteProjects.as_view(), name="projects-delete"), 
+    path('api/projects/create/', ProjectsCreate.as_view(), name="projects-create"), 
+    path('api/projects/<int:pk>/update/', ProjectsUpdate.as_view(), name="projects-update"),   
+    path('api/projects/<int:pk>/delete/', ProjectsDelete.as_view(), name="projects-delete"), 
     
     # Forgot Password
     path('api/forgot-password/', ForgotPasswordView.as_view(), name="forgot-password"),

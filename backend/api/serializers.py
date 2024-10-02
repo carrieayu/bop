@@ -97,7 +97,7 @@ class MasterClientSerializer(serializers.ModelSerializer):
             'auth_user',
         ]
         
-class UpdateMasterCompanySerializers(serializers.ModelSerializer):
+class MasterCompanyUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = MasterCompany
         fields = [
@@ -110,12 +110,12 @@ class ResultListsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Results
         fields = '__all__'
-class CreateResultsSerializers(serializers.ModelSerializer):
+class ResultsCreateSerializers(serializers.ModelSerializer):
     class Meta:
         model = Results
         fields = '__all__'
 
-class UpdateResultsSerializers(serializers.ModelSerializer):
+class ResultsUpdateSerializers(serializers.ModelSerializer):
     class Meta:
         model = Results
         fields = [
@@ -155,7 +155,7 @@ class CreateTableListSerializers(serializers.ModelSerializer):
         model = MasterClient
         fields = '__all__'     
 
-class UpdateProjectsSerializers(serializers.ModelSerializer):
+class ProjectsUpdateSerializers(serializers.ModelSerializer):
     class Meta:
         model = Projects
         fields = [
