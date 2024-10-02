@@ -127,8 +127,8 @@ const UsersListAndEdit: React.FC = () => {
         }
 
         try {
-          const response = await axios.get('http://127.0.0.1:8000/api/user/list/', {
-            // const response = await axios.get('http://54.178.202.58:8000/api/user/list/', {
+          const response = await axios.get('http://127.0.0.1:8000/api/users/', {
+            // const response = await axios.get('http://54.178.202.58:8000/api/users/', {
           })
           setUserList(response.data)
         } catch (error) {

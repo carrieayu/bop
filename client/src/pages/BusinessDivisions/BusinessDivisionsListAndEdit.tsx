@@ -157,7 +157,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                 console.log("Comp Mapping: ", companyMapping)
                 setCompanyMap(companyMapping);
                 // Fetch users
-                const userResponse = await axios.get('http://127.0.0.1:8000/api/user/list/', {
+                const userResponse = await axios.get('http://127.0.0.1:8000/api/users/', {
                     // headers: { Authorization: `Bearer ${token}` },
                 });
                 const users = userResponse.data;
