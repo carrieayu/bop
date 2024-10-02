@@ -114,10 +114,10 @@ const CostOfSalesRegistration = () => {
       // Attempt to create a new entry
       const response = await axios.post('http://127.0.0.1:8000/api/cost-of-sales/create', formData, {
         // const response = await axios.post('http://54.178.202.58:8000/api/cost-of-sales/create', formData, {
-        // headers: {
-        //   Authorization: `Bearer ${token}`,
-        //   'Content-Type': 'application/json',
-        // },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
       });
       console.log('Form Data before submission:', formData);
   
@@ -143,10 +143,10 @@ const CostOfSalesRegistration = () => {
             // If user confirms, overwrite the existing data with a PUT request
             const overwriteResponse = await axios.put('http://127.0.0.1:8000/api/cost-of-sales/create', formData, {
               // const response = await axios.post('http://54.178.202.58:8000/api/cost-of-sales/create', formData, {
-              // headers: {
-              //   Authorization: `Bearer ${token}`,
-              //   'Content-Type': 'application/json',
-              // },
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
             });
   
             alert('Data successfully overwritten.');

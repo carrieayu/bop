@@ -102,9 +102,9 @@ const CostOfSalesList: React.FC = () => {
       try {
           await axios.put('http://127.0.0.1:8000/api/cost-of-sales/update', validData, {
             // const response = await axios.put('http://54.178.202.58:8000/api/cost-of-sales/update', validData, {
-              // headers: {
-              //     'Authorization': `Bearer ${token}`,
-              // },
+              headers: {
+                  'Authorization': `Bearer ${token}`,
+              },
           });
           alert('Successfully updated');
 
@@ -140,9 +140,9 @@ const CostOfSalesList: React.FC = () => {
           try {
             const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales', {
             // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales', {
-              // headers: {
-              //   'Authorization': `Bearer ${token}`  // Add token to request headers
-              // }
+              headers: {
+                'Authorization': `Bearer ${token}`  // Add token to request headers
+              }
             });
             setCostOfSales(response.data);
             console.log("cost of sales: ", response.data);
@@ -239,15 +239,14 @@ const CostOfSalesList: React.FC = () => {
     };
 
     const handleConfirm = async () => {
-      // Currently no delete logic
       console.log('Confirmed action for cost of sale:', deleteId)
       const token = localStorage.getItem('accessToken')
       try {
         await axios.delete(`http://127.0.0.1:8000/api/cost-of-sales/${deleteId}/delete/`, {
           // const response = await axios.get(`http://54.178.202.58:8000/api/user/list/${deleteId}/delete/`, {
-              // headers: {
-              //   'Authorization': `Bearer ${token}`  // Add token to request headers
-              // }
+              headers: {
+                'Authorization': `Bearer ${token}`  // Add token to request headers
+              }
         })
 
         setIsEditing(false);
