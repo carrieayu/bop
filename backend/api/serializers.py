@@ -226,7 +226,7 @@ class EmployeeExpensesDataSerializer(serializers.ModelSerializer):
 
 
 class CostOfSalesSerializer(serializers.ModelSerializer):
-
+    cost_of_sale_id = serializers.CharField(required=False)
     class Meta:
         model = CostOfSales
         fields = '__all__'

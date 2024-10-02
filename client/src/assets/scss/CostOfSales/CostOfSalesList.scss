@@ -10,7 +10,6 @@
         }
         .costOfSalesList_btn_wrapper{
             width: 84%;
-            height: 100vh;
             padding: 10px 30px 10px 30px;
             .costOfSalesList_top_content{
                 border: 1px solid #fff;
@@ -19,6 +18,24 @@
                 .costOfSalesList_top_body_cont{
                     background-color: #fff;
                     height: 4rem;
+                }
+                button.costOfSalesList_mode_switch{
+                    border: 1px solid;
+                    padding: 3px 21px;
+                    border-radius: 5px;
+                    font-weight: 500;
+                    background-color: #f3f3f3;
+                }
+                .costOfSalesList_mode_switch_datalist{
+                    float: right;
+                    padding: 40px 70px;
+                }
+                button.costOfSalesList_edit_submit_btn {
+                    border: 2px solid #fdd7b3;
+                    padding: 2px 13px;
+                    border-radius: 7px;
+                    background: #2e2eff;
+                    color: white;
                 }
                 .costOfSalesList_mid_body_cont{
                     height: 118vh;
@@ -71,6 +88,27 @@
                                     }
                                 }
                                 .costOfSalesList_table_body{
+                                    .year-separator {
+                                        background-color: #fff; 
+                                        height: 20px;
+                                    
+                                        .horizontal-line-cell {
+                                            padding: 0; 
+                                            border: none;
+                                        }
+                                    
+                                        .horizontal-line {
+                                            width: 98%; 
+                                            background-color: #808080; 
+                                            opacity: 50%;
+                                            height: 2px; 
+                                            border: none;
+                                            margin-top: 8px; 
+                                            margin-bottom: 8px;
+                                            margin-left: 12px;
+                                        }
+                                    }
+                                    
                                     .costOfSalesList_table_body_content_horizontal{
                                         border: none;
                                         &:nth-child(odd){
@@ -82,6 +120,9 @@
                                         .costOfSalesList_table_body_content_vertical{
                                             border: none;
                                             text-align: center;
+                                            input{
+                                                width: 100px;
+                                            }
                                         }
                                     }
                                 }
