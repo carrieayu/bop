@@ -76,9 +76,5 @@
     "dateJoined": "入社日",
     "users": "ユーザー",
     "clientExistMessage": "このクライアント名はすでに存在します。",
-    "clientDeleteMessage": "このクライアントを削除してもよろしいですか？",
-    "year": "年",
-    "cancelMessage": "キャンセルするのはよろしいでしょうか?",
-    "reject": "いいえ",
-    "accept": "はい"
+    "clientDeleteMessage": "このクライアントを削除してもよろしいですか？"
 }

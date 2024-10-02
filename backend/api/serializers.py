@@ -65,7 +65,7 @@ class MasterBusinessDivisionSerializer(serializers.ModelSerializer):
         # fields = ["business_division_id", "business_division_name", "company_id", "company", "created_at", "registered_user_id"]
 
 
-class MasterClientCreateSerializer(serializers.ModelSerializer):
+class MasterClientsCreateSerializer(serializers.ModelSerializer):
      class Meta:
         model = MasterClient
         fields = [
@@ -97,7 +97,7 @@ class MasterClientSerializer(serializers.ModelSerializer):
             'auth_user',
         ]
         
-class UpdateMasterCompanySerializers(serializers.ModelSerializer):
+class MasterCompanyUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = MasterCompany
         fields = [
@@ -110,12 +110,12 @@ class ResultListsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Results
         fields = '__all__'
-class CreateResultsSerializers(serializers.ModelSerializer):
+class ResultsCreateSerializers(serializers.ModelSerializer):
     class Meta:
         model = Results
         fields = '__all__'
 
-class UpdateResultsSerializers(serializers.ModelSerializer):
+class ResultsUpdateSerializers(serializers.ModelSerializer):
     class Meta:
         model = Results
         fields = [
@@ -133,7 +133,8 @@ class UpdateResultsSerializers(serializers.ModelSerializer):
         
 
 
-class CreateProjectsSerializers(serializers.ModelSerializer):
+# class CreateProjectsSerializer(serializers.ModelSerializer):
+class ProjectsCreateSerializer(serializers.ModelSerializer):
     # client = MasterClientSerializer(source='client_id', read_only=True)
     client = serializers.PrimaryKeyRelatedField(queryset=MasterClient.objects.all())
     class Meta:
@@ -154,7 +155,7 @@ class CreateTableListSerializers(serializers.ModelSerializer):
         model = MasterClient
         fields = '__all__'     
 
-class UpdateProjectsSerializers(serializers.ModelSerializer):
+class ProjectsUpdateSerializers(serializers.ModelSerializer):
     class Meta:
         model = Projects
         fields = [

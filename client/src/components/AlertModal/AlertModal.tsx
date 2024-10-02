@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { translate } from '../../utils/translationUtil';
 import Btn from '../Button/Button';
@@ -12,25 +12,10 @@ interface AlertModalProps {
 
 const AlertModal: React.FC<AlertModalProps> = ({ message, onConfirm, onCancel, isOpen }) => {
     const { language } = useLanguage();
-    const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
     
     if (!isOpen) return null;
 
-    const handleCancelClick = () => {
-        setShowCancelConfirmation(true);
-    };
-
-    const handleConfirmCancel = () => {
-        setShowCancelConfirmation(false);  
-        onCancel();  
-    };
-
-    const handleRejectCancel = () => {
-        setShowCancelConfirmation(false); 
-    };
-
     return (
-        <div>
         <div className="alert-modal-overlay">
             <div className="alert-modal-content">
                 <p className="alert-modal-message">
@@ -44,33 +29,11 @@ const AlertModal: React.FC<AlertModalProps> = ({ message, onConfirm, onCancel, i
                     />
                     <Btn
                         label={translate('cancel', language)}
-                        onClick={handleCancelClick}
+                        onClick={onCancel}
                         className="btn-cancel"
                     />
                 </div>
             </div>
-        </div>
-        {showCancelConfirmation && (
-            <div className="alert-modal-overlay">
-                <div className="alert-modal-content">
-                    <p className="alert-modal-message">
-                        {translate('cancelMessage', language)}
-                    </p>
-                    <div className="alert-modal-buttons">
-                        <Btn
-                            label={translate('accept', language)}
-                            onClick={handleConfirmCancel}
-                            className="btn-confirm"
-                        />
-                        <Btn
-                            label={translate('reject', language)}
-                            onClick={handleRejectCancel}
-                            className="btn-cancel"
-                        />
-                    </div>
-                </div>
-            </div>
-        )}
         </div>
     );
 };
