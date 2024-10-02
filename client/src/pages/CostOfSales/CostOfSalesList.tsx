@@ -27,7 +27,7 @@ const CostOfSalesList: React.FC = () => {
     const [initialLanguage, setInitialLanguage] = useState(language);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedCostOfSales, setSelectedCostOfSales] = useState<any>(null);
-    const [deleteId, setDeleteCostOfSalesId] = useState([])
+    const [deleteCostOfSalesId, setDeleteCostOfSalesId] = useState([])
 
     const totalPages = Math.ceil(100 / 10);
 
@@ -239,10 +239,10 @@ const CostOfSalesList: React.FC = () => {
     };
 
     const handleConfirm = async () => {
-      console.log('Confirmed action for cost of sale:', deleteId)
+      console.log('Confirmed action for cost of sale:', deleteCostOfSalesId)
       const token = localStorage.getItem('accessToken')
       try {
-        await axios.delete(`http://127.0.0.1:8000/api/cost-of-sales/${deleteId}/delete/`, {
+        await axios.delete(`http://127.0.0.1:8000/api/cost-of-sales/${deleteCostOfSalesId}/delete/`, {
           // const response = await axios.get(`http://54.178.202.58:8000/api/user/list/${deleteId}/delete/`, {
               headers: {
                 'Authorization': `Bearer ${token}`  // Add token to request headers
