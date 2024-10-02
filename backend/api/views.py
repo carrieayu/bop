@@ -769,101 +769,78 @@ class CostOfSalesList(generics.ListAPIView):
     permission_classes = [AllowAny]
 
 
-
 class CostOfSalesCreate(generics.CreateAPIView):
     serializer_class = CostOfSalesSerializer
     permission_classes = [IsAuthenticated]
-    
+
     def post(self, request):
         data = JSONParser().parse(request)
         if not isinstance(data, list):
-            return JsonResponse(status=status.HTTP_400_BAD_REQUEST)
-        
+            return JsonResponse({"detail": "Invalid input format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
+
         responses = []
-        
         for item in data:
             try:
-                cos = {
-                    'year' : item['year'],
-                    'month': item['month'],
-                    'purchase': item['purchase'],
-                    'outsourcing_expense': item['outsourcing_expense'],
-                    'product_purchase': item['product_purchase'],
-                    'dispatch_labor_expense': item['dispatch_labor_expense'],
-                    'communication_expense': item['communication_expense'],
-                    'work_in_progress_expense': item['work_in_progress_expense'],
-                    'amortization_expense': item['amortization_expense'],
-                }
-                
-                existing_entry = CostOfSales.objects.filter(
-                    year=cos['year'],
-                    month=cos['month']
-                ).first()
-                
+                year = item.get('year')
+                month = item.get('month')
+
+                # Check if an entry with the same year and month already exists
+                existing_entry = CostOfSales.objects.filter(year=year, month=month).first()
+
                 if existing_entry:
-                    print("Month Exist")
-                    return JsonResponse({"detail": "選択された月は既にデータが登録されています。 \n 上書きしますか？"}, status=status.HTTP_409_CONFLICT) 
-                    
-                serializer = CostOfSalesSerializer(data=cos)
+                    # Return conflict message if data exists
+                    return JsonResponse(
+                        {"detail": "選択された月は既にデータが登録されています。 \n 上書きしますか？"},
+                        status=status.HTTP_409_CONFLICT
+                    )
+
+                # If no conflict, create a new entry
+                serializer = CostOfSalesSerializer(data=item)
                 if serializer.is_valid():
                     serializer.save()
-                    responses.append({"message": "Created successfully."})
+                    responses.append({"message": f"Created successfully for month {month}, year {year}."})
                 else:
                     return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
             except Exception as e:
-                return JsonResponse({"messages": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
+                return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
         return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
 
-class CostOfSalesOverWrite(generics.CreateAPIView):
-    serializer_class = CostOfSalesSerializer
-    permission_classes = [IsAuthenticated]
-    
     def put(self, request):
         data = JSONParser().parse(request)
         if not isinstance(data, list):
-            return JsonResponse(status=status.HTTP_400_BAD_REQUEST, data={"detail": "Invalid input format."})
-        
+            return JsonResponse({"detail": "Invalid input format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
+
         responses = []
-        
         for item in data:
             try:
-                year = datetime.now().year
-                month = item['month']
-                
+                year = item.get('year')
+                month = item.get('month')
+
+                # Check if an entry with the same year and month exists
                 existing_entry = CostOfSales.objects.filter(year=year, month=month).first()
-                
+
                 if existing_entry:
-                    # Update existing entry
+                    # Update existing entry (except year and month)
                     serializer = CostOfSalesSerializer(existing_entry, data=item, partial=True)
                     if serializer.is_valid():
                         serializer.save()
-                        responses.append({"message": f"Updated successfully for month {month}."})
+                        responses.append({"message": f"Updated successfully for month {month}, year {year}."})
                     else:
                         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 else:
-                    # Create new entry if none exists
-                    cos = {
-                        'year' : datetime.now().year,
-                        'month': item['month'],
-                        'purchase': item['purchase'],
-                        'outsourcing_expense': item['outsourcing_expense'],
-                        'product_purchase': item['product_purchase'],
-                        'dispatch_labor_expense': item['dispatch_labor_expense'],
-                        'communication_expense': item['communication_expense'],
-                        'work_in_progress_expense': item['work_in_progress_expense'],
-                        'amortization_expense': item['amortization_expense'],
-                    }
-                    
-                    serializer = CostOfSalesSerializer(data=cos)
+                    # If no existing entry, create a new one
+                    serializer = CostOfSalesSerializer(data=item)
                     if serializer.is_valid():
                         serializer.save()
-                        responses.append({"message": f"Created successfully for month {month}."})
+                        responses.append({"message": f"Created successfully for month {month}, year {year}."})
                     else:
                         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
             except Exception as e:
                 return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         return JsonResponse(responses, safe=False, status=status.HTTP_200_OK)
 
 
