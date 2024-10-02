@@ -24,11 +24,10 @@ const CostOfSalesList: React.FC = () => {
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
     const select = [5, 10, 100]
     const [isEditing, setIsEditing] = useState(false)
-    const [userList, setUserList] = useState([])
     const [initialLanguage, setInitialLanguage] = useState(language);
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [selectedProject, setSelectedProject] = useState<any>(null);
-    const [deleteId, setDeleteUserId] = useState([])
+    const [selectedCostOfSales, setSelectedCostOfSales] = useState<any>(null);
+    const [deleteId, setDeleteCostOfSalesId] = useState([])
 
     const totalPages = Math.ceil(100 / 10);
 
@@ -101,13 +100,19 @@ const CostOfSalesList: React.FC = () => {
           return;
       }
       try {
-          const response = await axios.put('http://127.0.0.1:8000/api/cost-of-sales/update', validData, {
+          await axios.put('http://127.0.0.1:8000/api/cost-of-sales/update', validData, {
             // const response = await axios.put('http://54.178.202.58:8000/api/cost-of-sales/update', validData, {
-              headers: {
-                  'Authorization': `Bearer ${token}`,
-              },
+              // headers: {
+              //     'Authorization': `Bearer ${token}`,
+              // },
           });
           alert('Successfully updated');
+
+          setIsEditing(false);
+
+          const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales');
+          // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales');
+          setCostOfSales(response.data);
       } catch (error) {
           if (error.response) {
               console.error('Error response:', error.response.data);
@@ -135,9 +140,9 @@ const CostOfSalesList: React.FC = () => {
           try {
             const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales', {
             // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales', {
-              headers: {
-                'Authorization': `Bearer ${token}`  // Add token to request headers
-              }
+              // headers: {
+              //   'Authorization': `Bearer ${token}`  // Add token to request headers
+              // }
             });
             setCostOfSales(response.data);
             console.log("cost of sales: ", response.data);
@@ -172,23 +177,28 @@ const CostOfSalesList: React.FC = () => {
       // Fixed months array
     const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3];
 
+    // Extract unique years from the costOfSales data
+    const uniqueYears = Array.from(new Set(costOfSales.map(item => item.year))).sort((a, b) => a - b);
+
     // Combine static months with dynamic data
-    const combinedData = months.map((month) => {
-      const foundData = costOfSales.find(item => parseInt(item.month, 10) === month);
-      
-      return {
+    const combinedData = uniqueYears.flatMap(year => {
+      return months.map((month) => {
+        const foundData = costOfSales.find(item => parseInt(item.month, 10) === month && item.year === year);
+        
+        return {
           cost_of_sale_id: foundData ? foundData.cost_of_sale_id : null,
-          month,  
-          year: foundData ? foundData.year : '',
-          purchase: foundData ? foundData.purchase : '',
-          outsourcing_expense: foundData ? foundData.outsourcing_expense : '',
-          product_purchase: foundData ? foundData.product_purchase : '',
-          dispatch_labor_expense: foundData ? foundData.dispatch_labor_expense : '',
-          communication_expense: foundData ? foundData.communication_expense : '',
-          work_in_progress_expense: foundData ? foundData.work_in_progress_expense : '',
-          amortization_expense: foundData ? foundData.amortization_expense : ''
-      };
-  });
+          month,
+          year,
+          purchase: foundData ? foundData.purchase : 0,
+          outsourcing_expense: foundData ? foundData.outsourcing_expense : 0,
+          product_purchase: foundData ? foundData.product_purchase : 0,
+          dispatch_labor_expense: foundData ? foundData.dispatch_labor_expense : 0,
+          communication_expense: foundData ? foundData.communication_expense : 0,
+          work_in_progress_expense: foundData ? foundData.work_in_progress_expense : 0,
+          amortization_expense: foundData ? foundData.amortization_expense : 0
+        };
+      });
+    });
 
   const validData = combinedData.filter(data => data.cost_of_sale_id !== null);
 
@@ -202,14 +212,14 @@ const CostOfSalesList: React.FC = () => {
     };
 
     const openModal = (users, id) => {
-      setSelectedProject(users)
+      setSelectedCostOfSales(users)
       setModalIsOpen(true);
-      setDeleteUserId(id)
+      setDeleteCostOfSalesId(id)
   };
   
 
   const closeModal = () => {
-      setSelectedProject(null);
+      setSelectedCostOfSales(null);
       setModalIsOpen(false);
   };
 
@@ -235,12 +245,14 @@ const CostOfSalesList: React.FC = () => {
       try {
         await axios.delete(`http://127.0.0.1:8000/api/cost-of-sales/${deleteId}/delete/`, {
           // const response = await axios.get(`http://54.178.202.58:8000/api/user/list/${deleteId}/delete/`, {
-              headers: {
-                'Authorization': `Bearer ${token}`  // Add token to request headers
-              }
+              // headers: {
+              //   'Authorization': `Bearer ${token}`  // Add token to request headers
+              // }
         })
-        // setUserList((prevList) => prevList.filter((user) => user.id !== deleteId))
+
         setIsEditing(false);
+
+        alert('Successfully deleted');
 
         const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales');
         // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales');
@@ -313,86 +325,98 @@ const CostOfSalesList: React.FC = () => {
                                                   </tr>
                                               </thead>
                                               <tbody className="costOfSalesList_table_body">
-                                              {combinedData.map((project, index) => (
-                                                 project ? (
-                                                          <tr key={index} className="costOfSalesList_table_body_content_horizontal">
-                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  {/* <input
-                                                                    type='number'
-                                                                    name='year'
-                                                                    value={project.year}
-                                                                    onChange={(e) => handleChange(index, e)}
-                                                                  /> */}
-                                                                  {project.year}
-                                                              </td>
-                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.month}</td>
-                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                <input
-                                                                    type='number'
-                                                                    name='purchase'
-                                                                    value={project.purchase}
-                                                                    onChange={(e) => handleChange(index, e)}
-                                                                  />
-                                                              </td>
-                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                <input
-                                                                    type='number'
-                                                                    name='outsourcing_expense'
-                                                                    value={project.outsourcing_expense}
-                                                                    onChange={(e) => handleChange(index, e)}
-                                                                  />
-                                                              </td>
-                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  <input
-                                                                    type='number'
-                                                                    name='product_purchase'
-                                                                    value={project.product_purchase}
-                                                                    onChange={(e) => handleChange(index, e)}
-                                                                  />
-                                                              </td>
-                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  <input
-                                                                    type='number'
-                                                                    name='dispatch_labor_expense'
-                                                                    value={project.dispatch_labor_expense}
-                                                                    onChange={(e) => handleChange(index, e)}
-                                                                  />
-                                                              </td>
-                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  <input
-                                                                    type='number'
-                                                                    name='communication_expense'
-                                                                    value={project.communication_expense}
-                                                                    onChange={(e) => handleChange(index, e)}
-                                                                  />
-                                                              </td>
-                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  <input
-                                                                    type='number'
-                                                                    name='work_in_progress_expense'
-                                                                    value={project.work_in_progress_expense}
-                                                                    onChange={(e) => handleChange(index, e)}
-                                                                  />
-                                                              </td>
-                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  <input
-                                                                    type='number'
-                                                                    name='amortization_expense'
-                                                                    value={project.amortization_expense}
-                                                                    onChange={(e) => handleChange(index, e)}
-                                                                  />
-                                                              </td>
-                                                              <td className='costOfSalesList_table_body_content_vertical delete_icon'>
-                                                                <RiDeleteBin6Fill
-                                                                  className='delete-icon'
-                                                                  onClick={() => openModal('costOfSales', project.cost_of_sale_id)}
-                                                                  style={{ color: 'red' }}
-                                                                />
-                                                              </td>
-                                                          </tr>
-                                                          ) : null
-                                                      ))}
-                                              </tbody>
+                                                {combinedData.map((project, index) => {
+                                                    const isNewYear = index === 0 || combinedData[index - 1].year !== project.year;
+                                                    const isLastProjectOfYear = 
+                                                      (index !== combinedData.length - 1 && combinedData[index + 1].year !== project.year);
+                                                      
+                                                    return (
+                                                        <React.Fragment key={index}>
+                                                            {project ? (
+                                                                <tr className="costOfSalesList_table_body_content_horizontal">
+                                                                    <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                        {project.year}
+                                                                    </td>
+                                                                    <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                        {project.month}
+                                                                    </td>
+                                                                    <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                        <input
+                                                                            type='number'
+                                                                            name='purchase'
+                                                                            value={project.purchase}
+                                                                            onChange={(e) => handleChange(index, e)}
+                                                                        />
+                                                                    </td>
+                                                                    <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                        <input
+                                                                            type='number'
+                                                                            name='outsourcing_expense'
+                                                                            value={project.outsourcing_expense}
+                                                                            onChange={(e) => handleChange(index, e)}
+                                                                        />
+                                                                    </td>
+                                                                    <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                        <input
+                                                                            type='number'
+                                                                            name='product_purchase'
+                                                                            value={project.product_purchase}
+                                                                            onChange={(e) => handleChange(index, e)}
+                                                                        />
+                                                                    </td>
+                                                                    <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                        <input
+                                                                            type='number'
+                                                                            name='dispatch_labor_expense'
+                                                                            value={project.dispatch_labor_expense}
+                                                                            onChange={(e) => handleChange(index, e)}
+                                                                        />
+                                                                    </td>
+                                                                    <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                        <input
+                                                                            type='number'
+                                                                            name='communication_expense'
+                                                                            value={project.communication_expense}
+                                                                            onChange={(e) => handleChange(index, e)}
+                                                                        />
+                                                                    </td>
+                                                                    <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                        <input
+                                                                            type='number'
+                                                                            name='work_in_progress_expense'
+                                                                            value={project.work_in_progress_expense}
+                                                                            onChange={(e) => handleChange(index, e)}
+                                                                        />
+                                                                    </td>
+                                                                    <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                        <input
+                                                                            type='number'
+                                                                            name='amortization_expense'
+                                                                            value={project.amortization_expense}
+                                                                            onChange={(e) => handleChange(index, e)}
+                                                                        />
+                                                                    </td>
+                                                                    <td className='costOfSalesList_table_body_content_vertical delete_icon'>
+                                                                        <RiDeleteBin6Fill
+                                                                            className='delete-icon'
+                                                                            onClick={() => openModal('costOfSales', project.cost_of_sale_id)}
+                                                                            style={{ color: 'red' }}
+                                                                        />
+                                                                    </td>
+                                                                </tr>
+                                                            ) : null}
+                                                            {isLastProjectOfYear && (
+                                                                <tr className="year-separator">
+                                                                    <td className="horizontal-line-cell" colSpan={9}>
+                                                                        <div className="horizontal-line" />
+                                                                    </td>
+                                                                </tr>
+                                                            )}
+                                                        </React.Fragment>
+                                                    );
+                                                })}
+                                            </tbody>
+
                                             </table>
                                             </div>
                                           ):(
@@ -411,19 +435,52 @@ const CostOfSalesList: React.FC = () => {
                                                 </tr>
                                             </thead>
                                             <tbody className="costOfSalesList_table_body">
-                                            {combinedData.map((project, index) => (
-                                                        <tr key={index} className="costOfSalesList_table_body_content_horizontal">
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.year || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.month}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.purchase || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.outsourcing_expense || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.product_purchase || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.dispatch_labor_expense || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.communication_expense || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.work_in_progress_expense || 0}</td>
-                                                            <td className="costOfSalesList_table_body_content_vertical has-text-centered">{project.amortization_expense || 0}</td>
-                                                        </tr>
-                                                    ))}
+                                              {combinedData.map((project, index) => {
+                                                   const isNewYear = index === 0 || combinedData[index - 1].year !== project.year;
+                                                   const isLastProjectOfYear = 
+                                                     (index !== combinedData.length - 1 && combinedData[index + 1].year !== project.year);
+
+                                                  return (
+                                                      <React.Fragment key={index}>
+                                                          <tr className="costOfSalesList_table_body_content_horizontal">
+                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                  {project.year || 0}
+                                                              </td>
+                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                  {project.month}
+                                                              </td>
+                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                  {project.purchase || 0}
+                                                              </td>
+                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                  {project.outsourcing_expense || 0}
+                                                              </td>
+                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                  {project.product_purchase || 0}
+                                                              </td>
+                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                  {project.dispatch_labor_expense || 0}
+                                                              </td>
+                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                  {project.communication_expense || 0}
+                                                              </td>
+                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                  {project.work_in_progress_expense || 0}
+                                                              </td>
+                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
+                                                                  {project.amortization_expense || 0}
+                                                              </td>
+                                                          </tr>
+                                                          {isLastProjectOfYear && (
+                                                              <tr className="year-separator">
+                                                                  <td className="horizontal-line-cell" colSpan={9}>
+                                                                      <div className="horizontal-line" />
+                                                                  </td>
+                                                              </tr>
+                                                          )}
+                                                      </React.Fragment>
+                                                  );
+                                              })}
                                             </tbody>
                                             </table>
                                           )}

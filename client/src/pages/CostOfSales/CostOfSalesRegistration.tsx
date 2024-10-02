@@ -20,6 +20,10 @@ const CostOfSalesRegistration = () => {
   const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
+  const currentYear = new Date().getFullYear();
+  const startYear = currentYear - 1;
+  const endYear = currentYear + 2;
+  const years = Array.from({ length: endYear - startYear + 1 }, (val, i) => startYear + i);
   const [formData, setFormData] = useState([
     {
       year: '', 
@@ -98,55 +102,55 @@ const CostOfSalesRegistration = () => {
     setFormData(newFormData)
   }
 
-
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    const token = localStorage.getItem('accessToken')
+    e.preventDefault();
+    const token = localStorage.getItem('accessToken');
     if (!token) {
-      window.location.href = '/login'
-      return
+      window.location.href = '/login';
+      return;
     }
-
-
+  
     try {
+      // Attempt to create a new entry
       const response = await axios.post('http://127.0.0.1:8000/api/cost-of-sales/create', formData, {
         // const response = await axios.post('http://54.178.202.58:8000/api/cost-of-sales/create', formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-        })
-        console.log('Form Data before submission:', formData);
-
-      alert('Sucessfully Saved')
-      setFormData([
-        {
-          year: '', 
-          month: '',
-          purchase: '',
-          outsourcing_expense: '', 
-          product_purchase: '',
-          dispatch_labor_expense: '',
-          communication_expense: '',
-          work_in_progress_expense: '',
-          amortization_expense: '',
-          // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
-        },
-      ])
+        // headers: {
+        //   Authorization: `Bearer ${token}`,
+        //   'Content-Type': 'application/json',
+        // },
+      });
+      console.log('Form Data before submission:', formData);
+  
+      alert('Successfully Saved');
+      // Reset form data after successful save
+      setFormData([{
+        year: '', 
+        month: '',
+        purchase: '',
+        outsourcing_expense: '', 
+        product_purchase: '',
+        dispatch_labor_expense: '',
+        communication_expense: '',
+        work_in_progress_expense: '',
+        amortization_expense: '',
+      }]);
     } catch (error) {
       if (error.response && error.response.status === 409) {
-        // If there's a conflict (month already exists), prompt the user
+        // Conflict: prompt the user to overwrite
         const confirmOverwrite = window.confirm("選択された月は既にデータが登録されています。 \n上書きしますか？");
         if (confirmOverwrite) {
           try {
-            const response = await axios.put('http://127.0.0.1:8000/api/cost-of-sales/overwrite', formData, {
-            // const response = await axios.put('http://54.178.202.58:8000/api/cost-of-sales/overwrite', formData, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json'
-              },
+            // If user confirms, overwrite the existing data with a PUT request
+            const overwriteResponse = await axios.put('http://127.0.0.1:8000/api/cost-of-sales/create', formData, {
+              // const response = await axios.post('http://54.178.202.58:8000/api/cost-of-sales/create', formData, {
+              // headers: {
+              //   Authorization: `Bearer ${token}`,
+              //   'Content-Type': 'application/json',
+              // },
             });
-            // alert('Data successfully saved/overwritten.');
+  
+            alert('Data successfully overwritten.');
+            // Reset form data after successful overwrite
             setFormData([{
               year: '', 
               month: '',
@@ -157,18 +161,18 @@ const CostOfSalesRegistration = () => {
               communication_expense: '',
               work_in_progress_expense: '',
               amortization_expense: '',
-              // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
             }]);
-        } catch (overwriteError) {
+          } catch (overwriteError) {
             console.error('Error overwriting data:', overwriteError);
-        }
-        
+          }
         }
       } else {
+        // Handle any other errors
         console.error('There was an error with expenses registration!', error);
       }
     }
-  }
+  };
+  
 
 
   useEffect(() => {
@@ -204,8 +208,6 @@ const CostOfSalesRegistration = () => {
     11: { en: "November", jp: "11月" },
     12: { en: "December", jp: "12月" },
   };
-
-  const years = ['2022', '2023', '2024', '2025', '2026'];
 
   return (
     <div className="costOfSalesRegistration_wrapper">
@@ -248,8 +250,10 @@ const CostOfSalesRegistration = () => {
                             style={{ textAlign: 'center', textAlignLast: 'center' }}
                           >
                             <option value=''></option>
-                              {years.map((year, idx) => (
-                                <option key={idx} value={year}>{year}</option>
+                              {years.map((year, i) => (
+                                <option key={i} value={year}>
+                                  {year}
+                                </option>
                               ))}
                           </select>
                         </div>

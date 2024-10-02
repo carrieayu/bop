@@ -88,6 +88,27 @@
                                     }
                                 }
                                 .costOfSalesList_table_body{
+                                    .year-separator {
+                                        background-color: #fff; 
+                                        height: 20px;
+                                    
+                                        .horizontal-line-cell {
+                                            padding: 0; 
+                                            border: none;
+                                        }
+                                    
+                                        .horizontal-line {
+                                            width: 98%; 
+                                            background-color: #808080; 
+                                            opacity: 50%;
+                                            height: 2px; 
+                                            border: none;
+                                            margin-top: 8px; 
+                                            margin-bottom: 8px;
+                                            margin-left: 12px;
+                                        }
+                                    }
+                                    
                                     .costOfSalesList_table_body_content_horizontal{
                                         border: none;
                                         &:nth-child(odd){
