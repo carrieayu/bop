@@ -328,6 +328,8 @@ const CostOfSalesList: React.FC = () => {
                                                     const isNewYear = index === 0 || combinedData[index - 1].year !== costOfSale.year;
                                                     const isLastcostOfSaleOfYear = 
                                                       (index !== combinedData.length - 1 && combinedData[index + 1].year !== costOfSale.year);
+
+                                                      const isEditable = costOfSale.cost_of_sale_id !== null;
                                                       
                                                     return (
                                                         <React.Fragment key={index}>
@@ -345,6 +347,7 @@ const CostOfSalesList: React.FC = () => {
                                                                             name='purchase'
                                                                             value={costOfSale.purchase}
                                                                             onChange={(e) => handleChange(index, e)}
+                                                                            disabled={!isEditable}
                                                                         />
                                                                     </td>
                                                                     <td className="costOfSalesList_table_body_content_vertical has-text-centered">
@@ -353,6 +356,7 @@ const CostOfSalesList: React.FC = () => {
                                                                             name='outsourcing_expense'
                                                                             value={costOfSale.outsourcing_expense}
                                                                             onChange={(e) => handleChange(index, e)}
+                                                                            disabled={!isEditable}
                                                                         />
                                                                     </td>
                                                                     <td className="costOfSalesList_table_body_content_vertical has-text-centered">
@@ -361,6 +365,7 @@ const CostOfSalesList: React.FC = () => {
                                                                             name='product_purchase'
                                                                             value={costOfSale.product_purchase}
                                                                             onChange={(e) => handleChange(index, e)}
+                                                                            disabled={!isEditable}
                                                                         />
                                                                     </td>
                                                                     <td className="costOfSalesList_table_body_content_vertical has-text-centered">
@@ -369,6 +374,7 @@ const CostOfSalesList: React.FC = () => {
                                                                             name='dispatch_labor_expense'
                                                                             value={costOfSale.dispatch_labor_expense}
                                                                             onChange={(e) => handleChange(index, e)}
+                                                                            disabled={!isEditable}
                                                                         />
                                                                     </td>
                                                                     <td className="costOfSalesList_table_body_content_vertical has-text-centered">
@@ -377,6 +383,7 @@ const CostOfSalesList: React.FC = () => {
                                                                             name='communication_expense'
                                                                             value={costOfSale.communication_expense}
                                                                             onChange={(e) => handleChange(index, e)}
+                                                                            disabled={!isEditable}
                                                                         />
                                                                     </td>
                                                                     <td className="costOfSalesList_table_body_content_vertical has-text-centered">
@@ -385,6 +392,7 @@ const CostOfSalesList: React.FC = () => {
                                                                             name='work_in_progress_expense'
                                                                             value={costOfSale.work_in_progress_expense}
                                                                             onChange={(e) => handleChange(index, e)}
+                                                                            disabled={!isEditable}
                                                                         />
                                                                     </td>
                                                                     <td className="costOfSalesList_table_body_content_vertical has-text-centered">
@@ -393,6 +401,7 @@ const CostOfSalesList: React.FC = () => {
                                                                             name='amortization_expense'
                                                                             value={costOfSale.amortization_expense}
                                                                             onChange={(e) => handleChange(index, e)}
+                                                                            disabled={!isEditable}
                                                                         />
                                                                     </td>
                                                                     <td className='costOfSalesList_table_body_content_vertical delete_icon'>
@@ -415,7 +424,6 @@ const CostOfSalesList: React.FC = () => {
                                                     );
                                                 })}
                                             </tbody>
-
                                             </table>
                                             </div>
                                           ):(
