@@ -130,7 +130,7 @@ const CostOfSalesList: React.FC = () => {
 
 
     useEffect(() => {
-        const fetchProjects = async () => {
+        const fetchCostOfSales = async () => {
           const token = localStorage.getItem('accessToken');
           if (!token) {
             window.location.href = '/login';  // Redirect to login if no token found
@@ -157,7 +157,7 @@ const CostOfSalesList: React.FC = () => {
           }
         };
     
-        fetchProjects();
+        fetchCostOfSales();
       }, []);
 
       console.log("cost of sales: ", setCostOfSales);
