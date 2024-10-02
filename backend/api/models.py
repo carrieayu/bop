@@ -269,18 +269,19 @@ class CostOfSales(models.Model):
         db_table = u'cost_of_sales'
 
     def save(self, *args, **kwargs):
-        if not self.id:
-            max_id = CostOfSales.objects.aggregate(max_id=Max("id"))["max_id"]
+        if not self.cost_of_sale_id:
+            # Get the maximum existing ID and increment it
+            max_id = CostOfSales.objects.aggregate(max_id=Max("cost_of_sale_id"))["max_id"]
             if max_id:
-                numeric_part = int(max_id[1:]) + 1
+                numeric_part = int(max_id[1:]) + 1  # Extract numeric part after 'A'
             else:
-                numeric_part = 1
-            self.id = f'A{numeric_part:09d}'
+                numeric_part = 1  # Start with 1 if no records exist
+            self.cost_of_sale_id = f'A{numeric_part:09d}'  # Format as 'A000000001'
         
-        super().save(*args, **kwargs)
+        super().save(*args, **kwargs) 
 
     def __str__(self):
-        return self.id
+        return self.cost_of_sale_id
     
 class Expenses(models.Model):
     expense_id = models.CharField(max_length=10, primary_key=True)
