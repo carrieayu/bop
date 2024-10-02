@@ -324,26 +324,26 @@ const CostOfSalesList: React.FC = () => {
                                                   </tr>
                                               </thead>
                                               <tbody className="costOfSalesList_table_body">
-                                                {combinedData.map((project, index) => {
-                                                    const isNewYear = index === 0 || combinedData[index - 1].year !== project.year;
-                                                    const isLastProjectOfYear = 
-                                                      (index !== combinedData.length - 1 && combinedData[index + 1].year !== project.year);
+                                                {combinedData.map((costOfSale, index) => {
+                                                    const isNewYear = index === 0 || combinedData[index - 1].year !== costOfSale.year;
+                                                    const isLastcostOfSaleOfYear = 
+                                                      (index !== combinedData.length - 1 && combinedData[index + 1].year !== costOfSale.year);
                                                       
                                                     return (
                                                         <React.Fragment key={index}>
-                                                            {project ? (
+                                                            {costOfSale ? (
                                                                 <tr className="costOfSalesList_table_body_content_horizontal">
                                                                     <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                        {project.year}
+                                                                        {costOfSale.year}
                                                                     </td>
                                                                     <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                        {project.month}
+                                                                        {costOfSale.month}
                                                                     </td>
                                                                     <td className="costOfSalesList_table_body_content_vertical has-text-centered">
                                                                         <input
                                                                             type='number'
                                                                             name='purchase'
-                                                                            value={project.purchase}
+                                                                            value={costOfSale.purchase}
                                                                             onChange={(e) => handleChange(index, e)}
                                                                         />
                                                                     </td>
@@ -351,7 +351,7 @@ const CostOfSalesList: React.FC = () => {
                                                                         <input
                                                                             type='number'
                                                                             name='outsourcing_expense'
-                                                                            value={project.outsourcing_expense}
+                                                                            value={costOfSale.outsourcing_expense}
                                                                             onChange={(e) => handleChange(index, e)}
                                                                         />
                                                                     </td>
@@ -359,7 +359,7 @@ const CostOfSalesList: React.FC = () => {
                                                                         <input
                                                                             type='number'
                                                                             name='product_purchase'
-                                                                            value={project.product_purchase}
+                                                                            value={costOfSale.product_purchase}
                                                                             onChange={(e) => handleChange(index, e)}
                                                                         />
                                                                     </td>
@@ -367,7 +367,7 @@ const CostOfSalesList: React.FC = () => {
                                                                         <input
                                                                             type='number'
                                                                             name='dispatch_labor_expense'
-                                                                            value={project.dispatch_labor_expense}
+                                                                            value={costOfSale.dispatch_labor_expense}
                                                                             onChange={(e) => handleChange(index, e)}
                                                                         />
                                                                     </td>
@@ -375,7 +375,7 @@ const CostOfSalesList: React.FC = () => {
                                                                         <input
                                                                             type='number'
                                                                             name='communication_expense'
-                                                                            value={project.communication_expense}
+                                                                            value={costOfSale.communication_expense}
                                                                             onChange={(e) => handleChange(index, e)}
                                                                         />
                                                                     </td>
@@ -383,7 +383,7 @@ const CostOfSalesList: React.FC = () => {
                                                                         <input
                                                                             type='number'
                                                                             name='work_in_progress_expense'
-                                                                            value={project.work_in_progress_expense}
+                                                                            value={costOfSale.work_in_progress_expense}
                                                                             onChange={(e) => handleChange(index, e)}
                                                                         />
                                                                     </td>
@@ -391,20 +391,20 @@ const CostOfSalesList: React.FC = () => {
                                                                         <input
                                                                             type='number'
                                                                             name='amortization_expense'
-                                                                            value={project.amortization_expense}
+                                                                            value={costOfSale.amortization_expense}
                                                                             onChange={(e) => handleChange(index, e)}
                                                                         />
                                                                     </td>
                                                                     <td className='costOfSalesList_table_body_content_vertical delete_icon'>
                                                                         <RiDeleteBin6Fill
                                                                             className='delete-icon'
-                                                                            onClick={() => openModal('costOfSales', project.cost_of_sale_id)}
+                                                                            onClick={() => openModal('costOfSales', costOfSale.cost_of_sale_id)}
                                                                             style={{ color: 'red' }}
                                                                         />
                                                                     </td>
                                                                 </tr>
                                                             ) : null}
-                                                            {isLastProjectOfYear && (
+                                                            {isLastcostOfSaleOfYear && (
                                                                 <tr className="year-separator">
                                                                     <td className="horizontal-line-cell" colSpan={9}>
                                                                         <div className="horizontal-line" />
@@ -434,43 +434,43 @@ const CostOfSalesList: React.FC = () => {
                                                 </tr>
                                             </thead>
                                             <tbody className="costOfSalesList_table_body">
-                                              {combinedData.map((project, index) => {
-                                                   const isNewYear = index === 0 || combinedData[index - 1].year !== project.year;
-                                                   const isLastProjectOfYear = 
-                                                     (index !== combinedData.length - 1 && combinedData[index + 1].year !== project.year);
+                                              {combinedData.map((costOfSale, index) => {
+                                                   const isNewYear = index === 0 || combinedData[index - 1].year !== costOfSale.year;
+                                                   const isLastcostOfSaleOfYear = 
+                                                     (index !== combinedData.length - 1 && combinedData[index + 1].year !== costOfSale.year);
 
                                                   return (
                                                       <React.Fragment key={index}>
                                                           <tr className="costOfSalesList_table_body_content_horizontal">
                                                               <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  {project.year || 0}
+                                                                  {costOfSale.year || 0}
                                                               </td>
                                                               <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  {project.month}
+                                                                  {costOfSale.month}
                                                               </td>
                                                               <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  {project.purchase || 0}
+                                                                  {costOfSale.purchase || 0}
                                                               </td>
                                                               <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  {project.outsourcing_expense || 0}
+                                                                  {costOfSale.outsourcing_expense || 0}
                                                               </td>
                                                               <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  {project.product_purchase || 0}
+                                                                  {costOfSale.product_purchase || 0}
                                                               </td>
                                                               <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  {project.dispatch_labor_expense || 0}
+                                                                  {costOfSale.dispatch_labor_expense || 0}
                                                               </td>
                                                               <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  {project.communication_expense || 0}
+                                                                  {costOfSale.communication_expense || 0}
                                                               </td>
                                                               <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  {project.work_in_progress_expense || 0}
+                                                                  {costOfSale.work_in_progress_expense || 0}
                                                               </td>
                                                               <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  {project.amortization_expense || 0}
+                                                                  {costOfSale.amortization_expense || 0}
                                                               </td>
                                                           </tr>
-                                                          {isLastProjectOfYear && (
+                                                          {isLastcostOfSaleOfYear && (
                                                               <tr className="year-separator">
                                                                   <td className="horizontal-line-cell" colSpan={9}>
                                                                       <div className="horizontal-line" />
