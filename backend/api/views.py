@@ -9,7 +9,7 @@ from django.db import IntegrityError
 from .serializers import (
     AllPlanningSerializer,
     CostOfSalesSerializer,
-    CreateProjectsSerializers,
+    ProjectsCreateSerializer,
     CreateResultsSerializers,
     CreateTableListSerializers,
     CustomCostOfSalesSerializer,
@@ -20,7 +20,7 @@ from .serializers import (
     GetProjectsSerializers,
     GetUserMasterSerializer,
     MasterBusinessDivisionSerializer,
-    MasterClientCreateSerializer,
+    MasterClientsCreateSerializer,
     MasterClientSerializer,
     MasterClientUpdateSerializer,
     MasterCompanySerializers,
@@ -29,8 +29,6 @@ from .serializers import (
     UpdateMasterCompanySerializers,
     UpdateProjectsSerializers,
     UpdateResultsSerializers,
-    EmployeeExpensesDataSerializer,
-    ProjectsUpdateSerializer,
     ProjectsUpdateSerializer,
     UpdatePlanningSerializer,
     UserSerializer,
@@ -317,7 +315,7 @@ class MasterClientList(generics.ListAPIView):
     
 class MasterClientCreate(generics.CreateAPIView):
     queryset = MasterClient.objects.all()
-    serializer_class = MasterClientCreateSerializer
+    serializer_class = MasterClientsCreateSerializer
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
@@ -479,8 +477,8 @@ class DeleteResults(generics.DestroyAPIView):
             return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
 
 
-class CreateProjectsData(generics.CreateAPIView):
-    serializer_class = CreateProjectsSerializers
+class CreateProjects(generics.CreateAPIView):
+    serializer_class = ProjectsCreateSerializer
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
@@ -501,7 +499,7 @@ class CreateProjectsData(generics.CreateAPIView):
         )
 
 
-class UpdateProjectsData(generics.UpdateAPIView):
+class UpdateProjects(generics.UpdateAPIView):
     serializer_class = UpdateProjectsSerializers
     permission_classes = [IsAuthenticated]
 
@@ -520,7 +518,7 @@ class UpdateProjectsData(generics.UpdateAPIView):
 
 class ProjectsList(generics.ListCreateAPIView):
     queryset = Projects.objects.all()
-    serializer_class = CreateProjectsSerializers
+    serializer_class = ProjectsCreateSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -544,7 +542,7 @@ class MasterClientTableList(generics.ListAPIView):
         return MasterClient.objects.all()
 
 
-class DeleteProjectsData(generics.DestroyAPIView):
+class DeleteProjects(generics.DestroyAPIView):
     queryset = Projects.objects.all()
     permission_classes = [IsAuthenticated]
 
@@ -626,7 +624,7 @@ class StoreProjects(generics.CreateAPIView):
                 'planning_project_type': "Type A",
                 'client_id': "0001",
             }
-            planning_serializer = CreateProjectsSerializers(data=planning_instance_data)
+            planning_serializer = ProjectsCreateSerializer(data=planning_instance_data)
             if planning_serializer.is_valid():
                 planning_serializer.save()
             else:
@@ -698,7 +696,7 @@ class Employees(generics.ListAPIView):
     serializer_class = EmployeesListSerializer
     permission_classes = [IsAuthenticated]
     
-class CreateEmployeeExpenses(generics.CreateAPIView):
+class EmployeeExpensesCreate(generics.CreateAPIView):
     serializer_class = EmployeeExpensesDataSerializer
     permission_classes = [IsAuthenticated]
 

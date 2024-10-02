@@ -1,9 +1,9 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import CostOfSalesList, CreateMasterCompany, CreateProjectsData, CreateResults, CreateUserView , DeleteMasterCompany, DeleteProjectsData, DeleteResults, DeleteUser, EmployeesCreate, EmployeesDelete, EmployeesUpdate, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany,  UpdateProjectsData, UpdateResults,ForgotPasswordView, UserList, UserUpdate
-from api.views import CostOfSalesCreate, CostOfSalesUpdate, CreateEmployeeExpenses,CreateProjectsData, EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
-from api.views import CostOfSalesList, CreateMasterCompany, CreateResults, CreateUserView , DeleteMasterCompany, DeleteProjectsData, DeleteResults, DeleteUser, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany,  UpdateProjectsData, UpdateResults,ForgotPasswordView, UserList, UserUpdate
-from api.views import CostOfSalesCreate, CostOfSalesUpdate, CreateEmployeeExpenses,  EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
+from api.views import CostOfSalesList, CreateMasterCompany, CreateProjects, CreateResults, CreateUserView , DeleteMasterCompany, DeleteProjects, DeleteResults, DeleteUser, EmployeeExpensesCreate, EmployeesCreate, EmployeesDelete, EmployeesUpdate, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany, UpdateProjects, UpdateResults,ForgotPasswordView, UserList, UserUpdate
+from api.views import CostOfSalesCreate, CostOfSalesUpdate, EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
+from api.views import CostOfSalesList, CreateMasterCompany, CreateResults, CreateUserView , DeleteMasterCompany, DeleteResults, DeleteUser, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany, UpdateResults,ForgotPasswordView, UserList, UserUpdate
+from api.views import CostOfSalesCreate, CostOfSalesUpdate,  EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -11,8 +11,9 @@ urlpatterns = [
     #Admin
     path("admin/", admin.site.urls),
     path("api/user/register/", CreateUserView.as_view(), name="register"),
-    path("api/user/list/", UserList.as_view(), name="user-list"),
-    path('api/user/list/<int:pk>/delete/', DeleteUser.as_view(), name="master-company-delete"),
+    path("api/users/", UserList.as_view(), name="user-list"),
+    # path("api/user/list/", UserList.as_view(), name="user-list"),
+    path('api/user/list/<int:pk>/delete/', DeleteUser.as_view(), name="users-delete"),
     path('api/user/update/', UserUpdate.as_view()),
     #Token
     path("api/token/", TokenObtainPairView.as_view(), name="get_token"),
@@ -35,19 +36,16 @@ urlpatterns = [
     path('api/results/<int:pk>/delete/', DeleteResults.as_view(), name="results-delete"), 
     # PrpjectData -> Projects
     path('api/projects/', ProjectsList.as_view(), name="projects-list"), 
-    path('api/projects/create/', CreateProjectsData.as_view(), name="projects-create"), 
-    path('api/projects/<int:pk>/update/', UpdateProjectsData.as_view(), name="projects-update"),   
-    path('api/projects/<int:pk>/delete/', DeleteProjectsData.as_view(), name="projects-delete"), 
-    # Projects needs to trace on where it is used
-    # path('api/projects/tablelist/', MasterClientTableList.as_view(), name="projects-table-lists"), 
-    # path('api/projects/store/', StoreProjects.as_view(), name="projects-store"), #the nested views for storing projects
-    # path('api/projects/update', ProjectsUpdate.as_view()),
-    # path('api/forgot-password/', ForgotPasswordView.as_view(), name="forgot-password"),
-    # path('api/reset-password/<uidb64>/<token>/', ForgotPasswordView.as_view(), name='reset-password'),
-    # End
+    path('api/projects/create/', CreateProjects.as_view(), name="projects-create"), 
+    path('api/projects/<int:pk>/update/', UpdateProjects.as_view(), name="projects-update"),   
+    path('api/projects/<int:pk>/delete/', DeleteProjects.as_view(), name="projects-delete"), 
+    
+    # Forgot Password
+    path('api/forgot-password/', ForgotPasswordView.as_view(), name="forgot-password"),
+    path('api/reset-password/<uidb64>/<token>/', ForgotPasswordView.as_view(), name='reset-password'),
     #Employees
     path('api/employee-expenses', EmployeeExpensesList.as_view()),
-    path('api/employee-expenses/create', CreateEmployeeExpenses.as_view()),
+    path('api/employee-expenses/create', EmployeeExpensesCreate.as_view()),
     path('api/employees', Employees.as_view()),
     path('api/employees/create', EmployeesCreate.as_view()),
     path('api/employees/<int:pk>/delete/', EmployeesDelete.as_view()),
