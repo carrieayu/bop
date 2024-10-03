@@ -8,6 +8,7 @@ urlpatterns = [
     path("master-business-division/bulk-update/", views.MasterBusinessDivisionUpdate.as_view(), name="master-business-division-update"),
     path("master-business-division/<str:pk>/delete/", views.MasterBusinessDivisionDestroy.as_view(), name="master-business-division-delete"),
     
+    path("business-divisions/", views.CompaniesWithBusinessDivisions.as_view(), name="companies-with-business-division"), #url for filtering the bussiness division from the selected company
     
     path("master-clients/", views.MasterClientList.as_view(), name="master-client-lists"),
     path("master-client/create/", views.MasterClientCreate.as_view(), name="master-client-create"),
