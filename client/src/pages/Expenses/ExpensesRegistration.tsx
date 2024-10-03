@@ -97,6 +97,7 @@ const ExpensesRegistration = () => {
   }, [location.pathname])
 
   const handleSubmit = async (e) => {
+    e.preventDefault()
     const {
       year,
       month,
@@ -127,7 +128,6 @@ const ExpensesRegistration = () => {
       !transaction_fee
       ) {
        alert(translate('usersValidationText6', language))
-       return
      }
     
     e.preventDefault()
