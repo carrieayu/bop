@@ -479,44 +479,125 @@ class DeleteResults(generics.DestroyAPIView):
             return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
 
 
-class CreateProjectsData(generics.CreateAPIView):
+class ProjectsCreate(generics.CreateAPIView):
     serializer_class = CreateProjectsSerializers
     permission_classes = [IsAuthenticated]
 
-    def create(self, request, *args, **kwargs):
-        # Check if the request data is a list (i.e., array of project data)
-        if isinstance(request.data, list):
-            # Set 'many=True' for handling multiple objects
-            serializer = self.get_serializer(data=request.data, many=True)
-        else:
-            # Single object creation
-            serializer = self.get_serializer(data=request.data)
-        # Validate the data
-        serializer.is_valid(raise_exception=True)
-        # Save the validated data
-        self.perform_create(serializer)
-        return Response(
-            {"message": "Projects created successfully!"}, 
-            status=status.HTTP_200_OK
-        )
+    def post(self, request):
+        data = JSONParser().parse(request)
+        if not isinstance(data, list):
+            return JsonResponse({"detail": "Invalid input format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
+
+        responses = []
+        for item in data:
+            try:
+                year = item.get('year')
+                month = item.get('month')
+
+                existing_entry = Projects.objects.filter(year=year, month=month).first()
+
+                if existing_entry:
+                    return JsonResponse(
+                        {"detail": "選択された月は既にデータが登録されています。 \n 上書きしますか？"},
+                        status=status.HTTP_409_CONFLICT
+                    )
+
+                serializer = CreateProjectsSerializers(data=item)
+                if serializer.is_valid():
+                    serializer.save()
+                    responses.append({"message": f"Created successfully for month {month}, year {year}."})
+                else:
+                    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            except Exception as e:
+                return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
+
+    def put(self, request):
+        data = JSONParser().parse(request)
+        if not isinstance(data, list):
+            return JsonResponse({"detail": "Invalid input format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
+
+        responses = []
+        for item in data:
+            try:
+                year = item.get('year')
+                month = item.get('month')
+                project_name = item.get('project_name')
+
+                existing_entry = Projects.objects.filter(year=year, month=month).first()
+                projectName = Projects.objects.filter(project_name = project_name ).first()
+
+                if projectName: 
+                    return JsonResponse("Project name already exist", safe=False, status=status.HTTP_400_BAD_REQUEST)
+                
+                elif existing_entry:
+                    serializer = CreateProjectsSerializers(existing_entry, data=item, partial=True)
+                    if serializer.is_valid():
+                        serializer.save()
+                        responses.append({"message": f"Updated successfully for month {month}, year {year}."})
+                    else:
+                        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    serializer = CreateProjectsSerializers(data=item)
+                    if serializer.is_valid():
+                        serializer.save()
+                        responses.append({"message": f"Created successfully for month {month}, year {year}."})
+                    else:
+                        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            except Exception as e:
+                return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        return JsonResponse(responses, safe=False, status=status.HTTP_200_OK)
 
 
-class UpdateProjectsData(generics.UpdateAPIView):
+class ProjectsDataUpdate(generics.UpdateAPIView):
     serializer_class = UpdateProjectsSerializers
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         id = self.kwargs.get("pk")
-        return Projects.objects.filter(planning_project_id=id)
+        return Projects.objects.filter(project_id=id)
 
     def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(
-            {"message": "planning data updated !!!"}, status=status.HTTP_200_OK
-        )
+        client_data = request.data
+        try :
+            for client in client_data: 
+                project_id = client.get('project_id')
+                try:
+                    
+                    projects = Projects.objects.get(project_id=int(project_id))
+                    business_division_id = client.get('business_division')
+                    client_id = client.get('client_id')
+                    if business_division_id:
+                        try:
+                            business_division_instance = MasterBusinessDivision.objects.get(pk=business_division_id)
+                            projects.business_division = business_division_instance
+                        except MasterBusinessDivision.DoesNotExist:
+                            return Response({"error": f"Business division with ID {business_division_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
+                    if client_id:
+                        try:
+                            client_instance = MasterClient.objects.get(pk=client_id)
+                            projects.client = client_instance
+                        except MasterClient.DoesNotExist:
+                            return Response({"error": f"Clients with ID {client_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
+                    for field, value in client.items():
+                        if field not in ['project_id', 'business_division', 'client']:
+                            setattr(projects, field, value)
+                            
+                    projects.save()
+
+                except Projects.DoesNotExist:
+                    return Response({"error": f"Projects with ID {project_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+            return Response({"success": "Projects updated successfully."}, status=status.HTTP_200_OK)
+        except IntegrityError as e:
+            if 'Duplicate entry' in str(e):
+                return Response({'error': 'Project Name already exists.'}, status=400)
+            return Response({'error': str(e)}, status=400)
+        
 
 class ProjectsList(generics.ListCreateAPIView):
     queryset = Projects.objects.all()
@@ -540,18 +621,18 @@ class MasterClientTableList(generics.ListAPIView):
     queryset = MasterClient.objects.all()
     serializer_class = CreateTableListSerializers
     permission_classes = [IsAuthenticated]
-                                          
+
     def get_queryset(self):
         return MasterClient.objects.all()
 
 
-class DeleteProjectsData(generics.DestroyAPIView):
+class ProjectsDelete(generics.DestroyAPIView):
     queryset = Projects.objects.all()
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         id = self.kwargs.get("pk")
-        return Projects.objects.filter(planning_project_id=id)
+        return Projects.objects.filter(project_id=id)
 
     def destroy(self, request, *args, **kwargs):
         try:

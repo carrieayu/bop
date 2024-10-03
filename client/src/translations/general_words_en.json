@@ -80,5 +80,18 @@
     "year": "Year",
     "cancelMessage": "Are you sure you want to cancel?",
     "reject": "No",
-    "accept": "Yes"
+    "accept": "Yes",
+    "projectType": "Project Type",
+    "saleRevenue": "Sale Revenue",
+    "costOfSale": "Cost of Sale",
+    "dispatchLaborExpense": "Dispatch Labor Expense",
+    "employeeExpense": "Employee Expense",
+    "indirectEmployeeExpense": "Indirect Employee Expense",
+    "expense": "Expense",
+    "operatingProfit": "Operating Profit",
+    "nonOperatingProfit": "Non Operating Profit",
+    "nonOperatingExpense": "Non Operating Expense",
+    "ordinaryProfit": "Ordinary Profit",
+    "ordinaryProfitMargin": "Ordinary Profit Margin",
+    "projectNameExist": "This project name already exists.\nPlease choose a different name."
 }

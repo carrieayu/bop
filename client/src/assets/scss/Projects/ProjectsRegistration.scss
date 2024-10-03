@@ -128,7 +128,7 @@
                                     flex-direction: column;
                                     margin-bottom: 10px;
                                     .projectsRegistration_project_name{
-                                        margin-bottom: 5px;
+                                        margin-bottom: 0px;
                                     }
                                     input{
                                         width: 80%;
@@ -145,6 +145,7 @@
                                 .projectsRegistration_month-div{ 
                                     display: flex;
                                     flex-direction: column;
+                                    margin-bottom: 10px;
                                     .projectsRegistration_month{
                                         margin-bottom: 5px;
                                     }
@@ -162,7 +163,7 @@
                                     flex-direction: column;
                                     margin-bottom: 10px;
                                     .projectsRegistration_business_division_name{
-                                        margin-bottom: 5px;
+                                        margin-bottom: 0px;
                                     }
                                     input{
                                         width: 80%;
@@ -175,13 +176,20 @@
                                     -webkit-appearance: none;
                                     margin: 0;
                                     }
+                                    
+                                    .projectsRegistration_select-option{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
                                 }
                                 .projectsRegistration_operating-income-div{ 
                                     display: flex;
                                     flex-direction: column;
                                     margin-bottom: 10px;
                                     .projectsRegistration_operating_income{
-                                        margin-bottom: 5px;
+                                        margin-bottom: 0px;
                                     }
                                     input{
                                         width: 80%;

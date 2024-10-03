@@ -7,6 +7,10 @@ import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
+import { fetchBusinessDivisions } from '../../reducers/businessDivisions/businessDivisionsSlice'
+import { UnknownAction } from 'redux'
+import { useDispatch } from 'react-redux'
+import { fetchMasterClient } from '../../reducers/client/clientSlice'
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -22,46 +26,67 @@ const ProjectsRegistration = () => {
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
   const years = [];
   const token = localStorage.getItem('accessToken')
-  const [clients, setClients] = useState([]);
+  const [clients, setClients] = useState<any>([])
   const [selectedClient, setSelectedClient] = useState([]);
-  for (let year = 2000; year <= new Date().getFullYear(); year++) {
+  const [businessSelection, setBusinessSelection] = useState<any>([])
+  const dispatch = useDispatch()
+  for (let year = 2021; year <= new Date().getFullYear(); year++) {
     years.push(year);
   }
-  const [formData, setFormData] = useState([
+  const [formProjects, setProjects] = useState([
     {
-      client: '', //gets client_id
-      // business_division_name: '',
-      project_name: '',
-      project_type: '', //temporary used for the input field "Business Divisions"
+      year: '',
       month: '',
+      project_name: '',
+      project_type: '',
+      client: '',
+      business_division: '',
       sales_revenue: '',
-      non_operating_income: '',
+      cost_of_sale: '',
+      dispatch_labor_expense: '',
+      employee_expense: '',
+      indirect_employee_expense: '',
+      expense: '',
+      operating_profit: '',
+      non_operating_profit: '',
       non_operating_expense: '',
-      // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
+      ordinary_profit: '',
+      ordinary_profit_margin: '',
     },
   ])
 
   const handleAdd = () => {
-    if (formData.length < 10) {
-      setFormData([...formData, {
-        client: '',
-        project_type: '', //temporary used for the input field "Business Divisions"
-        // business_division_name: '',
-        project_name: '',
-        month: '',
-        sales_revenue: '',
-        non_operating_income: '',
-        non_operating_expense: '',
-        // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
-      }]);
+    if (formProjects.length < 10) {
+      setProjects([
+        ...formProjects,
+        {
+          year: '',
+          month: '',
+          project_name: '',
+          project_type: '',
+          client: '',
+          business_division: '',
+          sales_revenue: '',
+          cost_of_sale: '',
+          dispatch_labor_expense: '',
+          employee_expense: '',
+          indirect_employee_expense: '',
+          expense: '',
+          operating_profit: '',
+          non_operating_profit: '',
+          non_operating_expense: '',
+          ordinary_profit: '',
+          ordinary_profit_margin: '',
+        },
+      ])
     } else {
       console.log('You can only add up to 10 forms.');
     }
   };
 
   const handleMinus = () => {
-    if (formData.length > 1) {
-      setFormData(formData.slice(0, -1));
+    if (formProjects.length > 1) {
+      setProjects(formProjects.slice(0, -1))
     }
   };
 
@@ -89,18 +114,35 @@ const ProjectsRegistration = () => {
     }
   }
 
+  const fetchClients = async () => {
+    try {
+      const resMasterClients = await dispatch(fetchMasterClient() as unknown as UnknownAction)
+      setClients(resMasterClients.payload)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const fetchDivision = async () => {
+    try {
+      const resBusinessDivisions = await dispatch(fetchBusinessDivisions() as unknown as UnknownAction)
+      setBusinessSelection(resBusinessDivisions.payload)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
 
   const handleChange = (index, event) => {
     const { name, value } = event.target
-    const updatedFormData = [...formData]
+    const updatedFormData = [...formProjects]
     updatedFormData[index] = {
       ...updatedFormData[index],
       [name]: value,
     }
-    setFormData(updatedFormData)
+    setProjects(updatedFormData)
   } 
-  useEffect(() => {
-  }, [formData])
+  useEffect(() => {}, [formProjects])
 
   const HandleClientChange = (e) => {
     setSelectedClient(e.target.value);
@@ -113,20 +155,62 @@ const ProjectsRegistration = () => {
     }
   }, [location.pathname]);
 
+  const validateProjects = (projectsValidate) => {
+    return projectsValidate.every((prj) => {
+      return (
+        prj.year.trim() !== '' &&
+        prj.month.trim() !== '' &&
+        prj.business_division.trim() !== '' &&
+        prj.client.trim() !== '' &&
+        !isNaN(prj.sales_revenue) &&
+        prj.sales_revenue > 0 &&
+        !isNaN(prj.sales_revenue) &&
+        prj.cost_of_sale > 0 &&
+        !isNaN(prj.cost_of_sale) &&
+        prj.dispatch_labor_expense > 0 &&
+        !isNaN(prj.dispatch_labor_expense) &&
+        prj.employee_expense > 0 &&
+        !isNaN(prj.employee_expense) &&
+        prj.indirect_employee_expense > 0 &&
+        !isNaN(prj.indirect_employee_expense) &&
+        prj.expense > 0 &&
+        !isNaN(prj.expense) &&
+        prj.operating_profit > 0 &&
+        !isNaN(prj.operating_profit) &&
+        prj.non_operating_profit > 0 &&
+        !isNaN(prj.non_operating_profit) &&
+        prj.non_operating_expense > 0 &&
+        !isNaN(prj.non_operating_expense) &&
+        prj.ordinary_profit > 0 &&
+        !isNaN(prj.ordinary_profit) &&
+        prj.ordinary_profit_margin > 0 &&
+        !isNaN(prj.ordinary_profit_margin)
+      )
+    })
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log(formData)
 
-    const postData = formData.map((entry) => ({
-      client: entry.client,
-      project_name: entry.project_name,
-      project_type: entry.project_type, //temporary used for the input field "Business Divisions"
-      month: entry.month,
-      sales_revenue: parseFloat(entry.sales_revenue),
-      non_operating_income: parseFloat(entry.non_operating_income),
-      non_operating_expense: parseFloat(entry.non_operating_expense),
-      // registered_user_id: entry.registered_user_id, //for testing and will be removed it not used for future use
-    }));
+    const projectsData = formProjects.map((projects) => ({
+      year: projects.year,
+      month: projects.month,
+      project_name: projects.project_name,
+      project_type: projects.project_type,
+      client: projects.client,
+      business_division: projects.business_division,
+      sales_revenue: parseFloat(projects.sales_revenue),
+      cost_of_sale: parseFloat(projects.cost_of_sale),
+      dispatch_labor_expense: parseFloat(projects.dispatch_labor_expense),
+      employee_expense: parseFloat(projects.employee_expense),
+      indirect_employee_expense: parseFloat(projects.indirect_employee_expense),
+      expense: parseFloat(projects.expense),
+      operating_profit: parseFloat(projects.operating_profit),
+      non_operating_profit: parseFloat(projects.non_operating_profit),
+      non_operating_expense: parseFloat(projects.non_operating_expense),
+      ordinary_profit: parseFloat(projects.ordinary_profit),
+      ordinary_profit_margin: parseFloat(projects.ordinary_profit_margin),
+    }))
 
     const token = localStorage.getItem('accessToken')
     if (!token) {
@@ -134,34 +218,48 @@ const ProjectsRegistration = () => {
       return
     }
 
+    if (!validateProjects(formProjects)) {
+      alert(translate('usersValidationText6', language))
+      return // Stop the submission
+    }
+
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/projects/create/', postData, {
-        // const response = await axios.post('http://54.178.202.58:8000/api/projectplanning/create/', postData, {
+      const response = await axios.post('http://127.0.0.1:8000/api/projects/create/', projectsData, {
+        // const response = await axios.post('http://54.178.202.58:8000/api/projects/create/', projectsData, {
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
       })
       alert('Sucessfully Saved')
-      setFormData([
-        {
-          client: '',
-          // business_division_name: '',
-          project_type: '', //temporary used for the input field "Business Divisions"
-          project_name: '',
-          month: '',
-          sales_revenue: '',
-          non_operating_income: '',
-          non_operating_expense: '',
-          // registered_user_id: localStorage.getItem('userID'),  //for testing and will be removed it not used for future use
-        },
-      ])
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        console.error('Validation error:', error.response.data);
-        window.location.href = '/login'
+      if (error.response && error.response.status === 409) {
+        const confirmOverwrite = window.confirm('選択された月は既にデータが登録されています。 \n上書きしますか？')
+        if (confirmOverwrite) {
+          try {
+            const overwriteResponse = await axios.put('http://127.0.0.1:8000/api/projects/create/', projectsData, {
+              // const response = await axios.post('http://54.178.202.58:8000/api/projects/create/', formData, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            })
+
+            alert('Data successfully overwritten.')
+          } catch (overwriteError) {
+            if (overwriteError.response.status === 400) {
+              alert(translate('projectNameExist', language))
+            } else {
+              console.error('Error overwriting data:', overwriteError)
+            }
+            
+          }
+        }
+      } 
+      else if (error.response.data.project_name[0] && error.response.status === 400) {
+        alert(translate('projectNameExist', language))
       } else {
-        console.error('There was an error creating the project planning data!', error)
+        console.error('There was an error with expenses registration!', error)
       }
     }
   }
@@ -175,24 +273,8 @@ const ProjectsRegistration = () => {
     setLanguage(newLanguage);
   };
   useEffect(() => {
-    const fetchClients = async () => {
-      try{
-        const response = await axios.get('http://127.0.0.1:8000/api/master-clients/', {
-        // const response = await axios.get('http://54.178.202.58:8000/api/master-clients/', {
-          headers: { 
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}` 
-          },
-        });
-        console.log("clients: ", response.data)
-        setClients(response.data);
-      }
-      catch (error) {
-        console.error('Error fetching clients:', error);
-      }
-    };
-
-    fetchClients();
+    fetchDivision()
+    fetchClients()
   }, [token]);
   const monthNames: { [key: number]: { en: string; jp: string } } = {
     1: { en: "January", jp: "1月" },
@@ -211,54 +293,67 @@ const ProjectsRegistration = () => {
 
   return (
     <div className='projectsRegistration_wrapper'>
-        <HeaderButtons 
-            activeTab={activeTab}
-            handleTabClick={handleTabClick}
-            isTranslateSwitchActive={isTranslateSwitchActive}
-            handleTranslationSwitchToggle={handleTranslationSwitchToggle}
-        />
+      <HeaderButtons
+        activeTab={activeTab}
+        handleTabClick={handleTabClick}
+        isTranslateSwitchActive={isTranslateSwitchActive}
+        handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+      />
       <div className='projectsRegistration_content_wrapper'>
-          <Sidebar />
+        <Sidebar />
         <div className='projectsRegistration_data_content'>
           <div className='projectsRegistration_top_body_cont'></div>
           <div className='projectsRegistration_mid_body_cont'>
-                <RegistrationButtons
-                  activeTabOther={activeTabOther}
-                  message={translate('projectsRegistration', language)}
-                  handleTabsClick={handleTabsClick}
-                  buttonConfig={[
-                    { labelKey: 'project', tabKey: 'project' },
-                    { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
-                    { labelKey: 'expenses', tabKey: 'expenses' },
-                    { labelKey: 'costOfSales', tabKey: 'costOfSales' },
-                  ]}
-                />
+            <RegistrationButtons
+              activeTabOther={activeTabOther}
+              message={translate('projectsRegistration', language)}
+              handleTabsClick={handleTabsClick}
+              buttonConfig={[
+                { labelKey: 'project', tabKey: 'project' },
+                { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
+                { labelKey: 'expenses', tabKey: 'expenses' },
+                { labelKey: 'costOfSales', tabKey: 'costOfSales' },
+              ]}
+            />
             <div className='projectsRegistration_mid_form_cont'>
               <form onSubmit={handleSubmit}>
-                {formData.map((form, index) => (
-                  <div key={index} className={`projectsRegistration_form-content ${index > 0 ? 'projectsRegistration_form-content-special' : ''}`}>
-                    <div className={`projectsRegistration_form-content ${index > 0 ? 'projectsRegistration_form-line' : ''}`}></div>
+                {formProjects.map((form, index) => (
+                  <div
+                    key={index}
+                    className={`projectsRegistration_form-content ${index > 0 ? 'projectsRegistration_form-content-special' : ''}`}
+                  >
+                    <div
+                      className={`projectsRegistration_form-content ${index > 0 ? 'projectsRegistration_form-line' : ''}`}
+                    ></div>
                     <div className='projectsRegistration_form-content-div'>
                       <div className='projectsRegistration_left-form-div projectsRegistration_calc'>
                         <div className='projectsRegistration_client-div'>
-                          <label className='projectsRegistration_client'>{translate('client', language)}</label>
+                          <label className='projectsRegistration_month'>{translate('year', language)}</label>
                           <select
                             className='projectsRegistration_select-option'
-                            name='client'
-                            value={form.client}
+                            name='year'
+                            value={form.year}
                             onChange={(e) => handleChange(index, e)}
                           >
                             <option value=''></option>
-                            {/* Dynamically map the clients fetched from the database */}
-                            {clients.map((client) => (
-                              <option key={client.client_id} value={client.client_id}>
-                                {client.client_name}
+                            {years.map((year, idx) => (
+                              <option key={idx} value={year}>
+                                {year}
                               </option>
                             ))}
                           </select>
                         </div>
                         <div className='projectsRegistration_sales_revenue-div'>
-                          <label className='projectsRegistration_sales_revenue'>{translate('salesRevenue', language)}</label>
+                          <label className='projectsRegistration_client'>{translate('projectName', language)}</label>
+                          <input
+                            type='text'
+                            name='project_type'
+                            value={form.project_type}
+                            onChange={(e) => handleChange(index, e)}
+                          />
+                        </div>
+                        <div className='projectsRegistration_sales_revenue-div'>
+                          <label className='projectsRegistration_operating_income'>{translate('saleRevenue', language)}</label>
                           <input
                             type='number'
                             name='sales_revenue'
@@ -266,28 +361,47 @@ const ProjectsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='projectsRegistration_non-operating-expenses-div'>
-                          <label className='projectsRegistration_non-operating-expenses'>{translate('nonOperatingExpenses', language)}</label>
+                        <div className='projectsRegistration_sales_revenue-div'>
+                          <label className='projectsRegistration_operating_income'>{translate('employeeExpense', language)}</label>
                           <input
                             type='number'
-                            name='non_operating_expense'
-                            value={form.non_operating_expense}
+                            name='employee_expense'
+                            value={form.employee_expense}
+                            onChange={(e) => handleChange(index, e)}
+                          />
+                        </div>
+                        <div className='projectsRegistration_sales_revenue-div'>
+                          <label className='projectsRegistration_operating_income'>{translate('operatingProfit', language)}</label>
+                          <input
+                            type='number'
+                            name='operating_profit'
+                            value={form.operating_profit}
+                            onChange={(e) => handleChange(index, e)}
+                          />
+                        </div>
+                        <div className='projectsRegistration_sales_revenue-div'>
+                          <label className='projectsRegistration_operating_income'>{translate('ordinaryProfit', language)}</label>
+                          <input
+                            type='number'
+                            name='ordinary_profit'
+                            value={form.ordinary_profit}
+                            onChange={(e) => handleChange(index, e)}
+                          />
+                        </div>
+                        <div className='projectsRegistration_sales_revenue-div'>
+                          <label className='projectsRegistration_operating_income'>{translate('ordinaryProfitMargin', language)}</label>
+                          <input
+                            type='number'
+                            name='ordinary_profit_margin'
+                            value={form.ordinary_profit_margin}
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
                       </div>
+
                       <div className='projectsRegistration_middle-form-div projectsRegistration_calc'>
-                        <div className='projectsRegistration_project_name-div'>
-                          <label className='projectsRegistration_project_name'>{translate('projectName', language)}</label>
-                          <input
-                            type='text'
-                            name='project_name'
-                            value={form.project_name}
-                            onChange={(e) => handleChange(index, e)}
-                          />
-                        </div>
                         <div className='projectsRegistration_month-div'>
-                          <label className='projectsRegistration_month'>{translate('month', language)}</label>
+                          <label className='projectsRegistration_project_name'>{translate('month', language)}</label>
                           <select
                             className='projectsRegistration_select-option'
                             name='month'
@@ -297,28 +411,116 @@ const ProjectsRegistration = () => {
                             <option value=''></option>
                             {months.map((month, idx) => (
                               <option key={idx} value={month}>
-                               {language === "en" ? monthNames[month].en : monthNames[month].jp}
+                                {language === 'en' ? monthNames[month].en : monthNames[month].jp}
                               </option>
                             ))}
                           </select>
                         </div>
-                      </div>
-                      <div className='projectsRegistration_right-form-div projectsRegistration_calc'>
-                        <div className='projectsRegistration_business_division_name-div'>
-                          <label className='projectsRegistration_business_division_name'>{translate('businessDivision', language)}</label>
+                        <div className='projectsRegistration_month-div'>
+                          <label className='projectsRegistration_project_name'>{translate('client', language)}</label>
+                          <select
+                            className='projectsRegistration_select-option'
+                            name='client'
+                            value={form.client}
+                            onChange={(e) => handleChange(index, e)}
+                          >
+                            <option value=''></option>
+                            {clients.map((client) => (
+                              <option key={client.client_id} value={client.client_id}>
+                                {client.client_name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className='projectsRegistration_project_name-div'>
+                          <label className='projectsRegistration_project_name'>{translate('costOfSale', language)}</label>
                           <input
-                            type='text'
-                            name='project_type'
-                            value={form.project_type}
+                            type='number'
+                            name='cost_of_sale'
+                            value={form.cost_of_sale}
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='projectsRegistration_operating-income-div'>
-                          <label className='projectsRegistration_operating_income'>{translate('nonOperatingIncome', language)}</label>
+                        <div className='projectsRegistration_project_name-div'>
+                          <label className='projectsRegistration_project_name'>{translate('indirectEmployeeExpense', language)}</label>
                           <input
                             type='number'
-                            name='non_operating_income'
-                            value={form.non_operating_income}
+                            name='indirect_employee_expense'
+                            value={form.indirect_employee_expense}
+                            onChange={(e) => handleChange(index, e)}
+                          />
+                        </div>
+                        <div className='projectsRegistration_project_name-div'>
+                          <label className='projectsRegistration_project_name'>{translate('nonOperatingProfit', language)}</label>
+                          <input
+                            type='number'
+                            name='non_operating_profit'
+                            value={form.non_operating_profit}
+                            onChange={(e) => handleChange(index, e)}
+                          />
+                        </div>
+                      </div>
+
+                      <div className='projectsRegistration_right-form-div projectsRegistration_calc'>
+                        <div className='projectsRegistration_operating-income-div'>
+                          <label className='projectsRegistration_operating_income'>
+                            {translate('projectName', language)}
+                          </label>
+                          <input
+                            type='text'
+                            name='project_name'
+                            value={form.project_name}
+                            onChange={(e) => handleChange(index, e)}
+                          />
+                        </div>
+
+                        <div className='projectsRegistration_right-form-div'>
+                          <div className='projectsRegistration_business_division_name-div'>
+                            <label className='projectsRegistration_business_division_name'>
+                              {translate('businessDivision', language)}
+                            </label>
+                            <select
+                              className='projectsRegistration_select-option'
+                              name='business_division'
+                              value={form.business_division}
+                              onChange={(e) => handleChange(index, e)}
+                            >
+                              <option value=''></option>
+                              {businessSelection.map((division) => (
+                                <option key={division.business_division_id} value={division.business_division_id}>
+                                  {division.business_division_name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className='projectsRegistration_operating-income-div'>
+                          <label className='projectsRegistration_operating_income'>{translate('dispatchLaborExpense', language)}</label>
+                          <input
+                            type='number'
+                            name='dispatch_labor_expense'
+                            value={form.dispatch_labor_expense}
+                            onChange={(e) => handleChange(index, e)}
+                          />
+                        </div>
+
+                        <div className='projectsRegistration_operating-income-div'>
+                          <label className='projectsRegistration_operating_income'>{translate('expenses', language)}</label>
+                          <input
+                            type='number'
+                            name='expense'
+                            value={form.expense}
+                            onChange={(e) => handleChange(index, e)}
+                          />
+                        </div>
+
+                        <div className='projectsRegistration_operating-income-div'>
+                          <label className='projectsRegistration_operating_income'>{translate('nonOperatingExpense', language)}</label>
+                          <input
+                            type='number'
+                            name='non_operating_expense'
+                            value={form.non_operating_expense}
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
@@ -356,3 +558,4 @@ const ProjectsRegistration = () => {
 }
 
 export default ProjectsRegistration
+

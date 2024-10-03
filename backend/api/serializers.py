@@ -140,7 +140,6 @@ class CreateProjectsSerializers(serializers.ModelSerializer):
         model = Projects
         fields = '__all__'
 
-
 class ClientMasterPlanningProjectDataSerializer(serializers.ModelSerializer):
     # other_planning_data = CreateOtherPlanningSerializers(many=True, read_only=True, source='other_planning')
     class Meta:

@@ -7,6 +7,12 @@ import { useLanguage } from "../../contexts/LanguageContext";
 import { translate } from "../../utils/translationUtil";
 import ListButtons from "../../components/ListButtons/ListButtons";
 import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
+import { useDispatch } from 'react-redux'
+import { UnknownAction } from 'redux'
+import { fetchBusinessDivisions } from "../../reducers/businessDivisions/businessDivisionsSlice";
+import { fetchMasterClient } from "../../reducers/client/clientSlice";
+import { RiDeleteBin6Fill } from "react-icons/ri";
+import AlertModal from "../../components/AlertModal/AlertModal";
 
 
 const ProjectsListAndEdit: React.FC = () => {
@@ -21,13 +27,23 @@ const ProjectsListAndEdit: React.FC = () => {
     const { language, setLanguage } = useLanguage()
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
     const [isEditing, setIsEditing] = useState(false)
-    const [changes, setChanges] = useState({})
     const [projects, setProjects] = useState([])
+    const [originalProjectsList, setOriginalProjectsList] = useState(projects)
     const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
+    const years = []
     const [initialLanguage, setInitialLanguage] = useState(language);
-
+    const dispatch = useDispatch()
+    const [clients, setClients] = useState<any>([])
+    const [businessSelection, setBusinessSelection] = useState<any>([])
     const totalPages = Math.ceil(100 / 10);
-
+    const [modalIsOpen, setModalIsOpen] = useState(false)
+    const [selectedProject, setSelectedProject] = useState<any>(null)
+    const [deleteProjectsId, setDeleteProjectsId] = useState([])
+    const [clientMap, setClientMap] = useState({})
+    const [businessMap, setBusinessMap] = useState({})
+    for (let year = 2020; year <= new Date().getFullYear(); year++) {
+      years.push(year)
+    }
     const handleTabClick = (tab) => {
         setActiveTab(tab)
         navigate(tab)
@@ -76,27 +92,43 @@ const ProjectsListAndEdit: React.FC = () => {
 
     const handleChange = (index, event) => {
       const { name, value } = event.target
-      const updatedProjects = [...projects]
-      if (name.includes('client.client_name')) {
-        updatedProjects[index].client.client_name = value
-      } else {
-        updatedProjects[index][name] = value
-      }
-      setProjects(updatedProjects)
-      const projectId = updatedProjects[index].planning_project_id
-      setChanges((prevChanges) => ({
-        ...prevChanges,
-        [projectId]: {
-          ...prevChanges[projectId],
+      setProjects((prevState) => {
+        const updatedProjectsData = [...prevState]
+        updatedProjectsData[index] = {
+          ...updatedProjectsData[index],
           [name]: value,
-        },
-      }))
+        }
+        return updatedProjectsData
+      })
     }
 
     const handleSubmit = async (e) => {
       event.preventDefault()
-      console.log('Changed Data:', changes)
 
+      const getModifiedFields = (original, updated) => {
+        const modifiedFields = []
+
+        updated.forEach((updatedProjects) => {
+          const originalProjects = original.find((pr) => pr.project_id === updatedProjects.project_id)
+
+          if (originalProjects) {
+            const changes = { project_id: updatedProjects.project_id }
+
+            for (const key in updatedProjects) {
+              if (updatedProjects[key] !== originalProjects[key]) {
+                changes[key] = updatedProjects[key]
+              }
+            }
+
+            if (Object.keys(changes).length > 1) {
+              modifiedFields.push(changes)
+            }
+          }
+        })
+
+        return modifiedFields
+      }
+      const modifiedFields = getModifiedFields(originalProjectsList, projects)
       const token = localStorage.getItem('accessToken')
       if (!token) {
         window.location.href = '/login'
@@ -104,14 +136,17 @@ const ProjectsListAndEdit: React.FC = () => {
       }
 
       try {
-        // const response = await axios.put('http://127.0.0.1:8000/api/projectdatalist/update/', changes, {
-        const response = await axios.put('http://54.178.202.58:8000/api/projectdatalist/update/',  changes ,{
+        const response = await axios.put('http://127.0.0.1:8000/api/projects/update/', modifiedFields, {
+          // const response = await axios.put('http://54.178.202.58:8000/api/projects/update/',  modifiedFields ,{
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
         alert('Sucessfully updated')
       } catch (error) {
+        if (error && error.response.status === 400) {
+          alert(translate('projectNameExist', language))
+        }
         if (error.response && error.response.status === 401) {
           window.location.href = '/login'
         } else {
@@ -120,6 +155,25 @@ const ProjectsListAndEdit: React.FC = () => {
       }
 
     }
+
+    const fetchClient = async () => {
+      try {
+        const resMasterClients = await dispatch(fetchMasterClient() as unknown as UnknownAction)
+        setClients(resMasterClients.payload)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+
+    const fetchDivision = async () => {
+      try {
+        const resBusinessDivisions = await dispatch(fetchBusinessDivisions() as unknown as UnknownAction)
+        setBusinessSelection(resBusinessDivisions.payload)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+
 
     useEffect(() => {
       const fetchProjects = async () => {
@@ -130,13 +184,14 @@ const ProjectsListAndEdit: React.FC = () => {
         }
 
         try {
-          // const response = await axios.get('http://127.0.0.1:8000/api/planningprojects/', {
-          const response = await axios.get('http://54.178.202.58:8000/api/planningprojects/', {
+          const response = await axios.get('http://127.0.0.1:8000/api/projects/', {
+            // const response = await axios.get('http://54.178.202.58:8000/api/projects/', {
             headers: {
               Authorization: `Bearer ${token}`, // Add token to request headers
             },
           })
           setProjects(response.data)
+          setOriginalProjectsList(response.data)
         } catch (error) {
           if (error.response && error.response.status === 401) {
             window.location.href = '/login' // Redirect to login if unauthorized
@@ -145,7 +200,8 @@ const ProjectsListAndEdit: React.FC = () => {
           }
         }
       }
-
+      fetchDivision()
+      fetchClient()
       fetchProjects()
     }, [])
 
@@ -177,16 +233,51 @@ const ProjectsListAndEdit: React.FC = () => {
         navigate('/projects-registration');
       };
 
+      const openModal = (projects, id) => {
+        setSelectedProject(projects)
+        setModalIsOpen(true)
+        setDeleteProjectsId(id)
+      }
+
+      const closeModal = () => {
+        setSelectedProject(null)
+        setModalIsOpen(false)
+      }
+
+      const handleConfirm = async () => {
+        const token = localStorage.getItem('accessToken')
+        if (!token) {
+          window.location.href = '/login' 
+          return
+        }
+        try {
+          const response = await axios.delete(`http://127.0.0.1:8000/api/projects/${deleteProjectsId}/delete/`, {
+            // const response = await axios.get(`http://54.178.202.58:8000/api/projects/${deleteProjectsId}/delete/`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          setProjects((prevList) => prevList.filter((pr) => pr.project_id !== deleteProjectsId))
+        } catch (error) {
+          if (error.response && error.response.status === 401) {
+            window.location.href = '/login'
+          } else {
+            console.error('Error deleting projects', error)
+          }
+        }
+        closeModal()
+      }
+
   return (
     <div className='projectsList_wrapper'>
-        <HeaderButtons 
-            activeTab={activeTab}
-            handleTabClick={handleTabClick}
-            isTranslateSwitchActive={isTranslateSwitchActive}
-            handleTranslationSwitchToggle={handleTranslationSwitchToggle}
-        />
+      <HeaderButtons
+        activeTab={activeTab}
+        handleTabClick={handleTabClick}
+        isTranslateSwitchActive={isTranslateSwitchActive}
+        handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+      />
       <div className='projectsList_cont_wrapper'>
-          <Sidebar />
+        <Sidebar />
         <div className='projectsList_wrapper'>
           <div className='projectsList_top_content'>
             <div className='projectsList_top_body_cont'>
@@ -198,17 +289,17 @@ const ProjectsListAndEdit: React.FC = () => {
             </div>
             <div className='projectsList_mid_body_cont'>
               <ListButtons
-                  activeTabOther={activeTabOther}
-                  message={translate('projectsList', language)}
-                  handleTabsClick={handleTabsClick}
-                  handleNewRegistrationClick={handleNewRegistrationClick}
-                  buttonConfig={[
-                    { labelKey: 'project', tabKey: 'project' },
-                    { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
-                    { labelKey: 'expenses', tabKey: 'expenses' },
-                    { labelKey: 'costOfSales', tabKey: 'costOfSales' },
-                  ]}
-                />
+                activeTabOther={activeTabOther}
+                message={translate('projectsList', language)}
+                handleTabsClick={handleTabsClick}
+                handleNewRegistrationClick={handleNewRegistrationClick}
+                buttonConfig={[
+                  { labelKey: 'project', tabKey: 'project' },
+                  { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
+                  { labelKey: 'expenses', tabKey: 'expenses' },
+                  { labelKey: 'costOfSales', tabKey: 'costOfSales' },
+                ]}
+              />
               <div className='projectsList_table_wrapper'>
                 <div className='projectsList_table_cont'>
                   <div className='columns is-mobile'>
@@ -219,44 +310,72 @@ const ProjectsListAndEdit: React.FC = () => {
                             <thead>
                               <tr className='projectsList_table_title '>
                                 <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                  {translate('client', language)}
+                                  {translate('year', language)}
                                 </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                  {translate('projectName', language)}
-                                </th>
-                                {/* <th className="projectsList_table_title_content_vertical has-text-centered">受注事業部</th> */}
                                 <th className='projectsList_table_title_content_vertical has-text-centered'>
                                   {translate('month', language)}
                                 </th>
                                 <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                  {translate('salesRevenue', language)}
+                                  {translate('projectName', language)}
                                 </th>
                                 <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                  {translate('nonOperatingIncome', language)}
+                                  {translate('projectType', language)}
                                 </th>
                                 <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                  {translate('nonOperatingExpenses', language)}
+                                  {translate('client', language)}
                                 </th>
+                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  {translate('businessDivision', language)}
+                                </th>
+                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  {translate('saleRevenue', language)}
+                                </th>
+                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  {translate('costOfSale', language)}
+                                </th>
+                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  {translate('dispatchLaborExpense', language)}
+                                </th>
+                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  {translate('employeeExpense', language)}
+                                </th>
+                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  {translate('indirectEmployeeExpense', language)}
+                                </th>
+                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  {translate('expense', language)}
+                                </th>
+                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  {translate('operatingProfit', language)}
+                                </th>
+                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  {translate('nonOperatingProfit', language)}
+                                </th>
+                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  {translate('nonOperatingExpense', language)}
+                                </th>
+                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  {translate('ordinaryProfit', language)}
+                                </th>
+                                <th className='projectsList_table_title_content_vertical has-text-centered'></th>
                               </tr>
                             </thead>
                             <tbody className='projectsList_table_body'>
                               {projects.map((project, index) => (
-                                <tr key={project.planning_project_id} className='projectsList_table_body_content_horizontal'>
+                                <tr key={project.project_id} className='projectsList_table_body_content_horizontal'>
                                   <td className='projectsList_table_body_content_vertical'>
-                                    <input
-                                      type='text'
-                                      name='client.client_name'
-                                      value={project.client.client_name}
+                                    <select
+                                      className='projectsRegistration_select-option'
+                                      name='year'
+                                      value={project.year}
                                       onChange={(e) => handleChange(index, e)}
-                                    />
-                                  </td>
-                                  <td className='projectsList_table_body_content_vertical'>
-                                    <input
-                                      type='text'
-                                      name='planning_project_name'
-                                      value={project.planning_project_name}
-                                      onChange={(e) => handleChange(index, e)}
-                                    />
+                                    >
+                                      {years.map((year, idx) => (
+                                        <option key={idx} value={year} selected={year.year === project.year}>
+                                          {year}
+                                        </option>
+                                      ))}
+                                    </select>
                                   </td>
                                   <td className='projectsList_table_body_content_vertical'>
                                     <select
@@ -267,35 +386,164 @@ const ProjectsListAndEdit: React.FC = () => {
                                     >
                                       <option value=''></option>
                                       {months.map((month, idx) => (
-                                        <option key={idx} value={month}>
+                                        <option key={idx} value={month} selected={month === project.month}>
                                           {month}月
                                         </option>
                                       ))}
                                     </select>
                                     {}
                                   </td>
+
+                                  <td className='projectsList_table_body_content_vertical'>
+                                    <input
+                                      type='text'
+                                      name='project_name'
+                                      style={{ width: '50px' }}
+                                      value={project.project_name}
+                                      onChange={(e) => handleChange(index, e)}
+                                    />
+                                  </td>
+                                  <td className='projectsList_table_body_content_vertical'>
+                                    <input
+                                      type='text'
+                                      name='project_type'
+                                      style={{ width: '50px' }}
+                                      value={project.project_type}
+                                      onChange={(e) => handleChange(index, e)}
+                                    />
+                                  </td>
+                                  <td className='projectsList_table_body_content_vertical'>
+                                    <select
+                                      className='projectsRegistration_select-option'
+                                      name='client'
+                                      value={project.client}
+                                      style={{ width: '100px' }}
+                                      onChange={(e) => handleChange(index, e)}
+                                    >
+                                      {clients.map((client) => (
+                                        <option
+                                          key={client.client_id}
+                                          value={client.client_id}
+                                          selected={client.client_id === project.client_id}
+                                        >
+                                          {client.client_name}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </td>
+                                  <td className='projectsList_table_body_content_vertical'>
+                                    <select
+                                      className='projectsRegistration_select-option'
+                                      name='business_division'
+                                      value={project.business_division}
+                                      style={{ width: '100px' }}
+                                      onChange={(e) => handleChange(index, e)}
+                                    >
+                                      {businessSelection.map((division) => (
+                                        <option
+                                          key={division.business_division_id}
+                                          value={division.business_division_id}
+                                          selected={division.business_division_id === project.business_division_id}
+                                        >
+                                          {division.business_division_name}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </td>
                                   <td className='projectsList_table_body_content_vertical'>
                                     <input
                                       type='number'
                                       name='sales_revenue'
                                       value={project.sales_revenue}
+                                      style={{ width: '50px' }}
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
                                   <td className='projectsList_table_body_content_vertical'>
                                     <input
                                       type='number'
-                                      name='non_operating_income'
-                                      value={project.non_operating_income}
+                                      name='cost_of_sale'
+                                      value={project.cost_of_sale}
+                                      style={{ width: '50px' }}
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
                                   <td className='projectsList_table_body_content_vertical'>
                                     <input
                                       type='number'
-                                      name='non_operating_expenses'
-                                      value={project.non_operating_expenses}
+                                      name='dispatch_labor_expense'
+                                      value={project.dispatch_labor_expense}
+                                      style={{ width: '50px' }}
                                       onChange={(e) => handleChange(index, e)}
+                                    />
+                                  </td>
+                                  <td className='projectsList_table_body_content_vertical'>
+                                    <input
+                                      type='number'
+                                      name='employee_expense'
+                                      value={project.employee_expense}
+                                      style={{ width: '50px' }}
+                                      onChange={(e) => handleChange(index, e)}
+                                    />
+                                  </td>
+                                  <td className='projectsList_table_body_content_vertical'>
+                                    <input
+                                      type='number'
+                                      name='indirect_employee_expense'
+                                      value={project.indirect_employee_expense}
+                                      style={{ width: '50px' }}
+                                      onChange={(e) => handleChange(index, e)}
+                                    />
+                                  </td>
+                                  <td className='projectsList_table_body_content_vertical'>
+                                    <input
+                                      type='number'
+                                      name='expense'
+                                      value={project.expense}
+                                      style={{ width: '50px' }}
+                                      onChange={(e) => handleChange(index, e)}
+                                    />
+                                  </td>
+                                  <td className='projectsList_table_body_content_vertical'>
+                                    <input
+                                      type='number'
+                                      name='operating_profit'
+                                      value={project.operating_profit}
+                                      style={{ width: '50px' }}
+                                      onChange={(e) => handleChange(index, e)}
+                                    />
+                                  </td>
+                                  <td className='projectsList_table_body_content_vertical'>
+                                    <input
+                                      type='number'
+                                      name='non_operating_profit'
+                                      value={project.non_operating_profit}
+                                      style={{ width: '50px' }}
+                                      onChange={(e) => handleChange(index, e)}
+                                    />
+                                  </td>
+                                  <td className='projectsList_table_body_content_vertical'>
+                                    <input
+                                      type='number'
+                                      name='non_operating_expense'
+                                      value={project.non_operating_expense}
+                                      style={{ width: '50px' }}
+                                      onChange={(e) => handleChange(index, e)}
+                                    />
+                                  </td>
+                                  <td className='projectsList_table_body_content_vertical'>
+                                    <input
+                                      type='number'
+                                      name='ordinary_profit'
+                                      value={project.ordinary_profit}
+                                      style={{ width: '50px' }}
+                                      onChange={(e) => handleChange(index, e)}
+                                    />
+                                  </td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                    <RiDeleteBin6Fill
+                                      className='delete-icon'
+                                      onClick={() => openModal('project', project.project_id)}
                                     />
                                   </td>
                                 </tr>
@@ -308,37 +556,96 @@ const ProjectsListAndEdit: React.FC = () => {
                           <thead>
                             <tr className='projectsList_table_title '>
                               <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                {translate('client', language)}
+                                {translate('year', language)}
                               </th>
-                              <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                {translate('projectName', language)}
-                              </th>
-                              {/* <th className="projectsList_table_title_content_vertical has-text-centered">受注事業部</th> */}
                               <th className='projectsList_table_title_content_vertical has-text-centered'>
                                 {translate('month', language)}
                               </th>
                               <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                {translate('salesRevenue', language)}
+                                {translate('projectName', language)}
                               </th>
                               <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                {translate('nonOperatingIncome', language)}
+                                {translate('projectType', language)}
                               </th>
                               <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                {translate('nonOperatingExpenses', language)}
+                                {translate('client', language)}
+                              </th>
+                              <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                {translate('businessDivision', language)}
+                              </th>
+                              <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                {translate('saleRevenue', language)}
+                              </th>
+                              <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                {translate('costOfSale', language)}
+                              </th>
+                              <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                {translate('dispatchLaborExpense', language)}
+                              </th>
+                              <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                {translate('employeeExpense', language)}
+                              </th>
+                              <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                {translate('indirectEmployeeExpense', language)}
+                              </th>
+                              <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                {translate('expense', language)}
+                              </th>
+                              <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                {translate('operatingProfit', language)}
+                              </th>
+                              <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                {translate('nonOperatingProfit', language)}
+                              </th>
+                              <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                {translate('nonOperatingExpense', language)}
+                              </th>
+                              <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                {translate('ordinaryProfit', language)}
                               </th>
                             </tr>
                           </thead>
                           <tbody className='projectsList_table_body'>
                             {projects.map((project) => (
-                              <tr key={project.planning_project_id} className='projectsList_table_body_content_horizontal'>
-                                <td className='projectsList_table_body_content_vertical'>{project.client.client_name}</td>
-                                <td className='projectsList_table_body_content_vertical'>{project.planning_project_name}</td>
+                              <tr key={project.project_id} className='projectsList_table_body_content_horizontal'>
+                                <td className='projectsList_table_body_content_vertical'>{project.year}</td>
+                                <td className='projectsList_table_body_content_vertical'>{project.month}</td>
+                                <td className='projectsList_table_body_content_vertical'>{project.project_name}</td>
+                                <td className='projectsList_table_body_content_vertical'>{project.project_type}</td>
                                 <td className='projectsList_table_body_content_vertical'>
-                                  {project.year}/{project.month}
+                                  {clients.map(
+                                    (client) =>
+                                      client.client_id === project.client && (
+                                        <div key={client.client_id}>{client.client_name}</div>
+                                      ),
+                                  )}
+                                </td>
+                                <td className='projectsList_table_body_content_vertical'>
+                                  {businessSelection.map(
+                                    (business) =>
+                                      business.business_division_id === project.business_division && (
+                                        <div key={business.business_division_id}>{business.business_division_name}</div>
+                                      ),
+                                  )}
                                 </td>
                                 <td className='projectsList_table_body_content_vertical'>{project.sales_revenue}</td>
-                                <td className='projectsList_table_body_content_vertical'>{project.non_operating_income}</td>
-                                <td className='projectsList_table_body_content_vertical'>{project.non_operating_expenses}</td>
+                                <td className='projectsList_table_body_content_vertical'>{project.cost_of_sale}</td>
+                                <td className='projectsList_table_body_content_vertical'>
+                                  {project.dispatch_labor_expense}
+                                </td>
+                                <td className='projectsList_table_body_content_vertical'>{project.employee_expense}</td>
+                                <td className='projectsList_table_body_content_vertical'>
+                                  {project.indirect_employee_expense}
+                                </td>
+                                <td className='projectsList_table_body_content_vertical'>{project.expense}</td>
+                                <td className='projectsList_table_body_content_vertical'>{project.operating_profit}</td>
+                                <td className='projectsList_table_body_content_vertical'>
+                                  {project.non_operating_profit}
+                                </td>
+                                <td className='projectsList_table_body_content_vertical'>
+                                  {project.non_operating_expense}
+                                </td>
+                                <td className='projectsList_table_body_content_vertical'>{project.ordinary_profit}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -353,7 +660,7 @@ const ProjectsListAndEdit: React.FC = () => {
                   {isEditing ? (
                     <div className='projectsList_mode_switch_datalist'>
                       <button className='projectsList_edit_submit_btn' onClick={handleSubmit}>
-                          更新
+                        更新
                       </button>
                     </div>
                   ) : (
@@ -365,6 +672,12 @@ const ProjectsListAndEdit: React.FC = () => {
           </div>
         </div>
       </div>
+      <AlertModal
+        isOpen={modalIsOpen}
+        onConfirm={handleConfirm}
+        onCancel={closeModal}
+        message={translate('deleteEmployeeMessage', language)}
+      />
     </div>
   )
 };

@@ -9,6 +9,8 @@ import personnelSlice from "../reducers/personnel/personnelSlice";
 import businessDivisionsSlice from '../reducers/businessDivisions/businessDivisionsSlice'
 import masterCompanySlice from '../reducers/company/companySlice';
 import personnelPlanningSlice from "../reducers/personnel/personnelPlanningSlice";
+import clientMasterSlice from "../reducers/client/clientSlice";
+
 export const store = configureStore({
   reducer: {
     counter: CounterReducer,
@@ -21,6 +23,7 @@ export const store = configureStore({
     personnelPlanning: personnelPlanningSlice,
     businessDivisionsSlice: businessDivisionsSlice,
     masterCompanySlice: masterCompanySlice,
+    clientMasterSlice: clientMasterSlice,
   },
 })
 
