@@ -299,7 +299,7 @@ class Expenses(models.Model):
     entertainment_expense = models.IntegerField(max_length=12)
     professional_service_fee = models.IntegerField(max_length=12)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
     class Meta :
         db_table = u'expenses'
 

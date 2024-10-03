@@ -139,8 +139,8 @@ const ExpensesRegistration = () => {
         const confirmOverwrite = window.confirm('選択された月は既にデータが登録されています。 \n上書きしますか？')
         if (confirmOverwrite) {
           try {
-            const response = await axios.put('http://127.0.0.1:8000/api/expenses/update', formData, {
-              // const response = await axios.put('http://54.178.202.58:8000/api/expenses/update', formData, {
+            const response = await axios.put('http://127.0.0.1:8000/api/expenses/create', formData, {
+              // const response = await axios.put('http://54.178.202.58:8000/api/expenses/create', formData, {
               headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',

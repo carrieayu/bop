@@ -966,12 +966,13 @@ class ExpensesCreate(generics.CreateAPIView):
         return JsonResponse(responses, safe=False, status=status.HTTP_200_OK)
 
 class ExpensesUpdate(generics.UpdateAPIView):
-    serializer_class = ExpensesSerializer
+    serializer_class = CustomExpensesSerializer
     permission_classes = [IsAuthenticated]
     queryset = Expenses.objects.all()
 
     def update(self, request, *args, **kwargs):
         received_data = request.data  # This is expected to be a list of expense data
+        print(received_data)
 
         for expense_data in received_data:
             expense_id = expense_data.get('expense_id')  # Adjusted to match your model
