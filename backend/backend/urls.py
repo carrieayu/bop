@@ -3,7 +3,7 @@ from django.urls import path, include
 from api.views import CostOfSalesList, CreateMasterCompany, CreateProjectsData, CreateResults, CreateUserView , DeleteMasterCompany, DeleteProjectsData, DeleteResults, DeleteUser, EmployeesCreate, EmployeesDelete, EmployeesUpdate, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany,  UpdateProjectsData, UpdateResults,ForgotPasswordView, UserList, UserUpdate
 from api.views import CostOfSalesCreate, CostOfSalesUpdate, CreateEmployeeExpenses,CreateProjectsData, EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
 from api.views import CostOfSalesList, CreateMasterCompany, CreateResults, CreateUserView , DeleteMasterCompany, DeleteProjectsData, DeleteResults, DeleteUser, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany,  UpdateProjectsData, UpdateResults,ForgotPasswordView, UserList, UserUpdate
-from api.views import CostOfSalesCreate, CostOfSalesUpdate, CreateEmployeeExpenses,  EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
+from api.views import CostOfSalesCreate, CostOfSalesUpdate, CreateEmployeeExpenses,  EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, ExpensesDelete, Planning, PlanningUpdate, ProjectsUpdate
 from api.views import CostOfSalesDelete, CostOfSalesList, CostOfSalesUpdate, CreateMasterCompany, CreateProjectsData, CreateResults, CreateUserView , DeleteMasterCompany, DeleteProjectsData, DeleteResults, DeleteUser, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany,  UpdateProjectsData, UpdateResults,ForgotPasswordView, UserList, UserUpdate
 from api.views import CostOfSalesCreate, CreateEmployeeExpenses,CreateProjectsData, EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
 
@@ -58,12 +58,13 @@ urlpatterns = [
     path('api/planning', Planning.as_view()),
     path('api/planning/update', PlanningUpdate.as_view()),
     #Expenses
-    path('api/expenses', ExpensesList.as_view()),
-    path('api/expenses/create', ExpensesCreate.as_view()),
-    path('api/expenses/update', ExpensesUpdate.as_view()),
+    path('api/expenses', ExpensesList.as_view(), name = 'expenses-list'),
+    path('api/expenses/create', ExpensesCreate.as_view(), name = 'expenses-create'),
+    path('api/expenses/update', ExpensesUpdate.as_view(), name = 'expenses-update'),
+    path('api/expenses/<str:pk>/delete/', ExpensesDelete.as_view(), name='expenses-delete'),
     #COS
     path('api/cost-of-sales', CostOfSalesList.as_view()),
     path('api/cost-of-sales/create', CostOfSalesCreate.as_view()),
     path('api/cost-of-sales/update', CostOfSalesUpdate.as_view()),
-    path('api/cost-of-sales/<str:pk>/delete/', CostOfSalesDelete.as_view(), name='cost_of_sales_delete'),
+    path('api/cost-of-sales/<str:pk>/delete/', CostOfSalesDelete.as_view(), name='cost-of-sales-delete'),
 ]
