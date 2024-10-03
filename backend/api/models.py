@@ -10,7 +10,7 @@ class MasterClient(models.Model):
     client_name = models.CharField(unique=True,max_length=100)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     class Meta :
         db_table = u'mst_clients'
 
@@ -40,7 +40,7 @@ class MasterCompany(models.Model):
     company_name = models.CharField(max_length=100)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     class Meta :
         db_table = u'mst_companies'
 
@@ -66,7 +66,7 @@ class MasterBusinessDivision(models.Model):
     company = models.ForeignKey(MasterCompany, on_delete=models.CASCADE)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     class Meta :
         db_table = u'mst_business_divisions'
 
@@ -98,7 +98,7 @@ class Employees(models.Model):
     )
     auth_user =  models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     class Meta :
         db_table = u'employees'
 
@@ -151,7 +151,7 @@ class Projects(models.Model):
     ordinary_profit = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
     ordinary_profit_margin = models.FloatField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     class Meta :
         db_table = u'projects'
 
@@ -213,7 +213,7 @@ class Results(models.Model):
     ordinary_income = models.IntegerField(max_length=12)
     cumulative_ordinary_income = models.IntegerField(max_length=12)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     class Meta :
         db_table = u'results'
 
@@ -245,7 +245,7 @@ class EmployeeExpenses(models.Model):
     employee = models.ForeignKey(Employees, on_delete=models.CASCADE)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     class Meta :
         db_table = u'employee_expenses'
 
@@ -264,7 +264,7 @@ class CostOfSales(models.Model):
     work_in_progress_expense = models.IntegerField(max_length=12)
     amortization_expense = models.IntegerField(max_length=12)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     class Meta :
         db_table = u'cost_of_sales'
 
