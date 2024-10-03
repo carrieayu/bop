@@ -21,7 +21,6 @@ const ExpensesRegistration = () => {
   const { language, setLanguage } = useLanguage()
   const token = localStorage.getItem('accessToken')
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
-  
   const [formData, setFormData] = useState([
     {
       year: '',
@@ -98,6 +97,39 @@ const ExpensesRegistration = () => {
   }, [location.pathname])
 
   const handleSubmit = async (e) => {
+    const {
+      year,
+      month,
+      consumable_expense,
+      tax_and_public_charge,
+      communication_expense,
+      advertising_expense,
+      depreciation_expense,
+      utilities_expense,
+      entertainment_expense,
+      rent_expense,
+      travel_expense,
+      transaction_fee,
+    } = formData[0]
+    if (
+      !year ||
+      !month ||
+      !consumable_expense ||
+      !tax_and_public_charge ||
+      !communication_expense ||
+      !communication_expense ||
+      !advertising_expense ||
+      !depreciation_expense ||
+      !utilities_expense ||
+      !entertainment_expense ||
+      !rent_expense ||
+      !travel_expense ||
+      !transaction_fee
+      ) {
+       alert(translate('usersValidationText6', language))
+       return
+     }
+    
     e.preventDefault()
     if (!token) {
       window.location.href = '/login'
@@ -285,13 +317,13 @@ const ExpensesRegistration = () => {
                         </div>
                         <div className='expensesRegistration_rent_expenses-div'>
                           <label className='expensesRegistration_rent_expenses'>
-                            {translate('rentExpenses', language)}
+                            {translate('rentExpense', language)}
                           </label>
                           <input type='number' name='rent_expense' value={form.rent_expense} onChange={(e) => handleChange(index, e)} />
                         </div>
                         <div className='expensesRegistration_travel_expenses-div'>
                           <label className='expensesRegistration_travel_expenses'>
-                            {translate('travelExpenses', language)}
+                            {translate('travelExpense', language)}
                           </label>
                           <input
                             type='number'
@@ -302,7 +334,7 @@ const ExpensesRegistration = () => {
                         </div>
                         <div className='expensesRegistration_transaction_fees-div'>
                           <label className='expensesRegistration_transaction_fees'>
-                            {translate('transactionFees', language)}
+                            {translate('transactionFee', language)}
                           </label>
                           <input
                             type='number'
@@ -313,7 +345,7 @@ const ExpensesRegistration = () => {
                         </div>
                         <div className='expensesRegistration_professional_services_fees-div'>
                           <label className='expensesRegistration_professional_services_fees'>
-                            {translate('professionalServicesFees', language)}
+                            {translate('professionalServicesFee', language)}
                           </label>
                           <input
                             type='number'
@@ -343,7 +375,7 @@ const ExpensesRegistration = () => {
                         </div>
                         <div className='expensesRegistration_taxes_and_public_charges-div'>
                           <label className='expensesRegistration_taxes_and_public_charges'>
-                            {translate('taxesAndPublicCharges', language)}
+                            {translate('taxAndPublicCharge', language)}
                           </label>
                           <input
                             type='number'
@@ -354,7 +386,7 @@ const ExpensesRegistration = () => {
                         </div>
                         <div className='expensesRegistration_communication_expenses-div'>
                           <label className='expensesRegistration_communication_expenses'>
-                            {translate('communicationExpenses', language)}
+                            {translate('communicationExpense', language)}
                           </label>
                           <input
                             type='number'
@@ -365,7 +397,7 @@ const ExpensesRegistration = () => {
                         </div>
                         <div className='expensesRegistration_advertising_expenses-div'>
                           <label className='expensesRegistration_advertising_expenses'>
-                            {translate('advertisingExpenses', language)}
+                            {translate('advertisingExpense', language)}
                           </label>
                           <input
                             type='number'
@@ -378,7 +410,7 @@ const ExpensesRegistration = () => {
                       <div className='expensesRegistration_right-form-div expensesRegistration_calc'>
                         <div className='expensesRegistration_consumable_expenses-div'>
                           <label className='expensesRegistration_consumable_expenses'>
-                            {translate('consumableExpenses', language)}
+                            {translate('consumableExpense', language)}
                           </label>
                           <input
                             type='number'
@@ -389,7 +421,7 @@ const ExpensesRegistration = () => {
                         </div>
                         <div className='expensesRegistration_depreciation_expenses-div'>
                           <label className='expensesRegistration_depreciation_expenses'>
-                            {translate('depreciationExpenses', language)}
+                            {translate('depreciationExpense', language)}
                           </label>
                           <input
                             type='number'
@@ -400,7 +432,7 @@ const ExpensesRegistration = () => {
                         </div>
                         <div className='expensesRegistration_utilities_expenses-div'>
                           <label className='expensesRegistration_utilities_expenses'>
-                            {translate('utilitiesExpenses', language)}
+                            {translate('utilitiesExpense', language)}
                           </label>
                           <input
                             type='number'
@@ -411,7 +443,7 @@ const ExpensesRegistration = () => {
                         </div>
                         <div className='expensesRegistration_entertainment_expenses-div'>
                           <label className='expensesRegistration_entertainment_expenses'>
-                            {translate('entertainmentExpenses', language)}
+                            {translate('entertainmentExpense', language)}
                           </label>
                           <input
                             type='number'
