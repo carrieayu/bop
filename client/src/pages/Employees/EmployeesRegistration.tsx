@@ -22,10 +22,9 @@ const EmployeesRegistration = () => {
     const { language, setLanguage } = useLanguage()
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
     const dispatch = useDispatch()
-    const [businessSelection, setBusinessSelection] = useState<any>([])
+    const [businessDivisionSelection, setBusinessDivisionSelection] = useState<any>([])
     const [companySelection, setCompanySelection] = useState<any>([])
     const [selectedCompanyId, setSelectedCompanyId] = useState('');
-
     const [employees, setEmployees] = useState([
       {
         last_name: '',
@@ -41,8 +40,6 @@ const EmployeesRegistration = () => {
 
     const fetchData = async () => {
       try {
-        // const resBusinessDivisions = await dispatch(fetchBusinessDivisions() as unknown as UnknownAction)
-        // setBusinessSelection(resBusinessDivisions.payload)
         const resMasterCompany = await dispatch(fetchMasterCompany() as unknown as UnknownAction)
         setCompanySelection(resMasterCompany.payload)
         
@@ -77,13 +74,13 @@ const EmployeesRegistration = () => {
       const fetchBusinessDivisionsForCompany = async () => {
         if (selectedCompanyId) {
           try {
-            const response = await axios.get(`http://127.0.0.1:8000/api/business-divisions?company_id=${selectedCompanyId}`);
-            setBusinessSelection(response.data); // Update business divisions based on selected company
+            const response = await axios.get(`http://127.0.0.1:8000/api/business-division?company_id=${selectedCompanyId}`);
+            setBusinessDivisionSelection(response.data); // Update business divisions based on selected company
           } catch (error) {
             console.error('Error fetching business divisions:', error);
           }
         } else {
-          setBusinessSelection([]); // Clear if no company is selected
+          setBusinessDivisionSelection([]); // Clear if no company is selected
         }
       };
     
@@ -97,13 +94,13 @@ const EmployeesRegistration = () => {
     
       try {
         // Fetch business divisions based on the selected company ID
-        const response = await axios.get(`http://127.0.0.1:8000/api/business-divisions/?company_id=${companyId}`);
+        const response = await axios.get(`http://127.0.0.1:8000/api/business-division/?company_id=${companyId}`);
         const divisions = response.data; // Assuming your API returns an array of divisions
     
         console.log(`Selected Company ID: ${companyId}`);
         console.log('Fetched Business Divisions:', divisions);
     
-        setBusinessSelection(divisions); // Update businessSelection with fetched divisions
+        setBusinessDivisionSelection(divisions); // Update businessDivisionSelection with fetched divisions
       } catch (error) {
         console.error('Error fetching business divisions:', error);
       }
@@ -340,7 +337,7 @@ const EmployeesRegistration = () => {
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
                             >
                               <option value=''></option>
-                              {businessSelection.map((division) => (
+                              {businessDivisionSelection.map((division) => (
                                 <option key={division.business_division_id} value={division.business_division_id}>
                                   {division.business_division_name}
                                 </option>
