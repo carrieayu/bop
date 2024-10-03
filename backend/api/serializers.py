@@ -254,22 +254,27 @@ class ExpensesSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CustomExpensesSerializer(serializers.ModelSerializer):
+
+    expense_id = serializers.CharField(required=False)
     class Meta:
         model = Expenses
         fields = [
+            'expense_id',
             'year',
             'month',
-            'taxes_and_public_charges',
-            'communication_expenses',
-            'advertising_expenses',
-            'consumables_expenses',
-            'depreciation_expenses',
-            'utilities_expenses',
-            'entertainment_expenses',
-            'rent',
-            'travel_expenses',
-            'payment_fees',
-            'remuneration',
+            'tax_and_public_charge',
+            'communication_expense',
+            'advertising_expense',
+            'consumable_expense',
+            'depreciation_expense',
+            'utilities_expense',
+            'entertainment_expense',
+            'rent_expense',
+            'travel_expense',
+            'transaction_fee',
+            'professional_service_fee',
+            # 'created_at',
+            'updated_at',
         ]
 
 class AllPlanningSerializer(serializers.Serializer):

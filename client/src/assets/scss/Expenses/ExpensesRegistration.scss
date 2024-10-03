@@ -70,11 +70,11 @@
                             width: calc(100%/3);
                         }
                         .expensesRegistration_left-form-div{
-                            .expensesRegistration_month-div{
+                            .expensesRegistration_year-div{
                                 display: flex;
                                 flex-direction: column;
                                 margin-bottom: 10px;
-                                .expensesRegistration_month{
+                                .expensesRegistration_year{
                                     margin-bottom: 5px;
                                 }       
                                 .expensesRegistration_select-option{
@@ -87,108 +87,6 @@
                                     }
                                 }
                             }
-                            .expensesRegistration_taxes_and_public_charges-div{
-                                display: flex;
-                                flex-direction: column;
-                                margin-bottom: 10px;
-                                .expensesRegistration_taxes_and_public_charges{
-                                    margin-bottom: 5px;
-                                }
-                                input{
-                                    width: 80%;
-                                    height: 40px;
-                                    border: 1px solid #000;
-                                    border-radius: 10px;
-                                }
-                            }
-                            .expensesRegistration_communication_expenses-div{
-                                display: flex;
-                                flex-direction: column;
-                                margin-bottom: 10px;
-                                .expensesRegistration_communication_expenses{
-                                    margin-bottom: 5px;
-                                }
-                                input{
-                                    width: 80%;
-                                    height: 40px;
-                                    border: 1px solid #000;
-                                    border-radius: 10px;
-                                }
-                            }
-                            .expensesRegistration_advertising_expenses-div{
-                                display: flex;
-                                flex-direction: column;
-                                margin-bottom: 10px;
-                                .expensesRegistration_advertising_expenses{
-                                    margin-bottom: 5px;
-                                }
-                                input{
-                                    width: 80%;
-                                    height: 40px;
-                                    border: 1px solid #000;
-                                    border-radius: 10px;
-                                }
-                            }
-                        }
-                        .expensesRegistration_middle-form-div{
-                            .expensesRegistration_consumables_expenses-div{
-                                display: flex;
-                                flex-direction: column;
-                                margin-bottom: 10px;
-                                .expensesRegistration_consumables_expenses{
-                                    margin-bottom: 5px;
-                                }
-                                input{
-                                    width: 80%;
-                                    height: 40px;
-                                    border: 1px solid #000;
-                                    border-radius: 10px;
-                                }
-                            }
-                            .expensesRegistration_depreciation_expenses-div{
-                                display: flex;
-                                flex-direction: column;
-                                margin-bottom: 10px;
-                                .expensesRegistration_depreciation_expenses{
-                                    margin-bottom: 5px;
-                                }
-                                input{
-                                    width: 80%;
-                                    height: 40px;
-                                    border: 1px solid #000;
-                                    border-radius: 10px;
-                                }
-                            }
-                            .expensesRegistration_utilities_expenses-div{
-                                display: flex;
-                                flex-direction: column;
-                                margin-bottom: 10px;
-                                .expensesRegistration_utilities_expenses{
-                                    margin-bottom: 5px;
-                                }
-                                input{
-                                    width: 80%;
-                                    height: 40px;
-                                    border: 1px solid #000;
-                                    border-radius: 10px;
-                                }
-                            }
-                            .expensesRegistration_entertainment_expenses-div{
-                                display: flex;
-                                flex-direction: column;
-                                margin-bottom: 10px;
-                                .expensesRegistration_entertainment_expenses{
-                                    margin-bottom: 5px;
-                                }
-                                input{
-                                    width: 80%;
-                                    height: 40px;
-                                    border: 1px solid #000;
-                                    border-radius: 10px;
-                                }
-                            }
-                        }
-                        .expensesRegistration_right-form-div{
                             .expensesRegistration_rent_expenses-div{
                                 display: flex;
                                 flex-direction: column;
@@ -236,6 +134,125 @@
                                 flex-direction: column;
                                 margin-bottom: 10px;
                                 .expensesRegistration_professional_services_fees{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                            }
+                        }
+                        .expensesRegistration_middle-form-div{
+                            .expensesRegistration_month-div{
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .expensesRegistration_month{
+                                    margin-bottom: 5px;
+                                }       
+                                .expensesRegistration_select-option{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                    option{
+                                        text-align: left;
+                                    }
+                                }
+                            }
+                              .expensesRegistration_taxes_and_public_charges-div{
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .expensesRegistration_taxes_and_public_charges{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                            }
+                            .expensesRegistration_communication_expenses-div{
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .expensesRegistration_communication_expenses{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                            }
+                            .expensesRegistration_advertising_expenses-div{
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .expensesRegistration_advertising_expenses{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                            }
+                        }
+                        .expensesRegistration_right-form-div{
+                            .expensesRegistration_consumable_expenses-div{
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .expensesRegistration_consumable_expenses{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                            }
+                            .expensesRegistration_depreciation_expenses-div{
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .expensesRegistration_depreciation_expenses{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                            }
+                            .expensesRegistration_utilities_expenses-div{
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .expensesRegistration_utilities_expenses{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                            }
+                            .expensesRegistration_entertainment_expenses-div{
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .expensesRegistration_entertainment_expenses{
                                     margin-bottom: 5px;
                                 }
                                 input{

@@ -299,20 +299,21 @@ class Expenses(models.Model):
     entertainment_expense = models.IntegerField(max_length=12)
     professional_service_fee = models.IntegerField(max_length=12)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     class Meta :
         db_table = u'expenses'
 
     def save(self, *args, **kwargs):
-        if not self.id:
-            max_id = Expenses.objects.aggregate(max_id=Max("id"))["max_id"]
-            if max_id:
-                numeric_part = int(max_id[1:]) + 1
+        if not self.expense_id:
+            # Get the maximum existing ID and increment it
+            max_expense_id = Expenses.objects.aggregate(max_expense_id=Max("expense_id"))["max_expense_id"]
+            if max_expense_id:
+                numeric_part = int(max_expense_id[1:]) + 1  # Extract numeric part after 'B'
             else:
-                numeric_part = 1
-            self.id = f'B{numeric_part:09d}'
+                numeric_part = 1  # Start with 1 if no records exist
+            self.expense_id = f'B{numeric_part:09d}'  # Format as 'B000000001'
         
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.id
+        return self.expense_id
