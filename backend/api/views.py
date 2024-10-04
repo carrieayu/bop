@@ -204,6 +204,20 @@ class MasterBusinessDivisionList(generics.ListAPIView):
     serializer_class = MasterBusinessDivisionSerializer
     permission_classes = [AllowAny]
     
+class CompaniesWithBusinessDivisions(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        company_id = request.query_params.get('company_id')
+        if company_id:
+            # Filter business divisions by the selected company ID
+            divisions = MasterBusinessDivision.objects.filter(company_id=company_id).values('business_division_id', 'business_division_name')
+            return JsonResponse(list(divisions), safe=False)
+        
+        # If no company_id is passed, return an empty list
+        return JsonResponse([], safe=False)
+    
+    
 class BusinessDivisionMasterCreate(generics.CreateAPIView):
     serializer_class = MasterBusinessDivisionSerializer
     permission_classes = [IsAuthenticated]
