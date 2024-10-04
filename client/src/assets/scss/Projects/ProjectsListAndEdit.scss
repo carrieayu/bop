@@ -73,6 +73,9 @@
                                     }
                                     scrollbar-width: none; 
                                 }
+                                .projectsList_table_cont.editScrollable {
+                                    overflow-x: auto;
+                                }
                                 .projectsList_table_cont{
                                     padding: 0px 0px 0px 70px;
                                     .table{
@@ -101,6 +104,10 @@
                                                 .projectsList_table_body_content_vertical{
                                                     border: none;
                                                     text-align: center;
+                                                }
+                                                .delete-icon{
+                                                    color: red;
+                                                    cursor: pointer;
                                                 }
                                             }
                                         }

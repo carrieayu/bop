@@ -491,21 +491,24 @@ class ProjectsCreate(generics.CreateAPIView):
         responses = []
         for item in data:
             try:
-                year = item.get('year')
+                clientName = item.get('client')
+                projectName = item.get('project_name')
                 month = item.get('month')
+                year = item.get('year')
+                businessDivision = item.get('business_division')
 
-                existing_entry = Projects.objects.filter(year=year, month=month).first()
+                existing_entry = Projects.objects.filter(year=year, month=month, client=clientName, project_name = projectName, business_division=businessDivision).first()
 
                 if existing_entry:
                     return JsonResponse(
-                        {"detail": "選択された月は既にデータが登録されています。 \n 上書きしますか？"},
+                        {"detail": "duplicate amaw"},
                         status=status.HTTP_409_CONFLICT
                     )
 
                 serializer = CreateProjectsSerializers(data=item)
                 if serializer.is_valid():
                     serializer.save()
-                    responses.append({"message": f"Created successfully for month {month}, year {year}."})
+                    responses.append({"message": f"Created successfully."})
                 else:
                     return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -522,17 +525,15 @@ class ProjectsCreate(generics.CreateAPIView):
         responses = []
         for item in data:
             try:
-                year = item.get('year')
+                clientName = item.get('client')
+                projectName = item.get('project_name')
                 month = item.get('month')
-                project_name = item.get('project_name')
+                year = item.get('year')
+                businessDivision = item.get('business_division')
 
-                existing_entry = Projects.objects.filter(year=year, month=month).first()
-                projectName = Projects.objects.filter(project_name = project_name ).first()
-
-                if projectName: 
-                    return JsonResponse("Project name already exist", safe=False, status=status.HTTP_400_BAD_REQUEST)
+                existing_entry = Projects.objects.filter(year=year, month=month, client=clientName, project_name = projectName, business_division=businessDivision).first()
                 
-                elif existing_entry:
+                if existing_entry:
                     serializer = CreateProjectsSerializers(existing_entry, data=item, partial=True)
                     if serializer.is_valid():
                         serializer.save()

@@ -233,8 +233,9 @@ const ProjectsRegistration = () => {
       })
       alert('Sucessfully Saved')
     } catch (error) {
+      console.log(error)
       if (error.response && error.response.status === 409) {
-        const confirmOverwrite = window.confirm('選択された月は既にデータが登録されています。 \n上書きしますか？')
+        const confirmOverwrite = window.confirm('データはすでに登録されています。上書きしますか？')
         if (confirmOverwrite) {
           try {
             const overwriteResponse = await axios.put('http://127.0.0.1:8000/api/projects/create/', projectsData, {
@@ -327,8 +328,8 @@ const ProjectsRegistration = () => {
                     ></div>
                     <div className='projectsRegistration_form-content-div'>
                       <div className='projectsRegistration_left-form-div projectsRegistration_calc'>
-                        <div className='projectsRegistration_client-div'>
-                          <label className='projectsRegistration_month'>{translate('year', language)}</label>
+                        <div className='projectsRegistration_year-div'>
+                          <label className='projectsRegistration_year'>{translate('year', language)}</label>
                           <select
                             className='projectsRegistration_select-option'
                             name='year'
@@ -343,8 +344,10 @@ const ProjectsRegistration = () => {
                             ))}
                           </select>
                         </div>
-                        <div className='projectsRegistration_sales_revenue-div'>
-                          <label className='projectsRegistration_client'>{translate('projectName', language)}</label>
+                        <div className='projectsRegistration_project-type-div'>
+                          <label className='projectsRegistration_project-type'>
+                            {translate('projectType', language)}
+                          </label>
                           <input
                             type='text'
                             name='project_type'
@@ -353,7 +356,9 @@ const ProjectsRegistration = () => {
                           />
                         </div>
                         <div className='projectsRegistration_sales_revenue-div'>
-                          <label className='projectsRegistration_operating_income'>{translate('saleRevenue', language)}</label>
+                          <label className='projectsRegistration_operating_income'>
+                            {translate('saleRevenue', language)}
+                          </label>
                           <input
                             type='number'
                             name='sales_revenue'
@@ -361,8 +366,10 @@ const ProjectsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='projectsRegistration_sales_revenue-div'>
-                          <label className='projectsRegistration_operating_income'>{translate('employeeExpense', language)}</label>
+                        <div className='projectsRegistration_employee-expenses-div'>
+                          <label className='projectsRegistration_employee-expenses'>
+                            {translate('employeeExpense', language)}
+                          </label>
                           <input
                             type='number'
                             name='employee_expense'
@@ -370,8 +377,10 @@ const ProjectsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='projectsRegistration_sales_revenue-div'>
-                          <label className='projectsRegistration_operating_income'>{translate('operatingProfit', language)}</label>
+                        <div className='projectsRegistration_operating-profit-div'>
+                          <label className='projectsRegistration_operating-profit'>
+                            {translate('operatingProfit', language)}
+                          </label>
                           <input
                             type='number'
                             name='operating_profit'
@@ -379,8 +388,10 @@ const ProjectsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='projectsRegistration_sales_revenue-div'>
-                          <label className='projectsRegistration_operating_income'>{translate('ordinaryProfit', language)}</label>
+                        <div className='projectsRegistration_ordinary-profit-div'>
+                          <label className='projectsRegistration_ordinary-profit'>
+                            {translate('ordinaryProfit', language)}
+                          </label>
                           <input
                             type='number'
                             name='ordinary_profit'
@@ -388,8 +399,10 @@ const ProjectsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='projectsRegistration_sales_revenue-div'>
-                          <label className='projectsRegistration_operating_income'>{translate('ordinaryProfitMargin', language)}</label>
+                        <div className='projectsRegistration_ordinary-profit-margin-div'>
+                          <label className='projectsRegistration_ordinary-profit-margin'>
+                            {translate('ordinaryProfitMargin', language)}
+                          </label>
                           <input
                             type='number'
                             name='ordinary_profit_margin'
@@ -401,7 +414,7 @@ const ProjectsRegistration = () => {
 
                       <div className='projectsRegistration_middle-form-div projectsRegistration_calc'>
                         <div className='projectsRegistration_month-div'>
-                          <label className='projectsRegistration_project_name'>{translate('month', language)}</label>
+                          <label className='projectsRegistration_month'>{translate('month', language)}</label>
                           <select
                             className='projectsRegistration_select-option'
                             name='month'
@@ -416,8 +429,8 @@ const ProjectsRegistration = () => {
                             ))}
                           </select>
                         </div>
-                        <div className='projectsRegistration_month-div'>
-                          <label className='projectsRegistration_project_name'>{translate('client', language)}</label>
+                        <div className='projectsRegistration_client-div'>
+                          <label className='projectsRegistration_client'>{translate('client', language)}</label>
                           <select
                             className='projectsRegistration_select-option'
                             name='client'
@@ -432,8 +445,10 @@ const ProjectsRegistration = () => {
                             ))}
                           </select>
                         </div>
-                        <div className='projectsRegistration_project_name-div'>
-                          <label className='projectsRegistration_project_name'>{translate('costOfSale', language)}</label>
+                        <div className='projectsRegistration_cost-of-sale-div'>
+                          <label className='projectsRegistration_cost-of-sale'>
+                            {translate('costOfSale', language)}
+                          </label>
                           <input
                             type='number'
                             name='cost_of_sale'
@@ -441,8 +456,10 @@ const ProjectsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='projectsRegistration_project_name-div'>
-                          <label className='projectsRegistration_project_name'>{translate('indirectEmployeeExpense', language)}</label>
+                        <div className='projectsRegistration_indirect-employee-expense-div'>
+                          <label className='projectsRegistration_indirect-employee-expense'>
+                            {translate('indirectEmployeeExpense', language)}
+                          </label>
                           <input
                             type='number'
                             name='indirect_employee_expense'
@@ -450,8 +467,10 @@ const ProjectsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='projectsRegistration_project_name-div'>
-                          <label className='projectsRegistration_project_name'>{translate('nonOperatingProfit', language)}</label>
+                        <div className='projectsRegistration_non-operating-profit-div'>
+                          <label className='projectsRegistration_non-operating-profit'>
+                            {translate('nonOperatingProfit', language)}
+                          </label>
                           <input
                             type='number'
                             name='non_operating_profit'
@@ -462,8 +481,8 @@ const ProjectsRegistration = () => {
                       </div>
 
                       <div className='projectsRegistration_right-form-div projectsRegistration_calc'>
-                        <div className='projectsRegistration_operating-income-div'>
-                          <label className='projectsRegistration_operating_income'>
+                        <div className='projectsRegistration_project-name-div'>
+                          <label className='projectsRegistration_project_name'>
                             {translate('projectName', language)}
                           </label>
                           <input
@@ -495,8 +514,10 @@ const ProjectsRegistration = () => {
                           </div>
                         </div>
 
-                        <div className='projectsRegistration_operating-income-div'>
-                          <label className='projectsRegistration_operating_income'>{translate('dispatchLaborExpense', language)}</label>
+                        <div className='projectsRegistration_dispatch-labor-expense-div'>
+                          <label className='projectsRegistration_dispatch-labor-expense'>
+                            {translate('dispatchLaborExpense', language)}
+                          </label>
                           <input
                             type='number'
                             name='dispatch_labor_expense'
@@ -505,8 +526,8 @@ const ProjectsRegistration = () => {
                           />
                         </div>
 
-                        <div className='projectsRegistration_operating-income-div'>
-                          <label className='projectsRegistration_operating_income'>{translate('expenses', language)}</label>
+                        <div className='projectsRegistration_expense-div'>
+                          <label className='projectsRegistration_expense'>{translate('expenses', language)}</label>
                           <input
                             type='number'
                             name='expense'
@@ -515,8 +536,10 @@ const ProjectsRegistration = () => {
                           />
                         </div>
 
-                        <div className='projectsRegistration_operating-income-div'>
-                          <label className='projectsRegistration_operating_income'>{translate('nonOperatingExpense', language)}</label>
+                        <div className='projectsRegistration_non-operating-expense-div'>
+                          <label className='projectsRegistration_non-operating-expense'>
+                            {translate('nonOperatingExpense', language)}
+                          </label>
                           <input
                             type='number'
                             name='non_operating_expense'

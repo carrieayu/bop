@@ -301,11 +301,11 @@ const ProjectsListAndEdit: React.FC = () => {
                 ]}
               />
               <div className='projectsList_table_wrapper'>
-                <div className='projectsList_table_cont'>
+                <div className={`projectsList_table_cont ${isEditing ? 'editScrollable' : ''}`}>
                   <div className='columns is-mobile'>
                     <div className='column'>
                       {isEditing ? (
-                        <div>
+                        <div className='editScroll'>
                           <table className='table is-bordered is-hoverable'>
                             <thead>
                               <tr className='projectsList_table_title '>
@@ -398,7 +398,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                     <input
                                       type='text'
                                       name='project_name'
-                                      style={{ width: '50px' }}
                                       value={project.project_name}
                                       onChange={(e) => handleChange(index, e)}
                                     />
@@ -407,7 +406,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                     <input
                                       type='text'
                                       name='project_type'
-                                      style={{ width: '50px' }}
                                       value={project.project_type}
                                       onChange={(e) => handleChange(index, e)}
                                     />
@@ -417,7 +415,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                       className='projectsRegistration_select-option'
                                       name='client'
                                       value={project.client}
-                                      style={{ width: '100px' }}
                                       onChange={(e) => handleChange(index, e)}
                                     >
                                       {clients.map((client) => (
@@ -436,7 +433,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                       className='projectsRegistration_select-option'
                                       name='business_division'
                                       value={project.business_division}
-                                      style={{ width: '100px' }}
                                       onChange={(e) => handleChange(index, e)}
                                     >
                                       {businessSelection.map((division) => (
@@ -455,7 +451,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                       type='number'
                                       name='sales_revenue'
                                       value={project.sales_revenue}
-                                      style={{ width: '50px' }}
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
@@ -464,7 +459,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                       type='number'
                                       name='cost_of_sale'
                                       value={project.cost_of_sale}
-                                      style={{ width: '50px' }}
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
@@ -473,7 +467,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                       type='number'
                                       name='dispatch_labor_expense'
                                       value={project.dispatch_labor_expense}
-                                      style={{ width: '50px' }}
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
@@ -482,7 +475,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                       type='number'
                                       name='employee_expense'
                                       value={project.employee_expense}
-                                      style={{ width: '50px' }}
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
@@ -491,7 +483,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                       type='number'
                                       name='indirect_employee_expense'
                                       value={project.indirect_employee_expense}
-                                      style={{ width: '50px' }}
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
@@ -500,7 +491,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                       type='number'
                                       name='expense'
                                       value={project.expense}
-                                      style={{ width: '50px' }}
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
@@ -509,7 +499,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                       type='number'
                                       name='operating_profit'
                                       value={project.operating_profit}
-                                      style={{ width: '50px' }}
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
@@ -518,7 +507,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                       type='number'
                                       name='non_operating_profit'
                                       value={project.non_operating_profit}
-                                      style={{ width: '50px' }}
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
@@ -527,7 +515,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                       type='number'
                                       name='non_operating_expense'
                                       value={project.non_operating_expense}
-                                      style={{ width: '50px' }}
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
@@ -536,7 +523,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                       type='number'
                                       name='ordinary_profit'
                                       value={project.ordinary_profit}
-                                      style={{ width: '50px' }}
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
@@ -676,7 +662,7 @@ const ProjectsListAndEdit: React.FC = () => {
         isOpen={modalIsOpen}
         onConfirm={handleConfirm}
         onCancel={closeModal}
-        message={translate('deleteEmployeeMessage', language)}
+        message={translate('deleteProjectMessage', language)}
       />
     </div>
   )
