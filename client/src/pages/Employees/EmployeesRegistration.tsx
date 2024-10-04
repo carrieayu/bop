@@ -74,7 +74,7 @@ const EmployeesRegistration = () => {
       const fetchBusinessDivisionsForCompany = async () => {
         if (selectedCompanyId) {
           try {
-            const response = await axios.get(`http://127.0.0.1:8000/api/business-division?company_id=${selectedCompanyId}`);
+            const response = await axios.get(`http://127.0.0.1:8000/api/business-divisions?company_id=${selectedCompanyId}`);
             setBusinessDivisionSelection(response.data); // Update business divisions based on selected company
           } catch (error) {
             console.error('Error fetching business divisions:', error);
@@ -94,7 +94,7 @@ const EmployeesRegistration = () => {
     
       try {
         // Fetch business divisions based on the selected company ID
-        const response = await axios.get(`http://127.0.0.1:8000/api/business-division/?company_id=${companyId}`);
+        const response = await axios.get(`http://127.0.0.1:8000/api/business-divisions/?company_id=${companyId}`);
         const divisions = response.data; // Assuming your API returns an array of divisions
     
         console.log(`Selected Company ID: ${companyId}`);
