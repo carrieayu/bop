@@ -98,41 +98,52 @@ const BusinessDivisionsRegistration = () => {
 
     
       const handleSubmit = async (e) => {
-        e.preventDefault();
+        e.preventDefault()
         console.log(formData)
-  
+
         const postData = formData.map((business) => ({
           business_division_name: business.business_division_name,
           company_id: business.company_id,
-          auth_user_id: business.auth_user_id
-        }));
-  
-        if(!token){
+          auth_user_id: business.auth_user_id,
+        }))
+
+        // Extract business division names from postData
+        const businessDivisionNames = postData.map((bd) => bd.business_division_name)
+        const companyIds = postData.map((company) => company.company_id)
+
+        // Check for duplicates in the [inputs] submitted business division names
+        const hasDuplicates = businessDivisionNames.some((name, index) => businessDivisionNames.indexOf(name) !== index) &&
+        (companyIds.some((id,index)=> companyIds.indexOf(id) !== index))
+
+        if (hasDuplicates ) {
+          alert(translate('duplicateBusinessDivisionNameInputValidationMessage', language))
+          return
+        }
+
+        if (!token) {
           window.location.href = '/login'
           return
         }
-  
+
         try {
           const response = await axios.post('http://127.0.0.1:8000/api/master-business-division/create', postData, {
-          // const response = await axios.post('http://54.178.202.58:8000/api/master-business-division/create', postData, {
+            // const response = await axios.post('http://54.178.202.58:8000/api/master-business-division/create', postData, {
             headers: {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
           })
           alert('Sucessfully Saved')
           setFormData([
             {
-             business_division_name: '',
-             company_id: '',
-             auth_user_id: authUserID
+              business_division_name: '',
+              company_id: '',
+              auth_user_id: authUserID,
             },
           ])
-        }
-        catch (error)
-        {
+        } catch (error) {
           if (error.response && error.response.status === 401) {
-            console.error('Validation error:', error.response.data);
+            console.error('Validation error:', error.response.data)
             window.location.href = '/login'
           } else {
             console.error('There was an error creating the project planning data!', error)

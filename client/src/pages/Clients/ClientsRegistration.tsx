@@ -78,12 +78,21 @@ const ClientsRegistration = () => {
           auth_user: storedUserID,
           created_at: Date.now(),
         }))
-        
+        // Extract client names from clientData
+        const clientNames = clientData.map((cl) => cl.client_name)
+        // Check for duplicates in the [inputs] submitted client names
+        const hasDuplicates = clientNames.some((name, index) => clientNames.indexOf(name) !== index)
+
+        if (hasDuplicates) {
+          alert(translate('duplicateClientNameInputValidationMessage', language))
+          return
+        }
+
         if (!validateClient(clientData)) {
           alert(translate('usersValidationText6', language))
-          return 
+          return
         }
-        
+
         const token = localStorage.getItem('accessToken')
         try {
           const response = await axios.post('http://127.0.0.1:8000/api/master-client/create/', client, {
@@ -96,15 +105,9 @@ const ClientsRegistration = () => {
           alert('Saved')
           window.location.reload()
         } catch (error) {
-          console.log()
-        if (error.response.data[0].client_name[0] && error.response.status === 400) {
-          alert(translate('clientExistMessage', language))
-        } else {
-          console.error('Error:', error.response)
+          console.error('Error:', error)
+          //Lets add modal here with genral error message - Ed
         }
-            
-        }
-        
       }
 
       const handleAddContainer = () => {

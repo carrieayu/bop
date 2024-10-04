@@ -104,11 +104,28 @@ const CostOfSalesRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      window.location.href = '/login';
-      return;
+
+    const costOfSales = formData.map((costOfSale) => ({
+      year: costOfSale.year,
+      month: costOfSale.month,
+      //combines them so duplicate inputs can be checked
+      yearMonth: `${costOfSale.year}-${costOfSale.month}`
+    }))
+    console.log(costOfSales)
+      
+    // Check for duplicates in the [inputs] submitted cost of sales (year and month combination)
+    const hasDuplicates = costOfSales.some((entry, index) => costOfSales.findIndex( e => e.yearMonth === entry.yearMonth ) !== index)
+    console.log(hasDuplicates)
+    if (hasDuplicates) {
+      alert(translate('duplicateYearAndMonthInputValidationMessage', language))
+      return
     }
+
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        window.location.href = '/login';
+        return;
+      }
   
     try {
       // Attempt to create a new entry

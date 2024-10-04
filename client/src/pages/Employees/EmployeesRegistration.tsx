@@ -170,7 +170,16 @@ const EmployeesRegistration = () => {
           auth_user: localStorage.getItem('userID'),
           created_at: Date.now(),
         }))
-        
+
+
+        const emails = employeeData.map((employee)=> employee.email)
+        const hasDuplicates = emails.some((email, index) => emails.indexOf(email) !== index)
+
+         if (hasDuplicates) {
+           alert(translate('duplicateEmployeeInputValidationMessage', language))
+           return // Stop the submission
+         }
+      
         if (!validateEmployees(employees)) {
           alert(translate('usersValidationText6', language))
           return // Stop the submission

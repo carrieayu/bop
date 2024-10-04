@@ -131,6 +131,25 @@ const ExpensesRegistration = () => {
      }
     
     e.preventDefault()
+
+    const expenses = formData.map((expense) => ({
+      year: expense.year,
+      month: expense.month,
+      //combines them so duplicate inputs can be checked
+      yearMonth: `${expense.year}-${expense.month}`,
+    }))
+    console.log(expenses)
+
+    // Check for duplicates in the [inputs] submitted expense (year and month combination)
+    const hasDuplicates = expenses.some(
+      (entry, index) => expenses.findIndex((e) => e.yearMonth === entry.yearMonth) !== index,
+    )
+    console.log(hasDuplicates)
+    if (hasDuplicates) {
+      alert(translate('duplicateYearAndMonthInputValidationMessage', language))
+      return
+    }
+
     if (!token) {
       window.location.href = '/login'
       return

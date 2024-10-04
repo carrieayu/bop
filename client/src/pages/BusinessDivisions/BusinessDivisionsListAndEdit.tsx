@@ -104,7 +104,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
       });
     
       if (isDuplicate) {
-        alert('Cannot Update Data: Duplicate business division name found for the same company!');
+        alert(translate('businessDivisionNameAndClientExistValidationMessage', language))
         return;
       }
     
@@ -282,14 +282,14 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
 
   return (
     <div className='BusinessDivisionsListAndEdit_wrapper'>
-        <HeaderButtons 
-            activeTab={activeTab}
-            handleTabClick={handleTabClick}
-            isTranslateSwitchActive={isTranslateSwitchActive}
-            handleTranslationSwitchToggle={handleTranslationSwitchToggle}
-        />
+      <HeaderButtons
+        activeTab={activeTab}
+        handleTabClick={handleTabClick}
+        isTranslateSwitchActive={isTranslateSwitchActive}
+        handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+      />
       <div className='BusinessDivisionsListAndEdit_cont_wrapper'>
-          <Sidebar />
+        <Sidebar />
         <div className='BusinessDivisionsListAndEdit_maincontent_wrapper'>
           <div className='BusinessDivisionsListAndEdit_top_content'>
             <div className='BusinessDivisionsListAndEdit_top_body_cont'>
@@ -300,18 +300,18 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
               </div>
             </div>
             <div className='BusinessDivisionsListAndEdit_mid_body_cont'>
-                <ListButtons
-                  activeTabOther={activeTabOther}
-                  message={translate('businessDivisionsList', language)}
-                  handleTabsClick={handleTabsClick}
-                  handleNewRegistrationClick={handleNewRegistrationClick}
-                  buttonConfig={[
-                    { labelKey: 'client', tabKey: 'client' },
-                    { labelKey: 'employee', tabKey: 'employee' },
-                    { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                    { labelKey: 'users', tabKey: 'users' },
-                  ]}
-                />
+              <ListButtons
+                activeTabOther={activeTabOther}
+                message={translate('businessDivisionsList', language)}
+                handleTabsClick={handleTabsClick}
+                handleNewRegistrationClick={handleNewRegistrationClick}
+                buttonConfig={[
+                  { labelKey: 'client', tabKey: 'client' },
+                  { labelKey: 'employee', tabKey: 'employee' },
+                  { labelKey: 'businessDivision', tabKey: 'businessDivision' },
+                  { labelKey: 'users', tabKey: 'users' },
+                ]}
+              />
               <div className='BusinessDivisionsListAndEdit_table_wrapper'>
                 <div className='BusinessDivisionsListAndEdit_table_cont'>
                   <div className='columns is-mobile'>
@@ -322,33 +322,38 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                             <thead>
                               <tr className='BusinessDivisionsListAndEdit_table_title '>
                                 <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-left'>
-                                    ID
+                                  ID
                                 </th>
                                 <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('businessDivision', language)}
+                                  {translate('businessDivision', language)}
                                 </th>
                                 <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('companyName', language)}
+                                  {translate('companyName', language)}
                                 </th>
                                 <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('createdBy', language)}
+                                  {translate('createdBy', language)}
                                 </th>
                                 <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('createdAt', language)}
+                                  {translate('createdAt', language)}
                                 </th>
                                 <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
-                                    {translate('updatedAt', language)}
+                                  {translate('updatedAt', language)}
                                 </th>
                                 <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'></th>
                               </tr>
                             </thead>
                             <tbody className='BusinessDivisionsListAndEdit_table_body'>
-                            {business.map((business_data, index) => (
-                                <tr key={business_data.business_division_id} className='BusinessDivisionsListAndEdit_table_body_content_horizontal'>
-                                  <td className='BusinessDivisionsListAndEdit_table_body_content_vertical has-text-left'>{business_data.business_division_id}</td>
+                              {business.map((business_data, index) => (
+                                <tr
+                                  key={business_data.business_division_id}
+                                  className='BusinessDivisionsListAndEdit_table_body_content_horizontal'
+                                >
+                                  <td className='BusinessDivisionsListAndEdit_table_body_content_vertical has-text-left'>
+                                    {business_data.business_division_id}
+                                  </td>
                                   <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
                                     <input
-                                      className="edit_input"
+                                      className='edit_input'
                                       type='text'
                                       name='business_division_name'
                                       value={business_data.business_division_name || ''}
@@ -356,8 +361,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                                     />
                                   </td>
                                   <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
-                                  <select
-                                      className="edit_select"
+                                    <select
+                                      className='edit_select'
                                       name='company_name'
                                       value={business_data.company || null} // Set value to null if company is undefined
                                       onChange={(e) => handleChange(index, e)}
@@ -370,12 +375,18 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                                       ))}
                                     </select>
                                   </td>
-                                  <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>{userMap[business_data.auth_user_id] || 'Unknown User'}</td>
-                                  <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>{formatDate(business_data.created_at)}</td>
-                                  <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>{formatDate(business_data.updated_at)}</td>
                                   <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
-                                    <RiDeleteBin6Fill 
-                                      className='delete-icon' 
+                                    {userMap[business_data.auth_user_id] || 'Unknown User'}
+                                  </td>
+                                  <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
+                                    {formatDate(business_data.created_at)}
+                                  </td>
+                                  <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
+                                    {formatDate(business_data.updated_at)}
+                                  </td>
+                                  <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
+                                    <RiDeleteBin6Fill
+                                      className='delete-icon'
                                       onClick={() => openModal('business', business_data.business_division_id)}
                                     />
                                   </td>
@@ -389,34 +400,49 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                           <thead>
                             <tr className='BusinessDivisionsListAndEdit_table_title '>
                               <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-left'>
-                                  ID
+                                ID
                               </th>
                               <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('businessDivision', language)}
+                                {translate('businessDivision', language)}
                               </th>
                               <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('companyName', language)}
+                                {translate('companyName', language)}
                               </th>
                               <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('createdBy', language)}
+                                {translate('createdBy', language)}
                               </th>
                               <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('createdAt', language)}
+                                {translate('createdAt', language)}
                               </th>
                               <th className='BusinessDivisionsListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('updatedAt', language)}
+                                {translate('updatedAt', language)}
                               </th>
                             </tr>
                           </thead>
                           <tbody className='BusinessDivisionsListAndEdit_table_body'>
                             {business.map((business_data) => (
-                              <tr key={business_data.business_division_id} className='BusinessDivisionsListAndEdit_table_body_content_horizontal'>
-                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical has-text-left'>{business_data.business_division_id}</td>
-                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>{business_data.business_division_name}</td>
-                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>{companyMap[business_data.company] || 'Unknown Company'}</td>
-                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>{userMap[business_data.auth_user_id] || 'Unknown User'}</td>
-                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>{formatDate(business_data.created_at)}</td>
-                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>{formatDate(business_data.updated_at)}</td>
+                              <tr
+                                key={business_data.business_division_id}
+                                className='BusinessDivisionsListAndEdit_table_body_content_horizontal'
+                              >
+                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical has-text-left'>
+                                  {business_data.business_division_id}
+                                </td>
+                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
+                                  {business_data.business_division_name}
+                                </td>
+                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
+                                  {companyMap[business_data.company] || 'Unknown Company'}
+                                </td>
+                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
+                                  {userMap[business_data.auth_user_id] || 'Unknown User'}
+                                </td>
+                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
+                                  {formatDate(business_data.created_at)}
+                                </td>
+                                <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
+                                  {formatDate(business_data.updated_at)}
+                                </td>
                               </tr>
                             ))}
                           </tbody>
@@ -447,7 +473,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         isOpen={modalIsOpen}
         onConfirm={handleConfirm}
         onCancel={closeModal}
-        message={translate('deleteMessage', language)}
+        message={translate('businessDivisionDeleteMessage', language)}
       />
     </div>
   )

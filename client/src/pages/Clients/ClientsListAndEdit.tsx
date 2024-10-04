@@ -133,7 +133,7 @@ const ClientsListAndEdit: React.FC = () => {
         window.location.reload()
       } catch (error) {
         if (error && error.response.status === 400) {
-          alert(translate('clientExistMessage', language))
+          alert(translate('clientNameExistsValidationMessage', language))
         }
         if (error.response && error.response.status === 401) {
           window.location.href = '/login'
