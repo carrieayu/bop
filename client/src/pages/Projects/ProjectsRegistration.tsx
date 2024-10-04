@@ -355,8 +355,8 @@ const ProjectsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='projectsRegistration_sales_revenue-div'>
-                          <label className='projectsRegistration_operating_income'>
+                        <div className='projectsRegistration_sales-revenue-div'>
+                          <label className='projectsRegistration_sales-revenue'>
                             {translate('saleRevenue', language)}
                           </label>
                           <input
