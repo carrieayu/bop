@@ -232,6 +232,27 @@ const ProjectsRegistration = () => {
         },
       })
       alert('Sucessfully Saved')
+      setProjects([
+        {
+          year: '',
+          month: '',
+          project_name: '',
+          project_type: '',
+          client: '',
+          business_division: '',
+          sales_revenue: '',
+          cost_of_sale: '',
+          dispatch_labor_expense: '',
+          employee_expense: '',
+          indirect_employee_expense: '',
+          expense: '',
+          operating_profit: '',
+          non_operating_profit: '',
+          non_operating_expense: '',
+          ordinary_profit: '',
+          ordinary_profit_margin: '',
+        },
+      ])
     } catch (error) {
       console.log(error)
       if (error.response && error.response.status === 409) {

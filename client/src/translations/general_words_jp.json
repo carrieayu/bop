@@ -54,7 +54,7 @@
     "updatedAt": "更新日",
     "deleteClientMessage": "この顧客を削除してもよろしいですか？",
     "deleteEmployeeMessage": "この従業員を削除してもよろしいですか？",
-    "deleteProjectMessage": "本当にこのプロジェクトを削除しますか？",
+    "deleteProjectMessage": "この案件を削除してもよろしいですか？",
     "delete": "削除",
     "confirm": "確認",
     "firstName": "名",
