@@ -120,10 +120,13 @@ class Projects(models.Model):
     project_id = models.CharField(
         max_length=10, primary_key=True, editable=False
     )
-    project_name = models.CharField(max_length=100)
+    project_name = models.CharField(unique=True,max_length=100)
     project_type = models.CharField(max_length=50, null=True)
     client = models.ForeignKey(
-        "MasterClient", on_delete=models.CASCADE, related_name="planning_project"
+        "MasterClient", on_delete=models.CASCADE, related_name="mst_client"
+    )
+    business_division = models.ForeignKey(
+        "MasterBusinessDivision", on_delete=models.CASCADE, related_name="business_division"
     )
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
@@ -131,7 +134,7 @@ class Projects(models.Model):
     cost_of_sale = models.DecimalField(
         max_digits=12, decimal_places=2, default=0.0
     )
-    disdpatch_labor_expense = models.DecimalField(
+    dispatch_labor_expense = models.DecimalField(
         max_digits=12, decimal_places=2, default=0.0
     )
     employee_expense = models.DecimalField(
@@ -142,7 +145,7 @@ class Projects(models.Model):
     )
     expense = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
     operating_profit = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    non_operating_income = models.DecimalField(
+    non_operating_profit = models.DecimalField(
         max_digits=12, decimal_places=2, default=0.0
     )
     non_operating_expense = models.DecimalField(
@@ -163,7 +166,7 @@ class Projects(models.Model):
             Projects.objects.aggregate(
                 max_project_id=models.Max("project_id")
             )["max_project_id"]
-            or "000000"
+            or "6000000000"
         )
         new_project_id = str(int(max_project_id) + 1).zfill(6)
         return new_project_id

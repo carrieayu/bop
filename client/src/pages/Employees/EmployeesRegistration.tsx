@@ -22,9 +22,8 @@ const EmployeesRegistration = () => {
     const { language, setLanguage } = useLanguage()
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
     const dispatch = useDispatch()
-    const [businessDivisionSelection, setBusinessDivisionSelection] = useState<any>([])
+    const [businessSelection, setBusinessSelection] = useState<any>([])
     const [companySelection, setCompanySelection] = useState<any>([])
-    const [selectedCompanyId, setSelectedCompanyId] = useState('');
     const [employees, setEmployees] = useState([
       {
         last_name: '',
@@ -40,6 +39,8 @@ const EmployeesRegistration = () => {
 
     const fetchData = async () => {
       try {
+        const resBusinessDivisions = await dispatch(fetchBusinessDivisions() as unknown as UnknownAction)
+        setBusinessSelection(resBusinessDivisions.payload)
         const resMasterCompany = await dispatch(fetchMasterCompany() as unknown as UnknownAction)
         setCompanySelection(resMasterCompany.payload)
         
@@ -47,65 +48,6 @@ const EmployeesRegistration = () => {
         console.error(e)
       }
     }
-
-    useEffect(() => {
-      fetchData();
-    }, []);
-
-    const handleInputChange = (containerIndex, projectIndex, event) => {
-      const { name, value } = event.target;
-    
-      if (name === 'company_name') {
-        setSelectedCompanyId(value); // Update selected company ID
-        const newContainers = [...employees];
-        newContainers[containerIndex].business_division_name = ''; // Reset business division when the company changes
-        setEmployees(newContainers);
-      }
-    
-      const newContainers = [...employees];
-      newContainers[containerIndex] = {
-        ...newContainers[containerIndex],
-        [name]: value,
-      };
-      setEmployees(newContainers);
-    };
-
-    useEffect(() => {
-      const fetchBusinessDivisionsForCompany = async () => {
-        if (selectedCompanyId) {
-          try {
-            const response = await axios.get(`http://127.0.0.1:8000/api/business-divisions?company_id=${selectedCompanyId}`);
-            setBusinessDivisionSelection(response.data); // Update business divisions based on selected company
-          } catch (error) {
-            console.error('Error fetching business divisions:', error);
-          }
-        } else {
-          setBusinessDivisionSelection([]); // Clear if no company is selected
-        }
-      };
-    
-      fetchBusinessDivisionsForCompany();
-    }, [selectedCompanyId]);
-
-    const handleCompanyChange = async (containerIndex, companyId) => {
-      const newContainers = [...employees];
-      newContainers[containerIndex].company_name = companyId; // Set the selected company ID
-      setEmployees(newContainers);
-    
-      try {
-        // Fetch business divisions based on the selected company ID
-        const response = await axios.get(`http://127.0.0.1:8000/api/business-divisions/?company_id=${companyId}`);
-        const divisions = response.data; // Assuming your API returns an array of divisions
-    
-        console.log(`Selected Company ID: ${companyId}`);
-        console.log('Fetched Business Divisions:', divisions);
-    
-        setBusinessDivisionSelection(divisions); // Update businessDivisionSelection with fetched divisions
-      } catch (error) {
-        console.error('Error fetching business divisions:', error);
-      }
-    };
-  
 
     const handleTabClick = (tab) => {
         setActiveTab(tab)
@@ -223,7 +165,16 @@ const EmployeesRegistration = () => {
         }
       }
 
-      
+      const handleInputChange = (containerIndex, projectIndex, event) => {
+        const { name, value } = event.target
+        const newContainers = [...employees]
+        newContainers[containerIndex] = {
+          ...newContainers[containerIndex],
+          [name]: value, 
+        }
+        setEmployees(newContainers) 
+      }
+
       useEffect(() => {
         setIsTranslateSwitchActive(language === 'en');
         fetchData()
@@ -294,38 +245,6 @@ const EmployeesRegistration = () => {
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
                             />
                           </div>
-                          {/*  */}
-                          <div className='EmployeesRegistration_company_name-div'>
-                            <label className='EmployeesRegistration_company_name'>
-                              {translate('companyName', language)}
-                            </label>
-                            <select
-                                className='EmployeesRegistration_select-option'
-                                name='company_name'
-                                value={container.company_name}
-                                onChange={(e) => handleCompanyChange(containerIndex, e.target.value)}
-                            >
-                                <option value=''></option>
-                                {companySelection.map((company) => (
-                                    <option key={company.company_id} value={company.company_id}>
-                                        {company.company_name}
-                                    </option>
-                                ))}
-                            </select>
-                          </div>
-                          {/*  */}
-                        </div>
-                        <div className='EmployeesRegistration_right-form-content-div EmployeesRegistration_calc'>
-                          <div className='EmployeesRegistration_email-div'>
-                            <label className='email'>{translate('email', language)}</label>
-                            <input
-                              type='text'
-                              name='email'
-                              value={container.email}
-                              onChange={(e) => handleInputChange(containerIndex, null, e)}
-                            />
-                          </div>
-                          {/*  */}
                           <div className='EmployeesRegistration_business_division_name-div'>
                             <label className='EmployeesRegistration_business_division_name'>
                               {translate('businessDivision', language)}
@@ -337,14 +256,42 @@ const EmployeesRegistration = () => {
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
                             >
                               <option value=''></option>
-                              {businessDivisionSelection.map((division) => (
+                              {businessSelection.map((division) => (
                                 <option key={division.business_division_id} value={division.business_division_id}>
                                   {division.business_division_name}
                                 </option>
                               ))}
                             </select>
                           </div>
-                          {/*  */}
+                        </div>
+                        <div className='EmployeesRegistration_right-form-content-div EmployeesRegistration_calc'>
+                          <div className='EmployeesRegistration_email-div'>
+                            <label className='email'>{translate('email', language)}</label>
+                            <input
+                              type='text'
+                              name='email'
+                              value={container.email}
+                              onChange={(e) => handleInputChange(containerIndex, null, e)}
+                            />
+                          </div>
+                          <div className='EmployeesRegistration_company_name-div'>
+                            <label className='EmployeesRegistration_company_name'>
+                              {translate('companyName', language)}
+                            </label>
+                            <select
+                              className='EmployeesRegistration_select-option'
+                              name='company_name'
+                              value={container.company_name}
+                              onChange={(e) => handleInputChange(containerIndex, null, e)}
+                            >
+                              <option value=''></option>
+                              {companySelection.map((company) => (
+                                <option key={company.company_id} value={company.company_id}>
+                                  {company.company_name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
                         </div>
                       </div>
                    

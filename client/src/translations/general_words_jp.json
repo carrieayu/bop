@@ -54,6 +54,7 @@
     "updatedAt": "更新日",
     "deleteClientMessage": "この顧客を削除してもよろしいですか？",
     "deleteEmployeeMessage": "この従業員を削除してもよろしいですか？",
+    "deleteProjectMessage": "この案件を削除してもよろしいですか？",
     "delete": "削除",
     "confirm": "確認",
     "firstName": "名",
@@ -80,5 +81,18 @@
     "year": "年",
     "cancelMessage": "キャンセルするのはよろしいでしょうか?",
     "reject": "いいえ",
-    "accept": "はい"
+    "accept": "はい",
+    "projectType": "プロジェクト・タイプ",
+    "saleRevenue": "売上高",
+    "costOfSale": "売上原価",
+    "dispatchLaborExpense": "派遣人件費",
+    "employeeExpense": "従業員経費",
+    "indirectEmployeeExpense": "間接人件費",
+    "expense": "経費",
+    "operatingProfit": "営業利益",
+    "nonOperatingProfit": "営業外利益",
+    "nonOperatingExpense": "営業外費用",
+    "ordinaryProfit": "経常利益",
+    "ordinaryProfitMargin": "経常利益率",
+    "projectNameExist": "入力された案件名は既に存在されています。他の名を選択してください。"
 }
