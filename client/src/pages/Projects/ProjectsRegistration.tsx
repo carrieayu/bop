@@ -400,7 +400,7 @@ const ProjectsRegistration = () => {
                         </div>
                         <div className='projectsRegistration_operating-profit-div'>
                           <label className='projectsRegistration_operating-profit'>
-                            {translate('operatingProfit', language)}
+                            {translate('operatingIncome', language)}
                           </label>
                           <input
                             type='number'
@@ -411,7 +411,7 @@ const ProjectsRegistration = () => {
                         </div>
                         <div className='projectsRegistration_ordinary-profit-div'>
                           <label className='projectsRegistration_ordinary-profit'>
-                            {translate('ordinaryProfit', language)}
+                            {translate('ordinaryIncome', language)}
                           </label>
                           <input
                             type='number'
@@ -422,7 +422,7 @@ const ProjectsRegistration = () => {
                         </div>
                         <div className='projectsRegistration_ordinary-profit-margin-div'>
                           <label className='projectsRegistration_ordinary-profit-margin'>
-                            {translate('ordinaryProfitMargin', language)}
+                            {translate('ordinaryIncomeProfitMargin', language)}
                           </label>
                           <input
                             type='number'
@@ -490,7 +490,7 @@ const ProjectsRegistration = () => {
                         </div>
                         <div className='projectsRegistration_non-operating-profit-div'>
                           <label className='projectsRegistration_non-operating-profit'>
-                            {translate('nonOperatingProfit', language)}
+                            {translate('nonOperatingIncome', language)}
                           </label>
                           <input
                             type='number'
