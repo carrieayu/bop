@@ -72,16 +72,24 @@ const ClientsRegistration = () => {
 
       const handleSubmit = async (e) => {
         e.preventDefault()
-
         const client = clientData.map((cl) => ({
           client_name: cl.client_name,
           auth_user: storedUserID,
           created_at: Date.now(),
         }))
-        
+        // Extract client names from clientData
+        const clientNames = clientData.map((cl) => cl.client_name)
+        // Check for duplicates in the [inputs] submitted client names
+        const hasDuplicates = clientNames.some((name, index) => clientNames.indexOf(name) !== index)
+
         if (!validateClient(clientData)) {
-          alert(translate('usersValidationText6', language))
-          return 
+          alert(translate('allFieldsRequiredInputValidationMessage', language))
+          return
+        }
+
+        if (hasDuplicates) {
+          alert(translate('clientDuplicateNameInputValidationMessage', language))
+          return
         }
         
         const token = localStorage.getItem('accessToken')
@@ -89,22 +97,30 @@ const ClientsRegistration = () => {
           const response = await axios.post('http://127.0.0.1:8000/api/master-client/create/', client, {
             // const response = await axios.post('http://54.178.202.58:8000/api/master-client/create/', client, {
             headers: {
+              // 'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
           })
-          console.log(response.data)
           alert('Saved')
           window.location.reload()
         } catch (error) {
-          console.log()
-        if (error.response.data[0].client_name[0] && error.response.status === 400) {
-          alert(translate('clientExistMessage', language))
-        } else {
-          console.error('Error:', error.response)
+          if (error.response) {
+            const { status, data } = error.response
+            switch (status) {
+              case 409:
+                alert(translate('clientNameExistsValidationMessage', language))
+                break
+              case 401:
+                console.error('Validation error:', data)
+                window.location.href = '/login'
+                break
+              default:
+                console.error('There was an error creating the client data!', error)
+                alert(translate('error', language))
+                break
+            }
+          }
         }
-            
-        }
-        
       }
 
       const handleAddContainer = () => {

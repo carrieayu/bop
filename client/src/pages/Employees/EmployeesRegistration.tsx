@@ -114,10 +114,19 @@ const EmployeesRegistration = () => {
         }))
         
         if (!validateEmployees(employees)) {
-          alert(translate('usersValidationText6', language))
+          alert(translate('allFieldsRequiredInputValidationMessage', language))
           return // Stop the submission
         }
+        // Check for duplicates in the email [input] submitted in enmployee
+        const hasDuplicateEntries = (entries, key) => {
+          return entries.some((entry, index) => entries.findIndex((e) => e[key] === entry[key]) !== index)
+        }
 
+        if (hasDuplicateEntries(employees, 'email')) {
+          alert(translate('employeeDuplicateInputValidationMessage', language))
+          return
+        }
+        
         const token = localStorage.getItem('accessToken')
         try {
           const response = await axios.post('http://127.0.0.1:8000/api/employees/create', employeeData, {
@@ -129,16 +138,24 @@ const EmployeesRegistration = () => {
           console.log(response.data)
           alert('Saved')
           window.location.reload()
-          
         } catch (error) {
-          if (error.response.data[0].email[0] && error.response.status === 400) {
-              alert(translate('emailExistsMessage', language))
-          }else{
-            console.error('Error:', error.response.data[0].email[0])
+         if (error.response) {
+            const { status, data } = error.response
+            switch (status) {
+              case 409:
+                alert(translate('emailExistsMessage', language))
+                break
+              case 401:
+                console.error('Validation error:', data)
+                window.location.href = '/login'
+                break
+              default:
+                console.error('There was an error creating the employee data!', error)
+                alert(translate('error', language))
+                break
+            }
           }
-          
         }
-
       }
 
       const handleAddContainer = () => {

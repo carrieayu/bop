@@ -103,13 +103,60 @@ const CostOfSalesRegistration = () => {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      window.location.href = '/login';
-      return;
+    e.preventDefault()
+
+    const costOfSalesData = formData.map((cos) => ({
+      year: cos.year,
+      month: cos.month,
+      purchase: cos.purchase,
+      outsourcing_expense: cos.outsourcing_expense,
+      product_purchase: cos.product_purchase,
+      dispatch_labor_expense: cos.dispatch_labor_expense,
+      communication_expense: cos.communication_expense,
+      work_in_progress_expense: cos.work_in_progress_expense,
+      amortization_expense: cos.amortization_expense,
+    }))
+
+    // Checks if any inputs are empty
+    const areFieldsEmpty = costOfSalesData.some(
+      (entry) =>
+        !entry.year ||
+        !entry.month ||
+        !entry.purchase ||
+        !entry.outsourcing_expense ||
+        !entry.product_purchase ||
+        !entry.dispatch_labor_expense ||
+        !entry.communication_expense ||
+        !entry.work_in_progress_expense ||
+        !entry.amortization_expense,
+    )
+
+    if (areFieldsEmpty) {
+      alert(translate('allFieldsRequiredInputValidationMessage', language))
+      return
     }
-  
+
+    // Combine year and month for easier duplicate checking
+    const costOfSales = costOfSalesData.map((costOfSale) => ({
+      yearMonth: `${costOfSale.year}-${costOfSale.month}`,
+    }))
+
+    // Check for duplicates in the [inputs] submitted cost of sales (year and month combination)
+    const hasDuplicateEntries = (entries, key) => {
+      return entries.some((entry, index) => entries.findIndex((e) => e[key] === entry[key]) !== index)
+    }
+
+    if (hasDuplicateEntries(costOfSales, 'yearMonth')) {
+      alert(translate('duplicateYearAndMonthInputValidationMessage', language))
+      return
+    }
+
+    const token = localStorage.getItem('accessToken')
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
+
     try {
       // Attempt to create a new entry
       const response = await axios.post('http://127.0.0.1:8000/api/cost-of-sales/create', formData, {
@@ -118,26 +165,28 @@ const CostOfSalesRegistration = () => {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-      });
-      console.log('Form Data before submission:', formData);
-  
-      alert('Successfully Saved');
+      })
+      console.log('Form Data before submission:', formData)
+
+      alert('Successfully Saved')
       // Reset form data after successful save
-      setFormData([{
-        year: '', 
-        month: '',
-        purchase: '',
-        outsourcing_expense: '', 
-        product_purchase: '',
-        dispatch_labor_expense: '',
-        communication_expense: '',
-        work_in_progress_expense: '',
-        amortization_expense: '',
-      }]);
+      setFormData([
+        {
+          year: '',
+          month: '',
+          purchase: '',
+          outsourcing_expense: '',
+          product_purchase: '',
+          dispatch_labor_expense: '',
+          communication_expense: '',
+          work_in_progress_expense: '',
+          amortization_expense: '',
+        },
+      ])
     } catch (error) {
       if (error.response && error.response.status === 409) {
         // Conflict: prompt the user to overwrite
-        const confirmOverwrite = window.confirm("選択された月は既にデータが登録されています。 \n上書きしますか？");
+        const confirmOverwrite = window.confirm('選択された月は既にデータが登録されています。 \n上書きしますか？')
         if (confirmOverwrite) {
           try {
             // If user confirms, overwrite the existing data with a PUT request
@@ -147,28 +196,30 @@ const CostOfSalesRegistration = () => {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
               },
-            });
-  
-            alert('Data successfully overwritten.');
+            })
+
+            alert('Data successfully overwritten.')
             // Reset form data after successful overwrite
-            setFormData([{
-              year: '', 
-              month: '',
-              purchase: '',
-              outsourcing_expense: '', 
-              product_purchase: '',
-              dispatch_labor_expense: '',
-              communication_expense: '',
-              work_in_progress_expense: '',
-              amortization_expense: '',
-            }]);
+            setFormData([
+              {
+                year: '',
+                month: '',
+                purchase: '',
+                outsourcing_expense: '',
+                product_purchase: '',
+                dispatch_labor_expense: '',
+                communication_expense: '',
+                work_in_progress_expense: '',
+                amortization_expense: '',
+              },
+            ])
           } catch (overwriteError) {
-            console.error('Error overwriting data:', overwriteError);
+            console.error('Error overwriting data:', overwriteError)
           }
         }
       } else {
         // Handle any other errors
-        console.error('There was an error with expenses registration!', error);
+        console.error('There was an error with expenses registration!', error)
       }
     }
   };

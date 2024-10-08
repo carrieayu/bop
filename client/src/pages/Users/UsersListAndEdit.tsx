@@ -13,90 +13,137 @@ import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
 
 
 const UsersListAndEdit: React.FC = () => {
-    const [activeTab, setActiveTab] = useState('/planning-list')
-    const navigate = useNavigate()
-    const location = useLocation()
-    const [activeTabOther, setActiveTabOther] = useState('users')
-    const [currentPage, setCurrentPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5)
-    const [paginatedData, setPaginatedData] = useState<any[]>([])
-    const select = [5, 10, 100]
-    const { language, setLanguage } = useLanguage()
-    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
-    const [isEditing, setIsEditing] = useState(false)
-    const [userList, setUserList] = useState([])
-    const [initialLanguage, setInitialLanguage] = useState(language);
-    const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [selectedProject, setSelectedProject] = useState<any>(null);
-    const [deleteId, setDeleteUserId] = useState([])
+  const [activeTab, setActiveTab] = useState('/planning-list')
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [activeTabOther, setActiveTabOther] = useState('users')
+  const [currentPage, setCurrentPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5)
+  const [paginatedData, setPaginatedData] = useState<any[]>([])
+  const select = [5, 10, 100]
+  const { language, setLanguage } = useLanguage()
+  const [isUsernameValid, setIsUsernameValid] = useState(true)
+  const [isEmailValid, setIsEmailValid] = useState(true)
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
+  const [isEditing, setIsEditing] = useState(false)
+  const [userList, setUserList] = useState([])
+  const [initialLanguage, setInitialLanguage] = useState(language);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [deleteId, setDeleteUserId] = useState([])
+  const [userData, setUserData] = useState({
+    username: '',
+    first_name: '',
+    last_name: '',
+    password: '',
+    email: '',
+    confirm_password: '',
+    confirm_email: '',
+  })
 
-    const totalPages = Math.ceil(100 / 10);
+  const totalPages = Math.ceil(100 / 10);
 
-    const handleTabClick = (tab) => {
-        setActiveTab(tab)
-        navigate(tab)
-      }
+  const handleTabClick = (tab) => {
+    setActiveTab(tab)
+    navigate(tab)
+  }
       
-      const handleTabsClick = (tab) => {
-        setActiveTabOther(tab)
-        switch (tab) {
-          case 'client':
-            navigate('/clients-list');
-            break;
-          case 'employee':
-            navigate('/employees-list');
-            break;
-          case 'businessDivision':
-            navigate('/business-divisions-list');
-            break;
-          case 'users':
-            navigate('/users-list');
-            break;
-          default:
-            break;
-        }
+  const handleTabsClick = (tab) => {
+    setActiveTabOther(tab)
+    switch (tab) {
+      case 'client':
+        navigate('/clients-list');
+        break;
+      case 'employee':
+        navigate('/employees-list');
+        break;
+      case 'businessDivision':
+        navigate('/business-divisions-list');
+        break;
+      case 'users':
+        navigate('/users-list');
+        break;
+      default:
+        break;
+    }
+  }
+    
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleRowsPerPageChange = (numRows: number) => {
+    setRowsPerPage(numRows)
+    setCurrentPage(0)
+  }
+
+  const handleClick = () => {
+    setIsEditing((prevState) => {
+      const newEditingState = !prevState;
+      if (newEditingState) {
+        setLanguage(initialLanguage);
       }
     
-    const handlePageChange = (page: number) => {
-      setCurrentPage(page);
-    };
+      return newEditingState;
+    });
+  }
 
-    const handleRowsPerPageChange = (numRows: number) => {
-        setRowsPerPage(numRows)
-        setCurrentPage(0) 
-    }
-
-    const handleClick = () => {
-      setIsEditing((prevState) => {
-        const newEditingState = !prevState;
-        if (newEditingState) {
-          setLanguage(initialLanguage);
-        }
-    
-        return newEditingState;
-      });
-    }
-
-
-    // const handleChange = (index, event) => {
-    //   const { name, value } = event.target
-    //   const updatedUsers = [...userList]
-    //   console.log(updatedUsers)
-    // }
-    const handleChange = (index, event) => {
-      const { name, value } = event.target
-      const updatedUserData = [...userList]
-
+  const handleChange = (index, event) => {
+    const { name, value } = event.target
+    setUserList((prevState) => {
+      const updatedUserData = [...prevState]
       updatedUserData[index] = {
         ...updatedUserData[index],
         [name]: value,
       }
-      setUserList(updatedUserData) // Make sure you set the correct state
-    }
+      return updatedUserData
+    })
+  }
+  
+  const validateUser = (users) => {
+    return users.every((user) => {
+      const { username, first_name, last_name, email, date_joined } = user
+      console.log(user.date_joined)
 
-    const handleSubmit = async (e) => {
-      event.preventDefault()
-      console.log('Changed Data:', userList)
+      if (!username || !email || !date_joined) {
+        alert(translate('usersValidationText6', language))
+        return false
+      }
+
+      if (!first_name || !last_name) {
+        alert(translate('usersValidationText2', language))
+        return
+      }
+
+      const usernameRegex = /^[a-zA-Z]+_[a-zA-Z]+$/
+      if (!usernameRegex.test(username)) {
+        setIsUsernameValid(usernameRegex.test(username))
+        alert(translate('usersValidationText1', language))
+        return false
+      } else {
+        setIsUsernameValid(true)
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(email)) {
+        setIsEmailValid(false)
+        alert(translate('usersValidationText4', language))
+        return false
+      } else {
+        setIsEmailValid(true)
+      }
+
+      return true
+      
+    })
+  }
+
+  const handleSubmit = async (e) => {
+      e.preventDefault()
+
+      if (!validateUser(userList)) {
+        return
+      }
 
       const token = localStorage.getItem('accessToken')
       if (!token) {
@@ -115,7 +162,6 @@ const UsersListAndEdit: React.FC = () => {
           console.error('There was an error updating the user data!', error)
         }
       }
-
     }
 
     useEffect(() => {

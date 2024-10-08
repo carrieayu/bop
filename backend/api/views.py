@@ -118,16 +118,32 @@ class EmployeesCreate(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        if isinstance(request.data, list):
-            serializer = self.get_serializer(data=request.data, many=True)
-            serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return super().create(request, *args, **kwargs)
+        data = request.data
+        if not isinstance(data, list):  # Ensure it's a list
+            return Response({"error": "Expected a list of data"}, status=status.HTTP_400_BAD_REQUEST)
 
-    def perform_create(self, serializer):
-        serializer.save()
+        created_employees = []  # To store the successfully created employees
+        error_responses = []  # To store any errors for duplicates
+
+        for employee in data:
+            email = employee.get('email')  # Get the employee email from the current data
+
+            if EmployeesApi.objects.filter(email=email).exists():
+                error_responses.append(f"Employee with email '{email}' already exists.")
+                continue  # Skip this employee and continue with the next
+
+            serializer = self.get_serializer(data=employee)
+            if serializer.is_valid():
+                serializer.save()  # Use the serializer to save the new employee
+                created_employees.append(serializer.data)  # Store the created employee data
+            else:
+                error_responses.append(serializer.errors)  # Capture validation errors
+
+        if error_responses:
+            return Response({"errors": error_responses}, status=status.HTTP_409_CONFLICT)
+
+        return Response({"message": "Employee Created", "data": created_employees},
+                        status=status.HTTP_201_CREATED)
 
 class EmployeesDelete(generics.DestroyAPIView):
         queryset = EmployeesApi.objects.all()
@@ -185,7 +201,7 @@ class EmployeesUpdate(generics.UpdateAPIView):
             return Response({"success": "Employee updated successfully."}, status=status.HTTP_200_OK)
         except IntegrityError as e:
             if 'Duplicate entry' in str(e):
-                return Response({'error': 'Email already exists.'}, status=400)
+                return Response({'error': 'Email already exists.'}, status=409)
             return Response({'error': str(e)}, status=400)
 
 
@@ -224,7 +240,8 @@ class BusinessDivisionMasterCreate(generics.CreateAPIView):
                 if MasterBusinessDivision.objects.filter(business_division_name=business_division['business_division_name'], company=company).exists():
                     return Response(
                     {"error": f"Business division with name '{business_division['business_division_name']}' already exists for this company."},
-                    status=status.HTTP_400_BAD_REQUEST
+                    
+                    status=status.HTTP_409_CONFLICT
                 )
 
                 # Create the business division
@@ -249,13 +266,6 @@ class BusinessDivisionMasterCreate(generics.CreateAPIView):
         return Response({"message": "Business Divisions Created", "data": created_business_divisions},
                         status=status.HTTP_201_CREATED)
         
-    # def perform_create(self, serializer):
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #     else:
-    #         print(serializer.errors)
-
-
 class BusinessDivisionMasterRetrieve(
     generics.RetrieveAPIView
 ):
@@ -272,21 +282,24 @@ class MasterBusinessDivisionUpdate(generics.UpdateAPIView):
     
     def put(self, request, *args, **kwargs):
         data = request.data
-        if not isinstance(data, list):
-            return Response({'error': 'Invalid data format'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            for item in data:
+                try:
+                    business_division = MasterBusinessDivision.objects.get(business_division_id=item['business_division_id'])
+                    serializer = MasterBusinessDivisionSerializer(business_division, data=item, partial=True)
+                    if serializer.is_valid():
+                        serializer.save()
+                    else:
+                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                except MasterBusinessDivision.DoesNotExist:
+                    return Response({'error': 'Business division not found'}, status=status.HTTP_404_NOT_FOUND)
+                
+            return Response({'message': 'Business divisions updated successfully'}, status=status.HTTP_200_OK)
+        except IntegrityError as e:
+            if 'Duplicate entry' in str(e):
+                return Response({'error': 'Business Division already exists.'}, status=409)
+            return Response({'error': str(e)}, status=400)
 
-        for item in data:
-            try:
-                business_division = MasterBusinessDivision.objects.get(business_division_id=item['business_division_id'])
-                serializer = MasterBusinessDivisionSerializer(business_division, data=item, partial=True)
-                if serializer.is_valid():
-                    serializer.save()
-                else:
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            except MasterBusinessDivision.DoesNotExist:
-                return Response({'error': 'Business division not found'}, status=status.HTTP_404_NOT_FOUND)
-
-        return Response({'message': 'Business divisions updated successfully'}, status=status.HTTP_200_OK)
 class MasterBusinessDivisionDestroy(generics.DestroyAPIView):
     queryset = MasterBusinessDivision.objects.all()
     permission_classes = [AllowAny]
@@ -321,16 +334,33 @@ class MasterClientCreate(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        if isinstance(request.data, list):
-            serializer = self.get_serializer(data=request.data, many=True)
-            serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return super().create(request, *args, **kwargs)
+        data = request.data
+        if not isinstance(data, list):  # Ensure it's a list
+            return Response({"error": "Expected a list of data"}, status=status.HTTP_400_BAD_REQUEST)
 
-    def perform_create(self, serializer):
-        serializer.save()
+        created_clients = []  # To store the successfully created clients
+        error_responses = []  # To store any errors for duplicates
+
+        for client in data:
+            client_name = client.get('client_name')  # Get the client name from the current data
+
+            if MasterClient.objects.filter(client_name=client_name).exists():
+                error_responses.append(f"Client with name '{client_name}' already exists.")
+                continue  # Skip this client and continue with the next
+
+            serializer = self.get_serializer(data=client)
+            if serializer.is_valid():
+                serializer.save()  # Use the serializer to save the new client
+                created_clients.append(serializer.data)  # Store the created client data
+            else:
+                error_responses.append(serializer.errors)  # Capture validation errors
+
+        if error_responses:
+            return Response({"errors": error_responses}, status=status.HTTP_409_CONFLICT)
+
+        return Response({"message": "Client Created", "data": created_clients},
+                        status=status.HTTP_201_CREATED)
+
 
 class MasterClientRetrieve(generics.RetrieveAPIView):
     serializer_class = MasterClientSerializer
@@ -365,7 +395,7 @@ class MasterClientUpdate(generics.UpdateAPIView):
             return Response({"success": "Users updated successfully."}, status=status.HTTP_200_OK)
         except IntegrityError as e:
             if 'Duplicate entry' in str(e):
-                return Response({'error': 'Client name already exists.'}, status=400)
+                return Response({'error': 'Client name already exists.'}, status=409)
             return Response({'error': str(e)}, status=400)
     
 class MasterClientDelete(generics.DestroyAPIView):
@@ -501,7 +531,7 @@ class ProjectsCreate(generics.CreateAPIView):
 
                 if existing_entry:
                     return JsonResponse(
-                        {"detail": "duplicate amaw"},
+                        {"detail": "duplicate"},
                         status=status.HTTP_409_CONFLICT
                     )
 
@@ -596,7 +626,7 @@ class ProjectsDataUpdate(generics.UpdateAPIView):
             return Response({"success": "Projects updated successfully."}, status=status.HTTP_200_OK)
         except IntegrityError as e:
             if 'Duplicate entry' in str(e):
-                return Response({'error': 'Project Name already exists.'}, status=400)
+                return Response({'error': 'Project Name already exists.'}, status=409)
             return Response({'error': str(e)}, status=400)
         
 
