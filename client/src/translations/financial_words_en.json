@@ -80,7 +80,9 @@
   "welfareExpense": "Welfare Expense ",
   "workInProgressExpenses": "Work in Progress Expenses",
   "workInProgressExpense": "Work in Progress Expense",
-
   "firstHalfTotal": "First Half Total",
-  "secondHalfTotal": "Second Half Total"
+  "secondHalfTotal": "Second Half Total",
+  "saleRevenue": "Sale Revenue",
+  "employeeExpense": "Employee Expense",
+  "indirectEmployeeExpense": "Indirect Employee Expense"
 }
