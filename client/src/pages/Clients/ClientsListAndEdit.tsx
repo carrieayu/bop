@@ -283,7 +283,7 @@ const ClientsListAndEdit: React.FC = () => {
             <div className='ClientsListAndEdit_mid_body_cont'>
               <ListButtons
                 activeTabOther={activeTabOther}
-                message={translate('clientsList', language)}
+                message={translate(isEditing? 'clientsEdit':'clientsList', language)}
                 handleTabsClick={handleTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[

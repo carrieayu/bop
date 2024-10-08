@@ -41,7 +41,7 @@ const PlanningListAndEdit = Loader(lazy(() => import("../pages/Planning/Planning
 
 //Cost of Sales Pages
 const CostOfSalesRegistration = Loader(lazy(() => import("../pages/CostOfSales/CostOfSalesRegistration")))
-const CostOfSalesList = Loader(lazy(() => import("../pages/CostOfSales/CostOfSalesList")))
+const CostOfSalesListAndEdit = Loader(lazy(() => import("../pages/CostOfSales/CostOfSalesListAndEdit")))
 
 //Expenses Pages
 const ExpensesRegistration = Loader(lazy(() => import("../pages/Expenses/ExpensesRegistration")))
@@ -157,7 +157,7 @@ const routes: RouteObject[] = [
         path: "cost-of-sales-list",
         element: (
           <ProtectedRoutes>
-            <CostOfSalesList />
+            <CostOfSalesListAndEdit />
           </ProtectedRoutes>
         )
       },
