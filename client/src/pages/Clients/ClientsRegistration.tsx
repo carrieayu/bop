@@ -180,8 +180,8 @@ const ClientsRegistration = () => {
                 { labelKey: 'users', tabKey: 'users' },
               ]}
             />
-            <div className='ClientsRegistration_mid_form_cont'>
-              <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
+              <div className='ClientsRegistration_mid_form_cont'>
                 {clientData.map((container, containerIndex) => (
                   <div key={containerIndex} className='ClientsRegistration_ForImplementationOfPlusAndMinus'>
                     <div className='ClientsRegistration_ForImplementationOfHorizontalLineBelow'></div>
@@ -201,6 +201,8 @@ const ClientsRegistration = () => {
                     <input type='hidden' name='registered_user_id' value='' />
                   </div>
                 ))}
+              </div>
+              <div className='ClientsRegistration_lower_form_cont'>
                 <div className='ClientsRegistration_form-content'>
                   <div className='ClientsRegistration_plus-btn'>
                     <button className='ClientsRegistration_inc' type='button' onClick={handleAddContainer}>
@@ -219,8 +221,8 @@ const ClientsRegistration = () => {
                     </button>
                   </div>
                 </div>
-              </form>
-            </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>

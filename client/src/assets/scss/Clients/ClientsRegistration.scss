@@ -81,6 +81,16 @@
                             }
                         }
                     }
+                }
+                .ClientsRegistration_lower_form_cont{
+                    // display: flex;
+                    justify-content: space-between; // Distribute buttons across the width
+                    align-items: center; // Center the content vertically
+                    padding: 20px;
+                    background-color: #fff;
+                    position: fixed;
+                    bottom: 100px;
+                    width: 80vw; // Take up the entire viewport width
                     .ClientsRegistration_form-content{
                         .ClientsRegistration_plus-btn{
                             padding: 20px 10px 20px 10px;
