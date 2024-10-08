@@ -91,41 +91,64 @@ const CostOfSalesList: React.FC = () => {
     };
 
     const handleSubmit = async (e) => {
-      e.preventDefault();
-  
+      e.preventDefault()
+
+      // Checks if any fields are empty for entries that have a cost_of_sale_id
+      const areFieldsEmpty = costOfSales.some((entry) => {
+        // Only check entries that have a valid cost_of_sale_id
+        if (entry.cost_of_sale_id) {
+          return (
+            !entry.purchase ||
+            !entry.outsourcing_expense ||
+            !entry.product_purchase ||
+            !entry.dispatch_labor_expense ||
+            !entry.communication_expense ||
+            !entry.work_in_progress_expense ||
+            !entry.amortization_expense
+          )
+        }
+        return false // Skip entries without a cost_of_sale_id
+      })
+
+      if (areFieldsEmpty) {
+        console.log(costOfSales)
+        alert(translate('allFieldsRequiredInputValidationMessage', language))
+        return
+      }
+
       // Use validData instead of combinedData
-      const token = localStorage.getItem('accessToken');
+      const token = localStorage.getItem('accessToken')
       if (!token) {
-          window.location.href = '/login';
-          return;
+        window.location.href = '/login'
+        return
       }
       try {
-          await axios.put('http://127.0.0.1:8000/api/cost-of-sales/update', validData, {
-            // const response = await axios.put('http://54.178.202.58:8000/api/cost-of-sales/update', validData, {
-              headers: {
-                  'Authorization': `Bearer ${token}`,
-              },
-          });
-          alert('Successfully updated');
+        await axios.put('http://127.0.0.1:8000/api/cost-of-sales/update', validData, {
+          // const response = await axios.put('http://54.178.202.58:8000/api/cost-of-sales/update', validData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        alert('Successfully updated')
 
-          setIsEditing(false);
+        setIsEditing(false)
 
-          const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales');
-          // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales');
-          setCostOfSales(response.data);
+        const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales')
+        // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales');
+        setCostOfSales(response.data)
       } catch (error) {
-          if (error.response) {
-              console.error('Error response:', error.response.data);
-              if (error.response.status === 401) {
-                  window.location.href = '/login';
-              } else {
-                  console.error('There was an error updating the cost of sales data!', error.response.data);
-              }
+        if (error.response) {
+          console.error('Error response:', error.response.data)
+          if (error.response.status === 401) {
+            window.location.href = '/login'
           } else {
-              console.error('Error', error.message);
+            console.error('There was an error updating the cost of sales data!', error.response.data)
           }
+        } else {
+          console.error('Error', error.message)
+        }
       }
-  };
+    };
   
 
 

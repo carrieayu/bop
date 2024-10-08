@@ -88,9 +88,24 @@ const ClientsListAndEdit: React.FC = () => {
         return updatedClientData
       })
     }
+  
+    const validateClient = (client) => {
+      return client.every((cl) => {
+        return cl.client_name.trim() !== ''
+      })
+    }
 
     const handleSubmit = async (e) => {
-      event.preventDefault()
+      e.preventDefault()
+
+      // Extract client names from updatedClients
+      const clientNames = updatedClients.map((cl) => cl.client_name)
+      // Check no inputs are empty on Edit Screen
+      if (!validateClient(updatedClients)) {
+        alert(translate('allFieldsRequiredInputValidationMessage', language))
+        return
+      }
+
       const getModifiedFields = (original, updated) => {
         const modifiedFields = []
 
@@ -132,16 +147,25 @@ const ClientsListAndEdit: React.FC = () => {
         alert('Sucessfully updated')
         window.location.reload()
       } catch (error) {
-        if (error && error.response.status === 400) {
-          alert(translate('clientExistMessage', language))
-        }
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login'
-        } else {
-          console.error('There was an error updating the clients data!', error)
+        if (error.response) {
+          const { status, data } = error.response
+          switch (status) {
+            case 409:
+              alert(translate('clientNameExistsUpdateValidationMessage', language))
+              break
+            case 401:
+              console.error('Validation error:', data)
+              window.location.href = '/login'
+              break
+            default:
+              console.error('There was an error updating the clients data!', error)
+              alert(translate('error', language))
+              break
+          }
         }
       }
     }
+    
 
     useEffect(() => {
       const fetchProjects = async () => {

@@ -41,6 +41,29 @@ const ProjectsListAndEdit: React.FC = () => {
     const [deleteProjectsId, setDeleteProjectsId] = useState([])
     const [clientMap, setClientMap] = useState({})
     const [businessMap, setBusinessMap] = useState({})
+    const [formProjects, setFormProjects] = useState([
+      {
+        year: '',
+        month: '',
+        project_name: '',
+        project_type: '',
+        client: '',
+        business_division: '',
+        sales_revenue: '',
+        cost_of_sale: '',
+        dispatch_labor_expense: '',
+        employee_expense: '',
+        indirect_employee_expense: '',
+        expense: '',
+        operating_profit: '',
+        non_operating_profit: '',
+        non_operating_expense: '',
+        ordinary_profit: '',
+        ordinary_profit_margin: '',
+      },
+    ])
+
+    
     for (let year = 2020; year <= new Date().getFullYear(); year++) {
       years.push(year)
     }
@@ -98,63 +121,112 @@ const ProjectsListAndEdit: React.FC = () => {
           ...updatedProjectsData[index],
           [name]: value,
         }
+        setFormProjects(updatedProjectsData)
+
         return updatedProjectsData
       })
     }
+  
+    const validateProjects = (projectsValidate) => {
+      return projectsValidate.every((prj) => {
+        return (
+          prj.year.trim() !== '' &&
+          prj.month.trim() !== '' &&
+          prj.business_division.trim() !== '' &&
+          prj.client.trim() !== '' &&
+          !isNaN(prj.sales_revenue) &&
+          prj.sales_revenue > 0 &&
+          !isNaN(prj.sales_revenue) &&
+          prj.cost_of_sale > 0 &&
+          !isNaN(prj.cost_of_sale) &&
+          prj.dispatch_labor_expense > 0 &&
+          !isNaN(prj.dispatch_labor_expense) &&
+          prj.employee_expense > 0 &&
+          !isNaN(prj.employee_expense) &&
+          prj.indirect_employee_expense > 0 &&
+          !isNaN(prj.indirect_employee_expense) &&
+          prj.expense > 0 &&
+          !isNaN(prj.expense) &&
+          prj.operating_profit > 0 &&
+          !isNaN(prj.operating_profit) &&
+          prj.non_operating_profit > 0 &&
+          !isNaN(prj.non_operating_profit) &&
+          prj.non_operating_expense > 0 &&
+          !isNaN(prj.non_operating_expense) &&
+          prj.ordinary_profit > 0 &&
+          !isNaN(prj.ordinary_profit) &&
+          prj.ordinary_profit_margin > 0 &&
+          !isNaN(prj.ordinary_profit_margin)
+        )
+      })
+    }
 
-    const handleSubmit = async (e) => {
-      event.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault()
 
-      const getModifiedFields = (original, updated) => {
-        const modifiedFields = []
+    if (!validateProjects(formProjects)) {
+      alert(translate('usersValidationText6', language))
+      return // Stop the submission
+    }
 
-        updated.forEach((updatedProjects) => {
-          const originalProjects = original.find((pr) => pr.project_id === updatedProjects.project_id)
+    const getModifiedFields = (original, updated) => {
+      const modifiedFields = []
 
-          if (originalProjects) {
-            const changes = { project_id: updatedProjects.project_id }
+      updated.forEach((updatedProjects) => {
+        const originalProjects = original.find((pr) => pr.project_id === updatedProjects.project_id)
 
-            for (const key in updatedProjects) {
-              if (updatedProjects[key] !== originalProjects[key]) {
-                changes[key] = updatedProjects[key]
-              }
-            }
+        if (originalProjects) {
+          const changes = { project_id: updatedProjects.project_id }
 
-            if (Object.keys(changes).length > 1) {
-              modifiedFields.push(changes)
+          for (const key in updatedProjects) {
+            if (updatedProjects[key] !== originalProjects[key]) {
+              changes[key] = updatedProjects[key]
             }
           }
-        })
 
-        return modifiedFields
-      }
-      const modifiedFields = getModifiedFields(originalProjectsList, projects)
-      const token = localStorage.getItem('accessToken')
-      if (!token) {
-        window.location.href = '/login'
-        return
-      }
-
-      try {
-        const response = await axios.put('http://127.0.0.1:8000/api/projects/update/', modifiedFields, {
-          // const response = await axios.put('http://54.178.202.58:8000/api/projects/update/',  modifiedFields ,{
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        alert('Sucessfully updated')
-      } catch (error) {
-        if (error && error.response.status === 400) {
-          alert(translate('projectNameExist', language))
+          if (Object.keys(changes).length > 1) {
+            modifiedFields.push(changes)
+          }
         }
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login'
-        } else {
-          console.error('There was an error updating the project planning data!', error)
-        }
-      }
+      })
 
+      return modifiedFields
     }
+    const modifiedFields = getModifiedFields(originalProjectsList, projects)
+    const token = localStorage.getItem('accessToken')
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
+
+    try {
+      const response = await axios.put('http://127.0.0.1:8000/api/projects/update/', modifiedFields, {
+        // const response = await axios.put('http://54.178.202.58:8000/api/projects/update/',  modifiedFields ,{
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      alert('Sucessfully updated')
+    } catch (error) {
+      if (error.response) {
+        const { status, data } = error.response
+
+        switch (status) {
+          case 409:
+            alert(translate('projectNameExist', language))
+            break
+          case 401:
+            console.error('Validation error:', data)
+            window.location.href = '/login'
+            break
+          default:
+            console.error('There was an error creating the project data!', error)
+            alert(translate('error', language))
+            break
+        }
+      }
+    }
+  }  
 
     const fetchClient = async () => {
       try {

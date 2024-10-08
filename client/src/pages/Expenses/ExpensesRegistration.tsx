@@ -98,39 +98,62 @@ const ExpensesRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const {
-      year,
-      month,
-      consumable_expense,
-      tax_and_public_charge,
-      communication_expense,
-      advertising_expense,
-      depreciation_expense,
-      utilities_expense,
-      entertainment_expense,
-      rent_expense,
-      travel_expense,
-      transaction_fee,
-    } = formData[0]
-    if (
-      !year ||
-      !month ||
-      !consumable_expense ||
-      !tax_and_public_charge ||
-      !communication_expense ||
-      !communication_expense ||
-      !advertising_expense ||
-      !depreciation_expense ||
-      !utilities_expense ||
-      !entertainment_expense ||
-      !rent_expense ||
-      !travel_expense ||
-      !transaction_fee
-      ) {
-       alert(translate('usersValidationText6', language))
+
+    const expensesData = formData.map((ex) => ({
+      year: ex.year,
+      month: ex.month,
+      consumable_expense: ex.consumable_expense,
+      tax_and_public_charge: ex.tax_and_public_charge,
+      communication_expense: ex.communication_expense,
+      advertising_expense: ex.advertising_expense,
+      depreciation_expense: ex.depreciation_expense,
+      utilities_expense: ex.utilities_expense,
+      entertainment_expense: ex.entertainment_expense,
+      rent_expense: ex.rent_expense,
+      travel_expense: ex.travel_expense,
+      transaction_fee: ex.transaction_fee,
+    }))
+
+    // Checks if any inputs are empty
+    const areFieldsEmpty = expensesData.some(
+      (entry) =>
+        !entry.year ||
+        !entry.month ||
+        !entry.consumable_expense ||
+        !entry.tax_and_public_charge ||
+        !entry.communication_expense ||
+        !entry.advertising_expense ||
+        !entry.depreciation_expense ||
+        !entry.utilities_expense ||
+        !entry.entertainment_expense ||
+        !entry.rent_expense ||
+        !entry.travel_expense ||
+        !entry.transaction_fee,
+    )
+
+     if (areFieldsEmpty) {
+       alert(translate('allFieldsRequiredInputValidationMessage', language))
+       return
      }
+
+    // Combine year and month for easier duplicate checking
+    const expenses = formData.map((expense) => ({
+      year: expense.year,
+      month: expense.month,
+      //combines them so duplicate inputs can be checked
+      yearMonth: `${expense.year}-${expense.month}`,
+    }))
     
-    e.preventDefault()
+    // Check for duplicates in the [inputs] submitted cost of sales (year and month combination)
+    const hasDuplicateEntries = (entries, key) => {
+      return entries.some((entry, index) => entries.findIndex((e) => e[key] === entry[key]) !== index)
+    }
+
+    if (hasDuplicateEntries(expenses, 'yearMonth')) {
+      alert(translate('duplicateYearAndMonthInputValidationMessage', language))
+      return
+    }
+
     if (!token) {
       window.location.href = '/login'
       return
