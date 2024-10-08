@@ -23,7 +23,7 @@ const ExpensesList: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [deleteExpenseId, setDeleteExpenseId] = useState([])
   const [selectedExpense, setSelectedExpense] = useState<any>(null)
-  const [expenses, setExpensesList] = useState([])
+  const [expensesList, setExpensesList] = useState([])
 
   const [changes, setChanges] = useState({}) //ians code maybe i do not need.
 
@@ -107,6 +107,32 @@ const ExpensesList: React.FC = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
+    // Checks if any fields are empty for entries that have a expense_id
+    const areFieldsEmpty = expensesList.some((entry) => {
+      // Only check entries that have a valid expense_id
+      if (entry.expense_id) {
+        return (
+          !entry.consumable_expense ||
+          !entry.rent_expense ||
+          !entry.tax_and_public_charge ||
+          !entry.depreciation_expense ||
+          !entry.travel_expense ||
+          !entry.communication_expense ||
+          !entry.utilities_expense ||
+          !entry.transaction_fee ||
+          !entry.advertising_expense ||
+          !entry.entertainment_expense ||
+          !entry.professional_service_fee
+        )
+      }
+      return false // Skip entries without an expense_id
+    })
+
+    if (areFieldsEmpty) {
+      alert(translate('allFieldsRequiredInputValidationMessage', language))
+      return
+    }
+
     const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login'
@@ -177,12 +203,12 @@ const ExpensesList: React.FC = () => {
   }, [location.pathname])
 
   // Extract unique years from the expenses data
-  const uniqueYears = Array.from(new Set(expenses.map((item) => item.year))).sort((a, b) => a - b)
+  const uniqueYears = Array.from(new Set(expensesList.map((item) => item.year))).sort((a, b) => a - b)
 
   // Combine static months with dynamic data
   const combinedData = uniqueYears.flatMap((year) => {
     return months.map((month) => {
-      const foundData = expenses.find((item) => parseInt(item.month, 10) === month && item.year === year)
+      const foundData = expensesList.find((item) => parseInt(item.month, 10) === month && item.year === year)
 
       return {
         expense_id: foundData ? foundData.expense_id : null,

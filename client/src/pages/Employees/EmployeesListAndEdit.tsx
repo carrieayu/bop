@@ -105,9 +105,30 @@ const EmployeesListAndEdit: React.FC = () => {
         return updatedEmployeeData
       })
     }
+  
+   const validateEmployees = (employees) => {
+      return employees.every((employee) => {
+        return (
+          employee.last_name.trim() !== '' &&
+          employee.first_name.trim() !== '' &&
+          /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(employee.email) && // Email validation
+          !isNaN(employee.salary) &&
+          employee.salary > 0  // Salary should be a number and greater than 0
+        )
+      })
+    }
 
     const handleSubmit = async (e) => {
-      event.preventDefault()
+      e.preventDefault()
+
+      // Extract employee email from updatedClients
+      const emails = employeesList.map((em) => em.email)
+      // Check no inputs are empty on Edit Screen
+      if (!validateEmployees(employeesList)) {
+        alert(translate('allFieldsRequiredInputValidationMessage', language))
+        return
+      }
+
       const getModifiedFields = (original, updated) => {
         const modifiedFields = []
 
@@ -115,16 +136,16 @@ const EmployeesListAndEdit: React.FC = () => {
           const originalEmployee = original.find((emp) => emp.employee_id === updatedEmployee.employee_id)
 
           if (originalEmployee) {
-            const changes = { employee_id: updatedEmployee.employee_id } 
+            const changes = { employee_id: updatedEmployee.employee_id }
 
             for (const key in updatedEmployee) {
               if (updatedEmployee[key] !== originalEmployee[key]) {
-                changes[key] = updatedEmployee[key] 
+                changes[key] = updatedEmployee[key]
               }
             }
 
             if (Object.keys(changes).length > 1) {
-              modifiedFields.push(changes) 
+              modifiedFields.push(changes)
             }
           }
         })
@@ -148,15 +169,23 @@ const EmployeesListAndEdit: React.FC = () => {
         alert('Sucessfully updated')
         window.location.reload()
       } catch (error) {
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login'
-        }if (error && error.response.status === 400) {
+        if (error.response) {
+          const { status, data } = error.response
+          switch (status) {
+            case 409:
               alert(translate('emailExistsMessage', language))
-        }else {
-          console.error('There was an error updating the employeesg data!', error)
+              break
+            case 401:
+              console.error('Validation error:', data)
+              window.location.href = '/login'
+              break
+            default:
+              console.error('There was an error creating the employee data!', error)
+              alert(translate('error', language))
+              break
+          }
         }
       }
-
     }
 
     useEffect(() => {

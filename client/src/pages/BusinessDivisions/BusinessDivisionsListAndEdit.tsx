@@ -89,8 +89,14 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
       // Update state with the modified array
       setBusiness(updatedBusiness);
     };
+  
+    const validateBusinessDivision = (businessDivision) => {
+      return businessDivision.every((bd) => {
+        console.log(businessDivision)
+        return bd.business_division_name.trim() !== ''
+      })
+    }
     
-
     const handleSubmit = async (e) => {
       e.preventDefault();
     
@@ -102,9 +108,14 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
           currentBusiness.company === otherBusiness.company
         );
       });
+
+      if (!validateBusinessDivision(business)) {
+        alert(translate('allFieldsRequiredInputValidationMessage', language))
+        return
+      }
     
       if (isDuplicate) {
-        alert('Cannot Update Data: Duplicate business division name found for the same company!');
+        alert(translate('businessDivisionUpdateFailed', language))
         return;
       }
     
@@ -125,14 +136,25 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         });
         alert('Successfully updated');
       } catch (error) {
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login';
-        } else {
-          console.error('There was an error updating the data!', error);
-          alert('Cannot Update Data due to an error!');
+         if (error.response) {
+            const { status, data } = error.response
+
+            switch (status) {
+              case 409:
+                alert(translate('businessDivisionNameExistsValidationMessage', language))
+                break
+              case 401:
+                console.error('Validation error:', data)
+                window.location.href = '/login'
+                break
+              default:
+                console.error('There was an error creating the business division data!', error)
+                alert(translate('error', language))
+                break
+            }
+          }
         }
-      }
-    };
+      };
     
 
     useEffect(() => {

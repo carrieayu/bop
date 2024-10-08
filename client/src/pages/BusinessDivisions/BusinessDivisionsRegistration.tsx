@@ -82,6 +82,14 @@ const BusinessDivisionsRegistration = () => {
         console.log("business limits to 10")
       }
     }
+  
+  
+    const validateBusinessDivision = (businessDivision) => {
+      return businessDivision.every((bd) => {
+        console.log(businessDivision)
+        return bd.business_division_name.trim() !== ''
+      })
+    }
 
     const handleMinus = () => {
       if (formData.length > 1) {
@@ -104,10 +112,28 @@ const BusinessDivisionsRegistration = () => {
         const postData = formData.map((business) => ({
           business_division_name: business.business_division_name,
           company_id: business.company_id,
-          auth_user_id: business.auth_user_id
-        }));
-  
-        if(!token){
+          auth_user_id: business.auth_user_id,
+        }))
+
+        // Extract business division names from postData
+        const businessDivisionNames = postData.map((bd) => bd.business_division_name)
+        const companyIds = postData.map((company) => company.company_id)
+
+        // Check for duplicates in the [inputs] submitted business division names
+        const hasDuplicates = businessDivisionNames.some((name, index) => businessDivisionNames.indexOf(name) !== index) &&
+        (companyIds.some((id,index)=> companyIds.indexOf(id) !== index))
+
+        if (!validateBusinessDivision(formData)) {
+          alert(translate('allFieldsRequiredInputValidationMessage', language))
+          return
+        }
+
+        if (hasDuplicates ) {
+          alert(translate('businessDivisionDuplicateNameInputValidationMessage', language))
+          return
+        }
+
+        if (!token) {
           window.location.href = '/login'
           return
         }
@@ -131,16 +157,26 @@ const BusinessDivisionsRegistration = () => {
         }
         catch (error)
         {
-          if (error.response && error.response.status === 401) {
-            console.error('Validation error:', error.response.data);
-            window.location.href = '/login'
-          } else {
-            console.error('There was an error creating the project planning data!', error)
-            alert('Business name already exists')
+          if (error.response) {
+            const { status, data } = error.response
+
+            switch (status) {
+              case 409:
+                alert(translate('businessDivisionNameExistsValidationMessage', language))
+                break
+              case 401:
+                console.error('Validation error:', data)
+                window.location.href = '/login'
+                break
+              default:
+                console.error('There was an error creating the business division data!', error)
+                alert(translate('error', language))
+                break
+            }
           }
         }
       }
-
+  
       useEffect(() => {
         const fetchCompany = async () => {
           try{
