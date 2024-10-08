@@ -418,16 +418,16 @@ const ProjectsListAndEdit: React.FC = () => {
                                   {translate('expense', language)}
                                 </th>
                                 <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                  {translate('operatingProfit', language)}
+                                  {translate('operatingIncome', language)}
                                 </th>
                                 <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                  {translate('nonOperatingProfit', language)}
+                                  {translate('nonOperatingIncome', language)}
                                 </th>
                                 <th className='projectsList_table_title_content_vertical has-text-centered'>
                                   {translate('nonOperatingExpense', language)}
                                 </th>
                                 <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                  {translate('ordinaryProfit', language)}
+                                  {translate('ordinaryIncome', language)}
                                 </th>
                                 <th className='projectsList_table_title_content_vertical has-text-centered'></th>
                               </tr>
@@ -650,16 +650,16 @@ const ProjectsListAndEdit: React.FC = () => {
                                 {translate('expense', language)}
                               </th>
                               <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                {translate('operatingProfit', language)}
+                                {translate('operatingIncome', language)}
                               </th>
                               <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                {translate('nonOperatingProfit', language)}
+                                {translate('nonOperatingIncome', language)}
                               </th>
                               <th className='projectsList_table_title_content_vertical has-text-centered'>
                                 {translate('nonOperatingExpense', language)}
                               </th>
                               <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                {translate('ordinaryProfit', language)}
+                                {translate('ordinaryIncome', language)}
                               </th>
                             </tr>
                           </thead>
