@@ -398,8 +398,8 @@ const ProjectsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='projectsRegistration_operating-profit-div'>
-                          <label className='projectsRegistration_operating-profit'>
+                        <div className='projectsRegistration_operating-income-div'>
+                          <label className='projectsRegistration_operating-income'>
                             {translate('operatingIncome', language)}
                           </label>
                           <input
@@ -409,8 +409,8 @@ const ProjectsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='projectsRegistration_ordinary-profit-div'>
-                          <label className='projectsRegistration_ordinary-profit'>
+                        <div className='projectsRegistration_ordinary-income-div'>
+                          <label className='projectsRegistration_ordinary-income'>
                             {translate('ordinaryIncome', language)}
                           </label>
                           <input
@@ -420,8 +420,8 @@ const ProjectsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='projectsRegistration_ordinary-profit-margin-div'>
-                          <label className='projectsRegistration_ordinary-profit-margin'>
+                        <div className='projectsRegistration_ordinary-income-margin-div'>
+                          <label className='projectsRegistration_ordinary-income-margin'>
                             {translate('ordinaryIncomeProfitMargin', language)}
                           </label>
                           <input
@@ -488,8 +488,8 @@ const ProjectsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='projectsRegistration_non-operating-profit-div'>
-                          <label className='projectsRegistration_non-operating-profit'>
+                        <div className='projectsRegistration_non-operating-income-div'>
+                          <label className='projectsRegistration_non-operating-income'>
                             {translate('nonOperatingIncome', language)}
                           </label>
                           <input
