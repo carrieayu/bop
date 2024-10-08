@@ -1,42 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import Btn from '../../components/Button/Button';
-import { fetchPersonnelData } from '../../reducers/personnel/personnelSlice';
-import { fetchPlanning } from '../../reducers/personnel/personnelPlanningSlice';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../app/store';
-import { UnknownAction } from 'redux';
-import axios from 'axios';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { translate } from '../../utils/translationUtil';
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons';
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons';
+import axios from 'axios';
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
 ];
 
 const EmployeeExpensesRegistration = () => {
-  const dispatch = useDispatch();
-  const [personnelList, setPersonnelList] = useState<any>([]);
-  const personnel = useSelector((state: RootState) => state.personnelData.personnel);
-  const personnelPlanning = useSelector((state: RootState) => state.personnelPlanning.personnelPlanning);
-  const [activeTab, setActiveTab] = useState('/planning-list')
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('employeeExpenses')
-  const { language, setLanguage } = useLanguage()
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState('/planning-list');
+  const [activeTabOther, setActiveTabOther] = useState('employeeExpenses');
+  const { language, setLanguage } = useLanguage();
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
-
+  const currentYear = new Date().getFullYear();
+  const startYear = currentYear - 1;
+  const endYear = currentYear + 2;
+  const years = Array.from({ length: endYear - startYear + 1 }, (val, i) => startYear + i);
+  const token = localStorage.getItem('accessToken')
+  const [employees, setEmployees] = useState([]); 
+  const [projects, setProjects] = useState([]); 
+  const [employeeContainers, setEmployeeContainers] = useState([{ id: 1, projectEntries: [{ id: 1 }] }]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
   }
-  
+
   const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
+    setActiveTabOther(tab);
     switch (tab) {
       case 'project':
         navigate('/projects-registration');
@@ -53,29 +51,7 @@ const EmployeeExpensesRegistration = () => {
       default:
         break;
     }
-  }
-
-  const [containers, setContainers] = useState([{
-    employeeName: '',
-    user_id: '',
-    projects: [{ projectName: '', project_planning_id: '', client_id: '', unit_price: '', ratio: '' }]
-  }]);
-
-  const fetchData = async () => {
-    try {
-      const resPersonnel = await dispatch(fetchPersonnelData() as unknown as UnknownAction);
-      console.log('fetchPersonnel response:', resPersonnel);
-      setPersonnelList(resPersonnel.payload);
-      const resPersonPlanning = await dispatch(fetchPlanning() as unknown as UnknownAction);
-      console.log('fetchPlanning response:', resPersonPlanning);
-    } catch (e) {
-      console.error(e);
-    }
   };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   useEffect(() => {
     const path = location.pathname;
@@ -83,89 +59,6 @@ const EmployeeExpensesRegistration = () => {
       setActiveTab(path);
     }
   }, [location.pathname]);
-
-  const handleAddContainer = () => {
-    if (containers.length < 5) {
-      setContainers([...containers, {
-        employeeName: '',
-        user_id: '',
-        projects: [{ projectName: '', project_planning_id: '', client_id: '', unit_price: '', ratio: '' }]
-      }]);
-    }
-  };
-
-  const handleRemoveContainer = () => {
-    if (containers.length > 1) {
-      const newContainers = [...containers];
-      newContainers.pop();
-      setContainers(newContainers);
-    }
-  };
-
-  const handleAddProject = (containerIndex) => {
-    const newContainers = [...containers];
-    if (newContainers[containerIndex].projects.length < 5) {
-      newContainers[containerIndex].projects.push({ projectName: '', project_planning_id: '', client_id: '', unit_price: '', ratio: '' });
-      setContainers(newContainers);
-    }
-  };
-
-  const handleInputChange = (containerIndex, projectIndex, event) => {
-    const { name, value } = event.target;
-    const newContainers = [...containers];
-    if (projectIndex === null) {
-      newContainers[containerIndex][name] = value;
-
-      // Update user_id when employeeName is selected
-      if (name === 'employeeName') {
-        const selectedPerson = personnel.find(person => person.username === value);
-        newContainers[containerIndex]['user_id'] = selectedPerson ? selectedPerson.user_id : '';
-      }
-
-    } else {
-      newContainers[containerIndex].projects[projectIndex][name] = value;
-
-      // Update project_planning_id and client_id when projectName is selected
-      if (name === 'projectName') {
-        const selectedProject = personnelPlanning.find(plan => plan.planning_project_name === value);
-        newContainers[containerIndex].projects[projectIndex]['project_planning_id'] = selectedProject ? selectedProject.planning_project_id : '';
-        newContainers[containerIndex].projects[projectIndex]['client_id'] = selectedProject ? selectedProject.client_id : '';
-      }
-    }
-    setContainers(newContainers);
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault(); // Prevent the default form submission
-
-    const transformedData = containers.flatMap(container => 
-      container.projects.map(project => ({
-        client_id: project.client_id,
-        assignment_ratio: project.ratio,
-        assignment_unit_price: project.unit_price,
-        planning_project_id: project.project_planning_id,
-        assignment_user_id: container.user_id,
-        employeeName: container.employeeName // Include any additional fields if necessary
-      }))
-    );
-
-    const token = localStorage.getItem('accessToken');
-    try {
-      // const response = await axios.post('http://127.0.0.1:8000/api/personnelplanning/add/', transformedData, {
-      const response = await axios.post('http://54.178.202.58:8000/api/personnelplanning/add/', transformedData, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Add token to request headers
-        },
-      })
-      console.log(response.data);
-      alert('Saved');
-      window.location.reload();
-      // Reset the form or handle success accordingly
-    } catch (error) {
-      console.error('Error:', error.response.data);
-      // Handle error
-    }
-  };
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en');
@@ -176,7 +69,7 @@ const EmployeeExpensesRegistration = () => {
     setLanguage(newLanguage);
   };
 
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
+  const monthNames = {
     1: { en: "January", jp: "1月" },
     2: { en: "February", jp: "2月" },
     3: { en: "March", jp: "3月" },
@@ -191,159 +84,194 @@ const EmployeeExpensesRegistration = () => {
     12: { en: "December", jp: "12月" },
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const employeeResponse = await axios.get('http://127.0.0.1:8000/api/employees', {
+          headers: { 
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+        });
+        setEmployees(employeeResponse.data);
+
+        const projectResponse = await axios.get('http://127.0.0.1:8000/api/projects/', {
+          headers: { 
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+        });
+        setProjects(projectResponse.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [token]);
+
+   // Function to add a new employee container (up to 5)
+   const addEmployeeContainer = () => {
+    if (employeeContainers.length < 5) {
+      setEmployeeContainers([
+        ...employeeContainers,
+        { id: employeeContainers.length + 1, projectEntries: [{ id: 1 }] },
+      ]);
+    }
+  };
+
+  // Function to remove an employee container (minimum 1)
+  const removeEmployeeContainer = () => {
+    if (employeeContainers.length > 1) {
+      setEmployeeContainers(employeeContainers.slice(0, -1));
+    }
+  };
+
+  // Function to add a project entry in a specific container (up to 3)
+  const addProjectEntry = (containerIndex) => {
+    const updatedContainers = [...employeeContainers];
+    const projectEntries = updatedContainers[containerIndex].projectEntries;
+
+    if (projectEntries.length < 3) {
+      projectEntries.push({ id: projectEntries.length + 1 });
+      setEmployeeContainers(updatedContainers);
+    }
+  };
+
+
   return (
     <div className='employeeExpensesRegistration_wrapper'>
-      <HeaderButtons 
+      <HeaderButtons
           activeTab={activeTab}
           handleTabClick={handleTabClick}
           isTranslateSwitchActive={isTranslateSwitchActive}
           handleTranslationSwitchToggle={handleTranslationSwitchToggle}
       />
-     <div className="employeeExpensesRegistration_cont_wrapper">
-             <Sidebar />
-         <div className="employeeExpensesRegistration_wrapper_div">
-                 <div className="employeeExpensesRegistration_top_content">
-                     <div className="employeeExpensesRegistration_top_body_cont">
-                         <div className="employeeExpensesRegistration_top_btn_cont"></div>
-                     </div>
-                     <div className="employeeExpensesRegistration_mid_body_cont">
-                        <RegistrationButtons
-                            activeTabOther={activeTabOther}
-                            message={translate('employeeExpensesRegistration', language)}
-                            handleTabsClick={handleTabsClick}
-                            buttonConfig={[
-                              { labelKey: 'project', tabKey: 'project' },
-                              { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
-                              { labelKey: 'expenses', tabKey: 'expenses' },
-                              { labelKey: 'costOfSales', tabKey: 'costOfSales' },
-                            ]}
-                          />
-                         <div className="employeeExpensesRegistration_table_wrapper">
-                          <form onSubmit={handleSubmit} className="employeeExpensesRegistration_form_wrapper">
-                              {containers.map((container, containerIndex) => (
-                                <div className="employeeExpensesRegistration_container" key={containerIndex}>
-                                  <div className={`employeeExpensesRegistration_form-content ${containerIndex > 0 ? 'employeeExpensesRegistration_form-line' : ''}`}></div>
-                                  <div className="employeeExpensesRegistration_cont-body">
-                                    <div className="employeeExpensesRegistration_row">
-                                      <div className="employeeExpensesRegistration_label">
-                                        <p>{translate('employee', language)}</p>
-                                      </div>
-                                      <div className="employeeExpensesRegistration_card-box">
-                                        <select
-                                          name="employeeName"
-                                          className="employeeExpensesRegistration_emp-select"
-                                          value={container.employeeName}
-                                          onChange={(e) => handleInputChange(containerIndex, null, e)}
-                                        >
-                                          <option value="">{translate('selectEmployee', language)}</option>
-                                          {personnel.map((person, index) => (
-                                            <option key={index} value={person.username}>
-                                              {person.username}
-                                            </option>
-                                          ))}
-                                        </select>
-                                      </div>
-                                    </div>
-                                    <div className="employeeExpensesRegistration_project-fields">
-                                      {container.projects.map((project, projectIndex) => (
-                                        <div className="employeeExpensesRegistration_project-group" key={projectIndex}>
-                                          <div className="employeeExpensesRegistration_row">
-                                            <div className="employeeExpensesRegistration_label">
-                                              <p>{translate('project', language)}</p>
-                                            </div>
-                                            <div className="employeeExpensesRegistration_card-box">
-                                              <select
-                                                name="projectName"
-                                                value={project.projectName}
-                                                onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
-                                              >
-                                                <option value=""></option>
-                                                {personnelPlanning.map((person_plan, index) => (
-                                                  <option key={index} value={person_plan.planning_project_name}>
-                                                    {person_plan.planning_project_name}
-                                                  </option>
-                                                ))}
-                                              </select>
-                                            </div>
-                                          </div>
-                                          <div className="employeeExpensesRegistration_row">
-                                            <div className="employeeExpensesRegistration_label">
-                                              <p>{translate('month', language)}</p>
-                                            </div>
-                                            <div className="employeeExpensesRegistration_card-box">
-                                              <select
-                                                name="month"
-                                                value={''}
-                                                onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
-                                              >
-                                                <option value=""></option>
-                                                  {months.map((month, idx) => (
-                                                    <option key={idx} value={month}>{language === "en" ? monthNames[month].en : monthNames[month].jp}</option>
-                                                  ))}
-                                              </select>
-                                            </div>
-                                          </div>
-                                          <div className="employeeExpensesRegistration_row">
-                                            <div className="employeeExpensesRegistration_label">
-                                              <p>{translate('employeeExpenses', language)}</p>
-                                            </div>
-                                            <div className="employeeExpensesRegistration_card-box">
-                                              <input
-                                                type="number"
-                                                name="unit_price"
-                                                value={project.unit_price}
-                                                onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
-                                              />
-                                            </div>
-                                          </div>
-                                          <div className="employeeExpensesRegistration_row">
-                                            <div className="employeeExpensesRegistration_label">
-                                              <p>{translate('assignmentRatio', language)}</p>
-                                            </div>
-                                            <div className="employeeExpensesRegistration_card-box">
-                                              <input
-                                                type="number"
-                                                name="ratio"
-                                                value={project.ratio}
-                                                onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
-                                              />
-                                            </div>
-                                          </div>
-                                        </div>
-                                      ))}
-                                      <div className="employeeExpensesRegistration_button-box">
-                                        {container.projects.length < 5 && (
-                                          <Btn
-                                            label={translate('add', language)}
-                                            className="employeeExpensesRegistration_button"
-                                            type="button"
-                                            onClick={() => handleAddProject(containerIndex)}
-                                          />
-                                        )}
-                                    </div>
-                                    </div>
-                                  </div>
-
-                                </div>
+      <div className="employeeExpensesRegistration_cont_wrapper">
+        <Sidebar />
+        <div className="employeeExpensesRegistration_wrapper_div">
+          <div className="employeeExpensesRegistration_top_content">
+            <div className="employeeExpensesRegistration_top_body_cont">
+              <div className="employeeExpensesRegistration_top_btn_cont"></div>
+            </div>
+            <div className="employeeExpensesRegistration_mid_body_cont">
+              <RegistrationButtons
+                activeTabOther={activeTabOther}
+                message={translate('employeeExpensesRegistration', language)}
+                handleTabsClick={handleTabsClick}
+                buttonConfig={[
+                  { labelKey: 'project', tabKey: 'project' },
+                  { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
+                  { labelKey: 'expenses', tabKey: 'expenses' },
+                  { labelKey: 'costOfSales', tabKey: 'costOfSales' },
+                ]}
+              />
+              <div className="employeeExpensesRegistration_table_wrapper">
+                <form className="employeeExpensesRegistration_form_wrapper">
+                  {employeeContainers.map((container, containerIndex) => (
+                    <div className="employeeExpensesRegistration_container" key={container.id}>
+                      <div className={`employeeExpensesRegistration_form-content ${containerIndex > 0 ? 'employeeExpensesRegistration_form-line' : ''}`}></div>
+                      <div className="employeeExpensesRegistration_cont-body">
+                        <div className="employeeExpensesRegistration_row">
+                          <div className="employeeExpensesRegistration_label">
+                            <p>{translate('employee', language)}</p>
+                          </div>
+                          <div className="employeeExpensesRegistration_card-box">
+                            <select 
+                            name="employeeName" 
+                            className="employeeExpensesRegistration_emp-select"
+                            >
+                              <option value="">{translate('selectEmployee', language)}</option>
+                              {employees.map((employee) => (
+                                <option key={employee.id} value={employee.id}>
+                                  {`${employee.last_name} ${employee.first_name}`}
+                                </option>
                               ))}
-                              <div className="employeeExpensesRegistration_cont-footer">
-                                <div className="employeeExpensesRegistration_btn-plusminus">
-                                  <Btn label="+" className="employeeExpensesRegistration_plus-btn" type="button" onClick={handleAddContainer} />
-                                  <Btn label="-" className="employeeExpensesRegistration_minus-btn" type="button" onClick={handleRemoveContainer} />
+                            </select>
+                          </div>
+                        </div>
+                        <div className="employeeExpensesRegistration_project-fields">
+                          {container.projectEntries.map((_, projectIndex) => (
+                            <div className="employeeExpensesRegistration_project-group" key={projectIndex}>
+                              <div className="employeeExpensesRegistration_row">
+                                <div className="employeeExpensesRegistration_label">
+                                  <p>{translate('project', language)}</p>
                                 </div>
-                                <div className="employeeExpensesRegistration_btn-subcancel">
-                                  <Btn label={translate('cancel', language)} className="employeeExpensesRegistration_cancel-btn is-light" type="button" onClick={() => alert('cancel')} />
-                                  <Btn label={translate('submit', language)} className="employeeExpensesRegistration_submit-btn is-info" type="submit" onClick={() => ''} />
+                                <div className="employeeExpensesRegistration_card-box">
+                                  <select 
+                                  name="projectName"
+                                  >
+                                    <option value=""></option>
+                                    {projects.map((project) => (
+                                      <option key={project.id} value={project.id}>
+                                        {project.project_name}
+                                      </option>
+                                    ))}
+                                  </select>
                                 </div>
-                                {/* <button className="save-btn" type='submit'>Save</button> */}
                               </div>
-                          </form>
-                         </div>
-                     </div>
-                 </div>
-         </div>
-     </div>
- </div>
+                              <div className="employeeExpensesRegistration_row">
+                                <div className="employeeExpensesRegistration_label">
+                                  <p>{translate('year', language)}</p>
+                                </div>
+                                <div className="employeeExpensesRegistration_card-box">
+                                  <select 
+                                  name="year"
+                                  >
+                                    <option value=""></option>
+                                    {years.map((year) => (
+                                      <option key={year} value={year}>
+                                        {year}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="employeeExpensesRegistration_row">
+                                <div className="employeeExpensesRegistration_label">
+                                  <p>{translate('month', language)}</p>
+                                </div>
+                                <div className="employeeExpensesRegistration_card-box">
+                                  <select 
+                                  name="month"
+                                  >
+                                    <option value=""></option>
+                                    {months.map((month, idx) => (
+                                      <option key={idx} value={month}>{language === "en" ? monthNames[month].en : monthNames[month].jp}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                          <div className="employeeExpensesRegistration_button-box">
+                            <Btn label={translate('add', language)} className="employeeExpensesRegistration_button" type="button" onClick={() => addProjectEntry(containerIndex)} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="employeeExpensesRegistration_cont-footer">
+                    <div className="employeeExpensesRegistration_btn-plusminus">
+                      <Btn label="+" className="employeeExpensesRegistration_plus-btn" type="button" onClick={addEmployeeContainer} />
+                      <Btn label="-" className="employeeExpensesRegistration_minus-btn" type="button" onClick={removeEmployeeContainer} />
+                    </div>
+                    <div className="employeeExpensesRegistration_btn-subcancel">
+                      <button type='button' className='button is-light'>
+                        {translate('cancel', language)}
+                      </button>
+                      <button type='submit' className='button is-info'>
+                        {translate('submit', language)}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

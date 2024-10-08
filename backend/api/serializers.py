@@ -217,7 +217,7 @@ class GetBusinessDivisionMasterSerializer(serializers.ModelSerializer):
         fields = ["business_division_id", "business_division_name", "created_at", "registered_user_id", "company"]
         
 class EmployeeExpensesDataSerializer(serializers.ModelSerializer):
-    
+    employee_expense_id = serializers.CharField(required=False)
     class Meta:
         model = EmployeeExpenses
         fields = '__all__'

@@ -815,45 +815,58 @@ class CreateEmployeeExpenses(generics.CreateAPIView):
     serializer_class = EmployeeExpensesDataSerializer
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
-        data = JSONParser().parse(request)
+    def create(self, request, *args, **kwargs):
+        employee_expenses_data = request.data.get('employeeExpenses', [])
+        year = request.data.get('year', '2001')  # Default year
+        month = request.data.get('month', '01')  # Default month
         
-        # Check if the incoming data is a list
-        if not isinstance(data, list):
-            return JsonResponse({"messagessss": "Expected a list of items."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        responses = []
-        
-        for item in data:
+        # Validate incoming data
+        if not employee_expenses_data:
+            return Response({'detail': 'No employee expenses data provided.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        created_expenses = []
+        for expense_data in employee_expenses_data:
             try:
-                planning_project = Projects.objects.get(planning_project_id=item['planning_project_id'])
-                employees = Employees.objects.get(user_id=item['assignment_user_id'])
-                planning_data = {
-                    'planning_project_id': planning_project.planning_project_id,
-                    'client_id': item['client_id'],
-                    'assignment_user_id': employees.user_id,
-                    'assignment_ratio': item['assignment_ratio'],
-                    'assignment_unit_price': item['assignment_unit_price'],
-                    'year': timezone.now().year,
-                    'assignment_start_date': timezone.now().date(),
-                    'assignment_end_date': timezone.now().date(),
-                    'registration_date': timezone.now().date(),
-                    'registration_user': request.user.username
-                }
-                serializer = EmployeeExpensesDataSerializer(data=planning_data)
-                if serializer.is_valid():
-                    serializer.save()
-                    responses.append({"message": "Personnel Planning Data created successfully."})
-                else:
-                    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                # Get related instances
+                client = MasterClient.objects.get(pk=expense_data['client_id'])
+                project = Projects.objects.get(pk=expense_data['project_id'])
+                employee = EmployeesApi.objects.get(pk=expense_data['employee_id'])
+                auth_user = AuthUser.objects.get(pk=expense_data['auth_user_id'])
+
+                # Create the employee expense
+                new_expense = EmployeeExpenses(
+                    client=client,
+                    project=project,
+                    employee=employee,
+                    auth_user=auth_user,
+                    year=year,
+                    month=month
+                )
+                new_expense.save()
+
+                # Serialize the saved object for the response
+                serializer = EmployeeExpensesDataSerializer(new_expense)
+                created_expenses.append(serializer.data)
+                
+            except MasterClient.DoesNotExist:
+                return Response({"error": f"Client with ID {expense_data['client_id']} does not exist"},
+                                status=status.HTTP_404_NOT_FOUND)
             except Projects.DoesNotExist:
-                return JsonResponse({"message": "Planning project not found."}, status=status.HTTP_404_NOT_FOUND)
+                return Response({"error": f"Project with ID {expense_data['project_id']} does not exist"},
+                                status=status.HTTP_404_NOT_FOUND)
             except Employees.DoesNotExist:
-                return JsonResponse({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
-            except Exception as e:
-                return JsonResponse({"messagessss": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
-        return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
+                return Response({"error": f"Employee with ID {expense_data['employee_id']} does not exist"},
+                                status=status.HTTP_404_NOT_FOUND)
+            except AuthUser.DoesNotExist:
+                return Response({"error": f"User with ID {expense_data['auth_user_id']} does not exist"},
+                                status=status.HTTP_404_NOT_FOUND)
+
+        # Return the desired JSON structure
+        return Response({
+            "year": year,
+            "month": month,
+            "employeeExpenses": created_expenses
+        }, status=status.HTTP_201_CREATED)
     
 class Planning(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
