@@ -301,7 +301,7 @@ const ProjectsListAndEdit: React.FC = () => {
         }
       };
 
-      const handleNewRegistrationClick = () => {
+  const handleNewRegistrationClick = () => { 
         navigate('/projects-registration');
       };
 
@@ -362,7 +362,7 @@ const ProjectsListAndEdit: React.FC = () => {
             <div className='projectsList_mid_body_cont'>
               <ListButtons
                 activeTabOther={activeTabOther}
-                message={translate('projectsList', language)}
+                message={ translate(isEditing?'projectsEdit': 'projectsList', language)}
                 handleTabsClick={handleTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
