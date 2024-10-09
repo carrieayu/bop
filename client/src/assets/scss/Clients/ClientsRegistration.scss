@@ -11,7 +11,7 @@
         display: flex;
         background-color: #EFEDEA;
         width: 100vw;
-        height: 130vh;
+        height: 100vh;
         @media only screen and (max-width: 1000px){
             flex-direction: column;
         }
@@ -55,9 +55,9 @@
                     background-color: #555; 
                 }
                 .ClientsRegistration_mid_form_cont{
-                    margin: -20px 50px;
+                    margin: 20px 50px;                    
                     .ClientsRegistration_ForImplementationOfPlusAndMinus{
-                        padding: 50px 0px 0px 20px;
+                        padding: 0px 0px 10px 0px;
                     }
                     .ClientsRegistration_ForImplementationOfHorizontalLineBelow{
                         // border-top: 4px solid rgb(183, 183, 183);
@@ -77,49 +77,49 @@
                                     height: 40px;
                                     border: 1px solid #000;
                                     border-radius: 10px;
-                                }
-                            }
-                        }
-                    }
-                }
-                .ClientsRegistration_lower_form_cont{
-                    // display: flex;
-                    justify-content: space-between; // Distribute buttons across the width
-                    align-items: center; // Center the content vertically
-                    padding: 20px;
-                    background-color: #fff;
-                    position: fixed;
-                    bottom: 100px;
-                    width: 80vw; // Take up the entire viewport width
-                    .ClientsRegistration_form-content{
-                        .ClientsRegistration_plus-btn{
-                            padding: 20px 10px 20px 10px;
-                            gap: 1rem;
-                            display: flex;
-                            margin-left: 90%;
-                            .ClientsRegistration_inc,
-                            .ClientsRegistration_dec{
-                                background-color: #808080;
-                                color: whitesmoke;
-                                width: 30px;
-                                height: 40px;
-                                font-size: 25px;
-                                border-radius: 5px;
-                            }
-                        }
-                        .ClientsRegistration_options-btn{
-                            display: flex;
-                            gap: 1%;
-                            padding: 10px 10px 10px 10px;
-                            align-items: center;
-                            justify-content: center;
-                            button{
-                                width: 10%;
                             }
                         }
                     }
                 }
             }
+            .ClientsRegistration_lower_form_cont{
+                // display: flex;
+                justify-content: space-between; // Distribute buttons across the width
+                align-items: center; // Center the content vertically
+                padding: 20px;
+                background-color: #fff;
+                position: fixed;
+                bottom: 50px;
+                width: 80vw; // Take up the entire viewport width
+                .ClientsRegistration_form-content{
+                    .ClientsRegistration_plus-btn{
+                        padding: 20px 10px 20px 10px;
+                        gap: 1rem;
+                        display: flex;
+                        margin-left: 90%;
+                        .ClientsRegistration_inc,
+                        .ClientsRegistration_dec{
+                            background-color: #808080;
+                            color: whitesmoke;
+                            width: 30px;
+                            height: 40px;
+                            font-size: 25px;
+                            border-radius: 5px;
+                        }
+                    }
+                    .ClientsRegistration_options-btn{
+                        display: flex;
+                        gap: 1%;
+                        padding: 10px 10px 10px 10px;
+                        align-items: center;
+                        justify-content: center;
+                        button{
+                            width: 10%;                        
+                            }
+                        }
+                    }
+                }
+            }    
         }
     }
 }
