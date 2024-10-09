@@ -816,57 +816,65 @@ class CreateEmployeeExpenses(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        employee_expenses_data = request.data.get('employeeExpenses', [])
-        year = request.data.get('year', '2001')  # Default year
-        month = request.data.get('month', '01')  # Default month
+        employee_expenses_data = request.data
+
+        if not isinstance(employee_expenses_data, list):
+            return Response({'detail': 'Invalid data format. Expecting a list.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Validate incoming data
         if not employee_expenses_data:
             return Response({'detail': 'No employee expenses data provided.'}, status=status.HTTP_400_BAD_REQUEST)
 
         created_expenses = []
-        for expense_data in employee_expenses_data:
-            try:
-                # Get related instances
-                client = MasterClient.objects.get(pk=expense_data['client_id'])
-                project = Projects.objects.get(pk=expense_data['project_id'])
-                employee = EmployeesApi.objects.get(pk=expense_data['employee_id'])
-                auth_user = AuthUser.objects.get(pk=expense_data['auth_user_id'])
+        for expense_data in request.data:
+            employee_id = expense_data.get('employee')
+            if not employee_id:
+                return Response({'detail': 'Employee ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-                # Create the employee expense
-                new_expense = EmployeeExpenses(
-                    client=client,
-                    project=project,
-                    employee=employee,
-                    auth_user=auth_user,
-                    year=year,
-                    month=month
-                )
-                new_expense.save()
+            project_entries = expense_data.get('projectEntries', [])
+            
+            if not isinstance(project_entries, list):
+                return Response({'detail': 'projectEntries must be a list.'}, status=status.HTTP_400_BAD_REQUEST)
 
-                # Serialize the saved object for the response
-                serializer = EmployeeExpensesDataSerializer(new_expense)
-                created_expenses.append(serializer.data)
-                
-            except MasterClient.DoesNotExist:
-                return Response({"error": f"Client with ID {expense_data['client_id']} does not exist"},
-                                status=status.HTTP_404_NOT_FOUND)
-            except Projects.DoesNotExist:
-                return Response({"error": f"Project with ID {expense_data['project_id']} does not exist"},
-                                status=status.HTTP_404_NOT_FOUND)
-            except Employees.DoesNotExist:
-                return Response({"error": f"Employee with ID {expense_data['employee_id']} does not exist"},
-                                status=status.HTTP_404_NOT_FOUND)
-            except AuthUser.DoesNotExist:
-                return Response({"error": f"User with ID {expense_data['auth_user_id']} does not exist"},
-                                status=status.HTTP_404_NOT_FOUND)
+            for entry in project_entries:
+                if not entry.get('projects') or not entry.get('clients'):
+                    return Response({'detail': 'Project ID and Client ID cannot be empty.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Return the desired JSON structure
+                try:
+                    client = MasterClient.objects.get(pk=entry['clients'])  
+                    project = Projects.objects.get(pk=entry['projects'])  
+                    employee = EmployeesApi.objects.get(pk=employee_id) 
+                    auth_user = AuthUser.objects.get(pk=entry.get('auth_id')) if entry.get('auth_id') else None  
+
+                    new_expense = EmployeeExpenses(
+                        client=client,
+                        project=project,
+                        employee=employee,
+                        auth_user=auth_user,
+                        year=entry.get('year', '2001'),  
+                        month=entry.get('month', '01')   
+                    )
+                    new_expense.save()
+
+                    serializer = EmployeeExpensesDataSerializer(new_expense)
+                    created_expenses.append(serializer.data)
+
+                except MasterClient.DoesNotExist:
+                    return Response({"error": f"Client with ID {entry['clients']} does not exist"},
+                                    status=status.HTTP_404_NOT_FOUND)
+                except Projects.DoesNotExist:
+                    return Response({"error": f"Project with ID {entry['projects']} does not exist"},
+                                    status=status.HTTP_404_NOT_FOUND)
+                except EmployeesApi.DoesNotExist:
+                    return Response({"error": f"Employee with ID {employee_id} does not exist"},
+                                    status=status.HTTP_404_NOT_FOUND)
+                except AuthUser.DoesNotExist:
+                    return Response({"error": f"User with ID {entry.get('auth_id')} does not exist"},
+                                    status=status.HTTP_404_NOT_FOUND)
+
         return Response({
-            "year": year,
-            "month": month,
             "employeeExpenses": created_expenses
         }, status=status.HTTP_201_CREATED)
+
     
 class Planning(generics.ListAPIView):
     permission_classes = [IsAuthenticated]

@@ -26,7 +26,14 @@ const EmployeeExpensesRegistration = () => {
   const token = localStorage.getItem('accessToken')
   const [employees, setEmployees] = useState([]); 
   const [projects, setProjects] = useState([]); 
-  const [employeeContainers, setEmployeeContainers] = useState([{ id: 1, projectEntries: [{ id: 1 }] }]);
+  const storedUserID = localStorage.getItem('userID')
+  const [employeeContainers, setEmployeeContainers] = useState([
+    {
+      id: 1,
+      employee: '',
+      projectEntries: [{ id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '' }],
+    },
+  ])
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -94,7 +101,6 @@ const EmployeeExpensesRegistration = () => {
           },
         });
         setEmployees(employeeResponse.data);
-
         const projectResponse = await axios.get('http://127.0.0.1:8000/api/projects/', {
           headers: { 
             "Content-Type": "application/json",
@@ -110,51 +116,108 @@ const EmployeeExpensesRegistration = () => {
     fetchData();
   }, [token]);
 
-   // Function to add a new employee container (up to 5)
-   const addEmployeeContainer = () => {
+  const addEmployeeContainer = () => {
     if (employeeContainers.length < 5) {
       setEmployeeContainers([
         ...employeeContainers,
-        { id: employeeContainers.length + 1, projectEntries: [{ id: 1 }] },
-      ]);
+        {
+          id: employeeContainers.length + 1,
+          employee: '',
+          projectEntries: [{ id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '' }],
+        },
+      ])
     }
-  };
+  }
 
-  // Function to remove an employee container (minimum 1)
   const removeEmployeeContainer = () => {
     if (employeeContainers.length > 1) {
       setEmployeeContainers(employeeContainers.slice(0, -1));
     }
   };
 
-  // Function to add a project entry in a specific container (up to 3)
   const addProjectEntry = (containerIndex) => {
-    const updatedContainers = [...employeeContainers];
-    const projectEntries = updatedContainers[containerIndex].projectEntries;
+    const updatedContainers = [...employeeContainers]
+    const projectEntries = updatedContainers[containerIndex].projectEntries
 
     if (projectEntries.length < 3) {
-      projectEntries.push({ id: projectEntries.length + 1 });
-      setEmployeeContainers(updatedContainers);
+      projectEntries.push({
+        id: projectEntries.length + 1,
+        clients: '',
+        auth_id: storedUserID,
+        projects: '',
+        year: '',
+        month: '',
+      })
+      setEmployeeContainers(updatedContainers)
     }
-  };
+  }
+
+  const handleInputChange = (containerIndex, projectIndex, event) => {
+    const { name, value } = event.target
+    const newContainers = [...employeeContainers]
+
+    if (projectIndex !== null) {
+      if (name === 'projects') {
+        const selectedProject = projects.find((project) => project.project_id === value)
+
+        newContainers[containerIndex].projectEntries[projectIndex] = {
+          ...newContainers[containerIndex].projectEntries[projectIndex],
+          projects: value, 
+          clients: selectedProject ? selectedProject.client : '',
+        }
+      } else {
+        newContainers[containerIndex].projectEntries[projectIndex] = {
+          ...newContainers[containerIndex].projectEntries[projectIndex],
+          [name]: value, 
+        }
+      }
+    } else {
+      newContainers[containerIndex] = {
+        ...newContainers[containerIndex],
+        [name]: value,
+      }
+    }
+
+    setEmployeeContainers(newContainers) 
+  }
+
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const token = localStorage.getItem('accessToken')
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/api/employee-expenses/create', employeeContainers, {
+        // const response = await axios.post('http://54.178.202.58:8000/api/employee-expenses/create', client, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      alert('Saved')
+      window.location.reload()
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
 
   return (
     <div className='employeeExpensesRegistration_wrapper'>
       <HeaderButtons
-          activeTab={activeTab}
-          handleTabClick={handleTabClick}
-          isTranslateSwitchActive={isTranslateSwitchActive}
-          handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+        activeTab={activeTab}
+        handleTabClick={handleTabClick}
+        isTranslateSwitchActive={isTranslateSwitchActive}
+        handleTranslationSwitchToggle={handleTranslationSwitchToggle}
       />
-      <div className="employeeExpensesRegistration_cont_wrapper">
+      <div className='employeeExpensesRegistration_cont_wrapper'>
         <Sidebar />
-        <div className="employeeExpensesRegistration_wrapper_div">
-          <div className="employeeExpensesRegistration_top_content">
-            <div className="employeeExpensesRegistration_top_body_cont">
-              <div className="employeeExpensesRegistration_top_btn_cont"></div>
+        <div className='employeeExpensesRegistration_wrapper_div'>
+          <div className='employeeExpensesRegistration_top_content'>
+            <div className='employeeExpensesRegistration_top_body_cont'>
+              <div className='employeeExpensesRegistration_top_btn_cont'></div>
             </div>
-            <div className="employeeExpensesRegistration_mid_body_cont">
+            <div className='employeeExpensesRegistration_mid_body_cont'>
               <RegistrationButtons
                 activeTabOther={activeTabOther}
                 message={translate('employeeExpensesRegistration', language)}
@@ -166,59 +229,67 @@ const EmployeeExpensesRegistration = () => {
                   { labelKey: 'costOfSales', tabKey: 'costOfSales' },
                 ]}
               />
-              <div className="employeeExpensesRegistration_table_wrapper">
-                <form className="employeeExpensesRegistration_form_wrapper">
+              <div className='employeeExpensesRegistration_table_wrapper'>
+                <form onSubmit={handleSubmit} className='employeeExpensesRegistration_form_wrapper'>
                   {employeeContainers.map((container, containerIndex) => (
-                    <div className="employeeExpensesRegistration_container" key={container.id}>
-                      <div className={`employeeExpensesRegistration_form-content ${containerIndex > 0 ? 'employeeExpensesRegistration_form-line' : ''}`}></div>
-                      <div className="employeeExpensesRegistration_cont-body">
-                        <div className="employeeExpensesRegistration_row">
-                          <div className="employeeExpensesRegistration_label">
+                    <div className='employeeExpensesRegistration_container' key={container.id}>
+                      <div
+                        className={`employeeExpensesRegistration_form-content ${containerIndex > 0 ? 'employeeExpensesRegistration_form-line' : ''}`}
+                      ></div>
+                      <div className='employeeExpensesRegistration_cont-body'>
+                        <div className='employeeExpensesRegistration_row'>
+                          <div className='employeeExpensesRegistration_label'>
                             <p>{translate('employee', language)}</p>
                           </div>
-                          <div className="employeeExpensesRegistration_card-box">
-                            <select 
-                            name="employeeName" 
-                            className="employeeExpensesRegistration_emp-select"
+                          <div className='employeeExpensesRegistration_card-box'>
+                            <select
+                              name='employee'
+                              value={container.employee}
+                              className='employeeExpensesRegistration_emp-select'
+                              onChange={(e) => handleInputChange(containerIndex, null, e)}
                             >
-                              <option value="">{translate('selectEmployee', language)}</option>
+                              <option value=''>{translate('selectEmployee', language)}</option>
                               {employees.map((employee) => (
-                                <option key={employee.id} value={employee.id}>
+                                <option key={employee.employee_id} value={employee.employee_id}>
                                   {`${employee.last_name} ${employee.first_name}`}
                                 </option>
                               ))}
                             </select>
                           </div>
                         </div>
-                        <div className="employeeExpensesRegistration_project-fields">
-                          {container.projectEntries.map((_, projectIndex) => (
-                            <div className="employeeExpensesRegistration_project-group" key={projectIndex}>
-                              <div className="employeeExpensesRegistration_row">
-                                <div className="employeeExpensesRegistration_label">
+                        <div className='employeeExpensesRegistration_project-fields'>
+                          {container.projectEntries.map((projectEntry, projectIndex) => (
+                            <div className='employeeExpensesRegistration_project-group' key={projectEntry.id}>
+                              <div className='employeeExpensesRegistration_row'>
+                                <div className='employeeExpensesRegistration_label'>
                                   <p>{translate('project', language)}</p>
                                 </div>
-                                <div className="employeeExpensesRegistration_card-box">
-                                  <select 
-                                  name="projectName"
+                                <div className='employeeExpensesRegistration_card-box'>
+                                  <select
+                                    name='projects'
+                                    value={projectEntry.projects}
+                                    onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
                                   >
-                                    <option value=""></option>
+                                    <option value=''></option>
                                     {projects.map((project) => (
-                                      <option key={project.id} value={project.id}>
+                                      <option key={project.project_id} value={project.project_id}>
                                         {project.project_name}
                                       </option>
                                     ))}
                                   </select>
                                 </div>
                               </div>
-                              <div className="employeeExpensesRegistration_row">
-                                <div className="employeeExpensesRegistration_label">
+                              <div className='employeeExpensesRegistration_row'>
+                                <div className='employeeExpensesRegistration_label'>
                                   <p>{translate('year', language)}</p>
                                 </div>
-                                <div className="employeeExpensesRegistration_card-box">
-                                  <select 
-                                  name="year"
+                                <div className='employeeExpensesRegistration_card-box'>
+                                  <select
+                                    name='year'
+                                    value={projectEntry.year}
+                                    onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
                                   >
-                                    <option value=""></option>
+                                    <option value=''></option>{' '}
                                     {years.map((year) => (
                                       <option key={year} value={year}>
                                         {year}
@@ -227,36 +298,55 @@ const EmployeeExpensesRegistration = () => {
                                   </select>
                                 </div>
                               </div>
-                              <div className="employeeExpensesRegistration_row">
-                                <div className="employeeExpensesRegistration_label">
+                              <div className='employeeExpensesRegistration_row'>
+                                <div className='employeeExpensesRegistration_label'>
                                   <p>{translate('month', language)}</p>
                                 </div>
-                                <div className="employeeExpensesRegistration_card-box">
-                                  <select 
-                                  name="month"
+                                <div className='employeeExpensesRegistration_card-box'>
+                                  <select
+                                    name='month'
+                                    value={projectEntry.month}
+                                    onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
                                   >
-                                    <option value=""></option>
+                                    <option value=''></option>{' '}
                                     {months.map((month, idx) => (
-                                      <option key={idx} value={month}>{language === "en" ? monthNames[month].en : monthNames[month].jp}</option>
+                                      <option key={idx} value={month}>
+                                        {language === 'en' ? monthNames[month].en : monthNames[month].jp}{' '}
+                                      </option>
                                     ))}
                                   </select>
                                 </div>
                               </div>
                             </div>
                           ))}
-                          <div className="employeeExpensesRegistration_button-box">
-                            <Btn label={translate('add', language)} className="employeeExpensesRegistration_button" type="button" onClick={() => addProjectEntry(containerIndex)} />
+                          <div className='employeeExpensesRegistration_button-box'>
+                            <Btn
+                              label={translate('add', language)}
+                              className='employeeExpensesRegistration_button'
+                              type='button'
+                              onClick={() => addProjectEntry(containerIndex)}
+                            />
                           </div>
                         </div>
                       </div>
                     </div>
                   ))}
-                  <div className="employeeExpensesRegistration_cont-footer">
-                    <div className="employeeExpensesRegistration_btn-plusminus">
-                      <Btn label="+" className="employeeExpensesRegistration_plus-btn" type="button" onClick={addEmployeeContainer} />
-                      <Btn label="-" className="employeeExpensesRegistration_minus-btn" type="button" onClick={removeEmployeeContainer} />
+                  <div className='employeeExpensesRegistration_cont-footer'>
+                    <div className='employeeExpensesRegistration_btn-plusminus'>
+                      <Btn
+                        label='+'
+                        className='employeeExpensesRegistration_plus-btn'
+                        type='button'
+                        onClick={addEmployeeContainer}
+                      />
+                      <Btn
+                        label='-'
+                        className='employeeExpensesRegistration_minus-btn'
+                        type='button'
+                        onClick={removeEmployeeContainer}
+                      />
                     </div>
-                    <div className="employeeExpensesRegistration_btn-subcancel">
+                    <div className='employeeExpensesRegistration_btn-subcancel'>
                       <button type='button' className='button is-light'>
                         {translate('cancel', language)}
                       </button>
@@ -272,7 +362,7 @@ const EmployeeExpensesRegistration = () => {
         </div>
       </div>
     </div>
-  );
+  )
 };
 
 export default EmployeeExpensesRegistration;

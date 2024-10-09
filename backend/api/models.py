@@ -258,13 +258,21 @@ class EmployeeExpenses(models.Model):
         if not self.employee_expense_id:
             # Get the maximum existing ID and increment it
             max_id = EmployeeExpenses.objects.aggregate(max_id=Max("employee_expense_id"))["max_id"]
-            if max_id:
-                numeric_part = int(max_id[1:]) + 1  # Extract numeric part after 'E'
+            
+            if max_id is not None:  # Check if max_id is not None
+                max_id_str = str(max_id)  # Convert max_id to string
+                
+                if len(max_id_str) > 1 and max_id_str.startswith('E'):
+                    # Ensure there is a numeric part after 'E'
+                    numeric_part = int(max_id_str[1:]) + 1  # Extract numeric part after 'E'
+                else:
+                    numeric_part = 1  # Start with 1 if the format is unexpected
             else:
                 numeric_part = 1  # Start with 1 if no records exist
+                
             self.employee_expense_id = f'E{numeric_part:09d}'  # Format as 'E000000001'
         
-        super().save(*args, **kwargs) 
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.employee_expense_id
