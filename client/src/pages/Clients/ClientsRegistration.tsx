@@ -167,8 +167,7 @@ const ClientsRegistration = () => {
       <div className='ClientsRegistration_content_wrapper'>
         <Sidebar />
         <div className='ClientsRegistration_data_content'>
-          <div className='ClientsRegistration_top_body_cont'></div>
-          <div className='ClientsRegistration_mid_body_cont'>
+          <div className='ClientsRegistration_top_body_cont'>
             <RegistrationButtons
               activeTabOther={activeTabOther}
               message={translate('clientsRegistration', language)}
@@ -180,7 +179,9 @@ const ClientsRegistration = () => {
                 { labelKey: 'users', tabKey: 'users' },
               ]}
             />
-            <form onSubmit={handleSubmit}>
+          </div>
+          <div className='ClientsRegistration_mid_body_cont'>
+            <form className='ClientsRegistration_form_cont' onSubmit={handleSubmit}>
               <div className='ClientsRegistration_mid_form_cont'>
                 {clientData.map((container, containerIndex) => (
                   <div key={containerIndex} className='ClientsRegistration_ForImplementationOfPlusAndMinus'>

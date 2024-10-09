@@ -2,6 +2,8 @@
     display: flex;
     flex-direction: column;
     .RegistrationButtons_title_container{
+        background-color: #fff;
+        width: 80vw;
         padding: 58.5px 70px 50px 70px !important;
         @media only screen and (min-width: 1920px){
             padding: 59.5px 70px 50px 70px !important;
@@ -16,105 +18,115 @@
             flex-direction: column;
         }
         .ClientsRegistration_data_content{
-            width: 80%;
+            display: flex;
+            flex-direction: column;
+            // width: 80%;
             margin: 10px 30px 10px 30px;
             border: 1px solid #fff;
             border-radius: 5px;
             background-color: #fff;
             .ClientsRegistration_top_body_cont{
-                background-color: #fff;
-                height: 4rem;
+               margin: 4rem 0 0 0;
+               background-color: #fff;
+                // height: 4rem;
             }
-            .ClientsRegistration_mid_body_cont{
-                background-color: #fff;
-                max-height: 670px;
-                overflow-y: auto;
-                overflow-x: hidden;
-                scrollbar-width: thin; 
-                scrollbar-color: transparent transparent;
-                @media only screen and (min-width: 1875px){
-                    height: 55vh;
-                }
-                &:hover {
-                    scrollbar-color: #888 #EFEDEA; 
-                }
-                &::-webkit-scrollbar {
-                    width: 8px;
-                }
-                &::-webkit-scrollbar-track {
-                    background: transparent; 
-                }
-                &::-webkit-scrollbar-thumb {
-                    background-color: transparent; 
-                    border-radius: 10px;
-                }
-                &:hover::-webkit-scrollbar-thumb {
-                    background-color: #888;
-                }
-                &:hover::-webkit-scrollbar-thumb:hover {
-                    background-color: #555; 
-                }
-                .ClientsRegistration_mid_form_cont{
-                    margin: 20px 50px;                    
-                    .ClientsRegistration_ForImplementationOfPlusAndMinus{
-                        padding: 0px 0px 10px 0px;
+            .ClientsRegistration_form_cont{
+                display: flex;
+                height: 70vh;
+                justify-content: space-between;
+                flex-direction: column;
+            }
+
+                .ClientsRegistration_mid_body_cont{
+                    background-color: #fff;
+                    height: 90%;
+                    @media only screen and (min-width: 1875px){
+                        height: 55vh;
                     }
-                    .ClientsRegistration_ForImplementationOfHorizontalLineBelow{
-                        // border-top: 4px solid rgb(183, 183, 183);
-                    }
-                    .ClientsRegistration_form-div{
-                        padding: 15px 0px 0px 20px;
-                        .ClientsRegistration_form-content-div{
-                            .ClientsRegistration_client_name-div{
-                                display: flex;
-                                flex-direction: column;
-                                margin-bottom: 10px;
-                                .client_name{
-                                    margin-bottom: 5px;
+                    
+                    .ClientsRegistration_mid_form_cont{
+                        margin: 20px 50px;          
+                        background-color: #EFEDEA;
+                        overflow-y: auto;
+                        overflow-x: hidden;
+                        scrollbar-width: thin; 
+                        scrollbar-color: transparent transparent;
+                        border-radius: 5px;
+                        &:hover {
+                            scrollbar-color: #888 #EFEDEA; 
+                        }
+                        &::-webkit-scrollbar {
+                            width: 8px;
+                        }
+                        &::-webkit-scrollbar-track {
+                            background: transparent; 
+                        }
+                        &::-webkit-scrollbar-thumb {
+                            background-color: transparent; 
+                            border-radius: 10px;
+                        }
+                        &:hover::-webkit-scrollbar-thumb {
+                            background-color: #888;
+                        }
+                        &:hover::-webkit-scrollbar-thumb:hover {
+                            background-color: #555; 
+                        }     
+                        .ClientsRegistration_ForImplementationOfPlusAndMinus{
+                            padding: 0px 0px 10px 0px;
+                        }
+                        .ClientsRegistration_ForImplementationOfHorizontalLineBelow{
+                            // border-top: 4px solid rgb(183, 183, 183);
+                        }
+                        .ClientsRegistration_form-div{
+                            padding: 15px 0px 0px 20px;
+                            .ClientsRegistration_form-content-div{
+                                .ClientsRegistration_client_name-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .client_name{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 40%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
                                 }
-                                input{
-                                    width: 40%;
-                                    height: 40px;
-                                    border: 1px solid #000;
-                                    border-radius: 10px;
                             }
                         }
                     }
                 }
-            }
-            .ClientsRegistration_lower_form_cont{
-                // display: flex;
-                justify-content: space-between; // Distribute buttons across the width
-                align-items: center; // Center the content vertically
-                padding: 20px;
-                background-color: #fff;
-                position: fixed;
-                bottom: 50px;
-                width: 80vw; // Take up the entire viewport width
-                .ClientsRegistration_form-content{
-                    .ClientsRegistration_plus-btn{
-                        padding: 20px 10px 20px 10px;
-                        gap: 1rem;
-                        display: flex;
-                        margin-left: 90%;
-                        .ClientsRegistration_inc,
-                        .ClientsRegistration_dec{
-                            background-color: #808080;
-                            color: whitesmoke;
-                            width: 30px;
-                            height: 40px;
-                            font-size: 25px;
-                            border-radius: 5px;
+                .ClientsRegistration_lower_form_cont{
+                    justify-content: space-between;
+                    align-items: center; 
+                    padding: 20px;
+                    background-color: #fff;
+                    bottom: 50px;
+                    .ClientsRegistration_form-content{
+                        .ClientsRegistration_plus-btn{
+                            padding: 20px 10px 20px 10px;
+                            gap: 1rem;
+                            display: flex;
+                            margin-left: 90%;
+                            .ClientsRegistration_inc,
+                            .ClientsRegistration_dec{
+                                background-color: #808080;
+                                color: whitesmoke;
+                                width: 30px;
+                                height: 40px;
+                                font-size: 25px;
+                                border-radius: 5px;
+                            }
                         }
-                    }
-                    .ClientsRegistration_options-btn{
-                        display: flex;
-                        gap: 1%;
-                        padding: 10px 10px 10px 10px;
-                        align-items: center;
-                        justify-content: center;
-                        button{
-                            width: 10%;                        
+                        .ClientsRegistration_options-btn{
+                            display: flex;
+                            gap: 1%;
+                            padding: 10px 10px 10px 10px;
+                            align-items: center;
+                            justify-content: center;
+                            button{
+                                width: 10%;                        
                             }
                         }
                     }
