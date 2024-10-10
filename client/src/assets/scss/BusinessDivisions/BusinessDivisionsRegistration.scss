@@ -10,54 +10,67 @@
     .BusinessDivisionsRegistration_content_wrapper{
         display: flex;
         background-color: #EFEDEA;
-        width: 100vw;
-        height: 130vh;
+        width: 100%;
+        height: 95vh;
         @media only screen and (max-width: 1000px){
             flex-direction: column;
         }
         .BusinessDivisionsRegistration_data_content{
-            width: 80%;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
             margin: 10px 30px 10px 30px;
             border: 1px solid #fff;
+
             border-radius: 5px;
             background-color: #fff;
             .BusinessDivisionsRegistration_top_body_cont{
+                margin: 4rem 0 0 0;
                 background-color: #fff;
-                height: 4rem;
+                // height: 4rem;
+            }
+            .BusinessDivisionsRegistration_inputs_and_buttons{
+            display: flex;
+            height: 70vh;
+            justify-content: space-between;
+            flex-direction: column;
             }
             .BusinessDivisionsRegistration_mid_body_cont{
                 background-color: #fff;
-                max-height: 100vh;
-                overflow-y: auto;
-                overflow-x: hidden;
-                scrollbar-width: thin; 
-                scrollbar-color: transparent transparent;
+                max-height: 90%;
                 @media only screen and (min-width: 1875px){
                     height: 55vh;
                 }
-                &:hover {
-                    scrollbar-color: #888 #EFEDEA; 
-                }
-                &::-webkit-scrollbar {
-                    width: 8px;
-                }
-                &::-webkit-scrollbar-track {
-                    background: transparent; 
-                }
-                &::-webkit-scrollbar-thumb {
-                    background-color: transparent; 
-                    border-radius: 10px;
-                }
-                &:hover::-webkit-scrollbar-thumb {
-                    background-color: #888;
-                }
-                &:hover::-webkit-scrollbar-thumb:hover {
-                    background-color: #555; 
-                }
                 .BusinessDivisionsRegistration_mid_form_cont{
-                    margin: -20px 50px;
+                    
+                    margin: 20px 50px;
+                    background-color: #EFEDEA;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    scrollbar-width: thin; 
+                    scrollbar-color: transparent transparent;
+                    border-radius: 5px;
+                    &:hover {
+                        scrollbar-color: #888 #EFEDEA; 
+                    }
+                    &::-webkit-scrollbar {
+                        width: 8px;
+                    }
+                    &::-webkit-scrollbar-track {
+                        background: transparent; 
+                    }
+                    &::-webkit-scrollbar-thumb {
+                        background-color: transparent; 
+                        border-radius: 10px;
+                    }
+                    &:hover::-webkit-scrollbar-thumb {
+                        background-color: #888;
+                    }
+                    &:hover::-webkit-scrollbar-thumb:hover {
+                        background-color: #555; 
+                    }
                     .BusinessDivisionsRegistration_form-content.BusinessDivisionsRegistration_ForImplementationOfPlusAndMinus{
-                        padding: 50px 0px 0px 20px;
+                        padding: 0px 0px 10px 20px;
                     }
                     .BusinessDivisionsRegistration_form-content.BusinessDivisionsRegistration_ForImplementationOfHorizontalLineBelow{
                         // border-top: 4px solid rgb(183, 183, 183);
@@ -101,33 +114,34 @@
                                 }
                             }
                         }
+                    } 
+                }
+            }
+            .BusinessDivisionsRegistration_form-btn-content{
+                padding: 20px;
+                .BusinessDivisionsRegistration_plus-btn{
+                    padding: 20px 10px 20px 10px;
+                    gap: 1rem;
+                    display: flex;
+                    margin-left: 90%;
+                    .BusinessDivisionsRegistration_inc,
+                    .BusinessDivisionsRegistration_dec{
+                        background-color: #808080;
+                        color: whitesmoke;
+                        width: 30px;
+                        height: 40px;
+                        font-size: 25px;
+                        border-radius: 5px;
                     }
-                    .BusinessDivisionsRegistration_form-btn-content{
-                        .BusinessDivisionsRegistration_plus-btn{
-                            padding: 20px 10px 20px 10px;
-                            gap: 1rem;
-                            display: flex;
-                            margin-left: 90%;
-                            .BusinessDivisionsRegistration_inc,
-                            .BusinessDivisionsRegistration_dec{
-                                background-color: #808080;
-                                color: whitesmoke;
-                                width: 30px;
-                                height: 40px;
-                                font-size: 25px;
-                                border-radius: 5px;
-                            }
-                        }
-                        .BusinessDivisionsRegistration_options-btn{
-                            display: flex;
-                            gap: 1%;
-                            padding: 10px 10px 10px 10px;
-                            align-items: center;
-                            justify-content: center;
-                            button{
-                                width: 10%;
-                            }
-                        }
+                }
+                .BusinessDivisionsRegistration_options-btn{
+                    display: flex;
+                    gap: 1%;
+                    padding: 10px 10px 10px 10px;
+                    align-items: center;
+                    justify-content: center;
+                    button{
+                        width: 10%;
                     }
                 }
             }

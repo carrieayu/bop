@@ -181,7 +181,7 @@ const ClientsRegistration = () => {
             />
           </div>
           <div className='ClientsRegistration_mid_body_cont'>
-            <form className='ClientsRegistration_form_cont' onSubmit={handleSubmit}>
+            <form className='ClientsRegistration_inputs_and_buttons' onSubmit={handleSubmit}>
               <div className='ClientsRegistration_mid_form_cont'>
                 {clientData.map((container, containerIndex) => (
                   <div key={containerIndex} className='ClientsRegistration_ForImplementationOfPlusAndMinus'>

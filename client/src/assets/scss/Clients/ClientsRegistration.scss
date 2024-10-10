@@ -2,8 +2,6 @@
     display: flex;
     flex-direction: column;
     .RegistrationButtons_title_container{
-        background-color: #fff;
-        width: 80vw;
         padding: 58.5px 70px 50px 70px !important;
         @media only screen and (min-width: 1920px){
             padding: 59.5px 70px 50px 70px !important;
@@ -12,15 +10,15 @@
     .ClientsRegistration_content_wrapper{
         display: flex;
         background-color: #EFEDEA;
-        width: 100vw;
-        height: 100vh;
+        width: 100%;
+        height: 95vh;
         @media only screen and (max-width: 1000px){
             flex-direction: column;
         }
         .ClientsRegistration_data_content{
             display: flex;
             flex-direction: column;
-            // width: 80%;
+            width: 100%;
             margin: 10px 30px 10px 30px;
             border: 1px solid #fff;
             border-radius: 5px;
@@ -28,9 +26,8 @@
             .ClientsRegistration_top_body_cont{
                margin: 4rem 0 0 0;
                background-color: #fff;
-                // height: 4rem;
             }
-            .ClientsRegistration_form_cont{
+            .ClientsRegistration_inputs_and_buttons{
                 display: flex;
                 height: 70vh;
                 justify-content: space-between;
@@ -98,11 +95,10 @@
                     }
                 }
                 .ClientsRegistration_lower_form_cont{
-                    justify-content: space-between;
-                    align-items: center; 
+                    // justify-content: space-between;
+                    // align-items: center; 
                     padding: 20px;
-                    background-color: #fff;
-                    bottom: 50px;
+                    // bottom: 50px;
                     .ClientsRegistration_form-content{
                         .ClientsRegistration_plus-btn{
                             padding: 20px 10px 20px 10px;
