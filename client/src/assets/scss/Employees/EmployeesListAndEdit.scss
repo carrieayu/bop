@@ -4,12 +4,12 @@
         display: flex;
         background-color: #EFEDEA;
         width: 100vw;
-        height: 130vh;
+        // height: 130vh;
         @media only screen and (max-width: 1000px){
             flex-direction: column;
         }
         .EmployeesListAndEdit_maincontent_wrapper{
-            width: 84%;
+            width: 102.5%; // I chaned this so it would align with registration screens
             padding: 10px 30px 10px 30px;
             .EmployeesListAndEdit_top_content{
                 border: 1px solid #fff;
@@ -38,20 +38,20 @@
                     color: white;
                 }
                 .EmployeesListAndEdit_mid_body_cont{
-                    height: 118vh;
+                    height: 85vh;
                     .ListButtons_btn{
                         margin-left: -8px;
                     }
                 }
                 .EmployeesListAndEdit_table_wrapper{
                     width: 100%;
-                    height: 80vh;
+                    height: 80%;
                     overflow-y: auto; 
                     overflow-x: hidden;
                     scrollbar-width: thin;
                     scrollbar-color: #888 #e0e0e0;
                     @media only screen and (min-width: 1920px){
-                        height: 45vh;
+                    height: 65vh;
                     }
                     &::-webkit-scrollbar {
                         width: 8px;

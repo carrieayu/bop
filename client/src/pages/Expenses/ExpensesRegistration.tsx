@@ -296,8 +296,7 @@ const ExpensesRegistration = () => {
       <div className='expensesRegistration_content_wrapper'>
         <Sidebar />
         <div className='expensesRegistration_data_content'>
-          <div className='expensesRegistration_top_body_cont'></div>
-          <div className='expensesRegistration_mid_body_cont'>
+          <div className='expensesRegistration_top_body_cont'>
             <RegistrationButtons
               activeTabOther={activeTabOther}
               message={translate('expensesRegistration', language)}
@@ -309,8 +308,10 @@ const ExpensesRegistration = () => {
                 { labelKey: 'costOfSales', tabKey: 'costOfSales' },
               ]}
             />
-            <div className='expensesRegistration_mid_form_cont'>
-              <form onSubmit={handleSubmit}>
+            </div>
+            <div className='expensesRegistration_mid_body_cont'>
+              <form className='expensesRegistration_inputs_and_buttons'onSubmit={handleSubmit}>
+                <div className='expensesRegistration_mid_form_cont'>
                 {formData.map((form, index) => (
                   <div
                     key={index}
@@ -342,7 +343,12 @@ const ExpensesRegistration = () => {
                           <label className='expensesRegistration_rent_expenses'>
                             {translate('rentExpense', language)}
                           </label>
-                          <input type='number' name='rent_expense' value={form.rent_expense} onChange={(e) => handleChange(index, e)} />
+                          <input
+                            type='number'
+                            name='rent_expense'
+                            value={form.rent_expense}
+                            onChange={(e) => handleChange(index, e)}
+                          />
                         </div>
                         <div className='expensesRegistration_travel_expenses-div'>
                           <label className='expensesRegistration_travel_expenses'>
@@ -480,26 +486,28 @@ const ExpensesRegistration = () => {
                     <input type='hidden' name='registered_user_id' value={form.registered_user_id} />
                   </div>
                 ))}
-                <div className='expensesRegistration_form-content'>
-                  <div className='expensesRegistration_plus-btn'>
-                    <button className='expensesRegistration_inc' type='button' onClick={handleAdd}>
-                      +
-                    </button>
-                    <button className='expensesRegistration_dec' type='button' onClick={handleMinus}>
-                      -
-                    </button>
-                  </div>
-                  <div className='expensesRegistration_options-btn'>
-                    <button type='button' className='button is-light'>
-                      {translate('cancel', language)}
-                    </button>
-                    <button type='submit' className='button is-info'>
-                      {translate('submit', language)}
-                    </button>
+              </div>
+                <div className='expensesRegistration_lower_form_cont'>
+                  <div className='expensesRegistration_form-content'>
+                    <div className='expensesRegistration_plus-btn'>
+                      <button className='expensesRegistration_inc' type='button' onClick={handleAdd}>
+                        +
+                      </button>
+                      <button className='expensesRegistration_dec' type='button' onClick={handleMinus}>
+                        -
+                      </button>
+                    </div>
+                    <div className='expensesRegistration_options-btn'>
+                      <button type='button' className='button is-light'>
+                        {translate('cancel', language)}
+                      </button>
+                      <button type='submit' className='button is-info'>
+                        {translate('submit', language)}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </form>
-            </div>
           </div>
         </div>
       </div>

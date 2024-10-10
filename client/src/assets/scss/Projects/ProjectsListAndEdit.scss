@@ -3,128 +3,159 @@
     .projectsList_cont_wrapper{
         display: flex;
         background-color: #EFEDEA;
-        width: 100vw; 
-        height: 130vh;
+        // width: 100vw; 
         @media only screen and (max-width: 1000px){
             flex-direction: column;
         }
         .projectsList_wrapper{
-                    width: 84%;
-                    height: 100vh;
-                    padding: 10px 30px 10px 30px;
-                    .projectsList_top_content{
-                        border: 1px solid #fff;
-                        border-radius: 5px;
-                        background-color: #fff;
-                        .projectsList_top_body_cont{
-                            background-color: #fff;
-                            height: 4rem;
+            width: 102.5%; // I chaned this so it would align with registration screens
+            padding: 10px 30px 10px 30px;
+            .projectsList_top_content{
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                border: 1px solid #fff;
+                border-radius: 5px;
+                .projectsList_top_body_cont{
+                    background-color: #fff;
+                    height: 4rem;
+                }
+                button.projectsList_mode_switch {
+                    position: absolute;
+                    right: 70px;
+                    border: 1px solid;
+                    padding: 3px 21px;
+                    border-radius: 5px;
+                    font-weight: 500;
+                    background-color: #f3f3f38b;
+                }
+                .projectsList_mode_switch_datalist{
+                    // position: absolute;
+                    float: right;
+                    padding: 40px 70px;
+                }
+                button.projectsList_edit_submit_btn {
+                    // border: 2px solid #fdd7b3;
+                    padding: 2px 13px;
+                    border-radius: 7px;
+                    margin-top: 6px;
+                    background: #66d1ff;
+                    // color: white;
+                }
+                .projectsList_mid_body_cont{
+                    background-color: #fff;
+                    height: 85vh;
+                    .ListButtons_btn{
+                        margin-left: 10px;
+                    }
+                    .projectsList_table_wrapper{
+                        width: 100%;
+                        height: 80%;
+                        overflow-y: auto; 
+                        overflow-x: hidden;
+                        scrollbar-width: thin;
+                        scrollbar-color: #888 #e0e0e0;
+                        @media only screen and (min-width: 1920px){
+                            height: 65vh;
                         }
-                        button.projectsList_mode_switch {
-                            border: 1px solid;
-                            padding: 3px 21px;
-                            border-radius: 5px;
-                            font-weight: 500;
-                            background-color: #f3f3f3;
+                        &::-webkit-scrollbar {
+                            width: 8px;
                         }
-                        .projectsList_mode_switch_datalist{
-                            float: right;
-                            padding: 40px 70px;
+                        &::-webkit-scrollbar-track {
+                            background: #e0e0e0;
                         }
-                        button.projectsList_edit_submit_btn {
-                            border: 2px solid #fdd7b3;
-                            padding: 2px 13px;
-                            border-radius: 7px;
-                            margin-top: 6px;
-                            background: #2e2eff;
-                            color: white;
+                        &::-webkit-scrollbar-thumb {
+                            background-color: #888;
+                            border-radius: 10px;
                         }
-                        .projectsList_mid_body_cont{
-                            height: 118vh;
-                            .ListButtons_btn{
-                                margin-left: 10px;
+                        &::-webkit-scrollbar-thumb:hover {
+                            background-color: #555;
+                        }
+                        &:not(:hover) {
+                            &::-webkit-scrollbar {
+                                width: 0;
                             }
-                            .projectsList_table_wrapper{
-                                width: 100%;
-                                height: 75vh;
-                                overflow-y: auto; 
-                                overflow-x: hidden;
-                                scrollbar-width: thin;
-                                scrollbar-color: #888 #e0e0e0;
-                                @media only screen and (min-width: 1920px){
-                                    height: 85vh;
-                                }
-                                &::-webkit-scrollbar {
-                                    width: 8px;
-                                }
-                                &::-webkit-scrollbar-track {
-                                    background: #e0e0e0;
-                                }
-                                &::-webkit-scrollbar-thumb {
-                                    background-color: #888;
-                                    border-radius: 10px;
-                                }
-                                &::-webkit-scrollbar-thumb:hover {
-                                    background-color: #555;
-                                }
-                                &:not(:hover) {
-                                    &::-webkit-scrollbar {
-                                        width: 0;
+                            scrollbar-width: none; 
+                        }
+                        .projectsList_table_cont.editScrollable {
+                            overflow-x: auto;
+                        }
+                        .projectsList_table_cont{
+                            padding: 0px 0px 0px 70px;
+                            .table{
+                                width: 97%;
+                                .projectsList_table_title{
+                                    position: sticky;
+                                    top: 0;
+                                    z-index: 1;
+                                    text-align: center;
+                                    background-color: #808080;
+                                    .projectsList_table_title_content_vertical{
+                                        color: #fff;
+                                        border: none;
+                                        font-size: 14px;
                                     }
-                                    scrollbar-width: none; 
                                 }
-                                .projectsList_table_cont.editScrollable {
-                                    overflow-x: auto;
-                                }
-                                .projectsList_table_cont{
-                                    padding: 0px 0px 0px 70px;
-                                    .table{
-                                        width: 97%;
-                                        .projectsList_table_title{
-                                            position: sticky;
-                                            top: 0;
-                                            z-index: 1;
+                                .projectsList_table_body{
+                                    .projectsList_table_body_content_horizontal{
+                                        
+                                        border: none;
+                                        &:nth-child(odd){
+                                            background-color: #f9f9f9;
+                                        }
+                                        &:nth-child(even){
+                                            background-color: #e0e0e0;
+                                        }
+                                        .projectsList_table_body_content_vertical{
+                                            border: none;
                                             text-align: center;
-                                            background-color: #808080;
-                                            .projectsList_table_title_content_vertical{
-                                                color: #fff;
-                                                border: none;
-                                                font-size: 14px;
-                                            }
                                         }
-                                        .projectsList_table_body{
-                                            .projectsList_table_body_content_horizontal{
-                                                border: none;
-                                                &:nth-child(odd){
-                                                    background-color: #f9f9f9;
-                                                }
-                                                &:nth-child(even){
-                                                    background-color: #e0e0e0;
-                                                }
-                                                .projectsList_table_body_content_vertical{
-                                                    border: none;
-                                                    text-align: center;
-                                                }
-                                                .delete-icon{
-                                                    color: red;
-                                                    cursor: pointer;
-                                                }
-                                            }
+                                        .delete-icon{
+                                            color: red;
+                                            cursor: pointer;
                                         }
                                     }
-                                }
-                            }
-                            .projectsList_is_editing_wrapper{
-                                // margin-top: 220px;
-                                .projectsList_is_editing_cont{
-                                    display: flex;
-                                    justify-content: flex-end;
-                                    padding: 20px 20px 0px 20px;
-                                    margin: 0px !important;
                                 }
                             }
                         }
                     }
+                    .projectsList_table_wrapper.editMode {
+                        display: flex;
+                        // margin-top: 220px;
+                        padding: 0px 40px 0px 0px;
+                        // justify-content: flex-start;
+                        // width: 80%; // Adjusted to 80% for edit mode
+                    }
+                    .projectsList_edit_submit_btn_cont{
+                        display: flex;
+                        justify-content: center;
+                        position: absolute;
+                        bottom: 3px;
+                        right: 3px;
+                        // float: right;
+                        // padding: 0px 120px 200px 120px; 
+                        .projectsList_edit_submit_btn{
+                            
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            gap: 1%;
+                            padding: 5px 20px 5px 20px;
+                        }
+                    }
+                    .projectsList_is_editing_wrapper{
+                        .projectsList_is_editing_cont{                            
+                            // display: flex;
+                            // justify-content: flex-end;
+                            // margin: 0px !important;
+                        }
+                    }
                 }
+            }
+        }
+        .projectsList_wrapper.editMode{
+        width: 84%; // Adjusted to 84% for edit mode
+        }
     }
 }
