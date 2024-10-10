@@ -33,63 +33,61 @@
                 justify-content: space-between;
                 flex-direction: column;
             }
-
-                .ClientsRegistration_mid_body_cont{
-                    background-color: #fff;
-                    height: 90%;
-                    @media only screen and (min-width: 1875px){
-                        height: 55vh;
+            .ClientsRegistration_mid_body_cont{
+                background-color: #fff;
+                height: 90%;
+                @media only screen and (min-width: 1875px){
+                    height: 55vh;
+                }
+                .ClientsRegistration_mid_form_cont{
+                    margin: 20px 50px;          
+                    background-color: #EFEDEA;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    scrollbar-width: thin; 
+                    scrollbar-color: transparent transparent;
+                    border-radius: 5px;
+                    &:hover {
+                        scrollbar-color: #888 #EFEDEA; 
                     }
-                    
-                    .ClientsRegistration_mid_form_cont{
-                        margin: 20px 50px;          
-                        background-color: #EFEDEA;
-                        overflow-y: auto;
-                        overflow-x: hidden;
-                        scrollbar-width: thin; 
-                        scrollbar-color: transparent transparent;
-                        border-radius: 5px;
-                        &:hover {
-                            scrollbar-color: #888 #EFEDEA; 
-                        }
-                        &::-webkit-scrollbar {
-                            width: 8px;
-                        }
-                        &::-webkit-scrollbar-track {
-                            background: transparent; 
-                        }
-                        &::-webkit-scrollbar-thumb {
-                            background-color: transparent; 
-                            border-radius: 10px;
-                        }
-                        &:hover::-webkit-scrollbar-thumb {
-                            background-color: #888;
-                        }
-                        &:hover::-webkit-scrollbar-thumb:hover {
-                            background-color: #555; 
-                        }     
-                        .ClientsRegistration_ForImplementationOfPlusAndMinus{
-                            padding: 0px 0px 10px 0px;
-                        }
-                        .ClientsRegistration_ForImplementationOfHorizontalLineBelow{
-                            // border-top: 4px solid rgb(183, 183, 183);
-                            // opacity: 30%;
-                        }
-                        .ClientsRegistration_form-div{
-                            padding: 15px 0px 0px 20px;
-                            .ClientsRegistration_form-content-div{
-                                .ClientsRegistration_client_name-div{
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .client_name{
-                                        margin-bottom: 5px;
-                                    }
-                                    input{
-                                        width: 40%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
+                    &::-webkit-scrollbar {
+                        width: 8px;
+                    }
+                    &::-webkit-scrollbar-track {
+                        background: transparent; 
+                    }
+                    &::-webkit-scrollbar-thumb {
+                        background-color: transparent; 
+                        border-radius: 10px;
+                    }
+                    &:hover::-webkit-scrollbar-thumb {
+                        background-color: #888;
+                    }
+                    &:hover::-webkit-scrollbar-thumb:hover {
+                        background-color: #555; 
+                    }     
+                    .ClientsRegistration_ForImplementationOfPlusAndMinus{
+                        padding: 0px 0px 10px 0px;
+                    }
+                    .ClientsRegistration_ForImplementationOfHorizontalLineBelow{
+                        // border-top: 4px solid rgb(183, 183, 183);
+                        // opacity: 30%;
+                    }
+                    .ClientsRegistration_form-div{
+                        padding: 15px 0px 0px 20px;
+                        .ClientsRegistration_form-content-div{
+                            .ClientsRegistration_client_name-div{
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .client_name{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 40%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
                                 }
                             }
                         }
