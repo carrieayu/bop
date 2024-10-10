@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import CostOfSalesList, CreateMasterCompany, CreateResults, CreateUserView , DeleteMasterCompany, DeleteResults, DeleteUser, EmployeesCreate, EmployeesDelete, EmployeesUpdate, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany, UpdateResults,ForgotPasswordView, UserList, UserUpdate
+from api.views import CostOfSalesList, CreateMasterCompany, CreateResults, CreateUserView , DeleteMasterCompany, DeleteResults, DeleteUser, EmployeeDetailView, EmployeesCreate, EmployeesDelete, EmployeesUpdate, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany, UpdateResults,ForgotPasswordView, UserList, UserUpdate
 from api.views import CostOfSalesCreate, CostOfSalesUpdate, CreateEmployeeExpenses, EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
 from api.views import ForgotPasswordView, MasterClientTableList,   ResultsLists, StoreProjects, ExpensesDelete, CostOfSalesDelete, ProjectsCreate, ProjectsDataUpdate, ProjectsDelete
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -46,6 +46,7 @@ urlpatterns = [
     #Employees
     path('api/employee-expenses', EmployeeExpensesList.as_view()),
     path('api/employee-expenses/create', CreateEmployeeExpenses.as_view()),
+    path('api/employees/edit/', EmployeeDetailView.as_view()), #used for filtering business when going on edit mode
     path('api/employees', Employees.as_view()),
     path('api/employees/create', EmployeesCreate.as_view()),
     path('api/employees/<int:pk>/delete/', EmployeesDelete.as_view()),

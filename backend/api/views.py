@@ -170,13 +170,13 @@ class EmployeesUpdate(generics.UpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         received_data = request.data
-        try :
+        try:
             for employee_data in received_data: 
-                employee_id = employee_data.get('employee_id')
+                employee_id = employee_data.get('employee', {}).get('employee_id')
                 try:
-                    employee = EmployeesApi.objects.get(employee_id=int(employee_id))
-                    business_division_id = employee_data.get('business_division')
-                    company_id = employee_data.get('company_id')
+                    employee = EmployeesApi.objects.get(employee_id=employee_id)
+                    business_division_id = employee_data.get('employee', {}).get('business_division_id')
+                    company_id = employee_data.get('employee', {}).get('company_id')
                     if business_division_id:
                         try:
                             business_division_instance = MasterBusinessDivision.objects.get(pk=business_division_id)
@@ -189,13 +189,13 @@ class EmployeesUpdate(generics.UpdateAPIView):
                             employee.company = company_instance
                         except MasterCompany.DoesNotExist:
                             return Response({"error": f"Company with ID {company_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
-                    for field, value in employee_data.items():
+                    for field, value in employee_data.get('employee', {}).items():
                         if field not in ['employee_id', 'auth_user', 'auth_user_id' , 'business_division', 'company']:
                             setattr(employee, field, value)
                             
                     employee.save()
 
-                except AuthUser.DoesNotExist:
+                except EmployeesApi.DoesNotExist:
                     return Response({"error": f"Employee with ID {employee_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
             return Response({"success": "Employee updated successfully."}, status=status.HTTP_200_OK)
@@ -203,7 +203,6 @@ class EmployeesUpdate(generics.UpdateAPIView):
             if 'Duplicate entry' in str(e):
                 return Response({'error': 'Email already exists.'}, status=409)
             return Response({'error': str(e)}, status=400)
-
 
 class MasterCompanyList(generics.ListAPIView):
     queryset = MasterCompany.objects.all()
@@ -219,6 +218,21 @@ class MasterBusinessDivisionList(generics.ListAPIView):
     queryset = MasterBusinessDivision.objects.all()
     serializer_class = MasterBusinessDivisionSerializer
     permission_classes = [AllowAny]
+    
+class CompaniesWithBusinessDivisions(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        company_id = request.query_params.get('company_id')
+        if company_id:
+            # Filter business divisions by the selected company ID
+            divisions = MasterBusinessDivision.objects.filter(company_id=company_id).values('business_division_id', 'business_division_name')
+            return JsonResponse(list(divisions), safe=False)
+        
+        # If no company_id is passed, return an empty list
+        return JsonResponse([], safe=False)
+
+
     
 class BusinessDivisionMasterCreate(generics.CreateAPIView):
     serializer_class = MasterBusinessDivisionSerializer
@@ -805,7 +819,37 @@ class EmployeeExpensesList(generics.ListCreateAPIView):
 
     def get_queryset(self): 
         return EmployeesApi.objects.all()
+
+class EmployeeDetailView(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    queryset = EmployeesApi.objects.all()
+    serializer_class = EmployeesListSerializer
     
+    def get(self, request):
+        # Get all employees
+        employees = EmployeesApi.objects.all()
+        employee_data = []
+        
+        # Loop through each employee to retrieve their respective business divisions
+        for employee in employees:
+            business_divisions = MasterBusinessDivision.objects.filter(company_id=employee.company_id).values('business_division_id', 'business_division_name')
+            employee_data.append({
+                'employee': {
+                    'employee_id': employee.employee_id,
+                    'first_name': employee.first_name,
+                    'last_name': employee.last_name,
+                    'email': employee.email,
+                    'salary': employee.salary,
+                    'created_at': employee.created_at,
+                    'updated_at': employee.updated_at,
+                    'auth_user_id': employee.auth_user_id,
+                    'company_id': employee.company_id,
+                    'business_division_id': employee.business_division_id
+                },
+                'business_divisions': list(business_divisions)
+            })
+        
+        return JsonResponse(employee_data, safe=False)
 class Employees(generics.ListAPIView):
     queryset = EmployeesApi.objects.all()
     serializer_class = EmployeesListSerializer
