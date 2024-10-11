@@ -172,16 +172,23 @@ const EmployeesListAndEdit: React.FC = () => {
     const validateEmployees = (employees, originalEmployees) => {
       return employees.every((employee, index) => {
         const originalEmployee = originalEmployees[index];
-        if (employee.last_name !== originalEmployee.last_name || employee.first_name !== originalEmployee.first_name || employee.email !== originalEmployee.email || employee.salary !== originalEmployee.salary) {
+        console.log(employee)
+        console.log(originalEmployee)
+        if (
+          employee.employee.last_name !== originalEmployee.last_name ||
+          employee.employee.first_name !== originalEmployee.first_name ||
+          employee.employee.email !== originalEmployee.email ||
+          employee.employee.salary !== originalEmployee.salary
+        ) {
           return (
-            employee.last_name.trim() !== '' &&
-            employee.first_name.trim() !== '' &&
-            /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(employee.email) && // Email validation
-            !isNaN(employee.salary) &&
-            employee.salary > 0  // Salary should be a number and greater than 0
+            employee.employee.last_name.trim() !== '' &&
+            employee.employee.first_name.trim() !== '' &&
+            /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(employee.employee.email) &&
+            !isNaN(employee.employee.salary) &&
+            employee.employee.salary > 0
           )
         } else {
-          return true;
+          return true
         }
       })
     }
@@ -265,6 +272,7 @@ const EmployeesListAndEdit: React.FC = () => {
         }
     
         try {
+         
           const url = isEditing ? 'http://127.0.0.1:8000/api/employees/edit/' : 'http://127.0.0.1:8000/api/employees'
           const response = await axios.get(url, {
             headers: {
@@ -278,7 +286,7 @@ const EmployeesListAndEdit: React.FC = () => {
           }));
           setEmployeesList(employeesListWithBusinessSelection)
           setOriginalEmployeesList(employeesListWithBusinessSelection)
-    
+          
           // Update business divisions for each employee
           employeesListWithBusinessSelection.forEach((employee, index) => {
             axios.get(`http://127.0.0.1:8000/api/business-divisions/?company_id=${employee.company_id}`)
