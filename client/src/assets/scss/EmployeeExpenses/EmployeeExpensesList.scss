@@ -20,6 +20,24 @@
                             background-color: #fff;
                             height: 4rem;
                         }
+                        button.employeeExpensesList_mode_switch{
+                            border: 1px solid;
+                            padding: 3px 21px;
+                            border-radius: 5px;
+                            font-weight: 500;
+                            background-color: #f3f3f3;
+                        }
+                        .employeeExpensesList_mode_switch_datalist{
+                            float: right;
+                            padding: 40px 70px;
+                        }
+                        button.employeeExpensesList_edit_submit_btn {
+                            border: 2px solid #fdd7b3;
+                            padding: 2px 13px;
+                            border-radius: 7px;
+                            background: #2e2eff;
+                            color: white;
+                        }
                         .employeeExpensesList_mid_body_cont{
                             height: 118vh;
                             .ListButtons_btn{
@@ -71,6 +89,19 @@
                                             }
                                         }
                                         .employeeExpensesList_table_body{
+                                            .employeeExpensesList_year{
+                                                border: none;
+                                                .horizontal-line {
+                                                    width: 100%; 
+                                                    background-color: #808080; 
+                                                    opacity: 30%;
+                                                    height: 2px; 
+                                                    border: none;
+                                                    margin-top: 8px; 
+                                                    margin-bottom: 8px;
+                                                    margin-left: 55px;
+                                                }
+                                            }
                                             .employeeExpensesList_user_name{
                                                 &:nth-child(odd){
                                                     background-color: #f9f9f9;
@@ -81,53 +112,30 @@
                                             }
                                             .employeeExpensesList_txt0{
                                                 margin-bottom: 5px;
-                                                text-align: center;
+                                                // text-align: center;
                                                 font-size: 14px;
+                                                // background-color: #C6D4E7;
+                                                // color: #000;
+                                                // border-radius: 5px;
                                             }
                                             .employeeExpensesList_txt1_txt2_flex{
-                                                margin-top: 20px;
+                                                margin-top: 10px;
+                                                margin-bottom: 10px;
                                                 display: flex;
                                                 flex-direction: column;
                                                 .employeeExpensesList_txt1{
-                                                    font-size: 10px;
-                                                    padding: 5px 0px;
-                                                    background-color: #C6D4E7;
-                                                    color: #000;
-                                                    border-radius: 5px;
-                                                    text-align: center;
+                                                    font-size: 14px;
+                                                    // text-align: center;
                                                     // width: 100% !important;
                                                     @media only screen and (max-width: 1875px){
-                                                        font-size: 10px;
+                                                        font-size: 14px;
                                                     }
                                                 }
                                                 .employeeExpensesList_txt2{
-                                                    margin-left: 5px;
-                                                    font-size: 10px;
+                                                    // margin-left: 5px;
+                                                    font-size: 14px;
                                                     padding: 5px 0px;
-                                                    text-align: center;
-                                                }
-                                            }
-                                            .employeeExpensesList_txt3_txt4_flex{
-                                                margin-top: 30px;
-                                                display: flex;
-                                                flex-direction: column;
-                                                .employeeExpensesList_txt3{
-                                                    font-size: 12px;
-                                                    padding: 5px 0px;
-                                                    background-color: #C6D4E7;
-                                                    color: #000;
-                                                    border-radius: 5px;
-                                                    text-align: center;
-                                                    // width: 100% !important;
-                                                    @media only screen and (max-width: 1875px){
-                                                        font-size: 10px;
-                                                    }
-                                                }
-                                                .employeeExpensesList_txt4{
-                                                    margin-left: 5px;
-                                                    font-size: 12px;
-                                                    padding: 5px 0px;
-                                                    text-align: center;
+                                                    // text-align: center;
                                                 }
                                             }
                                         }
@@ -140,25 +148,6 @@
                                     justify-content: flex-end;
                                     padding: 20px 20px 0px 20px;
                                     margin: 0px !important;
-                                    .pagination{
-                                        #prevButton,
-                                        #nextButton,
-                                        #lastButton,
-                                        #optionNumber{
-                                            border: 1px solid #34a953;
-                                            background-color: #fff;
-                                            color: #000;
-                                            &:hover{
-                                                background-color: #34a953;
-                                                color: #fff;
-                                            }
-                                        }
-                                        .activeButton{
-                                            background-color: #34a953 !important;
-                                            color: #fff !important;
-                                            border: 1px solid #34a953 !important;
-                                        }
-                                    }
                                 }
                             }
                         }

@@ -13,7 +13,7 @@ export const fetchApi = async (
       throw new Error(`Error: ${response.statusText}`)
     }
     const data = await response.json()
-    onSuccess(data)
+    onSuccess(data) 
   } catch (error) {
     if (onError) {
       onError(error)
