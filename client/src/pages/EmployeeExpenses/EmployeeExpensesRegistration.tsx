@@ -181,10 +181,38 @@ const EmployeeExpensesRegistration = () => {
     setEmployeeContainers(newContainers) 
   }
 
+  const hasDuplicateProjects = () => {
+    for (const container of employeeContainers) {
+      const projectMap = new Map();
+      
+      for (const projectEntry of container.projectEntries) {
+        const projectId = projectEntry.projects;
+  
+        // Ensure the projectId is not empty before checking
+        if (projectId) {
+          // Check if the project is already present for the same employee
+          if (projectMap.has(projectId)) {
+            return true; // Duplicate project found for the same employee
+          }
+          projectMap.set(projectId, true);
+        }
+      }
+    }
+    
+    return false; // No duplicates found for any employee
+  };
+  
 
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    // Check for duplicate projects
+    if (hasDuplicateProjects()) {
+      alert('Duplicate projects found. Please ensure each project is unique.');
+      return; // Prevent form submission
+    }
+
     const token = localStorage.getItem('accessToken')
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/employee-expenses/create/', employeeContainers, {

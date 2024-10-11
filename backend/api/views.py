@@ -837,8 +837,9 @@ class EmployeeExpensesList(generics.ListAPIView):
                 employee_last_name = employee['last_name'] if employee else ''
                 employee_first_name = employee['first_name'] if employee else ''
                 employee_salary = employee['salary'] if employee else 0  # Default to 0 if None
+                employee_id = employee['employee_id'] if project else '' 
                 project_name = project['project_name'] if project else ''  # Default to empty string if None
-                project_id = project['project_id'] if project else ''  # Default to 0 if
+                project_id = project['project_id'] if project else ''  
                 
 
                 # print("project",project['project_id'])
@@ -850,6 +851,7 @@ class EmployeeExpensesList(generics.ListAPIView):
                     'employee_last_name': employee_last_name,
                     'employee_first_name': employee_first_name,
                     'employee_salary': employee_salary,
+                    'employee_id': employee_id,
                     'project_name': project_name,
                     'project_id': project_id
                 })
@@ -960,10 +962,10 @@ class CreateEmployeeExpenses(generics.CreateAPIView):
 
 class DeleteEmployeeExpenses(generics.DestroyAPIView):
     serializer_class = EmployeeExpensesDataSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        pk = self.kwargs.get('pk')  # Get the pk from the URL kwargs
+        pk = self.kwargs.get('pk')
         try:
             return EmployeeExpenses.objects.get(employee_expense_id=pk)
         except EmployeeExpenses.DoesNotExist:
@@ -971,7 +973,7 @@ class DeleteEmployeeExpenses(generics.DestroyAPIView):
 
     def destroy(self, request, pk, *args, **kwargs):
         project_id = request.query_params.get('project_id')
-        instance = self.get_object()  # Fetch the instance without arguments
+        instance = self.get_object()
 
         if instance is None:
             return Response({"message": "Employee expense not found."}, status=status.HTTP_404_NOT_FOUND)
@@ -982,17 +984,18 @@ class DeleteEmployeeExpenses(generics.DestroyAPIView):
         print(f"Provided Project ID: {project_id}")
 
         if project_id:
-            # Check if the specified project_id matches the associated project
+            # If a project_id is provided, check if it matches the instance's project
             if instance.project and str(instance.project.project_id) == project_id:
-                instance.project = None  # Remove the association
-                instance.save()
-                return Response({"message": "Project association removed successfully"}, status=status.HTTP_200_OK)
+                # Delete the employee expense instance entirely
+                instance.delete()  # This will delete the instance from the database
+                return Response({"message": "Employee expense and its project association removed successfully"}, status=status.HTTP_200_OK)
             else:
                 return Response({"message": "Project not found in this expense."}, status=status.HTTP_404_NOT_FOUND)
         else:
-            # If no project_id is provided, delete the entire employee expense
-            instance.delete()
-            return Response({"message": "Employee expense deleted successfully"}, status=status.HTTP_200_OK)
+            # If no project_id is provided, delete all employee expenses for the same employee_id
+            employee_id = instance.employee_id 
+            EmployeeExpenses.objects.filter(employee_id=employee_id).delete()
+            return Response({"message": "All employee expenses for this employee deleted successfully"}, status=status.HTTP_200_OK)
 
     
 class Planning(generics.ListAPIView):

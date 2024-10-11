@@ -24,7 +24,6 @@ const EmployeeExpensesList: React.FC = () => {
     const [isEditing, setIsEditing] = useState(false)
     const [initialLanguage, setInitialLanguage] = useState(language);
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const token = localStorage.getItem('accessToken')
     const [selectedEmployeeExpenses, setSelectedEmployeeExpenses] = useState<any>(null);
     const [deleteEmployeeExpensesId, setDeleteEmployeeExpensesId] = useState([])
     const [employeeProjectId, setEmployeeProjectId ] = useState<{employee_expense_id:string,project_id:string,mode:"employee_expense" | "project"}>({} as {employee_expense_id:string,project_id:string,mode:"employee_expense"})
@@ -153,18 +152,24 @@ const EmployeeExpensesList: React.FC = () => {
 
   const handleDeleteExpense = async () => {
     console.log('Confirmed action for employee expense:', employeeProjectId)
+    const token = localStorage.getItem('accessToken')
+    console.log('Token before delete:', token);
     try {
-      const response = await axios.delete(`http://127.0.0.1:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/`, {
+      await axios.delete(`http://127.0.0.1:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/`, {
         headers: {
           'Authorization': `Bearer ${token}`  // Add token to request headers
         }
       });
 
+      setEmployeeExpenses(prevExpenses => 
+        prevExpenses.filter(expense => expense.employee_expense_id !== employeeProjectId.employee_expense_id)
+      );
+
       setIsEditing(false);
       alert('Successfully deleted');
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        window.location.href = '/login' // Redirect to login if unauthorized
+        // window.location.href = '/login' // Redirect to login if unauthorized
       } else {
         console.error('Error deleting employee expense:', error)
       }
@@ -174,19 +179,25 @@ const EmployeeExpensesList: React.FC = () => {
 
   const handleRemoveProjectAssociation = async () => {
     console.log("data", employeeProjectId)
-
     console.log('Confirmed action for employee expense:', employeeProjectId)
+    const token = localStorage.getItem('accessToken')
+    console.log('Token before delete:', token);
     try {
-      const response = await axios.delete(`http://127.0.0.1:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/?project_id=${employeeProjectId.project_id}`, {
+      await axios.delete(`http://127.0.0.1:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/?project_id=${employeeProjectId.project_id}`, {
         headers: {
           'Authorization': `Bearer ${token}`  // Add token to request headers
         }
       });
+
+      setEmployeeExpenses(prevExpenses => 
+        prevExpenses.filter(expense => expense.employee_expense_id !== employeeProjectId.employee_expense_id)
+      );
+      
       setIsEditing(false);
-      alert('Successfully deleted');
+      alert('Project successfully remove');
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        window.location.href = '/login' // Redirect to login if unauthorized
+        // window.location.href = '/login' // Redirect to login if unauthorized
       } else {
         console.error("Error removing project association:", error)
       }
@@ -285,12 +296,13 @@ const EmployeeExpensesList: React.FC = () => {
                                       project_name: expense.project_name,
                                       employee_salary: expense.employee_salary,
                                       project_id: expense.project_id,
+                                      employee_expense_id: expense.employee_expense_id,
                                     });
                                     monthlyExpenses[monthIndex].total_salary += expense.employee_salary;
                                   }
-                                  // console.log("expense", expense)  
+                                  console.log("expense", expense)  
                                   yearGroup.employees.push({
-                                    employee_expense_id: expense.employee_expense_id,
+                                    employee_expense_id: expense.employee_expense_id,                                
                                     project_id: expense.project_id,
                                     employee_last_name: expense.employee_last_name,
                                     employee_first_name: expense.employee_first_name,
@@ -304,6 +316,7 @@ const EmployeeExpensesList: React.FC = () => {
                                       project_name: expense.project_name,
                                       employee_salary: expense.employee_salary,
                                       project_id: expense.project_id,
+                                      employee_expense_id: expense.employee_expense_id,
                                     });
                                     existingMonthlyExpenses[monthIndex].total_salary += expense.employee_salary;
                                   }
@@ -347,11 +360,12 @@ const EmployeeExpensesList: React.FC = () => {
                                                             style={{ color: 'red', marginLeft: '20px', cursor: 'pointer' }} 
                                                             // {to delete specific project}
                                                             onClick={() => {
-                                                              console.log("Deleting project with ID:", project.project_id); // Log the project ID
+                                                              console.log("Deleting project with ID:", project.employee_expense_id);
+                                                              console.log("Deleting project with ID:", project.project_id); 
                                                               setModalIsOpen(true), 
                                                               setEmployeeProjectId({
-                                                                employee_expense_id: employee.employee_expense_id,
-                                                                project_id: project.project_id, // Check this
+                                                                employee_expense_id: project.employee_expense_id,
+                                                                project_id: project.project_id, 
                                                                 mode: "project"
                                                               });
                                                             }}
@@ -379,10 +393,15 @@ const EmployeeExpensesList: React.FC = () => {
                                         className='delete-icon'
                                         style={{ color: 'red', cursor: 'pointer' }}
                                         // {to delete entire row}
-                                        onClick={() => (
-                                          setModalIsOpen(true), 
-                                          setEmployeeProjectId({...employeeProjectId,employee_expense_id:employee.employee_expense_id,mode:"employee_expense"})
-                                        )}
+                                        onClick={() => {
+                                          console.log("Deleting employee expense with ID:", employee.employee_expense_id);
+                                          setModalIsOpen(true);
+                                          setEmployeeProjectId({
+                                            ...employeeProjectId,
+                                            employee_expense_id: employee.employee_expense_id,
+                                            mode: "employee_expense"
+                                          });
+                                        }}
                                       />
                                       </td>
                                     </tr>
@@ -511,7 +530,7 @@ const EmployeeExpensesList: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className='employeeExpensesList_is_editing_wrapper'>
+                {/* <div className='employeeExpensesList_is_editing_wrapper'>
                     <div className='employeeExpensesList_is_editing_cont'>
                       {isEditing ? (
                         <div className='employeeExpensesList_mode_switch_datalist'>
@@ -523,7 +542,7 @@ const EmployeeExpensesList: React.FC = () => {
                         <div></div>
                       )}
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

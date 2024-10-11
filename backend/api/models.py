@@ -246,7 +246,7 @@ class EmployeeExpenses(models.Model):
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
     project = models.ForeignKey(Projects, on_delete=models.CASCADE, null=True)
-    employee = models.ForeignKey(Employees, on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employees, on_delete=models.CASCADE, null=True)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
