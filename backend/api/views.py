@@ -799,12 +799,54 @@ class ForgotPasswordView(generics.CreateAPIView):
             {"message": "Project Planning Data created successfully"},
             status=status.HTTP_201_CREATED,
         )
-class EmployeeExpensesList(generics.ListCreateAPIView):
-    serializer_class = GetUserMasterSerializer
+    
+class EmployeeExpensesList(generics.ListAPIView):
+    serializer_class = EmployeeExpensesDataSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self): 
-        return EmployeesApi.objects.all()
+        # Get all employee expenses along with related employee and project information
+        return EmployeeExpenses.objects.select_related('employee', 'project').all()
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        # Debugging: print the serialized data
+        # print(serializer.data)
+
+        employee_expenses_data = []
+        for expense in serializer.data:
+            # Ensure expense is a dictionary before accessing
+            if isinstance(expense, dict):
+                employee = expense.get('employee')  # This might be None
+                project = expense.get('project')  # This might be None
+
+                # Safely get the employee and project data
+                employee_last_name = employee['last_name'] if employee else ''
+                employee_first_name = employee['first_name'] if employee else ''
+                employee_salary = employee['salary'] if employee else 0  # Default to 0 if None
+                project_name = project['project_name'] if project else ''  # Default to empty string if None
+                project_id = project['project_id'] if project else ''  # Default to 0 if
+                
+
+                # print("project",project['project_id'])
+
+                employee_expenses_data.append({
+                    'employee_expense_id': expense.get('employee_expense_id', ''),
+                    'year': expense.get('year', ''),
+                    'month': expense.get('month', ''),
+                    'employee_last_name': employee_last_name,
+                    'employee_first_name': employee_first_name,
+                    'employee_salary': employee_salary,
+                    'project_name': project_name,
+                    'project_id': project_id
+                })
+
+        return Response(employee_expenses_data)
+
+
+
     
 class Employees(generics.ListAPIView):
     queryset = EmployeesApi.objects.all()
@@ -874,6 +916,43 @@ class CreateEmployeeExpenses(generics.CreateAPIView):
         return Response({
             "employeeExpenses": created_expenses
         }, status=status.HTTP_201_CREATED)
+    
+
+class DeleteEmployeeExpenses(generics.DestroyAPIView):
+    serializer_class = EmployeeExpensesDataSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        pk = self.kwargs.get('pk')  # Get the pk from the URL kwargs
+        try:
+            return EmployeeExpenses.objects.get(employee_expense_id=pk)
+        except EmployeeExpenses.DoesNotExist:
+            return None
+
+    def destroy(self, request, pk, *args, **kwargs):
+        project_id = request.query_params.get('project_id')
+        instance = self.get_object()  # Fetch the instance without arguments
+
+        if instance is None:
+            return Response({"message": "Employee expense not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Debugging: Log the current instance and project details
+        print(f"Current Employee Expense: {instance.employee_expense_id}")
+        print(f"Associated Project: {instance.project.project_id if instance.project else 'None'}")
+        print(f"Provided Project ID: {project_id}")
+
+        if project_id:
+            # Check if the specified project_id matches the associated project
+            if instance.project and str(instance.project.project_id) == project_id:
+                instance.project = None  # Remove the association
+                instance.save()
+                return Response({"message": "Project association removed successfully"}, status=status.HTTP_200_OK)
+            else:
+                return Response({"message": "Project not found in this expense."}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            # If no project_id is provided, delete the entire employee expense
+            instance.delete()
+            return Response({"message": "Employee expense deleted successfully"}, status=status.HTTP_200_OK)
 
     
 class Planning(generics.ListAPIView):

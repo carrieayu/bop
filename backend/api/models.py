@@ -110,7 +110,7 @@ class Employees(models.Model):
     def _generate_employee_id(self):
         last_employee = Employees.objects.filter(employee_id__startswith='300').order_by('-employee_id').first()
         if last_employee:
-            return str(int(last_employee.employee_id) + 1)
+            return str(int(last_employee.employee_id) + 1).zfill(10)
         return str(self.STARTING_EMPLOYEE_ID)
 
     def save(self, *args, **kwargs):
@@ -241,11 +241,11 @@ class Results(models.Model):
 
     
 class EmployeeExpenses(models.Model):
-    employee_expense_id = models.CharField(max_length=10, primary_key=True)  # Change to CharField for formatted ID
+    employee_expense_id = models.CharField(max_length=10, primary_key=True, editable=False)  # Change to CharField for formatted ID
     client = models.ForeignKey(MasterClient, on_delete=models.CASCADE)
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
-    project = models.ForeignKey(Projects, on_delete=models.CASCADE)
+    project = models.ForeignKey(Projects, on_delete=models.CASCADE, null=True)
     employee = models.ForeignKey(Employees, on_delete=models.CASCADE)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)

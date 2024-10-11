@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import CostOfSalesList, CreateMasterCompany, CreateResults, CreateUserView , DeleteMasterCompany, DeleteResults, DeleteUser, EmployeesCreate, EmployeesDelete, EmployeesUpdate, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany, UpdateResults,ForgotPasswordView, UserList, UserUpdate
+from api.views import CostOfSalesList, CreateMasterCompany, CreateResults, CreateUserView, DeleteEmployeeExpenses , DeleteMasterCompany, DeleteResults, DeleteUser, EmployeesCreate, EmployeesDelete, EmployeesUpdate, ForgotPasswordView, MasterClientTableList, MasterCompanyList, ProjectsList, ResultsLists, StoreProjects, UpdateMasterCompany, UpdateResults,ForgotPasswordView, UserList, UserUpdate
 from api.views import CostOfSalesCreate, CostOfSalesUpdate, CreateEmployeeExpenses, EmployeeExpensesList, Employees, ExpensesCreate, ExpensesList, ExpensesUpdate, Planning, PlanningUpdate, ProjectsUpdate
 from api.views import ForgotPasswordView, MasterClientTableList,   ResultsLists, StoreProjects, ExpensesDelete, CostOfSalesDelete, ProjectsCreate, ProjectsDataUpdate, ProjectsDelete
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -44,8 +44,6 @@ urlpatterns = [
     # path('api/reset-password/<uidb64>/<token>/', ForgotPasswordView.as_view(), name='reset-password'),
     # End
     #Employees
-    path('api/employee-expenses', EmployeeExpensesList.as_view()),
-    path('api/employee-expenses/create', CreateEmployeeExpenses.as_view()),
     path('api/employees', Employees.as_view()),
     path('api/employees/create', EmployeesCreate.as_view()),
     path('api/employees/<int:pk>/delete/', EmployeesDelete.as_view()),
@@ -63,4 +61,8 @@ urlpatterns = [
     path('api/cost-of-sales/create', CostOfSalesCreate.as_view()),
     path('api/cost-of-sales/update', CostOfSalesUpdate.as_view()),
     path('api/cost-of-sales/<str:pk>/delete/', CostOfSalesDelete.as_view(), name='cost-of-sales-delete'),
+    #EmployeeExpenses
+    path('api/employee-expenses/', EmployeeExpensesList.as_view(), name = 'employee-expenses-list'),
+    path('api/employee-expenses/create/', CreateEmployeeExpenses.as_view(), name = 'employee-expenses-create'),
+    path('api/employee-expenses/<str:pk>/delete/', DeleteEmployeeExpenses.as_view(), name='employee-expenses-delete'),
 ]

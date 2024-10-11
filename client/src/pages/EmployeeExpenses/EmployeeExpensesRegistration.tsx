@@ -187,8 +187,8 @@ const EmployeeExpensesRegistration = () => {
     e.preventDefault()
     const token = localStorage.getItem('accessToken')
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/employee-expenses/create', employeeContainers, {
-        // const response = await axios.post('http://54.178.202.58:8000/api/employee-expenses/create', client, {
+      const response = await axios.post('http://127.0.0.1:8000/api/employee-expenses/create/', employeeContainers, {
+        // const response = await axios.post('http://54.178.202.58:8000/api/employee-expenses/create', employeeContainers, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,

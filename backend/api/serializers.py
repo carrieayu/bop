@@ -218,6 +218,8 @@ class GetBusinessDivisionMasterSerializer(serializers.ModelSerializer):
         
 class EmployeeExpensesDataSerializer(serializers.ModelSerializer):
     employee_expense_id = serializers.CharField(required=False)
+    employee = EmployeesSerializer()
+    project = CreateProjectsSerializers()
     class Meta:
         model = EmployeeExpenses
         fields = '__all__'
