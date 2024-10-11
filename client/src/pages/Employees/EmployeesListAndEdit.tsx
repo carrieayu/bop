@@ -304,7 +304,7 @@ const EmployeesListAndEdit: React.FC = () => {
             <div className='EmployeesListAndEdit_mid_body_cont'>
               <ListButtons
                 activeTabOther={activeTabOther}
-                message={translate(isEditing? 'employeesEdit':'employeesList', language)}
+                message={translate(isEditing ? 'employeesEdit' : 'employeesList', language)}
                 handleTabsClick={handleTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
@@ -314,8 +314,8 @@ const EmployeesListAndEdit: React.FC = () => {
                   { labelKey: 'users', tabKey: 'users' },
                 ]}
               />
-              <div className='EmployeesListAndEdit_table_wrapper'>
-                <div className='EmployeesListAndEdit_table_cont'>
+              <div className={`EmployeesListAndEdit_table_wrapper ${isEditing ? 'editMode' : ''}`}>
+                <div className={`EmployeesListAndEdit_table_cont ${isEditing ? 'editScrollable' : ''}`}>
                   <div className='columns is-mobile'>
                     <div className='column'>
                       {isEditing ? (
@@ -531,7 +531,7 @@ const EmployeesListAndEdit: React.FC = () => {
               <div className='EmployeesListAndEdit_is_editing_wrapper'>
                 <div className='EmployeesListAndEdit_is_editing_cont'>
                   {isEditing ? (
-                    <div className='EmployeesListAndEdit_mode_switch_datalist'>
+                    <div className='EmployeesList_edit_submit_btn_cont'>
                       <button className='EmployeesListAndEdit_edit_submit_btn' onClick={handleSubmit}>
                         更新
                       </button>

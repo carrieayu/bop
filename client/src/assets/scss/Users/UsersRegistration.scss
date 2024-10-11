@@ -29,7 +29,7 @@
             }
             .UsersRegistration_inputs_and_buttons{
                 display: flex;
-                height: 70vh;
+                height: 65vh;
                 justify-content: space-between;
                 flex-direction: column;
             }
@@ -40,6 +40,9 @@
                     height: 55vh;
                 }
                 .UsersRegistration_mid_form_cont{
+                    background-color: #EFEDEA;
+                    border-radius: 5px;
+
                     margin: 20px 50px;
                     .UsersRegistration_top-form-input-div{
                         padding: 25px 0px 0px 20px;

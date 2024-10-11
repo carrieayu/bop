@@ -34,7 +34,7 @@
             }
             .projectsRegistration_inputs_and_buttons{
                 display: flex;
-                height: 70vh;
+                height: 65vh;
                 justify-content: space-between;
                 flex-direction: column;
             }
@@ -176,20 +176,6 @@
                                     border-radius: 10px;
                                 }
                             }
-                            .projectsRegistration_ordinary-income-margin-div{ 
-                                display: flex;
-                                flex-direction: column;
-                                margin-bottom: 10px;
-                                .projectsRegistration_ordinary-income-margin{
-                                    margin-bottom: 5px;
-                                }
-                                input{
-                                    width: 80%;
-                                    height: 40px;
-                                    border: 1px solid #000;
-                                    border-radius: 10px;
-                                }
-                            }
                         }
                         .projectsRegistration_middle-form-div{
                             .projectsRegistration_project_name-div{ 
@@ -294,6 +280,20 @@
                                 input::-webkit-inner-spin-button {
                                 -webkit-appearance: none;
                                 margin: 0;
+                                }
+                            }
+                             .projectsRegistration_ordinary-income-margin-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectsRegistration_ordinary-income-margin{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
                                 }
                             }
                         }

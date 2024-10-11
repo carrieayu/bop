@@ -29,7 +29,7 @@
             }
             .expensesRegistration_inputs_and_buttons{
                 display: flex;
-                height: 70vh;
+                height: 65vh;
                 justify-content: space-between;
                 flex-direction: column;
             }
@@ -50,8 +50,8 @@
             
                 }
                 .expensesRegistration_mid_form_cont{
-                    // margin: -20px 50px;
-                    margin: 20px 50px;          
+                    margin: -20px 50px;
+                    // margin: 20px 50px;          
                     background-color: #EFEDEA;
                     overflow-y: auto;
                     overflow-x: hidden;
@@ -85,7 +85,7 @@
                         opacity: 30%;
                     }
                     .expensesRegistration_form-content{
-                        padding: 15px 0px 0px 20px;
+                        padding: 0px 0px 10px 20px;
                         .expensesRegistration_form-content-div{
                             display: flex;
                             .expensesRegistration_calc{

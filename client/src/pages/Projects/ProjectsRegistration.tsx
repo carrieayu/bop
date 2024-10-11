@@ -421,17 +421,6 @@ const ProjectsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='projectsRegistration_ordinary-income-margin-div'>
-                          <label className='projectsRegistration_ordinary-income-margin'>
-                            {translate('ordinaryIncomeProfitMargin', language)}
-                          </label>
-                          <input
-                            type='number'
-                            name='ordinary_profit_margin'
-                            value={form.ordinary_profit_margin}
-                            onChange={(e) => handleChange(index, e)}
-                          />
-                        </div>
                       </div>
 
                       <div className='projectsRegistration_middle-form-div projectsRegistration_calc'>
@@ -497,6 +486,17 @@ const ProjectsRegistration = () => {
                             type='number'
                             name='non_operating_profit'
                             value={form.non_operating_profit}
+                            onChange={(e) => handleChange(index, e)}
+                          />
+                        </div>
+                        <div className='projectsRegistration_ordinary-income-margin-div'>
+                          <label className='projectsRegistration_ordinary-income-margin'>
+                            {translate('ordinaryIncomeProfitMargin', language)}
+                          </label>
+                          <input
+                            type='number'
+                            name='ordinary_profit_margin'
+                            value={form.ordinary_profit_margin}
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
@@ -573,7 +573,7 @@ const ProjectsRegistration = () => {
                     </div>
                     {/* //for testing and will be removed it not used for future use */}
                     {/* <input type='hidden' name='registered_user_id' value={form.registered_user_id} />  */}
-                </div>
+                  </div>
                 ))}
               </div>
               <div className='projectsRegistration_lower_form_cont'>
