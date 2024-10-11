@@ -230,10 +230,7 @@ class CompaniesWithBusinessDivisions(generics.ListAPIView):
             return JsonResponse(list(divisions), safe=False)
         
         # If no company_id is passed, return an empty list
-        return JsonResponse([], safe=False)
-
-
-    
+        return JsonResponse([], safe=False)  
 class BusinessDivisionMasterCreate(generics.CreateAPIView):
     serializer_class = MasterBusinessDivisionSerializer
     permission_classes = [IsAuthenticated]

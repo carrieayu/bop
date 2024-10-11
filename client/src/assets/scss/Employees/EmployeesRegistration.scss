@@ -116,11 +116,11 @@
                                         border-radius: 10px;
                                     }
                                 }
-                                .EmployeesRegistration_business_division_name-div{
+                                .EmployeesRegistration_company_name-div{
                                     display: flex;
                                     flex-direction: column;
                                     margin-bottom: 10px;
-                                    .EmployeesRegistration_business_division_name{
+                                    .EmployeesRegistration_company_name{
                                         margin-bottom: 5px;
                                     }
                                     .EmployeesRegistration_select-option{
@@ -149,11 +149,11 @@
                                         border-radius: 10px;
                                     }
                                 }
-                                .EmployeesRegistration_company_name-div{
+                                .EmployeesRegistration_business_division_name-div{
                                     display: flex;
                                     flex-direction: column;
                                     margin-bottom: 10px;
-                                    .EmployeesRegistration_company_name{
+                                    .EmployeesRegistration_business_division_name{
                                         margin-bottom: 5px;
                                     }
                                     .EmployeesRegistration_select-option{
@@ -166,6 +166,7 @@
                                         }
                                     }
                                 }
+                               
                             }
                         }
                     }
