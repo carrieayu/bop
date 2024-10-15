@@ -318,7 +318,7 @@ const UsersListAndEdit: React.FC = () => {
                             </thead>
                             <tbody className='UsersListAndEdit_table_body'>
                               {userList.map((users, index) => (
-                                <tr key={users.id} className='UsersListAndEdit_table_body_content_horizantal'>
+                                <tr key={users.id} className='UsersListAndEdit_table_body_content_horizontal'>
                                   <td className='UsersListAndEdit_table_body_content_vertical has-text-left'>
                                     {users.id}
                                   </td>

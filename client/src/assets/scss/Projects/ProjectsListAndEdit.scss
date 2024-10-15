@@ -45,8 +45,8 @@
                     // color: white;
                 // }
                 .projectsList_mid_body_cont{
-                    height: 70vh;
-                    background-color: #fff;
+                    height: 100%;
+                    // background-color: pink;
                     .ListButtons_btn{
                         margin-left: 10px;
                     }
@@ -58,7 +58,7 @@
                         scrollbar-width: thin;
                         scrollbar-color: #888 #e0e0e0;
                         @media only screen and (min-width: 1920px){
-                            height: 65vh;
+                            height: 60vh;
                         }
                         &::-webkit-scrollbar {
                             width: 8px;
