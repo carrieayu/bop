@@ -347,11 +347,11 @@ const EmployeeExpensesList: React.FC = () => {
                                       {employee.monthlyExpenses.map((exp, monthIndex) => (
                                         <td key={monthIndex} className='employeeExpensesList_td'>
                                           {exp && exp.projects.length > 0 ? (
-                                            <div>
+                                            <div className='employeeExpensesList_project_div'>
                                               {exp.projects.map((project, projIndex) => {
                                                 console.log("Project object:", project);
                                                 return (
-                                                  <div key={projIndex}>
+                                                  <div key={projIndex} className={projIndex % 2 === 0 ? 'project-even' : 'project-odd'}>
                                                     <div className='employeeExpensesList_txt0'>
                                                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                                         <div>
