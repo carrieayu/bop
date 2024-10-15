@@ -104,10 +104,13 @@ class Employees(models.Model):
 
     STARTING_EMPLOYEE_ID = 3000000001
 
+    def __str__(self):
+        return self.employee_id
+
     def _generate_employee_id(self):
         last_employee = Employees.objects.filter(employee_id__startswith='300').order_by('-employee_id').first()
         if last_employee:
-            return str(int(last_employee.employee_id) + 1)
+            return str(int(last_employee.employee_id) + 1).zfill(10)
         return str(self.STARTING_EMPLOYEE_ID)
 
     def save(self, *args, **kwargs):
@@ -238,22 +241,41 @@ class Results(models.Model):
 
     
 class EmployeeExpenses(models.Model):
-    employee_expense_id = models.BigAutoField(primary_key=True)
+    employee_expense_id = models.CharField(max_length=10, primary_key=True, editable=False)  # Change to CharField for formatted ID
     client = models.ForeignKey(MasterClient, on_delete=models.CASCADE)
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
-    project = models.ForeignKey(
-        Projects, on_delete=models.CASCADE
-    )
-    employee = models.ForeignKey(Employees, on_delete=models.CASCADE)
+    project = models.ForeignKey(Projects, on_delete=models.CASCADE, null=True)
+    employee = models.ForeignKey(Employees, on_delete=models.CASCADE, null=True)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    class Meta :
+
+    class Meta:
         db_table = u'employee_expenses'
 
+    def save(self, *args, **kwargs):
+        if not self.employee_expense_id:
+            # Get the maximum existing ID and increment it
+            max_id = EmployeeExpenses.objects.aggregate(max_id=Max("employee_expense_id"))["max_id"]
+            
+            if max_id is not None:  # Check if max_id is not None
+                max_id_str = str(max_id)  # Convert max_id to string
+                
+                if len(max_id_str) > 1 and max_id_str.startswith('E'):
+                    # Ensure there is a numeric part after 'E'
+                    numeric_part = int(max_id_str[1:]) + 1  # Extract numeric part after 'E'
+                else:
+                    numeric_part = 1  # Start with 1 if the format is unexpected
+            else:
+                numeric_part = 1  # Start with 1 if no records exist
+                
+            self.employee_expense_id = f'E{numeric_part:09d}'  # Format as 'E000000001'
+        
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return self.planning_assign_id
+        return self.employee_expense_id
     
 class CostOfSales(models.Model):
     cost_of_sale_id = models.CharField(max_length=10, primary_key=True)
