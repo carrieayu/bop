@@ -118,7 +118,6 @@ const CostOfSalesList: React.FC = () => {
       }
 
       const modifiedFields = getModifiedFields(originalCostOfSales, validData)
-      console.log(modifiedFields)
       if (modifiedFields.length === 0) {
         return
       }

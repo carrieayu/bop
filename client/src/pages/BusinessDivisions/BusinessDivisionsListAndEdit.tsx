@@ -117,7 +117,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         return modifiedFields
       }
       const modifiedFields = getModifiedFields(originalBusiness, business)
-      console.log(modifiedFields)
       if (modifiedFields.length === 0) {
         return 
       }

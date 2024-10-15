@@ -97,11 +97,10 @@ const ExpensesList: React.FC = () => {
     const updatedData = [...combinedData]
     updatedData[index] = {
       ...updatedData[index],
-      [name]: value, 
+      [name]: value,
     }
     setExpensesList(updatedData)
   }
-
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -133,7 +132,6 @@ const ExpensesList: React.FC = () => {
     }
 
     const modifiedFields = getModifiedFields(originalExpenseList, validData)
-    console.log(modifiedFields)
     if (modifiedFields.length === 0) {
       return
     }
