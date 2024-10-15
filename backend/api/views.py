@@ -810,12 +810,54 @@ class ForgotPasswordView(generics.CreateAPIView):
             {"message": "Project Planning Data created successfully"},
             status=status.HTTP_201_CREATED,
         )
-class EmployeeExpensesList(generics.ListCreateAPIView):
-    serializer_class = GetUserMasterSerializer
+    
+class EmployeeExpensesList(generics.ListAPIView):
+    serializer_class = EmployeeExpensesDataSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self): 
-        return EmployeesApi.objects.all()
+        # Get all employee expenses along with related employee and project information
+        return EmployeeExpenses.objects.select_related('employee', 'project').all()
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        # Debugging: print the serialized data
+        # print(serializer.data)
+
+        employee_expenses_data = []
+        for expense in serializer.data:
+            # Ensure expense is a dictionary before accessing
+            if isinstance(expense, dict):
+                employee = expense.get('employee')  # This might be None
+                project = expense.get('project')  # This might be None
+
+                # Safely get the employee and project data
+                employee_last_name = employee['last_name'] if employee else ''
+                employee_first_name = employee['first_name'] if employee else ''
+                employee_salary = employee['salary'] if employee else 0  # Default to 0 if None
+                employee_id = employee['employee_id'] if project else '' 
+                project_name = project['project_name'] if project else ''  # Default to empty string if None
+                project_id = project['project_id'] if project else ''  
+                
+
+                # print("project",project['project_id'])
+
+                employee_expenses_data.append({
+                    'employee_expense_id': expense.get('employee_expense_id', ''),
+                    'year': expense.get('year', ''),
+                    'month': expense.get('month', ''),
+                    'employee_last_name': employee_last_name,
+                    'employee_first_name': employee_first_name,
+                    'employee_salary': employee_salary,
+                    'employee_id': employee_id,
+                    'project_name': project_name,
+                    'project_id': project_id
+                })
+
+        return Response(employee_expenses_data)
+
 
 class EmployeeDetailView(generics.ListAPIView):
     permission_classes = [AllowAny]
@@ -847,6 +889,7 @@ class EmployeeDetailView(generics.ListAPIView):
             })
         
         return JsonResponse(employee_data, safe=False)
+      
 class Employees(generics.ListAPIView):
     queryset = EmployeesApi.objects.all()
     serializer_class = EmployeesListSerializer
@@ -856,45 +899,104 @@ class CreateEmployeeExpenses(generics.CreateAPIView):
     serializer_class = EmployeeExpensesDataSerializer
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
-        data = JSONParser().parse(request)
+    def create(self, request, *args, **kwargs):
+        employee_expenses_data = request.data
+
+        if not isinstance(employee_expenses_data, list):
+            return Response({'detail': 'Invalid data format. Expecting a list.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Check if the incoming data is a list
-        if not isinstance(data, list):
-            return JsonResponse({"messagessss": "Expected a list of items."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        responses = []
-        
-        for item in data:
-            try:
-                planning_project = Projects.objects.get(planning_project_id=item['planning_project_id'])
-                employees = Employees.objects.get(user_id=item['assignment_user_id'])
-                planning_data = {
-                    'planning_project_id': planning_project.planning_project_id,
-                    'client_id': item['client_id'],
-                    'assignment_user_id': employees.user_id,
-                    'assignment_ratio': item['assignment_ratio'],
-                    'assignment_unit_price': item['assignment_unit_price'],
-                    'year': timezone.now().year,
-                    'assignment_start_date': timezone.now().date(),
-                    'assignment_end_date': timezone.now().date(),
-                    'registration_date': timezone.now().date(),
-                    'registration_user': request.user.username
-                }
-                serializer = EmployeeExpensesDataSerializer(data=planning_data)
-                if serializer.is_valid():
-                    serializer.save()
-                    responses.append({"message": "Personnel Planning Data created successfully."})
-                else:
-                    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            except Projects.DoesNotExist:
-                return JsonResponse({"message": "Planning project not found."}, status=status.HTTP_404_NOT_FOUND)
-            except Employees.DoesNotExist:
-                return JsonResponse({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
-            except Exception as e:
-                return JsonResponse({"messagessss": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
-        return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
+        if not employee_expenses_data:
+            return Response({'detail': 'No employee expenses data provided.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        created_expenses = []
+        for expense_data in request.data:
+            employee_id = expense_data.get('employee')
+            if not employee_id:
+                return Response({'detail': 'Employee ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            project_entries = expense_data.get('projectEntries', [])
+            
+            if not isinstance(project_entries, list):
+                return Response({'detail': 'projectEntries must be a list.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            for entry in project_entries:
+                if not entry.get('projects') or not entry.get('clients'):
+                    return Response({'detail': 'Project ID and Client ID cannot be empty.'}, status=status.HTTP_400_BAD_REQUEST)
+
+                try:
+                    client = MasterClient.objects.get(pk=entry['clients'])  
+                    project = Projects.objects.get(pk=entry['projects'])  
+                    employee = EmployeesApi.objects.get(pk=employee_id) 
+                    auth_user = AuthUser.objects.get(pk=entry.get('auth_id')) if entry.get('auth_id') else None  
+
+                    new_expense = EmployeeExpenses(
+                        client=client,
+                        project=project,
+                        employee=employee,
+                        auth_user=auth_user,
+                        year=entry.get('year', '2001'),  
+                        month=entry.get('month', '01')   
+                    )
+                    new_expense.save()
+
+                    serializer = EmployeeExpensesDataSerializer(new_expense)
+                    created_expenses.append(serializer.data)
+
+                except MasterClient.DoesNotExist:
+                    return Response({"error": f"Client with ID {entry['clients']} does not exist"},
+                                    status=status.HTTP_404_NOT_FOUND)
+                except Projects.DoesNotExist:
+                    return Response({"error": f"Project with ID {entry['projects']} does not exist"},
+                                    status=status.HTTP_404_NOT_FOUND)
+                except EmployeesApi.DoesNotExist:
+                    return Response({"error": f"Employee with ID {employee_id} does not exist"},
+                                    status=status.HTTP_404_NOT_FOUND)
+                except AuthUser.DoesNotExist:
+                    return Response({"error": f"User with ID {entry.get('auth_id')} does not exist"},
+                                    status=status.HTTP_404_NOT_FOUND)
+
+        return Response({
+            "employeeExpenses": created_expenses
+        }, status=status.HTTP_201_CREATED)
+    
+
+class DeleteEmployeeExpenses(generics.DestroyAPIView):
+    serializer_class = EmployeeExpensesDataSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        pk = self.kwargs.get('pk')
+        try:
+            return EmployeeExpenses.objects.get(employee_expense_id=pk)
+        except EmployeeExpenses.DoesNotExist:
+            return None
+
+    def destroy(self, request, pk, *args, **kwargs):
+        project_id = request.query_params.get('project_id')
+        instance = self.get_object()
+
+        if instance is None:
+            return Response({"message": "Employee expense not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Debugging: Log the current instance and project details
+        print(f"Current Employee Expense: {instance.employee_expense_id}")
+        print(f"Associated Project: {instance.project.project_id if instance.project else 'None'}")
+        print(f"Provided Project ID: {project_id}")
+
+        if project_id:
+            # If a project_id is provided, check if it matches the instance's project
+            if instance.project and str(instance.project.project_id) == project_id:
+                # Delete the employee expense instance entirely
+                instance.delete()  # This will delete the instance from the database
+                return Response({"message": "Employee expense and its project association removed successfully"}, status=status.HTTP_200_OK)
+            else:
+                return Response({"message": "Project not found in this expense."}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            # If no project_id is provided, delete all employee expenses for the same employee_id
+            employee_id = instance.employee_id 
+            EmployeeExpenses.objects.filter(employee_id=employee_id).delete()
+            return Response({"message": "All employee expenses for this employee deleted successfully"}, status=status.HTTP_200_OK)
+
     
 class Planning(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
