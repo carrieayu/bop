@@ -111,6 +111,7 @@ const EmployeeExpensesList: React.FC = () => {
 
           try {
               const response = await axios.get('http://127.0.0.1:8000/api/employee-expenses/', {
+              // const response = await axios.get('http://54.178.202.58:8000/api/employee-expenses/', {
                   headers: {
                       'Authorization': `Bearer ${token}` // Add token to request headers
                   }
@@ -156,6 +157,7 @@ const EmployeeExpensesList: React.FC = () => {
     console.log('Token before delete:', token);
     try {
       await axios.delete(`http://127.0.0.1:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/`, {
+      // await axios.delete(`http://54.178.202.58:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/`, {
         headers: {
           'Authorization': `Bearer ${token}`  // Add token to request headers
         }
@@ -169,7 +171,7 @@ const EmployeeExpensesList: React.FC = () => {
       alert('Successfully deleted');
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        // window.location.href = '/login' // Redirect to login if unauthorized
+        window.location.href = '/login' // Redirect to login if unauthorized
       } else {
         console.error('Error deleting employee expense:', error)
       }
@@ -184,6 +186,7 @@ const EmployeeExpensesList: React.FC = () => {
     console.log('Token before delete:', token);
     try {
       await axios.delete(`http://127.0.0.1:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/?project_id=${employeeProjectId.project_id}`, {
+      // await axios.delete(`http://54.178.202.58:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/?project_id=${employeeProjectId.project_id}`, {
         headers: {
           'Authorization': `Bearer ${token}`  // Add token to request headers
         }
@@ -197,7 +200,7 @@ const EmployeeExpensesList: React.FC = () => {
       alert('Project successfully remove');
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        // window.location.href = '/login' // Redirect to login if unauthorized
+        window.location.href = '/login' // Redirect to login if unauthorized
       } else {
         console.error("Error removing project association:", error)
       }
@@ -239,11 +242,11 @@ const EmployeeExpensesList: React.FC = () => {
                   ]}
                 />
                 <div className='employeeExpensesList_table_wrapper'>
-                  <div className='employeeExpensesList_table_cont'>
+                  <div className={`employeeExpensesList_table_cont ${isEditing ? 'editScrollable' : ''}`}>
                     <div className='columns is-mobile'>
                       <div className='column'>
                       {isEditing ? (
-                        <div>
+                        <div className='editScroll'>
                         <table className='table is-bordered is-hoverable'>
                           <thead>
                             <tr className='employeeExpensesList_table_title'>
@@ -502,9 +505,9 @@ const EmployeeExpensesList: React.FC = () => {
                                     {employee.monthlyExpenses.map((exp, monthIndex) => (
                                       <td key={monthIndex} className='employeeExpensesList_td'>
                                         {exp && exp.projects.length > 0 ? (
-                                          <div>
+                                          <div className='employeeExpensesList_project_div'>
                                             {exp.projects.map((project, projIndex) => (
-                                              <div key={projIndex}>
+                                              <div key={projIndex} className={projIndex % 2 === 0 ? 'project-even' : 'project-odd'}>
                                                 <div className='employeeExpensesList_txt0'>{project.project_name}</div>
                                                 <div className='employeeExpensesList_txt1_txt2_flex'>
                                                   <div className='employeeExpensesList_txt1'>Salary: {project.employee_salary}</div>

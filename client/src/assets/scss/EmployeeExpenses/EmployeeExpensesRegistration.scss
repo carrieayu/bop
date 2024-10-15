@@ -140,8 +140,8 @@
                     }
                     .employeeExpensesRegistration_button-box{
                       display: flex;
-                      justify-content: center;
-                      align-items: center;
+                      flex-direction: column;
+                      justify-content: space-evenly;
                       padding: 10px;
                       .employeeExpensesRegistration_button{
                         background-color: #808080;

@@ -152,6 +152,14 @@ const EmployeeExpensesRegistration = () => {
     }
   }
 
+  const removeProjectEntry = (containerIndex) => {
+    const updatedContainers = [...employeeContainers];
+    if (updatedContainers[containerIndex].projectEntries.length > 1) {
+      updatedContainers[containerIndex].projectEntries.pop();
+      setEmployeeContainers(updatedContainers);
+    }
+  };
+
   const handleInputChange = (containerIndex, projectIndex, event) => {
     const { name, value } = event.target
     const newContainers = [...employeeContainers]
@@ -201,11 +209,49 @@ const EmployeeExpensesRegistration = () => {
     
     return false; // No duplicates found for any employee
   };
+
+  const handleValidation = () => {
+    // Check if all employeeContainers have selected an employee and their project entries are complete
+    for (const container of employeeContainers) {
+      if (!container.employee) {
+        alert('Please select an employee for all containers.');
+        return false;
+      }
   
+      for (const projectEntry of container.projectEntries) {
+        // Collect missing fields
+        const missingFields = [];
+  
+        if (!projectEntry.projects) {
+          missingFields.push('project');
+        }
+        if (!projectEntry.year) {
+          missingFields.push('year');
+        }
+        if (!projectEntry.month) {
+          missingFields.push('month');
+        }
+  
+        // If there are any missing fields, create a message
+        if (missingFields.length > 0) {
+          const fieldsMessage = missingFields.join(', ');
+          alert(`Please fill out all ${fieldsMessage} fields.`);
+          return false;
+        }
+      }
+    }
+  
+    return true;
+  };
 
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    // Perform validation
+    if (!handleValidation()) {
+      return; // Prevent form submission if validation fails
+    }
 
     // Check for duplicate projects
     if (hasDuplicateProjects()) {
@@ -349,10 +395,16 @@ const EmployeeExpensesRegistration = () => {
                           ))}
                           <div className='employeeExpensesRegistration_button-box'>
                             <Btn
-                              label={translate('add', language)}
+                              label='+'
                               className='employeeExpensesRegistration_button'
                               type='button'
                               onClick={() => addProjectEntry(containerIndex)}
+                            />
+                            <Btn
+                              label='-'
+                              className='employeeExpensesRegistration_button'
+                              type='button'
+                              onClick={() => removeProjectEntry(containerIndex)}
                             />
                           </div>
                         </div>

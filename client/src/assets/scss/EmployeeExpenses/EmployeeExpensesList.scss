@@ -72,6 +72,9 @@
                                     }
                                     scrollbar-width: none; 
                                 }
+                                .employeeExpensesList_table_cont.editScrollable {
+                                    overflow-x: auto;
+                                }
                                 .employeeExpensesList_table_cont{
                                     padding: 0px 0px 0px 70px;
                                     .table{
@@ -110,32 +113,41 @@
                                                     background-color: #e0e0e0;
                                                 }
                                             }
-                                            .employeeExpensesList_txt0{
-                                                margin-bottom: 5px;
-                                                // text-align: center;
-                                                font-size: 14px;
-                                                // background-color: #C6D4E7;
-                                                // color: #000;
-                                                // border-radius: 5px;
-                                            }
-                                            .employeeExpensesList_txt1_txt2_flex{
-                                                margin-top: 10px;
-                                                margin-bottom: 10px;
-                                                display: flex;
-                                                flex-direction: column;
-                                                .employeeExpensesList_txt1{
-                                                    font-size: 14px;
+                                            .employeeExpensesList_project_div{
+                                                .project-even {
+                                                    background-color: #f0f0f0; 
+                                                  }
+                                                  
+                                                  .project-odd {
+                                                    background-color: #ffffff; 
+                                                  }
+                                                .employeeExpensesList_txt0{
+                                                    margin-bottom: 5px;
                                                     // text-align: center;
-                                                    // width: 100% !important;
-                                                    @media only screen and (max-width: 1875px){
-                                                        font-size: 14px;
-                                                    }
+                                                    font-size: 14px;
+                                                    // background-color: #C6D4E7;
+                                                    // color: #000;
+                                                    // border-radius: 5px;
                                                 }
-                                                .employeeExpensesList_txt2{
-                                                    // margin-left: 5px;
-                                                    font-size: 14px;
-                                                    padding: 5px 0px;
-                                                    // text-align: center;
+                                                .employeeExpensesList_txt1_txt2_flex{
+                                                    margin-top: 10px;
+                                                    margin-bottom: 10px;
+                                                    display: flex;
+                                                    flex-direction: column;
+                                                    .employeeExpensesList_txt1{
+                                                        font-size: 14px;
+                                                        // text-align: center;
+                                                        // width: 100% !important;
+                                                        @media only screen and (max-width: 1875px){
+                                                            font-size: 14px;
+                                                        }
+                                                    }
+                                                    .employeeExpensesList_txt2{
+                                                        // margin-left: 5px;
+                                                        font-size: 14px;
+                                                        padding: 5px 0px;
+                                                        // text-align: center;
+                                                    }
                                                 }
                                             }
                                         }
