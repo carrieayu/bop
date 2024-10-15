@@ -63,13 +63,15 @@ const HeaderButtons: React.FC<HeaderButtonsProps> = ({ activeTab, handleTabClick
           <span className='HeaderButtons_slider'></span>
         </label>
         <TbLogout className='logout-icon' onClick={() => openModal()} />
+        <div>
+          <AlertModal
+            isOpen={modalIsOpen}
+            onConfirm={handleConfirm}
+            onCancel={closeModal}
+            message={translate('logout', language)}
+          />
+        </div>
       </div>
-      <AlertModal
-        isOpen={modalIsOpen}
-        onConfirm={handleConfirm}
-        onCancel={closeModal}
-        message={translate('logout', language)}
-      />
     </div>
   )
 }
