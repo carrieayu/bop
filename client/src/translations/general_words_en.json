@@ -91,5 +91,6 @@
   "accept": "Yes",
   "projectType": "Project Type",
   "projectNameExist": "This project name already exists.\n Please choose a different name.",
-  "error": "エラーがありました。"
+  "error": "エラーがありました。",
+  "logout" : "Are you sure you would like to logout? Yes / No"
 }
