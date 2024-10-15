@@ -1107,7 +1107,6 @@ class CostOfSalesUpdate(generics.UpdateAPIView):  # Change to UpdateAPIView for 
 
     def update(self, request, *args, **kwargs):
         received_data = request.data  # This is expected to be a list of cost_of_sales data
-
         for cost_data in received_data:
             cost_of_sale_id = cost_data.get('cost_of_sale_id')  # Adjusted to match your model
 
@@ -1227,22 +1226,18 @@ class ExpensesUpdate(generics.UpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         received_data = request.data  # This is expected to be a list of expense data
-        print(received_data)
 
         for expense_data in received_data:
             expense_id = expense_data.get('expense_id')  # Adjusted to match your model
-
             try:
                 # Fetch the existing record based on expense_id
                 expense = Expenses.objects.get(expense_id=expense_id)
-                
                 # Update each field except for the primary key
                 for field, value in expense_data.items():
                     if field not in ['expense_data', 'month']:  # Skip primary key and month field
                         setattr(expense, field, value)
                 
                 expense.save()  # Save the updated record
-
             except Expenses.DoesNotExist:
                 return Response({"error": f"Expense with ID {expense_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
 

@@ -28,7 +28,8 @@ const CostOfSalesList: React.FC = () => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedCostOfSales, setSelectedCostOfSales] = useState<any>(null);
     const [deleteCostOfSalesId, setDeleteCostOfSalesId] = useState([])
-
+    const [costOfSales, setCostOfSales] = useState([])
+    const [originalCostOfSales, setOriginalCostOfSales] = useState(costOfSales)
     const totalPages = Math.ceil(100 / 10);
 
     const handleTabClick = (tab) => {
@@ -60,10 +61,6 @@ const CostOfSalesList: React.FC = () => {
       setCurrentPage(page);
     };
 
-
-    const [costOfSales, setCostOfSales] = useState([]);
-
-
     const handleRowsPerPageChange = (numRows: number) => {
         setRowsPerPage(numRows)
         setCurrentPage(0) 
@@ -93,6 +90,38 @@ const CostOfSalesList: React.FC = () => {
     const handleSubmit = async (e) => {
       e.preventDefault()
 
+
+      const getModifiedFields = (original, updated) => {
+        const modifiedFields = []
+
+        updated.forEach((updatedCos) => {
+          const originalCoS = original.find((cos) => cos.cost_of_sale_id === updatedCos.cost_of_sale_id)
+
+          if (originalCoS) {
+            const changes = { cost_of_sale_id: updatedCos.cost_of_sale_id }
+
+            let hasChanges = false
+            for (const key in updatedCos) {
+              if (key === 'cost_of_sale_id ' || key === 'month') continue
+              if (updatedCos[key] !== originalCoS[key] && updatedCos[key] !== '') {
+                changes[key] = updatedCos[key]
+                hasChanges = true
+              }
+            }
+
+            if (hasChanges) {
+              modifiedFields.push(changes)
+            }
+          }
+        })
+        return modifiedFields
+      }
+
+      const modifiedFields = getModifiedFields(originalCostOfSales, validData)
+      if (modifiedFields.length === 0) {
+        return
+      }
+
       // Checks if any fields are empty for entries that have a cost_of_sale_id
       const areFieldsEmpty = costOfSales.some((entry) => {
         // Only check entries that have a valid cost_of_sale_id
@@ -111,7 +140,6 @@ const CostOfSalesList: React.FC = () => {
       })
 
       if (areFieldsEmpty) {
-        console.log(costOfSales)
         alert(translate('allFieldsRequiredInputValidationMessage', language))
         return
       }
@@ -123,19 +151,20 @@ const CostOfSalesList: React.FC = () => {
         return
       }
       try {
-        await axios.put('http://127.0.0.1:8000/api/cost-of-sales/update', validData, {
+        await axios.put('http://127.0.0.1:8000/api/cost-of-sales/update', modifiedFields, {
           // const response = await axios.put('http://54.178.202.58:8000/api/cost-of-sales/update', validData, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
+        setOriginalCostOfSales(costOfSales)
         alert('Successfully updated')
-
         setIsEditing(false)
 
         const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales')
         // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales');
         setCostOfSales(response.data)
+        setOriginalCostOfSales(response.data)
       } catch (error) {
         if (error.response) {
           console.error('Error response:', error.response.data)
@@ -168,9 +197,7 @@ const CostOfSalesList: React.FC = () => {
               }
             });
             setCostOfSales(response.data);
-            console.log("cost of sales: ", response.data);
-            
-            console.log("combijned: ", combinedData);
+            setOriginalCostOfSales(response.data)
           } catch (error) {
             if (error.response && error.response.status === 401) {
               window.location.href = '/login';  // Redirect to login if unauthorized
@@ -182,8 +209,6 @@ const CostOfSalesList: React.FC = () => {
     
         fetchCostOfSales();
       }, []);
-
-      console.log("cost of sales: ", setCostOfSales);
 
       useEffect(() => {
         const startIndex = currentPage * rowsPerPage
@@ -262,7 +287,6 @@ const CostOfSalesList: React.FC = () => {
     };
 
     const handleConfirm = async () => {
-      console.log('Confirmed action for cost of sale:', deleteCostOfSalesId)
       const token = localStorage.getItem('accessToken')
       try {
         await axios.delete(`http://127.0.0.1:8000/api/cost-of-sales/${deleteCostOfSalesId}/delete/`, {
