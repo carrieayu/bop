@@ -9,43 +9,60 @@
             flex-direction: column;
         }
         .UsersListAndEdit_maincontent_wrapper{
-            width: 102.5%; // I chaned this so it would align with registration screens
+            width: 84%; // I changed this so it would align with registration screens
             padding: 10px 30px 10px 30px;
             .UsersListAndEdit_top_content{
+                position: relative;
+                display: flex;
+                background-color: #fff;
+                flex-direction: column;
+                width: 100%;
+                height: 100%;
                 border: 1px solid #fff;
                 border-radius: 5px;
-                background-color: #fff;
                 .UsersListAndEdit_top_body_cont{
                     background-color: #fff;
                     height: 4rem;
                 }
                 button.UsersListAndEdit_mode_switch{
+                   position: absolute;
+                    right: 70px;
                     border: 1px solid;
                     padding: 3px 21px;
                     border-radius: 5px;
                     font-weight: 500;
-                    background-color: #f3f3f3;
+                    background-color: #f3f3f38b;
                 }
                 .UsersListAndEdit_mode_switch_datalist{
                     float: right;
                     padding: 40px 70px;
                 }
-                button.UsersListAndEdit_edit_submit_btn {
-                    border: 2px solid #fdd7b3;
-                    padding: 2px 13px;
-                    border-radius: 7px;
-                    background: #2e2eff;
-                    color: white;
+                .UsersListAndEdit_edit_submit_btn_cont{
+                    display: flex;
+                    justify-content: center;
+                    position: absolute;
+                    bottom: 2%;
+                    right:  2.5%;
+                    button.UsersListAndEdit_edit_submit_btn {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        gap: 1%;
+                        padding: 5px 20px 5px 20px;
+                        border-radius: 7px;
+                        margin-top: 6px;
+                        background: #66d1ff;
+                    }
                 }
                 .UsersListAndEdit_mid_body_cont{
-                    height: 85vh;
+                    height: 70vh;
                     .ListButtons_btn{
                         margin-left: -26px;
                     }
                 }
                 .UsersListAndEdit_table_wrapper{
                     width: 100%;
-                    height: 80vh;
+                    height: 80%;
                     overflow-y: auto; 
                     overflow-x: hidden;
                     scrollbar-width: thin;
@@ -73,7 +90,7 @@
                         scrollbar-width: none; 
                     }
                     .UsersListAndEdit_table_cont{
-                        padding: 0px 0px 0px 70px;
+                        padding: 0px 0px 0px 40px !important;
                         table{
                             width: 97%;
                             .UsersListAndEdit_table_title{
