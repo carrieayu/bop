@@ -22,8 +22,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
     const { language, setLanguage } = useLanguage()
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
     const [isEditing, setIsEditing] = useState(false)
-    const [changes, setChanges] = useState({})
     const [business, setBusiness] = useState([])
+    const [originalBusiness, setOriginalBusinessList] = useState(business)
     const [initialLanguage, setInitialLanguage] = useState(language);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedBusiness, setselectedBusiness] = useState<any>(null);
@@ -78,36 +78,57 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
       });
     }
     const handleChange = (index, event) => {
-      const { name, value } = event.target;
-      const updatedBusiness = [...business]; // Create a copy of the current state
-      // Update the relevant field in the business array
-      if (name === 'business_division_name') {
-        updatedBusiness[index].business_division_name = value;
-      } else if (name === 'company_name') {
-        updatedBusiness[index].company = value; // Update the company field
-      }
-      // Update state with the modified array
-      setBusiness(updatedBusiness);
-    };
+      const { name, value } = event.target
+      setBusiness((prevBusiness) => prevBusiness.map((item, i) => (i === index ? { ...item, [name]: value } : item)))
+    }
   
     const validateBusinessDivision = (businessDivision) => {
       return businessDivision.every((bd) => {
-        console.log(businessDivision)
         return bd.business_division_name.trim() !== ''
       })
     }
     
     const handleSubmit = async (e) => {
       e.preventDefault();
-    
-      // Check for duplicated entries
-      const isDuplicate = business.some((currentBusiness, index) => {
-        return business.some((otherBusiness, otherIndex) => 
-          index !== otherIndex &&
-          currentBusiness.business_division_name.trim() === otherBusiness.business_division_name.trim() &&
-          currentBusiness.company === otherBusiness.company
-        );
-      });
+      
+      const getModifiedFields = (original, updated) => {
+        const modifiedFields = []
+
+        updated.forEach((updatedBusiness) => {
+          const originalBusiness = original.find(
+            (bd) => bd.business_division_id === updatedBusiness.business_division_id,
+          )
+
+          if (originalBusiness) {
+            const changes = { business_division_id: updatedBusiness.business_division_id }
+
+            for (const key in updatedBusiness) {
+              if (updatedBusiness[key] !== originalBusiness[key]) {
+                changes[key] = updatedBusiness[key]
+              }
+            }
+
+            if (Object.keys(changes).length > 1) {
+              modifiedFields.push(changes)
+            }
+          }
+        })
+
+        return modifiedFields
+      }
+      const modifiedFields = getModifiedFields(originalBusiness, business)
+      console.log(modifiedFields)
+      if (modifiedFields.length === 0) {
+        return 
+      }
+        const isDuplicate = business.some((currentBusiness, index) => {
+          return business.some(
+            (otherBusiness, otherIndex) =>
+              index !== otherIndex &&
+              currentBusiness.business_division_name.trim() === otherBusiness.business_division_name.trim() &&
+              currentBusiness.company === otherBusiness.company,
+          )
+        })
 
       if (!validateBusinessDivision(business)) {
         alert(translate('allFieldsRequiredInputValidationMessage', language))
@@ -119,8 +140,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         return;
       }
     
-      console.log('Changed Data:', business);
-    
       const token = localStorage.getItem('accessToken');
       if (!token) {
         window.location.href = '/login';
@@ -128,13 +147,15 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
       }
     
       try {
-        const response = await axios.put('http://127.0.0.1:8000/api/master-business-division/bulk-update/', business, {
+        const response = await axios.put('http://127.0.0.1:8000/api/master-business-division/bulk-update/', modifiedFields, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         });
         alert('Successfully updated');
+        setOriginalBusinessList(business)
+        setIsEditing(false)
       } catch (error) {
          if (error.response) {
             const { status, data } = error.response
@@ -157,72 +178,70 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
       };
     
 
-    useEffect(() => {
-        const fetchCompanyAndUserData = async () => {
-            const token = localStorage.getItem('accessToken');
-            if (!token) {
-                window.location.href = '/login'; 
-                return;
-            }
-            try {
-                // Fetch companies
-                const companyResponse = await axios.get('http://127.0.0.1:8000/api/master-companies/', {
-                    // headers: { Authorization: `Bearer ${token}` },
-                });
-                const companies = companyResponse.data;
-                console.log("Companies: ", companies)
-                const companyMapping = companies.reduce((map, company) => {
-                    map[company.company_id] = company.company_name;
-                    return map;
-                }, {});
-                console.log("Comp Mapping: ", companyMapping)
-                setCompanyMap(companyMapping);
-                // Fetch users
-                const userResponse = await axios.get('http://127.0.0.1:8000/api/user/list/', {
-                    // headers: { Authorization: `Bearer ${token}` },
-                });
-                const users = userResponse.data;
-                const userMapping = users.reduce((map, user) => {
-                    map[user.user_id] = user.first_name;
-                    return map;
-                }, {});
-                setUserMap(userMapping);
-            } catch (error) {
-                if (error.response && error.response.status === 401) {
-                    window.location.href = '/login';
-                } else {
-                    console.error('Error fetching company or user data!', error);
-                }
-            }
-        };
-        fetchCompanyAndUserData();
-    }, []);
-
-    useEffect(() => {
-      const fetchBusinessDivision = async () => {
-        const token = localStorage.getItem('accessToken')
-        if (!token) {
-          window.location.href = '/login' // Redirect to login if no token found
-          return
-        }
-        try {
-          const response = await axios.get('http://127.0.0.1:8000/api/master-business-divisions/', {
-          // const response = await axios.get('http://54.178.202.58:8000/api/planningprojects/', {
-            // headers: {
-            //   Authorization: `Bearer ${token}`, // Add token to request headers
-            // },
-          })
-          setBusiness(response.data)
-        } catch (error) {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('There was an error fetching the projects!', error)
+    
+      const fetchCompanyAndUserData = async () => {
+          const token = localStorage.getItem('accessToken');
+          if (!token) {
+              window.location.href = '/login'; 
+              return;
           }
+          try {
+              // Fetch companies
+              const companyResponse = await axios.get('http://127.0.0.1:8000/api/master-companies/', {
+                  // headers: { Authorization: `Bearer ${token}` },
+              });
+              const companies = companyResponse.data;
+              const companyMapping = companies.reduce((map, company) => {
+                  map[company.company_id] = company.company_name;
+                  return map;
+              }, {});
+              setCompanyMap(companyMapping);
+              // Fetch users
+              const userResponse = await axios.get('http://127.0.0.1:8000/api/user/list/', {
+                  // headers: { Authorization: `Bearer ${token}` },
+              });
+              const users = userResponse.data;
+              const userMapping = users.reduce((map, user) => {
+                  map[user.user_id] = user.first_name;
+                  return map;
+              }, {});
+              setUserMap(userMapping);
+          } catch (error) {
+              if (error.response && error.response.status === 401) {
+                  window.location.href = '/login';
+              } else {
+                  console.error('Error fetching company or user data!', error);
+              }
+          }
+      };
+
+    const fetchBusinessDivision = async () => {
+      const token = localStorage.getItem('accessToken')
+      if (!token) {
+        window.location.href = '/login' // Redirect to login if no token found
+        return
+      }
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/master-business-divisions/', {
+          // const response = await axios.get('http://54.178.202.58:8000/api/planningprojects/', {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add token to request headers
+          },
+        })
+        setBusiness(response.data)
+        setOriginalBusinessList(response.data)
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login' // Redirect to login if unauthorized
+        } else {
+          console.error('There was an error fetching the projects!', error)
         }
       }
+    }
 
+    useEffect(() => {
       fetchBusinessDivision()
+      fetchCompanyAndUserData()
     }, [])
 
     const handleCompanyChange = (event) => {

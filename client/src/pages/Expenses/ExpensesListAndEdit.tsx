@@ -24,9 +24,7 @@ const ExpensesList: React.FC = () => {
   const [deleteExpenseId, setDeleteExpenseId] = useState([])
   const [selectedExpense, setSelectedExpense] = useState<any>(null)
   const [expensesList, setExpensesList] = useState([])
-
-  const [changes, setChanges] = useState({}) //ians code maybe i do not need.
-
+  const [originalExpenseList, setOriginalExpensesList] = useState(expensesList)
   const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
   const monthNames: { [key: number]: { en: string; jp: string } } = {
     1: { en: 'January', jp: '1月' },
@@ -99,14 +97,46 @@ const ExpensesList: React.FC = () => {
     const updatedData = [...combinedData]
     updatedData[index] = {
       ...updatedData[index],
-      [name]: value,
+      [name]: value, 
     }
     setExpensesList(updatedData)
   }
 
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
+    const getModifiedFields = (original, updated) => {
+      const modifiedFields = []
+
+      updated.forEach((updatedExpense) => {
+        const originalExpense = original.find((exp) => exp.expense_id === updatedExpense.expense_id)
+
+        if (originalExpense) {
+          const changes = { expense_id: updatedExpense.expense_id } 
+
+          let hasChanges = false 
+          for (const key in updatedExpense) {
+            if (key === 'expense_id' || key === 'month') continue
+            if (updatedExpense[key] !== originalExpense[key] && updatedExpense[key] !== '') {
+              changes[key] = updatedExpense[key] 
+              hasChanges = true 
+            }
+          }
+
+          if (hasChanges) {
+            modifiedFields.push(changes)
+          }
+        }
+      })
+      return modifiedFields
+    }
+
+    const modifiedFields = getModifiedFields(originalExpenseList, validData)
+    console.log(modifiedFields)
+    if (modifiedFields.length === 0) {
+      return
+    }
     // Checks if any fields are empty for entries that have a expense_id
     const areFieldsEmpty = expensesList.some((entry) => {
       // Only check entries that have a valid expense_id
@@ -139,19 +169,15 @@ const ExpensesList: React.FC = () => {
       return
     }
     try {
-      await axios.put('http://127.0.0.1:8000/api/expenses/update', validData, {
-        // const response = await axios.put('http://54.178.202.58:8000/api/expenses/update', validData, {
+      await axios.put('http://127.0.0.1:8000/api/expenses/update', modifiedFields, {
+        // const response = await axios.put('http://54.178.202.58:8000/api/expenses/update', modifiedFields, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
+      setOriginalExpensesList(expensesList)
       alert('Successfully updated')
-
       setIsEditing(false)
-
-      const response = await axios.get('http://127.0.0.1:8000/api/expenses')
-
-      setExpensesList(response.data)
     } catch (error) {
       if (error.response) {
         console.error('Error response:', error.response.data)
@@ -166,32 +192,32 @@ const ExpensesList: React.FC = () => {
     }
   }
 
-  useEffect(() => {
-    const fetchExpenses = async () => {
-      const token = localStorage.getItem('accessToken')
-      if (!token) {
-        window.location.href = '/login' // Redirect to login if no token found
-        return
-      }
-
-      try {
-        const response = await axios.get('http://127.0.0.1:8000/api/expenses', {
-          // const response = await axios.get('http://54.178.202.58:8000/api/expenses/', {
-          headers: {
-            Authorization: `Bearer ${token}`, // Add token to request headers
-          },
-        })
-        setExpensesList(response.data)
-        console.log('expenses: ', response.data)
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login' // Redirect to login if unauthorized
-        } else {
-          console.error('There was an error fetching the expenses!', error)
-        }
-      }
+  const fetchExpenses = async () => {
+    const token = localStorage.getItem('accessToken')
+    if (!token) {
+      window.location.href = '/login' // Redirect to login if no token found
+      return
     }
 
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/api/expenses', {
+        // const response = await axios.get('http://54.178.202.58:8000/api/expenses/', {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add token to request headers
+        },
+      })
+      setExpensesList(response.data)
+      setOriginalExpensesList(response.data)
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        window.location.href = '/login' // Redirect to login if unauthorized
+      } else {
+        console.error('There was an error fetching the expenses!', error)
+      }
+    }
+  }
+
+  useEffect(() => {
     fetchExpenses()
   }, [])
 
