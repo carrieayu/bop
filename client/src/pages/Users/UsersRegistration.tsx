@@ -7,6 +7,8 @@ import Sidebar from '../../components/Sidebar/Sidebar'
 import axios from 'axios'
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
+import AlertModal from '../../components/AlertModal/AlertModal'
+
 
 const UsersRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -21,6 +23,8 @@ const UsersRegistration = () => {
     const [isEmailMatch, setIsEmailMatch] = useState(true)
     const [isEmailValid, setIsEmailValid] = useState(true)
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
+    const [modalIsOpen, setModalIsOpen] = useState(false)
+
     const [userData, setUserData] = useState(
       {
         username: '',
@@ -57,6 +61,35 @@ const UsersRegistration = () => {
             break;
         }
     }
+  
+  
+  const handleCancel = () => {
+    //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
+    openModal()
+  }
+
+  const handleRemoveInputData = () => {
+    setUserData(
+      {
+        username: '',
+        first_name: '',
+        last_name: '',
+        password: '',
+        email: '',
+        confirm_password: '',
+        confirm_email: '',
+      },
+    )
+    closeModal()
+  }
+
+  const openModal = () => {
+    setModalIsOpen(true)
+  }
+
+  const closeModal = () => {
+    setModalIsOpen(false)
+  }
 
     const handleChange = (event) => {
       const { name, value } = event.target
@@ -168,28 +201,28 @@ const UsersRegistration = () => {
 
   return (
     <div className='UsersRegistration_wrapper'>
-        <HeaderButtons 
-            activeTab={activeTab}
-            handleTabClick={handleTabClick}
-            isTranslateSwitchActive={isTranslateSwitchActive}
-            handleTranslationSwitchToggle={handleTranslationSwitchToggle}
-        />
+      <HeaderButtons
+        activeTab={activeTab}
+        handleTabClick={handleTabClick}
+        isTranslateSwitchActive={isTranslateSwitchActive}
+        handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+      />
       <div className='UsersRegistration_content_wrapper'>
-          <Sidebar />
+        <Sidebar />
         <div className='UsersRegistration_data_content'>
           <div className='UsersRegistration_top_body_cont'></div>
           <div className='UsersRegistration_mid_body_cont'>
-                <RegistrationButtons
-                  activeTabOther={activeTabOther}
-                  message={translate('usersRegistration', language)}
-                  handleTabsClick={handleTabsClick}
-                  buttonConfig={[
-                    { labelKey: 'client', tabKey: 'client' },
-                    { labelKey: 'employee', tabKey: 'employee' },
-                    { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                    { labelKey: 'users', tabKey: 'users' },
-                  ]}
-                />
+            <RegistrationButtons
+              activeTabOther={activeTabOther}
+              message={translate('usersRegistration', language)}
+              handleTabsClick={handleTabsClick}
+              buttonConfig={[
+                { labelKey: 'client', tabKey: 'client' },
+                { labelKey: 'employee', tabKey: 'employee' },
+                { labelKey: 'businessDivision', tabKey: 'businessDivision' },
+                { labelKey: 'users', tabKey: 'users' },
+              ]}
+            />
             <div className='UsersRegistration_mid_form_cont'>
               <form onSubmit={handleSubmit}>
                 <div key='' className='UsersRegistration_top-form-input-div'>
@@ -287,7 +320,7 @@ const UsersRegistration = () => {
                             value={userData.confirm_email}
                             placeholder={`${translate('eg', language)} : takahashi_taro@gmail.com`}
                             style={{
-                              border: isEmailValid && isEmailMatch? '' : '2px solid red',
+                              border: isEmailValid && isEmailMatch ? '' : '2px solid red',
                             }}
                             onChange={(e) => handleChange(e)}
                           />
@@ -300,7 +333,7 @@ const UsersRegistration = () => {
                 </div>
                 <div className='UsersRegistration_form-btn-content'>
                   <div className='UsersRegistration_options-btn'>
-                    <button type='button' className='button is-light'>
+                    <button type='button' className='button is-light' onClick={handleCancel}>
                       {translate('cancel', language)}
                     </button>
                     <button type='submit' className='button is-info'>
@@ -313,6 +346,12 @@ const UsersRegistration = () => {
           </div>
         </div>
       </div>
+      <AlertModal
+        isOpen={modalIsOpen}
+        onConfirm={handleRemoveInputData}
+        onCancel={closeModal}
+        message={translate('cancelCreation', language)}
+      />
     </div>
   )
 }

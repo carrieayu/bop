@@ -7,6 +7,8 @@ import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
+import AlertModal from '../../components/AlertModal/AlertModal'
+
 
 const months = [
    '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -24,6 +26,7 @@ const CostOfSalesRegistration = () => {
   const startYear = currentYear - 1;
   const endYear = currentYear + 2;
   const years = Array.from({ length: endYear - startYear + 1 }, (val, i) => startYear + i);
+  const [modalIsOpen, setModalIsOpen] = useState(false)
   const [formData, setFormData] = useState([
     {
       year: '', 
@@ -90,6 +93,37 @@ const CostOfSalesRegistration = () => {
       default:
         break;
     }
+  }
+
+
+  const handleCancel = () => {
+    //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
+    openModal()
+  }
+
+  const handleRemoveInputData = () => {
+    setFormData([
+      {
+        year: '',
+        month: '',
+        purchase: '',
+        outsourcing_expense: '',
+        product_purchase: '',
+        dispatch_labor_expense: '',
+        communication_expense: '',
+        work_in_progress_expense: '',
+        amortization_expense: '',
+      },
+    ])
+    closeModal()
+  }
+
+  const openModal = () => {
+    setModalIsOpen(true)
+  }
+
+  const closeModal = () => {
+    setModalIsOpen(false)
   }
 
   const handleChange = (index, event) => {
@@ -261,34 +295,39 @@ const CostOfSalesRegistration = () => {
   };
 
   return (
-    <div className="costOfSalesRegistration_wrapper">
-        <HeaderButtons 
-            activeTab={activeTab}
-            handleTabClick={handleTabClick}
-            isTranslateSwitchActive={isTranslateSwitchActive}
-            handleTranslationSwitchToggle={handleTranslationSwitchToggle}
-        />
+    <div className='costOfSalesRegistration_wrapper'>
+      <HeaderButtons
+        activeTab={activeTab}
+        handleTabClick={handleTabClick}
+        isTranslateSwitchActive={isTranslateSwitchActive}
+        handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+      />
       <div className='costOfSalesRegistration_content_wrapper'>
-          <Sidebar />
+        <Sidebar />
         <div className='costOfSalesRegistration_data_content'>
           <div className='costOfSalesRegistration_top_body_cont'></div>
           <div className='costOfSalesRegistration_mid_body_cont'>
-              <RegistrationButtons
-                  activeTabOther={activeTabOther}
-                  message={translate('costOfSalesRegistration', language)}
-                  handleTabsClick={handleTabsClick}
-                  buttonConfig={[
-                    { labelKey: 'project', tabKey: 'project' },
-                    { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
-                    { labelKey: 'expenses', tabKey: 'expenses' },
-                    { labelKey: 'costOfSales', tabKey: 'costOfSales' },
-                  ]}
-                />
+            <RegistrationButtons
+              activeTabOther={activeTabOther}
+              message={translate('costOfSalesRegistration', language)}
+              handleTabsClick={handleTabsClick}
+              buttonConfig={[
+                { labelKey: 'project', tabKey: 'project' },
+                { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
+                { labelKey: 'expenses', tabKey: 'expenses' },
+                { labelKey: 'costOfSales', tabKey: 'costOfSales' },
+              ]}
+            />
             <div className='costOfSalesRegistration_mid_form_cont'>
               <form onSubmit={handleSubmit}>
                 {formData.map((form, index) => (
-                  <div key={index} className={`costOfSalesRegistration_form-content ${index > 0 ? 'costOfSalesRegistration_form-content-special' : ''}`}>
-                    <div className={`costOfSalesRegistration_form-content ${index > 0 ? 'costOfSalesRegistration_form-line' : ''}`}></div>
+                  <div
+                    key={index}
+                    className={`costOfSalesRegistration_form-content ${index > 0 ? 'costOfSalesRegistration_form-content-special' : ''}`}
+                  >
+                    <div
+                      className={`costOfSalesRegistration_form-content ${index > 0 ? 'costOfSalesRegistration_form-line' : ''}`}
+                    ></div>
                     <div className='costOfSalesRegistration_form-content-div'>
                       <div className='costOfSalesRegistration_left-form-div costOfSalesRegistration_calc'>
                         <div className='costOfSalesRegistration_year-div'>
@@ -301,15 +340,17 @@ const CostOfSalesRegistration = () => {
                             style={{ textAlign: 'center', textAlignLast: 'center' }}
                           >
                             <option value=''></option>
-                              {years.map((year, i) => (
-                                <option key={i} value={year}>
-                                  {year}
-                                </option>
-                              ))}
+                            {years.map((year, i) => (
+                              <option key={i} value={year}>
+                                {year}
+                              </option>
+                            ))}
                           </select>
                         </div>
                         <div className='costOfSalesRegistration_outsourcing_expense-div'>
-                          <label className='costOfSalesRegistration_outsourcing_expense'>{translate('outsourcingExpenses', language)}</label>
+                          <label className='costOfSalesRegistration_outsourcing_expense'>
+                            {translate('outsourcingExpenses', language)}
+                          </label>
                           <input
                             type='number'
                             name='outsourcing_expense'
@@ -318,7 +359,9 @@ const CostOfSalesRegistration = () => {
                           />
                         </div>
                         <div className='costOfSalesRegistration_communication_expense-div'>
-                          <label className='costOfSalesRegistration_communication_expense'>{translate('communicationExpenses', language)}</label>
+                          <label className='costOfSalesRegistration_communication_expense'>
+                            {translate('communicationExpenses', language)}
+                          </label>
                           <input
                             type='number'
                             name='communication_expense'
@@ -328,7 +371,7 @@ const CostOfSalesRegistration = () => {
                         </div>
                       </div>
                       <div className='costOfSalesRegistration_middle-form-div costOfSalesRegistration_calc'>
-                      <div className='costOfSalesRegistration_month-div'>
+                        <div className='costOfSalesRegistration_month-div'>
                           <label className='costOfSalesRegistration_month'>{translate('month', language)}</label>
                           <select
                             className='costOfSalesRegistration_select-option'
@@ -338,13 +381,17 @@ const CostOfSalesRegistration = () => {
                             style={{ textAlign: 'center', textAlignLast: 'center' }}
                           >
                             <option value=''></option>
-                              {months.map((month, idx) => (
-                                <option key={idx} value={month}>{language === "en" ? monthNames[month].en : monthNames[month].jp}</option>
-                              ))}
+                            {months.map((month, idx) => (
+                              <option key={idx} value={month}>
+                                {language === 'en' ? monthNames[month].en : monthNames[month].jp}
+                              </option>
+                            ))}
                           </select>
                         </div>
                         <div className='costOfSalesRegistration_product_purchase-div'>
-                          <label className='costOfSalesRegistration_product_purchase'>{translate('productPurchases', language)}</label>
+                          <label className='costOfSalesRegistration_product_purchase'>
+                            {translate('productPurchases', language)}
+                          </label>
                           <input
                             type='number'
                             name='product_purchase'
@@ -353,7 +400,9 @@ const CostOfSalesRegistration = () => {
                           />
                         </div>
                         <div className='costOfSalesRegistration_work_in_progress_expense-div'>
-                          <label className='costOfSalesRegistration_work_in_progress_expense'>{translate('workInProgressExpenses', language)}</label>
+                          <label className='costOfSalesRegistration_work_in_progress_expense'>
+                            {translate('workInProgressExpenses', language)}
+                          </label>
                           <input
                             type='number'
                             name='work_in_progress_expense'
@@ -363,7 +412,7 @@ const CostOfSalesRegistration = () => {
                         </div>
                       </div>
                       <div className='costOfSalesRegistration_right-form-div costOfSalesRegistration_calc'>
-                      <div className='costOfSalesRegistration_purchase-div'>
+                        <div className='costOfSalesRegistration_purchase-div'>
                           <label className='costOfSalesRegistration_purchase'>{translate('purchases', language)}</label>
                           <input
                             type='number'
@@ -373,7 +422,9 @@ const CostOfSalesRegistration = () => {
                           />
                         </div>
                         <div className='costOfSalesRegistration_dispatch_labor_expense-div'>
-                          <label className='costOfSalesRegistration_dispatch_labor_expense'>{translate('dispatchLaborExpenses', language)}</label>
+                          <label className='costOfSalesRegistration_dispatch_labor_expense'>
+                            {translate('dispatchLaborExpenses', language)}
+                          </label>
                           <input
                             type='number'
                             name='dispatch_labor_expense'
@@ -382,7 +433,9 @@ const CostOfSalesRegistration = () => {
                           />
                         </div>
                         <div className='costOfSalesRegistration_amortization_expense-div'>
-                          <label className='costOfSalesRegistration_amortization_expense'>{translate('amortizationExpenses', language)}</label>
+                          <label className='costOfSalesRegistration_amortization_expense'>
+                            {translate('amortizationExpenses', language)}
+                          </label>
                           <input
                             type='number'
                             name='amortization_expense'
@@ -405,7 +458,7 @@ const CostOfSalesRegistration = () => {
                     </button>
                   </div>
                   <div className='costOfSalesRegistration_options-btn'>
-                    <button type='button' className='button is-light'>
+                    <button type='button' className='button is-light' onClick={handleCancel}>
                       {translate('cancel', language)}
                     </button>
                     <button type='submit' className='button is-info'>
@@ -418,6 +471,12 @@ const CostOfSalesRegistration = () => {
           </div>
         </div>
       </div>
+      <AlertModal
+        isOpen={modalIsOpen}
+        onConfirm={handleRemoveInputData}
+        onCancel={closeModal}
+        message={translate('cancelCreation', language)}
+      />
     </div>
   )
 }

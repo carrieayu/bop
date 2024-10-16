@@ -11,6 +11,7 @@ import { useDispatch } from 'react-redux'
 import { UnknownAction } from 'redux'
 import { fetchMasterCompany } from '../../reducers/company/companySlice'
 import axios from 'axios'
+import AlertModal from '../../components/AlertModal/AlertModal'
 import { NULL } from 'sass'
 
 const EmployeesRegistration = () => {
@@ -25,6 +26,8 @@ const EmployeesRegistration = () => {
     const [businessDivisionSelection, setBusinessDivisionSelection] = useState<any>([])
     const [selectedCompanyId, setSelectedCompanyId] = useState('')
     const [companySelection, setCompanySelection] = useState<any>([])
+    const [modalIsOpen, setModalIsOpen] = useState(false)
+
     const [employees, setEmployees] = useState([
       {
         last_name: '',
@@ -132,6 +135,35 @@ const EmployeesRegistration = () => {
           default:
             break;
         }
+    }
+    
+    const handleCancel = () => {
+      //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
+      openModal()
+    }
+
+    const handleRemoveInputData = () => {
+      setEmployees([
+        {
+          last_name: '',
+          first_name: '',
+          email: '',
+          salary: '',
+          business_division_name: '',
+          company_name: '',
+          auth_id: '',
+          created_at: '',
+        },
+      ])
+      closeModal()
+    }
+
+    const openModal = () => {
+      setModalIsOpen(true)
+    }
+
+    const closeModal = () => {
+      setModalIsOpen(false)
     }
 
     const handleTranslationSwitchToggle = () => {
@@ -330,7 +362,7 @@ const EmployeesRegistration = () => {
                             name='company_name'
                             value={container.company_name}
                             onChange={(e) => handleCompanyChange(containerIndex, e.target.value)}
-                            >
+                          >
                             <option value=''></option>
                             {companySelection.map((company) => (
                               <option key={company.company_id} value={company.company_id}>
@@ -385,7 +417,7 @@ const EmployeesRegistration = () => {
                     </button>
                   </div>
                   <div className='EmployeesRegistration_options-btn'>
-                    <button type='button' className='button is-light'>
+                    <button type='button' className='button is-light' onClick={handleCancel}>
                       {translate('cancel', language)}
                     </button>
                     <button type='submit' className='button is-info'>
@@ -398,6 +430,12 @@ const EmployeesRegistration = () => {
           </div>
         </div>
       </div>
+      <AlertModal
+        isOpen={modalIsOpen}
+        onConfirm={handleRemoveInputData}
+        onCancel={closeModal}
+        message={translate('cancelCreation', language)}
+      />
     </div>
   )
 }

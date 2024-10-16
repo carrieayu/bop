@@ -7,6 +7,8 @@ import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
+import AlertModal from '../../components/AlertModal/AlertModal'
+
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -21,6 +23,7 @@ const ExpensesRegistration = () => {
   const { language, setLanguage } = useLanguage()
   const token = localStorage.getItem('accessToken')
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
+  const [modalIsOpen, setModalIsOpen] = useState(false)
   const [formData, setFormData] = useState([
     {
       year: '',
@@ -254,6 +257,42 @@ const ExpensesRegistration = () => {
         break;
     }
   }
+
+   const handleCancel = () => {
+     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
+     openModal()
+   }
+
+   const handleRemoveInputData = () => {
+     setFormData([
+       {
+         year: '',
+         month: '',
+         tax_and_public_charge: '',
+         communication_expense: '',
+         advertising_expense: '',
+         consumable_expense: '',
+         depreciation_expense: '',
+         utilities_expense: '',
+         entertainment_expense: '',
+         rent_expense: '',
+         travel_expense: '',
+         transaction_fee: '',
+         professional_service_fee: '',
+         registered_user_id: '',
+         updated_at: ''
+       },
+     ])
+     closeModal()
+   }
+
+   const openModal = () => {
+     setModalIsOpen(true)
+   }
+
+   const closeModal = () => {
+     setModalIsOpen(false)
+   }
   
   useEffect(() => {
   }, [formData])
@@ -342,7 +381,12 @@ const ExpensesRegistration = () => {
                           <label className='expensesRegistration_rent_expenses'>
                             {translate('rentExpense', language)}
                           </label>
-                          <input type='number' name='rent_expense' value={form.rent_expense} onChange={(e) => handleChange(index, e)} />
+                          <input
+                            type='number'
+                            name='rent_expense'
+                            value={form.rent_expense}
+                            onChange={(e) => handleChange(index, e)}
+                          />
                         </div>
                         <div className='expensesRegistration_travel_expenses-div'>
                           <label className='expensesRegistration_travel_expenses'>
@@ -490,7 +534,7 @@ const ExpensesRegistration = () => {
                     </button>
                   </div>
                   <div className='expensesRegistration_options-btn'>
-                    <button type='button' className='button is-light'>
+                    <button type='button' className='button is-light' onClick={handleCancel}>
                       {translate('cancel', language)}
                     </button>
                     <button type='submit' className='button is-info'>
@@ -503,6 +547,12 @@ const ExpensesRegistration = () => {
           </div>
         </div>
       </div>
+      <AlertModal
+        isOpen={modalIsOpen}
+        onConfirm={handleRemoveInputData}
+        onCancel={closeModal}
+        message={translate('cancelCreation', language)}
+      />
     </div>
   )
 }

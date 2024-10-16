@@ -7,6 +7,8 @@ import { translate } from '../../utils/translationUtil';
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons';
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons';
 import axios from 'axios';
+import AlertModal from '../../components/AlertModal/AlertModal'
+
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -27,6 +29,7 @@ const EmployeeExpensesRegistration = () => {
   const [employees, setEmployees] = useState([]); 
   const [projects, setProjects] = useState([]); 
   const storedUserID = localStorage.getItem('userID')
+  const [modalIsOpen, setModalIsOpen] = useState(false)
   const [employeeContainers, setEmployeeContainers] = useState([
     {
       id: 1,
@@ -59,6 +62,30 @@ const EmployeeExpensesRegistration = () => {
         break;
     }
   };
+
+  const handleCancel = () => {
+    //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
+    openModal()
+  }
+
+  const handleRemoveInputData = () => {
+    setEmployeeContainers([{
+        id: 1,
+        employee: '',
+        projectEntries: [{ id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '' }]
+      }
+    ]
+    )
+    closeModal()
+  }
+
+  const openModal = () => {
+    setModalIsOpen(true)
+  }
+
+  const closeModal = () => {
+    setModalIsOpen(false)
+  }
 
   useEffect(() => {
     const path = location.pathname;
@@ -427,7 +454,7 @@ const EmployeeExpensesRegistration = () => {
                       />
                     </div>
                     <div className='employeeExpensesRegistration_btn-subcancel'>
-                      <button type='button' className='button is-light'>
+                      <button type='button' className='button is-light' onClick={handleCancel}>
                         {translate('cancel', language)}
                       </button>
                       <button type='submit' className='button is-info'>
@@ -441,6 +468,12 @@ const EmployeeExpensesRegistration = () => {
           </div>
         </div>
       </div>
+      <AlertModal
+        isOpen={modalIsOpen}
+        onConfirm={handleRemoveInputData}
+        onCancel={closeModal}
+        message={translate('cancelCreation', language)}
+      />
     </div>
   )
 };

@@ -7,6 +7,8 @@ import Sidebar from '../../components/Sidebar/Sidebar'
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import axios from 'axios'
+import AlertModal from '../../components/AlertModal/AlertModal'
+
 
 const BusinessDivisionsRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -19,9 +21,10 @@ const BusinessDivisionsRegistration = () => {
     const [companyList, setCompanyList] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState('');
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
-    
     const [businessDivisionName, setBusinessDivisionName] = useState('');
     const [authUserID] = useState(storedUserID);
+    const [modalIsOpen, setModalIsOpen] = useState(false)
+
     const [formData, setFormData] = useState([
         {
           business_division_name: '',
@@ -53,6 +56,30 @@ const BusinessDivisionsRegistration = () => {
           default:
             break;
         }
+    }
+  
+    const handleCancel = () => {
+      //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
+      openModal()
+    }
+
+    const handleRemoveInputData = () => {
+      setFormData([
+        {
+          business_division_name: '',
+          company_id: '',
+          auth_user_id: authUserID,
+        },
+      ])
+      closeModal()
+    }
+
+    const openModal = () => {
+      setModalIsOpen(true)
+    }
+
+    const closeModal = () => {
+      setModalIsOpen(false)
     }
 
     const handleTranslationSwitchToggle = () => {
@@ -208,66 +235,71 @@ const BusinessDivisionsRegistration = () => {
 
   return (
     <div className='BusinessDivisionsRegistration_wrapper'>
-        <HeaderButtons 
-            activeTab={activeTab}
-            handleTabClick={handleTabClick}
-            isTranslateSwitchActive={isTranslateSwitchActive}
-            handleTranslationSwitchToggle={handleTranslationSwitchToggle}
-        />
+      <HeaderButtons
+        activeTab={activeTab}
+        handleTabClick={handleTabClick}
+        isTranslateSwitchActive={isTranslateSwitchActive}
+        handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+      />
       <div className='BusinessDivisionsRegistration_content_wrapper'>
-          <Sidebar />
+        <Sidebar />
         <div className='BusinessDivisionsRegistration_data_content'>
           <div className='BusinessDivisionsRegistration_top_body_cont'></div>
           <div className='BusinessDivisionsRegistration_mid_body_cont'>
-                <RegistrationButtons
-                  activeTabOther={activeTabOther}
-                  message={translate('businessDivisionsRegistration', language)}
-                  handleTabsClick={handleTabsClick}
-                  buttonConfig={[
-                    { labelKey: 'client', tabKey: 'client' },
-                    { labelKey: 'employee', tabKey: 'employee' },
-                    { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                    { labelKey: 'users', tabKey: 'users' },
-                  ]}
-                />
+            <RegistrationButtons
+              activeTabOther={activeTabOther}
+              message={translate('businessDivisionsRegistration', language)}
+              handleTabsClick={handleTabsClick}
+              buttonConfig={[
+                { labelKey: 'client', tabKey: 'client' },
+                { labelKey: 'employee', tabKey: 'employee' },
+                { labelKey: 'businessDivision', tabKey: 'businessDivision' },
+                { labelKey: 'users', tabKey: 'users' },
+              ]}
+            />
             <div className='BusinessDivisionsRegistration_mid_form_cont'>
               <form onSubmit={handleSubmit}>
-              {formData.map((form, index) => (
-                    <div key={index} className='BusinessDivisionsRegistration_form-content BusinessDivisionsRegistration_ForImplementationOfPlusAndMinus'>
-                      <div className='BusinessDivisionsRegistration_form-content BusinessDivisionsRegistration_ForImplementationOfHorizontalLineBelow'></div>
-                      <div className='BusinessDivisionsRegistration_form-div'>
-                        <div className='BusinessDivisionsRegistration_form-content-div'>
-                          <div className='BusinessDivisionsRegistration_business_division_name-div'>
-                            <label className='business_division_name'>{translate('businessDivision', language)}</label>
-                            <input
-                              type='text'
-                              name='business_division_name'
-                              value={form.business_division_name}
-                              onChange={(e) => handleChange(index, e)}
-                            />
-                          </div>
-                          <div className='BusinessDivisionsRegistration_company_name-div'>
-                            <label className='BusinessDivisionsRegistration_company_name'>{translate('companyName', language)}</label>
-                            <select
-                              className='BusinessDivisionsRegistration_select-option'
-                              name='company_id'
-                              value={form.company_id}
-                              // onChange={handleCompanyChange}
-                              onChange={(e) => handleChange(index, e)}
-                            >
-                              <option value=''></option>
+                {formData.map((form, index) => (
+                  <div
+                    key={index}
+                    className='BusinessDivisionsRegistration_form-content BusinessDivisionsRegistration_ForImplementationOfPlusAndMinus'
+                  >
+                    <div className='BusinessDivisionsRegistration_form-content BusinessDivisionsRegistration_ForImplementationOfHorizontalLineBelow'></div>
+                    <div className='BusinessDivisionsRegistration_form-div'>
+                      <div className='BusinessDivisionsRegistration_form-content-div'>
+                        <div className='BusinessDivisionsRegistration_business_division_name-div'>
+                          <label className='business_division_name'>{translate('businessDivision', language)}</label>
+                          <input
+                            type='text'
+                            name='business_division_name'
+                            value={form.business_division_name}
+                            onChange={(e) => handleChange(index, e)}
+                          />
+                        </div>
+                        <div className='BusinessDivisionsRegistration_company_name-div'>
+                          <label className='BusinessDivisionsRegistration_company_name'>
+                            {translate('companyName', language)}
+                          </label>
+                          <select
+                            className='BusinessDivisionsRegistration_select-option'
+                            name='company_id'
+                            value={form.company_id}
+                            // onChange={handleCompanyChange}
+                            onChange={(e) => handleChange(index, e)}
+                          >
+                            <option value=''></option>
                             {companyList.map((company) => (
-                                <option key={company.company_id} value={company.company_id}>
-                                  {company.company_name}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
+                              <option key={company.company_id} value={company.company_id}>
+                                {company.company_name}
+                              </option>
+                            ))}
+                          </select>
                         </div>
                       </div>
-                      <input type='hidden' name='auth_user_id' value={form.auth_user_id} />
                     </div>
-                  ))}
+                    <input type='hidden' name='auth_user_id' value={form.auth_user_id} />
+                  </div>
+                ))}
                 <div className='BusinessDivisionsRegistration_form-btn-content'>
                   <div className='BusinessDivisionsRegistration_plus-btn'>
                     <button className='BusinessDivisionsRegistration_inc' type='button' onClick={handleAdd}>
@@ -278,7 +310,7 @@ const BusinessDivisionsRegistration = () => {
                     </button>
                   </div>
                   <div className='BusinessDivisionsRegistration_options-btn'>
-                    <button type='button' className='button is-light'>
+                    <button type='button' className='button is-light' onClick={handleCancel}>
                       {translate('cancel', language)}
                     </button>
                     <button type='submit' className='button is-info'>
@@ -291,6 +323,12 @@ const BusinessDivisionsRegistration = () => {
           </div>
         </div>
       </div>
+      <AlertModal
+        isOpen={modalIsOpen}
+        onConfirm={handleRemoveInputData}
+        onCancel={closeModal}
+        message={translate('cancelCreation', language)}
+      />
     </div>
   )
 }

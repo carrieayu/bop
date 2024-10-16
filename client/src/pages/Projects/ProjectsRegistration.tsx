@@ -11,6 +11,8 @@ import { fetchBusinessDivisions } from '../../reducers/businessDivisions/busines
 import { UnknownAction } from 'redux'
 import { useDispatch } from 'react-redux'
 import { fetchMasterClient } from '../../reducers/client/clientSlice'
+import AlertModal from '../../components/AlertModal/AlertModal'
+
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -29,6 +31,8 @@ const ProjectsRegistration = () => {
   const [clients, setClients] = useState<any>([])
   const [selectedClient, setSelectedClient] = useState([]);
   const [businessSelection, setBusinessSelection] = useState<any>([])
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+
   const dispatch = useDispatch()
   for (let year = 2021; year <= new Date().getFullYear(); year++) {
     years.push(year);
@@ -112,6 +116,44 @@ const ProjectsRegistration = () => {
       default:
         break;
     }
+  }
+
+  const handleCancel = () => {
+    //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
+    openModal();
+  }
+
+  const handleRemoveInputData = () => {
+      setProjects([
+        {
+          year: '',
+          month: '',
+          project_name: '',
+          project_type: '',
+          client: '',
+          business_division: '',
+          sales_revenue: '',
+          cost_of_sale: '',
+          dispatch_labor_expense: '',
+          employee_expense: '',
+          indirect_employee_expense: '',
+          expense: '',
+          operating_profit: '',
+          non_operating_profit: '',
+          non_operating_expense: '',
+          ordinary_profit: '',
+          ordinary_profit_margin: '',
+        },
+      ])
+      closeModal()
+  }
+
+  const openModal = () => {
+    setModalIsOpen(true)
+  }
+
+  const closeModal = () => {
+      setModalIsOpen(false)
   }
 
   const fetchClients = async () => {
@@ -584,7 +626,7 @@ const ProjectsRegistration = () => {
                     </button>
                   </div>
                   <div className='projectsRegistration_options-btn'>
-                    <button type='button' className='button is-light'>
+                    <button type='button' className='button is-light' onClick={handleCancel}>
                       {translate('cancel', language)}
                     </button>
                     <button type='submit' className='button is-info'>
@@ -597,6 +639,12 @@ const ProjectsRegistration = () => {
           </div>
         </div>
       </div>
+       <AlertModal
+        isOpen={modalIsOpen}
+        onConfirm={handleRemoveInputData}
+        onCancel={closeModal}
+        message={translate('cancelCreation', language)}
+      />
     </div>
   )
 }
