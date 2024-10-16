@@ -185,7 +185,7 @@ const ClientsRegistration = () => {
               <div className='ClientsRegistration_mid_form_cont'>
                 {clientData.map((container, containerIndex) => (
                   <div key={containerIndex} className='ClientsRegistration_ForImplementationOfPlusAndMinus'>
-                    <div className='ClientsRegistration_ForImplementationOfHorizontalLineBelow'></div>
+                    <div className={`ClientsRegistration_ForImplementationOfHorizontalLineBelow-div ${containerIndex > 0 ? 'ClientsRegistration_form-line' : ''}`}></div>
                     <div className='ClientsRegistration_form-div'>
                       <div className='ClientsRegistration_form-content-div'>
                         <div className='ClientsRegistration_client_name-div'>

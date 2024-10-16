@@ -26,7 +26,6 @@
             .BusinessDivisionsRegistration_top_body_cont{
                 margin: 2rem 0 0 0;
                 background-color: #fff;
-                // height: 4rem;
             }
             .BusinessDivisionsRegistration_inputs_and_buttons{
             display: flex;
@@ -70,8 +69,11 @@
                     .BusinessDivisionsRegistration_form-content.BusinessDivisionsRegistration_ForImplementationOfPlusAndMinus{
                         padding: 0px 0px 10px 20px;
                     }
-                    .BusinessDivisionsRegistration_form-content.BusinessDivisionsRegistration_ForImplementationOfHorizontalLineBelow{
-                        // border-top: 4px solid rgb(183, 183, 183);
+                    .BusinessDivisionsRegistration_form-content.HorizontalLineBelow{
+                        margin: 0px 20px 0px 0px;
+                        border-top: 4px solid rgb(183, 183, 183);
+                        opacity: 30%;
+                        
                     }
                     .BusinessDivisionsRegistration_form-content{
                         padding: 15px 0px 0px 20px;

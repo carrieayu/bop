@@ -26,11 +26,8 @@
             .projectsRegistration_top_body_cont{
                 margin: 2rem 0 0 0;
                 background-color: #fff;
-                // .projectsRegistration_top_btn_cont{
-                //     margin-left: 5%;
-                //     display: flex;
-                //     gap: 2%;
-                // }
+                .projectsRegistration_top_btn_cont{
+                }
             }
             .projectsRegistration_inputs_and_buttons{
                 display: flex;
@@ -74,11 +71,10 @@
                     }    
                 }
                 // .projectsRegistration_form-content.projectsRegistration_form-content-special{
-                //     padding: 0px 0px 10px 0px;
                 // }
                 .projectsRegistration_form-content.projectsRegistration_form-line {
                     border-top: 4px solid rgb(183, 183, 183);
-                    margin: 20px 40px 20px 20px;
+                    margin: 20px 0px 20px 0px;
                     opacity: 30%;
                 }
                 .projectsRegistration_form-content{

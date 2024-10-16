@@ -8,7 +8,7 @@
             flex-direction: column;
         }
         .costOfSalesList_btn_wrapper{
-            width: 100%; // I chaned this so it would align with registration screens
+            width: 100%; 
             padding: 10px 30px 10px 30px;
             .costOfSalesList_top_content{
                 position: relative;
@@ -34,7 +34,6 @@
                     background-color: #f3f3f38b;
                 }
                 .costOfSalesList_mode_switch_datalist{
-                    // float: right;
                     padding: 1rem;
                 }
                 .costOfSalesList_edit_submit_btn_cont{
@@ -57,7 +56,6 @@
                 .costOfSalesList_mid_body_cont{
                     height: 100%;
                     .ListButtons_btn{
-                        // margin-left: 10px;
                     }
                     .costOfSalesList_table_wrapper{
                         width: 100%;
@@ -91,7 +89,6 @@
                             scrollbar-width: none; 
                         }
                         .costOfSalesList_table_cont{
-                            // padding: 0px 0px 0px 20px;
                             table{
                                 width: 100%;
                                 .costOfSalesList_table_title{
@@ -140,7 +137,7 @@
                                             border: none;
                                             text-align: center;
                                             input{
-                                                width: 100px;
+                                                width: 70px;
                                             }
                                         }
                                     }
@@ -153,8 +150,6 @@
         }
         .costOfSalesList_wrapper.editMode{
             overflow-x: hidden;
-            // width: 100% !important; // Adjusted to 84% for edit mode        
-            // padding: 0px 0px 0px 30px !important;
         }
     }
 }

@@ -41,6 +41,7 @@
                 }
                 .costOfSalesRegistration_mid_form_cont{
                     margin: 0px 40px;
+                    padding: 15px 20px;
                     background-color: #EFEDEA;
                     overflow-y: auto; 
                     overflow-x: hidden;
@@ -67,15 +68,15 @@
                         background-color: #555; 
                     }
                     .costOfSalesRegistration_form-content.costOfSalesRegistration_form-content-special{
-                         padding: 20px 10px 0px 20px;
+                        //  padding: 20px 10px 0px 20px;
                         }
                         .costOfSalesRegistration_form-content.costOfSalesRegistration_form-line{
                             border-top: 4px solid rgb(183, 183, 183);
-                            margin: 0px 110px 0px 0px;
+                            margin: 0px 20px 0px 0px;
                             opacity: 30%;
                         }
                         .costOfSalesRegistration_form-content{
-                            padding: 3px 20px 10px 20px;
+                            padding: -1px 0px 0px 0px;
                             .costOfSalesRegistration_form-content-div{
                                 display: flex;
                                 .costOfSalesRegistration_calc{

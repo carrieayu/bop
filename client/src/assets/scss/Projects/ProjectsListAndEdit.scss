@@ -33,15 +33,12 @@
                     background-color: #f3f3f38b;
                 }
                 .projectsList_mode_switch_datalist{
-                    // position: absolute;
-                    // float: right;
                     padding: 1rem;
                 }
                 .projectsList_mid_body_cont{
                     height: 100%;
                     
                     .ListButtons_btn{
-                        // margin-left: 10px;
                     }
                     .projectsList_table_wrapper{
                         width: 100%;
@@ -118,11 +115,6 @@
                         }
                     }
                     .projectsList_table_wrapper.editMode {
-                        // display: flex;
-                        // margin-top: 220px;
-                        // padding: 0px 40px 0px 40px;
-                        // justify-content: flex-start;
-                        // width: 80%; // Adjusted to 80% for edit mode
                     }
                     .projectsList_edit_submit_btn_cont{
                         display: flex;
@@ -130,8 +122,6 @@
                         position: absolute;
                         bottom: 2%;
                         right:  2.5%;
-                        // float: right;
-                        // padding: 0px 120px 200px 120px; 
                         .projectsList_edit_submit_btn{
                             display: flex;
                             justify-content: center;
@@ -145,17 +135,15 @@
                         }
                     }
                     .projectsList_is_editing_wrapper{
-                        .projectsList_is_editing_cont{                            
-                            // display: flex;
-                            // justify-content: flex-end;
-                            // margin: 0px !important;
+                        .projectsList_is_editing_cont{         
                         }
                     }
+                    
                 }
             }
         }
         .projectsList_wrapper.editMode{
-             overflow-x: hidden;
+            overflow-x: hidden;
         }
     }
 }

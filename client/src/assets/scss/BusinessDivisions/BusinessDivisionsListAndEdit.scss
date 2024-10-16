@@ -3,8 +3,6 @@
     .BusinessDivisionsListAndEdit_cont_wrapper{
         display: flex;
         background-color: #EFEDEA;
-        width: 100vw;
-        // height: 130vh;
         @media only screen and (max-width: 1000px){
             flex-direction: column;
         }
@@ -35,8 +33,6 @@
                     background-color: #f3f3f38b;
                 }
                 .BusinessDivisionsListAndEdit_mode_switch_datalist{
-                    // float: right;
-                    // padding: 40px 70px;
                     padding: 1rem;
                 }
                 .BusinessDivisionsListAndEdit_edit_submit_btn_cont{
@@ -59,7 +55,6 @@
                 .BusinessDivisionsListAndEdit_mid_body_cont{
                     height: 100%;
                     .ListButtons_btn{
-                        // margin-left: -44px;
                     }
                 }
                 .BusinessDivisionsListAndEdit_table_wrapper{
@@ -93,7 +88,6 @@
                         scrollbar-width: none; 
                     }
                     .BusinessDivisionsListAndEdit_table_cont{
-                        // padding: 0px 0px 0px 0px;
                         table{
                             width: 100%;
                             .BusinessDivisionsListAndEdit_table_title{
@@ -138,10 +132,6 @@
                 }
                 .BusinessDivisionsListAndEdit_is_editing_wrapper{
                     .BusinessDivisionsListAndEdit_is_editing_cont{
-                        // display: flex;
-                        // justify-content: flex-end;
-                        // padding: 20px 20px 0px 20px;
-                        // margin: 0px !important;
                     }
                 }
             }

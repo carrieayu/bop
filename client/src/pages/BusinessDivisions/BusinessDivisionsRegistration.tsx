@@ -238,7 +238,7 @@ const BusinessDivisionsRegistration = () => {
                     key={index}
                     className='BusinessDivisionsRegistration_form-content BusinessDivisionsRegistration_ForImplementationOfPlusAndMinus'
                   >
-                    <div className='BusinessDivisionsRegistration_form-content BusinessDivisionsRegistration_ForImplementationOfHorizontalLineBelow'></div>
+                    <div className={`BusinessDivisionsRegistration_form-content ${index > 0 ? 'HorizontalLineBelow': ''}`}></div>
                     <div className='BusinessDivisionsRegistration_form-div'>
                       <div className='BusinessDivisionsRegistration_form-content-div'>
                         <div className='BusinessDivisionsRegistration_business_division_name-div'>
