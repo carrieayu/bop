@@ -59,7 +59,7 @@
                 }
                 .UsersListAndEdit_table_wrapper{
                     width: 100%;
-                    height: 80%;
+                    height:60vh;
                     overflow-y: auto; 
                     overflow-x: hidden;
                     scrollbar-width: thin;
@@ -96,6 +96,7 @@
                                 z-index: 1;
                                 text-align: center;
                                 background-color: #808080;
+                                border: 1px solid #808080;
                                 .UsersListAndEdit_table_title_content_vertical{
                                     color: #fff;
                                     border: none;

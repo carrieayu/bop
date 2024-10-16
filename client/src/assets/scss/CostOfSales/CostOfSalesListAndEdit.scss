@@ -59,7 +59,7 @@
                     }
                     .costOfSalesList_table_wrapper{
                         width: 100%;
-                        height: 80%;
+                        height: 60vh;
                         overflow-y: auto; 
                         overflow-x: hidden;
                         scrollbar-width: thin;
@@ -97,6 +97,7 @@
                                     z-index: 1;
                                     text-align: center;
                                     background-color: #808080;
+                                    border: 1px solid #808080;
                                     .costOfSalesList_table_title_content_vertical{
                                         color: #fff;
                                         border: none;
@@ -134,7 +135,7 @@
                                             background-color: #e0e0e0;
                                         }
                                         .costOfSalesList_table_body_content_vertical{
-                                            border: none;
+                                            border: 1px solid  #d0cdcd;
                                             text-align: center;
                                             input{
                                                 width: 70px;
