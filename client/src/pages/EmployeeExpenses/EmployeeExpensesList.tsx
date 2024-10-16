@@ -219,7 +219,7 @@ const EmployeeExpensesList: React.FC = () => {
         />
         <div className='employeeExpensesList_cont_wrapper'>
           <Sidebar />
-          <div className='employeeExpensesList_wrapper_div'>
+          <div className={`employeeExpensesList_wrapper_div ${isEditing ? 'editMode' : ''}`}>
             <div className='employeeExpensesList_top_content'>
               <div className='employeeExpensesList_top_body_cont'>
                 <div className='employeeExpensesList_mode_switch_datalist'>

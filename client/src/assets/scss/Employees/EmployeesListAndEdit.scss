@@ -3,8 +3,6 @@
     .EmployeesListAndEdit_cont_wrapper{
         display: flex;
         background-color: #EFEDEA;
-        width: 100vw;
-        // height: 130vh;
         @media only screen and (max-width: 1000px){
             flex-direction: column;
         }
@@ -61,7 +59,7 @@
                 }
                 .EmployeesListAndEdit_table_wrapper{
                     width: 100%;
-                    height: 80%;
+                    height: 60vh;
                     overflow-y: auto; 
                     overflow-x: hidden;
                     scrollbar-width: thin;
@@ -90,9 +88,8 @@
                         scrollbar-width: none; 
                     }
                     .EmployeesListAndEdit_table_cont.editScrollable {
-                            overflow-x: auto;
-                            padding: 0px 0px 0px 0px;
-
+                        overflow-x: auto;
+                        padding: 0px 0px 0px 0px;
                         }
                     .EmployeesListAndEdit_table_cont{
                         table{
@@ -103,6 +100,7 @@
                                 z-index: 1;
                                 text-align: center;
                                 background-color: #808080;
+                                border: 1px solid #808080;
                                 .EmployeesListAndEdit_table_title_content_vertical{
                                     color: #fff;
                                     border: none;
@@ -119,7 +117,7 @@
                                         background-color: #e0e0e0;
                                     }
                                     .EmployeesListAndEdit_table_body_content_vertical{
-                                        border: none;
+                                        border: 1px solid  #d0cdcd;
                                         text-align: center;
                                         .edit_input{
                                             width: 100px;
@@ -138,7 +136,7 @@
                     }
                 }
                 .EmployeesListAndEdit_table_wrapper.editMode{
-                    overflow-x: hidden
+                    overflow-x: hidden;
                 }
             }
         }
