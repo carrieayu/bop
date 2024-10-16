@@ -23,7 +23,7 @@
       border-radius: 5px;
       background-color: #fff;
     .employeeExpensesRegistration_top_body_cont{
-      margin: 4rem 0 0 0;
+      margin: 2rem 0 0 0;
       background-color: #fff;
     }
     .employeeExpensesRegistration_inputs_and_buttons{
@@ -39,8 +39,8 @@
               height: 55vh;
           }
               .employeeExpensesRegistration_mid_form_cont{
-                margin: 20px 50px;
-                padding: 20px;
+                margin: 0px 40px;
+                padding: 15px 20px;
                 background-color: #EFEDEA;
                 overflow-y: auto; 
                 overflow-x: hidden;
@@ -67,8 +67,10 @@
                     background-color: #555; 
                 }
                 .employeeExpensesRegistration_form-content.employeeExpensesRegistration_form-line {
-                  padding-bottom: 50px;
+                  // padding-bottom: 50px;
+                  // border-top: 4px solid rgb(183, 183, 183);
                   border-top: 4px solid rgb(183, 183, 183);
+                  margin: 20px 40px 20px 20px;
                   opacity: 30%;
                 }
                 .employeeExpensesRegistration_cont-body{
@@ -162,24 +164,28 @@
             margin-left: 90%;
             .employeeExpensesRegistration_plus-btn,
             .employeeExpensesRegistration_minus-btn{
-              width: 3%;
-              border-radius: 5px !important;
               background-color: #808080;
               color: #fff;
-
+              width: 30px;
+              height: 40px;
+              border-radius: 5px !important;
+              font-size: 25px;
             }
           }
           .employeeExpensesRegistration_btn-subcancel{
             display: flex;
-            justify-content: center;
-            align-items: center;
             gap: 1%;
-            margin-top: 10px;
-            .employeeExpensesRegistration_cancel-btn,
-            .employeeExpensesRegistration_submit-btn{
-              border-radius: 5px !important;
-              width: 10%;
-            }
+            padding: 10px 10px 10px 10px;
+            align-items: center;
+            justify-content: center;
+            // .employeeExpensesRegistration_cancel-btn,
+            // .employeeExpensesRegistration_submit-btn{
+            //   border-radius: 5px !important;
+              button{
+                width: 10%;
+                // background-color: #555;
+              }
+            // }
           }
         }
       }

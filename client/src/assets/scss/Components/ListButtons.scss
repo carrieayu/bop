@@ -1,5 +1,5 @@
 .ListButtons_btn_cont{
-    margin-left: 5%;
+    margin-left: 40px;
     display: flex;
     gap: 2%;
     .body-btn{
@@ -23,16 +23,19 @@
   .ListButtons_title_container{
     display: flex;
     width: 100%;
-    padding: 49px 70px 50px 70px;
-    gap: 7.8%;
+    // padding: 49px 70px 50px 50px;
+    padding: 49px 70px 50px 40px;
+
+    gap: 40px;
     align-items: center;
     .ListButtons_title_table_cont{
         .ListButtons_title{
           letter-spacing: 2px;
+          width: 180px;
           font-weight: bold;
           color: #000;
           @media only screen and (min-width: 1920px){
-            margin-left: 10px;
+            // margin-left: 10px;
         }
         }
       }
@@ -44,6 +47,8 @@
             border-radius: 5px !important;
             background-color: #808080;
             color: #fff;
+            // margin-left: 10px !;
+
         }
       }
   }

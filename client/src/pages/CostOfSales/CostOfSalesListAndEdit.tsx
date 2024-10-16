@@ -327,8 +327,8 @@ const CostOfSalesList: React.FC = () => {
               />
               <div className={`costOfSalesList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                 <div className='costOfSalesList_table_cont'>
-                  <div className='columns is-mobile'>
-                    <div className='column'>
+                  {/* <div className='columns is-mobile'> */}
+                    {/* <div className='column'> */}
                       {isEditing ? (
                         <div>
                           <table className='table is-bordered is-hoverable'>
@@ -550,8 +550,8 @@ const CostOfSalesList: React.FC = () => {
                           </tbody>
                         </table>
                       )}
-                    </div>
-                  </div>
+                    {/* </div> */}
+                  {/* </div> */}
                 </div>
               </div>
               <div className='costOfSalesList_is_editing_wrapper'>

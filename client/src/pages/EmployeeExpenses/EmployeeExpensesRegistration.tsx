@@ -418,18 +418,19 @@ const EmployeeExpensesRegistration = () => {
               </div>
                 <div className='employeeExpensesRegistration_cont-footer'>
                   <div className='employeeExpensesRegistration_btn-plusminus'>
-                    <Btn
-                      label='+'
+                    <button
                       className='employeeExpensesRegistration_plus-btn'
                       type='button'
-                      onClick={addEmployeeContainer}
-                    />
-                    <Btn
-                      label='-'
+                      onClick={addEmployeeContainer}>
+                    +
+                    </button>
+                    <button
                       className='employeeExpensesRegistration_minus-btn'
                       type='button'
                       onClick={removeEmployeeContainer}
-                    />
+                    >
+                    -
+                  </button>
                   </div>
                   <div className='employeeExpensesRegistration_btn-subcancel'>
                     <button type='button' className='button is-light'>

@@ -319,8 +319,8 @@ const ExpensesList: React.FC = () => {
               <div className={`expensesList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                 <div className={`expensesList_table_cont ${isEditing ? 'editScrollable' : ''}`}>
                   {/* <div className='expensesList_table_cont'> */}
-                  <div className='columns is-mobile'>
-                    <div className='column'>
+                  {/* <div className='columns is-mobile'> */}
+                    {/* <div className='column'> */}
                       {isEditing ? (
                         <div className='editScroll'>
                           <table className='table is-bordered is-hoverable'>
@@ -581,9 +581,9 @@ const ExpensesList: React.FC = () => {
                           </tbody>
                         </table>
                       )}
-                    </div>
                     {/* </div> */}
-                  </div>
+                    {/* </div> */}
+                  {/* </div> */}
                 </div>
               </div>
             </div>

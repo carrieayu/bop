@@ -9,7 +9,6 @@
         }
         .employeeExpensesList_wrapper_div{
                     width: 84%;
-                    // height: 100vh;
                     padding: 10px 30px 10px 30px;
                     .employeeExpensesList_top_content{
                         position: relative;
@@ -22,9 +21,12 @@
                         border-radius: 5px;
                         .employeeExpensesList_top_body_cont{
                             background-color: #fff;
-                            height: 4rem;
+                            height: 2rem;
                         }
                         button.employeeExpensesList_mode_switch{
+                            position: absolute;
+                            right: 40px;
+                            top: 45px;
                             border: 1px solid;
                             padding: 3px 21px;
                             border-radius: 5px;
@@ -32,8 +34,9 @@
                             background-color: #f3f3f3;
                         }
                         .employeeExpensesList_mode_switch_datalist{
-                            float: right;
-                            padding: 40px 70px;
+                            padding: 1rem;
+                            // float: right;
+                            // padding: 40px 70px;
                         }
                         .employeeExpensesList_edit_submit_btn_cont{
                             display: flex;
@@ -53,9 +56,9 @@
                             background: #66d1ff;
                         }
                         .employeeExpensesList_mid_body_cont{
-                            height: 70vh;
+                            height: 100%;
                             .ListButtons_btn{
-                                margin-left: -1.5px;
+                                // margin-left:10px;
                             }
                             .employeeExpensesList_table_wrapper{
                                 width: 100%;
@@ -64,6 +67,7 @@
                                 overflow-x: hidden;
                                 scrollbar-width: thin;
                                 scrollbar-color: #888 #e0e0e0;
+                                padding: 0 40px 0 40px;
                                 @media only screen and (min-width: 1920px){
                                     height: 60vh;
                                 }
@@ -88,13 +92,12 @@
                                 }
                                 .employeeExpensesList_table_cont.editScrollable {
                                     // padding: 0px 20px 0px 40px;
-                                    width: 97.5%;
                                     overflow-x: auto;
+                                    padding: 0px 0px 0px 0px;
                                 }
                                 .employeeExpensesList_table_cont{
-                                    padding: 0px 0px 0px 40px;                                    
                                     .table{
-                                        width: 97%;
+                                        width: 100%;
                                         .employeeExpensesList_table_title{
                                             position: sticky;
                                             top: 0;
@@ -175,14 +178,17 @@
                             }
                             .employeeExpensesList_pagination_wrapper{
                                 .employeeExpensesList_pagination_cont{
-                                    display: flex;
-                                    justify-content: flex-end;
-                                    padding: 20px 20px 0px 20px;
-                                    margin: 0px !important;
+                                    // display: flex;
+                                    // justify-content: flex-end;
+                                    // padding: 20px 20px 0px 20px;
+                                    // margin: 0px !important;
                                 }
                             }
                         }
                     }
                 }
-    }
-}
+                .employeeExpensesList_table_wrapper.editMode{
+                     overflow-x: hidden;
+                }
+            }
+        }

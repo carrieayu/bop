@@ -7,7 +7,7 @@
             flex-direction: column;
         }
         .projectsList_wrapper{
-            width: 102.5%; // I chaned this so it would align with registration screens
+            width: 100%;
             padding: 10px 30px 10px 30px;
             .projectsList_top_content{
                 position: relative;
@@ -20,11 +20,12 @@
                 border-radius: 5px;
                 .projectsList_top_body_cont{
                     background-color: #fff;
-                    height: 4rem;
+                    height: 0rem;
                 }
                 button.projectsList_mode_switch {
                     position: absolute;
-                    right: 70px;
+                    right: 40px;
+                    top: 45px;
                     border: 1px solid;
                     padding: 3px 21px;
                     border-radius: 5px;
@@ -33,22 +34,14 @@
                 }
                 .projectsList_mode_switch_datalist{
                     // position: absolute;
-                    float: right;
-                    padding: 40px 70px;
+                    // float: right;
+                    padding: 1rem;
                 }
-                // button.projectsList_edit_submit_btn {
-                    // border: 2px solid #fdd7b3;
-                    // padding: 2px 13px;
-                    // border-radius: 7px;
-                    // margin-top: 6px;
-                    // background: #66d1ff;
-                    // color: white;
-                // }
                 .projectsList_mid_body_cont{
                     height: 100%;
-                    // background-color: pink;
+                    
                     .ListButtons_btn{
-                        margin-left: 10px;
+                        // margin-left: 10px;
                     }
                     .projectsList_table_wrapper{
                         width: 100%;
@@ -57,6 +50,7 @@
                         overflow-x: hidden;
                         scrollbar-width: thin;
                         scrollbar-color: #888 #e0e0e0;
+                        padding: 0 40px 0 40px;
                         @media only screen and (min-width: 1920px){
                             height: 60vh;
                         }
@@ -82,14 +76,11 @@
                         .projectsList_table_cont.editScrollable {
                             overflow-x: auto;
                             padding: 0px 0px 0px 0px;
-
+                            
                         }
-                        .projectsList_table_cont{
-                            // background-color: pink;
-                            padding: 0px 10px 0px 20px;
-
+                        .projectsList_table_cont{     
                             .table{
-                                width: 97%;
+                                width: 100%;
                                 .projectsList_table_title{
                                     position: sticky;
                                     top: 0;
@@ -103,7 +94,7 @@
                                     }
                                 }
                                 .projectsList_table_body{
-
+                                    
                                     .projectsList_table_body_content_horizontal{
                                         
                                         border: none;
@@ -127,9 +118,9 @@
                         }
                     }
                     .projectsList_table_wrapper.editMode {
-                        display: flex;
+                        // display: flex;
                         // margin-top: 220px;
-                        padding: 0px 40px 0px 40px;
+                        // padding: 0px 40px 0px 40px;
                         // justify-content: flex-start;
                         // width: 80%; // Adjusted to 80% for edit mode
                     }
@@ -164,7 +155,7 @@
             }
         }
         .projectsList_wrapper.editMode{
-            width: 84%; // Adjusted to 84% for edit mode
+             overflow-x: hidden;
         }
     }
 }

@@ -3,13 +3,11 @@
     .UsersListAndEdit_cont_wrapper{
         display: flex;
         background-color: #EFEDEA;
-        width: 100vw;
-        // height: 130vh;
         @media only screen and (max-width: 1000px){
             flex-direction: column;
         }
         .UsersListAndEdit_maincontent_wrapper{
-            width: 84%; // I changed this so it would align with registration screens
+            width: 100%;
             padding: 10px 30px 10px 30px;
             .UsersListAndEdit_top_content{
                 position: relative;
@@ -22,11 +20,12 @@
                 border-radius: 5px;
                 .UsersListAndEdit_top_body_cont{
                     background-color: #fff;
-                    height: 4rem;
+                    height: 2rem;
                 }
                 button.UsersListAndEdit_mode_switch{
                    position: absolute;
-                    right: 70px;
+                    right: 40px;
+                    top: 45px;
                     border: 1px solid;
                     padding: 3px 21px;
                     border-radius: 5px;
@@ -34,8 +33,9 @@
                     background-color: #f3f3f38b;
                 }
                 .UsersListAndEdit_mode_switch_datalist{
-                    float: right;
-                    padding: 40px 70px;
+                    // float: right;
+                    // padding: 40px 70px;
+                    padding: 1rem;
                 }
                 .UsersListAndEdit_edit_submit_btn_cont{
                     display: flex;
@@ -55,9 +55,9 @@
                     }
                 }
                 .UsersListAndEdit_mid_body_cont{
-                    height: 70vh;
+                    height: 100%;
                     .ListButtons_btn{
-                        margin-left: -26px;
+                        // margin-left: -26px;
                     }
                 }
                 .UsersListAndEdit_table_wrapper{
@@ -67,6 +67,7 @@
                     overflow-x: hidden;
                     scrollbar-width: thin;
                     scrollbar-color: #888 #e0e0e0;
+                    padding: 0 40px 0 40px;
                     @media only screen and (min-width: 1920px){
                     height: 60vh;
                     }
@@ -90,9 +91,9 @@
                         scrollbar-width: none; 
                     }
                     .UsersListAndEdit_table_cont{
-                        padding: 0px 0px 0px 40px !important;
+                        // padding: 0px 0px 0px 40px !important;
                         table{
-                            width: 97%;
+                            width: 100%;
                             .UsersListAndEdit_table_title{
                                 position: sticky;
                                 top: 0;
@@ -125,10 +126,6 @@
                 }
                 .UsersListAndEdit_is_editing_wrapper{
                     .UsersListAndEdit_is_editing_cont{
-                        display: flex;
-                        justify-content: flex-end;
-                        padding: 20px 20px 0px 20px;
-                        margin: 0px !important;
                     }
                 }
             }

@@ -7,11 +7,8 @@
             flex-direction: column;
         }
         .expensesList_wrapper{
-            width: 84%; // I chaned this so it would align I am not sure why it needs to be different.
+            width: 100%; // I chaned this so it would align I am not sure why it needs to be different.
             padding: 10px 30px 10px 30px;
-        // .expensesList_btn_cont_wrapper{
-        //     width: 102.5%; // I chaned this so it would align with registration screens and also give more space for list columns.
-        //     padding: 10px 30px 10px 30px;
             .expensesList_top_content{
                 position: relative;
                 display: flex;
@@ -23,11 +20,12 @@
                 border-radius: 5px;
                 .expensesList_top_body_cont{
                     background-color: #fff;
-                    height: 4rem;
+                    height: 2rem;
                 }
                 button.expensesList_mode_switch{
                     position: absolute;
-                    right: 70px;
+                    right: 40px;
+                    top: 45px;
                     border: 1px solid;
                     padding: 3px 21px;
                     border-radius: 5px;
@@ -35,24 +33,28 @@
                     background-color: #f3f3f38b;
                 }
                 .expensesList_mode_switch_datalist{
-                    float: right;
-                    padding: 40px 70px;
+                    // float: right;
+                    // padding: 40px 70px;
+                    padding: 1rem;
                 }
                 .expensesList_mid_body_cont{
-                    height: 70vh;
+                    height: 100%;
                     background-color: #fff;
                     
                     .ListButtons_btn{
-                        margin-left: 10px;
+                        // margin-left: 10px;
                     }
                     .expensesList_table_wrapper{
-                        padding: 0px 10px 0px 20px;
-                        width: 102.5%;
+                        // padding: 0px 40px 0px 40px !important;
+                        // padding: 0px 16px 0px 20px !important;
+
+                        width: 100%;
                         height: 80%;
                         overflow-y: auto; 
                         overflow-x: hidden;
                         scrollbar-width: thin;
                         scrollbar-color: #888 #e0e0e0;
+                        padding: 0 40px 0 40px;
                         @media only screen and (min-width: 1920px){
                             height: 60vh;
                         }
@@ -83,7 +85,7 @@
                         .expensesList_table_cont{
                             // padding: -20px 10px -20px 0px;
                             table{
-                                width: 97%;
+                                width: 100%;
                                 .expensesList_table_title{
                                     position: sticky;
                                     top: 0;
@@ -165,10 +167,8 @@
                 }
             }
         }
-        .expensesList_table_wrapper.editMode{
-            width: 100% !important; // Adjusted to 84% for edit mode        
-            // background-color: #e61717 !important;
-            padding: 0px 16px 0px 20px !important;
+        .expensesList_wrapper.editMode{
+            overflow-x: hidden;
         }
     }
 }
