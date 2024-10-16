@@ -211,21 +211,21 @@ const EmployeeExpensesList: React.FC = () => {
 
     return (
       <div className='employeeExpensesList_wrapper'>
-        <HeaderButtons 
-            activeTab={activeTab}
-            handleTabClick={handleTabClick}
-            isTranslateSwitchActive={isTranslateSwitchActive}
-            handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+        <HeaderButtons
+          activeTab={activeTab}
+          handleTabClick={handleTabClick}
+          isTranslateSwitchActive={isTranslateSwitchActive}
+          handleTranslationSwitchToggle={handleTranslationSwitchToggle}
         />
         <div className='employeeExpensesList_cont_wrapper'>
-            <Sidebar />
+          <Sidebar />
           <div className='employeeExpensesList_wrapper_div'>
             <div className='employeeExpensesList_top_content'>
               <div className='employeeExpensesList_top_body_cont'>
                 <div className='employeeExpensesList_mode_switch_datalist'>
-                    <button className='employeeExpensesList_mode_switch' onClick={handleClick}>
-                      {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
-                    </button>
+                  <button className='employeeExpensesList_mode_switch' onClick={handleClick}>
+                    {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
+                  </button>
                 </div>
               </div>
               <div className='employeeExpensesList_mid_body_cont'>
@@ -241,104 +241,308 @@ const EmployeeExpensesList: React.FC = () => {
                     { labelKey: 'costOfSales', tabKey: 'costOfSales' },
                   ]}
                 />
-                <div className='employeeExpensesList_table_wrapper'>
+                <div className={`employeeExpensesList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                   <div className={`employeeExpensesList_table_cont ${isEditing ? 'editScrollable' : ''}`}>
-                    <div className='columns is-mobile'>
-                      <div className='column'>
-                      {isEditing ? (
-                        <div className='editScroll'>
-                        <table className='table is-bordered is-hoverable'>
-                          <thead>
-                            <tr className='employeeExpensesList_table_title'>
-                              <th className='employeeExpensesList_table_title_content_vertical has-text-centered'>{translate('employee', language)}</th>
-                              <th className='employeeExpensesList_table_title_content_vertical has-text-centered'>{translate('year', language)}</th>
-                              {months.map((month, index) => (
-                                <th key={index} className='employeeExpensesList_table_title_content_vertical has-text-centered'>
-                                  {language === "en" ? monthNames[month].en : monthNames[month].jp}
+                    {/* <div className='columns is-mobile'> */}
+                      {/* <div className='column'> */}
+                        {isEditing ? (
+                          <div className='editScroll'>
+                            <table className='table is-bordered is-hoverable'>
+                              <thead>
+                                <tr className='employeeExpensesList_table_title'>
+                                  <th className='employeeExpensesList_table_title_content_vertical has-text-centered'>
+                                    {translate('employee', language)}
+                                  </th>
+                                  <th className='employeeExpensesList_table_title_content_vertical has-text-centered'>
+                                    {translate('year', language)}
+                                  </th>
+                                  {months.map((month, index) => (
+                                    <th
+                                      key={index}
+                                      className='employeeExpensesList_table_title_content_vertical has-text-centered'
+                                    >
+                                      {language === 'en' ? monthNames[month].en : monthNames[month].jp}
+                                    </th>
+                                  ))}
+                                  <th className='employeeExpensesList_table_title_content_vertical has-text-centered'></th>
+                                </tr>
+                              </thead>
+                              <tbody className='employeeExpensesList_table_body'>
+                                {employeeExpenses
+                                  .reduce((acc, expense) => {
+                                    // console.log("acc", acc)
+                                    const existingYearIndex = acc.findIndex((year) => year.year === expense.year)
+
+                                    // If the year does not exist, create a new entry
+                                    if (existingYearIndex === -1) {
+                                      acc.push({
+                                        year: expense.year,
+                                        employees: [],
+                                      })
+                                    }
+
+                                    const yearGroup = acc[existingYearIndex === -1 ? acc.length - 1 : existingYearIndex]
+
+                                    const existingIndex = yearGroup.employees.findIndex(
+                                      (emp) =>
+                                        emp.employee_last_name === expense.employee_last_name &&
+                                        emp.employee_first_name === expense.employee_first_name,
+                                    )
+
+                                    // Parse the month from the expense
+                                    const monthFromExpense = parseInt(expense.month, 10)
+
+                                    // Map the month to your custom months array
+                                    const monthIndex = months.findIndex((month) => month === monthFromExpense) // Find the index of the month in the custom order
+
+                                    if (existingIndex === -1) {
+                                      // Initialize monthly expenses
+                                      const monthlyExpenses = Array(12)
+                                        .fill(null)
+                                        .map(() => ({
+                                          projects: [],
+                                          total_salary: 0,
+                                        }))
+
+                                      // Update the monthly expenses for the correct month index
+                                      if (monthIndex !== -1) {
+                                        monthlyExpenses[monthIndex].projects.push({
+                                          project_name: expense.project_name,
+                                          employee_salary: expense.employee_salary,
+                                          project_id: expense.project_id,
+                                          employee_expense_id: expense.employee_expense_id,
+                                        })
+                                        monthlyExpenses[monthIndex].total_salary += expense.employee_salary
+                                      }
+                                      console.log('expense', expense)
+                                      yearGroup.employees.push({
+                                        employee_expense_id: expense.employee_expense_id,
+                                        project_id: expense.project_id,
+                                        employee_last_name: expense.employee_last_name,
+                                        employee_first_name: expense.employee_first_name,
+                                        monthlyExpenses,
+                                      })
+                                    } else {
+                                      // Update the existing employee's monthly expenses
+                                      const existingMonthlyExpenses = yearGroup.employees[existingIndex].monthlyExpenses
+                                      if (monthIndex !== -1) {
+                                        existingMonthlyExpenses[monthIndex].projects.push({
+                                          project_name: expense.project_name,
+                                          employee_salary: expense.employee_salary,
+                                          project_id: expense.project_id,
+                                          employee_expense_id: expense.employee_expense_id,
+                                        })
+                                        existingMonthlyExpenses[monthIndex].total_salary += expense.employee_salary
+                                      }
+                                    }
+
+                                    return acc
+                                  }, [])
+                                  .flatMap((yearGroup, yearIndex) => [
+                                    // Only add a separator for years after the first year
+                                    ...(yearIndex > 0
+                                      ? [
+                                          <tr key={`year-${yearGroup.year}`}>
+                                            <td colSpan={12} className='employeeExpensesList_year'>
+                                              <div className='horizontal-line' />
+                                            </td>
+                                          </tr>,
+                                        ]
+                                      : []),
+                                    // Map through employees
+                                    ...yearGroup.employees.map((employee, employeeIndex) => {
+                                      console.log('employee', employee)
+                                      return (
+                                        <tr key={employeeIndex} className='employeeExpensesList_user_name'>
+                                          <td className='employeeExpensesList_td'>
+                                            <p>{`${employee.employee_last_name} ${employee.employee_first_name}`}</p>
+                                          </td>
+                                          <td>{yearGroup.year}</td>
+                                          {employee.monthlyExpenses.map((exp, monthIndex) => (
+                                            <td key={monthIndex} className='employeeExpensesList_td'>
+                                              {exp && exp.projects.length > 0 ? (
+                                                <div className='employeeExpensesList_project_div'>
+                                                  {exp.projects.map((project, projIndex) => {
+                                                    console.log('Project object:', project)
+                                                    return (
+                                                      <div
+                                                        key={projIndex}
+                                                        className={projIndex % 2 === 0 ? 'project-even' : 'project-odd'}
+                                                      >
+                                                        <div className='employeeExpensesList_txt0'>
+                                                          <div
+                                                            style={{ display: 'flex', justifyContent: 'space-between' }}
+                                                          >
+                                                            <div>{project.project_name}</div>
+                                                            <div>
+                                                              <RiDeleteBin6Fill
+                                                                className='delete-icon'
+                                                                style={{
+                                                                  color: 'red',
+                                                                  marginLeft: '20px',
+                                                                  cursor: 'pointer',
+                                                                }}
+                                                                // {to delete specific project}
+                                                                onClick={() => {
+                                                                  console.log(
+                                                                    'Deleting project with ID:',
+                                                                    project.employee_expense_id,
+                                                                  )
+                                                                  console.log(
+                                                                    'Deleting project with ID:',
+                                                                    project.project_id,
+                                                                  )
+                                                                  setModalIsOpen(true),
+                                                                    setEmployeeProjectId({
+                                                                      employee_expense_id: project.employee_expense_id,
+                                                                      project_id: project.project_id,
+                                                                      mode: 'project',
+                                                                    })
+                                                                }}
+                                                              />
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                        <div className='employeeExpensesList_txt1_txt2_flex'>
+                                                          <div className='employeeExpensesList_txt1'>
+                                                            Salary: {project.employee_salary}
+                                                          </div>
+                                                          <div className='employeeExpensesList_txt2'>
+                                                            {Math.round((1 / exp.projects.length) * 100) + '%'}
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                    )
+                                                  })}
+                                                </div>
+                                              ) : (
+                                                <div></div>
+                                              )}
+                                            </td>
+                                          ))}
+                                          <td style={{ textAlign: 'center', verticalAlign: 'middle', height: '100px' }}>
+                                            <RiDeleteBin6Fill
+                                              className='delete-icon'
+                                              style={{ color: 'red', cursor: 'pointer' }}
+                                              // {to delete entire row}
+                                              onClick={() => {
+                                                console.log(
+                                                  'Deleting employee expense with ID:',
+                                                  employee.employee_expense_id,
+                                                )
+                                                setModalIsOpen(true)
+                                                setEmployeeProjectId({
+                                                  ...employeeProjectId,
+                                                  employee_expense_id: employee.employee_expense_id,
+                                                  mode: 'employee_expense',
+                                                })
+                                              }}
+                                            />
+                                          </td>
+                                        </tr>
+                                      )
+                                    }),
+                                  ])}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <table className='table is-bordered is-hoverable'>
+                            <thead>
+                              <tr className='employeeExpensesList_table_title'>
+                                <th className='employeeExpensesList_table_title_content_vertical has-text-centered'>
+                                  {translate('employee', language)}
                                 </th>
-                              ))}
-                              <th className='employeeExpensesList_table_title_content_vertical has-text-centered'></th>
-                            </tr>
-                          </thead>
-                          <tbody className='employeeExpensesList_table_body'>
-                              {employeeExpenses.reduce((acc, expense) => {
-                                // console.log("acc", acc)
-                                const existingYearIndex = acc.findIndex(year => year.year === expense.year);
-                                
-                                // If the year does not exist, create a new entry
-                                if (existingYearIndex === -1) {
-                                  acc.push({
-                                    year: expense.year,
-                                    employees: []
-                                  });
-                                }
-                                
-                                const yearGroup = acc[existingYearIndex === -1 ? acc.length - 1 : existingYearIndex];
+                                <th className='employeeExpensesList_table_title_content_vertical has-text-centered'>
+                                  {translate('year', language)}
+                                </th>
+                                {months.map((month, index) => (
+                                  <th
+                                    key={index}
+                                    className='employeeExpensesList_table_title_content_vertical has-text-centered'
+                                  >
+                                    {language === 'en' ? monthNames[month].en : monthNames[month].jp}
+                                  </th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody className='employeeExpensesList_table_body'>
+                              {employeeExpenses
+                                .reduce((acc, expense) => {
+                                  const existingYearIndex = acc.findIndex((year) => year.year === expense.year)
 
-                                const existingIndex = yearGroup.employees.findIndex(emp => 
-                                  emp.employee_last_name === expense.employee_last_name && 
-                                  emp.employee_first_name === expense.employee_first_name
-                                );
-
-                                // Parse the month from the expense
-                                const monthFromExpense = parseInt(expense.month, 10); 
-
-                                // Map the month to your custom months array
-                                const monthIndex = months.findIndex(month => month === monthFromExpense); // Find the index of the month in the custom order
-
-                                if (existingIndex === -1) {
-                                  // Initialize monthly expenses
-                                  const monthlyExpenses = Array(12).fill(null).map(() => ({
-                                    projects: [],
-                                    total_salary: 0
-                                  }));
-
-                                  // Update the monthly expenses for the correct month index
-                                  if (monthIndex !== -1) {
-                                    monthlyExpenses[monthIndex].projects.push({
-                                      project_name: expense.project_name,
-                                      employee_salary: expense.employee_salary,
-                                      project_id: expense.project_id,
-                                      employee_expense_id: expense.employee_expense_id,
-                                    });
-                                    monthlyExpenses[monthIndex].total_salary += expense.employee_salary;
+                                  // If the year does not exist, create a new entry
+                                  if (existingYearIndex === -1) {
+                                    acc.push({
+                                      year: expense.year,
+                                      employees: [],
+                                    })
                                   }
-                                  console.log("expense", expense)  
-                                  yearGroup.employees.push({
-                                    employee_expense_id: expense.employee_expense_id,                                
-                                    project_id: expense.project_id,
-                                    employee_last_name: expense.employee_last_name,
-                                    employee_first_name: expense.employee_first_name,
-                                    monthlyExpenses,
-                                  });
-                                } else {
-                                  // Update the existing employee's monthly expenses
-                                  const existingMonthlyExpenses = yearGroup.employees[existingIndex].monthlyExpenses;
-                                  if (monthIndex !== -1) {
-                                    existingMonthlyExpenses[monthIndex].projects.push({
-                                      project_name: expense.project_name,
-                                      employee_salary: expense.employee_salary,
-                                      project_id: expense.project_id,
-                                      employee_expense_id: expense.employee_expense_id,
-                                    });
-                                    existingMonthlyExpenses[monthIndex].total_salary += expense.employee_salary;
+
+                                  const yearGroup = acc[existingYearIndex === -1 ? acc.length - 1 : existingYearIndex]
+
+                                  const existingIndex = yearGroup.employees.findIndex(
+                                    (emp) =>
+                                      emp.employee_last_name === expense.employee_last_name &&
+                                      emp.employee_first_name === expense.employee_first_name,
+                                  )
+
+                                  // Parse the month from the expense
+                                  const monthFromExpense = parseInt(expense.month, 10)
+
+                                  // Map the month to your custom months array
+                                  const monthIndex = months.findIndex((month) => month === monthFromExpense) // Find the index of the month in the custom order
+
+                                  if (existingIndex === -1) {
+                                    // Initialize monthly expenses
+                                    const monthlyExpenses = Array(12)
+                                      .fill(null)
+                                      .map(() => ({
+                                        projects: [],
+                                        total_salary: 0,
+                                      }))
+
+                                    // Update the monthly expenses for the correct month index
+                                    if (monthIndex !== -1) {
+                                      monthlyExpenses[monthIndex].projects.push({
+                                        project_name: expense.project_name,
+                                        employee_salary: expense.employee_salary,
+                                      })
+                                      monthlyExpenses[monthIndex].total_salary += expense.employee_salary
+                                    }
+
+                                    yearGroup.employees.push({
+                                      employee_last_name: expense.employee_last_name,
+                                      employee_first_name: expense.employee_first_name,
+                                      monthlyExpenses,
+                                    })
+                                  } else {
+                                    // Update the existing employee's monthly expenses
+                                    const existingMonthlyExpenses = yearGroup.employees[existingIndex].monthlyExpenses
+                                    if (monthIndex !== -1) {
+                                      existingMonthlyExpenses[monthIndex].projects.push({
+                                        project_name: expense.project_name,
+                                        employee_salary: expense.employee_salary,
+                                      })
+                                      existingMonthlyExpenses[monthIndex].total_salary += expense.employee_salary
+                                    }
                                   }
-                                }
-                                
-                                return acc;
-                              }, []).flatMap((yearGroup, yearIndex) => [
-                                // Only add a separator for years after the first year
-                                ...(yearIndex > 0 ? [
-                                  <tr key={`year-${yearGroup.year}`}>
-                                    <td colSpan={12} className='employeeExpensesList_year'>
-                                        <div className="horizontal-line" />
-                                    </td>
-                                  </tr>
-                                ] : []),
-                                // Map through employees
-                                ...yearGroup.employees.map((employee, employeeIndex) => {
-                                  console.log("employee", employee)
-                                  return (
+
+                                  return acc
+                                }, [])
+                                .flatMap((yearGroup, yearIndex) => [
+                                  // Only add a separator for years after the first year
+                                  ...(yearIndex > 0
+                                    ? [
+                                        <tr key={`year-${yearGroup.year}`}>
+                                          <td colSpan={12} className='employeeExpensesList_year'>
+                                            <div className='horizontal-line' />
+                                          </td>
+                                        </tr>,
+                                      ]
+                                    : []),
+                                  // Map through employees
+                                  ...yearGroup.employees.map((employee, employeeIndex) => (
                                     <tr key={employeeIndex} className='employeeExpensesList_user_name'>
                                       <td className='employeeExpensesList_td'>
                                         <p>{`${employee.employee_last_name} ${employee.employee_first_name}`}</p>
@@ -348,204 +552,51 @@ const EmployeeExpensesList: React.FC = () => {
                                         <td key={monthIndex} className='employeeExpensesList_td'>
                                           {exp && exp.projects.length > 0 ? (
                                             <div className='employeeExpensesList_project_div'>
-                                              {exp.projects.map((project, projIndex) => {
-                                                console.log("Project object:", project);
-                                                return (
-                                                  <div key={projIndex} className={projIndex % 2 === 0 ? 'project-even' : 'project-odd'}>
-                                                    <div className='employeeExpensesList_txt0'>
-                                                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                        <div>
-                                                          {project.project_name}
-                                                        </div>
-                                                        <div>
-                                                          <RiDeleteBin6Fill
-                                                            className='delete-icon'
-                                                            style={{ color: 'red', marginLeft: '20px', cursor: 'pointer' }} 
-                                                            // {to delete specific project}
-                                                            onClick={() => {
-                                                              console.log("Deleting project with ID:", project.employee_expense_id);
-                                                              console.log("Deleting project with ID:", project.project_id); 
-                                                              setModalIsOpen(true), 
-                                                              setEmployeeProjectId({
-                                                                employee_expense_id: project.employee_expense_id,
-                                                                project_id: project.project_id, 
-                                                                mode: "project"
-                                                              });
-                                                            }}
-                                                          />
-                                                        </div>
-                                                      </div>
+                                              {exp.projects.map((project, projIndex) => (
+                                                <div
+                                                  key={projIndex}
+                                                  className={projIndex % 2 === 0 ? 'project-even' : 'project-odd'}
+                                                >
+                                                  <div className='employeeExpensesList_txt0'>
+                                                    {project.project_name}
+                                                  </div>
+                                                  <div className='employeeExpensesList_txt1_txt2_flex'>
+                                                    <div className='employeeExpensesList_txt1'>
+                                                      Salary: {project.employee_salary}
                                                     </div>
-                                                    <div className='employeeExpensesList_txt1_txt2_flex'>
-                                                      <div className='employeeExpensesList_txt1'>Salary: {project.employee_salary}</div>
-                                                      <div className='employeeExpensesList_txt2'>
-                                                        {Math.round((1 / exp.projects.length) * 100) + '%'} 
-                                                      </div>
+                                                    <div className='employeeExpensesList_txt2'>
+                                                      {Math.round((1 / exp.projects.length) * 100) + '%'}
                                                     </div>
                                                   </div>
-                                                )
-                                              })}
+                                                </div>
+                                              ))}
                                             </div>
                                           ) : (
                                             <div></div>
                                           )}
                                         </td>
                                       ))}
-                                      <td style={{ textAlign: 'center', verticalAlign: 'middle', height: '100px' }}>
-                                      <RiDeleteBin6Fill
-                                        className='delete-icon'
-                                        style={{ color: 'red', cursor: 'pointer' }}
-                                        // {to delete entire row}
-                                        onClick={() => {
-                                          console.log("Deleting employee expense with ID:", employee.employee_expense_id);
-                                          setModalIsOpen(true);
-                                          setEmployeeProjectId({
-                                            ...employeeProjectId,
-                                            employee_expense_id: employee.employee_expense_id,
-                                            mode: "employee_expense"
-                                          });
-                                        }}
-                                      />
-                                      </td>
                                     </tr>
-                                  )
-                                })
-                              ])}
+                                  )),
+                                ])}
                             </tbody>
-                        </table>
-                        </div>
-                        ):(
-                          <table className='table is-bordered is-hoverable'>
-                          <thead>
-                            <tr className='employeeExpensesList_table_title'>
-                              <th className='employeeExpensesList_table_title_content_vertical has-text-centered'>{translate('employee', language)}</th>
-                              <th className='employeeExpensesList_table_title_content_vertical has-text-centered'>{translate('year', language)}</th>
-                              {months.map((month, index) => (
-                                <th key={index} className='employeeExpensesList_table_title_content_vertical has-text-centered'>
-                                  {language === "en" ? monthNames[month].en : monthNames[month].jp}
-                                </th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody className='employeeExpensesList_table_body'>
-                              {employeeExpenses.reduce((acc, expense) => {
-                                const existingYearIndex = acc.findIndex(year => year.year === expense.year);
-                                
-                                // If the year does not exist, create a new entry
-                                if (existingYearIndex === -1) {
-                                  acc.push({
-                                    year: expense.year,
-                                    employees: []
-                                  });
-                                }
-                                
-                                const yearGroup = acc[existingYearIndex === -1 ? acc.length - 1 : existingYearIndex];
-
-                                const existingIndex = yearGroup.employees.findIndex(emp => 
-                                  emp.employee_last_name === expense.employee_last_name && 
-                                  emp.employee_first_name === expense.employee_first_name
-                                );
-
-                                // Parse the month from the expense
-                                const monthFromExpense = parseInt(expense.month, 10); 
-
-                                // Map the month to your custom months array
-                                const monthIndex = months.findIndex(month => month === monthFromExpense); // Find the index of the month in the custom order
-
-                                if (existingIndex === -1) {
-                                  // Initialize monthly expenses
-                                  const monthlyExpenses = Array(12).fill(null).map(() => ({
-                                    projects: [],
-                                    total_salary: 0
-                                  }));
-
-                                  // Update the monthly expenses for the correct month index
-                                  if (monthIndex !== -1) {
-                                    monthlyExpenses[monthIndex].projects.push({
-                                      project_name: expense.project_name,
-                                      employee_salary: expense.employee_salary,
-                                    });
-                                    monthlyExpenses[monthIndex].total_salary += expense.employee_salary;
-                                  }
-
-                                  yearGroup.employees.push({
-                                    employee_last_name: expense.employee_last_name,
-                                    employee_first_name: expense.employee_first_name,
-                                    monthlyExpenses,
-                                  });
-                                } else {
-                                  // Update the existing employee's monthly expenses
-                                  const existingMonthlyExpenses = yearGroup.employees[existingIndex].monthlyExpenses;
-                                  if (monthIndex !== -1) {
-                                    existingMonthlyExpenses[monthIndex].projects.push({
-                                      project_name: expense.project_name,
-                                      employee_salary: expense.employee_salary,
-                                    });
-                                    existingMonthlyExpenses[monthIndex].total_salary += expense.employee_salary;
-                                  }
-                                }
-
-                                return acc;
-                              }, []).flatMap((yearGroup, yearIndex) => [
-                                // Only add a separator for years after the first year
-                                ...(yearIndex > 0 ? [
-                                  <tr key={`year-${yearGroup.year}`}>
-                                    <td colSpan={12} className='employeeExpensesList_year'>
-                                      <div className="horizontal-line" />
-                                    </td>
-                                  </tr>
-                                ] : []),
-                                // Map through employees
-                                ...yearGroup.employees.map((employee, employeeIndex) => (
-                                  <tr key={employeeIndex} className='employeeExpensesList_user_name'>
-                                    <td className='employeeExpensesList_td'>
-                                      <p>{`${employee.employee_last_name} ${employee.employee_first_name}`}</p>
-                                    </td>
-                                    <td>{yearGroup.year}</td>
-                                    {employee.monthlyExpenses.map((exp, monthIndex) => (
-                                      <td key={monthIndex} className='employeeExpensesList_td'>
-                                        {exp && exp.projects.length > 0 ? (
-                                          <div className='employeeExpensesList_project_div'>
-                                            {exp.projects.map((project, projIndex) => (
-                                              <div key={projIndex} className={projIndex % 2 === 0 ? 'project-even' : 'project-odd'}>
-                                                <div className='employeeExpensesList_txt0'>{project.project_name}</div>
-                                                <div className='employeeExpensesList_txt1_txt2_flex'>
-                                                  <div className='employeeExpensesList_txt1'>Salary: {project.employee_salary}</div>
-                                                  <div className='employeeExpensesList_txt2'>
-                                                    {Math.round((1 / exp.projects.length) * 100) + '%'} 
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        ) : (
-                                          <div></div>
-                                        )}
-                                      </td>
-                                    ))}
-                                  </tr>
-                                ))
-                              ])}
-                            </tbody>
-                        </table>
+                          </table>
                         )}
-                      </div>
-                    </div>
+                      {/* </div> */}
+                    {/* </div> */}
                   </div>
                 </div>
-                {/* <div className='employeeExpensesList_is_editing_wrapper'>
-                    <div className='employeeExpensesList_is_editing_cont'>
-                      {isEditing ? (
-                        <div className='employeeExpensesList_mode_switch_datalist'>
-                          <button className='employeeExpensesList_edit_submit_btn'>
-                            更新
-                          </button>
-                        </div>
-                      ) : (
-                        <div></div>
-                      )}
+                <div className='employeeExpensesList_is_editing_wrapper'>
+                  <div className='employeeExpensesList_is_editing_cont'>
+                    {isEditing ? (
+                      <div className='employeeExpensesList_edit_submit_btn_cont'>
+                        <button className='employeeExpensesList_edit_submit_btn'>更新</button>
+                      </div>
+                    ) : (
+                      <div></div>
+                    )}
                   </div>
-                </div> */}
+                </div>
               </div>
             </div>
           </div>

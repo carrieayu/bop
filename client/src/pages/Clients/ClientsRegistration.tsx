@@ -167,8 +167,7 @@ const ClientsRegistration = () => {
       <div className='ClientsRegistration_content_wrapper'>
         <Sidebar />
         <div className='ClientsRegistration_data_content'>
-          <div className='ClientsRegistration_top_body_cont'></div>
-          <div className='ClientsRegistration_mid_body_cont'>
+          <div className='ClientsRegistration_top_body_cont'>
             <RegistrationButtons
               activeTabOther={activeTabOther}
               message={translate('clientsRegistration', language)}
@@ -180,11 +179,13 @@ const ClientsRegistration = () => {
                 { labelKey: 'users', tabKey: 'users' },
               ]}
             />
-            <div className='ClientsRegistration_mid_form_cont'>
-              <form onSubmit={handleSubmit}>
+          </div>
+          <div className='ClientsRegistration_mid_body_cont'>
+            <form className='ClientsRegistration_inputs_and_buttons' onSubmit={handleSubmit}>
+              <div className='ClientsRegistration_mid_form_cont'>
                 {clientData.map((container, containerIndex) => (
                   <div key={containerIndex} className='ClientsRegistration_ForImplementationOfPlusAndMinus'>
-                    <div className='ClientsRegistration_ForImplementationOfHorizontalLineBelow'></div>
+                    <div className={`ClientsRegistration_ForImplementationOfHorizontalLineBelow-div ${containerIndex > 0 ? 'ClientsRegistration_form-line' : ''}`}></div>
                     <div className='ClientsRegistration_form-div'>
                       <div className='ClientsRegistration_form-content-div'>
                         <div className='ClientsRegistration_client_name-div'>
@@ -201,6 +202,8 @@ const ClientsRegistration = () => {
                     <input type='hidden' name='registered_user_id' value='' />
                   </div>
                 ))}
+              </div>
+              <div className='ClientsRegistration_lower_form_cont'>
                 <div className='ClientsRegistration_form-content'>
                   <div className='ClientsRegistration_plus-btn'>
                     <button className='ClientsRegistration_inc' type='button' onClick={handleAddContainer}>
@@ -219,8 +222,8 @@ const ClientsRegistration = () => {
                     </button>
                   </div>
                 </div>
-              </form>
-            </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>

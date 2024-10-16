@@ -1,5 +1,5 @@
 .RegistrationButtons_btn_cont {
-    margin-left: 5%;
+    margin-left: 40px;
     display: flex;
     gap: 2%;
     .body-btn {
@@ -27,16 +27,19 @@
     padding: 49px 70px 50px 70px;
     gap: 7.8%;
     align-items: center;
-  
+
     .RegistrationButtons_title_table_cont {
+      position: relative;
+      margin-left: -40px; 
+      margin-top: -5px;
+      
       .RegistrationButtons_title {
         letter-spacing: 2px;
         font-weight: bold;
         color: #000;
         @media only screen and (min-width: 1920px) {
-          margin-left: 10px;
+          margin-left: 10px; /* Optionally adjust for larger screens */
         }
       }
     }
   }
-  

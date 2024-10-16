@@ -3,24 +3,30 @@
     .employeeExpensesList_cont_wrapper{
         display: flex;
         background-color: #EFEDEA;
-        width: 100vw; 
-        height: 130vh;
+        // width: 100vw; 
         @media only screen and (max-width: 1000px){
             flex-direction: column;
         }
         .employeeExpensesList_wrapper_div{
                     width: 84%;
-                    height: 100vh;
                     padding: 10px 30px 10px 30px;
                     .employeeExpensesList_top_content{
+                        position: relative;
+                        display: flex;
+                        background-color: #fff;
+                        flex-direction: column;
+                        width: 100%;
+                        height: 100%;
                         border: 1px solid #fff;
                         border-radius: 5px;
-                        background-color: #fff;
                         .employeeExpensesList_top_body_cont{
                             background-color: #fff;
-                            height: 4rem;
+                            height: 2rem;
                         }
                         button.employeeExpensesList_mode_switch{
+                            position: absolute;
+                            right: 40px;
+                            top: 45px;
                             border: 1px solid;
                             padding: 3px 21px;
                             border-radius: 5px;
@@ -28,30 +34,39 @@
                             background-color: #f3f3f3;
                         }
                         .employeeExpensesList_mode_switch_datalist{
-                            float: right;
-                            padding: 40px 70px;
+                            padding: 1rem;
+                        }
+                        .employeeExpensesList_edit_submit_btn_cont{
+                            display: flex;
+                            justify-content: center;
+                            position: absolute;
+                            bottom: 2%;
+                            right:  2.5%;
                         }
                         button.employeeExpensesList_edit_submit_btn {
-                            border: 2px solid #fdd7b3;
-                            padding: 2px 13px;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            gap: 1%;
+                            padding: 5px 20px 5px 20px;
                             border-radius: 7px;
-                            background: #2e2eff;
-                            color: white;
+                            margin-top: 6px;
+                            background: #66d1ff;
                         }
                         .employeeExpensesList_mid_body_cont{
-                            height: 118vh;
+                            height: 100%;
                             .ListButtons_btn{
-                                margin-left: -1.5px;
                             }
                             .employeeExpensesList_table_wrapper{
                                 width: 100%;
-                                height: 80vh;
+                                height: 80%;
                                 overflow-y: auto; 
                                 overflow-x: hidden;
                                 scrollbar-width: thin;
                                 scrollbar-color: #888 #e0e0e0;
+                                padding: 0 40px 0 40px;
                                 @media only screen and (min-width: 1920px){
-                                    height: 85vh;
+                                    height: 60vh;
                                 }
                                 &::-webkit-scrollbar {
                                     width: 8px;
@@ -74,11 +89,11 @@
                                 }
                                 .employeeExpensesList_table_cont.editScrollable {
                                     overflow-x: auto;
+                                    padding: 0px 0px 0px 0px;
                                 }
                                 .employeeExpensesList_table_cont{
-                                    padding: 0px 0px 0px 70px;
                                     .table{
-                                        width: 97%;
+                                        width: 100%;
                                         .employeeExpensesList_table_title{
                                             position: sticky;
                                             top: 0;
@@ -123,30 +138,25 @@
                                                   }
                                                 .employeeExpensesList_txt0{
                                                     margin-bottom: 5px;
-                                                    // text-align: center;
-                                                    font-size: 14px;
-                                                    // background-color: #C6D4E7;
-                                                    // color: #000;
-                                                    // border-radius: 5px;
+                                                    padding: 5px;
+                                                    font-weight: bold;
+                                                    font-size: 14px;        
                                                 }
                                                 .employeeExpensesList_txt1_txt2_flex{
                                                     margin-top: 10px;
                                                     margin-bottom: 10px;
+                                                    padding: 5px;
                                                     display: flex;
                                                     flex-direction: column;
                                                     .employeeExpensesList_txt1{
                                                         font-size: 14px;
-                                                        // text-align: center;
-                                                        // width: 100% !important;
                                                         @media only screen and (max-width: 1875px){
                                                             font-size: 14px;
                                                         }
                                                     }
-                                                    .employeeExpensesList_txt2{
-                                                        // margin-left: 5px;
+                                                    .employeeExpensesList_txt2{                                               
                                                         font-size: 14px;
                                                         padding: 5px 0px;
-                                                        // text-align: center;
                                                     }
                                                 }
                                             }
@@ -156,14 +166,13 @@
                             }
                             .employeeExpensesList_pagination_wrapper{
                                 .employeeExpensesList_pagination_cont{
-                                    display: flex;
-                                    justify-content: flex-end;
-                                    padding: 20px 20px 0px 20px;
-                                    margin: 0px !important;
                                 }
                             }
                         }
                     }
                 }
-    }
-}
+                .employeeExpensesList_table_wrapper.editMode{
+                     overflow-x: hidden;
+                }
+            }
+        }

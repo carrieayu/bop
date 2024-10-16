@@ -258,14 +258,14 @@ const UsersListAndEdit: React.FC = () => {
 
   return (
     <div className='UsersListAndEdit_wrapper'>
-        <HeaderButtons 
-            activeTab={activeTab}
-            handleTabClick={handleTabClick}
-            isTranslateSwitchActive={isTranslateSwitchActive}
-            handleTranslationSwitchToggle={handleTranslationSwitchToggle}
-        />
+      <HeaderButtons
+        activeTab={activeTab}
+        handleTabClick={handleTabClick}
+        isTranslateSwitchActive={isTranslateSwitchActive}
+        handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+      />
       <div className='UsersListAndEdit_cont_wrapper'>
-          <Sidebar />
+        <Sidebar />
         <div className='UsersListAndEdit_maincontent_wrapper'>
           <div className='UsersListAndEdit_top_content'>
             <div className='UsersListAndEdit_top_body_cont'>
@@ -276,18 +276,18 @@ const UsersListAndEdit: React.FC = () => {
               </div>
             </div>
             <div className='UsersListAndEdit_mid_body_cont'>
-                <ListButtons
-                  activeTabOther={activeTabOther}
-                  message={translate(isEditing? 'usersEdit':'usersList', language)}
-                  handleTabsClick={handleTabsClick}
-                  handleNewRegistrationClick={handleNewRegistrationClick}
-                  buttonConfig={[
-                    { labelKey: 'client', tabKey: 'client' },
-                    { labelKey: 'employee', tabKey: 'employee' },
-                    { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                    { labelKey: 'users', tabKey: 'users' },
-                  ]}
-                />
+              <ListButtons
+                activeTabOther={activeTabOther}
+                message={translate(isEditing ? 'usersEdit' : 'usersList', language)}
+                handleTabsClick={handleTabsClick}
+                handleNewRegistrationClick={handleNewRegistrationClick}
+                buttonConfig={[
+                  { labelKey: 'client', tabKey: 'client' },
+                  { labelKey: 'employee', tabKey: 'employee' },
+                  { labelKey: 'businessDivision', tabKey: 'businessDivision' },
+                  { labelKey: 'users', tabKey: 'users' },
+                ]}
+              />
               <div className='UsersListAndEdit_table_wrapper'>
                 <div className='UsersListAndEdit_table_cont'>
                   <div className='columns is-mobile'>
@@ -318,7 +318,7 @@ const UsersListAndEdit: React.FC = () => {
                             </thead>
                             <tbody className='UsersListAndEdit_table_body'>
                               {userList.map((users, index) => (
-                                <tr key={users.id} className='UsersListAndEdit_table_body_content_horizantal'>
+                                <tr key={users.id} className='UsersListAndEdit_table_body_content_horizontal'>
                                   <td className='UsersListAndEdit_table_body_content_vertical has-text-left'>
                                     {users.id}
                                   </td>
@@ -406,7 +406,9 @@ const UsersListAndEdit: React.FC = () => {
                                 <td className='UsersListAndEdit_table_body_content_vertical'>{users.last_name}</td>
                                 <td className='UsersListAndEdit_table_body_content_vertical'>{users.first_name}</td>
                                 <td className='UsersListAndEdit_table_body_content_vertical'>{users.email}</td>
-                                <td className='UsersListAndEdit_table_body_content_vertical'>{formatDate(users.date_joined)}</td>
+                                <td className='UsersListAndEdit_table_body_content_vertical'>
+                                  {formatDate(users.date_joined)}
+                                </td>
                               </tr>
                             ))}
                           </tbody>
@@ -419,7 +421,7 @@ const UsersListAndEdit: React.FC = () => {
               <div className='UsersListAndEdit_is_editing_wrapper'>
                 <div className='UsersListAndEdit_is_editing_cont'>
                   {isEditing ? (
-                    <div className='UsersListAndEdit_mode_switch_datalist'>
+                    <div className='UsersListAndEdit_edit_submit_btn_cont'>
                       <button className='UsersListAndEdit_edit_submit_btn' onClick={handleSubmit}>
                         更新
                       </button>
