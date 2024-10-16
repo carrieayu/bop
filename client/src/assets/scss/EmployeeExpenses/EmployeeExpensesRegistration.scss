@@ -33,7 +33,6 @@
       flex-direction: column;
     }
         .employeeExpensesRegistration_mid_body_cont{
-          // background-color: pink;
           height: 90%;
           @media only screen and (min-width: 1875px){
               height: 55vh;
@@ -176,14 +175,9 @@
             padding: 10px 10px 10px 10px;
             align-items: center;
             justify-content: center;
-            // .employeeExpensesRegistration_cancel-btn,
-            // .employeeExpensesRegistration_submit-btn{
-            //   border-radius: 5px !important;
               button{
                 width: 10%;
-                // background-color: #555;
               }
-            // }
           }
         }
       }
