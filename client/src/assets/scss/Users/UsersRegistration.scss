@@ -11,29 +11,39 @@
         display: flex;
         background-color: #EFEDEA;
         width: 100vw;
-        height: 130vh;
+        height: 95vh;
         @media only screen and (max-width: 1000px){
             flex-direction: column;
         }
         .UsersRegistration_data_content{
-            width: 80%;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
             margin: 10px 30px 10px 30px;
             border: 1px solid #fff;
             border-radius: 5px;
             background-color: #fff;
             .UsersRegistration_top_body_cont{
+                margin: 2rem 0 0 0;
                 background-color: #fff;
-                height: 4rem;
+            }
+            .UsersRegistration_inputs_and_buttons{
+                display: flex;
+                height: 65vh;
+                justify-content: space-between;
+                flex-direction: column;
             }
             .UsersRegistration_mid_body_cont{
                 background-color: #fff;
-                // max-height: 670px;
-                // overflow-y: auto;
-                // overflow-x: hidden;
-                // scrollbar-width: thin;
-                // scrollbar-color: #888 #f1f1f1;
+                height: 90%;
+                @media only screen and (min-width: 1875px){
+                    height: 55vh;
+                }
                 .UsersRegistration_mid_form_cont{
-                    margin: -20px 50px;
+                    background-color: #EFEDEA;
+                    border-radius: 5px;
+
+                    margin: 0px 40px;
                     .UsersRegistration_top-form-input-div{
                         padding: 25px 0px 0px 20px;
                         .UsersRegistration_username-div{
@@ -223,31 +233,34 @@
                             }
                         }
                     }
-                    .UsersRegistration_form-btn-content{
-                        .UsersRegistration_plus-btn{
-                            padding: 20px 10px 20px 10px;
-                            gap: 1rem;
-                            display: flex;
-                            margin-left: 90%;
-                            .UsersRegistration_inc,
-                            .UsersRegistration_dec{
-                                background-color: #808080;
-                                color: whitesmoke;
-                                width: 30px;
-                                height: 40px;
-                                font-size: 25px;
-                                border-radius: 5px;
-                            }
+                }
+            }
+            .UsersRegistration_lower_form_cont{
+                padding: 20px;
+                .UsersRegistration_form-btn-content{
+                    .UsersRegistration_plus-btn{
+                        padding: 20px 10px 20px 10px;
+                        gap: 1rem;
+                        display: flex;
+                        margin-left: 90%;
+                        .UsersRegistration_inc,
+                        .UsersRegistration_dec{
+                            background-color: #808080;
+                            color: whitesmoke;
+                            width: 30px;
+                            height: 40px;
+                            font-size: 25px;
+                            border-radius: 5px;
                         }
-                        .UsersRegistration_options-btn{
-                            display: flex;
-                            gap: 1%;
-                            padding: 10px 10px 10px 10px;
-                            align-items: center;
-                            justify-content: center;
-                            button{
-                                width: 10%;
-                            }
+                    }
+                    .UsersRegistration_options-btn{
+                        display: flex;
+                        gap: 1%;
+                        padding: 10px 10px 10px 10px;
+                        align-items: center;
+                        justify-content: center;
+                        button{
+                            width: 10%;
                         }
                     }
                 }

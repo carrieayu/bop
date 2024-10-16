@@ -319,252 +319,288 @@ const CostOfSalesList: React.FC = () => {
 
   return (
     <div className='costOfSalesList_wrapper'>
-        <HeaderButtons 
-            activeTab={activeTab}
-            handleTabClick={handleTabClick}
-            isTranslateSwitchActive={isTranslateSwitchActive}
-            handleTranslationSwitchToggle={handleTranslationSwitchToggle}
-        />
-        <div className="costOfSalesList_cont_wrapper">
-                <Sidebar />
-            <div className="costOfSalesList_btn_wrapper">
-                    <div className="costOfSalesList_top_content">
-                        <div className="costOfSalesList_top_body_cont">
-                          <div className='costOfSalesList_mode_switch_datalist'>
-                            <button className='costOfSalesList_mode_switch' onClick={handleClick}>
-                              {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
-                            </button>
-                          </div>
-                        </div>
-                        <div className="costOfSalesList_mid_body_cont">
-                            <ListButtons
-                              activeTabOther={activeTabOther}
-                              message={translate(isEditing? 'costOfSalesEdit':'costOfSalesList', language)}
-                              handleTabsClick={handleTabsClick}
-                              handleNewRegistrationClick={handleNewRegistrationClick}
-                              buttonConfig={[
-                                { labelKey: 'project', tabKey: 'project' },
-                                { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
-                                { labelKey: 'expenses', tabKey: 'expenses' },
-                                { labelKey: 'costOfSales', tabKey: 'costOfSales' },
-                              ]}
-                            />
-                            <div className="costOfSalesList_table_wrapper">
-                                <div className="costOfSalesList_table_cont">
-                                    <div className='columns is-mobile'>
-                                        <div className='column'>
-                                          {isEditing ? (
-                                            <div>
-                                            <table className='table is-bordered is-hoverable'>
-                                              <thead>
-                                                  <tr className="costOfSalesList_table_title ">
-                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('year', language)}</th>
-                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('month', language)}</th>
-                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('purchases', language)}</th>
-                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('outsourcingExpenses', language)}</th>
-                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('productPurchases', language)}</th>
-                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('dispatchLaborExpenses', language)}</th>
-                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('communicationExpenses', language)}</th>
-                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('workInProgressExpenses', language)}</th>
-                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('amortizationExpenses', language)}</th>
-                                                  <th className="costOfSalesList_table_title_content_vertical has-text-centered"></th>
-                                                  </tr>
-                                              </thead>
-                                              <tbody className="costOfSalesList_table_body">
-                                                {combinedData.map((costOfSale, index) => {
-                                                    const isNewYear = index === 0 || combinedData[index - 1].year !== costOfSale.year;
-                                                    const isLastcostOfSaleOfYear = 
-                                                      (index !== combinedData.length - 1 && combinedData[index + 1].year !== costOfSale.year);
-
-                                                      const isEditable = costOfSale.cost_of_sale_id !== null;
-                                                      
-                                                    return (
-                                                        <React.Fragment key={index}>
-                                                            {costOfSale ? (
-                                                                <tr className="costOfSalesList_table_body_content_horizontal">
-                                                                    <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                        {costOfSale.year}
-                                                                    </td>
-                                                                    <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                        {costOfSale.month}
-                                                                    </td>
-                                                                    <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                        <input
-                                                                            type='number'
-                                                                            name='purchase'
-                                                                            value={costOfSale.purchase}
-                                                                            onChange={(e) => handleChange(index, e)}
-                                                                            disabled={!isEditable}
-                                                                        />
-                                                                    </td>
-                                                                    <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                        <input
-                                                                            type='number'
-                                                                            name='outsourcing_expense'
-                                                                            value={costOfSale.outsourcing_expense}
-                                                                            onChange={(e) => handleChange(index, e)}
-                                                                            disabled={!isEditable}
-                                                                        />
-                                                                    </td>
-                                                                    <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                        <input
-                                                                            type='number'
-                                                                            name='product_purchase'
-                                                                            value={costOfSale.product_purchase}
-                                                                            onChange={(e) => handleChange(index, e)}
-                                                                            disabled={!isEditable}
-                                                                        />
-                                                                    </td>
-                                                                    <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                        <input
-                                                                            type='number'
-                                                                            name='dispatch_labor_expense'
-                                                                            value={costOfSale.dispatch_labor_expense}
-                                                                            onChange={(e) => handleChange(index, e)}
-                                                                            disabled={!isEditable}
-                                                                        />
-                                                                    </td>
-                                                                    <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                        <input
-                                                                            type='number'
-                                                                            name='communication_expense'
-                                                                            value={costOfSale.communication_expense}
-                                                                            onChange={(e) => handleChange(index, e)}
-                                                                            disabled={!isEditable}
-                                                                        />
-                                                                    </td>
-                                                                    <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                        <input
-                                                                            type='number'
-                                                                            name='work_in_progress_expense'
-                                                                            value={costOfSale.work_in_progress_expense}
-                                                                            onChange={(e) => handleChange(index, e)}
-                                                                            disabled={!isEditable}
-                                                                        />
-                                                                    </td>
-                                                                    <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                        <input
-                                                                            type='number'
-                                                                            name='amortization_expense'
-                                                                            value={costOfSale.amortization_expense}
-                                                                            onChange={(e) => handleChange(index, e)}
-                                                                            disabled={!isEditable}
-                                                                        />
-                                                                    </td>
-                                                                    <td className='costOfSalesList_table_body_content_vertical delete_icon'>
-                                                                        <RiDeleteBin6Fill
-                                                                            className='delete-icon'
-                                                                            onClick={() => openModal('costOfSales', costOfSale.cost_of_sale_id)}
-                                                                            style={{ color: 'red' }}
-                                                                        />
-                                                                    </td>
-                                                                </tr>
-                                                            ) : null}
-                                                            {isLastcostOfSaleOfYear && (
-                                                                <tr className="year-separator">
-                                                                    <td className="horizontal-line-cell" colSpan={9}>
-                                                                        <div className="horizontal-line" />
-                                                                    </td>
-                                                                </tr>
-                                                            )}
-                                                        </React.Fragment>
-                                                    );
-                                                })}
-                                            </tbody>
-                                            </table>
-                                            </div>
-                                          ):(
-                                            <table className='table is-bordered is-hoverable'>
-                                            <thead>
-                                                <tr className="costOfSalesList_table_title ">
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('year', language)}</th>
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('month', language)}</th>
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('purchases', language)}</th>
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('outsourcingExpenses', language)}</th>
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('productPurchases', language)}</th>
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('dispatchLaborExpenses', language)}</th>
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('communicationExpenses', language)}</th>
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('workInProgressExpenses', language)}</th>
-                                                <th className="costOfSalesList_table_title_content_vertical has-text-centered">{translate('amortizationExpenses', language)}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="costOfSalesList_table_body">
-                                              {combinedData.map((costOfSale, index) => {
-                                                   const isNewYear = index === 0 || combinedData[index - 1].year !== costOfSale.year;
-                                                   const isLastcostOfSaleOfYear = 
-                                                     (index !== combinedData.length - 1 && combinedData[index + 1].year !== costOfSale.year);
-
-                                                  return (
-                                                      <React.Fragment key={index}>
-                                                          <tr className="costOfSalesList_table_body_content_horizontal">
-                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  {costOfSale.year || 0}
-                                                              </td>
-                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  {costOfSale.month}
-                                                              </td>
-                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  {costOfSale.purchase || 0}
-                                                              </td>
-                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  {costOfSale.outsourcing_expense || 0}
-                                                              </td>
-                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  {costOfSale.product_purchase || 0}
-                                                              </td>
-                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  {costOfSale.dispatch_labor_expense || 0}
-                                                              </td>
-                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  {costOfSale.communication_expense || 0}
-                                                              </td>
-                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  {costOfSale.work_in_progress_expense || 0}
-                                                              </td>
-                                                              <td className="costOfSalesList_table_body_content_vertical has-text-centered">
-                                                                  {costOfSale.amortization_expense || 0}
-                                                              </td>
-                                                          </tr>
-                                                          {isLastcostOfSaleOfYear && (
-                                                              <tr className="year-separator">
-                                                                  <td className="horizontal-line-cell" colSpan={9}>
-                                                                      <div className="horizontal-line" />
-                                                                  </td>
-                                                              </tr>
-                                                          )}
-                                                      </React.Fragment>
-                                                  );
-                                              })}
-                                            </tbody>
-                                            </table>
-                                          )}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='costOfSalesList_is_editing_wrapper'>
-                              <div className='costOfSalesList_is_editing_cont'>
-                                {isEditing ? (
-                                  <div className='costOfSalesList_mode_switch_datalist'>
-                                    <button className='costOfSalesList_edit_submit_btn' onClick={handleSubmit}>
-                                      更新
-                                    </button>
-                                  </div>
-                                ) : (
-                                  <div></div>
-                                )}
-                              </div>
-                            </div>
-                        </div>
-                    </div>
+      <HeaderButtons
+        activeTab={activeTab}
+        handleTabClick={handleTabClick}
+        isTranslateSwitchActive={isTranslateSwitchActive}
+        handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+      />
+      <div className='costOfSalesList_cont_wrapper'>
+        <Sidebar />
+        <div className='costOfSalesList_btn_wrapper'>
+          <div className='costOfSalesList_top_content'>
+            <div className='costOfSalesList_top_body_cont'>
+              <div className='costOfSalesList_mode_switch_datalist'>
+                <button className='costOfSalesList_mode_switch' onClick={handleClick}>
+                  {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
+                </button>
+              </div>
             </div>
+            <div className='costOfSalesList_mid_body_cont'>
+              <ListButtons
+                activeTabOther={activeTabOther}
+                message={translate(isEditing ? 'costOfSalesEdit' : 'costOfSalesList', language)}
+                handleTabsClick={handleTabsClick}
+                handleNewRegistrationClick={handleNewRegistrationClick}
+                buttonConfig={[
+                  { labelKey: 'project', tabKey: 'project' },
+                  { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
+                  { labelKey: 'expenses', tabKey: 'expenses' },
+                  { labelKey: 'costOfSales', tabKey: 'costOfSales' },
+                ]}
+              />
+              <div className={`costOfSalesList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
+                <div className='costOfSalesList_table_cont'>
+                  {/* <div className='columns is-mobile'> */}
+                    {/* <div className='column'> */}
+                      {isEditing ? (
+                        <div>
+                          <table className='table is-bordered is-hoverable'>
+                            <thead>
+                              <tr className='costOfSalesList_table_title '>
+                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                                  {translate('year', language)}
+                                </th>
+                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                                  {translate('month', language)}
+                                </th>
+                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                                  {translate('purchases', language)}
+                                </th>
+                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                                  {translate('outsourcingExpenses', language)}
+                                </th>
+                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                                  {translate('productPurchases', language)}
+                                </th>
+                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                                  {translate('dispatchLaborExpenses', language)}
+                                </th>
+                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                                  {translate('communicationExpenses', language)}
+                                </th>
+                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                                  {translate('workInProgressExpenses', language)}
+                                </th>
+                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                                  {translate('amortizationExpenses', language)}
+                                </th>
+                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'></th>
+                              </tr>
+                            </thead>
+                            <tbody className='costOfSalesList_table_body'>
+                              {combinedData.map((costOfSale, index) => {
+                                const isNewYear = index === 0 || combinedData[index - 1].year !== costOfSale.year
+                                const isLastcostOfSaleOfYear =
+                                  index !== combinedData.length - 1 && combinedData[index + 1].year !== costOfSale.year
+
+                                const isEditable = costOfSale.cost_of_sale_id !== null
+
+                                return (
+                                  <React.Fragment key={index}>
+                                    {costOfSale ? (
+                                      <tr className='costOfSalesList_table_body_content_horizontal'>
+                                        <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                          {costOfSale.year}
+                                        </td>
+                                        <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                          {costOfSale.month}
+                                        </td>
+                                        <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                          <input
+                                            type='number'
+                                            name='purchase'
+                                            value={costOfSale.purchase}
+                                            onChange={(e) => handleChange(index, e)}
+                                            disabled={!isEditable}
+                                          />
+                                        </td>
+                                        <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                          <input
+                                            type='number'
+                                            name='outsourcing_expense'
+                                            value={costOfSale.outsourcing_expense}
+                                            onChange={(e) => handleChange(index, e)}
+                                            disabled={!isEditable}
+                                          />
+                                        </td>
+                                        <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                          <input
+                                            type='number'
+                                            name='product_purchase'
+                                            value={costOfSale.product_purchase}
+                                            onChange={(e) => handleChange(index, e)}
+                                            disabled={!isEditable}
+                                          />
+                                        </td>
+                                        <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                          <input
+                                            type='number'
+                                            name='dispatch_labor_expense'
+                                            value={costOfSale.dispatch_labor_expense}
+                                            onChange={(e) => handleChange(index, e)}
+                                            disabled={!isEditable}
+                                          />
+                                        </td>
+                                        <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                          <input
+                                            type='number'
+                                            name='communication_expense'
+                                            value={costOfSale.communication_expense}
+                                            onChange={(e) => handleChange(index, e)}
+                                            disabled={!isEditable}
+                                          />
+                                        </td>
+                                        <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                          <input
+                                            type='number'
+                                            name='work_in_progress_expense'
+                                            value={costOfSale.work_in_progress_expense}
+                                            onChange={(e) => handleChange(index, e)}
+                                            disabled={!isEditable}
+                                          />
+                                        </td>
+                                        <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                          <input
+                                            type='number'
+                                            name='amortization_expense'
+                                            value={costOfSale.amortization_expense}
+                                            onChange={(e) => handleChange(index, e)}
+                                            disabled={!isEditable}
+                                          />
+                                        </td>
+                                        <td className='costOfSalesList_table_body_content_vertical delete_icon'>
+                                          <RiDeleteBin6Fill
+                                            className='delete-icon'
+                                            onClick={() => openModal('costOfSales', costOfSale.cost_of_sale_id)}
+                                            style={{ color: 'red' }}
+                                          />
+                                        </td>
+                                      </tr>
+                                    ) : null}
+                                    {isLastcostOfSaleOfYear && (
+                                      <tr className='year-separator'>
+                                        <td className='horizontal-line-cell' colSpan={9}>
+                                          <div className='horizontal-line' />
+                                        </td>
+                                      </tr>
+                                    )}
+                                  </React.Fragment>
+                                )
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : (
+                        <table className='table is-bordered is-hoverable'>
+                          <thead>
+                            <tr className='costOfSalesList_table_title '>
+                              <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                                {translate('year', language)}
+                              </th>
+                              <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                                {translate('month', language)}
+                              </th>
+                              <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                                {translate('purchases', language)}
+                              </th>
+                              <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                                {translate('outsourcingExpenses', language)}
+                              </th>
+                              <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                                {translate('productPurchases', language)}
+                              </th>
+                              <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                                {translate('dispatchLaborExpenses', language)}
+                              </th>
+                              <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                                {translate('communicationExpenses', language)}
+                              </th>
+                              <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                                {translate('workInProgressExpenses', language)}
+                              </th>
+                              <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                                {translate('amortizationExpenses', language)}
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className='costOfSalesList_table_body'>
+                            {combinedData.map((costOfSale, index) => {
+                              const isNewYear = index === 0 || combinedData[index - 1].year !== costOfSale.year
+                              const isLastcostOfSaleOfYear =
+                                index !== combinedData.length - 1 && combinedData[index + 1].year !== costOfSale.year
+
+                              return (
+                                <React.Fragment key={index}>
+                                  <tr className='costOfSalesList_table_body_content_horizontal'>
+                                    <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                      {costOfSale.year || 0}
+                                    </td>
+                                    <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                      {costOfSale.month}
+                                    </td>
+                                    <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                      {costOfSale.purchase || 0}
+                                    </td>
+                                    <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                      {costOfSale.outsourcing_expense || 0}
+                                    </td>
+                                    <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                      {costOfSale.product_purchase || 0}
+                                    </td>
+                                    <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                      {costOfSale.dispatch_labor_expense || 0}
+                                    </td>
+                                    <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                      {costOfSale.communication_expense || 0}
+                                    </td>
+                                    <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                      {costOfSale.work_in_progress_expense || 0}
+                                    </td>
+                                    <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                      {costOfSale.amortization_expense || 0}
+                                    </td>
+                                  </tr>
+                                  {isLastcostOfSaleOfYear && (
+                                    <tr className='year-separator'>
+                                      <td className='horizontal-line-cell' colSpan={9}>
+                                        <div className='horizontal-line' />
+                                      </td>
+                                    </tr>
+                                  )}
+                                </React.Fragment>
+                              )
+                            })}
+                          </tbody>
+                        </table>
+                      )}
+                    {/* </div> */}
+                  {/* </div> */}
+                </div>
+              </div>
+              <div className='costOfSalesList_is_editing_wrapper'>
+                <div className='costOfSalesList_is_editing_cont'>
+                  {isEditing ? (
+                    <div className='costOfSalesList_edit_submit_btn_cont'>
+                      <button className='costOfSalesList_edit_submit_btn' onClick={handleSubmit}>
+                        更新
+                      </button>
+                    </div>
+                  ) : (
+                    <div></div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <AlertModal
-          isOpen={modalIsOpen}
-          onConfirm={handleConfirm}
-          onCancel={closeModal}
-          message={translate('deleteMessage', language)}
-        />
+      </div>
+      <AlertModal
+        isOpen={modalIsOpen}
+        onConfirm={handleConfirm}
+        onCancel={closeModal}
+        message={translate('deleteMessage', language)}
+      />
     </div>
   )
 };

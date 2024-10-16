@@ -2,79 +2,74 @@
   max-width: 2560px;
   .RegistrationButtons_title_container{
     padding: 54.5px 70px 50px 70px !important;
+     @media only screen and (min-width: 1920px){
+            padding: 59.5px 70px 50px 70px !important;
+    }
   }
   .employeeExpensesRegistration_cont_wrapper{
     display: flex;
     background-color: #EFEDEA;
     width: 100vw;
-    height: 130vh;
+    height: 95vh;
     @media only screen and (max-width: 1000px){
         flex-direction: column;
     }
-    .employeeExpensesRegistration_wrapper_div{
-      width: 84%;
-      height: 100vh;
-      padding: 10px 30px 10px 30px;
-      .employeeExpensesRegistration_top_content{
-        border: 1px solid #fff;
-        border-radius: 5px;
-        background-color: #fff;
-        .employeeExpensesRegistration_top_body_cont{
-          background-color: #fff;
-          height: 4rem;
-          .employeeExpensesRegistration_top_btn_cont{
-            
-          }
-        }
+    .employeeExpensesRegistration_data_content{
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin: 10px 30px 10px 30px;
+      border: 1px solid #fff;
+      border-radius: 5px;
+      background-color: #fff;
+    .employeeExpensesRegistration_top_body_cont{
+      margin: 2rem 0 0 0;
+      background-color: #fff;
+    }
+    .employeeExpensesRegistration_inputs_and_buttons{
+      display: flex;
+      height: 65vh;
+      justify-content: space-between;
+      flex-direction: column;
+    }
         .employeeExpensesRegistration_mid_body_cont{
-          height: 118vh;
-          .employeeExpensesRegistration_table_wrapper{
-            width: 100%;
-            height: 60vh;
-            overflow-y: auto; 
-            overflow-x: hidden;
-            scrollbar-width: thin; 
-            scrollbar-color: transparent transparent;
-            @media only screen and (min-width: 1875px){
-                height: 55vh;
-            }
-            &:hover {
-              scrollbar-color: #888 #EFEDEA; 
-            }
-            &::-webkit-scrollbar {
-                width: 8px;
-            }
-            &::-webkit-scrollbar-track {
-                background: transparent; 
-            }
-            &::-webkit-scrollbar-thumb {
-                background-color: transparent; 
-                border-radius: 10px;
-            }
-            &:hover::-webkit-scrollbar-thumb {
-                background-color: #888;
-            }
-            &:hover::-webkit-scrollbar-thumb:hover {
-                background-color: #555; 
-            }
-            .employeeExpensesRegistration_form_wrapper{
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              padding: 30px;
-              .employeeExpensesRegistration_container{
-                width: 100%;
-                padding: 20px;
-                border-radius: 10px;
-                background-color: #fff;
-                margin-top: -30px;
-                transition: width 0.3s ease;
+          height: 90%;
+          @media only screen and (min-width: 1875px){
+              height: 55vh;
+          }
+              .employeeExpensesRegistration_mid_form_cont{
+                margin: 0px 40px;
+                padding: 15px 20px;
+                background-color: #EFEDEA;
+                overflow-y: auto; 
+                overflow-x: hidden;
+                scrollbar-width: thin; 
+                scrollbar-color: transparent transparent;
+                border-radius: 5px;
+                &:hover {
+                    scrollbar-color: #888 #EFEDEA; 
+                }
+                &::-webkit-scrollbar {
+                    width: 8px;
+                }
+                &::-webkit-scrollbar-track {
+                    background: transparent; 
+                }
+                &::-webkit-scrollbar-thumb {
+                    background-color: transparent; 
+                    border-radius: 10px;
+                }
+                &:hover::-webkit-scrollbar-thumb {
+                    background-color: #888;
+                }
+                &:hover::-webkit-scrollbar-thumb:hover {
+                    background-color: #555; 
+                }
                 .employeeExpensesRegistration_form-content.employeeExpensesRegistration_form-line {
-                  padding-bottom: 50px;
                   border-top: 4px solid rgb(183, 183, 183);
+                  margin: 20px 0px 20px 0px;
                   opacity: 30%;
-              }
+                }
                 .employeeExpensesRegistration_cont-body{
                   display: flex;
                   flex-direction: column;
@@ -156,37 +151,33 @@
                     }
                   }
                 }
-              }
-              .employeeExpensesRegistration_cont-footer{
-                display: flex;
-                width: 100%;
-                flex-direction: column;
-                padding-left: 20px;
-                .employeeExpensesRegistration_btn-plusminus{
-                  display: flex;
-                  gap: 1%;
-                  .employeeExpensesRegistration_plus-btn,
-                  .employeeExpensesRegistration_minus-btn{
-                    width: 3%;
-                    border-radius: 5px !important;
-                    background-color: #808080;
-                    color: #fff;
-                  }
-                }
-                .employeeExpensesRegistration_btn-subcancel{
-                  display: flex;
-                  justify-content: center;
-                  align-items: center;
-                  gap: 1%;
-                  margin-top: 10px;
-                  .employeeExpensesRegistration_cancel-btn,
-                  .employeeExpensesRegistration_submit-btn{
-                    border-radius: 5px !important;
-                    width: 10%;
-                  }
-                }
-              }
+        }
+        .employeeExpensesRegistration_cont-footer{
+          padding: 20px;
+          .employeeExpensesRegistration_btn-plusminus{
+            padding: 20px 10px 20px 10px;
+            gap: 1rem;
+            display: flex;
+            margin-left: 90%;
+            .employeeExpensesRegistration_plus-btn,
+            .employeeExpensesRegistration_minus-btn{
+              background-color: #808080;
+              color: #fff;
+              width: 30px;
+              height: 40px;
+              border-radius: 5px !important;
+              font-size: 25px;
             }
+          }
+          .employeeExpensesRegistration_btn-subcancel{
+            display: flex;
+            gap: 1%;
+            padding: 10px 10px 10px 10px;
+            align-items: center;
+            justify-content: center;
+              button{
+                width: 10%;
+              }
           }
         }
       }

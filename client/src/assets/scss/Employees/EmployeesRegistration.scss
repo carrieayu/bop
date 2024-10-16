@@ -1,6 +1,7 @@
 .EmployeesRegistration_wrapper{
     display: flex;
     flex-direction: column;
+
     .RegistrationButtons_title_container{
         padding: 58.5px 70px 50px 70px !important;
         @media only screen and (min-width: 1920px){
@@ -10,61 +11,76 @@
     .EmployeesRegistration_content_wrapper{
         display: flex;
         background-color: #EFEDEA;
-        width: 100vw;
-        height: 130vh;
+        width: 100%;
+        height: 95vh;
         @media only screen and (max-width: 1000px){
             flex-direction: column;
         }
         .EmployeesRegistration_data_content{
-            width: 80%;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
             margin: 10px 30px 10px 30px;
             border: 1px solid #fff;
             border-radius: 5px;
             background-color: #fff;
             .EmployeesRegistration_top_body_cont{
+                margin: 2rem 0 0 0;
                 background-color: #fff;
-                height: 4rem;
+            }
+            .EmployeeRegistration_form_cont{
+                display: flex;
+                height: 65vh;
+                justify-content: space-between;
+                flex-direction: column;
             }
             .EmployeesRegistration_mid_body_cont{
                 background-color: #fff;
-                max-height: 670px;
-                overflow-y: auto;
-                overflow-x: hidden;
-                scrollbar-width: thin; 
-                scrollbar-color: transparent transparent;
+                max-height: 90%;
                 @media only screen and (min-width: 1875px){
                     height: 55vh;
                 }
-                &:hover {
-                    scrollbar-color: #888 #EFEDEA; 
+                .EmployeeRegistration_mid{
+                    margin: 0px 40px;          
+                    background-color: #EFEDEA;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    scrollbar-width: thin; 
+                    scrollbar-color: transparent transparent;
+                    border-radius: 5px;
+                    // padding: 0 0 20px 0;
+                    &:hover {
+                        scrollbar-color: #888 #EFEDEA; 
+                    }
+                    &::-webkit-scrollbar {
+                        width: 8px;
+                    }
+                    &::-webkit-scrollbar-track {
+                        background: transparent; 
+                    }
+                    &::-webkit-scrollbar-thumb {
+                        background-color: transparent; 
+                        border-radius: 10px;
+                    }
+                    &:hover::-webkit-scrollbar-thumb {
+                        background-color: #888;
+                    }
+                    &:hover::-webkit-scrollbar-thumb:hover {
+                        background-color: #555; 
+                    }    
                 }
-                &::-webkit-scrollbar {
-                    width: 8px;
-                }
-                &::-webkit-scrollbar-track {
-                    background: transparent; 
-                }
-                &::-webkit-scrollbar-thumb {
-                    background-color: transparent; 
-                    border-radius: 10px;
-                }
-                &:hover::-webkit-scrollbar-thumb {
-                    background-color: #888;
-                }
-                &:hover::-webkit-scrollbar-thumb:hover {
-                    background-color: #555; 
-                }
-                .EmployeesRegistration_mid_form_cont{
-                    margin: -14px 50px;
+                .EmployeesRegistration_mid_form_cont{                    
                     .EmployeesRegistration_form-content.EmployeesRegistration_ForImplementationOfPlusAndMinus{
-                        padding: 50px 0px 0px 20px;
+                        padding: 0px 0px 10px 0px;
                     }
                     .EmployeesRegistration_form-content.EmployeesRegistration_ForImplementationOfHorizontalLineBelow{
                         border-top: 4px solid rgb(183, 183, 183);
+                        margin: 20px 0px 20px 0px;
                         opacity: 30%;
                     }
                     .EmployeesRegistration_form-content{
-                        padding: 15px 80px 0px 20px;
+                        padding: 3px 20px 10px 20px;
+
                         .EmployeesRegistration_form-div{
                             display: flex;
                             gap: 60px;
@@ -80,7 +96,6 @@
                                         margin-bottom: 5px;
                                     }
                                     input{
-                                        // width: 80%;
                                         height: 40px;
                                         border: 1px solid #000;
                                         border-radius: 10px;
@@ -94,7 +109,6 @@
                                         margin-bottom: 5px;
                                     }
                                     input{
-                                        // width: 80%;
                                         height: 40px;
                                         border: 1px solid #000;
                                         border-radius: 10px;
@@ -110,7 +124,6 @@
                                         margin-bottom: 5px;
                                     }
                                     input{
-                                        // width: 80%;
                                         height: 40px;
                                         border: 1px solid #000;
                                         border-radius: 10px;
@@ -124,7 +137,6 @@
                                         margin-bottom: 5px;
                                     }
                                     .EmployeesRegistration_select-option{
-                                        // width: 80%;
                                         height: 40px;
                                         border: 1px solid #000;
                                         border-radius: 10px;
@@ -143,7 +155,6 @@
                                         margin-bottom: 5px;
                                     }
                                     input{
-                                        // width: 80%;
                                         height: 40px;
                                         border: 1px solid #000;
                                         border-radius: 10px;
@@ -157,7 +168,6 @@
                                         margin-bottom: 5px;
                                     }
                                     .EmployeesRegistration_select-option{
-                                        // width: 80%;
                                         height: 40px;
                                         border: 1px solid #000;
                                         border-radius: 10px;
@@ -170,7 +180,10 @@
                             }
                         }
                     }
+                }
+                .EmployeesRegistration_lower_form_cont{
                     .EmployeesRegistration_form-btn-content{
+                        padding: 20px;
                         .EmployeesRegistration_plus-btn{
                             padding: 20px 10px 20px 10px;
                             gap: 1rem;

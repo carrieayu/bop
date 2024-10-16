@@ -208,66 +208,74 @@ const BusinessDivisionsRegistration = () => {
 
   return (
     <div className='BusinessDivisionsRegistration_wrapper'>
-        <HeaderButtons 
-            activeTab={activeTab}
-            handleTabClick={handleTabClick}
-            isTranslateSwitchActive={isTranslateSwitchActive}
-            handleTranslationSwitchToggle={handleTranslationSwitchToggle}
-        />
+      <HeaderButtons
+        activeTab={activeTab}
+        handleTabClick={handleTabClick}
+        isTranslateSwitchActive={isTranslateSwitchActive}
+        handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+      />
       <div className='BusinessDivisionsRegistration_content_wrapper'>
-          <Sidebar />
+        <Sidebar />
         <div className='BusinessDivisionsRegistration_data_content'>
-          <div className='BusinessDivisionsRegistration_top_body_cont'></div>
+          <div className='BusinessDivisionsRegistration_top_body_cont'>
+            <RegistrationButtons
+              activeTabOther={activeTabOther}
+              message={translate('businessDivisionsRegistration', language)}
+              handleTabsClick={handleTabsClick}
+              buttonConfig={[
+                { labelKey: 'client', tabKey: 'client' },
+                { labelKey: 'employee', tabKey: 'employee' },
+                { labelKey: 'businessDivision', tabKey: 'businessDivision' },
+                { labelKey: 'users', tabKey: 'users' },
+              ]}
+            />
+          </div>
           <div className='BusinessDivisionsRegistration_mid_body_cont'>
-                <RegistrationButtons
-                  activeTabOther={activeTabOther}
-                  message={translate('businessDivisionsRegistration', language)}
-                  handleTabsClick={handleTabsClick}
-                  buttonConfig={[
-                    { labelKey: 'client', tabKey: 'client' },
-                    { labelKey: 'employee', tabKey: 'employee' },
-                    { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                    { labelKey: 'users', tabKey: 'users' },
-                  ]}
-                />
-            <div className='BusinessDivisionsRegistration_mid_form_cont'>
-              <form onSubmit={handleSubmit}>
-              {formData.map((form, index) => (
-                    <div key={index} className='BusinessDivisionsRegistration_form-content BusinessDivisionsRegistration_ForImplementationOfPlusAndMinus'>
-                      <div className='BusinessDivisionsRegistration_form-content BusinessDivisionsRegistration_ForImplementationOfHorizontalLineBelow'></div>
-                      <div className='BusinessDivisionsRegistration_form-div'>
-                        <div className='BusinessDivisionsRegistration_form-content-div'>
-                          <div className='BusinessDivisionsRegistration_business_division_name-div'>
-                            <label className='business_division_name'>{translate('businessDivision', language)}</label>
-                            <input
-                              type='text'
-                              name='business_division_name'
-                              value={form.business_division_name}
-                              onChange={(e) => handleChange(index, e)}
-                            />
-                          </div>
-                          <div className='BusinessDivisionsRegistration_company_name-div'>
-                            <label className='BusinessDivisionsRegistration_company_name'>{translate('companyName', language)}</label>
-                            <select
-                              className='BusinessDivisionsRegistration_select-option'
-                              name='company_id'
-                              value={form.company_id}
-                              // onChange={handleCompanyChange}
-                              onChange={(e) => handleChange(index, e)}
-                            >
-                              <option value=''></option>
+            <form className='BusinessDivisionsRegistration_inputs_and_buttons' onSubmit={handleSubmit}>
+              <div className='BusinessDivisionsRegistration_mid_form_cont'>
+                {formData.map((form, index) => (
+                  <div
+                    key={index}
+                    className='BusinessDivisionsRegistration_form-content BusinessDivisionsRegistration_ForImplementationOfPlusAndMinus'
+                  >
+                    <div className={`BusinessDivisionsRegistration_form-content ${index > 0 ? 'HorizontalLineBelow': ''}`}></div>
+                    <div className='BusinessDivisionsRegistration_form-div'>
+                      <div className='BusinessDivisionsRegistration_form-content-div'>
+                        <div className='BusinessDivisionsRegistration_business_division_name-div'>
+                          <label className='business_division_name'>{translate('businessDivision', language)}</label>
+                          <input
+                            type='text'
+                            name='business_division_name'
+                            value={form.business_division_name}
+                            onChange={(e) => handleChange(index, e)}
+                          />
+                        </div>
+                        <div className='BusinessDivisionsRegistration_company_name-div'>
+                          <label className='BusinessDivisionsRegistration_company_name'>
+                            {translate('companyName', language)}
+                          </label>
+                          <select
+                            className='BusinessDivisionsRegistration_select-option'
+                            name='company_id'
+                            value={form.company_id}
+                            // onChange={handleCompanyChange}
+                            onChange={(e) => handleChange(index, e)}
+                          >
+                            <option value=''></option>
                             {companyList.map((company) => (
-                                <option key={company.company_id} value={company.company_id}>
-                                  {company.company_name}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
+                              <option key={company.company_id} value={company.company_id}>
+                                {company.company_name}
+                              </option>
+                            ))}
+                          </select>
                         </div>
                       </div>
-                      <input type='hidden' name='auth_user_id' value={form.auth_user_id} />
                     </div>
-                  ))}
+                    <input type='hidden' name='auth_user_id' value={form.auth_user_id} />
+                  </div>
+                ))}
+              </div>
+              {/* <div className='BusinessDivisionsRegistration_lower_form_cont'> */}
                 <div className='BusinessDivisionsRegistration_form-btn-content'>
                   <div className='BusinessDivisionsRegistration_plus-btn'>
                     <button className='BusinessDivisionsRegistration_inc' type='button' onClick={handleAdd}>
@@ -286,8 +294,8 @@ const BusinessDivisionsRegistration = () => {
                     </button>
                   </div>
                 </div>
-              </form>
-            </div>
+              {/* </div> */}
+            </form>
           </div>
         </div>
       </div>
