@@ -31,6 +31,7 @@ const ExpensesList: React.FC = () => {
 
   const [isCRUDOpen, setIsCRUDOpen] = useState(false);
   const [crudMessage, setCrudMessage] = useState('');
+  const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
 
   const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
   const monthNames: { [key: number]: { en: string; jp: string } } = {
@@ -109,8 +110,8 @@ const ExpensesList: React.FC = () => {
     setExpensesList(updatedData)
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleSubmit = async () => {
+    // e.preventDefault()
 
     const getModifiedFields = (original, updated) => {
       const modifiedFields = []
@@ -203,6 +204,11 @@ const ExpensesList: React.FC = () => {
       }
     }
   }
+
+  const handleUpdateConfirm = async () => {
+    await handleSubmit(); // Call the submit function for update
+    setIsUpdateConfirmationOpen(false);
+};
 
   const fetchExpenses = async () => {
     const token = localStorage.getItem('accessToken')
@@ -631,7 +637,7 @@ const ExpensesList: React.FC = () => {
               <div className='expensesList_is_editing_cont'>
                 {isEditing ? (
                   <div className='expensesList_edit_submit_btn_cont'>
-                    <button className='expensesList_edit_submit_btn' onClick={handleSubmit}>
+                    <button className='expensesList_edit_submit_btn' onClick={() => {setIsUpdateConfirmationOpen(true)}}>
                       更新
                     </button>
                   </div>
@@ -654,6 +660,12 @@ const ExpensesList: React.FC = () => {
         isCRUDOpen={isCRUDOpen}
         onClose={closeModal}
         message={crudMessage}
+      />
+      <AlertModal
+        isOpen={isUpdateConfirmationOpen}
+        onConfirm={handleUpdateConfirm}
+        onCancel={() => setIsUpdateConfirmationOpen(false)}
+        message={translate('updateMessage', language)}
       />
     </div>
   )

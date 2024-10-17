@@ -66,6 +66,7 @@ const ProjectsListAndEdit: React.FC = () => {
 
     const [isCRUDOpen, setIsCRUDOpen] = useState(false);
     const [crudMessage, setCrudMessage] = useState('');
+    const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
 
     
     for (let year = 2020; year <= new Date().getFullYear(); year++) {
@@ -165,8 +166,8 @@ const ProjectsListAndEdit: React.FC = () => {
       })
     }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleSubmit = async () => {
+    // e.preventDefault()
 
     if (!validateProjects(formProjects)) {
       setCrudMessage(translate('usersValidationText6', language));
@@ -236,6 +237,11 @@ const ProjectsListAndEdit: React.FC = () => {
       }
     }
   }  
+
+  const handleUpdateConfirm = async () => {
+    await handleSubmit(); // Call the submit function for update
+    setIsUpdateConfirmationOpen(false);
+};
 
     const fetchClient = async () => {
       try {
@@ -731,7 +737,7 @@ const ProjectsListAndEdit: React.FC = () => {
                 <div className='projectsList_is_editing_cont'>
                   {isEditing ? (
                     <div className='projectsList_edit_submit_btn_cont'>
-                      <button className='projectsList_edit_submit_btn' onClick={handleSubmit}>
+                      <button className='projectsList_edit_submit_btn' onClick={() => {setIsUpdateConfirmationOpen(true)}}>
                         更新
                       </button>
                     </div>
@@ -754,6 +760,12 @@ const ProjectsListAndEdit: React.FC = () => {
         isCRUDOpen={isCRUDOpen}
         onClose={closeModal}
         message={crudMessage}
+      />
+      <AlertModal
+        isOpen={isUpdateConfirmationOpen}
+        onConfirm={handleUpdateConfirm}
+        onCancel={() => setIsUpdateConfirmationOpen(false)}
+        message={translate('updateMessage', language)}
       />
     </div>
   )

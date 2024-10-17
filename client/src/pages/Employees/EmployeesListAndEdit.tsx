@@ -41,6 +41,7 @@ const EmployeesListAndEdit: React.FC = () => {
 
     const [isCRUDOpen, setIsCRUDOpen] = useState(false);
     const [crudMessage, setCrudMessage] = useState('');
+    const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
 
     const handleTabClick = (tab) => {
         setActiveTab(tab)
@@ -220,8 +221,8 @@ const EmployeesListAndEdit: React.FC = () => {
       })
     }
 
-    const handleSubmit = async (e) => {
-      e.preventDefault()
+    const handleSubmit = async () => {
+      // e.preventDefault()
 
       const emails = employeesList.map((em) => em.email)
       if (!validateEmployees(employeesList, originalEmployeesList)) {
@@ -318,6 +319,11 @@ const EmployeesListAndEdit: React.FC = () => {
         }
       }
     }
+
+    const handleUpdateConfirm = async () => {
+      await handleSubmit(); // Call the submit function for update
+      setIsUpdateConfirmationOpen(false);
+  };
 
     const fetchProjects = async () => {
       const token = localStorage.getItem('accessToken')
@@ -690,7 +696,7 @@ const EmployeesListAndEdit: React.FC = () => {
                 <div className='EmployeesListAndEdit_is_editing_cont'>
                   {isEditing ? (
                     <div className='EmployeesList_edit_submit_btn_cont'>
-                      <button className='EmployeesListAndEdit_edit_submit_btn' onClick={handleSubmit}>
+                      <button className='EmployeesListAndEdit_edit_submit_btn' onClick={() => {setIsUpdateConfirmationOpen(true)}}>
                         更新
                       </button>
                     </div>
@@ -713,6 +719,12 @@ const EmployeesListAndEdit: React.FC = () => {
         isCRUDOpen={isCRUDOpen}
         onClose={closeModal}
         message={crudMessage}
+      />
+      <AlertModal
+        isOpen={isUpdateConfirmationOpen}
+        onConfirm={handleUpdateConfirm}
+        onCancel={() => setIsUpdateConfirmationOpen(false)}
+        message={translate('updateMessage', language)}
       />
     </div>
   )

@@ -35,6 +35,7 @@ const CostOfSalesList: React.FC = () => {
 
     const [isCRUDOpen, setIsCRUDOpen] = useState(false);
     const [crudMessage, setCrudMessage] = useState('');
+    const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
 
     const handleTabClick = (tab) => {
         setActiveTab(tab)
@@ -91,8 +92,8 @@ const CostOfSalesList: React.FC = () => {
       setCostOfSales(updatedData);
     };
 
-    const handleSubmit = async (e) => {
-      e.preventDefault()
+    const handleSubmit = async () => {
+      // e.preventDefault()
 
 
       const getModifiedFields = (original, updated) => {
@@ -185,9 +186,12 @@ const CostOfSalesList: React.FC = () => {
         }
       }
     };
+
+    const handleUpdateConfirm = async () => {
+      await handleSubmit(); // Call the submit function for update
+      setIsUpdateConfirmationOpen(false);
+  };
   
-
-
     useEffect(() => {
         const fetchCostOfSales = async () => {
           const token = localStorage.getItem('accessToken');
@@ -590,7 +594,7 @@ const CostOfSalesList: React.FC = () => {
                 <div className='costOfSalesList_is_editing_cont'>
                   {isEditing ? (
                     <div className='costOfSalesList_edit_submit_btn_cont'>
-                      <button className='costOfSalesList_edit_submit_btn' onClick={handleSubmit}>
+                      <button className='costOfSalesList_edit_submit_btn' onClick={() => {setIsUpdateConfirmationOpen(true)}}>
                         更新
                       </button>
                     </div>
@@ -613,6 +617,12 @@ const CostOfSalesList: React.FC = () => {
         isCRUDOpen={isCRUDOpen}
         onClose={closeModal}
         message={crudMessage}
+      />
+      <AlertModal
+        isOpen={isUpdateConfirmationOpen}
+        onConfirm={handleUpdateConfirm}
+        onCancel={() => setIsUpdateConfirmationOpen(false)}
+        message={translate('updateMessage', language)}
       />
     </div>
   )

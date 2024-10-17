@@ -88,7 +88,7 @@
   "businessDivisionUpdateFailed": "同じ会社の同じ事業部名を入力しています。異なる会社名や事業部名にしてください",
   "allFieldsRequiredInputValidationMessage": "すべての項目は必須です",
   "year": "年",
-  "cancelMessage": "キャンセルするのはよろしいでしょうか?",
+  "confirmationMessage": "本当にこの操作を実行しますか？",
   "reject": "いいえ",
   "accept": "はい",
   "projectType": "種類", 
@@ -110,5 +110,6 @@
   "employeeExpensesValidation2":"重複したプロジェクトが見つかりました。各プロジェクトがユニークであることを確認してください。",
   "employeeExpensesValidation3": "すべての${fieldsMessage}フィールドに入力してください。",
   "employeeExpensesRemoveProject": "プロジェクトが正常に削除されました。",
-  "projectOverwriteMessage": "データはすでに登録されています。上書きしますか？"
+  "projectOverwriteMessage": "データはすでに登録されています。上書きしますか？",
+  "updateMessage": "このデータを更新してもよろしいですか？"
 }

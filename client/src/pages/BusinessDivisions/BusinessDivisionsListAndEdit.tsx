@@ -36,6 +36,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
 
     const [isCRUDOpen, setIsCRUDOpen] = useState(false);
     const [crudMessage, setCrudMessage] = useState('');
+    const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
 
     const handleTabClick = (tab) => {
         setActiveTab(tab)
@@ -92,8 +93,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
       })
     }
     
-    const handleSubmit = async (e) => {
-      e.preventDefault();
+    const handleSubmit = async () => {
+      // e.preventDefault();
       
       const getModifiedFields = (original, updated) => {
         const modifiedFields = []
@@ -185,7 +186,10 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         }
       };
     
-
+      const handleUpdateConfirm = async () => {
+        await handleSubmit(); // Call the submit function for update
+        setIsUpdateConfirmationOpen(false);
+    };
     
       const fetchCompanyAndUserData = async () => {
           const token = localStorage.getItem('accessToken');
@@ -509,7 +513,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                 <div className='BusinessDivisionsListAndEdit_is_editing_cont'>
                   {isEditing ? (
                     <div className='BusinessDivisionsListAndEdit_edit_submit_btn_cont'>
-                      <button className='BusinessDivisionsListAndEdit_edit_submit_btn' onClick={handleSubmit}>
+                      <button className='BusinessDivisionsListAndEdit_edit_submit_btn' onClick={() => {setIsUpdateConfirmationOpen(true)}}>
                         更新
                       </button>
                     </div>
@@ -532,6 +536,12 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         isCRUDOpen={isCRUDOpen}
         onClose={closeModal}
         message={crudMessage}
+      />
+      <AlertModal
+        isOpen={isUpdateConfirmationOpen}
+        onConfirm={handleUpdateConfirm}
+        onCancel={() => setIsUpdateConfirmationOpen(false)}
+        message={translate('updateMessage', language)}
       />
     </div>
   )

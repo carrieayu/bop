@@ -46,6 +46,7 @@ const UsersListAndEdit: React.FC = () => {
 
   const [isCRUDOpen, setIsCRUDOpen] = useState(false);
   const [crudMessage, setCrudMessage] = useState('');
+  const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -146,8 +147,8 @@ const UsersListAndEdit: React.FC = () => {
     })
   }
 
-  const handleSubmit = async (e) => {
-      e.preventDefault()
+  const handleSubmit = async () => {
+      // e.preventDefault()
 
       if (!validateUser(userList)) {
         return
@@ -173,6 +174,11 @@ const UsersListAndEdit: React.FC = () => {
         }
       }
     }
+
+    const handleUpdateConfirm = async () => {
+      await handleSubmit(); // Call the submit function for update
+      setIsUpdateConfirmationOpen(false);
+  };
 
     useEffect(() => {
       const fetchProjects = async () => {
@@ -435,7 +441,7 @@ const UsersListAndEdit: React.FC = () => {
                 <div className='UsersListAndEdit_is_editing_cont'>
                   {isEditing ? (
                     <div className='UsersListAndEdit_edit_submit_btn_cont'>
-                      <button className='UsersListAndEdit_edit_submit_btn' onClick={handleSubmit}>
+                      <button className='UsersListAndEdit_edit_submit_btn' onClick={() => {setIsUpdateConfirmationOpen(true)}}>
                         更新
                       </button>
                     </div>
@@ -458,6 +464,12 @@ const UsersListAndEdit: React.FC = () => {
         isCRUDOpen={isCRUDOpen}
         onClose={closeModal}
         message={crudMessage}
+      />
+      <AlertModal
+        isOpen={isUpdateConfirmationOpen}
+        onConfirm={handleUpdateConfirm}
+        onCancel={() => setIsUpdateConfirmationOpen(false)}
+        message={translate('updateMessage', language)}
       />
     </div>
   )
