@@ -167,7 +167,6 @@ const ProjectsListAndEdit: React.FC = () => {
     }
 
   const handleSubmit = async () => {
-    // e.preventDefault()
 
     if (!validateProjects(formProjects)) {
       setCrudMessage(translate('usersValidationText6', language));

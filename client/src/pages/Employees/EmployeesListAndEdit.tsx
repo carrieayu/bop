@@ -222,7 +222,6 @@ const EmployeesListAndEdit: React.FC = () => {
     }
 
     const handleSubmit = async () => {
-      // e.preventDefault()
 
       const emails = employeesList.map((em) => em.email)
       if (!validateEmployees(employeesList, originalEmployeesList)) {

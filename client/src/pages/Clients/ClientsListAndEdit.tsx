@@ -101,7 +101,6 @@ const ClientsListAndEdit: React.FC = () => {
     }
 
     const handleSubmit = async () => {
-      // e.preventDefault()
 
       // Extract client names from updatedClients
       const clientNames = updatedClients.map((cl) => cl.client_name)

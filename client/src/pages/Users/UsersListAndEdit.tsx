@@ -148,7 +148,6 @@ const UsersListAndEdit: React.FC = () => {
   }
 
   const handleSubmit = async () => {
-      // e.preventDefault()
 
       if (!validateUser(userList)) {
         return

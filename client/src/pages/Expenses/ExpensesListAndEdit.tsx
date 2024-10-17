@@ -111,7 +111,6 @@ const ExpensesList: React.FC = () => {
   }
 
   const handleSubmit = async () => {
-    // e.preventDefault()
 
     const getModifiedFields = (original, updated) => {
       const modifiedFields = []
