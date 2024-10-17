@@ -13,6 +13,7 @@ import { fetchBusinessDivisions } from "../../reducers/businessDivisions/busines
 import { fetchMasterCompany } from "../../reducers/company/companySlice";
 import { useDispatch } from "react-redux";
 import { UnknownAction } from "redux";
+import CrudModal from "../../components/CrudModal/CrudModal";
 
 const EmployeesListAndEdit: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -37,6 +38,10 @@ const EmployeesListAndEdit: React.FC = () => {
     const dispatch = useDispatch()
     const totalPages = Math.ceil(100 / 10);
     const [allBusinessDivisions, setAllBusinessDivisions] = useState([]);
+
+    const [isCRUDOpen, setIsCRUDOpen] = useState(false);
+    const [crudMessage, setCrudMessage] = useState('');
+
     const handleTabClick = (tab) => {
         setActiveTab(tab)
         navigate(tab)
@@ -69,6 +74,7 @@ const EmployeesListAndEdit: React.FC = () => {
       
           if (isEditing) {
             const response = await axios.get(`http://127.0.0.1:8000/api/employees/edit/`, {
+              // const response = await axios.get(`http://54.178.202.58:8000/api/employees/edit/`, {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
               },
@@ -110,6 +116,7 @@ const EmployeesListAndEdit: React.FC = () => {
 
     useEffect(() => {
       axios.get('http://127.0.0.1:8000/api/master-business-divisions/')
+      // axios.get(`http://54.178.202.58:8000/api/master-business-divisions/`, {
         .then(response => {
           setAllBusinessDivisions(response.data);
         })
@@ -218,7 +225,8 @@ const EmployeesListAndEdit: React.FC = () => {
 
       const emails = employeesList.map((em) => em.email)
       if (!validateEmployees(employeesList, originalEmployeesList)) {
-        alert(translate('allFieldsRequiredInputValidationMessage', language))
+        setCrudMessage(translate('allFieldsRequiredInputValidationMessage', language));
+        setIsCRUDOpen(true);
         return
       }
 
@@ -286,14 +294,16 @@ const EmployeesListAndEdit: React.FC = () => {
           },
         })
         setOriginalEmployeesList(employeesList)
-        alert('Sucessfully updated')
-        setIsEditing(false)
+        setCrudMessage(translate('successfullyUpdated', language));
+        setIsCRUDOpen(true);
+        setIsEditing(false);
       } catch (error) {
         if (error.response) {
           const { status, data } = error.response
           switch (status) {
             case 409:
-              alert(translate('emailExistsMessage', language))
+              setCrudMessage(translate('emailExistsMessage', language));
+              setIsCRUDOpen(true);
               break
             case 401:
               console.error('Validation error:', data)
@@ -301,7 +311,8 @@ const EmployeesListAndEdit: React.FC = () => {
               break
             default:
               console.error('There was an error creating the employee data!', error)
-              alert(translate('error', language))
+              setCrudMessage(translate('error', language));
+              setIsCRUDOpen(true);
               break
           }
         }
@@ -395,15 +406,18 @@ const EmployeesListAndEdit: React.FC = () => {
     const closeModal = () => {
         setSelectedProject(null);
         setModalIsOpen(false);
+        setIsCRUDOpen(false);
     };
 
     const handleConfirm = async () => {
       try {
         const response = await axios.delete(`http://127.0.0.1:8000/api/employees/${deleteId}/delete/`, {
-          // const response = await axios.get(`http://54.178.202.58:8000/api/employees/list/<int:pk>/delete/`, {
+        // const response = await axios.delete(`http://54.178.202.58:8000/api/employees/${deleteId}/delete/`, {
         })
         setEmployeesList((prevList) => prevList.filter((employee) => employee.employee_id !== deleteId))
-        setIsEditing(false)
+        setCrudMessage(translate('successfullyDeleted', language));
+        setIsCRUDOpen(true);
+        setIsEditing(false);
       } catch (error) {
         if (error.response && error.response.status === 401) {
           window.location.href = '/login'
@@ -411,7 +425,6 @@ const EmployeesListAndEdit: React.FC = () => {
           console.error('Error deleting project:', error)
         }
       }
-      closeModal()
     }
 
     const formatDate = (dateString) => {
@@ -695,6 +708,11 @@ const EmployeesListAndEdit: React.FC = () => {
         onConfirm={handleConfirm}
         onCancel={closeModal}
         message={translate('deleteEmployeeMessage', language)}
+      />
+      <CrudModal
+        isCRUDOpen={isCRUDOpen}
+        onClose={closeModal}
+        message={crudMessage}
       />
     </div>
   )

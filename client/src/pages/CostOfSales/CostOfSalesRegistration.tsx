@@ -8,7 +8,7 @@ import { translate } from '../../utils/translationUtil'
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import AlertModal from '../../components/AlertModal/AlertModal'
-
+import CrudModal from '../../components/CrudModal/CrudModal'
 
 const months = [
    '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -41,6 +41,11 @@ const CostOfSalesRegistration = () => {
       // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
     },
   ])
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false); 
+  const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false);
 
   const handleAdd = () => {
     if (formData.length < 10) {
@@ -137,7 +142,7 @@ const CostOfSalesRegistration = () => {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     const costOfSalesData = formData.map((cos) => ({
       year: cos.year,
@@ -149,46 +154,47 @@ const CostOfSalesRegistration = () => {
       communication_expense: cos.communication_expense,
       work_in_progress_expense: cos.work_in_progress_expense,
       amortization_expense: cos.amortization_expense,
-    }))
+    }));
 
     // Checks if any inputs are empty
     const areFieldsEmpty = costOfSalesData.some(
-      (entry) =>
-        !entry.year ||
-        !entry.month ||
-        !entry.purchase ||
-        !entry.outsourcing_expense ||
-        !entry.product_purchase ||
-        !entry.dispatch_labor_expense ||
-        !entry.communication_expense ||
-        !entry.work_in_progress_expense ||
-        !entry.amortization_expense,
-    )
+      (entry) => !entry.year || 
+                 !entry.month || 
+                 !entry.purchase || 
+                 !entry.outsourcing_expense || 
+                 !entry.product_purchase || 
+                 !entry.dispatch_labor_expense || 
+                 !entry.communication_expense || 
+                 !entry.work_in_progress_expense || 
+                 !entry.amortization_expense,
+    );
 
     if (areFieldsEmpty) {
-      alert(translate('allFieldsRequiredInputValidationMessage', language))
-      return
+      setModalMessage(translate('allFieldsRequiredInputValidationMessage', language));
+      setIsModalOpen(true);
+      return;
     }
 
     // Combine year and month for easier duplicate checking
     const costOfSales = costOfSalesData.map((costOfSale) => ({
       yearMonth: `${costOfSale.year}-${costOfSale.month}`,
-    }))
+    }));
 
-    // Check for duplicates in the [inputs] submitted cost of sales (year and month combination)
+    // Check for duplicates in the submitted cost of sales (year and month combination)
     const hasDuplicateEntries = (entries, key) => {
-      return entries.some((entry, index) => entries.findIndex((e) => e[key] === entry[key]) !== index)
-    }
+      return entries.some((entry, index) => entries.findIndex((e) => e[key] === entry[key]) !== index);
+    };
 
     if (hasDuplicateEntries(costOfSales, 'yearMonth')) {
-      alert(translate('duplicateYearAndMonthInputValidationMessage', language))
-      return
+      setModalMessage(translate('duplicateYearAndMonthInputValidationMessage', language));
+      setIsModalOpen(true);
+      return;
     }
 
-    const token = localStorage.getItem('accessToken')
+    const token = localStorage.getItem('accessToken');
     if (!token) {
-      window.location.href = '/login'
-      return
+      window.location.href = '/login';
+      return;
     }
 
     try {
@@ -199,66 +205,77 @@ const CostOfSalesRegistration = () => {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-      })
-      console.log('Form Data before submission:', formData)
+      });
+      console.log('Form Data before submission:', formData);
 
-      alert('Successfully Saved')
+      setModalMessage(translate('successfullySaved', language));
+      setIsModalOpen(true);
       // Reset form data after successful save
-      setFormData([
-        {
-          year: '',
-          month: '',
-          purchase: '',
-          outsourcing_expense: '',
-          product_purchase: '',
-          dispatch_labor_expense: '',
-          communication_expense: '',
-          work_in_progress_expense: '',
-          amortization_expense: '',
-        },
-      ])
+      setFormData([{
+        year: '',
+        month: '',
+        purchase: '',
+        outsourcing_expense: '',
+        product_purchase: '',
+        dispatch_labor_expense: '',
+        communication_expense: '',
+        work_in_progress_expense: '',
+        amortization_expense: '',
+      }]);
     } catch (error) {
       if (error.response && error.response.status === 409) {
-        // Conflict: prompt the user to overwrite
-        const confirmOverwrite = window.confirm('選択された月は既にデータが登録されています。 \n上書きしますか？')
-        if (confirmOverwrite) {
-          try {
-            // If user confirms, overwrite the existing data with a PUT request
-            const overwriteResponse = await axios.put('http://127.0.0.1:8000/api/cost-of-sales/create', formData, {
-              // const response = await axios.post('http://54.178.202.58:8000/api/cost-of-sales/create', formData, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-            })
-
-            alert('Data successfully overwritten.')
-            // Reset form data after successful overwrite
-            setFormData([
-              {
-                year: '',
-                month: '',
-                purchase: '',
-                outsourcing_expense: '',
-                product_purchase: '',
-                dispatch_labor_expense: '',
-                communication_expense: '',
-                work_in_progress_expense: '',
-                amortization_expense: '',
-              },
-            ])
-          } catch (overwriteError) {
-            console.error('Error overwriting data:', overwriteError)
-          }
-        }
+        // Conflict: open the overwrite confirmation modal
+        setModalMessage(translate('alertMessageAbove', language));
+        setIsOverwriteModalOpen(true);
+        return; // Exit the function to wait for user input
       } else {
         // Handle any other errors
-        console.error('There was an error with expenses registration!', error)
+        console.error('There was an error with expenses registration!', error);
       }
     }
   };
-  
 
+  // Handle overwrite confirmation
+  const handleOverwriteConfirmation = async () => {
+    setIsOverwriteModalOpen(false); // Close the overwrite modal
+    setIsOverwriteConfirmed(true); // Set overwrite confirmed state
+
+    // Call the submission method again after confirmation
+    await handleSubmitConfirmed();
+  };
+
+  const handleSubmitConfirmed = async () => {
+    const token = localStorage.getItem('accessToken');
+
+    try {
+      const overwriteResponse = await axios.put('http://127.0.0.1:8000/api/cost-of-sales/create', formData, {
+        // const overwriteResponse = await axios.put('http://54.178.202.58:8000/api/cost-of-sales/create', formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      setModalMessage(translate('overWrite', language));
+      setIsModalOpen(true);
+      // Reset form data after successful overwrite
+      setFormData([{
+        year: '',
+        month: '',
+        purchase: '',
+        outsourcing_expense: '',
+        product_purchase: '',
+        dispatch_labor_expense: '',
+        communication_expense: '',
+        work_in_progress_expense: '',
+        amortization_expense: '',
+      }]);
+    } catch (overwriteError) {
+      console.error('Error overwriting data:', overwriteError);
+    } finally {
+      setIsOverwriteConfirmed(false); // Reset overwrite confirmation
+    }
+  };
 
   useEffect(() => {
   }, [formData])
@@ -479,6 +496,17 @@ const CostOfSalesRegistration = () => {
         onConfirm={handleRemoveInputData}
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
+      />
+      <CrudModal
+        message={modalMessage}
+        onClose={() => setIsModalOpen(false)}
+        isCRUDOpen={isModalOpen}
+      />
+      <AlertModal
+        isOpen={isOverwriteModalOpen}
+        onCancel={() => setIsOverwriteModalOpen(false)}
+        onConfirm={handleOverwriteConfirmation}
+        message={modalMessage}
       />
     </div>
   )

@@ -11,8 +11,8 @@ import { fetchBusinessDivisions } from '../../reducers/businessDivisions/busines
 import { UnknownAction } from 'redux'
 import { useDispatch } from 'react-redux'
 import { fetchMasterClient } from '../../reducers/client/clientSlice'
+import CrudModal from '../../components/CrudModal/CrudModal'
 import AlertModal from '../../components/AlertModal/AlertModal'
-
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -37,6 +37,12 @@ const ProjectsRegistration = () => {
   for (let year = 2021; year <= new Date().getFullYear(); year++) {
     years.push(year);
   }
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false); 
+  const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false);
+
   const [formProjects, setProjects] = useState([
     {
       year: '',
@@ -232,8 +238,8 @@ const ProjectsRegistration = () => {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-
+    e.preventDefault();
+  
     const projectsData = formProjects.map((projects) => ({
       year: projects.year,
       month: projects.month,
@@ -252,81 +258,151 @@ const ProjectsRegistration = () => {
       non_operating_expense: parseFloat(projects.non_operating_expense),
       ordinary_profit: parseFloat(projects.ordinary_profit),
       ordinary_profit_margin: parseFloat(projects.ordinary_profit_margin),
-    }))
-
-    const token = localStorage.getItem('accessToken')
+    }));
+  
+    const token = localStorage.getItem('accessToken');
     if (!token) {
-      window.location.href = '/login'
-      return
+      window.location.href = '/login';
+      return;
     }
-
+  
     if (!validateProjects(formProjects)) {
-      alert(translate('usersValidationText6', language))
-      return // Stop the submission
+      setModalMessage(translate('usersValidationText6', language));
+      setIsModalOpen(true);
+      return; // Stop the submission
     }
-
+  
     try {
+      // Attempt to create a new entry
       const response = await axios.post('http://127.0.0.1:8000/api/projects/create/', projectsData, {
-        // const response = await axios.post('http://54.178.202.58:8000/api/projects/create/', projectsData, {
+      // const response = await axios.post('http://54.178.202.58:8000/api/projects/create/', projectsData, {
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
-      })
-      alert('Sucessfully Saved')
+      });
+      setModalMessage(translate('successfullySaved', language));
+      setIsModalOpen(true);
+      
+      // Reset form data after successful save
       setProjects([
-        {
-          year: '',
-          month: '',
-          project_name: '',
-          project_type: '',
-          client: '',
-          business_division: '',
-          sales_revenue: '',
-          cost_of_sale: '',
-          dispatch_labor_expense: '',
-          employee_expense: '',
-          indirect_employee_expense: '',
-          expense: '',
-          operating_profit: '',
-          non_operating_profit: '',
-          non_operating_expense: '',
-          ordinary_profit: '',
-          ordinary_profit_margin: '',
-        },
-      ])
-    } catch (error) {
-      console.log(error)
-      if (error.response && error.response.status === 409) {
-        const confirmOverwrite = window.confirm('データはすでに登録されています。上書きしますか？')
-        if (confirmOverwrite) {
-          try {
-            const overwriteResponse = await axios.put('http://127.0.0.1:8000/api/projects/create/', projectsData, {
-              // const response = await axios.post('http://54.178.202.58:8000/api/projects/create/', formData, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-            })
-
-            alert('Data successfully overwritten.')
-          } catch (overwriteError) {
-            if (overwriteError.response.status === 400) {
-              alert(translate('projectNameExist', language))
-            } else {
-              console.error('Error overwriting data:', overwriteError)
-            }
-            
-          }
+        { 
+          year: '', 
+          month: '', 
+          project_name: '', 
+          project_type: '', 
+          client: '', 
+          business_division: '', 
+          sales_revenue: '', 
+          cost_of_sale: '', 
+          dispatch_labor_expense: '', 
+          employee_expense: '', 
+          indirect_employee_expense: '', 
+          expense: '', 
+          operating_profit: '', 
+          non_operating_profit: '', 
+          non_operating_expense: '', 
+          ordinary_profit: '', 
+          ordinary_profit_margin: '' 
         }
-      } 
-      else if (error.response.data.project_name[0] && error.response.status === 400) {
-        alert(translate('projectNameExist', language))
+      ]);
+    } catch (error) {
+      if (error.response && error.response.status === 409) {
+        // Conflict: open the overwrite confirmation modal
+        setModalMessage(translate('projectOverwriteMessage', language));
+        setIsOverwriteModalOpen(true);
+        return; // Exit the function to wait for user input
+      } else if (error.response.data.project_name[0] && error.response.status === 400) {
+        // Display project name already exists alert
+        setModalMessage(translate('projectNameExist', language));
+        setIsModalOpen(true);
       } else {
-        console.error('There was an error with expenses registration!', error)
+        console.error('There was an error with expenses registration!', error);
       }
     }
-  }
+  };
+  
+
+  // Handle overwrite confirmation
+  const handleOverwriteConfirmation = async () => {
+    setIsOverwriteModalOpen(false); // Close the overwrite modal
+    setIsOverwriteConfirmed(true); // Set overwrite confirmed state
+
+    // Call the submission method again after confirmation
+    await handleSubmitConfirmed();
+  };
+
+  const handleSubmitConfirmed = async () => {
+    const projectsData = formProjects.map((projects) => ({
+      year: projects.year,
+      month: projects.month,
+      project_name: projects.project_name,
+      project_type: projects.project_type,
+      client: projects.client,
+      business_division: projects.business_division,
+      sales_revenue: parseFloat(projects.sales_revenue),
+      cost_of_sale: parseFloat(projects.cost_of_sale),
+      dispatch_labor_expense: parseFloat(projects.dispatch_labor_expense),
+      employee_expense: parseFloat(projects.employee_expense),
+      indirect_employee_expense: parseFloat(projects.indirect_employee_expense),
+      expense: parseFloat(projects.expense),
+      operating_profit: parseFloat(projects.operating_profit),
+      non_operating_profit: parseFloat(projects.non_operating_profit),
+      non_operating_expense: parseFloat(projects.non_operating_expense),
+      ordinary_profit: parseFloat(projects.ordinary_profit),
+      ordinary_profit_margin: parseFloat(projects.ordinary_profit_margin),
+    }));
+  
+    const token = localStorage.getItem('accessToken');
+  
+    try {
+      const overwriteResponse = await axios.put('http://127.0.0.1:8000/api/projects/create/', projectsData, {
+      // const overwriteResponse = await axios.put('http://54.178.202.58:8000/api/projects/create/', projectsData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      // Display data successfully overwritten message
+      setModalMessage(translate('overWrite', language));
+      setIsModalOpen(true);
+      
+      // Reset form data after successful overwrite
+      setProjects([
+        { 
+          year: '', 
+          month: '', 
+          project_name: '', 
+          project_type: '', 
+          client: '', 
+          business_division: '', 
+          sales_revenue: '', 
+          cost_of_sale: '', 
+          dispatch_labor_expense: '', 
+          employee_expense: '', 
+          indirect_employee_expense: '', 
+          expense: '', 
+          operating_profit: '', 
+          non_operating_profit: '', 
+          non_operating_expense: '', 
+          ordinary_profit: '', 
+          ordinary_profit_margin: '' 
+        }
+      ]);
+    } catch (overwriteError) {
+      if (overwriteError.response.status === 400) {
+        // Display project name already exists alert
+        setModalMessage(translate('projectNameExist', language));
+        setIsModalOpen(true);
+      } else {
+        console.error('Error overwriting data:', overwriteError);
+      }
+    } finally {
+      setIsOverwriteConfirmed(false); // Reset overwrite confirmation
+    }
+  };
+  
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en');
@@ -647,6 +723,17 @@ const ProjectsRegistration = () => {
         onConfirm={handleRemoveInputData}
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
+        />
+      <CrudModal
+        message={modalMessage}
+        onClose={() => setIsModalOpen(false)}
+        isCRUDOpen={isModalOpen}
+      />
+      <AlertModal
+        isOpen={isOverwriteModalOpen}
+        onCancel={() => setIsOverwriteModalOpen(false)}
+        onConfirm={handleOverwriteConfirmation}
+        message={modalMessage}
       />
     </div>
   )

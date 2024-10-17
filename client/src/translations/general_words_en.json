@@ -93,5 +93,20 @@
   "projectNameExist": "This project name already exists.\n Please choose a different name.",
   "error": "エラーがありました。",
   "logout" : "Are you sure you would like to logout? Yes / No",
-  "cancelCreation": "Are you sure you want to delete all data you have input so far?"
+  "cancelCreation": "Are you sure you want to delete all data you have input so far?",
+  "close": "Close",
+  "successfullySaved": "Successfully Saved",
+  "successfullyUpdated": "Successfully Updated",
+  "successfullyDeleted": "Successfully Deleted",
+  "businessDivisionsValidation1": "Cannot Create Data: Duplicate business division name found for the same company!",
+  "businessDivisionsValidation2": "Cannot Update Data: Duplicate business division name found for the same company!",
+  "businessDivisionsValidation3": "Cannot Update Data due to an error!",
+  "deleteUsersMessage": "Are you sure you would like to delete this user?",
+  "overWrite": "Data successfully overwritten",
+  "deleteMessage": "Are you sure you would like to delete this data?",
+  "employeeExpensesValidation1": "Please select an employee for all containers.",
+  "employeeExpensesValidation2":"Duplicate projects found. Please ensure each project is unique.",
+  "employeeExpensesValidation3": "Please fill out all ${fieldsMessage} fields.",
+  "employeeExpensesRemoveProject": "Project successfully removed",
+  "projectOverwriteMessage": "The data is already registered. Do you want to overwrite it?"
 }

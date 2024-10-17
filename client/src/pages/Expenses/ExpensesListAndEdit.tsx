@@ -9,6 +9,7 @@ import ListButtons from "../../components/ListButtons/ListButtons";
 import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { RiDeleteBin6Fill } from 'react-icons/ri'
+import CrudModal from "../../components/CrudModal/CrudModal";
 
 const ExpensesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -25,6 +26,12 @@ const ExpensesList: React.FC = () => {
   const [selectedExpense, setSelectedExpense] = useState<any>(null)
   const [expensesList, setExpensesList] = useState([])
   const [originalExpenseList, setOriginalExpensesList] = useState(expensesList)
+
+  const [changes, setChanges] = useState({}) //ians code maybe i do not need.
+
+  const [isCRUDOpen, setIsCRUDOpen] = useState(false);
+  const [crudMessage, setCrudMessage] = useState('');
+
   const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
   const monthNames: { [key: number]: { en: string; jp: string } } = {
     1: { en: 'January', jp: '1月' },
@@ -157,7 +164,8 @@ const ExpensesList: React.FC = () => {
     })
 
     if (areFieldsEmpty) {
-      alert(translate('allFieldsRequiredInputValidationMessage', language))
+      setCrudMessage(translate('allFieldsRequiredInputValidationMessage', language));
+      setIsCRUDOpen(true);
       return
     }
 
@@ -174,8 +182,14 @@ const ExpensesList: React.FC = () => {
         },
       })
       setOriginalExpensesList(expensesList)
-      alert('Successfully updated')
-      setIsEditing(false)
+      setCrudMessage(translate('successfullyUpdated', language));
+      setIsCRUDOpen(true);
+      setIsEditing(false);
+
+      const response = await axios.get('http://127.0.0.1:8000/api/expenses')
+      // const response = await axios.get('http://54.178.202.58:8000/api/expenses')
+
+      setExpensesList(response.data)
     } catch (error) {
       if (error.response) {
         console.error('Error response:', error.response.data)
@@ -276,6 +290,7 @@ const ExpensesList: React.FC = () => {
   const closeModal = () => {
     setSelectedExpense(null)
     setModalIsOpen(false)
+    setIsCRUDOpen(false);
   }
 
   const handleConfirm = async () => {
@@ -283,12 +298,14 @@ const ExpensesList: React.FC = () => {
     const token = localStorage.getItem('accessToken')
     try {
       await axios.delete(`http://127.0.0.1:8000/api/expenses/${deleteExpenseId}/delete/`, {
-        // const response = await axios.get(`http://54.178.202.58:8000/api/expenses/${deleteExpenseId}/delete/`, {
+        // await axios.get(`http://54.178.202.58:8000/api/expenses/${deleteExpenseId}/delete/`, {
         headers: {
           Authorization: `Bearer ${token}`, // Add token to request headers
         },
       })
-      setIsEditing(false)
+      setCrudMessage(translate('successfullyDeleted', language));
+      setIsCRUDOpen(true);
+      setIsEditing(false);
 
       const response = await axios.get('http://127.0.0.1:8000/api/expenses')
       // const response = await axios.get('http://54.178.202.58:8000/api/expensess');
@@ -300,7 +317,6 @@ const ExpensesList: React.FC = () => {
         console.error('Error deleting expenses:', error)
       }
     }
-    closeModal()
   }
 
   const handleNewRegistrationClick = () => {
@@ -633,6 +649,11 @@ const ExpensesList: React.FC = () => {
         onConfirm={handleConfirm}
         onCancel={closeModal}
         message={translate('deleteMessage', language)}
+      />
+      <CrudModal
+        isCRUDOpen={isCRUDOpen}
+        onClose={closeModal}
+        message={crudMessage}
       />
     </div>
   )

@@ -13,6 +13,7 @@ import { fetchMasterCompany } from '../../reducers/company/companySlice'
 import axios from 'axios'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { NULL } from 'sass'
+import CrudModal from '../../components/CrudModal/CrudModal'
 
 const EmployeesRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -41,6 +42,9 @@ const EmployeesRegistration = () => {
       },
     ])
     const [allBusinessDivisions, setAllBusinessDivisions] = useState([]);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
 
 
     const fetchData = async () => {
@@ -79,9 +83,8 @@ const EmployeesRegistration = () => {
        const fetchBusinessDivisionsForCompany = async () => {
          if (selectedCompanyId) {
            try {
-             const response = await axios.get(
-               `http://127.0.0.1:8000/api/business-divisions?company_id=${selectedCompanyId}`,
-             )
+             const response = await axios.get(`http://127.0.0.1:8000/api/business-divisions?company_id=${selectedCompanyId}`, )
+             // const response = await axios.get(`http://54.178.202.58:8000/api/business-divisions?company_id=${selectedCompanyId}`, )
              setBusinessDivisionSelection(response.data) // Update business divisions based on selected company
            } catch (error) {
              console.error('Error fetching business divisions:', error)
@@ -102,6 +105,7 @@ const EmployeesRegistration = () => {
        try {
          // Fetch business divisions based on the selected company ID
          const response = await axios.get(`http://127.0.0.1:8000/api/business-divisions/?company_id=${companyId}`)
+         // const response = await axios.get(`http://54.178.202.58:8000/api/business-divisions/?company_id=${companyId}`)
          const divisions = response.data // Assuming your API returns an array of divisions
 
          setBusinessDivisionSelection(divisions) // Update businessDivisionSelection with fetched divisions
@@ -206,7 +210,8 @@ const EmployeesRegistration = () => {
         }))
         
         if (!validateEmployees(employees)) {
-          alert(translate('allFieldsRequiredInputValidationMessage', language))
+          setModalMessage(translate('allFieldsRequiredInputValidationMessage', language));
+          setIsModalOpen(true);
           return // Stop the submission
         }
         // Check for duplicates in the email [input] submitted in enmployee
@@ -215,7 +220,8 @@ const EmployeesRegistration = () => {
         }
 
         if (hasDuplicateEntries(employees, 'email')) {
-          alert(translate('employeeDuplicateInputValidationMessage', language))
+          setModalMessage(translate('employeeDuplicateInputValidationMessage', language));
+          setIsModalOpen(true);
           return
         }
         
@@ -227,14 +233,15 @@ const EmployeesRegistration = () => {
               Authorization: `Bearer ${token}`, // Add token to request headers
             },
           })
-          alert('Saved')
-          window.location.reload()
+          setModalMessage(translate('successfullySaved', language));
+          setIsModalOpen(true);
         } catch (error) {
          if (error.response) {
             const { status, data } = error.response
             switch (status) {
               case 409:
-                alert(translate('emailExistsMessage', language))
+                setModalMessage(translate('emailExistsMessage', language));
+                setIsModalOpen(true);
                 break
               case 401:
                 console.error('Validation error:', data)
@@ -242,7 +249,8 @@ const EmployeesRegistration = () => {
                 break
               default:
                 console.error('There was an error creating the employee data!', error)
-                alert(translate('error', language))
+                setModalMessage(translate('error', language));
+                setIsModalOpen(true);
                 break
             }
           }
@@ -437,6 +445,11 @@ const EmployeesRegistration = () => {
         onConfirm={handleRemoveInputData}
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
+      />
+      <CrudModal
+        message={modalMessage}
+        onClose={() => setIsModalOpen(false)}
+        isCRUDOpen={isModalOpen}
       />
     </div>
   )

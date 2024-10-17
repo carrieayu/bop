@@ -10,6 +10,7 @@ import { RiDeleteBin6Fill } from 'react-icons/ri'
 import DatePicker from 'react-datepicker'
 import ListButtons from "../../components/ListButtons/ListButtons";
 import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
+import CrudModal from "../../components/CrudModal/CrudModal";
 
 
 const UsersListAndEdit: React.FC = () => {
@@ -42,6 +43,9 @@ const UsersListAndEdit: React.FC = () => {
   })
 
   const totalPages = Math.ceil(100 / 10);
+
+  const [isCRUDOpen, setIsCRUDOpen] = useState(false);
+  const [crudMessage, setCrudMessage] = useState('');
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -106,19 +110,22 @@ const UsersListAndEdit: React.FC = () => {
       console.log(user.date_joined)
 
       if (!username || !email || !date_joined) {
-        alert(translate('usersValidationText6', language))
+        setCrudMessage(translate('usersValidationText6', language));
+        setIsCRUDOpen(true);
         return false
       }
 
       if (!first_name || !last_name) {
-        alert(translate('usersValidationText2', language))
+        setCrudMessage(translate('usersValidationText2', language));
+        setIsCRUDOpen(true);
         return
       }
 
       const usernameRegex = /^[a-zA-Z]+_[a-zA-Z]+$/
       if (!usernameRegex.test(username)) {
         setIsUsernameValid(usernameRegex.test(username))
-        alert(translate('usersValidationText1', language))
+        setCrudMessage(translate('usersValidationText1', language));
+        setIsCRUDOpen(true);
         return false
       } else {
         setIsUsernameValid(true)
@@ -127,7 +134,8 @@ const UsersListAndEdit: React.FC = () => {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       if (!emailRegex.test(email)) {
         setIsEmailValid(false)
-        alert(translate('usersValidationText4', language))
+        setCrudMessage(translate('usersValidationText4', language));
+        setIsCRUDOpen(true);
         return false
       } else {
         setIsEmailValid(true)
@@ -154,7 +162,9 @@ const UsersListAndEdit: React.FC = () => {
         const response = await axios.put('http://127.0.0.1:8000/api/user/update/', userList, {
           // const response = await axios.put('http://54.178.202.58:8000/api/user/update/',  userList ,{
         })
-        alert('Sucessfully updated')
+        setCrudMessage(translate('successfullyUpdated', language));
+        setIsCRUDOpen(true);
+        setIsEditing(false);
       } catch (error) {
         if (error.response && error.response.status === 401) {
           window.location.href = '/login'
@@ -223,6 +233,7 @@ const UsersListAndEdit: React.FC = () => {
     const closeModal = () => {
         setSelectedProject(null);
         setModalIsOpen(false);
+        setIsCRUDOpen(false);
     };
 
     const formatDate = (dateString) => {
@@ -242,6 +253,9 @@ const UsersListAndEdit: React.FC = () => {
           // const response = await axios.get(`http://54.178.202.58:8000/api/user/list/${deleteId}/delete/`, {
         })
         setUserList((prevList) => prevList.filter((user) => user.id !== deleteId))
+        setCrudMessage(translate('successfullyDeleted', language));
+        setIsCRUDOpen(true);
+        setIsEditing(false);
       } catch (error) {
         if (error.response && error.response.status === 401) {
           window.location.href = '/login' // Redirect to login if unauthorized
@@ -249,7 +263,6 @@ const UsersListAndEdit: React.FC = () => {
           console.error('Error deleting project:', error)
         }
       }
-      closeModal();
     };
 
     const handleNewRegistrationClick = () => {
@@ -440,6 +453,11 @@ const UsersListAndEdit: React.FC = () => {
         onConfirm={handleConfirm}
         onCancel={closeModal}
         message={translate('deleteMessage', language)}
+      />
+      <CrudModal
+        isCRUDOpen={isCRUDOpen}
+        onClose={closeModal}
+        message={crudMessage}
       />
     </div>
   )

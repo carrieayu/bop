@@ -13,6 +13,7 @@ import { fetchBusinessDivisions } from "../../reducers/businessDivisions/busines
 import { fetchMasterClient } from "../../reducers/client/clientSlice";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import AlertModal from "../../components/AlertModal/AlertModal";
+import CrudModal from "../../components/CrudModal/CrudModal";
 
 
 const ProjectsListAndEdit: React.FC = () => {
@@ -62,6 +63,9 @@ const ProjectsListAndEdit: React.FC = () => {
         ordinary_profit_margin: '',
       },
     ])
+
+    const [isCRUDOpen, setIsCRUDOpen] = useState(false);
+    const [crudMessage, setCrudMessage] = useState('');
 
     
     for (let year = 2020; year <= new Date().getFullYear(); year++) {
@@ -165,7 +169,8 @@ const ProjectsListAndEdit: React.FC = () => {
     e.preventDefault()
 
     if (!validateProjects(formProjects)) {
-      alert(translate('usersValidationText6', language))
+      setCrudMessage(translate('usersValidationText6', language));
+      setIsCRUDOpen(true);
       return // Stop the submission
     }
 
@@ -206,14 +211,17 @@ const ProjectsListAndEdit: React.FC = () => {
           Authorization: `Bearer ${token}`,
         },
       })
-      alert('Sucessfully updated')
+      setCrudMessage(translate('successfullyUpdated', language));
+      setIsCRUDOpen(true);
+      setIsEditing(false);
     } catch (error) {
       if (error.response) {
         const { status, data } = error.response
 
         switch (status) {
           case 409:
-            alert(translate('projectNameExist', language))
+            setCrudMessage(translate('projectNameExist', language));
+            setIsCRUDOpen(true);
             break
           case 401:
             console.error('Validation error:', data)
@@ -221,7 +229,8 @@ const ProjectsListAndEdit: React.FC = () => {
             break
           default:
             console.error('There was an error creating the project data!', error)
-            alert(translate('error', language))
+            setCrudMessage(translate('error', language));
+            setIsCRUDOpen(true);
             break
         }
       }
@@ -314,6 +323,7 @@ const ProjectsListAndEdit: React.FC = () => {
       const closeModal = () => {
         setSelectedProject(null)
         setModalIsOpen(false)
+        setIsCRUDOpen(false);
       }
 
       const handleConfirm = async () => {
@@ -330,6 +340,9 @@ const ProjectsListAndEdit: React.FC = () => {
             },
           })
           setProjects((prevList) => prevList.filter((pr) => pr.project_id !== deleteProjectsId))
+          setCrudMessage(translate('successfullyDeleted', language));
+          setIsCRUDOpen(true);
+          setIsEditing(false);
         } catch (error) {
           if (error.response && error.response.status === 401) {
             window.location.href = '/login'
@@ -337,7 +350,6 @@ const ProjectsListAndEdit: React.FC = () => {
             console.error('Error deleting projects', error)
           }
         }
-        closeModal()
       }
 
   return (
@@ -737,6 +749,11 @@ const ProjectsListAndEdit: React.FC = () => {
         onConfirm={handleConfirm}
         onCancel={closeModal}
         message={translate('deleteProjectMessage', language)}
+      />
+      <CrudModal
+        isCRUDOpen={isCRUDOpen}
+        onClose={closeModal}
+        message={crudMessage}
       />
     </div>
   )

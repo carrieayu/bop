@@ -8,7 +8,7 @@ import RegistrationButtons from '../../components/RegistrationButtons/Registrati
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons';
 import axios from 'axios';
 import AlertModal from '../../components/AlertModal/AlertModal'
-
+import CrudModal from '../../components/CrudModal/CrudModal';
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -37,6 +37,9 @@ const EmployeeExpensesRegistration = () => {
       projectEntries: [{ id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '' }],
     },
   ])
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -122,6 +125,7 @@ const EmployeeExpensesRegistration = () => {
     const fetchData = async () => {
       try {
         const employeeResponse = await axios.get('http://127.0.0.1:8000/api/employees', {
+        // const employeeResponse = await axios.get('http://54.178.202.58:8000/api/employees', {
           headers: { 
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
@@ -129,6 +133,7 @@ const EmployeeExpensesRegistration = () => {
         });
         setEmployees(employeeResponse.data);
         const projectResponse = await axios.get('http://127.0.0.1:8000/api/projects/', {
+        // const projectResponse = await axios.get('http://54.178.202.58:8000/api/projects/', {
           headers: { 
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
@@ -238,38 +243,43 @@ const EmployeeExpensesRegistration = () => {
   };
 
   const handleValidation = () => {
-    // Check if all employeeContainers have selected an employee and their project entries are complete
+    const projectField = translate('project', language);
+    const yearField = translate('year', language);
+    const monthField = translate('month', language);
+
+    const allFields = [projectField, yearField, monthField];
+  
     for (const container of employeeContainers) {
-      if (!container.employee) {
-        alert('Please select an employee for all containers.');
-        return false;
-      }
-  
-      for (const projectEntry of container.projectEntries) {
-        // Collect missing fields
-        const missingFields = [];
-  
-        if (!projectEntry.projects) {
-          missingFields.push('project');
-        }
-        if (!projectEntry.year) {
-          missingFields.push('year');
-        }
-        if (!projectEntry.month) {
-          missingFields.push('month');
+        if (!container.employee) {
+            setModalMessage(translate('employeeExpensesValidation1', language));
+            setIsModalOpen(true);
+            return false;
         }
   
-        // If there are any missing fields, create a message
-        if (missingFields.length > 0) {
-          const fieldsMessage = missingFields.join(', ');
-          alert(`Please fill out all ${fieldsMessage} fields.`);
-          return false;
+        for (const projectEntry of container.projectEntries) {
+            const missingFields = [];
+            if (!projectEntry.projects) {
+                missingFields.push(translate('project', language)); 
+            }
+            if (!projectEntry.year) {
+                missingFields.push(translate('year', language));
+            }
+            if (!projectEntry.month) {
+                missingFields.push(translate('month', language));
+            }
+
+            // If there are any missing fields, create a message
+            if (missingFields.length > 0) {
+                const fieldsMessage = missingFields.join(', ');
+                setModalMessage(translate('employeeExpensesValidation3', language).replace('${fieldsMessage}', fieldsMessage));
+                setIsModalOpen(true);
+                return false;
+            }
         }
-      }
     }
   
     return true;
-  };
+};
 
 
   const handleSubmit = async (e) => {
@@ -282,7 +292,8 @@ const EmployeeExpensesRegistration = () => {
 
     // Check for duplicate projects
     if (hasDuplicateProjects()) {
-      alert('Duplicate projects found. Please ensure each project is unique.');
+      setModalMessage(translate('employeeExpensesValidation2', language));
+      setIsModalOpen(true);
       return; // Prevent form submission
     }
 
@@ -295,8 +306,15 @@ const EmployeeExpensesRegistration = () => {
           Authorization: `Bearer ${token}`,
         },
       })
-      alert('Saved')
-      window.location.reload()
+      setModalMessage(translate('successfullySaved', language));
+      setIsModalOpen(true);
+      setEmployeeContainers([
+        {
+          id: 1,
+          employee: '',
+          projectEntries: [{ id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '' }],
+        },
+      ])
     } catch (error) {
       console.log(error)
     }
@@ -478,6 +496,11 @@ const EmployeeExpensesRegistration = () => {
         onConfirm={handleRemoveInputData}
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
+      />
+      <CrudModal
+        message={modalMessage}
+        onClose={() => setIsModalOpen(false)}
+        isCRUDOpen={isModalOpen}
       />
     </div>
   )

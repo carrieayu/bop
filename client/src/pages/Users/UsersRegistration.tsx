@@ -8,7 +8,7 @@ import axios from 'axios'
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import AlertModal from '../../components/AlertModal/AlertModal'
-
+import CrudModal from '../../components/CrudModal/CrudModal'
 
 const UsersRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -36,6 +36,9 @@ const UsersRegistration = () => {
         confirm_email: '',
       },
     )
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
 
     const handleTabClick = (tab) => {
         setActiveTab(tab)
@@ -112,75 +115,79 @@ const UsersRegistration = () => {
       }, [location.pathname]);
 
       const handleSubmit = async (e) => {
-        e.preventDefault()
-        const token = localStorage.getItem('accessToken')
-        const { username, first_name, last_name, password, confirm_password, email , confirm_email} = userData
-
+        e.preventDefault();
+        const token = localStorage.getItem('accessToken');
+        const { username, first_name, last_name, password, confirm_password, email, confirm_email } = userData;
+    
         if (!username || !email || !password || !confirm_password) {
-          alert(translate('usersValidationText6', language))
-          return
+          setModalMessage(translate('usersValidationText6', language));
+          setIsModalOpen(true);
+          return;
         }
-
+    
         if (!first_name || !last_name) {
-          alert(translate('usersValidationText2', language))
-          return
+          setModalMessage(translate('usersValidationText2', language));
+          setIsModalOpen(true);
+          return;
         }
-
-        const usernameRegex = /^[a-zA-Z]+_[a-zA-Z]+$/
+    
+        const usernameRegex = /^[a-zA-Z]+_[a-zA-Z]+$/;
         if (!usernameRegex.test(username)) {
-          setIsUsernameValid(usernameRegex.test(username))
-          alert(
-            translate('usersValidationText1', language),
-          )
-          return
+          setIsUsernameValid(usernameRegex.test(username));
+          setModalMessage(translate('usersValidationText1', language));
+          setIsModalOpen(true);
+          return;
         } else {
-          setIsUsernameValid(true)
+          setIsUsernameValid(true);
         }
-
+    
         if (password !== confirm_password) {
-            setIsPasswordMatch(false) 
-            alert(translate('usersValidationText5', language))
-          return
+          setIsPasswordMatch(false);
+          setModalMessage(translate('usersValidationText5', language));
+          setIsModalOpen(true);
+          return;
         } else {
-            setIsPasswordMatch(true) 
+          setIsPasswordMatch(true);
         }
-
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/
+    
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
         if (!passwordRegex.test(password)) {
-          setIsPasswordValid(passwordRegex.test(password))
-          alert(translate('usersValidationText3', language))
-          return
+          setIsPasswordValid(passwordRegex.test(password));
+          setModalMessage(translate('usersValidationText3', language));
+          setIsModalOpen(true);
+          return;
         } else {
-          setIsPasswordValid(true) 
+          setIsPasswordValid(true);
         }
-
+    
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-          setIsEmailValid(false)
-          alert(translate('usersValidationText4', language))
-          return
+          setIsEmailValid(false);
+          setModalMessage(translate('usersValidationText4', language));
+          setIsModalOpen(true);
+          return;
         } else {
-          setIsEmailValid(true)
+          setIsEmailValid(true);
         }
-
+    
         if (email !== confirm_email) {
-          setIsEmailMatch(false)
-          alert(translate('usersValidationText8', language))
-          return
+          setIsEmailMatch(false);
+          setModalMessage(translate('usersValidationText8', language));
+          setIsModalOpen(true);
+          return;
         } else {
-          setIsEmailMatch(true)
+          setIsEmailMatch(true);
         }
-
-
+    
         if (!token) {
-          window.location.href = '/login'
-          return
+          window.location.href = '/login';
+          return;
         }
         try {
-          await axios.post('http://127.0.0.1:8000/api/user/register/', userData, {
-            // await axios.post('http://54.178.202.58:8000/api/user/register/'', userData, {
-          })
-          alert('Sucessfully Saved')
+          await axios.post('http://127.0.0.1:8000/api/user/register/', userData);
+          // await axios.post('http://54.178.202.58:8000/api/user/register/', userData); 
+          setModalMessage(translate('successfullySaved', language));
+          setIsModalOpen(true);
           setUserData({
             username: '',
             first_name: '',
@@ -189,11 +196,14 @@ const UsersRegistration = () => {
             email: '',
             confirm_password: '',
             confirm_email: '',
-          })
+          });
         } catch (error) {
-          console.error(translate('usersValidationText7', language))
+          setModalMessage(translate('usersValidationText7', language));
+          setIsModalOpen(true);
+          console.error(error);
         }
-      }
+      };
+    
 
       useEffect(() => {
         setIsTranslateSwitchActive(language === 'en');
@@ -354,6 +364,11 @@ const UsersRegistration = () => {
         onConfirm={handleRemoveInputData}
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
+      />
+      <CrudModal
+        message={modalMessage}
+        onClose={() => setIsModalOpen(false)}
+        isCRUDOpen={isModalOpen}
       />
     </div>
   )

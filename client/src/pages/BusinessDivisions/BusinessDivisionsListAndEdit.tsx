@@ -9,6 +9,7 @@ import AlertModal from "../../components/AlertModal/AlertModal";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import ListButtons from "../../components/ListButtons/ListButtons";
 import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
+import CrudModal from "../../components/CrudModal/CrudModal";
 
 const BusinessDivisionsListAndEdit: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -32,6 +33,9 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
     const [selectedCompany, setSelectedCompany] = useState('');
 
     const totalPages = Math.ceil(100 / 10);
+
+    const [isCRUDOpen, setIsCRUDOpen] = useState(false);
+    const [crudMessage, setCrudMessage] = useState('');
 
     const handleTabClick = (tab) => {
         setActiveTab(tab)
@@ -130,12 +134,14 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         })
 
       if (!validateBusinessDivision(business)) {
-        alert(translate('allFieldsRequiredInputValidationMessage', language))
+        setCrudMessage(translate('allFieldsRequiredInputValidationMessage', language));
+        setIsCRUDOpen(true);
         return
       }
     
       if (isDuplicate) {
-        alert(translate('businessDivisionUpdateFailed', language))
+        setCrudMessage(translate('businessDivisionUpdateFailed', language));
+        setIsCRUDOpen(true);
         return;
       }
     
@@ -152,7 +158,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        alert('Successfully updated');
+        setCrudMessage(translate('successfullyUpdated', language));
+        setIsCRUDOpen(true);
         setOriginalBusinessList(business)
         setIsEditing(false)
       } catch (error) {
@@ -161,7 +168,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
 
             switch (status) {
               case 409:
-                alert(translate('businessDivisionNameExistsValidationMessage', language))
+                setCrudMessage(translate('businessDivisionNameExistsValidationMessage', language));
+                setIsCRUDOpen(true);
                 break
               case 401:
                 console.error('Validation error:', data)
@@ -169,7 +177,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                 break
               default:
                 console.error('There was an error creating the business division data!', error)
-                alert(translate('error', language))
+                setCrudMessage(translate('error', language));
+                setIsCRUDOpen(true);
                 break
             }
           }
@@ -279,6 +288,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
     const closeModal = () => {
         setselectedBusiness(null);
         setModalIsOpen(false);
+        setIsCRUDOpen(false);
     };
 
     const handleConfirm = async () => {
@@ -290,6 +300,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
     
       try {
         const response = await axios.delete(`http://127.0.0.1:8000/api/master-business-division/${selectedBusiness}/delete/`, {
+          // const response = await axios.delete('http://54.178.202.58:8000/api/master-business-division/${selectedBusiness}/delete/', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -297,6 +308,9 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         console.log('Deleted successfully');
         // Update the business data after deletion
         const updatedBusiness = business.filter((item) => item.business_division_id !== selectedBusiness);
+        setCrudMessage(translate('successfullyDeleted', language));
+        setIsCRUDOpen(true);
+        setIsEditing(false);
         setBusiness(updatedBusiness);
       } catch (error) {
         if (error.response && error.response.status === 401) {
@@ -305,7 +319,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
           console.error('Error deleting data:', error);
         }
       }
-      closeModal();
     };
 
     const handleNewRegistrationClick = () => {
@@ -514,6 +527,11 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         onConfirm={handleConfirm}
         onCancel={closeModal}
         message={translate('deleteMessage', language)}
+      />
+      <CrudModal
+        isCRUDOpen={isCRUDOpen}
+        onClose={closeModal}
+        message={crudMessage}
       />
     </div>
   )

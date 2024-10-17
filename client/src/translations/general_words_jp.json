@@ -95,6 +95,20 @@
   "projectNameExist": "入力された案件名は既に存在されています。他の名を選択してください。",
   "error": "エラーがありました。",
   "logout" : "ログアウトしてもよろしいですか？ はい/いいえ",
-  "cancelCreation": "今まで入力した情報が削除するのはよろしいでしょうか?"
-
+  "cancelCreation": "今まで入力した情報が削除するのはよろしいでしょうか?",
+  "close": "閉じる",
+  "successfullySaved": "保存が成功しました",
+  "successfullyUpdated": "更新が成功しました",
+  "successfullyDeleted": "削除が成功しました",
+  "businessDivisionsValidation1": "データを作成できません：同じ会社で重複する事業部名が見つかりました！",
+  "businessDivisionsValidation2": "データを更新できません：同じ会社で重複する事業部名が見つかりました！",
+  "businessDivisionsValidation3": "エラーのため、データを更新できません！",
+  "deleteUsersMessage": "このユーザーを削除してもよろしいですか？",
+  "overWrite": "データが正常に上書きされました",
+  "deleteMessage": "このデータを削除してもよろしいですか？",
+  "employeeExpensesValidation1": "すべてのコンテナに対して従業員を選択してください。",
+  "employeeExpensesValidation2":"重複したプロジェクトが見つかりました。各プロジェクトがユニークであることを確認してください。",
+  "employeeExpensesValidation3": "すべての${fieldsMessage}フィールドに入力してください。",
+  "employeeExpensesRemoveProject": "プロジェクトが正常に削除されました。",
+  "projectOverwriteMessage": "データはすでに登録されています。上書きしますか？"
 }
