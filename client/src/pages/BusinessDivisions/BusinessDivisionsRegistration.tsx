@@ -8,7 +8,7 @@ import RegistrationButtons from '../../components/RegistrationButtons/Registrati
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import axios from 'axios'
 import AlertModal from '../../components/AlertModal/AlertModal'
-
+import CrudModal from '../../components/CrudModal/CrudModal'
 
 const BusinessDivisionsRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -32,6 +32,9 @@ const BusinessDivisionsRegistration = () => {
           auth_user_id: authUserID,
         },
       ])
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
 
     const handleTabClick = (tab) => {
         setActiveTab(tab)
@@ -151,12 +154,14 @@ const BusinessDivisionsRegistration = () => {
         (companyIds.some((id,index)=> companyIds.indexOf(id) !== index))
 
         if (!validateBusinessDivision(formData)) {
-          alert(translate('allFieldsRequiredInputValidationMessage', language))
+          setModalMessage(translate('allFieldsRequiredInputValidationMessage', language));
+          setIsModalOpen(true);
           return
         }
 
         if (hasDuplicates ) {
-          alert(translate('businessDivisionDuplicateNameInputValidationMessage', language))
+          setModalMessage(translate('businessDivisionDuplicateNameInputValidationMessage', language));
+          setIsModalOpen(true);
           return
         }
 
@@ -173,7 +178,8 @@ const BusinessDivisionsRegistration = () => {
               Authorization: `Bearer ${token}`,
             },
           })
-          alert('Sucessfully Saved')
+          setModalMessage(translate('successfullySaved', language));
+          setIsModalOpen(true);
           setFormData([
             {
              business_division_name: '',
@@ -189,7 +195,8 @@ const BusinessDivisionsRegistration = () => {
 
             switch (status) {
               case 409:
-                alert(translate('businessDivisionNameExistsValidationMessage', language))
+                setModalMessage(translate('businessDivisionNameExistsValidationMessage', language));
+                setIsModalOpen(true);
                 break
               case 401:
                 console.error('Validation error:', data)
@@ -197,7 +204,8 @@ const BusinessDivisionsRegistration = () => {
                 break
               default:
                 console.error('There was an error creating the business division data!', error)
-                alert(translate('error', language))
+                setModalMessage(translate('error', language));
+                setIsModalOpen(true);
                 break
             }
           }
@@ -331,6 +339,11 @@ const BusinessDivisionsRegistration = () => {
         onConfirm={handleRemoveInputData}
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
+      />
+      <CrudModal
+        message={modalMessage}
+        onClose={() => setIsModalOpen(false)}
+        isCRUDOpen={isModalOpen}
       />
     </div>
   )

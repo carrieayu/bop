@@ -9,6 +9,7 @@ import axios from 'axios'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { RiDeleteBin6Fill } from 'react-icons/ri'
 import { log } from 'console'
+import CrudModal from '../../components/CrudModal/CrudModal'
 
 const months: number[] = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]; // Store as numbers
 
@@ -27,6 +28,9 @@ const EmployeeExpensesList: React.FC = () => {
     const [selectedEmployeeExpenses, setSelectedEmployeeExpenses] = useState<any>(null);
     const [deleteEmployeeExpensesId, setDeleteEmployeeExpensesId] = useState([])
     const [employeeProjectId, setEmployeeProjectId ] = useState<{employee_expense_id:string,project_id:string,mode:"employee_expense" | "project"}>({} as {employee_expense_id:string,project_id:string,mode:"employee_expense"})
+
+    const [isCRUDOpen, setIsCRUDOpen] = useState(false);
+    const [crudMessage, setCrudMessage] = useState('');
 
 
     const handleTabClick = (tab) => {
@@ -140,6 +144,7 @@ const EmployeeExpensesList: React.FC = () => {
   const closeModal = () => {
       setSelectedEmployeeExpenses(null);
       setModalIsOpen(false);
+      setIsCRUDOpen(false);
   };
 
   const handleDelete = () => {
@@ -167,8 +172,9 @@ const EmployeeExpensesList: React.FC = () => {
         prevExpenses.filter(expense => expense.employee_expense_id !== employeeProjectId.employee_expense_id)
       );
 
+      setCrudMessage(translate('successfullyDeleted', language));
+      setIsCRUDOpen(true);
       setIsEditing(false);
-      alert('Successfully deleted');
     } catch (error) {
       if (error.response && error.response.status === 401) {
         window.location.href = '/login' // Redirect to login if unauthorized
@@ -176,7 +182,6 @@ const EmployeeExpensesList: React.FC = () => {
         console.error('Error deleting employee expense:', error)
       }
     }
-    closeModal();
   };
 
   const handleRemoveProjectAssociation = async () => {
@@ -196,8 +201,9 @@ const EmployeeExpensesList: React.FC = () => {
         prevExpenses.filter(expense => expense.employee_expense_id !== employeeProjectId.employee_expense_id)
       );
       
+      setCrudMessage(translate('employeeExpensesRemoveProject', language));
+      setIsCRUDOpen(true);
       setIsEditing(false);
-      alert('Project successfully remove');
     } catch (error) {
       if (error.response && error.response.status === 401) {
         window.location.href = '/login' // Redirect to login if unauthorized
@@ -205,7 +211,6 @@ const EmployeeExpensesList: React.FC = () => {
         console.error("Error removing project association:", error)
       }
     }
-    closeModal();
   };
   
 
@@ -586,17 +591,6 @@ const EmployeeExpensesList: React.FC = () => {
                     {/* </div> */}
                   </div>
                 </div>
-                <div className='employeeExpensesList_is_editing_wrapper'>
-                  <div className='employeeExpensesList_is_editing_cont'>
-                    {isEditing ? (
-                      <div className='employeeExpensesList_edit_submit_btn_cont'>
-                        <button className='employeeExpensesList_edit_submit_btn'>更新</button>
-                      </div>
-                    ) : (
-                      <div></div>
-                    )}
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -606,6 +600,11 @@ const EmployeeExpensesList: React.FC = () => {
           onConfirm={handleDelete}
           onCancel={closeModal}
           message={translate('deleteMessage', language)}
+        />
+        <CrudModal
+          isCRUDOpen={isCRUDOpen}
+          onClose={closeModal}
+          message={crudMessage}
         />
       </div>
     )

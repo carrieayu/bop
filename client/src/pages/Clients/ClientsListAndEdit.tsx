@@ -9,6 +9,7 @@ import AlertModal from "../../components/AlertModal/AlertModal";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import ListButtons from "../../components/ListButtons/ListButtons";
 import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
+import CrudModal from "../../components/CrudModal/CrudModal";
 
 const ClientsListAndEdit: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -30,6 +31,10 @@ const ClientsListAndEdit: React.FC = () => {
     const [selectedClient, setSelectedClient] = useState<any>(null);
 
     const totalPages = Math.ceil(100 / 10);
+
+    const [isCRUDOpen, setIsCRUDOpen] = useState(false);
+    const [crudMessage, setCrudMessage] = useState('');
+    const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
 
     const handleTabClick = (tab) => {
         setActiveTab(tab)
@@ -95,14 +100,14 @@ const ClientsListAndEdit: React.FC = () => {
       })
     }
 
-    const handleSubmit = async (e) => {
-      e.preventDefault()
+    const handleSubmit = async () => {
 
       // Extract client names from updatedClients
       const clientNames = updatedClients.map((cl) => cl.client_name)
       // Check no inputs are empty on Edit Screen
       if (!validateClient(updatedClients)) {
-        alert(translate('allFieldsRequiredInputValidationMessage', language))
+        setCrudMessage(translate('allFieldsRequiredInputValidationMessage', language));
+        setIsCRUDOpen(true);
         return
       }
 
@@ -144,14 +149,16 @@ const ClientsListAndEdit: React.FC = () => {
             Authorization: `Bearer ${token}`,
           },
         })
-        alert('Sucessfully updated')
-        window.location.reload()
+        setCrudMessage(translate('successfullyUpdated', language));
+        setIsCRUDOpen(true);
+        setIsEditing(false);
       } catch (error) {
         if (error.response) {
           const { status, data } = error.response
           switch (status) {
             case 409:
-              alert(translate('clientNameExistsUpdateValidationMessage', language))
+              setCrudMessage(translate('clientNameExistsUpdateValidationMessage', language));
+              setIsCRUDOpen(true);
               break
             case 401:
               console.error('Validation error:', data)
@@ -159,12 +166,18 @@ const ClientsListAndEdit: React.FC = () => {
               break
             default:
               console.error('There was an error updating the clients data!', error)
-              alert(translate('error', language))
+              setCrudMessage(translate('error', language));
+              setIsCRUDOpen(true);
               break
           }
         }
       }
     }
+
+    const handleUpdateConfirm = async () => {
+      await handleSubmit(); // Call the submit function for update
+      setIsUpdateConfirmationOpen(false);
+  };
     
 
     useEffect(() => {
@@ -229,6 +242,7 @@ const ClientsListAndEdit: React.FC = () => {
     const closeModal = () => {
         setSelectedClient(null);
         setModalIsOpen(false);
+        setIsCRUDOpen(false);
     };
 
     const handleConfirm = async () => {
@@ -236,9 +250,12 @@ const ClientsListAndEdit: React.FC = () => {
       console.log('Confirmed action for project:', deleteId)
       try {
         const response = await axios.delete(`http://127.0.0.1:8000/api/master-client/${deleteId}/delete/`, {
-          // const response = await axios.get(`http://54.178.202.58:8000/api/master-client/${deleteId}/delete/`, {
+        // const response = await axios.delete(`http://54.178.202.58:8000/api/master-client/${deleteId}/delete/`, {
         })
         setUpdatedClients((prevList) => prevList.filter((client) => client.client_id !== deleteId))
+        setCrudMessage(translate('successfullyDeleted', language));
+        setIsCRUDOpen(true);
+        setIsEditing(false);
       } catch (error) {
         if (error.response && error.response.status === 401) {
           window.location.href = '/login'
@@ -246,7 +263,6 @@ const ClientsListAndEdit: React.FC = () => {
           console.error('Error deleting client:', error)
         }
       }
-      closeModal()
     }
 
     const handleNewRegistrationClick = () => {
@@ -403,7 +419,7 @@ const ClientsListAndEdit: React.FC = () => {
                 <div className='ClientsListAndEdit_is_editing_cont'>
                   {isEditing ? (
                     <div className='ClientsListAndEdit_edit_submit_btn_cont'>
-                      <button className='ClientsListAndEdit_edit_submit_btn' onClick={handleSubmit}>
+                      <button className='ClientsListAndEdit_edit_submit_btn' onClick={() => {setIsUpdateConfirmationOpen(true)}}>
                         更新
                       </button>
                     </div>
@@ -421,6 +437,17 @@ const ClientsListAndEdit: React.FC = () => {
         onConfirm={handleConfirm}
         onCancel={closeModal}
         message={translate('clientDeleteMessage', language)}
+      />
+      <CrudModal
+        isCRUDOpen={isCRUDOpen}
+        onClose={closeModal}
+        message={crudMessage}
+      />
+      <AlertModal
+        isOpen={isUpdateConfirmationOpen}
+        onConfirm={handleUpdateConfirm}
+        onCancel={() => setIsUpdateConfirmationOpen(false)}
+        message={translate('updateMessage', language)}
       />
     </div>
   )

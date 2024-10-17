@@ -8,7 +8,7 @@ import RegistrationButtons from '../../components/RegistrationButtons/Registrati
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import axios from 'axios'
 import AlertModal from '../../components/AlertModal/AlertModal'
-
+import CrudModal from '../../components/CrudModal/CrudModal'
 
 const ClientsRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -26,6 +26,9 @@ const ClientsRegistration = () => {
           auth_user:'',
         },
       ])
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
 
     const handleTabClick = (tab) => {
         setActiveTab(tab)
@@ -109,12 +112,14 @@ const ClientsRegistration = () => {
         const hasDuplicates = clientNames.some((name, index) => clientNames.indexOf(name) !== index)
 
         if (!validateClient(clientData)) {
-          alert(translate('allFieldsRequiredInputValidationMessage', language))
+          setModalMessage(translate('allFieldsRequiredInputValidationMessage', language));
+          setIsModalOpen(true);
           return
         }
 
         if (hasDuplicates) {
-          alert(translate('clientDuplicateNameInputValidationMessage', language))
+          setModalMessage(translate('clientDuplicateNameInputValidationMessage', language));
+          setIsModalOpen(true);
           return
         }
         
@@ -127,14 +132,15 @@ const ClientsRegistration = () => {
               Authorization: `Bearer ${token}`,
             },
           })
-          alert('Saved')
-          window.location.reload()
+          setModalMessage(translate('successfullySaved', language));
+          setIsModalOpen(true);
         } catch (error) {
           if (error.response) {
             const { status, data } = error.response
             switch (status) {
               case 409:
-                alert(translate('clientNameExistsValidationMessage', language))
+                setModalMessage(translate('clientNameExistsValidationMessage', language));
+                setIsModalOpen(true);
                 break
               case 401:
                 console.error('Validation error:', data)
@@ -142,7 +148,8 @@ const ClientsRegistration = () => {
                 break
               default:
                 console.error('There was an error creating the client data!', error)
-                alert(translate('error', language))
+                setModalMessage(translate('error', language));
+                setIsModalOpen(true);
                 break
             }
           }
@@ -258,6 +265,11 @@ const ClientsRegistration = () => {
         onConfirm={handleRemoveInputData}
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
+      />
+      <CrudModal
+        message={modalMessage}
+        onClose={() => setIsModalOpen(false)}
+        isCRUDOpen={isModalOpen}
       />
     </div>
   )

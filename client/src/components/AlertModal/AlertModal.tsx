@@ -12,65 +12,65 @@ interface AlertModalProps {
 
 const AlertModal: React.FC<AlertModalProps> = ({ message, onConfirm, onCancel, isOpen }) => {
     const { language } = useLanguage();
-    const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
+    const [showConfirmConfirmation, setShowConfirmConfirmation] = useState(false);
     
     if (!isOpen) return null;
 
-    const handleCancelClick = () => {
-        setShowCancelConfirmation(true);
+    const handleConfirmClick = () => {
+        setShowConfirmConfirmation(true);
     };
 
-    const handleConfirmCancel = () => {
-        setShowCancelConfirmation(false);  
-        onCancel();  
+    const handleConfirmAccept = () => {
+        setShowConfirmConfirmation(false);  
+        onConfirm();  
     };
 
-    const handleRejectCancel = () => {
-        setShowCancelConfirmation(false); 
+    const handleRejectConfirm = () => {
+        setShowConfirmConfirmation(false); 
     };
 
     return (
         <div>
-        <div className="alert-modal-overlay">
-            <div className="alert-modal-content">
-                <p className="alert-modal-message">
-                    {message}
-                </p>
-                <div className="alert-modal-buttons">
-                    <Btn
-                        label={translate('confirm', language)}
-                        onClick={onConfirm}
-                        className="btn-confirm"
-                    />
-                    <Btn
-                        label={translate('cancel', language)}
-                        onClick={handleCancelClick}
-                        className="btn-cancel"
-                    />
-                </div>
-            </div>
-        </div>
-        {showCancelConfirmation && (
             <div className="alert-modal-overlay">
                 <div className="alert-modal-content">
                     <p className="alert-modal-message">
-                        {translate('cancelMessage', language)}
+                        {message}
                     </p>
                     <div className="alert-modal-buttons">
                         <Btn
-                            label={translate('accept', language)}
-                            onClick={handleConfirmCancel}
+                            label={translate('confirm', language)}
+                            onClick={handleConfirmClick}
                             className="btn-confirm"
                         />
                         <Btn
-                            label={translate('reject', language)}
-                            onClick={handleRejectCancel}
+                            label={translate('cancel', language)}
+                            onClick={onCancel}
                             className="btn-cancel"
                         />
                     </div>
                 </div>
             </div>
-        )}
+            {showConfirmConfirmation && (
+                <div className="alert-modal-overlay">
+                    <div className="alert-modal-content">
+                        <p className="alert-modal-message">
+                            {translate('confirmationMessage', language)}
+                        </p>
+                        <div className="alert-modal-buttons">
+                            <Btn
+                                label={translate('accept', language)}
+                                onClick={handleConfirmAccept}
+                                className="btn-confirm"
+                            />
+                            <Btn
+                                label={translate('reject', language)}
+                                onClick={handleRejectConfirm}
+                                className="btn-cancel"
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

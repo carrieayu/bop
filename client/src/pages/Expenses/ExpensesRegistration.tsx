@@ -8,7 +8,7 @@ import { translate } from '../../utils/translationUtil'
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import AlertModal from '../../components/AlertModal/AlertModal'
-
+import CrudModal from '../../components/CrudModal/CrudModal'
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -43,6 +43,11 @@ const ExpensesRegistration = () => {
       updated_at: '',
     },
   ])
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false); 
+  const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false);
 
   const handleTranslationSwitchToggle = () => {
      const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
@@ -99,10 +104,11 @@ const ExpensesRegistration = () => {
     }
   }, [location.pathname])
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
 
-    const expensesData = formData.map((ex) => ({
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+     const expensesData = formData.map((ex) => ({
       year: ex.year,
       month: ex.month,
       consumable_expense: ex.consumable_expense,
@@ -135,7 +141,8 @@ const ExpensesRegistration = () => {
     )
 
      if (areFieldsEmpty) {
-       alert(translate('allFieldsRequiredInputValidationMessage', language))
+        setModalMessage(translate('allFieldsRequiredInputValidationMessage', language));
+        setIsModalOpen(true);
        return
      }
 
@@ -153,25 +160,31 @@ const ExpensesRegistration = () => {
     }
 
     if (hasDuplicateEntries(expenses, 'yearMonth')) {
-      alert(translate('duplicateYearAndMonthInputValidationMessage', language))
+      setModalMessage(translate('duplicateYearAndMonthInputValidationMessage', language));
+      setIsModalOpen(true);
       return
     }
 
+    const token = localStorage.getItem('accessToken');
     if (!token) {
-      window.location.href = '/login'
-      return
+      window.location.href = '/login';
+      return;
     }
+
     try {
+      // Attempt to create a new entry
       const response = await axios.post('http://127.0.0.1:8000/api/expenses/create', formData, {
-        // const response = await axios.post('http://54.178.202.58:8000/api/create/', formData, {
+        // const response = await axios.post('http://54.178.202.58:8000/api/expenses/create', formData, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
       })
+      console.log('Form Data before submission:', formData);
 
-      alert('Successfully Saved')
-      // Reset form data after successful submission
+      setModalMessage(translate('successfullySaved', language));
+      setIsModalOpen(true);
+      // Reset form data after successful save
       setFormData([
         {
           year: '',
@@ -193,46 +206,66 @@ const ExpensesRegistration = () => {
       ])
     } catch (error) {
       if (error.response && error.response.status === 409) {
-        // If there's a conflict (month already exists), prompt the user
-        const confirmOverwrite = window.confirm('選択された月は既にデータが登録されています。 \n上書きしますか？')
-        if (confirmOverwrite) {
-          try {
-            const response = await axios.put('http://127.0.0.1:8000/api/expenses/create', formData, {
-              // const response = await axios.put('http://54.178.202.58:8000/api/expenses/create', formData, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-            })
-            // alert('Data successfully saved/overwritten.');
-            setFormData([
-              {
-                year: '',
-                month: '',
-                tax_and_public_charge: '',
-                communication_expense: '',
-                advertising_expense: '',
-                consumable_expense: '',
-                depreciation_expense: '',
-                utilities_expense: '',
-                entertainment_expense: '',
-                rent_expense: '',
-                travel_expense: '',
-                transaction_fee: '',
-                professional_service_fee: '',
-                registered_user_id: localStorage.getItem('userID'),
-                updated_at: '',
-              },
-            ])
-          } catch (overwriteError) {
-            console.error('Error overwriting data:', overwriteError)
-          }
-        }
+        // Conflict: open the overwrite confirmation modal
+        setModalMessage(translate('alertMessageAbove', language));
+        setIsOverwriteModalOpen(true);
+        return; // Exit the function to wait for user input
       } else {
-        console.error('There was an error with expenses registration!', error)
+        // Handle any other errors
+        console.error('There was an error with expenses registration!', error);
       }
     }
-  }
+  };
+
+  // Handle overwrite confirmation
+  const handleOverwriteConfirmation = async () => {
+    setIsOverwriteModalOpen(false); // Close the overwrite modal
+    setIsOverwriteConfirmed(true); // Set overwrite confirmed state
+
+    // Call the submission method again after confirmation
+    await handleSubmitConfirmed();
+  };
+
+  const handleSubmitConfirmed = async () => {
+    const token = localStorage.getItem('accessToken');
+
+    try {
+      const response = await axios.put('http://127.0.0.1:8000/api/expenses/create', formData, {
+        // const response = await axios.put('http://54.178.202.58:8000/api/expenses/create', formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      })
+
+      setModalMessage(translate('overWrite', language));
+      setIsModalOpen(true);
+      // Reset form data after successful overwrite
+      setFormData([
+        {
+          year: '',
+          month: '',
+          tax_and_public_charge: '',
+          communication_expense: '',
+          advertising_expense: '',
+          consumable_expense: '',
+          depreciation_expense: '',
+          utilities_expense: '',
+          entertainment_expense: '',
+          rent_expense: '',
+          travel_expense: '',
+          transaction_fee: '',
+          professional_service_fee: '',
+          registered_user_id: localStorage.getItem('userID'),
+          updated_at: '',
+        },
+      ])
+    } catch (overwriteError) {
+      console.error('Error overwriting data:', overwriteError);
+    } finally {
+      setIsOverwriteConfirmed(false); // Reset overwrite confirmation
+    }
+  };
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -555,6 +588,17 @@ const ExpensesRegistration = () => {
         onConfirm={handleRemoveInputData}
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
+        />
+      <CrudModal
+        message={modalMessage}
+        onClose={() => setIsModalOpen(false)}
+        isCRUDOpen={isModalOpen}
+      />
+      <AlertModal
+        isOpen={isOverwriteModalOpen}
+        onCancel={() => setIsOverwriteModalOpen(false)}
+        onConfirm={handleOverwriteConfirmation}
+        message={modalMessage}
       />
     </div>
   )

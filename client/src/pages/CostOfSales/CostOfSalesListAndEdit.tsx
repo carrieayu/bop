@@ -10,6 +10,7 @@ import ListButtons from "../../components/ListButtons/ListButtons";
 import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
 import AlertModal from "../../components/AlertModal/AlertModal";
 import { RiDeleteBin6Fill } from "react-icons/ri";
+import CrudModal from "../../components/CrudModal/CrudModal";
 
 
 const CostOfSalesList: React.FC = () => {
@@ -31,6 +32,10 @@ const CostOfSalesList: React.FC = () => {
     const [costOfSales, setCostOfSales] = useState([])
     const [originalCostOfSales, setOriginalCostOfSales] = useState(costOfSales)
     const totalPages = Math.ceil(100 / 10);
+
+    const [isCRUDOpen, setIsCRUDOpen] = useState(false);
+    const [crudMessage, setCrudMessage] = useState('');
+    const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
 
     const handleTabClick = (tab) => {
         setActiveTab(tab)
@@ -87,9 +92,7 @@ const CostOfSalesList: React.FC = () => {
       setCostOfSales(updatedData);
     };
 
-    const handleSubmit = async (e) => {
-      e.preventDefault()
-
+    const handleSubmit = async () => {
 
       const getModifiedFields = (original, updated) => {
         const modifiedFields = []
@@ -140,7 +143,9 @@ const CostOfSalesList: React.FC = () => {
       })
 
       if (areFieldsEmpty) {
-        alert(translate('allFieldsRequiredInputValidationMessage', language))
+        console.log(costOfSales)
+        setCrudMessage(translate('allFieldsRequiredInputValidationMessage', language));
+        setIsCRUDOpen(true);
         return
       }
 
@@ -158,8 +163,9 @@ const CostOfSalesList: React.FC = () => {
           },
         })
         setOriginalCostOfSales(costOfSales)
-        alert('Successfully updated')
-        setIsEditing(false)
+        setCrudMessage(translate('successfullyUpdated', language));
+        setIsCRUDOpen(true);
+        setIsEditing(false);
 
         const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales')
         // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales');
@@ -178,9 +184,12 @@ const CostOfSalesList: React.FC = () => {
         }
       }
     };
+
+    const handleUpdateConfirm = async () => {
+      await handleSubmit(); // Call the submit function for update
+      setIsUpdateConfirmationOpen(false);
+  };
   
-
-
     useEffect(() => {
         const fetchCostOfSales = async () => {
           const token = localStorage.getItem('accessToken');
@@ -269,6 +278,7 @@ const CostOfSalesList: React.FC = () => {
   const closeModal = () => {
       setSelectedCostOfSales(null);
       setModalIsOpen(false);
+      setIsCRUDOpen(false);
   };
 
     const monthNames: { [key: number]: { en: string; jp: string } } = {
@@ -296,9 +306,9 @@ const CostOfSalesList: React.FC = () => {
               }
         })
 
+        setCrudMessage(translate('successfullyDeleted', language));
+        setIsCRUDOpen(true);
         setIsEditing(false);
-
-        alert('Successfully deleted');
 
         const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales');
         // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales');
@@ -310,7 +320,7 @@ const CostOfSalesList: React.FC = () => {
           console.error('Error deleting cost of sale:', error)
         }
       }
-      closeModal();
+      
     };
 
     const handleNewRegistrationClick = () => {
@@ -582,7 +592,7 @@ const CostOfSalesList: React.FC = () => {
                 <div className='costOfSalesList_is_editing_cont'>
                   {isEditing ? (
                     <div className='costOfSalesList_edit_submit_btn_cont'>
-                      <button className='costOfSalesList_edit_submit_btn' onClick={handleSubmit}>
+                      <button className='costOfSalesList_edit_submit_btn' onClick={() => {setIsUpdateConfirmationOpen(true)}}>
                         更新
                       </button>
                     </div>
@@ -600,6 +610,17 @@ const CostOfSalesList: React.FC = () => {
         onConfirm={handleConfirm}
         onCancel={closeModal}
         message={translate('deleteMessage', language)}
+      />
+      <CrudModal
+        isCRUDOpen={isCRUDOpen}
+        onClose={closeModal}
+        message={crudMessage}
+      />
+      <AlertModal
+        isOpen={isUpdateConfirmationOpen}
+        onConfirm={handleUpdateConfirm}
+        onCancel={() => setIsUpdateConfirmationOpen(false)}
+        message={translate('updateMessage', language)}
       />
     </div>
   )
