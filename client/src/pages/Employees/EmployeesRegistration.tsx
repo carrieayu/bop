@@ -11,6 +11,7 @@ import { useDispatch } from 'react-redux'
 import { UnknownAction } from 'redux'
 import { fetchMasterCompany } from '../../reducers/company/companySlice'
 import axios from 'axios'
+import AlertModal from '../../components/AlertModal/AlertModal'
 import { NULL } from 'sass'
 
 const EmployeesRegistration = () => {
@@ -25,6 +26,8 @@ const EmployeesRegistration = () => {
     const [businessDivisionSelection, setBusinessDivisionSelection] = useState<any>([])
     const [selectedCompanyId, setSelectedCompanyId] = useState('')
     const [companySelection, setCompanySelection] = useState<any>([])
+    const [modalIsOpen, setModalIsOpen] = useState(false)
+
     const [employees, setEmployees] = useState([
       {
         last_name: '',
@@ -132,6 +135,35 @@ const EmployeesRegistration = () => {
           default:
             break;
         }
+    }
+    
+    const handleCancel = () => {
+      //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
+      openModal()
+    }
+
+    const handleRemoveInputData = () => {
+      setEmployees([
+        {
+          last_name: '',
+          first_name: '',
+          email: '',
+          salary: '',
+          business_division_name: '',
+          company_name: '',
+          auth_id: '',
+          created_at: '',
+        },
+      ])
+      closeModal()
+    }
+
+    const openModal = () => {
+      setModalIsOpen(true)
+    }
+
+    const closeModal = () => {
+      setModalIsOpen(false)
     }
 
     const handleTranslationSwitchToggle = () => {
@@ -284,96 +316,96 @@ const EmployeesRegistration = () => {
             <div className='EmployeesRegistration_mid_form_cont'>
               <form className='EmployeeRegistration_form_cont' onSubmit={handleSubmit}>
                 <div className='EmployeeRegistration_mid'>
-                {employees.map((container, containerIndex) => (
-                  <div
-                    key={containerIndex}
-                    className={`EmployeesRegistration_form-content ${containerIndex > 0 ? 'EmployeesRegistration_form-content-special' : ''}`}
-                  >
+                  {employees.map((container, containerIndex) => (
                     <div
-                      className={`EmployeesRegistration_form-content ${containerIndex > 0 ? 'EmployeesRegistration_ForImplementationOfHorizontalLineBelow' : ''}`}
-                    ></div>
-                    <div className='EmployeesRegistration_form-div'>
-                      <div className='EmployeesRegistration_left-form-content-div EmployeesRegistration_calc'>
-                        <div className='EmployeesRegistration_last_name-div'>
-                          <label className='last_name'>{translate('lastName', language)}</label>
-                          <input
-                            type='text'
-                            name='last_name'
-                            value={container.last_name}
-                            onChange={(e) => handleInputChange(containerIndex, null, e)}
-                          />
+                      key={containerIndex}
+                      className={`EmployeesRegistration_form-content ${containerIndex > 0 ? 'EmployeesRegistration_form-content-special' : ''}`}
+                    >
+                      <div
+                        className={`EmployeesRegistration_form-content ${containerIndex > 0 ? 'EmployeesRegistration_ForImplementationOfHorizontalLineBelow' : ''}`}
+                      ></div>
+                      <div className='EmployeesRegistration_form-div'>
+                        <div className='EmployeesRegistration_left-form-content-div EmployeesRegistration_calc'>
+                          <div className='EmployeesRegistration_last_name-div'>
+                            <label className='last_name'>{translate('lastName', language)}</label>
+                            <input
+                              type='text'
+                              name='last_name'
+                              value={container.last_name}
+                              onChange={(e) => handleInputChange(containerIndex, null, e)}
+                            />
+                          </div>
+                          <div className='EmployeesRegistration_salary-div'>
+                            <label className='salary'>{translate('salary', language)}</label>
+                            <input
+                              type='number'
+                              name='salary'
+                              value={container.salary}
+                              onChange={(e) => handleInputChange(containerIndex, null, e)}
+                            />
+                          </div>
                         </div>
-                        <div className='EmployeesRegistration_salary-div'>
-                          <label className='salary'>{translate('salary', language)}</label>
-                          <input
-                            type='number'
-                            name='salary'
-                            value={container.salary}
-                            onChange={(e) => handleInputChange(containerIndex, null, e)}
-                          />
-                        </div>
-                      </div>
-                      <div className='EmployeesRegistration_mid-form-content-div EmployeesRegistration_calc'>
-                        <div className='EmployeesRegistration_first_name-div'>
-                          <label className='first_name'>{translate('firstName', language)}</label>
-                          <input
-                            type='text'
-                            name='first_name'
-                            value={container.first_name}
-                            onChange={(e) => handleInputChange(containerIndex, null, e)}
-                          />
-                        </div>
-                        <div className='EmployeesRegistration_company_name-div'>
-                          <label className='EmployeesRegistration_company_name'>
-                            {translate('companyName', language)}
-                          </label>
-                          <select
-                            className='EmployeesRegistration_select-option'
-                            name='company_name'
-                            value={container.company_name}
-                            onChange={(e) => handleCompanyChange(containerIndex, e.target.value)}
+                        <div className='EmployeesRegistration_mid-form-content-div EmployeesRegistration_calc'>
+                          <div className='EmployeesRegistration_first_name-div'>
+                            <label className='first_name'>{translate('firstName', language)}</label>
+                            <input
+                              type='text'
+                              name='first_name'
+                              value={container.first_name}
+                              onChange={(e) => handleInputChange(containerIndex, null, e)}
+                            />
+                          </div>
+                          <div className='EmployeesRegistration_company_name-div'>
+                            <label className='EmployeesRegistration_company_name'>
+                              {translate('companyName', language)}
+                            </label>
+                            <select
+                              className='EmployeesRegistration_select-option'
+                              name='company_name'
+                              value={container.company_name}
+                              onChange={(e) => handleCompanyChange(containerIndex, e.target.value)}
                             >
-                            <option value=''></option>
-                            {companySelection.map((company) => (
-                              <option key={company.company_id} value={company.company_id}>
-                                {company.company_name}
-                              </option>
-                            ))}
-                          </select>
+                              <option value=''></option>
+                              {companySelection.map((company) => (
+                                <option key={company.company_id} value={company.company_id}>
+                                  {company.company_name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
                         </div>
-                      </div>
-                      <div className='EmployeesRegistration_right-form-content-div EmployeesRegistration_calc'>
-                        <div className='EmployeesRegistration_email-div'>
-                          <label className='email'>{translate('email', language)}</label>
-                          <input
-                            type='text'
-                            name='email'
-                            value={container.email}
-                            onChange={(e) => handleInputChange(containerIndex, null, e)}
-                          />
-                        </div>
-                        <div className='EmployeesRegistration_business_division_name-div'>
-                          <label className='EmployeesRegistration_business_division_name'>
-                            {translate('businessDivision', language)}
-                          </label>
-                          <select
-                            className='EmployeesRegistration_select-option'
-                            name='business_division_name'
-                            value={container.business_division_name}
-                            onChange={(e) => handleInputChange(containerIndex, null, e)}
-                          >
-                            <option value=''></option>
-                            {businessDivisionSelection.map((division) => (
-                              <option key={division.business_division_id} value={division.business_division_id}>
-                                {division.business_division_name}
-                              </option>
-                            ))}
-                          </select>
+                        <div className='EmployeesRegistration_right-form-content-div EmployeesRegistration_calc'>
+                          <div className='EmployeesRegistration_email-div'>
+                            <label className='email'>{translate('email', language)}</label>
+                            <input
+                              type='text'
+                              name='email'
+                              value={container.email}
+                              onChange={(e) => handleInputChange(containerIndex, null, e)}
+                            />
+                          </div>
+                          <div className='EmployeesRegistration_business_division_name-div'>
+                            <label className='EmployeesRegistration_business_division_name'>
+                              {translate('businessDivision', language)}
+                            </label>
+                            <select
+                              className='EmployeesRegistration_select-option'
+                              name='business_division_name'
+                              value={container.business_division_name}
+                              onChange={(e) => handleInputChange(containerIndex, null, e)}
+                            >
+                              <option value=''></option>
+                              {businessDivisionSelection.map((division) => (
+                                <option key={division.business_division_id} value={division.business_division_id}>
+                                  {division.business_division_name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
                 </div>
                 <div className='EmployeesRegistration_lower_form_cont'>
                   <div className='EmployeesRegistration_form-btn-content'>
@@ -386,7 +418,7 @@ const EmployeesRegistration = () => {
                       </button>
                     </div>
                     <div className='EmployeesRegistration_options-btn'>
-                      <button type='button' className='button is-light'>
+                      <button type='button' className='button is-light' onClick={handleCancel}>
                         {translate('cancel', language)}
                       </button>
                       <button type='submit' className='button is-info'>
@@ -400,6 +432,12 @@ const EmployeesRegistration = () => {
           </div>
         </div>
       </div>
+      <AlertModal
+        isOpen={modalIsOpen}
+        onConfirm={handleRemoveInputData}
+        onCancel={closeModal}
+        message={translate('cancelCreation', language)}
+      />
     </div>
   )
 }

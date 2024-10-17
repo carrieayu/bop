@@ -7,6 +7,8 @@ import Sidebar from '../../components/Sidebar/Sidebar'
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import axios from 'axios'
+import AlertModal from '../../components/AlertModal/AlertModal'
+
 
 const BusinessDivisionsRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -19,9 +21,10 @@ const BusinessDivisionsRegistration = () => {
     const [companyList, setCompanyList] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState('');
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
-    
     const [businessDivisionName, setBusinessDivisionName] = useState('');
     const [authUserID] = useState(storedUserID);
+    const [modalIsOpen, setModalIsOpen] = useState(false)
+
     const [formData, setFormData] = useState([
         {
           business_division_name: '',
@@ -53,6 +56,30 @@ const BusinessDivisionsRegistration = () => {
           default:
             break;
         }
+    }
+  
+    const handleCancel = () => {
+      //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
+      openModal()
+    }
+
+    const handleRemoveInputData = () => {
+      setFormData([
+        {
+          business_division_name: '',
+          company_id: '',
+          auth_user_id: authUserID,
+        },
+      ])
+      closeModal()
+    }
+
+    const openModal = () => {
+      setModalIsOpen(true)
+    }
+
+    const closeModal = () => {
+      setModalIsOpen(false)
     }
 
     const handleTranslationSwitchToggle = () => {
@@ -286,7 +313,7 @@ const BusinessDivisionsRegistration = () => {
                     </button>
                   </div>
                   <div className='BusinessDivisionsRegistration_options-btn'>
-                    <button type='button' className='button is-light'>
+                    <button type='button' className='button is-light' onClick={handleCancel}>
                       {translate('cancel', language)}
                     </button>
                     <button type='submit' className='button is-info'>
@@ -299,6 +326,12 @@ const BusinessDivisionsRegistration = () => {
           </div>
         </div>
       </div>
+      <AlertModal
+        isOpen={modalIsOpen}
+        onConfirm={handleRemoveInputData}
+        onCancel={closeModal}
+        message={translate('cancelCreation', language)}
+      />
     </div>
   )
 }
