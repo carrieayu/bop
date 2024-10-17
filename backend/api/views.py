@@ -171,7 +171,7 @@ class EmployeesUpdate(generics.UpdateAPIView):
     def update(self, request, *args, **kwargs):
         received_data = request.data
         try:
-            for employee_data in received_data: 
+            for index, employee_data in received_data.items():
                 employee_id = employee_data.get('employee', {}).get('employee_id')
                 try:
                     employee = EmployeesApi.objects.get(employee_id=employee_id)
