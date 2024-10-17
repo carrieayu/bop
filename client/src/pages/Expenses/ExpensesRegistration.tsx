@@ -347,10 +347,10 @@ const ExpensesRegistration = () => {
                 { labelKey: 'costOfSales', tabKey: 'costOfSales' },
               ]}
             />
-            </div>
-            <div className='expensesRegistration_mid_body_cont'>
-              <form className='expensesRegistration_inputs_and_buttons'onSubmit={handleSubmit}>
-                <div className='expensesRegistration_mid_form_cont'>
+          </div>
+          <div className='expensesRegistration_mid_body_cont'>
+            <form className='expensesRegistration_inputs_and_buttons' onSubmit={handleSubmit}>
+              <div className='expensesRegistration_mid_form_cont'>
                 {formData.map((form, index) => (
                   <div
                     key={index}
@@ -526,27 +526,27 @@ const ExpensesRegistration = () => {
                   </div>
                 ))}
               </div>
-                <div className='expensesRegistration_lower_form_cont'>
-                  <div className='expensesRegistration_form-content'>
-                    <div className='expensesRegistration_plus-btn'>
-                      <button className='expensesRegistration_inc' type='button' onClick={handleAdd}>
-                        +
-                      </button>
-                      <button className='expensesRegistration_dec' type='button' onClick={handleMinus}>
-                        -
-                      </button>
-                    </div>
-                    <div className='expensesRegistration_options-btn'>
-                      <button type='button' className='button is-light'>
-                        {translate('cancel', language)}
-                      </button>
-                      <button type='submit' className='button is-info'>
-                        {translate('submit', language)}
-                      </button>
-                    </div>
+              <div className='expensesRegistration_lower_form_cont'>
+                <div className='expensesRegistration_form-content'>
+                  <div className='expensesRegistration_plus-btn'>
+                    <button className='expensesRegistration_inc' type='button' onClick={handleAdd}>
+                      +
+                    </button>
+                    <button className='expensesRegistration_dec' type='button' onClick={handleMinus}>
+                      -
+                    </button>
+                  </div>
+                  <div className='expensesRegistration_options-btn'>
+                    <button type='button' className='button is-light' onClick={handleCancel}>
+                      {translate('cancel', language)}
+                    </button>
+                    <button type='submit' className='button is-info'>
+                      {translate('submit', language)}
+                    </button>
                   </div>
                 </div>
-              </form>
+              </div>
+            </form>
           </div>
         </div>
       </div>

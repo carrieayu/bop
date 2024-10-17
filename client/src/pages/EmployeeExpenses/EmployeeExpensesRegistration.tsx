@@ -443,31 +443,32 @@ const EmployeeExpensesRegistration = () => {
                   </div>
                 ))}
               </div>
-                <div className='employeeExpensesRegistration_cont-footer'>
-                  <div className='employeeExpensesRegistration_btn-plusminus'>
-                    <button
-                      className='employeeExpensesRegistration_plus-btn'
-                      type='button'
-                      onClick={addEmployeeContainer}>
+              <div className='employeeExpensesRegistration_cont-footer'>
+                <div className='employeeExpensesRegistration_btn-plusminus'>
+                  <button
+                    className='employeeExpensesRegistration_plus-btn'
+                    type='button'
+                    onClick={addEmployeeContainer}
+                  >
                     +
-                    </button>
-                    <button
-                      className='employeeExpensesRegistration_minus-btn'
-                      type='button'
-                      onClick={removeEmployeeContainer}
-                    >
+                  </button>
+                  <button
+                    className='employeeExpensesRegistration_minus-btn'
+                    type='button'
+                    onClick={removeEmployeeContainer}
+                  >
                     -
                   </button>
-                  </div>
-                  <div className='employeeExpensesRegistration_btn-subcancel'>
-                    <button type='button' className='button is-light'>
-                      {translate('cancel', language)}
-                    </button>
-                    <button type='submit' className='button is-info'>
-                      {translate('submit', language)}
-                    </button>
-                  </div>
                 </div>
+                <div className='employeeExpensesRegistration_btn-subcancel'>
+                  <button type='button' className='button is-light' onClick={handleCancel}>
+                    {translate('cancel', language)}
+                  </button>
+                  <button type='submit' className='button is-info'>
+                    {translate('submit', language)}
+                  </button>
+                </div>
+              </div>
             </form>
           </div>
         </div>

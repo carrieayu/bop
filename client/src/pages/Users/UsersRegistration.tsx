@@ -333,18 +333,18 @@ const UsersRegistration = () => {
                   <input type='hidden' name='auth_user_id' value='' />
                 </div>
               </div>
-                <div className='UsersRegistration_lower_form_cont'>
-                  <div className='UsersRegistration_form-btn-content'>
-                    <div className='UsersRegistration_options-btn'>
-                      <button type='button' className='button is-light'>
-                        {translate('cancel', language)}
-                      </button>
-                      <button type='submit' className='button is-info'>
-                        {translate('submit', language)}
-                      </button>
-                    </div>
+              <div className='UsersRegistration_lower_form_cont'>
+                <div className='UsersRegistration_form-btn-content'>
+                  <div className='UsersRegistration_options-btn'>
+                    <button type='button' className='button is-light' onClick={handleCancel}>
+                      {translate('cancel', language)}
+                    </button>
+                    <button type='submit' className='button is-info'>
+                      {translate('submit', language)}
+                    </button>
                   </div>
                 </div>
+              </div>
             </form>
           </div>
         </div>
