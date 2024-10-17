@@ -366,8 +366,7 @@ const ProjectsRegistration = () => {
       <div className='projectsRegistration_content_wrapper'>
         <Sidebar />
         <div className='projectsRegistration_data_content'>
-          <div className='projectsRegistration_top_body_cont'></div>
-          <div className='projectsRegistration_mid_body_cont'>
+          <div className='projectsRegistration_top_body_cont'>
             <RegistrationButtons
               activeTabOther={activeTabOther}
               message={translate('projectsRegistration', language)}
@@ -379,8 +378,10 @@ const ProjectsRegistration = () => {
                 { labelKey: 'costOfSales', tabKey: 'costOfSales' },
               ]}
             />
-            <div className='projectsRegistration_mid_form_cont'>
-              <form onSubmit={handleSubmit}>
+          </div>
+          <div className='projectsRegistration_mid_body_cont'>
+            <form className='projectsRegistration_inputs_and_buttons' onSubmit={handleSubmit}>
+              <div className='projectsRegistration_mid_form_cont'>
                 {formProjects.map((form, index) => (
                   <div
                     key={index}
@@ -462,17 +463,6 @@ const ProjectsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='projectsRegistration_ordinary-income-margin-div'>
-                          <label className='projectsRegistration_ordinary-income-margin'>
-                            {translate('ordinaryIncomeProfitMargin', language)}
-                          </label>
-                          <input
-                            type='number'
-                            name='ordinary_profit_margin'
-                            value={form.ordinary_profit_margin}
-                            onChange={(e) => handleChange(index, e)}
-                          />
-                        </div>
                       </div>
 
                       <div className='projectsRegistration_middle-form-div projectsRegistration_calc'>
@@ -538,6 +528,17 @@ const ProjectsRegistration = () => {
                             type='number'
                             name='non_operating_profit'
                             value={form.non_operating_profit}
+                            onChange={(e) => handleChange(index, e)}
+                          />
+                        </div>
+                        <div className='projectsRegistration_ordinary-income-margin-div'>
+                          <label className='projectsRegistration_ordinary-income-margin'>
+                            {translate('ordinaryIncomeProfitMargin', language)}
+                          </label>
+                          <input
+                            type='number'
+                            name='ordinary_profit_margin'
+                            value={form.ordinary_profit_margin}
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
@@ -616,6 +617,8 @@ const ProjectsRegistration = () => {
                     {/* <input type='hidden' name='registered_user_id' value={form.registered_user_id} />  */}
                   </div>
                 ))}
+              </div>
+              <div className='projectsRegistration_lower_form_cont'>
                 <div className='projectsRegistration_form-content'>
                   <div className='projectsRegistration_plus-btn'>
                     <button className='projectsRegistration_inc' type='button' onClick={handleAdd}>
@@ -634,8 +637,8 @@ const ProjectsRegistration = () => {
                     </button>
                   </div>
                 </div>
-              </form>
-            </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>

@@ -91,7 +91,7 @@
   "cancelMessage": "キャンセルするのはよろしいでしょうか?",
   "reject": "いいえ",
   "accept": "はい",
-  "projectType": "プロジェクト・タイプ",
+  "projectType": "種類", 
   "projectNameExist": "入力された案件名は既に存在されています。他の名を選択してください。",
   "error": "エラーがありました。",
   "logout" : "ログアウトしてもよろしいですか？ はい/いいえ",

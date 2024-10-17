@@ -210,8 +210,7 @@ const UsersRegistration = () => {
       <div className='UsersRegistration_content_wrapper'>
         <Sidebar />
         <div className='UsersRegistration_data_content'>
-          <div className='UsersRegistration_top_body_cont'></div>
-          <div className='UsersRegistration_mid_body_cont'>
+          <div className='UsersRegistration_top_body_cont'>
             <RegistrationButtons
               activeTabOther={activeTabOther}
               message={translate('usersRegistration', language)}
@@ -223,8 +222,10 @@ const UsersRegistration = () => {
                 { labelKey: 'users', tabKey: 'users' },
               ]}
             />
-            <div className='UsersRegistration_mid_form_cont'>
-              <form onSubmit={handleSubmit}>
+          </div>
+          <div className='UsersRegistration_mid_body_cont'>
+            <form className='UsersRegistration_inputs_and_buttons' onSubmit={handleSubmit}>
+              <div className='UsersRegistration_mid_form_cont'>
                 <div key='' className='UsersRegistration_top-form-input-div'>
                   <div className='UsersRegistration_username-div'>
                     <label className='username'>{translate('username', language)}</label>
@@ -331,18 +332,20 @@ const UsersRegistration = () => {
                   </div>
                   <input type='hidden' name='auth_user_id' value='' />
                 </div>
-                <div className='UsersRegistration_form-btn-content'>
-                  <div className='UsersRegistration_options-btn'>
-                    <button type='button' className='button is-light' onClick={handleCancel}>
-                      {translate('cancel', language)}
-                    </button>
-                    <button type='submit' className='button is-info'>
-                      {translate('submit', language)}
-                    </button>
+              </div>
+                <div className='UsersRegistration_lower_form_cont'>
+                  <div className='UsersRegistration_form-btn-content'>
+                    <div className='UsersRegistration_options-btn'>
+                      <button type='button' className='button is-light'>
+                        {translate('cancel', language)}
+                      </button>
+                      <button type='submit' className='button is-info'>
+                        {translate('submit', language)}
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </form>
-            </div>
+            </form>
           </div>
         </div>
       </div>

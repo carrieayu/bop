@@ -308,16 +308,17 @@ const ExpensesList: React.FC = () => {
   }
 
   return (
-    <div className='expensesList_wrapper'>
+    <div className={'expensesList_wrapper'}>
       <HeaderButtons
         activeTab={activeTab}
         handleTabClick={handleTabClick}
         isTranslateSwitchActive={isTranslateSwitchActive}
         handleTranslationSwitchToggle={handleTranslationSwitchToggle}
       />
-      <div className='expensesList_cont_wrapper'>
+      <div className={'expensesList_cont_wrapper'}>
         <Sidebar />
-        <div className='expensesList_btn_cont_wrapper'>
+        <div className={`expensesList_wrapper ${isEditing ? 'editMode' : ''}`}>
+          {/* <div className='expensesList_btn_cont_wrapper'> */}
           <div className='expensesList_top_content'>
             <div className='expensesList_top_body_cont'>
               <div className='expensesList_mode_switch_datalist'>
@@ -329,7 +330,7 @@ const ExpensesList: React.FC = () => {
             <div className='expensesList_mid_body_cont'>
               <ListButtons
                 activeTabOther={activeTabOther}
-                message={translate(isEditing? 'expensesEdit':'expensesList', language)}
+                message={translate(isEditing ? 'expensesEdit' : 'expensesList', language)}
                 handleTabsClick={handleTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
@@ -339,12 +340,13 @@ const ExpensesList: React.FC = () => {
                   { labelKey: 'costOfSales', tabKey: 'costOfSales' },
                 ]}
               />
-              <div className='expensesList_table_wrapper'>
-                <div className='expensesList_table_cont'>
-                  <div className='columns is-mobile'>
-                    <div className='column'>
+              <div className={`expensesList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
+                <div className={`expensesList_table_cont ${isEditing ? 'editScrollable' : ''}`}>
+                  {/* <div className='expensesList_table_cont'> */}
+                  {/* <div className='columns is-mobile'> */}
+                    {/* <div className='column'> */}
                       {isEditing ? (
-                        <div>
+                        <div className='editScroll'>
                           <table className='table is-bordered is-hoverable'>
                             <thead>
                               <tr className='expensesList_table_title '>
@@ -392,12 +394,12 @@ const ExpensesList: React.FC = () => {
                             </thead>
                             <tbody className='expensesList_table_body'>
                               {combinedData.map((expense, index) => {
-                                const isNewYear = index === 0 || combinedData[index - 1].year !== expense.year;
+                                const isNewYear = index === 0 || combinedData[index - 1].year !== expense.year
                                 const isLastExpenseOfYear =
-                                  (index !== combinedData.length - 1 && combinedData[index + 1].year !== expense.year);
+                                  index !== combinedData.length - 1 && combinedData[index + 1].year !== expense.year
 
-                                const isEditable = expense.expense_id !== null;
-                                                      
+                                const isEditable = expense.expense_id !== null
+
                                 return (
                                   <React.Fragment key={index}>
                                     {expense ? (
@@ -525,7 +527,7 @@ const ExpensesList: React.FC = () => {
                                       </tr>
                                     )}
                                   </React.Fragment>
-                                )                    
+                                )
                               })}
                             </tbody>
                           </table>
@@ -542,85 +544,87 @@ const ExpensesList: React.FC = () => {
                             </tr>
                           </thead>
                           <tbody className='expensesList_table_body'>
-                              {combinedData.map((expense, index) => {
-                                const isNewYear = index === 0 || combinedData[index - 1].year !== expense.year;
-                                const isLastExpenseOfYear =
-                                  (index !== combinedData.length - 1 && combinedData[index + 1].year !== expense.year);
+                            {combinedData.map((expense, index) => {
+                              const isNewYear = index === 0 || combinedData[index - 1].year !== expense.year
+                              const isLastExpenseOfYear =
+                                index !== combinedData.length - 1 && combinedData[index + 1].year !== expense.year
 
-                                return (
-                                  <React.Fragment key={index}>
-                                    <tr className='expensesList_table_body_content_horizontal'>
-                                      <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                        {expense.year}
-                                      </td>
-                                      <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                        {expense.month}
-                                      </td>
-                                      <td className='expensesList_table_body_content_vertical'>
-                                        {expense.consumable_expense || 0}
-                                      </td>
-                                      <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                        {expense.rent_expense || 0}
-                                      </td>
-                                      <td className='expensesList_table_body_content_vertical has-text-right'>
-                                        {expense.tax_and_public_charge || 0}
-                                      </td>
-                                      <td className='expensesList_table_body_content_vertical has-text-right'>
-                                        {expense.depreciation_expense || 0}
-                                      </td>
-                                      <td className='expensesList_table_body_content_vertical has-text-right'>
-                                        {expense.travel_expense || 0}
-                                      </td>
-                                      <td className='expensesList_table_body_content_vertical has-text-right'>
-                                        {expense.communication_expense || 0}
-                                      </td>
-                                      <td className='expensesList_table_body_content_vertical has-text-right'>
-                                        {expense.utilities_expense || 0}
-                                      </td>
-                                      <td className='expensesList_table_body_content_vertical has-text-right'>
-                                        {expense.transaction_fee || 0}
-                                      </td>
-                                      <td className='expensesList_table_body_content_vertical has-text-right'>
-                                        {expense.advertising_expense || 0}
-                                      </td>
-                                      <td className='expensesList_table_body_content_vertical has-text-right'>
-                                        {expense.entertainment_expense || 0}
-                                      </td>
-                                      <td className='expensesList_table_body_content_vertical has-text-right'>
-                                        {expense.professional_service_fee || 0}
+                              return (
+                                <React.Fragment key={index}>
+                                  <tr className='expensesList_table_body_content_horizontal'>
+                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                      {expense.year}
+                                    </td>
+                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                      {expense.month}
+                                    </td>
+                                    <td className='expensesList_table_body_content_vertical'>
+                                      {expense.consumable_expense || 0}
+                                    </td>
+                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                      {expense.rent_expense || 0}
+                                    </td>
+                                    <td className='expensesList_table_body_content_vertical has-text-right'>
+                                      {expense.tax_and_public_charge || 0}
+                                    </td>
+                                    <td className='expensesList_table_body_content_vertical has-text-right'>
+                                      {expense.depreciation_expense || 0}
+                                    </td>
+                                    <td className='expensesList_table_body_content_vertical has-text-right'>
+                                      {expense.travel_expense || 0}
+                                    </td>
+                                    <td className='expensesList_table_body_content_vertical has-text-right'>
+                                      {expense.communication_expense || 0}
+                                    </td>
+                                    <td className='expensesList_table_body_content_vertical has-text-right'>
+                                      {expense.utilities_expense || 0}
+                                    </td>
+                                    <td className='expensesList_table_body_content_vertical has-text-right'>
+                                      {expense.transaction_fee || 0}
+                                    </td>
+                                    <td className='expensesList_table_body_content_vertical has-text-right'>
+                                      {expense.advertising_expense || 0}
+                                    </td>
+                                    <td className='expensesList_table_body_content_vertical has-text-right'>
+                                      {expense.entertainment_expense || 0}
+                                    </td>
+                                    <td className='expensesList_table_body_content_vertical has-text-right'>
+                                      {expense.professional_service_fee || 0}
+                                    </td>
+                                  </tr>
+                                  {isLastExpenseOfYear && (
+                                    <tr className='year-separator'>
+                                      <td className='horizontal-line-cell' colSpan={9}>
+                                        <div className='horizontal-line' />
                                       </td>
                                     </tr>
-                                    {isLastExpenseOfYear && (
-                                      <tr className="year-separator">
-                                        <td className="horizontal-line-cell" colSpan={9}>
-                                          <div className="horizontal-line" />
-                                        </td>
-                                      </tr>
-                                    )}
-                                  </React.Fragment>
-                                );
-                              })}
+                                  )}
+                                </React.Fragment>
+                              )
+                            })}
                           </tbody>
                         </table>
                       )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className='expensesList_is_editing_wrapper'>
-                <div className='expensesList_is_editing_cont'>
-                  {isEditing ? (
-                    <div className='expensesList_mode_switch_datalist'>
-                      <button className='expensesList_edit_submit_btn' onClick={handleSubmit}>
-                        更新
-                      </button>
-                    </div>
-                  ) : (
-                    <div></div>
-                  )}
+                    {/* </div> */}
+                    {/* </div> */}
+                  {/* </div> */}
                 </div>
               </div>
             </div>
+            <div className='expensesList_is_editing_wrapper'>
+              <div className='expensesList_is_editing_cont'>
+                {isEditing ? (
+                  <div className='expensesList_edit_submit_btn_cont'>
+                    <button className='expensesList_edit_submit_btn' onClick={handleSubmit}>
+                      更新
+                    </button>
+                  </div>
+                ) : (
+                  <div></div>
+                )}
+              </div>
+            </div>
+            {/* </div> */}
           </div>
         </div>
       </div>

@@ -244,8 +244,7 @@ const BusinessDivisionsRegistration = () => {
       <div className='BusinessDivisionsRegistration_content_wrapper'>
         <Sidebar />
         <div className='BusinessDivisionsRegistration_data_content'>
-          <div className='BusinessDivisionsRegistration_top_body_cont'></div>
-          <div className='BusinessDivisionsRegistration_mid_body_cont'>
+          <div className='BusinessDivisionsRegistration_top_body_cont'>
             <RegistrationButtons
               activeTabOther={activeTabOther}
               message={translate('businessDivisionsRegistration', language)}
@@ -257,14 +256,16 @@ const BusinessDivisionsRegistration = () => {
                 { labelKey: 'users', tabKey: 'users' },
               ]}
             />
-            <div className='BusinessDivisionsRegistration_mid_form_cont'>
-              <form onSubmit={handleSubmit}>
+          </div>
+          <div className='BusinessDivisionsRegistration_mid_body_cont'>
+            <form className='BusinessDivisionsRegistration_inputs_and_buttons' onSubmit={handleSubmit}>
+              <div className='BusinessDivisionsRegistration_mid_form_cont'>
                 {formData.map((form, index) => (
                   <div
                     key={index}
                     className='BusinessDivisionsRegistration_form-content BusinessDivisionsRegistration_ForImplementationOfPlusAndMinus'
                   >
-                    <div className='BusinessDivisionsRegistration_form-content BusinessDivisionsRegistration_ForImplementationOfHorizontalLineBelow'></div>
+                    <div className={`BusinessDivisionsRegistration_form-content ${index > 0 ? 'HorizontalLineBelow': ''}`}></div>
                     <div className='BusinessDivisionsRegistration_form-div'>
                       <div className='BusinessDivisionsRegistration_form-content-div'>
                         <div className='BusinessDivisionsRegistration_business_division_name-div'>
@@ -300,6 +301,8 @@ const BusinessDivisionsRegistration = () => {
                     <input type='hidden' name='auth_user_id' value={form.auth_user_id} />
                   </div>
                 ))}
+              </div>
+              {/* <div className='BusinessDivisionsRegistration_lower_form_cont'> */}
                 <div className='BusinessDivisionsRegistration_form-btn-content'>
                   <div className='BusinessDivisionsRegistration_plus-btn'>
                     <button className='BusinessDivisionsRegistration_inc' type='button' onClick={handleAdd}>
@@ -318,8 +321,8 @@ const BusinessDivisionsRegistration = () => {
                     </button>
                   </div>
                 </div>
-              </form>
-            </div>
+              {/* </div> */}
+            </form>
           </div>
         </div>
       </div>

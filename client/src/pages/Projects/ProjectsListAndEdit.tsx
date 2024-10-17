@@ -350,19 +350,19 @@ const ProjectsListAndEdit: React.FC = () => {
       />
       <div className='projectsList_cont_wrapper'>
         <Sidebar />
-        <div className='projectsList_wrapper'>
+        <div className={`projectsList_wrapper ${isEditing ? 'editMode' : ''}`}>
           <div className='projectsList_top_content'>
             <div className='projectsList_top_body_cont'>
+            </div>
               <div className='projectsList_mode_switch_datalist'>
                 <button className='projectsList_mode_switch' onClick={handleClick}>
                   {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
                 </button>
               </div>
-            </div>
             <div className='projectsList_mid_body_cont'>
               <ListButtons
                 activeTabOther={activeTabOther}
-                message={ translate(isEditing?'projectsEdit': 'projectsList', language)}
+                message={translate(isEditing ? 'projectsEdit' : 'projectsList', language)}
                 handleTabsClick={handleTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
@@ -372,10 +372,11 @@ const ProjectsListAndEdit: React.FC = () => {
                   { labelKey: 'costOfSales', tabKey: 'costOfSales' },
                 ]}
               />
-              <div className='projectsList_table_wrapper'>
+              <div className={`projectsList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                 <div className={`projectsList_table_cont ${isEditing ? 'editScrollable' : ''}`}>
+                  <div>
                   <div className='columns is-mobile'>
-                    <div className='column'>
+                    <div className='column'> 
                       {isEditing ? (
                         <div className='editScroll'>
                           <table className='table is-bordered is-hoverable'>
@@ -709,6 +710,7 @@ const ProjectsListAndEdit: React.FC = () => {
                           </tbody>
                         </table>
                       )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -716,7 +718,7 @@ const ProjectsListAndEdit: React.FC = () => {
               <div className='projectsList_is_editing_wrapper'>
                 <div className='projectsList_is_editing_cont'>
                   {isEditing ? (
-                    <div className='projectsList_mode_switch_datalist'>
+                    <div className='projectsList_edit_submit_btn_cont'>
                       <button className='projectsList_edit_submit_btn' onClick={handleSubmit}>
                         更新
                       </button>

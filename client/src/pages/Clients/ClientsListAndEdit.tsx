@@ -283,7 +283,7 @@ const ClientsListAndEdit: React.FC = () => {
             <div className='ClientsListAndEdit_mid_body_cont'>
               <ListButtons
                 activeTabOther={activeTabOther}
-                message={translate(isEditing? 'clientsEdit':'clientsList', language)}
+                message={translate(isEditing ? 'clientsEdit' : 'clientsList', language)}
                 handleTabsClick={handleTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
@@ -402,7 +402,7 @@ const ClientsListAndEdit: React.FC = () => {
               <div className='ClientsListAndEdit_is_editing_wrapper'>
                 <div className='ClientsListAndEdit_is_editing_cont'>
                   {isEditing ? (
-                    <div className='ClientsListAndEdit_mode_switch_datalist'>
+                    <div className='ClientsListAndEdit_edit_submit_btn_cont'>
                       <button className='ClientsListAndEdit_edit_submit_btn' onClick={handleSubmit}>
                         更新
                       </button>

@@ -305,8 +305,7 @@ const CostOfSalesRegistration = () => {
       <div className='costOfSalesRegistration_content_wrapper'>
         <Sidebar />
         <div className='costOfSalesRegistration_data_content'>
-          <div className='costOfSalesRegistration_top_body_cont'></div>
-          <div className='costOfSalesRegistration_mid_body_cont'>
+          <div className='costOfSalesRegistration_top_body_cont'>
             <RegistrationButtons
               activeTabOther={activeTabOther}
               message={translate('costOfSalesRegistration', language)}
@@ -318,8 +317,10 @@ const CostOfSalesRegistration = () => {
                 { labelKey: 'costOfSales', tabKey: 'costOfSales' },
               ]}
             />
-            <div className='costOfSalesRegistration_mid_form_cont'>
-              <form onSubmit={handleSubmit}>
+          </div>
+          <div className='costOfSalesRegistration_mid_body_cont'>
+            <form className='costOfSalesRegistration_inputs_and_buttons' onSubmit={handleSubmit}>
+              <div className='costOfSalesRegistration_mid_form_cont'>
                 {formData.map((form, index) => (
                   <div
                     key={index}
@@ -448,6 +449,8 @@ const CostOfSalesRegistration = () => {
                     {/* <input type='hidden' name='registered_user_id' value={form.registered_user_id} /> */}
                   </div>
                 ))}
+              </div>
+              <div className='costOfSalesRegistration_lower_form_cont'>
                 <div className='costOfSalesRegistration_form-content'>
                   <div className='costOfSalesRegistration_plus-btn'>
                     <button className='costOfSalesRegistration_inc' type='button' onClick={handleAdd}>
@@ -466,8 +469,8 @@ const CostOfSalesRegistration = () => {
                     </button>
                   </div>
                 </div>
-              </form>
-            </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>

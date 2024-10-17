@@ -11,413 +11,423 @@
         display: flex;
         background-color: #EFEDEA;
         width: 100vw;
-        height: 130vh;
+        height: 95vh;
         @media only screen and (max-width: 1000px){
             flex-direction: column;
         }
         .projectsRegistration_data_content{
-            width: 80%;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
             margin: 10px 30px 10px 30px;
             border: 1px solid #fff;
             border-radius: 5px;
             background-color: #fff;
             .projectsRegistration_top_body_cont{
+                margin: 2rem 0 0 0;
                 background-color: #fff;
-                height: 4rem;
                 .projectsRegistration_top_btn_cont{
-                    margin-left: 5%;
-                    display: flex;
-                    gap: 2%;
                 }
+            }
+            .projectsRegistration_inputs_and_buttons{
+                display: flex;
+                height: 65vh;
+                justify-content: space-between;
+                flex-direction: column;
             }
             .projectsRegistration_mid_body_cont{
                 background-color: #fff;
-                max-height: 670px;
-                overflow-y: auto; 
-                overflow-x: hidden;
-                scrollbar-width: thin; 
-                scrollbar-color: transparent transparent;
+                height: 90%;
                 @media only screen and (min-width: 1875px){
                     height: 55vh;
-                }
-                &:hover {
-                    scrollbar-color: #888 #EFEDEA; 
-                }
-                &::-webkit-scrollbar {
-                    width: 8px;
-                }
-                &::-webkit-scrollbar-track {
-                    background: transparent; 
-                }
-                &::-webkit-scrollbar-thumb {
-                    background-color: transparent; 
-                    border-radius: 10px;
-                }
-                &:hover::-webkit-scrollbar-thumb {
-                    background-color: #888;
-                }
-                &:hover::-webkit-scrollbar-thumb:hover {
-                    background-color: #555; 
-                }
+                }        
                 .projectsRegistration_mid_form_cont{
-                    margin: -20px 50px;
-                    .projectsRegistration_form-content.projectsRegistration_form-content-special{
-                        padding: 50px 0px 0px 20px;
+                    margin: 0px 40px;
+                    padding: 15px 20px;
+                    background-color: #EFEDEA;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    scrollbar-width: thin; 
+                    scrollbar-color: transparent transparent;
+                    border-radius: 5px;
+                    &:hover {
+                        scrollbar-color: #888 #EFEDEA; 
                     }
-                    .projectsRegistration_form-content.projectsRegistration_form-line {
-                        border-top: 4px solid rgb(183, 183, 183);
-                        opacity: 30%;
+                    &::-webkit-scrollbar {
+                        width: 8px;
                     }
-                    .projectsRegistration_form-content{
-                        padding: 15px 0px 0px 20px;
-                        .projectsRegistration_form-content-div{
-                            display: flex;
-                            .projectsRegistration_calc{
-                                width: calc(100%/3);
-                            }
-                            .projectsRegistration_left-form-div{
-                                .projectsRegistration_year-div{
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .projectsRegistration_year{
-                                        margin-bottom: 5px;
-                                    }
-                                    .projectsRegistration_select-option{
-                                        width: 80%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                        option{
-                                            text-align: left;
-                                        }
-                                    }
-                                }
-                                .projectsRegistration_project-type-div{ 
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .projectsRegistration_project-type{
-                                        margin-bottom: 5px;
-                                    }
-                                    input{
-                                        width: 80%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                    }
-                                }
-                                .projectsRegistration_sales-revenue-div{
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .projectsRegistration_sales-revenue{
-                                        margin-bottom: 5px;
-                                    }
-                                    input{
-                                        width: 80%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                    }
-                                }
-                                .projectsRegistration_employee-expenses-div{ 
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .projectsRegistration_employee-expenses{
-                                        margin-bottom: 5px;
-                                    }
-                                    input{
-                                        width: 80%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                    }
-                                }
-                                .projectsRegistration_operating-income-div{ 
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .projectsRegistration_operating-income{
-                                        margin-bottom: 5px;
-                                    }
-                                    input{
-                                        width: 80%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                    }
-                                }
-                                .projectsRegistration_ordinary-income-div{ 
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .projectsRegistration_ordinary-income{
-                                        margin-bottom: 5px;
-                                    }
-                                    input{
-                                        width: 80%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                    }
-                                }
-                                .projectsRegistration_ordinary-income-margin-div{ 
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .projectsRegistration_ordinary-income-margin{
-                                        margin-bottom: 5px;
-                                    }
-                                    input{
-                                        width: 80%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                    }
-                                }
-                            }
-                            .projectsRegistration_middle-form-div{
-                                .projectsRegistration_project_name-div{ 
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .projectsRegistration_project_name{
-                                        margin-bottom: 5px;
-                                    }
-                                    input{
-                                        width: 80%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                    }
-                                    input::-webkit-outer-spin-button,
-                                    input::-webkit-inner-spin-button {
-                                    -webkit-appearance: none;
-                                    margin: 0;
-                                    }
-                                }
-                                .projectsRegistration_month-div{ 
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .projectsRegistration_month{
-                                        margin-bottom: 5px;
-                                    }
-                                    .projectsRegistration_select-option{
-                                        width: 80%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                    }
-                                }
-                                .projectsRegistration_client-div{ 
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .projectsRegistration_client{
-                                        margin-bottom: 5px;
-                                    }
-                                    .projectsRegistration_select-option{
-                                        width: 80%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                    }
-                                }
-                                .projectsRegistration_cost-of-sale-div{ 
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .projectsRegistration_cost-of-sale{
-                                        margin-bottom: 5px;
-                                    }
-                                    input{
-                                        width: 80%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                    }
-                                    input::-webkit-outer-spin-button,
-                                    input::-webkit-inner-spin-button {
-                                    -webkit-appearance: none;
-                                    margin: 0;
-                                    }
-                                }
-                                .projectsRegistration_indirect-employee-expense-div{ 
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .projectsRegistration_indirect-employee-expense{
-                                        margin-bottom: 5px;
-                                    }
-                                    input{
-                                        width: 80%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                    }
-                                    input::-webkit-outer-spin-button,
-                                    input::-webkit-inner-spin-button {
-                                    -webkit-appearance: none;
-                                    margin: 0;
-                                    }
-                                }
-                                .projectsRegistration_non-operating-income-div{ 
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .projectsRegistration_non-operating-income{
-                                        margin-bottom: 5px;
-                                    }
-                                    input{
-                                        width: 80%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                    }
-                                    input::-webkit-outer-spin-button,
-                                    input::-webkit-inner-spin-button {
-                                    -webkit-appearance: none;
-                                    margin: 0;
-                                    }
-                                }
-                            }
-                            .projectsRegistration_right-form-div{
-                                .projectsRegistration_business_division_name-div{ 
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .projectsRegistration_business_division_name{
-                                        margin-bottom: 5px;
-                                    }
-                                    input{
-                                        width: 80%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                    }
-                                    input::-webkit-outer-spin-button,
-                                    input::-webkit-inner-spin-button {
-                                    -webkit-appearance: none;
-                                    margin: 0;
-                                    }
-                                    
-                                    .projectsRegistration_select-option{
-                                        width: 80%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                    }
-                                }
-                                .projectsRegistration_project-name-div{ 
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .projectsRegistration_project_name{
-                                        margin-bottom: 5px;
-                                    }
-                                    input{
-                                        width: 80%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                    }
-                                    input::-webkit-outer-spin-button,
-                                    input::-webkit-inner-spin-button {
-                                    -webkit-appearance: none;
-                                    margin: 0;
-                                    }
-                                }
-                                // ---------------
-                                .projectsRegistration_dispatch-labor-expense-div{ 
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .projectsRegistration_dispatch-labor-expense{
-                                        margin-bottom: 5px;
-                                    }
-                                    input{
-                                        width: 80%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                    }
-                                    input::-webkit-outer-spin-button,
-                                    input::-webkit-inner-spin-button {
-                                    -webkit-appearance: none;
-                                    margin: 0;
-                                    }
-                                }
-                                // ------------------
-                                // ---------------
-                                .projectsRegistration_expense-div{ 
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .projectsRegistration_expense{
-                                        margin-bottom: 5px;
-                                    }
-                                    input{
-                                        width: 80%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                    }
-                                    input::-webkit-outer-spin-button,
-                                    input::-webkit-inner-spin-button {
-                                    -webkit-appearance: none;
-                                    margin: 0;
-                                    }
-                                }
-                                // ------------------
-                                // ---------------
-                                .projectsRegistration_non-operating-expense-div{ 
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .projectsRegistration_non-operating-expense{
-                                        margin-bottom: 5px;
-                                    }
-                                    input{
-                                        width: 80%;
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                    }
-                                    input::-webkit-outer-spin-button,
-                                    input::-webkit-inner-spin-button {
-                                    -webkit-appearance: none;
-                                    margin: 0;
-                                    }
-                                }
-                                // ------------------
-                            }
+                    &::-webkit-scrollbar-track {
+                        background: transparent; 
                     }
-                        .projectsRegistration_plus-btn{
-                            padding: 20px 10px 20px 10px;
-                            gap: 1rem;
-                            display: flex;
-                            margin-left: 90%;
-                            .projectsRegistration_inc,.projectsRegistration_dec{
-                                background-color: #808080;
-                                color: whitesmoke;
-                                width: 30px;
-                                height: 40px;
-                                font-size: 25px;
-                                border-radius: 5px;
+                    &::-webkit-scrollbar-thumb {
+                        background-color: transparent; 
+                        border-radius: 10px;
+                    }
+                    &:hover::-webkit-scrollbar-thumb {
+                        background-color: #888;
+                    }
+                    &:hover::-webkit-scrollbar-thumb:hover {
+                        background-color: #555; 
+                    }    
+                }
+                // .projectsRegistration_form-content.projectsRegistration_form-content-special{
+                // }
+                .projectsRegistration_form-content.projectsRegistration_form-line {
+                    border-top: 4px solid rgb(183, 183, 183);
+                    margin: 20px 0px 20px 0px;
+                    opacity: 30%;
+                }
+                .projectsRegistration_form-content{
+                    .projectsRegistration_form-content-div{
+                        display: flex;
+                        .projectsRegistration_calc{
+                            width: calc(100%/3);
+                        }
+                        .projectsRegistration_left-form-div{
+                            .projectsRegistration_year-div{
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectsRegistration_year{
+                                    margin-bottom: 5px;
+                                }
+                                .projectsRegistration_select-option{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                    option{
+                                        text-align: left;
+                                    }
+                                }
+                            }
+                            .projectsRegistration_project-type-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectsRegistration_project-type{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                            }
+                            .projectsRegistration_sales-revenue-div{
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectsRegistration_sales-revenue{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                            }
+                            .projectsRegistration_employee-expenses-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectsRegistration_employee-expenses{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                            }
+                            .projectsRegistration_operating-income-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectsRegistration_operating-income{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                            }
+                            .projectsRegistration_ordinary-income-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectsRegistration_ordinary-income{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
                             }
                         }
-                        .projectsRegistration_options-btn{
-                            display: flex;
-                            gap: 1%;
-                            padding: 10px 10px 10px 10px;
-                            align-items: center;
-                            justify-content: center;
-                            button{
-                                width: 10%;
+                        .projectsRegistration_middle-form-div{
+                            .projectsRegistration_project_name-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectsRegistration_project_name{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
                             }
+                            .projectsRegistration_month-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectsRegistration_month{
+                                    margin-bottom: 5px;
+                                }
+                                .projectsRegistration_select-option{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                            }
+                            .projectsRegistration_client-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectsRegistration_client{
+                                    margin-bottom: 5px;
+                                }
+                                .projectsRegistration_select-option{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                            }
+                            .projectsRegistration_cost-of-sale-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectsRegistration_cost-of-sale{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                            .projectsRegistration_indirect-employee-expense-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectsRegistration_indirect-employee-expense{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                            .projectsRegistration_non-operating-income-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectsRegistration_non-operating-income{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                             .projectsRegistration_ordinary-income-margin-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectsRegistration_ordinary-income-margin{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                            }
+                        }
+                        .projectsRegistration_right-form-div{
+                            .projectsRegistration_business_division_name-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectsRegistration_business_division_name{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                                
+                                .projectsRegistration_select-option{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                            }
+                            .projectsRegistration_project-name-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectsRegistration_project_name{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                            // ---------------
+                            .projectsRegistration_dispatch-labor-expense-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectsRegistration_dispatch-labor-expense{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                            // ------------------
+                            // ---------------
+                            .projectsRegistration_expense-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectsRegistration_expense{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                            // ------------------
+                            // ---------------
+                            .projectsRegistration_non-operating-expense-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectsRegistration_non-operating-expense{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                            // ------------------
+                        }
+                    }
+                }
+                .projectsRegistration_lower_form_cont{
+                    padding: 20px;
+                    .projectsRegistration_plus-btn{
+                        padding: 20px 10px 20px 10px;
+                        gap: 1rem;
+                        display: flex;
+                        margin-left: 90%;
+                        .projectsRegistration_inc,.projectsRegistration_dec{
+                            background-color: #808080;
+                            color: whitesmoke;
+                            width: 30px;
+                            height: 40px;
+                            font-size: 25px;
+                            border-radius: 5px;
+                        }
+                    }
+                    .projectsRegistration_options-btn{
+                        display: flex;
+                        gap: 1%;
+                        padding: 10px 10px 10px 10px;
+                        align-items: center;
+                        justify-content: center;
+                        button{
+                            width: 10%;
                         }
                     }
                 }

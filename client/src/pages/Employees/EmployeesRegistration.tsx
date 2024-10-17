@@ -299,21 +299,23 @@ const EmployeesRegistration = () => {
       <div className='EmployeesRegistration_content_wrapper'>
         <Sidebar />
         <div className='EmployeesRegistration_data_content'>
-          <div className='EmployeesRegistration_top_body_cont'></div>
           <div className='EmployeesRegistration_mid_body_cont'>
-            <RegistrationButtons
-              activeTabOther={activeTabOther}
-              message={translate('employeesRegistration', language)}
-              handleTabsClick={handleTabsClick}
-              buttonConfig={[
-                { labelKey: 'client', tabKey: 'client' },
-                { labelKey: 'employee', tabKey: 'employee' },
-                { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                { labelKey: 'users', tabKey: 'users' },
-              ]}
-            />
+            <div className='EmployeesRegistration_top_body_cont'>
+              <RegistrationButtons
+                activeTabOther={activeTabOther}
+                message={translate('employeesRegistration', language)}
+                handleTabsClick={handleTabsClick}
+                buttonConfig={[
+                  { labelKey: 'client', tabKey: 'client' },
+                  { labelKey: 'employee', tabKey: 'employee' },
+                  { labelKey: 'businessDivision', tabKey: 'businessDivision' },
+                  { labelKey: 'users', tabKey: 'users' },
+                ]}
+              />
+            </div>
             <div className='EmployeesRegistration_mid_form_cont'>
-              <form onSubmit={handleSubmit}>
+              <form className='EmployeeRegistration_form_cont' onSubmit={handleSubmit}>
+                <div className='EmployeeRegistration_mid'>
                 {employees.map((container, containerIndex) => (
                   <div
                     key={containerIndex}
@@ -404,25 +406,25 @@ const EmployeesRegistration = () => {
                     </div>
                   </div>
                 ))}
-
-                <input type='hidden' name='auth_user_id' value='' />
-
-                <div className='EmployeesRegistration_form-btn-content'>
-                  <div className='EmployeesRegistration_plus-btn'>
-                    <button className='EmployeesRegistration_inc' type='button' onClick={handleAddContainer}>
-                      +
-                    </button>
-                    <button className='EmployeesRegistration_dec' type='button' onClick={handleRemoveContainer}>
-                      -
-                    </button>
-                  </div>
-                  <div className='EmployeesRegistration_options-btn'>
-                    <button type='button' className='button is-light' onClick={handleCancel}>
-                      {translate('cancel', language)}
-                    </button>
-                    <button type='submit' className='button is-info'>
-                      {translate('submit', language)}
-                    </button>
+                </div>
+                <div className='EmployeesRegistration_lower_form_cont'>
+                  <div className='EmployeesRegistration_form-btn-content'>
+                    <div className='EmployeesRegistration_plus-btn'>
+                      <button className='EmployeesRegistration_inc' type='button' onClick={handleAddContainer}>
+                        +
+                      </button>
+                      <button className='EmployeesRegistration_dec' type='button' onClick={handleRemoveContainer}>
+                        -
+                      </button>
+                    </div>
+                    <div className='EmployeesRegistration_options-btn'>
+                      <button type='button' className='button is-light'>
+                        {translate('cancel', language)}
+                      </button>
+                      <button type='submit' className='button is-info'>
+                        {translate('submit', language)}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </form>
