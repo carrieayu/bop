@@ -65,7 +65,6 @@ const EmployeesListAndEdit: React.FC = () => {
       const fetchData = async () => {
         try {
           const resMasterCompany = await dispatch(fetchMasterCompany() as unknown as UnknownAction);
-          console.log("Company: ", resMasterCompany.payload);
           setCompanySelection(resMasterCompany.payload);
       
           if (isEditing) {
@@ -120,60 +119,81 @@ const EmployeesListAndEdit: React.FC = () => {
     }, []);
 
     const handleChange = (index, e) => {
-      const { name, value } = e.target;
+      const { name, value } = e.target
+
       setEmployeesList((prevState) => {
-        const updatedEmployeeData = [...prevState]; // Create a shallow copy of the previous state
-    
+        const updatedEmployeeData = [...prevState] 
+
+        const previousEmployee = prevState[index].employee
+        const updatedEmployee = { ...previousEmployee, [name]: value } 
+
+        const changes = {}
+
+        for (const key in updatedEmployee) {
+          if (updatedEmployee[key] !== previousEmployee[key]) {
+            changes[key] = updatedEmployee[key]
+          }
+        }
+        updatedEmployeeData[index] = {
+          ...updatedEmployeeData[index],
+          employee: updatedEmployee,
+        }
+
         if (name === 'company') {
-          const selectedCompany = companySelection.find((company) => company.company_id === value);
-          const selectedCompanyName = selectedCompany ? selectedCompany.company_name : '';
-          // Immediately update the company to prevent showing outdated data
+          const selectedCompany = companySelection.find((company) => company.company_id === value)
+          const selectedCompanyName = selectedCompany ? selectedCompany.company_name : ''
+
           updatedEmployeeData[index] = {
             ...updatedEmployeeData[index],
             employee: {
               ...updatedEmployeeData[index].employee,
-              company_id: value, // Update company_id
-              company: selectedCompanyName, // Update company name
-              business_division_id: null, // Clear business division until fetched
+              company_id: value,
+              company: selectedCompanyName,
+              business_division_id: null,
             },
-            business_divisions: [], // Clear the business divisions for this employee
-            businessSelection: [] // Reset business selection as well
-          };
-          // Update state immediately to reflect the company change
-          setEmployeesList(updatedEmployeeData);
-    
-          // Fetch business divisions for the selected company asynchronously
-          axios.get(`http://127.0.0.1:8000/api/business-divisions/?company_id=${value}`)
-            .then(response => {
-              const employeeBusinessDivisions = response.data.filter((division) => division.employee_id === updatedEmployeeData[index].employee_id);
-              // Update the state only after business divisions are successfully fetched
+            business_divisions: [],
+            businessSelection: [],
+          }
+
+          setEmployeesList(updatedEmployeeData) 
+
+          
+          axios
+            .get(`http://127.0.0.1:8000/api/business-divisions/?company_id=${value}`)
+            .then((response) => {
+              const employeeBusinessDivisions = response.data.filter(
+                (division) => division.employee_id === updatedEmployeeData[index].employee_id,
+              )
+
               setEmployeesList((prevState) => {
-                const updatedEmployeeDataAfterFetch = [...prevState];
-                updatedEmployeeDataAfterFetch[index].business_divisions = employeeBusinessDivisions;
-                updatedEmployeeDataAfterFetch[index].businessSelection = employeeBusinessDivisions.length ? employeeBusinessDivisions : [];
-                updatedEmployeeDataAfterFetch[index].employee.business_division_id = employeeBusinessDivisions[0]?.business_division_id || null;
-                return updatedEmployeeDataAfterFetch;
-              });
-    
+                const updatedEmployeeDataAfterFetch = [...prevState]
+                updatedEmployeeDataAfterFetch[index].business_divisions = employeeBusinessDivisions
+                updatedEmployeeDataAfterFetch[index].businessSelection = employeeBusinessDivisions.length
+                  ? employeeBusinessDivisions
+                  : []
+                updatedEmployeeDataAfterFetch[index].employee.business_division_id =
+                  employeeBusinessDivisions[0]?.business_division_id || null
+                return updatedEmployeeDataAfterFetch
+              })
             })
-            .catch(error => {
-              console.error('Error fetching business divisions:', error);
-            });
-    
+            .catch((error) => {
+              console.error('Error fetching business divisions:', error)
+            })
         } else if (name === 'business_division') {
-          updatedEmployeeData[index].employee.business_division_id = value;
+          updatedEmployeeData[index].employee.business_division_id = value
         } else {
-          updatedEmployeeData[index].employee[name] = value;
+          updatedEmployeeData[index].employee[name] = value
         }
+
         return updatedEmployeeData
       })
     }
+
+
   
     const validateEmployees = (employees, originalEmployees) => {
       return employees.every((employee, index) => {
         const originalEmployee = originalEmployees[index];
-        console.log(employee)
-        console.log(originalEmployee)
         if (
           employee.employee.last_name !== originalEmployee.last_name ||
           employee.employee.first_name !== originalEmployee.first_name ||
@@ -196,39 +216,63 @@ const EmployeesListAndEdit: React.FC = () => {
     const handleSubmit = async (e) => {
       e.preventDefault()
 
-      // Extract employee email from updatedClients
       const emails = employeesList.map((em) => em.email)
-      // Check no inputs are empty on Edit Screen
       if (!validateEmployees(employeesList, originalEmployeesList)) {
         alert(translate('allFieldsRequiredInputValidationMessage', language))
         return
       }
 
-      const getModifiedFields = (original, updated) => {
-        const modifiedFields = []
+        const getModifiedFields = (original, updated) => {
+          const modifiedFields = {}
 
-        updated.forEach((updatedEmployee) => {
-          const originalEmployee = original.find((emp) => emp.employee_id === updatedEmployee.employee_id)
+          updated.forEach((updatedEmployee, index) => {
+            const originalEmployee = original.find(
+              (emp) => emp.employee.employee_id === updatedEmployee.employee.employee_id,
+            )
 
-          if (originalEmployee) {
-            const changes = { employee_id: updatedEmployee.employee_id }
+            if (originalEmployee) {
+              const changes = {
+                employee: { employee_id: updatedEmployee.employee.employee_id }, // Ensure employee_id is always included
+              }
 
-            for (const key in updatedEmployee) {
-              if (updatedEmployee[key] !== originalEmployee[key]) {
-                changes[key] = updatedEmployee[key]
+              // Check for changes in the 'employee' object fields
+              for (const key in updatedEmployee.employee) {
+                if (
+                  originalEmployee.employee[key] !== undefined &&
+                  updatedEmployee.employee[key] !== originalEmployee.employee[key]
+                ) {
+                  changes.employee[key] = updatedEmployee.employee[key]
+                }
+              }
+
+              // Check for changes in 'business_divisions' or 'businessSelection' fields
+              if (
+                JSON.stringify(originalEmployee.business_divisions) !==
+                JSON.stringify(updatedEmployee.business_divisions)
+              ) {
+                changes['business_divisions'] = updatedEmployee.business_divisions
+              }
+
+              if (
+                JSON.stringify(originalEmployee.businessSelection) !== JSON.stringify(updatedEmployee.businessSelection)
+              ) {
+                changes['businessSelection'] = updatedEmployee.businessSelection
+              }
+
+              if (
+                Object.keys(changes.employee).length > 1 || 
+                'business_divisions' in changes ||
+                'businessSelection' in changes
+              ) {
+                modifiedFields[index] = changes 
               }
             }
+          })
 
-            if (Object.keys(changes).length > 1) {
-              modifiedFields.push(changes)
-            }
-          }
-        })
+          return modifiedFields
+        }
 
-        return modifiedFields
-      }
       const modifiedFields = getModifiedFields(originalEmployeesList, employeesList)
-
       const token = localStorage.getItem('accessToken')
       if (!token) {
         window.location.href = '/login'
@@ -241,8 +285,9 @@ const EmployeesListAndEdit: React.FC = () => {
             Authorization: `Bearer ${token}`,
           },
         })
+        setOriginalEmployeesList(employeesList)
         alert('Sucessfully updated')
-        window.location.reload()
+        setIsEditing(false)
       } catch (error) {
         if (error.response) {
           const { status, data } = error.response
@@ -263,54 +308,55 @@ const EmployeesListAndEdit: React.FC = () => {
       }
     }
 
-    useEffect(() => {
-      const fetchProjects = async () => {
-        const token = localStorage.getItem('accessToken')
-        if (!token) {
-          window.location.href = '/login' // Redirect to login if no token found
-          return
-        }
-    
-        try {
-         
-          const url = isEditing ? 'http://127.0.0.1:8000/api/employees/edit/' : 'http://127.0.0.1:8000/api/employees'
-          const response = await axios.get(url, {
-            headers: {
-              Authorization: `Bearer ${token}`, // Add token to request headers
-            },
-          })
-          console.log(response.data)
-          const employeesListWithBusinessSelection = response.data.map((employee) => ({
-            ...employee,
-            businessSelection: [], // Initialize businessSelection as an empty array
-          }));
-          setEmployeesList(employeesListWithBusinessSelection)
-          setOriginalEmployeesList(employeesListWithBusinessSelection)
-          
-          // Update business divisions for each employee
-          employeesListWithBusinessSelection.forEach((employee, index) => {
-            axios.get(`http://127.0.0.1:8000/api/business-divisions/?company_id=${employee.company_id}`)
-              .then(response => {
-                const employeeBusinessDivisions = response.data.filter((division) => division.employee_id === employee.employee_id);
-                const updatedEmployeesList = [...employeesListWithBusinessSelection];
-                updatedEmployeesList[index].businessSelection = employeeBusinessDivisions;
-                setEmployeesList(updatedEmployeesList);
-              })
-              .catch(error => {
-                console.error('Error fetching business divisions:', error);
-              });
-          });
-        } catch (error) {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('There was an error fetching the projects!', error)
-          }
+    const fetchProjects = async () => {
+      const token = localStorage.getItem('accessToken')
+      if (!token) {
+        window.location.href = '/login' // Redirect to login if no token found
+        return
+      }
+
+      try {
+        const url = isEditing ? 'http://127.0.0.1:8000/api/employees/edit/' : 'http://127.0.0.1:8000/api/employees'
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add token to request headers
+          },
+        })
+        
+        const employeesListWithBusinessSelection = response.data.map((employee) => ({
+          ...employee,
+          businessSelection: [], // Initialize businessSelection as an empty array
+        }))
+        setEmployeesList(employeesListWithBusinessSelection)
+        setOriginalEmployeesList(employeesListWithBusinessSelection)
+        // Update business divisions for each employee
+        employeesListWithBusinessSelection.forEach((employee, index) => {
+          axios
+            .get(`http://127.0.0.1:8000/api/business-divisions/?company_id=${employee.company_id}`)
+            .then((response) => {
+              const employeeBusinessDivisions = response.data.filter(
+                (division) => division.employee_id === employee.employee_id,
+              )
+              const updatedEmployeesList = [...employeesListWithBusinessSelection]
+              updatedEmployeesList[index].businessSelection = employeeBusinessDivisions
+              setEmployeesList(updatedEmployeesList)
+            })
+            .catch((error) => {
+              console.error('Error fetching business divisions:', error)
+            })
+        })
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login' // Redirect to login if unauthorized
+        } else {
+          console.error('There was an error fetching the projects!', error)
         }
       }
-    
+    }
+
+
+    useEffect(() => {
       fetchProjects()
-      // Call fetchData function when in editing mode
       if (isEditing) {
         fetchData()
       }
