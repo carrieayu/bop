@@ -7,6 +7,8 @@ import Sidebar from '../../components/Sidebar/Sidebar'
 import axios from 'axios'
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
+import AlertModal from '../../components/AlertModal/AlertModal'
+
 
 const UsersRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -21,6 +23,8 @@ const UsersRegistration = () => {
     const [isEmailMatch, setIsEmailMatch] = useState(true)
     const [isEmailValid, setIsEmailValid] = useState(true)
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
+    const [modalIsOpen, setModalIsOpen] = useState(false)
+
     const [userData, setUserData] = useState(
       {
         username: '',
@@ -57,6 +61,35 @@ const UsersRegistration = () => {
             break;
         }
     }
+  
+  
+  const handleCancel = () => {
+    //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
+    openModal()
+  }
+
+  const handleRemoveInputData = () => {
+    setUserData(
+      {
+        username: '',
+        first_name: '',
+        last_name: '',
+        password: '',
+        email: '',
+        confirm_password: '',
+        confirm_email: '',
+      },
+    )
+    closeModal()
+  }
+
+  const openModal = () => {
+    setModalIsOpen(true)
+  }
+
+  const closeModal = () => {
+    setModalIsOpen(false)
+  }
 
     const handleChange = (event) => {
       const { name, value } = event.target
@@ -300,22 +333,28 @@ const UsersRegistration = () => {
                   <input type='hidden' name='auth_user_id' value='' />
                 </div>
               </div>
-                <div className='UsersRegistration_lower_form_cont'>
-                  <div className='UsersRegistration_form-btn-content'>
-                    <div className='UsersRegistration_options-btn'>
-                      <button type='button' className='button is-light'>
-                        {translate('cancel', language)}
-                      </button>
-                      <button type='submit' className='button is-info'>
-                        {translate('submit', language)}
-                      </button>
-                    </div>
+              <div className='UsersRegistration_lower_form_cont'>
+                <div className='UsersRegistration_form-btn-content'>
+                  <div className='UsersRegistration_options-btn'>
+                    <button type='button' className='button is-light' onClick={handleCancel}>
+                      {translate('cancel', language)}
+                    </button>
+                    <button type='submit' className='button is-info'>
+                      {translate('submit', language)}
+                    </button>
                   </div>
                 </div>
+              </div>
             </form>
           </div>
         </div>
       </div>
+      <AlertModal
+        isOpen={modalIsOpen}
+        onConfirm={handleRemoveInputData}
+        onCancel={closeModal}
+        message={translate('cancelCreation', language)}
+      />
     </div>
   )
 }

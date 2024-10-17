@@ -7,6 +7,8 @@ import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
+import AlertModal from '../../components/AlertModal/AlertModal'
+
 
 const months = [
    '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -24,6 +26,7 @@ const CostOfSalesRegistration = () => {
   const startYear = currentYear - 1;
   const endYear = currentYear + 2;
   const years = Array.from({ length: endYear - startYear + 1 }, (val, i) => startYear + i);
+  const [modalIsOpen, setModalIsOpen] = useState(false)
   const [formData, setFormData] = useState([
     {
       year: '', 
@@ -90,6 +93,37 @@ const CostOfSalesRegistration = () => {
       default:
         break;
     }
+  }
+
+
+  const handleCancel = () => {
+    //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
+    openModal()
+  }
+
+  const handleRemoveInputData = () => {
+    setFormData([
+      {
+        year: '',
+        month: '',
+        purchase: '',
+        outsourcing_expense: '',
+        product_purchase: '',
+        dispatch_labor_expense: '',
+        communication_expense: '',
+        work_in_progress_expense: '',
+        amortization_expense: '',
+      },
+    ])
+    closeModal()
+  }
+
+  const openModal = () => {
+    setModalIsOpen(true)
+  }
+
+  const closeModal = () => {
+    setModalIsOpen(false)
   }
 
   const handleChange = (index, event) => {
@@ -427,7 +461,7 @@ const CostOfSalesRegistration = () => {
                     </button>
                   </div>
                   <div className='costOfSalesRegistration_options-btn'>
-                    <button type='button' className='button is-light'>
+                    <button type='button' className='button is-light' onClick={handleCancel}>
                       {translate('cancel', language)}
                     </button>
                     <button type='submit' className='button is-info'>
@@ -440,6 +474,12 @@ const CostOfSalesRegistration = () => {
           </div>
         </div>
       </div>
+      <AlertModal
+        isOpen={modalIsOpen}
+        onConfirm={handleRemoveInputData}
+        onCancel={closeModal}
+        message={translate('cancelCreation', language)}
+      />
     </div>
   )
 }

@@ -7,6 +7,8 @@ import Sidebar from '../../components/Sidebar/Sidebar'
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import axios from 'axios'
+import AlertModal from '../../components/AlertModal/AlertModal'
+
 
 const ClientsRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -16,7 +18,7 @@ const ClientsRegistration = () => {
     const storedUserID = localStorage.getItem('userID')
     const { language, setLanguage } = useLanguage()
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
-
+    const [modalIsOpen, setModalIsOpen] = useState(false)
     const [clientData, setClientData] = useState([
         {
           client_name: '',
@@ -48,6 +50,30 @@ const ClientsRegistration = () => {
           default:
             break;
         }
+    }
+  
+    const handleCancel = () => {
+      //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
+      openModal()
+    }
+
+    const handleRemoveInputData = () => {
+      setClientData([
+        {
+          client_name: '',
+          created_at: '',
+          auth_user: '',
+        },
+      ])
+      closeModal()
+    }
+
+    const openModal = () => {
+      setModalIsOpen(true)
+    }
+
+    const closeModal = () => {
+      setModalIsOpen(false)
     }
 
     const handleTranslationSwitchToggle = () => {
@@ -214,7 +240,7 @@ const ClientsRegistration = () => {
                     </button>
                   </div>
                   <div className='ClientsRegistration_options-btn'>
-                    <button type='button' className='button is-light'>
+                    <button type='button' className='button is-light' onClick={handleCancel}>
                       {translate('cancel', language)}
                     </button>
                     <button type='submit' className='button is-info'>
@@ -227,6 +253,12 @@ const ClientsRegistration = () => {
           </div>
         </div>
       </div>
+      <AlertModal
+        isOpen={modalIsOpen}
+        onConfirm={handleRemoveInputData}
+        onCancel={closeModal}
+        message={translate('cancelCreation', language)}
+      />
     </div>
   )
 }
