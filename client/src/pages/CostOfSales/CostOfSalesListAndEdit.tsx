@@ -246,13 +246,13 @@ const CostOfSalesList: React.FC = () => {
           cost_of_sale_id: foundData ? foundData.cost_of_sale_id : null,
           month,
           year,
-          purchase: foundData ? foundData.purchase : 0,
-          outsourcing_expense: foundData ? foundData.outsourcing_expense : 0,
-          product_purchase: foundData ? foundData.product_purchase : 0,
-          dispatch_labor_expense: foundData ? foundData.dispatch_labor_expense : 0,
-          communication_expense: foundData ? foundData.communication_expense : 0,
-          work_in_progress_expense: foundData ? foundData.work_in_progress_expense : 0,
-          amortization_expense: foundData ? foundData.amortization_expense : 0
+          purchase: foundData ? foundData.purchase : '',
+          outsourcing_expense: foundData ? foundData.outsourcing_expense : '',
+          product_purchase: foundData ? foundData.product_purchase : '',
+          dispatch_labor_expense: foundData ? foundData.dispatch_labor_expense : '',
+          communication_expense: foundData ? foundData.communication_expense : '',
+          work_in_progress_expense: foundData ? foundData.work_in_progress_expense : '',
+          amortization_expense: foundData ? foundData.amortization_expense : ''
         };
       });
     });

@@ -133,9 +133,13 @@
                                 }
                             }
                         }
+                        .is-editing{
+                            width: 110%;
+                        }
                     }
                 }
                 .EmployeesListAndEdit_table_wrapper.editMode{
+                    height: 55vh;
                     overflow-x: hidden;
                 }
             }

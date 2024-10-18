@@ -309,7 +309,7 @@ const ClientsListAndEdit: React.FC = () => {
                   { labelKey: 'users', tabKey: 'users' },
                 ]}
               />
-              <div className='ClientsListAndEdit_table_wrapper'>
+              <div className={`ClientsListAndEdit_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                 <div className='ClientsListAndEdit_table_cont'>
                   <div className='columns is-mobile'>
                     <div className='column'>

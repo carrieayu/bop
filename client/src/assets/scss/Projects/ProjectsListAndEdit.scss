@@ -79,7 +79,7 @@
                             overflow-x: auto;
    
                             .table{
-                                width: 100%;
+                                width: 125%;
                                 .projectsList_table_title{
                                     position: sticky;
                                     top: 0;
@@ -118,6 +118,7 @@
                         }
                     }
                     .projectsList_table_wrapper.editMode {
+                        height: 55vh;
                     }
                     .projectsList_edit_submit_btn_cont{
                         display: flex;
