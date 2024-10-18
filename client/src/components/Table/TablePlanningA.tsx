@@ -413,7 +413,7 @@ const TablePlanning = () => {
         },
         {
           //same " 法定福利費 "
-          label: 'taxesAndpublicCharges',
+          label: 'taxesAndPublicCharges',
           values: [
             ...taxesPublicChargesValues,
             firstHalfTotal(taxesPublicChargesValues),

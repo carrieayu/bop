@@ -482,7 +482,7 @@ const EmployeesListAndEdit: React.FC = () => {
                     <div className='column'>
                       {isEditing ? (
                         <div>
-                          <table className='table is-bordered is-hoverable'>
+                          <table className={`table ${isEditing ? 'is-editing' : 'is-hoverable'} is-bordered`}>
                             <thead>
                               <tr className='EmployeesListAndEdit_table_title '>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-left'>ID</th>

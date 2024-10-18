@@ -135,6 +135,9 @@
                             }
                         }
                     }
+                    .expensesList_table_wrapper.editMode{
+                        height: 55vh;
+                    }
                 }
                 .expensesList_edit_submit_btn_cont{
                     display: flex;
