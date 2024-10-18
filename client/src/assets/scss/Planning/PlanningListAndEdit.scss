@@ -8,13 +8,13 @@
     }
     .planning_table_wrapper{
       width: 84%;
-      height: 100vh;
+      height: 95vh;
       padding: 10px 2px 10px 2px;
       .planning_top_cont{
         border: 1px solid #fff;
         border-radius: 5px;
         background-color: #fff;
-        height: 127.7vh;
+        height: 92vh;
         .planning_content{
           .planning_btm{
             .planning_header_text{
@@ -96,7 +96,7 @@
               .table_content_planning{
                 .table-planning-container{
                   width: 100% !important;
-                  height: 120vh;
+                  height: 80vh;
                   @media only screen and (min-width: 1920px){
                     height: 122vh;
                   }

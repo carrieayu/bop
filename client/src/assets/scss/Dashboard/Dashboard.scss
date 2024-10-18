@@ -5,7 +5,7 @@
         display: flex;
         background-color: #EFEDEA;
         width: 100vw; 
-        height: 130vh;
+        height: 95vh;
         @media only screen and (max-width: 1000px){
             flex-direction: column;
         }
@@ -175,6 +175,7 @@
                     .dashboard_table_content_planning{
                         .table-planning-container{
                           width: 100% !important;
+                          height: 100vh !important;
                           .table-planning{
                             table{
                                 background-color: #fff;
