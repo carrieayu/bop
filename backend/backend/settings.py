@@ -28,11 +28,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-t9g%u6l13^fc%&hgr6*3geifrx22xar67yo)@go!p4gevgtcgt"
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'in-v3.mailjet.com'
+EMAIL_HOST = 'smtp.mailersend.net'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = '50fb00723421a9a6c0163dc6b64f1fa9'
-EMAIL_HOST_PASSWORD = '015c7bac7261f85a7fd5ec44207e680d'
+EMAIL_HOST_USER = 'MS_02InEQ@trial-o65qngkpyq3lwr12.mlsender.net'
+EMAIL_HOST_PASSWORD = 'VGqpE4bdbU6surH3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 

@@ -43,8 +43,8 @@ urlpatterns = [
     # path('api/projects/tablelist/', MasterClientTableList.as_view(), name="projects-table-lists"), 
     # path('api/projects/store/', StoreProjects.as_view(), name="projects-store"), #the nested views for storing projects
     # path('api/projects/update', ProjectsUpdate.as_view()),
-    # path('api/forgot-password/', ForgotPasswordView.as_view(), name="forgot-password"),
-    # path('api/reset-password/<uidb64>/<token>/', ForgotPasswordView.as_view(), name='reset-password'),
+    path('api/forgot-password/', ForgotPasswordView.as_view(), name="forgot-password"),
+    path('api/reset-password/<uidb64>/<token>/', ForgotPasswordView.as_view(), name='reset-password'),
     # End
     #Employees
 

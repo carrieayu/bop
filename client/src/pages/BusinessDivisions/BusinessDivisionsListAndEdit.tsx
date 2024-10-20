@@ -419,14 +419,14 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                                   <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
                                     <select
                                       className='edit_select'
-                                      name='company_name'
-                                      value={business_data.company || null} // Set value to null if company is undefined
-                                      onChange={(e) => handleChange(index, e)}
+                                      name='company' 
+                                      value={business_data.company || ''} 
+                                      onChange={(e) => handleChange(index, e)} 
                                     >
-                                      <option value={null}>Select a company</option>
+                                      <option value=''>Select a company</option> 
                                       {Object.entries(companyMap).map(([companyId, companyName]) => (
                                         <option key={companyId} value={companyId}>
-                                          {companyName as string}
+                                          {companyName as String}
                                         </option>
                                       ))}
                                     </select>

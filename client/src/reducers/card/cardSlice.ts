@@ -19,22 +19,11 @@ function getSum(data: number[]) {
     return accumulator + currentValue
   }, 0)
 }
-function getOtherPlanningSum(datas: OtherPlanningEntity[][], field: string) {
-  let total = 0
-  datas.forEach((data: OtherPlanningEntity[]) => {
-    total += data
-      ?.map((each) => each[field])
-      .reduce((accumulator: number, currentValue: number): number => {
-        return accumulator + currentValue
-      }, 0)
-  })
-  //  console.log("total", total)
-  return total
-}
+
 
 export const fetchAllCards = createAsyncThunk('', async () => {
-  // return await api.get<CardEntity[]>(`http://127.0.0.1:8000/api/planningprojects/`).then((res) => {
-  return await api.get<CardEntity[]>(`http://54.178.202.58:8000/api/planningprojects/`).then((res) => {
+  return await api.get<CardEntity[]>(`http://127.0.0.1:8000/api/projects/`).then((res) => {
+  // return await api.get<CardEntity[]>(`http://54.178.202.58:8000/api/projects/`).then((res) => {
     return res.data.map((data) => new CardEntity(data))
   })
 })
@@ -50,22 +39,10 @@ const cardSlice = createSlice({
         state.isLoading = false
         state.totalSales = getSum(action?.payload?.map((card) => Number(card.sales_revenue)))
         state.totalOperatingProfit = getSum(action?.payload?.map((card) => Number(card.operating_profit)))
-        state.totalGrossProfit = getOtherPlanningSum(
-          action?.payload.map((card) => card.other_planning),
-          'gross_profit',
-        )
-        state.totalNetProfitPeriod = getOtherPlanningSum(
-          action?.payload.map((card) => card.other_planning),
-          'net_profit_for_the_period',
-        )
-        state.totalGrossProfitMargin = getOtherPlanningSum(
-          action?.payload.map((card) => card.other_planning),
-          'gross_profit_margin',
-        )
-        state.totalOperatingProfitMargin = getOtherPlanningSum(
-          action?.payload.map((card) => card.other_planning),
-          'operating_profit_margin',
-        )
+        state.totalGrossProfit = getSum(action?.payload?.map((card) => Number(card.ordinary_profit)))
+        state.totalNetProfitPeriod = getSum(action?.payload?.map((card) => Number(card.non_operating_profit)))
+        state.totalGrossProfitMargin = getSum(action?.payload?.map((card) => Number(card.ordinary_profit_margin)))
+        state.totalOperatingProfitMargin = getSum(action?.payload?.map((card) => Number(card.non_operating_expense)))
       })
       .addCase(fetchAllCards.pending, (state) => {
         state.isLoading = true

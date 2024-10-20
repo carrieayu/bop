@@ -44,7 +44,7 @@ const Dashboard = () => {
   const totalNetProfitPeriodByDate = useAppSelector((state: RootState) => state.graph.totalNetProfitPeriodByDate)
   const totalGrossProfitMarginByDate = useAppSelector((state: RootState) => state.graph.totalGrossProfitMarginByDate)
   const totalOperatingProfitMarginByDate = useAppSelector((state: RootState) => state.graph.totalOperatingProfitMarginByDate)
-  const datePlanning = useAppSelector((state: RootState) => state.graph.datePlanning)
+  const month = useAppSelector((state: RootState) => state.graph.month)
   const select = [5, 10, 100]
   const [paginatedData, setPaginatedData] = useState<any[]>([])
   const [activeTab, setActiveTab] = useState('/dashboard')
@@ -99,12 +99,12 @@ const Dashboard = () => {
 
 
   const graphData = {
-    labels: datePlanning,
+    labels: month,
     datasets: [
       {
         type: 'bar' as const,
         label: translate('sales', language),
-        data: datePlanning?.map(date => totalSalesByDate[date]),
+        data: month?.map((date) => totalSalesByDate[date] || 0),
         backgroundColor: '#6e748c',
         borderColor: 'black',
         borderWidth: 1,
@@ -113,7 +113,7 @@ const Dashboard = () => {
       {
         type: 'bar' as const,
         label: translate('grossProfit', language),
-        data: datePlanning?.map(date => totalGrossProfitByDate[date]),
+        data: month?.map((date) => totalGrossProfitByDate[date]),
         backgroundColor: '#7696c6',
         borderColor: 'black',
         borderWidth: 1,
@@ -122,7 +122,7 @@ const Dashboard = () => {
       {
         type: 'bar' as const,
         label: translate('operatingIncome', language),
-        data: datePlanning?.map(date => totalOperatingProfitByDate[date]),
+        data: month?.map((date) => totalOperatingProfitByDate[date]),
         backgroundColor: '#b8cbe2',
         borderColor: 'black',
         borderWidth: 1,
@@ -131,7 +131,7 @@ const Dashboard = () => {
       {
         type: 'bar' as const,
         label: translate('cumulativeOrdinaryIncome', language),
-        data: datePlanning?.map(date => totalNetProfitPeriodByDate[date]),
+        data: month?.map((date) => totalNetProfitPeriodByDate[date]),
         backgroundColor: '#bde386',
         borderColor: 'black',
         borderWidth: 1,
@@ -140,7 +140,7 @@ const Dashboard = () => {
       {
         type: 'line' as const,
         label: translate('grossProfitMargin', language),
-        data: datePlanning?.map(date => totalGrossProfitMarginByDate[date]),
+        data: month?.map((date) => totalGrossProfitMarginByDate[date]),
         backgroundColor: '#ff8e13',
         borderColor: '#ff8e13',
         borderWidth: 2,
@@ -150,7 +150,7 @@ const Dashboard = () => {
       {
         type: 'line' as const,
         label: translate('operatingProfitMargin', language),
-        data: datePlanning?.map(date => totalOperatingProfitMarginByDate[date]),
+        data: month?.map((date) => totalOperatingProfitMarginByDate[date]),
         backgroundColor: '#ec3e4a',
         borderColor: '#ec3e4a',
         borderWidth: 2,
