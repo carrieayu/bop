@@ -357,6 +357,10 @@ const ExpensesRegistration = () => {
   const endYear = currentYear + 2;
   const years = Array.from({length:endYear - startYear + 1},(val,index)=> (startYear + index))
 
+  const handleListClick = () => { 
+    navigate('/expenses-list');
+  };
+
   return (
     <div className='expensesRegistration_wrapper'>
       <HeaderButtons
@@ -373,6 +377,7 @@ const ExpensesRegistration = () => {
               activeTabOther={activeTabOther}
               message={translate('expensesRegistration', language)}
               handleTabsClick={handleTabsClick}
+              handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'project', tabKey: 'project' },
                 { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },

@@ -241,6 +241,10 @@ const BusinessDivisionsRegistration = () => {
         setIsTranslateSwitchActive(language === 'en');
       }, [language]);
 
+      const handleListClick = () => { 
+        navigate('/business-divisions-list');
+      };
+
   return (
     <div className='BusinessDivisionsRegistration_wrapper'>
       <HeaderButtons
@@ -257,6 +261,7 @@ const BusinessDivisionsRegistration = () => {
               activeTabOther={activeTabOther}
               message={translate('businessDivisionsRegistration', language)}
               handleTabsClick={handleTabsClick}
+              handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'client', tabKey: 'client' },
                 { labelKey: 'employee', tabKey: 'employee' },

@@ -320,6 +320,10 @@ const EmployeeExpensesRegistration = () => {
     }
   }
 
+  const handleListClick = () => { 
+    navigate('/employee-expenses-list');
+  };
+
 
   return (
     <div className='employeeExpensesRegistration_wrapper'>
@@ -341,6 +345,7 @@ const EmployeeExpensesRegistration = () => {
               activeTabOther={activeTabOther}
               message={translate('employeeExpensesRegistration', language)}
               handleTabsClick={handleTabsClick}
+              handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'project', tabKey: 'project' },
                 { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },

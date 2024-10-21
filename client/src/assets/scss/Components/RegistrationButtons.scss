@@ -24,22 +24,31 @@
   .RegistrationButtons_title_container {
     display: flex;
     width: 100%;
-    padding: 49px 70px 50px 70px;
-    gap: 7.8%;
+    // padding: 49px 70px 50px 50px;
+    padding: 49px 70px 50px 40px;
+    gap: 40px;
     align-items: center;
-
     .RegistrationButtons_title_table_cont {
-      position: relative;
-      margin-left: -40px; 
-      margin-top: -5px;
-      
       .RegistrationButtons_title {
         letter-spacing: 2px;
+        width: 180px;
         font-weight: bold;
         color: #000;
         @media only screen and (min-width: 1920px) {
           margin-left: 10px; /* Optionally adjust for larger screens */
         }
+      }
+    }
+    .RegistrationButtons_title_btn_cont{
+      .RegistrationButtons_btn{
+          border: 1px solid #808080;
+          width: 12rem;
+          height: 35px;
+          border-radius: 5px !important;
+          background-color: #808080;
+          color: #fff;
+          // padding: 10px 10px;
+
       }
     }
   }

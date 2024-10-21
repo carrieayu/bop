@@ -296,6 +296,10 @@ const EmployeesRegistration = () => {
         fetchData()
       }, [language]);
 
+      const handleListClick = () => { 
+        navigate('/employees-list');
+      };
+
   return (
     <div className='EmployeesRegistration_wrapper'>
       <HeaderButtons
@@ -313,6 +317,7 @@ const EmployeesRegistration = () => {
                 activeTabOther={activeTabOther}
                 message={translate('employeesRegistration', language)}
                 handleTabsClick={handleTabsClick}
+                handleListClick={handleListClick}
                 buttonConfig={[
                   { labelKey: 'client', tabKey: 'client' },
                   { labelKey: 'employee', tabKey: 'employee' },
