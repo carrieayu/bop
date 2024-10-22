@@ -14,8 +14,8 @@ const TablePlanning = () => {
       window.location.href = '/login';
       return;
     }
-    // axios.get('http://127.0.0.1:8000/api/planning/all/', {
-    axios.get('http://54.178.202.58:8000/api/planning/all/', {
+    axios.get('http://127.0.0.1:8000/api/planning', {
+    // axios.get('http://54.178.202.58:8000/api/planning/all/', {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -44,6 +44,38 @@ const TablePlanning = () => {
         }
         return acc;
       }, {});
+      const aggregatedPlanningAssign = response.data.planning_assign_data.reduce((acc, item) => {
+        const { month, employee, project, ...values } = item;  // Destructure employee and project
+        
+        // Initialize month if not already present
+        if (!acc[month]) {
+            acc[month] = {
+                month,
+                employees: [employee],   // Store employees as an array
+                projects: [project],     // Store projects as an array
+                totalSalary: employee.salary || 0,  // Initialize totalSalary with the first employee's salary
+                ...values
+            };
+        } else {
+            // Add the new employee and project objects to the array
+            acc[month].employees.push(employee);
+            acc[month].projects.push(project);
+    
+            // Add the employee's salary to the total
+            acc[month].totalSalary += employee.salary || 0;
+    
+            // Aggregate other numeric fields
+            Object.keys(values).forEach(key => {
+                if (typeof values[key] === 'number') {
+                    acc[month][key] += values[key];
+                } else if (typeof values[key] === 'string') {
+                    // Handle strings like `created_at`, `updated_at`, and other concatenation-sensitive fields
+                    acc[month][key] = values[key];  // Keep the latest value or handle as needed
+                }
+            });
+        }
+        return acc;
+    }, {});
       const aggregatedPlanningProjectData = response.data.planning_project_data.reduce((acc, item) => {
         const { month, ...values } = item;
         if (!acc[month]) {
@@ -59,134 +91,110 @@ const TablePlanning = () => {
       
         return acc;
       }, {});
-      const aggregatedPlanningAssign = response.data.planning_assign_data.reduce((acc, item) => {
-        const { month, ...values } = item;
-        if (!acc[month]) {
-          acc[month] = { month, ...values };  // Include month in the object
-        } else {
-          Object.keys(values).forEach(key => {
-            acc[month][key] += values[key];
-          });
-        }
-        return acc;
-      }, {});
 
       const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3];
+      // SALES REVENUE
+      const salesValues = months.map(month => aggregatedPlanningProjectData[month]?.sales_revenue || 0);
       //COST OF SALES
-      const costOfSalesValues = months.map(month => aggregatedData[month]?.cost_of_sales || 0);
-      const purchasesValues = months.map(month => aggregatedData[month]?.purchases || 0);
-      const outsourcingValues = months.map(month => aggregatedData[month]?.outsourcing_costs || 0);
-      const productPurchaseValues = months.map(month => aggregatedData[month]?.product_purchases || 0);
-      const dispatchLaborValues = months.map(month => aggregatedData[month]?.dispatch_labor_costs || 0);
-      const communicationCostValues = months.map(month => aggregatedData[month]?.communication_costs || 0);
-      const inProgressValues = months.map(month => aggregatedData[month]?.work_in_progress || 0);
-      const amortizationValues = months.map(month => aggregatedData[month]?.amortization || 0);
-
-      //PLANNING ASSIGN
-      const renumerationValues = months.map(month => aggregatedExpensesData[month]?.remuneration || 0);
-      const consumableValues = months.map(month => aggregatedExpensesData[month]?.consumables_expenses || 0);
-      const assign_unit_priceValues = months.map(month => aggregatedPlanningAssign[month]?.assignment_unit_price || 0); //assignment_unit_price value data
-      const travelExpenseValues = months.map(month => aggregatedExpensesData[month]?.travel_expenses || 0);
-      const taxesPublicChargesValues = months.map(month => aggregatedExpensesData[month]?.taxes_and_public_charges || 0);
-      const utilitiesValues = months.map(month => aggregatedExpensesData[month]?.utilities_expenses || 0);
-
-      //FOR EXPENSES
-      const rentValues = months.map(month => aggregatedExpensesData[month]?.rent || 0);
-      const paymentFeeValues = months.map(month => aggregatedExpensesData[month]?.payment_fees || 0);
-      const depreciationExpensesValues = months.map(month => aggregatedExpensesData[month]?.depreciation_expenses || 0);
-      const communicationExpenseValues = months.map(month => aggregatedExpensesData[month]?.communication_expenses || 0);
-      const advertisingExpenseValues = months.map(month => aggregatedExpensesData[month]?.advertising_expenses || 0);
-      const entertainmentExpenseValues = months.map(month => aggregatedExpensesData[month]?.entertainment_expenses || 0);
-
-      //NoN Operating Income & Expense
-      const nonOperatingIncomeValues = months.map(month => aggregatedPlanningProjectData[month]?.non_operating_income || 0);
-      const nonOperatingExpensesValues = months.map(month => aggregatedPlanningProjectData[month]?.non_operating_expenses || 0);
-
-      // console.log("Non Operating: " , nonOperatingIncomeValues)
-      const personnelExpensesValues = months.map(month => {
-        const totalExpenses = aggregatedExpensesData[month]?.remuneration + aggregatedPlanningAssign[month]?.assignment_unit_price +
-        aggregatedExpensesData[month]?.travel_expenses + aggregatedExpensesData[month]?.taxes_and_public_charges + 
-        aggregatedExpensesData[month]?.utilities_expenses || 0;
-
-        return totalExpenses;
-      })
-      const generalExpenseValues = months.map(month => {
-        const personnelExpenses = (aggregatedExpensesData[month]?.remuneration || 0) +
-          (aggregatedExpensesData[month]?.consumables_expenses || 0) +
-          (aggregatedExpensesData[month]?.travel_expenses || 0) +
-          (aggregatedExpensesData[month]?.taxes_and_public_charges || 0) +
-          (aggregatedExpensesData[month]?.utilities_expenses || 0);
-      
-          const totalExpense = aggregatedExpensesData[month]?.rent + 
-          aggregatedExpensesData[month]?.consumables_expenses +
-          aggregatedExpensesData[month]?.payment_fees + 
-          aggregatedExpensesData[month]?.taxes_and_public_charges + 
-          aggregatedExpensesData[month]?.depreciation_expenses + 
-          aggregatedExpensesData[month]?.travel_expenses + 
-          aggregatedExpensesData[month]?.communication_expenses + 
-          aggregatedExpensesData[month]?.utilities_expenses + 
-          aggregatedExpensesData[month]?.advertising_expenses + 
-          aggregatedExpensesData[month]?.advertising_expenses + 
-          aggregatedExpensesData[month]?.entertainment_expenses + 
-          aggregatedExpensesData[month]?.payment_fees || 0;
-         
-          const generalTotal = personnelExpenses + totalExpense
-        return {
-          month,
-          personnelExpenses,
-          totalExpense,
-          generalTotal
-        };
+      const costOfSalesValues = months.map(month => {
+        const purchases = aggregatedData[month]?.purchase || 0;
+        const outsourcing = aggregatedData[month]?.outsourcing_expense || 0;
+        const productPurchase = aggregatedData[month]?.product_purchase || 0;
+        const dispatchLabor = aggregatedData[month]?.dispatch_labor_expense || 0;
+        const communicationCost = aggregatedData[month]?.communication_expense || 0;
+        const inProgress = aggregatedData[month]?.work_in_progress_expense || 0;
+        const amortization = aggregatedData[month]?.amortization_expense || 0;
+        return purchases + outsourcing + productPurchase + dispatchLabor + communicationCost + inProgress + amortization;
       });
+      const purchasesValues = months.map(month => aggregatedData[month]?.purchase || 0);
+      const outsourcingValues = months.map(month => aggregatedData[month]?.outsourcing_expense || 0);
+      const productPurchaseValues = months.map(month => aggregatedData[month]?.product_purchase || 0);
+      const dispatchLaborValues = months.map(month => aggregatedData[month]?.dispatch_labor_expense || 0);
+      const communicationCostValues = months.map(month => aggregatedData[month]?.communication_expense || 0);
+      const inProgressValues = months.map(month => aggregatedData[month]?.work_in_progress_expense || 0);
+      const amortizationValues = months.map(month => aggregatedData[month]?.amortization_expense || 0);
 
-      const expenseTotalValues = months.map(month => {
-        const totalExpense = aggregatedExpensesData[month]?.rent + 
-        aggregatedExpensesData[month]?.consumables_expenses +
-        aggregatedExpensesData[month]?.payment_fees + 
-        aggregatedExpensesData[month]?.taxes_and_public_charges + 
-        aggregatedExpensesData[month]?.depreciation_expenses + 
-        aggregatedExpensesData[month]?.travel_expenses + 
-        aggregatedExpensesData[month]?.communication_expenses + 
-        aggregatedExpensesData[month]?.utilities_expenses + 
-        aggregatedExpensesData[month]?.advertising_expenses + 
-        aggregatedExpensesData[month]?.advertising_expenses + 
-        aggregatedExpensesData[month]?.entertainment_expenses + 
-        aggregatedExpensesData[month]?.payment_fees || 0;
-
-        return totalExpense;
-      })
-      const firstHalfTotal = arr => arr.slice(0, 6).reduce((acc, value) => acc + parseFloat(value), 0);
-      const secondHalfTotal = arr => arr.slice(6).reduce((acc, value) => acc + parseFloat(value), 0);
-      const total = arr => arr.reduce((acc, value) => acc + parseFloat(value), 0);
-
-      // Compute gross profit for each month
-      const grossProfitValues = months.map(month => {
-        const totalRevenue = aggregatedData[month]?.product_purchases + aggregatedData[month]?.purchases || 0;
-        const grossProfit = totalRevenue - (aggregatedData[month]?.cost_of_sales || 0);
+      // GROSS PROFIT
+      const grossProfitValues = months.map((month, index) => {
+        const totalSales = salesValues[index]; // Get the sales revenue for the current month
+        const totalCostOfSales = costOfSalesValues[index]; // Get the cost of sales for the current month
+        const grossProfit = totalSales - totalCostOfSales; // Calculate gross profit
         return grossProfit;
       });
 
-      const grossProfitData = {
-        label: 'grossProfit',
-        values: [
-          ...grossProfitValues,
-          firstHalfTotal(grossProfitValues),
-          secondHalfTotal(grossProfitValues),
-          total(grossProfitValues),
-          ''
-        ],
-      };
+      // EMPLOYEE EXPENSE
+      const totalEmployeeExpenseValues = months.map(month => {
+        const renumeration = aggregatedExpensesData[month]?.renumeration || 0;
+        const salary = aggregatedPlanningAssign[month]?.totalSalary || 0;
+        const fuel_allowance = aggregatedExpensesData[month]?.fuel_allowance || 0;
+        const statutory_welfare_expense = aggregatedExpensesData[month]?.statutory_welfare_expense || 0;
+        const welfare_expense = aggregatedExpensesData[month]?.welfare_expense || 0;
+        const insurance_premiums = aggregatedExpensesData[month]?.insurance_premiums || 0;
 
-      const sellingGeneralValues = generalExpenseValues.map(item => item.generalTotal);
-      const operatingProfitValues = grossProfitValues.map((grossProfit, index) => grossProfit - sellingGeneralValues[index]);
+        return renumeration + salary + fuel_allowance + statutory_welfare_expense + welfare_expense + insurance_premiums;
+      })
+      const renumerationValues = months.map(month => aggregatedExpensesData[month]?.renumeration || 0);
+      const salaryValues = months.map(month => aggregatedPlanningAssign[month]?.totalSalary || 0); //GETTING TOTAL SALARY OF EMPLOYEE PER MONTH
+      const fuelAllowanceValues = months.map(month => aggregatedExpensesData[month]?.fuel_allowance || 0);
+      const statutoryWelfareExpenseValues = months.map(month => aggregatedExpensesData[month]?.statutory_welfare_expense || 0);
+      const welfareExpenseValues = months.map(month => aggregatedExpensesData[month]?.welfare_expense || 0);
+      const insurancePremiumsValues = months.map(month => aggregatedExpensesData[month]?.insurance_premiums || 0);
+
+      // EXPENSES
+      const totalExpenseValues = months.map(month => {
+        const consumables = aggregatedExpensesData[month]?.consumable_expense || 0;
+        const rent = aggregatedExpensesData[month]?.rent_expense || 0;
+        const taxAndPublicCharge = aggregatedExpensesData[month]?.tax_and_public_charge || 0;
+        const depreciation = aggregatedExpensesData[month]?.depreciation_expense || 0;
+        const travel_expense = aggregatedExpensesData[month]?.travel_expense || 0;
+        const communication_expense = aggregatedExpensesData[month]?.communication_expense || 0;
+        const utilities_expense = aggregatedExpensesData[month]?.utilities_expense || 0;
+        const transaction_fee = aggregatedExpensesData[month]?.transaction_fee || 0;
+        const advertising_expense = aggregatedExpensesData[month]?.advertising_expense || 0;
+        const entertainment_expense = aggregatedExpensesData[month]?.entertainment_expense || 0;
+        const professional_service_fee = aggregatedExpensesData[month]?.professional_service_fee || 0;
+        return consumables + rent + taxAndPublicCharge + depreciation + travel_expense + communication_expense
+                + utilities_expense + transaction_fee + advertising_expense + entertainment_expense + professional_service_fee;
+      })
+      const consumableValues = months.map(month => aggregatedExpensesData[month]?.consumable_expense || 0);
+      const rentValues = months.map(month => aggregatedExpensesData[month]?.rent_expense || 0);
+      const taxesPublicChargesValues = months.map(month => aggregatedExpensesData[month]?.tax_and_public_charge || 0);
+      const depreciationExpensesValues = months.map(month => aggregatedExpensesData[month]?.depreciation_expense || 0);
+      const travelExpenseValues = months.map(month => aggregatedExpensesData[month]?.travel_expense || 0);
+      const communicationExpenseValues = months.map(month => aggregatedExpensesData[month]?.communication_expense || 0);
+      const utilitiesValues = months.map(month => aggregatedExpensesData[month]?.utilities_expense || 0);
+      const trasactionExpenseValues = months.map(month => aggregatedExpensesData[month]?.transaction_fee || 0);
+      const advertisingExpenseValues = months.map(month => aggregatedExpensesData[month]?.advertising_expense || 0);
+      const entertainmentExpenseValues = months.map(month => aggregatedExpensesData[month]?.entertainment_expense || 0);
+      const professionalServiceFeeValues = months.map(month => aggregatedExpensesData[month]?.professional_service_fee || 0);
+
+      
+      // SELLING AND GENERAL ADMIN EXPENSES
+      const sellingAndGeneralAdminExpenseValues = months.map((month, index) => {
+        const total_employee_expense = totalEmployeeExpenseValues[index]; // Get the sales revenue for the current month
+        const total_expense = totalExpenseValues[index]; // Get the cost of sales for the current month
+        const sellingAndGeneralAdminExpense = total_employee_expense + total_expense; // Calculate gross profit
+        return sellingAndGeneralAdminExpense;
+      });
+
+      // OPERATING INCOME
+      const operatingIncomeValues = months.map((month, index) => {
+        const gross_profit = grossProfitValues[index]; // Get the sales revenue for the current month
+        const selling_and_general_admin = sellingAndGeneralAdminExpenseValues[index]; // Get the cost of sales for the current month
+        const operating_income_value = gross_profit - selling_and_general_admin; // Calculate gross profit
+        return operating_income_value;
+      });
+      //NoN Operating Income & Expense
+      const nonOperatingIncomeValues = months.map(month => aggregatedPlanningProjectData[month]?.non_operating_profit || 0);
+      const nonOperatingExpensesValues = months.map(month => aggregatedPlanningProjectData[month]?.non_operating_expense || 0);
 
       const ordinaryProfitValues = months.map((month, index) => {
-        const operatingProfitValuess = operatingProfitValues[index];
-        const nonOperatingIncome = nonOperatingIncomeValues[index];
-        const nonOperatingExpenses = nonOperatingExpensesValues[index];
-        const operatingTotal = operatingProfitValuess + nonOperatingIncome + nonOperatingExpenses;
+        const operating_income = operatingIncomeValues[index];
+        const non_operating_income = nonOperatingIncomeValues[index];
+        const totalOperating = operating_income + non_operating_income;
+        const totalOrdinaryIncome = totalOperating - nonOperatingExpensesValues[index];
 
-        return operatingTotal;
+        return totalOrdinaryIncome;
       });
 
       const cumulativeSum = (arr) => {
@@ -195,16 +203,33 @@ const TablePlanning = () => {
       };
       const cumulativeOrdinaryProfitValues = cumulativeSum(ordinaryProfitValues);
 
-      // console.log("Cumulative: ", cumulativeOrdinaryProfitValues)
+      const firstHalfTotal = arr => arr.slice(0, 6).reduce((acc, value) => acc + parseFloat(value), 0);
+      const secondHalfTotal = arr => arr.slice(6).reduce((acc, value) => acc + parseFloat(value), 0);
+      const total = arr => arr.reduce((acc, value) => acc + parseFloat(value), 0);
 
       const data = [
         {
           label: 'salesRevenue',
-          values: Array(16).fill(0),
+          values: [
+            ...salesValues,
+
+            firstHalfTotal(salesValues),
+            secondHalfTotal(salesValues),
+            total(salesValues),
+            // `${(total(salesValues) / total(salesValues) * 100).toFixed(2)}%`,
+            '0',
+          ],
         },
         {
           label: 'sales',
-          values: Array(16).fill(0),
+          values: [
+            ...salesValues,
+            firstHalfTotal(salesValues),
+            secondHalfTotal(salesValues),
+            total(salesValues),
+            // `${(total(salesValues) / total(salesValues) * 100).toFixed(2)}%`,
+            '0',
+          ],
         },
         //start of cost of sales portion
         {
@@ -295,16 +320,23 @@ const TablePlanning = () => {
             '0',
           ],
         },
-        //end of cost of sales portion
-        //start for planning assign data portion
-        grossProfitData, //gross profit
+        {
+          label: 'grossProfit',
+          values: [
+            ...grossProfitValues,
+            firstHalfTotal(grossProfitValues),
+            secondHalfTotal(grossProfitValues),
+            total(grossProfitValues),
+            ''
+          ],
+        },//gross profit
         {
           label: 'employeeExpenses',
           values: [
-            ...personnelExpensesValues,
-            firstHalfTotal(personnelExpensesValues),
-            secondHalfTotal(personnelExpensesValues),
-            total(personnelExpensesValues),
+            ...totalEmployeeExpenseValues,
+            firstHalfTotal(totalEmployeeExpenseValues),
+            secondHalfTotal(totalEmployeeExpenseValues),
+            total(totalEmployeeExpenseValues),
             // `${(total(personnelExpensesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
             '0',
           ],
@@ -323,10 +355,10 @@ const TablePlanning = () => {
         {
           label: 'salary',
           values: [
-            ...assign_unit_priceValues,
-            firstHalfTotal(assign_unit_priceValues),
-            secondHalfTotal(assign_unit_priceValues),
-            total(assign_unit_priceValues),
+            ...salaryValues,
+            firstHalfTotal(salaryValues),
+            secondHalfTotal(salaryValues),
+            total(salaryValues),
             // `${(total(consumableValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
             '0',
           ],
@@ -334,10 +366,10 @@ const TablePlanning = () => {
         {
           label: 'fuelAllowance',
           values: [
-            ...travelExpenseValues,
-            firstHalfTotal(travelExpenseValues),
-            secondHalfTotal(travelExpenseValues),
-            total(travelExpenseValues),
+            ...fuelAllowanceValues,
+            firstHalfTotal(fuelAllowanceValues),
+            secondHalfTotal(fuelAllowanceValues),
+            total(fuelAllowanceValues),
             // `${(total(travelExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
             '0',
           ],
@@ -345,10 +377,10 @@ const TablePlanning = () => {
         {
           label: 'statutoryWelfareExpenses',
           values: [
-            ...taxesPublicChargesValues,
-            firstHalfTotal(taxesPublicChargesValues),
-            secondHalfTotal(taxesPublicChargesValues),
-            total(taxesPublicChargesValues),
+            ...statutoryWelfareExpenseValues,
+            firstHalfTotal(statutoryWelfareExpenseValues),
+            secondHalfTotal(statutoryWelfareExpenseValues),
+            total(statutoryWelfareExpenseValues),
             // `${(total(taxesPublicChargesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
             '0',
           ],
@@ -356,11 +388,22 @@ const TablePlanning = () => {
         {
           label: 'welfareExpenses',
           values: [
-            ...utilitiesValues,
-            firstHalfTotal(utilitiesValues),
-            secondHalfTotal(utilitiesValues),
-            total(utilitiesValues),
+            ...welfareExpenseValues,
+            firstHalfTotal(welfareExpenseValues),
+            secondHalfTotal(welfareExpenseValues),
+            total(welfareExpenseValues),
             // `${(total(utilitiesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            '0',
+          ],
+        },
+        {
+          label: 'insurancePremiums',
+          values: [
+            ...insurancePremiumsValues,
+            firstHalfTotal(insurancePremiumsValues),
+            secondHalfTotal(insurancePremiumsValues),
+            total(insurancePremiumsValues),
+            // `${(total(paymentFeeValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
@@ -369,10 +412,10 @@ const TablePlanning = () => {
         {
           label: 'expenses',
           values: [
-            ...expenseTotalValues,
-            firstHalfTotal(expenseTotalValues),
-            secondHalfTotal(expenseTotalValues),
-            total(expenseTotalValues),
+            ...totalExpenseValues,
+            firstHalfTotal(totalExpenseValues),
+            secondHalfTotal(totalExpenseValues),
+            total(totalExpenseValues),
             // `${(total(expenseTotalValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
             '0',
           ],
@@ -400,17 +443,7 @@ const TablePlanning = () => {
             '0',
           ],
         },
-        {
-          label: 'insurancePremiums',
-          values: [
-            ...paymentFeeValues,
-            firstHalfTotal(paymentFeeValues),
-            secondHalfTotal(paymentFeeValues),
-            total(paymentFeeValues),
-            // `${(total(paymentFeeValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
-            '0',
-          ],
-        },
+        
         {
           //same " 法定福利費 "
           label: 'taxesAndPublicCharges',
@@ -470,10 +503,10 @@ const TablePlanning = () => {
         {
           label: 'transactionFees',
           values: [
-            ...advertisingExpenseValues,
-            firstHalfTotal(advertisingExpenseValues),
-            secondHalfTotal(advertisingExpenseValues),
-            total(advertisingExpenseValues),
+            ...trasactionExpenseValues,
+            firstHalfTotal(trasactionExpenseValues),
+            secondHalfTotal(trasactionExpenseValues),
+            total(trasactionExpenseValues),
             // `${(total(advertisingExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
             '0',
           ],
@@ -503,10 +536,10 @@ const TablePlanning = () => {
         {
           label: 'professionalServicesFees',
           values: [
-            ...paymentFeeValues,
-            firstHalfTotal(paymentFeeValues),
-            secondHalfTotal(paymentFeeValues),
-            total(paymentFeeValues),
+            ...professionalServiceFeeValues,
+            firstHalfTotal(professionalServiceFeeValues),
+            secondHalfTotal(professionalServiceFeeValues),
+            total(professionalServiceFeeValues),
             // `${(total(paymentFeeValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
             '0',
           ],
@@ -516,10 +549,10 @@ const TablePlanning = () => {
           label: 'sellingAndGeneralAdminExpenses',
           // values: Array(16).fill(0),
           values: [
-            ...generalExpenseValues.map((item) => item.generalTotal),
-            firstHalfTotal(generalExpenseValues.map((item) => item.generalTotal)),
-            secondHalfTotal(generalExpenseValues.map((item) => item.generalTotal)),
-            total(generalExpenseValues.map((item) => item.generalTotal)),
+            ...sellingAndGeneralAdminExpenseValues,
+            firstHalfTotal(sellingAndGeneralAdminExpenseValues),
+            secondHalfTotal(sellingAndGeneralAdminExpenseValues),
+            total(sellingAndGeneralAdminExpenseValues),
             '0',
           ],
         },
@@ -527,10 +560,10 @@ const TablePlanning = () => {
         {
           label: 'operatingIncome',
           values: [
-            ...operatingProfitValues,
-            firstHalfTotal(operatingProfitValues),
-            secondHalfTotal(operatingProfitValues),
-            total(operatingProfitValues),
+            ...operatingIncomeValues,
+            firstHalfTotal(operatingIncomeValues),
+            secondHalfTotal(operatingIncomeValues),
+            total(operatingIncomeValues),
             '0',
           ],
         },
@@ -596,8 +629,8 @@ const TablePlanning = () => {
     'salesRevenue',
     'costOfSales',
     'grossProfit',
-    'dispatchLaborExpenses',
     'employeeExpenses',
+    'expenses',
     'sellingAndGeneralAdminExpenses',
     'operatingIncome',
     'ordinaryIncome',
