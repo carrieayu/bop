@@ -87,6 +87,10 @@
                                         height: 40px;
                                         border: 1px solid #000;
                                         border-radius: 10px;
+                                        @media only screen and (min-width: 1024px) and (max-width: 1280px) {
+                                            /* For small laptops */
+                                            width: 250px;
+                                        }
                                     }
                                 }
                                 .BusinessDivisionsRegistration_company_name-div{
@@ -101,6 +105,10 @@
                                         height: 40px;
                                         border: 1px solid #000;
                                         border-radius: 10px;
+                                        @media only screen and (min-width: 1024px) and (max-width: 1280px) {
+                                            /* For small laptops */
+                                            width: 250px;
+                                        }
                                         option{
                                             text-align: left;
                                         }
