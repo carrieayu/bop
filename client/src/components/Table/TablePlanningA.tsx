@@ -95,6 +95,7 @@ const TablePlanning = () => {
       const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3];
       // SALES REVENUE
       const salesValues = months.map(month => aggregatedPlanningProjectData[month]?.sales_revenue || 0);
+
       //COST OF SALES
       const costOfSalesValues = months.map(month => {
         const purchases = aggregatedData[month]?.purchase || 0;
@@ -102,16 +103,16 @@ const TablePlanning = () => {
         const productPurchase = aggregatedData[month]?.product_purchase || 0;
         const dispatchLabor = aggregatedData[month]?.dispatch_labor_expense || 0;
         const communicationCost = aggregatedData[month]?.communication_expense || 0;
-        const inProgress = aggregatedData[month]?.work_in_progress_expense || 0;
+        const workInProgress = aggregatedData[month]?.work_in_progress_expense || 0;
         const amortization = aggregatedData[month]?.amortization_expense || 0;
-        return purchases + outsourcing + productPurchase + dispatchLabor + communicationCost + inProgress + amortization;
+        return purchases + outsourcing + productPurchase + dispatchLabor + communicationCost + workInProgress + amortization;
       });
       const purchasesValues = months.map(month => aggregatedData[month]?.purchase || 0);
-      const outsourcingValues = months.map(month => aggregatedData[month]?.outsourcing_expense || 0);
+      const outsourcingExpenseValues = months.map(month => aggregatedData[month]?.outsourcing_expense || 0);
       const productPurchaseValues = months.map(month => aggregatedData[month]?.product_purchase || 0);
-      const dispatchLaborValues = months.map(month => aggregatedData[month]?.dispatch_labor_expense || 0);
+      const dispatchLaborExpenseValues = months.map(month => aggregatedData[month]?.dispatch_labor_expense || 0);
       const communicationCostValues = months.map(month => aggregatedData[month]?.communication_expense || 0);
-      const inProgressValues = months.map(month => aggregatedData[month]?.work_in_progress_expense || 0);
+      const workInProgressValues = months.map(month => aggregatedData[month]?.work_in_progress_expense || 0);
       const amortizationValues = months.map(month => aggregatedData[month]?.amortization_expense || 0);
 
       // GROSS PROFIT
@@ -123,17 +124,17 @@ const TablePlanning = () => {
       });
 
       // EMPLOYEE EXPENSE
-      const totalEmployeeExpenseValues = months.map(month => {
-        const renumeration = aggregatedExpensesData[month]?.renumeration || 0;
+      const employeeExpensesValues = months.map(month => {
+        const executiveRenumeration = aggregatedExpensesData[month]?.executive_renumeration || 0;
         const salary = aggregatedPlanningAssign[month]?.totalSalary || 0;
         const fuel_allowance = aggregatedExpensesData[month]?.fuel_allowance || 0;
         const statutory_welfare_expense = aggregatedExpensesData[month]?.statutory_welfare_expense || 0;
         const welfare_expense = aggregatedExpensesData[month]?.welfare_expense || 0;
         const insurance_premiums = aggregatedExpensesData[month]?.insurance_premiums || 0;
 
-        return renumeration + salary + fuel_allowance + statutory_welfare_expense + welfare_expense + insurance_premiums;
+        return executiveRenumeration + salary + fuel_allowance + statutory_welfare_expense + welfare_expense + insurance_premiums;
       })
-      const renumerationValues = months.map(month => aggregatedExpensesData[month]?.renumeration || 0);
+      const executiveRenumerationValues = months.map(month => aggregatedExpensesData[month]?.renumeration || 0);
       const salaryValues = months.map(month => aggregatedPlanningAssign[month]?.totalSalary || 0); //GETTING TOTAL SALARY OF EMPLOYEE PER MONTH
       const fuelAllowanceValues = months.map(month => aggregatedExpensesData[month]?.fuel_allowance || 0);
       const statutoryWelfareExpenseValues = months.map(month => aggregatedExpensesData[month]?.statutory_welfare_expense || 0);
@@ -141,7 +142,7 @@ const TablePlanning = () => {
       const insurancePremiumsValues = months.map(month => aggregatedExpensesData[month]?.insurance_premiums || 0);
 
       // EXPENSES
-      const totalExpenseValues = months.map(month => {
+      const expenseValues = months.map(month => {
         const consumables = aggregatedExpensesData[month]?.consumable_expense || 0;
         const rent = aggregatedExpensesData[month]?.rent_expense || 0;
         const taxAndPublicCharge = aggregatedExpensesData[month]?.tax_and_public_charge || 0;
@@ -163,7 +164,7 @@ const TablePlanning = () => {
       const travelExpenseValues = months.map(month => aggregatedExpensesData[month]?.travel_expense || 0);
       const communicationExpenseValues = months.map(month => aggregatedExpensesData[month]?.communication_expense || 0);
       const utilitiesValues = months.map(month => aggregatedExpensesData[month]?.utilities_expense || 0);
-      const trasactionExpenseValues = months.map(month => aggregatedExpensesData[month]?.transaction_fee || 0);
+      const transactionFeeValues = months.map(month => aggregatedExpensesData[month]?.transaction_fee || 0);
       const advertisingExpenseValues = months.map(month => aggregatedExpensesData[month]?.advertising_expense || 0);
       const entertainmentExpenseValues = months.map(month => aggregatedExpensesData[month]?.entertainment_expense || 0);
       const professionalServiceFeeValues = months.map(month => aggregatedExpensesData[month]?.professional_service_fee || 0);
@@ -171,17 +172,17 @@ const TablePlanning = () => {
       
       // SELLING AND GENERAL ADMIN EXPENSES
       const sellingAndGeneralAdminExpenseValues = months.map((month, index) => {
-        const total_employee_expense = totalEmployeeExpenseValues[index]; // Get the sales revenue for the current month
-        const total_expense = totalExpenseValues[index]; // Get the cost of sales for the current month
-        const sellingAndGeneralAdminExpense = total_employee_expense + total_expense; // Calculate gross profit
+        const total_employee_expense = employeeExpensesValues[index]; // Get the total employee expense for the current month
+        const total_expense = expenseValues[index]; // Get the total expense for the current month
+        const sellingAndGeneralAdminExpense = total_employee_expense + total_expense; // Calculation for Selling and General Admin Expense
         return sellingAndGeneralAdminExpense;
       });
 
       // OPERATING INCOME
       const operatingIncomeValues = months.map((month, index) => {
-        const gross_profit = grossProfitValues[index]; // Get the sales revenue for the current month
-        const selling_and_general_admin = sellingAndGeneralAdminExpenseValues[index]; // Get the cost of sales for the current month
-        const operating_income_value = gross_profit - selling_and_general_admin; // Calculate gross profit
+        const gross_profit = grossProfitValues[index]; // Get the gross profit for the current month
+        const selling_and_general_admin = sellingAndGeneralAdminExpenseValues[index]; // Get the Selling and General Admin Expense for the current month
+        const operating_income_value = gross_profit - selling_and_general_admin; // Calculate operating income value
         return operating_income_value;
       });
       //NoN Operating Income & Expense
@@ -208,6 +209,7 @@ const TablePlanning = () => {
       const total = arr => arr.reduce((acc, value) => acc + parseFloat(value), 0);
 
       const data = [
+        //start for sales revenue section
         {
           label: 'salesRevenue',
           values: [
@@ -257,11 +259,11 @@ const TablePlanning = () => {
         {
           label: 'outsourcingExpenses',
           values: [
-            ...outsourcingValues,
-            firstHalfTotal(outsourcingValues),
-            secondHalfTotal(outsourcingValues),
-            total(outsourcingValues),
-            // `${(total(outsourcingValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            ...outsourcingExpenseValues,
+            firstHalfTotal(outsourcingExpenseValues),
+            secondHalfTotal(outsourcingExpenseValues),
+            total(outsourcingExpenseValues),
+            // `${(total(outsourcingExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
@@ -279,11 +281,11 @@ const TablePlanning = () => {
         {
           label: 'dispatchLaborExpenses',
           values: [
-            ...dispatchLaborValues,
-            firstHalfTotal(dispatchLaborValues),
-            secondHalfTotal(dispatchLaborValues),
-            total(dispatchLaborValues),
-            // `${(total(dispatchLaborValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            ...dispatchLaborExpenseValues,
+            firstHalfTotal(dispatchLaborExpenseValues),
+            secondHalfTotal(dispatchLaborExpenseValues),
+            total(dispatchLaborExpenseValues),
+            // `${(total(dispatchLaborExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
@@ -301,11 +303,11 @@ const TablePlanning = () => {
         {
           label: 'workInProgressExpenses',
           values: [
-            ...inProgressValues,
-            firstHalfTotal(inProgressValues),
-            secondHalfTotal(inProgressValues),
-            total(inProgressValues),
-            // `${(total(inProgressValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            ...workInProgressValues,
+            firstHalfTotal(workInProgressValues),
+            secondHalfTotal(workInProgressValues),
+            total(workInProgressValues),
+            // `${(total(workInProgressValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
@@ -320,6 +322,7 @@ const TablePlanning = () => {
             '0',
           ],
         },
+        // end for cost of sales section
         {
           label: 'grossProfit',
           values: [
@@ -329,26 +332,26 @@ const TablePlanning = () => {
             total(grossProfitValues),
             ''
           ],
-        },//gross profit
+        },
+        // start for employee expense section
         {
           label: 'employeeExpenses',
           values: [
-            ...totalEmployeeExpenseValues,
-            firstHalfTotal(totalEmployeeExpenseValues),
-            secondHalfTotal(totalEmployeeExpenseValues),
-            total(totalEmployeeExpenseValues),
-            // `${(total(personnelExpensesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            ...employeeExpensesValues,
+            firstHalfTotal(employeeExpensesValues),
+            secondHalfTotal(employeeExpensesValues),
+            total(employeeExpensesValues),
             '0',
           ],
         },
         {
           label: 'executiveRenumeration',
           values: [
-            ...renumerationValues,
-            firstHalfTotal(renumerationValues),
-            secondHalfTotal(renumerationValues),
-            total(renumerationValues),
-            // `${(total(renumerationValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            ...executiveRenumerationValues,
+            firstHalfTotal(executiveRenumerationValues),
+            secondHalfTotal(executiveRenumerationValues),
+            total(executiveRenumerationValues),
+            // `${(total(executiveRenumerationValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
@@ -359,7 +362,7 @@ const TablePlanning = () => {
             firstHalfTotal(salaryValues),
             secondHalfTotal(salaryValues),
             total(salaryValues),
-            // `${(total(consumableValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            // `${(total(salaryValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
@@ -370,7 +373,7 @@ const TablePlanning = () => {
             firstHalfTotal(fuelAllowanceValues),
             secondHalfTotal(fuelAllowanceValues),
             total(fuelAllowanceValues),
-            // `${(total(travelExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            // `${(total(fuelAllowanceValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
@@ -381,7 +384,7 @@ const TablePlanning = () => {
             firstHalfTotal(statutoryWelfareExpenseValues),
             secondHalfTotal(statutoryWelfareExpenseValues),
             total(statutoryWelfareExpenseValues),
-            // `${(total(taxesPublicChargesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            // `${(total(statutoryWelfareExpenseValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
@@ -392,7 +395,7 @@ const TablePlanning = () => {
             firstHalfTotal(welfareExpenseValues),
             secondHalfTotal(welfareExpenseValues),
             total(welfareExpenseValues),
-            // `${(total(utilitiesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            // `${(total(welfareExpenseValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
@@ -403,20 +406,19 @@ const TablePlanning = () => {
             firstHalfTotal(insurancePremiumsValues),
             secondHalfTotal(insurancePremiumsValues),
             total(insurancePremiumsValues),
-            // `${(total(paymentFeeValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            // `${(total(insurancePremiumsValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
-        //end for planning portion
-        //start for expenses portion
+        //end for employee expense section
+        //start for expenses section
         {
           label: 'expenses',
           values: [
-            ...totalExpenseValues,
-            firstHalfTotal(totalExpenseValues),
-            secondHalfTotal(totalExpenseValues),
-            total(totalExpenseValues),
-            // `${(total(expenseTotalValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            ...expenseValues,
+            firstHalfTotal(expenseValues),
+            secondHalfTotal(expenseValues),
+            total(expenseValues),
             '0',
           ],
         },
@@ -428,7 +430,7 @@ const TablePlanning = () => {
             firstHalfTotal(consumableValues),
             secondHalfTotal(consumableValues),
             total(consumableValues),
-            // `${(total(consumableValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            // `${(total(consumableValues) / total(expenseValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
@@ -439,20 +441,18 @@ const TablePlanning = () => {
             firstHalfTotal(rentValues),
             secondHalfTotal(rentValues),
             total(rentValues),
-            // `${(total(rentValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            // `${(total(rentValues) / total(expenseValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
-        
         {
-          //same " 法定福利費 "
           label: 'taxesAndPublicCharges',
           values: [
             ...taxesPublicChargesValues,
             firstHalfTotal(taxesPublicChargesValues),
             secondHalfTotal(taxesPublicChargesValues),
             total(taxesPublicChargesValues),
-            // `${(total(taxesPublicChargesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            // `${(total(taxesPublicChargesValues) / total(expenseValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
@@ -463,7 +463,7 @@ const TablePlanning = () => {
             firstHalfTotal(depreciationExpensesValues),
             secondHalfTotal(depreciationExpensesValues),
             total(depreciationExpensesValues),
-            // `${(total(depreciationExpensesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            // `${(total(depreciationExpensesValues) / total(expenseValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
@@ -474,7 +474,7 @@ const TablePlanning = () => {
             firstHalfTotal(travelExpenseValues),
             secondHalfTotal(travelExpenseValues),
             total(travelExpenseValues),
-            // `${(total(travelExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            // `${(total(travelExpenseValues) / total(expenseValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
@@ -485,7 +485,7 @@ const TablePlanning = () => {
             firstHalfTotal(communicationExpenseValues),
             secondHalfTotal(communicationExpenseValues),
             total(communicationExpenseValues),
-            // `${(total(communicationExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            // `${(total(communicationExpenseValues) / total(expenseValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
@@ -496,18 +496,18 @@ const TablePlanning = () => {
             firstHalfTotal(utilitiesValues),
             secondHalfTotal(utilitiesValues),
             total(utilitiesValues),
-            // `${(total(utilitiesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            // `${(total(utilitiesValues) / total(expenseValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
         {
           label: 'transactionFees',
           values: [
-            ...trasactionExpenseValues,
-            firstHalfTotal(trasactionExpenseValues),
-            secondHalfTotal(trasactionExpenseValues),
-            total(trasactionExpenseValues),
-            // `${(total(advertisingExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            ...transactionFeeValues,
+            firstHalfTotal(transactionFeeValues),
+            secondHalfTotal(transactionFeeValues),
+            total(transactionFeeValues),
+            // `${(total(transactionFeeValues) / total(expenseValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
@@ -518,7 +518,7 @@ const TablePlanning = () => {
             firstHalfTotal(advertisingExpenseValues),
             secondHalfTotal(advertisingExpenseValues),
             total(advertisingExpenseValues),
-            // `${(total(advertisingExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            // `${(total(advertisingExpenseValues) / total(expenseValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
@@ -529,7 +529,7 @@ const TablePlanning = () => {
             firstHalfTotal(entertainmentExpenseValues),
             secondHalfTotal(entertainmentExpenseValues),
             total(entertainmentExpenseValues),
-            // `${(total(entertainmentExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            // `${(total(entertainmentExpenseValues) / total(expenseValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
@@ -540,14 +540,14 @@ const TablePlanning = () => {
             firstHalfTotal(professionalServiceFeeValues),
             secondHalfTotal(professionalServiceFeeValues),
             total(professionalServiceFeeValues),
-            // `${(total(paymentFeeValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            // `${(total(professionalServiceFeeValues) / total(expenseValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
+        // end for expense section
         {
           //add 人件費 + 経費 field
           label: 'sellingAndGeneralAdminExpenses',
-          // values: Array(16).fill(0),
           values: [
             ...sellingAndGeneralAdminExpenseValues,
             firstHalfTotal(sellingAndGeneralAdminExpenseValues),
