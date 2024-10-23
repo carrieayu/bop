@@ -109,5 +109,6 @@
   "employeeExpensesValidation3": "Please fill out all ${fieldsMessage} fields.",
   "employeeExpensesRemoveProject": "Project successfully removed",
   "projectOverwriteMessage": "The data is already registered. Do you want to overwrite it?",
-  "updateMessage": "Are you sure you would like to update this data?"
+  "updateMessage": "Are you sure you would like to update this data?",
+  "listScreen": "List Screen"
 }

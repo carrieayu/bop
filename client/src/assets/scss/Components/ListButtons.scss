@@ -2,6 +2,10 @@
     margin-left: 40px;
     display: flex;
     gap: 2%;
+    @media only screen and (min-width: 1024px) and (max-width: 1280px) {
+      /* For small laptops */
+      padding-top: 50px;
+    }
     .body-btn{
         margin-top: 15px;
         border: 1px solid #808080;
@@ -25,7 +29,6 @@
     width: 100%;
     // padding: 49px 70px 50px 50px;
     padding: 49px 70px 50px 40px;
-
     gap: 40px;
     align-items: center;
     .ListButtons_title_table_cont{

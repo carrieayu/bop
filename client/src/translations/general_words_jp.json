@@ -111,5 +111,6 @@
   "employeeExpensesValidation3": "すべての${fieldsMessage}フィールドに入力してください。",
   "employeeExpensesRemoveProject": "プロジェクトが正常に削除されました。",
   "projectOverwriteMessage": "データはすでに登録されています。上書きしますか？",
-  "updateMessage": "このデータを更新してもよろしいですか？"
+  "updateMessage": "このデータを更新してもよろしいですか？",
+  "listScreen": "一覧画面"
 }

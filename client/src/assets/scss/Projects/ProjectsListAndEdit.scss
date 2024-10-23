@@ -1,4 +1,5 @@
 .projectsList_wrapper{
+    width: 100%;
     max-width: 2560px;
     .projectsList_cont_wrapper{
         display: flex;
@@ -31,6 +32,10 @@
                     border-radius: 5px;
                     font-weight: 500;
                     background-color: #f3f3f38b;
+                    @media only screen and (min-width: 1024px) and (max-width: 1280px) {
+                        /* For small laptops */
+                        top: 30px;
+                    }
                 }
                 .projectsList_mode_switch_datalist{
                     padding: 1rem;

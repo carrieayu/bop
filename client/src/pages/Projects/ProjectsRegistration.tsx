@@ -431,6 +431,10 @@ const ProjectsRegistration = () => {
     12: { en: "December", jp: "12月" },
   };
 
+  const handleListClick = () => { 
+    navigate('/projects-list');
+  };
+
   return (
     <div className='projectsRegistration_wrapper'>
       <HeaderButtons
@@ -447,6 +451,7 @@ const ProjectsRegistration = () => {
               activeTabOther={activeTabOther}
               message={translate('projectsRegistration', language)}
               handleTabsClick={handleTabsClick}
+              handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'project', tabKey: 'project' },
                 { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },

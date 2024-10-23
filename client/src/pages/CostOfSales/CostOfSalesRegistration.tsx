@@ -311,6 +311,10 @@ const CostOfSalesRegistration = () => {
     12: { en: "December", jp: "12月" },
   };
 
+  const handleListClick = () => { 
+    navigate('/cost-of-sales-list');
+  };
+
   return (
     <div className='costOfSalesRegistration_wrapper'>
       <HeaderButtons
@@ -327,6 +331,7 @@ const CostOfSalesRegistration = () => {
               activeTabOther={activeTabOther}
               message={translate('costOfSalesRegistration', language)}
               handleTabsClick={handleTabsClick}
+              handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'project', tabKey: 'project' },
                 { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },

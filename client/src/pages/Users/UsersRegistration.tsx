@@ -209,6 +209,10 @@ const UsersRegistration = () => {
         setIsTranslateSwitchActive(language === 'en');
       }, [language]);
 
+      const handleListClick = () => { 
+        navigate('/users-list');
+      };
+
   return (
     <div className='UsersRegistration_wrapper'>
       <HeaderButtons
@@ -225,6 +229,7 @@ const UsersRegistration = () => {
               activeTabOther={activeTabOther}
               message={translate('usersRegistration', language)}
               handleTabsClick={handleTabsClick}
+              handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'client', tabKey: 'client' },
                 { labelKey: 'employee', tabKey: 'employee' },
