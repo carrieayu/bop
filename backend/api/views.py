@@ -140,7 +140,7 @@ class EmployeesCreate(generics.CreateAPIView):
                 error_responses.append(serializer.errors)  # Capture validation errors
 
         if error_responses:
-            return Response({"errors": error_responses}, status=status.HTTP_409_CONFLICT)
+            return Response({"errors": error_responses}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"message": "Employee Created", "data": created_employees},
                         status=status.HTTP_201_CREATED)
@@ -836,7 +836,9 @@ class EmployeeExpensesList(generics.ListAPIView):
                 # Safely get the employee and project data
                 employee_last_name = employee['last_name'] if employee else ''
                 employee_first_name = employee['first_name'] if employee else ''
+                employee_type = employee['type'] if employee else ''
                 employee_salary = employee['salary'] if employee else 0  # Default to 0 if None
+                employee_executive_renumeration = employee['executive_renumeration'] if employee else 0
                 employee_id = employee['employee_id'] if project else '' 
                 project_name = project['project_name'] if project else ''  # Default to empty string if None
                 project_id = project['project_id'] if project else ''  
@@ -850,7 +852,9 @@ class EmployeeExpensesList(generics.ListAPIView):
                     'month': expense.get('month', ''),
                     'employee_last_name': employee_last_name,
                     'employee_first_name': employee_first_name,
+                    'employee_type': employee_type,
                     'employee_salary': employee_salary,
+                    'executive_renumeration': employee_executive_renumeration,
                     'employee_id': employee_id,
                     'project_name': project_name,
                     'project_id': project_id
@@ -877,8 +881,10 @@ class EmployeeDetailView(generics.ListAPIView):
                     'employee_id': employee.employee_id,
                     'first_name': employee.first_name,
                     'last_name': employee.last_name,
+                    'type': employee.type,
                     'email': employee.email,
                     'salary': employee.salary,
+                    'executive_renumeration':employee.executive_renumeration,
                     'created_at': employee.created_at,
                     'updated_at': employee.updated_at,
                     'auth_user_id': employee.auth_user_id,

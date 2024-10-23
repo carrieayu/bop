@@ -110,5 +110,9 @@
   "employeeExpensesRemoveProject": "Project successfully removed",
   "projectOverwriteMessage": "The data is already registered. Do you want to overwrite it?",
   "updateMessage": "Are you sure you would like to update this data?",
-  "listScreen": "List Screen"
+  "listScreen": "List Screen",
+  "type": "type",
+  "executiveEmployee": "Executive",
+  "regularEmployee": "Regular",
+  "selectEmployeeType": "Select Employee Type"
 }
