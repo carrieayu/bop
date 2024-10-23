@@ -351,7 +351,7 @@ const TablePlanning = () => {
             firstHalfTotal(executiveRenumerationValues),
             secondHalfTotal(executiveRenumerationValues),
             total(executiveRenumerationValues),
-            // `${(total(executiveRenumerationValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+            // `${(total(executiveRenumerationValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
             '0',
           ],
         },
