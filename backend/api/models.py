@@ -98,6 +98,9 @@ class Employees(models.Model):
     business_division = models.ForeignKey(
         MasterBusinessDivision, on_delete=models.CASCADE
     )
+    statutory_welfare_expense = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
+    welfare_expense = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
+    insurance_premium = models.IntegerField(max_length=12)
     bonus_and_fuel_allowance = models.IntegerField(max_length=12)
     auth_user =  models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)

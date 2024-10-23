@@ -168,7 +168,20 @@
                                         border-radius: 10px;
                                     }
                                 }
-                                    .EmployeesRegistration_bonus_and_fuel_allowance-div{
+                                .EmployeesRegistration_executive_renumeration-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .executive-renumeration-label{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                }
+                                .EmployeesRegistration_bonus_and_fuel_allowance-div{
                                     display: flex;
                                     flex-direction: column;
                                     margin-bottom: 10px;
@@ -181,11 +194,11 @@
                                         border-radius: 10px;
                                     }
                                 }
-                                .EmployeesRegistration_executive_renumeration-div{
+                                .EmployeesRegistration_insurance_premium-div{
                                     display: flex;
                                     flex-direction: column;
                                     margin-bottom: 10px;
-                                    .executive-renumeration-label{
+                                    .insurance-premium{
                                         margin-bottom: 5px;
                                     }
                                     input{

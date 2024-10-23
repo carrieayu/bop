@@ -16,177 +16,186 @@ import { NULL } from 'sass'
 import CrudModal from '../../components/CrudModal/CrudModal'
 
 const EmployeesRegistration = () => {
-    const [activeTab, setActiveTab] = useState('/planning-list')
-    const navigate = useNavigate()
-    const location = useLocation()
-    const [activeTabOther, setActiveTabOther] = useState('employee')
-    const storedUserID = localStorage.getItem('userID')
-    const { language, setLanguage } = useLanguage()
-    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
-    const dispatch = useDispatch()
-    const [businessDivisionSelection, setBusinessDivisionSelection] = useState<any>([])
-    const [selectedCompanyId, setSelectedCompanyId] = useState('')
-    const [companySelection, setCompanySelection] = useState<any>([])
-    const [modalIsOpen, setModalIsOpen] = useState(false)
-    const [selectedEmployeeType, setSelectedEmployeeType] = useState<string | null>(null)
-  
-    const [employees, setEmployees] = useState([
+  const [activeTab, setActiveTab] = useState('/planning-list')
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [activeTabOther, setActiveTabOther] = useState('employee')
+  const storedUserID = localStorage.getItem('userID')
+  const { language, setLanguage } = useLanguage()
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
+  const dispatch = useDispatch()
+  const [businessDivisionSelection, setBusinessDivisionSelection] = useState<any>([])
+  const [selectedCompanyId, setSelectedCompanyId] = useState('')
+  const [companySelection, setCompanySelection] = useState<any>([])
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [selectedEmployeeType, setSelectedEmployeeType] = useState<string | null>(null)
+
+  const [employees, setEmployees] = useState([
+    {
+      last_name: '',
+      first_name: '',
+      type: '',
+      email: '',
+      salary: '',
+      executive_renumeration: '',
+      company_name: '',
+      business_division_name: '',
+      bonus_and_fuel_allowance: '',
+      statutory_welfare_expense: '',
+      welfare_expense: '',
+      insurance_premium: '',
+      auth_id: '',
+      created_at: '',
+    },
+  ])
+  const [allBusinessDivisions, setAllBusinessDivisions] = useState([])
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
+
+  const fetchData = async () => {
+    try {
+      const resMasterCompany = await dispatch(fetchMasterCompany() as unknown as UnknownAction)
+      setCompanySelection(resMasterCompany.payload)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  // const handleInputChange = (containerIndex, projectIndex, event) => {
+  //   const { name, value } = event.target
+  //   const newContainers = [...employees]
+  //   newContainers[containerIndex] = {
+  //     ...newContainers[containerIndex],
+  //     [name]: value,
+  //   }
+  //   setEmployees(newContainers)
+  // }
+
+  const handleInputChange = (containerIndex, projectIndex, event) => {
+    const { name, value } = event.target
+
+    if (name === 'company_name') {
+      setSelectedCompanyId(value) // Update selected company ID
+      const newContainers = [...employees]
+      newContainers[containerIndex].business_division_name = '' // Reset business division when the company changes
+      setEmployees(newContainers)
+    }
+
+    const newContainers = [...employees]
+    newContainers[containerIndex] = {
+      ...newContainers[containerIndex],
+      [name]: value,
+    }
+    setEmployees(newContainers)
+  }
+
+  useEffect(() => {
+    const fetchBusinessDivisionsForCompany = async () => {
+      if (selectedCompanyId) {
+        try {
+          const response = await axios.get(
+            `http://127.0.0.1:8000/api/business-divisions?company_id=${selectedCompanyId}`,
+          )
+          // const response = await axios.get(`http://54.178.202.58:8000/api/business-divisions?company_id=${selectedCompanyId}`, )
+          setBusinessDivisionSelection(response.data) // Update business divisions based on selected company
+        } catch (error) {
+          console.error('Error fetching business divisions:', error)
+        }
+      } else {
+        setBusinessDivisionSelection([]) // Clear if no company is selected
+      }
+    }
+
+    fetchBusinessDivisionsForCompany()
+  }, [selectedCompanyId])
+
+  const handleCompanyChange = async (containerIndex, companyId) => {
+    const newContainers = [...employees]
+    newContainers[containerIndex].company_name = companyId // Set the selected company ID
+    setEmployees(newContainers)
+
+    try {
+      // Fetch business divisions based on the selected company ID
+      const response = await axios.get(`http://127.0.0.1:8000/api/business-divisions/?company_id=${companyId}`)
+      // const response = await axios.get(`http://54.178.202.58:8000/api/business-divisions/?company_id=${companyId}`)
+      const divisions = response.data // Assuming your API returns an array of divisions
+
+      setBusinessDivisionSelection(divisions) // Update businessDivisionSelection with fetched divisions
+    } catch (error) {
+      console.error('Error fetching business divisions:', error)
+    }
+  }
+
+  const handleTabClick = (tab) => {
+    setActiveTab(tab)
+    navigate(tab)
+  }
+
+  const handleTabsClick = (tab) => {
+    setActiveTabOther(tab)
+    switch (tab) {
+      case 'client':
+        navigate('/clients-registration')
+        break
+      case 'employee':
+        navigate('/employees-registration')
+        break
+      case 'businessDivision':
+        navigate('/business-divisions-registration')
+        break
+      case 'users':
+        navigate('/users-registration')
+        break
+      default:
+        break
+    }
+  }
+
+  const handleCancel = () => {
+    //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
+    openModal()
+  }
+
+  const handleRemoveInputData = () => {
+    setEmployees([
       {
         last_name: '',
         first_name: '',
-        email: '',
         type: '',
+        email: '',
         salary: '',
         executive_renumeration: '',
-        business_division_name: '',
         company_name: '',
+        business_division_name: '',
         bonus_and_fuel_allowance: '',
         statutory_welfare_expense: '',
         welfare_expense: '',
+        insurance_premium: '',
         auth_id: '',
         created_at: '',
       },
     ])
-    const [allBusinessDivisions, setAllBusinessDivisions] = useState([]);
+    closeModal()
+  }
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalMessage, setModalMessage] = useState('');
+  const openModal = () => {
+    setModalIsOpen(true)
+  }
 
+  const closeModal = () => {
+    setModalIsOpen(false)
+  }
 
-    const fetchData = async () => {
-      try {
-        const resMasterCompany = await dispatch(fetchMasterCompany() as unknown as UnknownAction)
-        setCompanySelection(resMasterCompany.payload)
-        
-      } catch (e) {
-        console.error(e)
-      }
-    }
-  
-     useEffect(() => {
-       fetchData()
-     }, [])
+  const handleTranslationSwitchToggle = () => {
+    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
+    setLanguage(newLanguage)
+  }
 
-  const handleInputChange = (containerIndex, projectIndex, event) => {
-       console.log('test',containerIndex)
-       const { name, value } = event.target
-
-       if (name === 'company_name') {
-         setSelectedCompanyId(value) // Update selected company ID
-         const newContainers = [...employees]
-         newContainers[containerIndex].business_division_name = '' // Reset business division when the company changes
-         setEmployees(newContainers)
-       }
-
-       const newContainers = [...employees]
-       newContainers[containerIndex] = {
-         ...newContainers[containerIndex],
-         [name]: value,
-       }
-       setEmployees(newContainers)
-     }
-
-     useEffect(() => {
-       const fetchBusinessDivisionsForCompany = async () => {
-         if (selectedCompanyId) {
-           try {
-             const response = await axios.get(`http://127.0.0.1:8000/api/business-divisions?company_id=${selectedCompanyId}`, )
-             // const response = await axios.get(`http://54.178.202.58:8000/api/business-divisions?company_id=${selectedCompanyId}`, )
-             setBusinessDivisionSelection(response.data) // Update business divisions based on selected company
-           } catch (error) {
-             console.error('Error fetching business divisions:', error)
-           }
-         } else {
-           setBusinessDivisionSelection([]) // Clear if no company is selected
-         }
-       }
-
-       fetchBusinessDivisionsForCompany()
-     }, [selectedCompanyId])
-
-     const handleCompanyChange = async (containerIndex, companyId) => {
-       const newContainers = [...employees]
-       newContainers[containerIndex].company_name = companyId // Set the selected company ID
-       setEmployees(newContainers)
-
-       try {
-         // Fetch business divisions based on the selected company ID
-         const response = await axios.get(`http://127.0.0.1:8000/api/business-divisions/?company_id=${companyId}`)
-         // const response = await axios.get(`http://54.178.202.58:8000/api/business-divisions/?company_id=${companyId}`)
-         const divisions = response.data // Assuming your API returns an array of divisions
-
-         setBusinessDivisionSelection(divisions) // Update businessDivisionSelection with fetched divisions
-       } catch (error) {
-         console.error('Error fetching business divisions:', error)
-       }
-     }
-
-
-
-    const handleTabClick = (tab) => {
-        setActiveTab(tab)
-        navigate(tab)
-    }
-
-    const handleTabsClick = (tab) => {
-        setActiveTabOther(tab)
-        switch (tab) {
-          case 'client':
-            navigate('/clients-registration');
-            break;
-          case 'employee':
-            navigate('/employees-registration');
-            break;
-          case 'businessDivision':
-            navigate('/business-divisions-registration');
-            break;
-          case 'users':
-            navigate('/users-registration');
-            break;
-          default:
-            break;
-        }
-    }
-    
-    const handleCancel = () => {
-      //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-      openModal()
-    }
-
-    const handleRemoveInputData = () => {
-      setEmployees([
-        {
-          last_name: '',
-          first_name: '',
-          email: '',
-          type: '',
-          salary: '',
-          executive_renumeration: '',
-          business_division_name: '',
-          company_name: '',
-          bonus_and_fuel_allowance: '',
-          statutory_welfare_expense: '',
-          welfare_expense: '',
-          auth_id: '',
-          created_at: '',
-        },
-      ])
-      closeModal()
-    }
-
-    const openModal = () => {
-      setModalIsOpen(true)
-    }
-
-    const closeModal = () => {
-      setModalIsOpen(false)
-    }
-
-    const handleTranslationSwitchToggle = () => {
-        const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
-        setLanguage(newLanguage);
-    };
-  
   const validateEmployees = (employees) => {
     return employees.every((employee, index) => {
       if (
@@ -201,14 +210,23 @@ const EmployeesRegistration = () => {
           console.log('is regular', employee.type === '0', 'is exec', employee.type === '1')
           console.log(typeof employee.executive_renumeration)
           console.log(typeof employee.salary)
-          console.log('salary',isNaN(employee.salary), 'greter than 0', employee.salary > 0, employee.salary, employee.executive_renumeration)
+          console.log(
+            'salary',
+            isNaN(employee.salary),
+            'greter than 0',
+            employee.salary > 0,
+            employee.salary,
+            employee.executive_renumeration,
+          )
           // Regular employee (type 0): Validate last_name, first_name, email, and salary
           return (
-            employee.last_name.trim() !== '' &&
-            employee.first_name.trim() !== '' &&
-            /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(employee.email) &&
-            (!isNaN(employee.salary) && employee.salary > 0) && // Salary must be greater than 0 for regular employees
-            employee.executive_renumeration === '' ||  employee.executive_renumeration === null
+            (employee.last_name.trim() !== '' &&
+              employee.first_name.trim() !== '' &&
+              /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(employee.email) &&
+              !isNaN(employee.salary) &&
+              employee.salary > 0 && // Salary must be greater than 0 for regular employees
+              employee.executive_renumeration === '') ||
+            employee.executive_renumeration === null
           )
         } else if (employee.type === '1') {
           console.log('is regular', employee.type === '0', 'is exec', employee.type === '1')
@@ -218,171 +236,164 @@ const EmployeesRegistration = () => {
 
           // Executive employee (type 1): Validate last_name, first_name, email, and executive_renumeration
           return (
-            employee.last_name.trim() !== '' &&
-            employee.first_name.trim() !== '' &&
-            /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(employee.email) &&
-            (!isNaN(employee.executive_renumeration) && employee.executive_renumeration >= 0)) &&// Executive renumeration can be empty or >= 0
-            employee.salary === ''|| employee.salary === null
+            (employee.last_name.trim() !== '' &&
+              employee.first_name.trim() !== '' &&
+              /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(employee.email) &&
+              !isNaN(employee.executive_renumeration) &&
+              employee.executive_renumeration >= 0 && // Executive renumeration can be empty or >= 0
+              employee.salary === '') ||
+            employee.salary === null
+          )
         } else {
           return true // No changes, no validation needed
         }
       }
     })
-   }
+  }
 
-    // const validateEmployees = (employees) => {
-    //   return employees.every((employee) => {
-    //     return (
-    //       employee.last_name.trim() !== '' &&
-    //       employee.first_name.trim() !== '' &&
-    //       /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(employee.email) && // Email validation
-    //       !isNaN(employee.salary) &&
-    //       !isNaN(employee.executive_renumeration) &&
-    //       // employee.salary > 0 && // Salary should be a number and greater than 0
-    //       employee.business_division_name.trim() !== '' &&
-    //       employee.company_name.trim() !== ''
-    //     )
-    //   })
-    // }
+  // const validateEmployees = (employees) => {
+  //   return employees.every((employee) => {
+  //     return (
+  //       employee.last_name.trim() !== '' &&
+  //       employee.first_name.trim() !== '' &&
+  //       /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(employee.email) && // Email validation
+  //       !isNaN(employee.salary) &&
+  //       !isNaN(employee.executive_renumeration) &&
+  //       // employee.salary > 0 && // Salary should be a number and greater than 0
+  //       employee.business_division_name.trim() !== '' &&
+  //       employee.company_name.trim() !== ''
+  //     )
+  //   })
+  // }
 
-    useEffect(() => {
-        const path = location.pathname;
-        if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
-          setActiveTab(path);
-        }
-      }, [location.pathname]);
+  useEffect(() => {
+    const path = location.pathname
+    if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
+      setActiveTab(path)
+    }
+  }, [location.pathname])
 
   const handleSubmit = async (e) => {
-        console.log(employees)
+    console.log(employees)
 
-        e.preventDefault()
-        const employeeData = employees.map((empl) => ({
-          last_name: empl.last_name,
-          first_name: empl.first_name,
-          email: empl.email,
-          type: empl.type,
-          salary: empl.salary,// ONLY if regular employee is selected, value is submitted
-          executive_renumeration: empl.executive_renumeration , // ONLY if executive employee is selected, value is submitted
-          business_division: empl.business_division_name,
-          company: empl.company_name,
-          bonus_and_fuel_allowance: empl.bonus_and_fuel_allowance,
-          statutory_welfare_expense: empl.statutory_welfare_expense,
-          welfare_expense: empl.welfare_expense,
-          auth_user: localStorage.getItem('userID'),
-          created_at: Date.now(),
-        }))
-        
-        if (!validateEmployees(employees)) {
-          setModalMessage(translate('allFieldsRequiredInputValidationMessage', language));
-          setIsModalOpen(true);
-          return // Stop the submission
-        }
-        // Check for duplicates in the email [input] submitted in enmployee
-        const hasDuplicateEntries = (entries, key) => {
-          return entries.some((entry, index) => entries.findIndex((e) => e[key] === entry[key]) !== index)
-        }
+    e.preventDefault()
+    const employeeData = employees.map((empl) => ({
+      last_name: empl.last_name,
+      first_name: empl.first_name,
+      type: empl.type,
+      email: empl.email,
+      salary: empl.salary, // ONLY if regular employee is selected, value is submitted
+      executive_renumeration: empl.executive_renumeration, // ONLY if executive employee is selected, value is submitted
+      company: empl.company_name,
+      business_division: empl.business_division_name,
+      bonus_and_fuel_allowance: empl.bonus_and_fuel_allowance,
+      statutory_welfare_expense: empl.statutory_welfare_expense,
+      welfare_expense: empl.welfare_expense,
+      insurance_premium: empl.insurance_premium,
+      auth_user: localStorage.getItem('userID'),
+      created_at: Date.now(),
+    }))
 
-        if (hasDuplicateEntries(employees, 'email')) {
-          setModalMessage(translate('employeeDuplicateInputValidationMessage', language));
-          setIsModalOpen(true);
-          return
-        }
-        
-        const token = localStorage.getItem('accessToken')
-        try {
-          const response = await axios.post('http://127.0.0.1:8000/api/employees/create', employeeData, {
-            // const response = await axios.post('http://54.178.202.58:8000/api/employees/create', employeeData, {
-            headers: {
-              Authorization: `Bearer ${token}`, // Add token to request headers
-            },
-          })
-          setModalMessage(translate('successfullySaved', language));
-          setIsModalOpen(true);
-        } catch (error) {
-         if (error.response) {
-            const { status, data } = error.response
-            switch (status) {
-              case 409:
-                setModalMessage(translate('emailExistsMessage', language));
-                setIsModalOpen(true);
-                break
-              case 401:
-                console.error('Validation error:', data)
-                window.location.href = '/login'
-                break
-              default:
-                console.error('There was an error creating the employee data!', error)
-                setModalMessage(translate('error', language));
-                setIsModalOpen(true);
-                break
-            }
-          }
-        }
-      }
-
-      const handleAddContainer = () => {
-          setEmployees([
-            ...employees,
-            {
-              last_name: '',
-              first_name: '',
-              email: '',
-              type: '',
-              salary: '',
-              executive_renumeration: '',
-              business_division_name: '',
-              company_name: '',
-              bonus_and_fuel_allowance: '',
-              statutory_welfare_expense: '',
-              welfare_expense: '',
-              auth_id: '',
-              created_at: '',
-            },
-          ])
-      }
-
-      const handleRemoveContainer = () => {
-        if (employees.length > 1) {
-          const newContainers = [...employees]
-          newContainers.pop()
-          setEmployees(newContainers)
-        }
-      }
-  
-  const handleEmployeeTypePulldown = (e, containerIndex) => {
-    console.log(containerIndex)
-      // Reset the values when switching employee type
-      if (e.target.value === '0') {
-        // Reset executive remuneration if switching to regular employee
-        handleInputChange(containerIndex, null, { target: { name: 'executive_renumeration', value: null } });
-      } else if (e.target.value === '1') {
-        // Reset salary if switching to executive employee
-        handleInputChange(containerIndex, null, { target: { name: 'salary', value: null } });
-      }
-      // Set the employee type to 0 (Regular) or 1 (Executive)
-      setSelectedEmployeeType(e.target.value)
+    if (!validateEmployees(employees)) {
+      setModalMessage(translate('allFieldsRequiredInputValidationMessage', language))
+      setIsModalOpen(true)
+      return // Stop the submission
+    }
+    // Check for duplicates in the email [input] submitted in enmployee
+    const hasDuplicateEntries = (entries, key) => {
+      return entries.some((entry, index) => entries.findIndex((e) => e[key] === entry[key]) !== index)
     }
 
-  
+    if (hasDuplicateEntries(employees, 'email')) {
+      setModalMessage(translate('employeeDuplicateInputValidationMessage', language))
+      setIsModalOpen(true)
+      return
+    }
 
-      // const handleInputChange = (containerIndex, projectIndex, event) => {
-      //   const { name, value } = event.target
-      //   const newContainers = [...employees]
-      //   newContainers[containerIndex] = {
-      //     ...newContainers[containerIndex],
-      //     [name]: value, 
-      //   }
-      //   setEmployees(newContainers) 
-      // }
+    const token = localStorage.getItem('accessToken')
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/api/employees/create', employeeData, {
+        // const response = await axios.post('http://54.178.202.58:8000/api/employees/create', employeeData, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add token to request headers
+        },
+      })
+      setModalMessage(translate('successfullySaved', language))
+      setIsModalOpen(true)
+    } catch (error) {
+      if (error.response) {
+        const { status, data } = error.response
+        switch (status) {
+          case 409:
+            setModalMessage(translate('emailExistsMessage', language))
+            setIsModalOpen(true)
+            break
+          case 401:
+            console.error('Validation error:', data)
+            window.location.href = '/login'
+            break
+          default:
+            console.error('There was an error creating the employee data!', error)
+            setModalMessage(translate('error', language))
+            setIsModalOpen(true)
+            break
+        }
+      }
+    }
+  }
 
-      useEffect(() => {
-        setIsTranslateSwitchActive(language === 'en');
-        fetchData()
-      }, [language]);
+  const handleAddContainer = () => {
+    setEmployees([
+      ...employees,
+      {
+        last_name: '',
+        first_name: '',
+        type: '',
+        email: '',
+        salary: '',
+        executive_renumeration: '',
+        company_name: '',
+        business_division_name: '',
+        bonus_and_fuel_allowance: '',
+        statutory_welfare_expense: '',
+        welfare_expense: '',
+        insurance_premium: '',
+        auth_id: '',
+        created_at: '',
+      },
+    ])
+  }
 
-      const handleListClick = () => { 
-        navigate('/employees-list');
-      };
+  const handleRemoveContainer = () => {
+    if (employees.length > 1) {
+      const newContainers = [...employees]
+      newContainers.pop()
+      setEmployees(newContainers)
+    }
+  }
+
+  const handleEmployeeTypePulldown = (e, containerIndex) => {
+    console.log(containerIndex)
+    // Reset the values when switching employee type
+    if (e.target.value === '0') {
+      // Reset executive remuneration if switching to regular employee
+      handleInputChange(containerIndex, null, { target: { name: 'executive_renumeration', value: null } })
+    } else if (e.target.value === '1') {
+      // Reset salary if switching to executive employee
+      handleInputChange(containerIndex, null, { target: { name: 'salary', value: null } })
+    }
+    // Set the employee type to 0 (Regular) or 1 (Executive)
+    setSelectedEmployeeType(e.target.value)
+  }
+
+  useEffect(() => {
+    setIsTranslateSwitchActive(language === 'en')
+    fetchData()
+  }, [language])
+
+  const handleListClick = () => {
+    navigate('/employees-list')
+  }
 
   return (
     <div className='EmployeesRegistration_wrapper'>
@@ -529,6 +540,15 @@ const EmployeesRegistration = () => {
                               type='number'
                               name='bonus_and_fuel_allowance'
                               value={container.bonus_and_fuel_allowance}
+                              onChange={(e) => handleInputChange(containerIndex, null, e)}
+                            />
+                          </div>
+                          <div className='EmployeesRegistration_insurance_premium-div'>
+                            <label className='insurance-premium'>{translate('insurancePremium', language)}</label>
+                            <input
+                              type='number'
+                              name='insurancePremium'
+                              // value={container.insurance_premium}
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
                             />
                           </div>

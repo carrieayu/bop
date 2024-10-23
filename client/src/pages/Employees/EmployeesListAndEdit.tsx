@@ -502,6 +502,31 @@ const EmployeesListAndEdit: React.FC = () => {
     // console.log('selectedEmp:',selectedEmployeeType)
   }
 
+  const handleStatutoryWelfare = (employeeIndex, e) => {
+    // Reset the values when switching employee type
+    if (e.target.value === '0') {
+      console.log('Changed to 0')
+      // Reset executive remuneration if switching to regular employee
+      handleChange(employeeIndex, e)
+      handleChange(employeeIndex, { target: { name: 'executive_renumeration', value: null } })
+    } else if (e.target.value === '1') {
+      console.log('Changed to 1')
+
+      // Reset salary if switching to executive employee
+      handleChange(employeeIndex, { target: { name: 'salary', value: null } })
+      handleChange(employeeIndex, e)
+    }
+
+    setSelectedEmployeeType((prevState) => [
+      ...prevState, // Spread the previous state (the existing array) to preserve the previous items
+      { employeeIndex, type: e.target.value }, // Add the new object to the array
+    ])
+
+    console.log(selectedEmployeeType)
+    // Set the employee type to 0 (Regular) or 1 (Executive)
+    // console.log('selectedEmp:',selectedEmployeeType)
+  }
+
   return (
     <div className='EmployeesListAndEdit_wrapper'>
       <HeaderButtons
@@ -567,6 +592,18 @@ const EmployeesListAndEdit: React.FC = () => {
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-left'>
                                   {translate('businessDivision', language)}
+                                </th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('bonus', language)}・ {translate('fuelAllowance', language)}
+                                </th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('statutoryWelfareExpense', language)}
+                                </th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('welfareExpense', language)}
+                                </th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('insurancePremium', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
                                   {translate('createdBy', language)}
@@ -683,6 +720,53 @@ const EmployeesListAndEdit: React.FC = () => {
                                         ))}
                                       </select>
                                     </td>
+                                    <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
+                                      <input
+                                        className='edit_input'
+                                        type='number'
+                                        name='bonus_and_fuel_allowance'
+                                        value={employee.bonus_and_fuel_allowance || ''}
+                                        onChange={(e) => handleChange(employeeIndex, e)}
+                                      />
+                                    </td>
+
+                                    <td className='EmployeesRegistration-statutory_welfare_expense-div'>
+                                      <input
+                                        type='text'
+                                        name='statutory_welfare_expense'
+                                        value={
+                                          (employee.statutory_welfare_expense =
+                                            employee.type === '0'
+                                              ? (Number(employee.salary) * 0.1451).toString()
+                                              : (Number(employee.executive_renumeration) * 0.1451).toString())
+                                        }
+                                        onChange={(e) => handleStatutoryWelfare(employeeIndex, e)}
+                                        readOnly
+                                      />
+                                    </td>
+                                    <td className='EmployeesRegistration-welfare_expense-div'>
+                                      <input
+                                        type='text'
+                                        name='welfare_expense'
+                                        value={
+                                          (employee.statutory_welfare_expense =
+                                            employee.type === '0'
+                                              ? (Number(employee.salary) * 0.0048).toString()
+                                              : (Number(employee.executive_renumeration) * 0.00481).toString())
+                                        }
+                                        onChange={(e) => handleStatutoryWelfare(employeeIndex, e)}
+                                        readOnly
+                                      />
+                                    </td>
+                                    <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
+                                      <input
+                                        className='edit_input'
+                                        type='number'
+                                        name='insurance_premium'
+                                        value={employee.insurance_premium || ''}
+                                        onChange={(e) => handleChange(employeeIndex, e)}
+                                      />
+                                    </td>
                                     <td className='EmployeesListAndEdit_table_body_content_vertical'>
                                       {employee.auth_user_id}
                                     </td>
@@ -734,6 +818,18 @@ const EmployeesListAndEdit: React.FC = () => {
                                 {translate('businessDivision', language)}
                               </th>
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                {translate('bonus', language)}・ {translate('fuelAllowance', language)}
+                              </th>
+                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                {translate('statutoryWelfareExpense', language)}
+                              </th>
+                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                {translate('welfareExpense', language)}
+                              </th>
+                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                {translate('insurancePremium', language)}
+                              </th>
+                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
                                 {translate('createdBy', language)}
                               </th>
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
@@ -770,6 +866,18 @@ const EmployeesListAndEdit: React.FC = () => {
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>{employee.company}</td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
                                   {employee.business_division}
+                                </td>
+                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                  {employee.bonus_and_fuel_allowance}
+                                </td>
+                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                  {employee.statutory_welfare_expense}
+                                </td>
+                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                  {employee.welfare_expense}
+                                </td>
+                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                  {employee.insurance_premium}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
                                   {employee.auth_user}
