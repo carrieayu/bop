@@ -235,6 +235,18 @@ const EmployeesRegistration = () => {
           })
           setModalMessage(translate('successfullySaved', language));
           setIsModalOpen(true);
+          setEmployees([
+            {
+              last_name: '',
+              first_name: '',
+              email: '',
+              salary: '',
+              business_division_name: '',
+              company_name: '',
+              auth_id: '',
+              created_at: '',
+            },
+          ])
         } catch (error) {
          if (error.response) {
             const { status, data } = error.response

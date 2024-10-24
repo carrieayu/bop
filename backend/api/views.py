@@ -1021,8 +1021,10 @@ class CreateEmployeeExpenses(generics.CreateAPIView):
 
                     if existing_expense:
                         employee_name = f"{employee.first_name} {employee.last_name}"
+                        year = entry.get('year', '2001')
+                        month = entry.get('month', '01')
                         return Response({
-                            'detail': f'There is already an existing expense for {employee_name}.'
+                            'detail': f'There is already an existing expense for {employee_name} for {month}/{year}.'
                             }, status=status.HTTP_400_BAD_REQUEST)
 
                 except MasterClient.DoesNotExist:

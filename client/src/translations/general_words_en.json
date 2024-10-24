@@ -115,5 +115,5 @@
   "projectNewEntry": " And save the new selected fields with: '${newEntries}'?",
   "updateMessage": "Are you sure you would like to update this data?",
   "listScreen": "List Screen",
-  "employeeExpensesDuplicateData": "There is already an existing data for ${employeeName}. Please choose a different name."
+  "employeeExpensesDuplicateData": "The selected project already exists for ${date} for employee ${employeeName}."
 }

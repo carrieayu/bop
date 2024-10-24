@@ -115,5 +115,5 @@
   "projectNewEntry": "そして、新しく選択されたフィールド '${newEntries}' を保存しますか？",
   "updateMessage": "このデータを更新してもよろしいですか？",
   "listScreen": "一覧画面",
-  "employeeExpensesDuplicateData": "${employeeName} のデータは既に存在しています。別の名前を選んでください。"
+  "employeeExpensesDuplicateData": "選択されたプロジェクトは、${date}に${employeeName}のために既に存在しています。"
 }
