@@ -195,7 +195,8 @@ const BusinessDivisionsRegistration = () => {
 
             switch (status) {
               case 409:
-                setModalMessage(translate('businessDivisionNameExistsValidationMessage', language));
+                const existingDivisions = data.errors.map(err => err.business_division_name).join(', ') || 'Unknown division';
+                setModalMessage(translate('businessDivisionNameExistsValidationMessage', language).replace('${businessDivisionName}', existingDivisions));
                 setIsModalOpen(true);
                 break
               case 401:

@@ -240,7 +240,8 @@ const EmployeesRegistration = () => {
             const { status, data } = error.response
             switch (status) {
               case 409:
-                setModalMessage(translate('emailExistsMessage', language));
+                const existingEmail = data.errors.map(err => err.email).join(',') || 'Unknown email';
+                setModalMessage(translate('emailExistsMessage', language).replace('${email}', existingEmail));
                 setIsModalOpen(true);
                 break
               case 401:

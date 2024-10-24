@@ -134,12 +134,21 @@ const ClientsRegistration = () => {
           })
           setModalMessage(translate('successfullySaved', language));
           setIsModalOpen(true);
+          setClientData([
+            {
+              client_name: '',
+              created_at: '',
+              auth_user: '',
+            },
+          ])
         } catch (error) {
           if (error.response) {
             const { status, data } = error.response
             switch (status) {
               case 409:
-                setModalMessage(translate('clientNameExistsValidationMessage', language));
+                // setModalMessage(translate('clientNameExistsValidationMessage', language));
+                const existingClientNames = data.errors.map(err => err.client_name).join(', ') || 'Unknown client';
+                setModalMessage(translate('clientNameExistsValidationMessage', language).replace('${clientName}', existingClientNames));
                 setIsModalOpen(true);
                 break
               case 401:
