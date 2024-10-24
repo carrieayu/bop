@@ -276,43 +276,62 @@ const EmployeesRegistration = () => {
       return entries.some((entry, index) => entries.findIndex((e) => e[key] === entry[key]) !== index)
     }
 
-    if (hasDuplicateEntries(employees, 'email')) {
-      setModalMessage(translate('employeeDuplicateInputValidationMessage', language))
-      setIsModalOpen(true)
-      return
-    }
-
-    const token = localStorage.getItem('accessToken')
-    try {
-      const response = await axios.post('http://127.0.0.1:8000/api/employees/create', employeeData, {
-        // const response = await axios.post('http://54.178.202.58:8000/api/employees/create', employeeData, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Add token to request headers
-        },
-      })
-      setModalMessage(translate('successfullySaved', language))
-      setIsModalOpen(true)
-    } catch (error) {
-      if (error.response) {
-        const { status, data } = error.response
-        switch (status) {
-          case 409:
-            setModalMessage(translate('emailExistsMessage', language))
-            setIsModalOpen(true)
-            break
-          case 401:
-            console.error('Validation error:', data)
-            window.location.href = '/login'
-            break
-          default:
-            console.error('There was an error creating the employee data!', error)
-            setModalMessage(translate('error', language))
-            setIsModalOpen(true)
-            break
+        if (hasDuplicateEntries(employees, 'email')) {
+          setModalMessage(translate('employeeDuplicateInputValidationMessage', language));
+          setIsModalOpen(true);
+          return
+        }
+        
+        const token = localStorage.getItem('accessToken')
+        try {
+          const response = await axios.post('http://127.0.0.1:8000/api/employees/create', employeeData, {
+            // const response = await axios.post('http://54.178.202.58:8000/api/employees/create', employeeData, {
+            headers: {
+              Authorization: `Bearer ${token}`, // Add token to request headers
+            },
+          })
+          setModalMessage(translate('successfullySaved', language));
+          setIsModalOpen(true);
+          setEmployees([
+            {
+              last_name: '',
+              first_name: '',
+              type:'',
+              email: '',
+              salary: '',
+              executive_renumeration:'',
+              company_name: '',
+              business_division_name: '',
+              bonus_and_fuel_allowance: '',
+              statutory_welfare_expense: '',
+              welfare_expense: '',
+              insurance_premium: '',
+              auth_id: '',
+              created_at: ''
+            },
+          ])
+        } catch (error) {
+         if (error.response) {
+            const { status, data } = error.response
+            switch (status) {
+              case 409:
+                const existingEmail = data.errors.map(err => err.email).join(',') || 'Unknown email';
+                setModalMessage(translate('emailExistsMessage', language).replace('${email}', existingEmail));
+                setIsModalOpen(true);
+                break
+              case 401:
+                console.error('Validation error:', data)
+                window.location.href = '/login'
+                break
+              default:
+                console.error('There was an error creating the employee data!', error)
+                setModalMessage(translate('error', language));
+                setIsModalOpen(true);
+                break
+            }
+          }
         }
       }
-    }
-  }
 
   const handleAddContainer = () => {
     setEmployees([

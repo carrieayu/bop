@@ -284,6 +284,7 @@ const EmployeeExpensesRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    console.log(employeeContainers)
 
     // Perform validation
     if (!handleValidation()) {
@@ -316,7 +317,32 @@ const EmployeeExpensesRegistration = () => {
         },
       ])
     } catch (error) {
-      console.log(error)
+      console.log('Error response:', error.response);
+      if (error.response && error.response.status === 400) {
+        const errorMessage = error.response.data.detail;
+
+    // Check if the error message indicates a duplicate expense
+    if (errorMessage.includes('There is already an existing expense')) {
+      // Extract the employee name, year, and month from the error message
+      const matches = errorMessage.match(/already an existing expense for (.+) for (\d{1,2}\/\d{4})/);
+      if (matches) {
+        const employeeName = matches[1]; // Extracted employee name
+        const date = matches[2]; // Extracted date (month/year)
+
+        // Set the modal message with the employee name and date
+        setModalMessage(translate('employeeExpensesDuplicateData', language)
+          .replace('${employeeName}', employeeName)
+          .replace('${date}', date)); // Assuming you want to format the date in the message
+      }
+    } else {
+      setModalMessage(translate('error', language)); // General error handling
+    }
+        setIsModalOpen(true);
+      } else {
+        console.log(error); // Log other errors for debugging
+        setModalMessage(translate('error', language));
+        setIsModalOpen(true);
+      }
     }
   }
 

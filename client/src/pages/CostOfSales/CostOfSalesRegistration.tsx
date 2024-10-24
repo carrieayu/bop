@@ -224,8 +224,31 @@ const CostOfSalesRegistration = () => {
       }]);
     } catch (error) {
       if (error.response && error.response.status === 409) {
-        // Conflict: open the overwrite confirmation modal
-        setModalMessage(translate('alertMessageAbove', language));
+        const existingEntries = error.response.data.existingEntries;
+
+        // Map to create a string of existing entries
+        const existingYearsMonths = existingEntries.map(entry => `'${entry.year}, ${entry.month}'`).join(', ');
+      
+        // Filter out new entries that don't match the existing entries
+        const newEntries = costOfSalesData.filter(item => {
+          return !existingEntries.some(existing => existing.year === item.year && existing.month === item.month);
+        });
+      
+        // Create a string for only the new entries being submitted
+        const newYearsMonths = newEntries.map(entry => `'${entry.year}, ${entry.month}'`).join(', ');
+      
+        // Construct the alert message
+        let message = translate('alertMessageAbove', language)
+            .replace('${existingEntries}', existingYearsMonths);
+      
+        // Only append the new entries part if there are new entries
+        if (newYearsMonths.length > 0) {
+          message += translate('alertMessageNewEntries', language)
+            .replace('${newEntries}', newYearsMonths);
+        }
+      
+
+        setModalMessage(message);
         setIsOverwriteModalOpen(true);
         return; // Exit the function to wait for user input
       } else {
