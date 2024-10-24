@@ -893,6 +893,7 @@ class EmployeeDetailView(generics.ListAPIView):
                     'business_division_id': employee.business_division_id,
                     'statutory_welfare_expense':employee.statutory_welfare_expense,
                     'welfare_expense':employee.welfare_expense,
+                    'bonus_and_fuel_allowance':employee.bonus_and_fuel_allowance,
                     'insurance_premium':employee.insurance_premium,
                     'auth_user_id': employee.auth_user_id,
                     'created_at': employee.created_at,

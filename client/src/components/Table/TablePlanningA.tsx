@@ -14,8 +14,8 @@ const TablePlanning = () => {
       window.location.href = '/login';
       return;
     }
-    axios.get('http://127.0.0.1:8000/api/planning/list/', {
-    // axios.get('http://54.178.202.58:8000/api/planning/list/', {
+    axios.get('http://127.0.0.1:8000/api/planning', {
+    // axios.get('http://54.178.202.58:8000/api/planning', {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,

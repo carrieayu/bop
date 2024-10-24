@@ -264,6 +264,8 @@ const EmployeesRegistration = () => {
       created_at: Date.now(),
     }))
 
+    console.log(employeeData)
+
     if (!validateEmployees(employees)) {
       setModalMessage(translate('allFieldsRequiredInputValidationMessage', language))
       setIsModalOpen(true)
@@ -459,8 +461,8 @@ const EmployeesRegistration = () => {
                               value={
                                 (container.welfare_expense =
                                   selectedEmployeeType === '0'
-                                    ? (Number(container.salary) * 0.0048).toString()
-                                    : (Number(container.executive_renumeration) * 0.0048).toString())
+                                    ? (Number(container.salary) * 0.0048).toFixed(2).toString()
+                                    : (Number(container.executive_renumeration) * 0.0048).toFixed(2).toString())
                               }
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
                               readOnly
@@ -517,8 +519,8 @@ const EmployeesRegistration = () => {
                             <label className='insurance-premium'>{translate('insurancePremium', language)}</label>
                             <input
                               type='number'
-                              name='insurancePremium'
-                              // value={container.insurance_premium}
+                              name='insurance_premium'
+                              value={container.insurance_premium}
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
                             />
                           </div>
@@ -561,8 +563,8 @@ const EmployeesRegistration = () => {
                               value={
                                 (container.statutory_welfare_expense =
                                   selectedEmployeeType === '0'
-                                    ? (Number(container.salary) * 0.1451).toString()
-                                    : (Number(container.executive_renumeration) * 0.1451).toString())
+                                    ? (Number(container.salary) * 0.1451).toFixed(2).toString()
+                                    : (Number(container.executive_renumeration) * 0.1451).toFixed(2).toString())
                               }
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
                               readOnly
