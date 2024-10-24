@@ -730,7 +730,7 @@ const EmployeesListAndEdit: React.FC = () => {
                                       />
                                     </td>
 
-                                    <td className='EmployeesRegistration-statutory_welfare_expense-div'>
+                                    <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
                                       <input
                                         type='text'
                                         name='statutory_welfare_expense'
@@ -744,7 +744,7 @@ const EmployeesListAndEdit: React.FC = () => {
                                         readOnly
                                       />
                                     </td>
-                                    <td className='EmployeesRegistration-welfare_expense-div'>
+                                    <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
                                       <input
                                         type='text'
                                         name='welfare_expense'
