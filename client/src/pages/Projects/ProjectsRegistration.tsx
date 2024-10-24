@@ -547,6 +547,7 @@ const ProjectsRegistration = () => {
                             name='sales_revenue'
                             value={form.sales_revenue}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()} 
                           />
                         </div>
                         <div className='projectsRegistration_employee-expenses-div'>
@@ -558,6 +559,7 @@ const ProjectsRegistration = () => {
                             name='employee_expense'
                             value={form.employee_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                         <div className='projectsRegistration_operating-income-div'>
@@ -569,6 +571,7 @@ const ProjectsRegistration = () => {
                             name='operating_profit'
                             value={form.operating_profit}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                         <div className='projectsRegistration_ordinary-income-div'>
@@ -580,6 +583,7 @@ const ProjectsRegistration = () => {
                             name='ordinary_profit'
                             value={form.ordinary_profit}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                       </div>
@@ -626,6 +630,7 @@ const ProjectsRegistration = () => {
                             name='cost_of_sale'
                             value={form.cost_of_sale}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                         <div className='projectsRegistration_indirect-employee-expense-div'>
@@ -637,6 +642,7 @@ const ProjectsRegistration = () => {
                             name='indirect_employee_expense'
                             value={form.indirect_employee_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                         <div className='projectsRegistration_non-operating-income-div'>
@@ -648,6 +654,7 @@ const ProjectsRegistration = () => {
                             name='non_operating_profit'
                             value={form.non_operating_profit}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                         <div className='projectsRegistration_ordinary-income-margin-div'>
@@ -659,6 +666,7 @@ const ProjectsRegistration = () => {
                             name='ordinary_profit_margin'
                             value={form.ordinary_profit_margin}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                       </div>
@@ -706,6 +714,7 @@ const ProjectsRegistration = () => {
                             name='dispatch_labor_expense'
                             value={form.dispatch_labor_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
 
@@ -716,6 +725,7 @@ const ProjectsRegistration = () => {
                             name='expense'
                             value={form.expense}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
 
@@ -728,6 +738,7 @@ const ProjectsRegistration = () => {
                             name='non_operating_expense'
                             value={form.non_operating_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                       </div>

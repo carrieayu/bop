@@ -107,6 +107,11 @@
                                             border: 1px solid #000;
                                             border-radius: 10px;
                                         }
+                                        input::-webkit-outer-spin-button,
+                                        input::-webkit-inner-spin-button {
+                                        -webkit-appearance: none;
+                                        margin: 0;
+                                        }
                                     }
                                     .costOfSalesRegistration_communication_expense-div{
                                         display: flex;
@@ -120,6 +125,11 @@
                                             height: 40px;
                                             border: 1px solid #000;
                                             border-radius: 10px;
+                                        }
+                                        input::-webkit-outer-spin-button,
+                                        input::-webkit-inner-spin-button {
+                                        -webkit-appearance: none;
+                                        margin: 0;
                                         }
                                     }
                                 }
@@ -154,6 +164,11 @@
                                             border: 1px solid #000;
                                             border-radius: 10px;
                                         }
+                                        input::-webkit-outer-spin-button,
+                                        input::-webkit-inner-spin-button {
+                                        -webkit-appearance: none;
+                                        margin: 0;
+                                        }
                                     }
                                     .costOfSalesRegistration_work_in_progress_expense-div{
                                         display: flex;
@@ -167,6 +182,11 @@
                                             height: 40px;
                                             border: 1px solid #000;
                                             border-radius: 10px;
+                                        }
+                                        input::-webkit-outer-spin-button,
+                                        input::-webkit-inner-spin-button {
+                                        -webkit-appearance: none;
+                                        margin: 0;
                                         }
                                     }
                                 }
@@ -184,6 +204,11 @@
                                             border: 1px solid #000;
                                             border-radius: 10px;
                                         }
+                                        input::-webkit-outer-spin-button,
+                                        input::-webkit-inner-spin-button {
+                                        -webkit-appearance: none;
+                                        margin: 0;
+                                        }
                                     }
                                     .costOfSalesRegistration_dispatch_labor_expense-div{
                                         display: flex;
@@ -198,6 +223,11 @@
                                             border: 1px solid #000;
                                             border-radius: 10px;
                                         }
+                                        input::-webkit-outer-spin-button,
+                                        input::-webkit-inner-spin-button {
+                                        -webkit-appearance: none;
+                                        margin: 0;
+                                        }
                                     }
                                     .costOfSalesRegistration_amortization_expense-div{
                                         display: flex;
@@ -211,6 +241,11 @@
                                             height: 40px;
                                             border: 1px solid #000;
                                             border-radius: 10px;
+                                        }
+                                        input::-webkit-outer-spin-button,
+                                        input::-webkit-inner-spin-button {
+                                        -webkit-appearance: none;
+                                        margin: 0;
                                         }
                                     }
                                 }

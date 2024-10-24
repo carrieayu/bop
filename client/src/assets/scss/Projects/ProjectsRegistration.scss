@@ -120,6 +120,11 @@
                                     border: 1px solid #000;
                                     border-radius: 10px;
                                 }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
                             }
                             .projectsRegistration_employee-expenses-div{ 
                                 display: flex;
@@ -133,6 +138,11 @@
                                     height: 40px;
                                     border: 1px solid #000;
                                     border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
                                 }
                             }
                             .projectsRegistration_operating-income-div{ 
@@ -148,6 +158,11 @@
                                     border: 1px solid #000;
                                     border-radius: 10px;
                                 }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
                             }
                             .projectsRegistration_ordinary-income-div{ 
                                 display: flex;
@@ -161,6 +176,11 @@
                                     height: 40px;
                                     border: 1px solid #000;
                                     border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
                                 }
                             }
                         }
@@ -281,6 +301,11 @@
                                     height: 40px;
                                     border: 1px solid #000;
                                     border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
                                 }
                             }
                         }

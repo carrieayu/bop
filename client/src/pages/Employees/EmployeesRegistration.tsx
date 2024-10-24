@@ -368,6 +368,7 @@ const EmployeesRegistration = () => {
                               name='salary'
                               value={container.salary}
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
+                              onWheel={(e) => (e.target as HTMLInputElement).blur()}
                             />
                           </div>
                         </div>
