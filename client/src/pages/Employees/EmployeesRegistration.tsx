@@ -202,22 +202,12 @@ const EmployeesRegistration = () => {
         employee.last_name.trim() !== '' &&
         employee.first_name.trim() !== '' &&
         employee.type.trim() !== '' &&
-        employee.email.trim() !== ''
+        employee.email.trim() !== '' &&
+        employee.company_name.trim() !== '' &&
+        employee.business_division_name.trim() !== ''
       ) {
-        console.log('initial true')
         // Perform validation based on type
         if (employee.type === '0') {
-          console.log('is regular', employee.type === '0', 'is exec', employee.type === '1')
-          console.log(typeof employee.executive_renumeration)
-          console.log(typeof employee.salary)
-          console.log(
-            'salary',
-            isNaN(employee.salary),
-            'greter than 0',
-            employee.salary > 0,
-            employee.salary,
-            employee.executive_renumeration,
-          )
           // Regular employee (type 0): Validate last_name, first_name, email, and salary
           return (
             (employee.last_name.trim() !== '' &&
@@ -229,11 +219,6 @@ const EmployeesRegistration = () => {
             employee.executive_renumeration === null
           )
         } else if (employee.type === '1') {
-          console.log('is regular', employee.type === '0', 'is exec', employee.type === '1')
-          console.log(typeof employee.executive_renumeration)
-          console.log(typeof employee.salary)
-          console.log(employee.executive_renumeration >= 0, employee.salary, employee.executive_renumeration)
-
           // Executive employee (type 1): Validate last_name, first_name, email, and executive_renumeration
           return (
             (employee.last_name.trim() !== '' &&
@@ -250,21 +235,6 @@ const EmployeesRegistration = () => {
       }
     })
   }
-
-  // const validateEmployees = (employees) => {
-  //   return employees.every((employee) => {
-  //     return (
-  //       employee.last_name.trim() !== '' &&
-  //       employee.first_name.trim() !== '' &&
-  //       /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(employee.email) && // Email validation
-  //       !isNaN(employee.salary) &&
-  //       !isNaN(employee.executive_renumeration) &&
-  //       // employee.salary > 0 && // Salary should be a number and greater than 0
-  //       employee.business_division_name.trim() !== '' &&
-  //       employee.company_name.trim() !== ''
-  //     )
-  //   })
-  // }
 
   useEffect(() => {
     const path = location.pathname

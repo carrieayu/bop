@@ -73,8 +73,6 @@ const EmployeesListAndEdit: React.FC = () => {
     try {
       const resMasterCompany = await dispatch(fetchMasterCompany() as unknown as UnknownAction)
       setCompanySelection(resMasterCompany.payload)
-      console.log('compnay selection', companySelection)
-
       if (isEditing) {
         const response = await axios.get(`http://127.0.0.1:8000/api/employees/edit/`, {
           // const response = await axios.get(`http://54.178.202.58:8000/api/employees/edit/`, {
@@ -88,7 +86,6 @@ const EmployeesListAndEdit: React.FC = () => {
         // Ensure employeesList is set from the fetched employee data if necessary
         const fetchedEmployeesList = response.data // or transform response as needed
         setEmployeesList(fetchedEmployeesList)
-        console.log('list on edit', employeesList)
       } else {
         const resBusinessDivisions = await dispatch(fetchBusinessDivisions() as unknown as UnknownAction)
         setBusinessSelection(resBusinessDivisions.payload)
@@ -150,8 +147,6 @@ const EmployeesListAndEdit: React.FC = () => {
         ...updatedEmployeeData[index],
         employee: updatedEmployee,
       }
-
-      console.log('updatedEmployeeData', updatedEmployeeData)
 
       if (name === 'company') {
         const selectedCompany = companySelection.find((company) => company.company_id === value)
@@ -230,7 +225,6 @@ const EmployeesListAndEdit: React.FC = () => {
         if (employee.type === 0) {
           // Regular employee: salary should be valid, executive_renumeration should be null
           if (salary === null || isNaN(salary) || salary <= 0 || executiveRenumeration !== null) {
-            console.log('Invalid regular employee')
             return false // Invalid regular employee data
           }
         } else if (employee.type === 1) {
@@ -408,7 +402,6 @@ const EmployeesListAndEdit: React.FC = () => {
     const types = employeesList.map((item) => {
       return [item]
     })
-    console.log('types from useEffect', types)
   }, [isEditing])
 
   // useEffect(() => {
@@ -480,13 +473,10 @@ const EmployeesListAndEdit: React.FC = () => {
   const handleEmployeeTypePulldown = (employeeIndex, e) => {
     // Reset the values when switching employee type
     if (e.target.value === '0') {
-      console.log('Changed to 0')
       // Reset executive remuneration if switching to regular employee
       handleChange(employeeIndex, e)
       handleChange(employeeIndex, { target: { name: 'executive_renumeration', value: null } })
     } else if (e.target.value === '1') {
-      console.log('Changed to 1')
-
       // Reset salary if switching to executive employee
       handleChange(employeeIndex, { target: { name: 'salary', value: null } })
       handleChange(employeeIndex, e)
@@ -497,21 +487,16 @@ const EmployeesListAndEdit: React.FC = () => {
       { employeeIndex, type: e.target.value }, // Add the new object to the array
     ])
 
-    console.log(selectedEmployeeType)
     // Set the employee type to 0 (Regular) or 1 (Executive)
-    // console.log('selectedEmp:',selectedEmployeeType)
   }
 
   const handleStatutoryWelfare = (employeeIndex, e) => {
     // Reset the values when switching employee type
     if (e.target.value === '0') {
-      console.log('Changed to 0')
       // Reset executive remuneration if switching to regular employee
       handleChange(employeeIndex, e)
       handleChange(employeeIndex, { target: { name: 'executive_renumeration', value: null } })
     } else if (e.target.value === '1') {
-      console.log('Changed to 1')
-
       // Reset salary if switching to executive employee
       handleChange(employeeIndex, { target: { name: 'salary', value: null } })
       handleChange(employeeIndex, e)
@@ -521,10 +506,7 @@ const EmployeesListAndEdit: React.FC = () => {
       ...prevState, // Spread the previous state (the existing array) to preserve the previous items
       { employeeIndex, type: e.target.value }, // Add the new object to the array
     ])
-
-    console.log(selectedEmployeeType)
     // Set the employee type to 0 (Regular) or 1 (Executive)
-    // console.log('selectedEmp:',selectedEmployeeType)
   }
 
   return (
@@ -799,7 +781,7 @@ const EmployeesListAndEdit: React.FC = () => {
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
                                 {translate('firstName', language)}
                               </th>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered type'>
                                 {translate('type', language)}
                               </th>
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
@@ -855,7 +837,7 @@ const EmployeesListAndEdit: React.FC = () => {
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
                                   {employee.first_name}
                                 </td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                <td className='EmployeesListAndEdit_table_body_content_vertical type'>
                                   {translate(employee.type === 0 ? 'regularEmployee' : 'executiveEmployee', language)}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>{employee.email}</td>
