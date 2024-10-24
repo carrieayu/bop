@@ -41,14 +41,20 @@ class EmployeesListSerializer(serializers.ModelSerializer):
             'employee_id',
             'last_name',
             'first_name',
+            'type',
             'email',
             'salary',
-            'auth_user_id',
+            'executive_renumeration',
+            'company',
+            'business_division', 
+            'bonus_and_fuel_allowance',
+            'statutory_welfare_expense',
+            'welfare_expense',
+            'insurance_premium',
+            'auth_user_id', # double ??
+            'auth_user', # double ?? 
             'created_at',
             'updated_at',
-            'business_division', 
-            'company',
-            'auth_user', 
         ]
 
 class MasterCompanySerializers(serializers.ModelSerializer):
