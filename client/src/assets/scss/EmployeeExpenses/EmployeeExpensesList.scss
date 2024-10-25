@@ -204,15 +204,20 @@
                                                         font-size: 14px;
                                                         padding: 5px 0px;
                                                         width: 50%;
+                                                        display: flex;
+                                                        flex-direction: column;
+                                                        justify-content: center;
+                                                        align-items: center;
                                                         .employeeExpensesList_txt2_label1{
                                                             background-color: #c6d4e7;
-                                                            // width: 50%;
+                                                            width: 100%;
                                                             text-align: center;
                                                             border: 1px solid #c6d4e7;
                                                             border-radius: 5px;
                                                         }
                                                         .employeeExpensesList_txt2_label2{
-                                                            padding-left: 34px;
+                                                            padding-left: 8px;
+                                                            // text-align: center;
                                                         }
                                                     }
                                                 }
