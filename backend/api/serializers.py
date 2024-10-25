@@ -31,6 +31,34 @@ class EmployeesSerializer(serializers.ModelSerializer):
         employee = EmployeesApi.objects.create(**validated_data)
         return employee
 
+from rest_framework import serializers
+
+from rest_framework import serializers
+
+class EmployeesCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmployeesApi  # Replace with your actual model
+        fields = [
+            'last_name',
+            'first_name', 
+            'type', 'email', 
+            'salary', 
+            'executive_renumeration', 
+            'company', 
+            'business_division', 
+            'bonus_and_fuel_allowance',
+            'statutory_welfare_expense',
+            'welfare_expense',
+            'insurance_premium',
+            'auth_user', # double ?? 
+            'created_at',
+            ]
+        
+        extra_kwargs = {
+            'salary': {'allow_null': True, 'required': False},
+            'executive_renumeration': {'allow_null': True, 'required': False},
+        }
+
 class EmployeesListSerializer(serializers.ModelSerializer):
     business_division = serializers.StringRelatedField()
     company = serializers.StringRelatedField()
@@ -56,6 +84,7 @@ class EmployeesListSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
         ]
+
 
 class MasterCompanySerializers(serializers.ModelSerializer):
     class Meta:

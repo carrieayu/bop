@@ -15,6 +15,7 @@ from .serializers import (
     CustomCostOfSalesSerializer,
     CustomExpensesSerializer,
     EmployeeExpensesDataSerializer,
+    EmployeesCreateSerializer,
     EmployeesListSerializer,
     ExpensesSerializer,
     GetProjectsSerializers,
@@ -114,7 +115,7 @@ class UserUpdate(generics.UpdateAPIView):
 
 class EmployeesCreate(generics.CreateAPIView):
     queryset = EmployeesApi.objects.all()
-    serializer_class = EmployeesSerializer
+    serializer_class = EmployeesCreateSerializer
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
@@ -128,7 +129,6 @@ class EmployeesCreate(generics.CreateAPIView):
         # First Pass: Validation without saving
         for employee in data:
             email = employee.get('email')  # Get the employee email from the current data
-
             # Check for duplicates in the DB
             existing_employee = EmployeesApi.objects.filter(email=email).first()
             if existing_employee:

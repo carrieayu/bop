@@ -135,6 +135,7 @@
                                         margin-bottom: 5px;
                                     }
                                     input{
+                                        background-color: #FBFAF9; 
                                         height: 40px;
                                         border: 1px solid #000;
                                         border-radius: 10px;
@@ -153,6 +154,20 @@
                                         height: 40px;
                                         border: 1px solid #000;
                                         border-radius: 10px;
+                                    }
+                                }
+                                .EmployeesRegistration_no_selection-div{ // THIS IS FOR WHEN EMPLOYEE TYPE HAS NOT BEEN SELECTED
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .no-selection-label{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                        // background-color: #FBFAF9;
                                     }
                                 }
                                 .EmployeesRegistration_salary-div{
@@ -246,6 +261,7 @@
                                         margin-bottom: 5px;
                                     }
                                     input{
+                                        background-color: #FBFAF9;
                                         height: 40px;
                                         border: 1px solid #000;
                                         border-radius: 10px;

@@ -119,5 +119,6 @@
   "type": "種別",
   "executiveEmployee": "役員",
   "regularEmployee": "一般",
-  "selectEmployeeType": "従業員種別選択"
+  "selectEmployeeType": "従業員種別選択",
+  "noSelection": "← 最初に種別選択"
 }

@@ -119,5 +119,6 @@
   "type": "Type",
   "executiveEmployee": "Executive",
   "regularEmployee": "Regular",
-  "selectEmployeeType": "Select Employee Type"
+  "selectEmployeeType": "Select Employee Type",
+  "noSelection": "← Select Type First"
 }

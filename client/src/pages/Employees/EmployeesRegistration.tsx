@@ -14,6 +14,7 @@ import axios from 'axios'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { NULL } from 'sass'
 import CrudModal from '../../components/CrudModal/CrudModal'
+import { escape } from 'querystring'
 
 const EmployeesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -28,7 +29,7 @@ const EmployeesRegistration = () => {
   const [selectedCompanyId, setSelectedCompanyId] = useState('')
   const [companySelection, setCompanySelection] = useState<any>([])
   const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [selectedEmployeeType, setSelectedEmployeeType] = useState<string | null>(null)
+  const [selectedEmployeeType, setSelectedEmployeeType] = useState<any>([])
 
   const [employees, setEmployees] = useState([
     {
@@ -66,15 +67,26 @@ const EmployeesRegistration = () => {
     fetchData()
   }, [])
 
-  // const handleInputChange = (containerIndex, projectIndex, event) => {
-  //   const { name, value } = event.target
-  //   const newContainers = [...employees]
-  //   newContainers[containerIndex] = {
-  //     ...newContainers[containerIndex],
-  //     [name]: value,
-  //   }
-  //   setEmployees(newContainers)
-  // }
+  // This could possible be combined into handleInputChange (refactoring)
+  const handleEmployeeTypePulldown = (e, containerIndex) => {
+
+    const newType = e.target.value
+    const newContainers = [...employees]
+
+    newContainers[containerIndex].type = newType
+    if (newType === '0') {
+      // Reset executive remuneration if switching to regular employee
+      newContainers[containerIndex].executive_renumeration = '' // Set to an empty string directly
+    } else if (newType === '1') {
+      // Reset salary if switching to executive employee
+      newContainers[containerIndex].salary = '' // Set to an empty string directly
+    } else (newType === '')
+    {
+      newContainers[containerIndex].executive_renumeration = '' // Set to an empty string directly
+      newContainers[containerIndex].salary = '' // Set to an empty string directly
+    }
+    setEmployees(newContainers) // Update employees state
+  }
 
   const handleInputChange = (containerIndex, projectIndex, event) => {
     const { name, value } = event.target
@@ -196,45 +208,63 @@ const EmployeesRegistration = () => {
     setLanguage(newLanguage)
   }
 
-  const validateEmployees = (employees) => {
-    return employees.every((employee, index) => {
-      if (
-        employee.last_name.trim() !== '' &&
-        employee.first_name.trim() !== '' &&
-        employee.type.trim() !== '' &&
-        employee.email.trim() !== '' &&
-        employee.company_name.trim() !== '' &&
-        employee.business_division_name.trim() !== ''
-      ) {
-        // Perform validation based on type
-        if (employee.type === '0') {
-          // Regular employee (type 0): Validate last_name, first_name, email, and salary
-          return (
-            (employee.last_name.trim() !== '' &&
-              employee.first_name.trim() !== '' &&
-              /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(employee.email) &&
-              !isNaN(employee.salary) &&
-              employee.salary > 0 && // Salary must be greater than 0 for regular employees
-              employee.executive_renumeration === '') ||
-            employee.executive_renumeration === null
-          )
-        } else if (employee.type === '1') {
-          // Executive employee (type 1): Validate last_name, first_name, email, and executive_renumeration
-          return (
-            (employee.last_name.trim() !== '' &&
-              employee.first_name.trim() !== '' &&
-              /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(employee.email) &&
-              !isNaN(employee.executive_renumeration) &&
-              employee.executive_renumeration >= 0 && // Executive renumeration can be empty or >= 0
-              employee.salary === '') ||
-            employee.salary === null
-          )
-        } else {
-          return true // No changes, no validation needed
-        }
-      }
-    })
-  }
+ const validateEmployees = (employeeData) => {
+   return employeeData.every((employee) => {
+     
+    // Just removing employee to make them shorter
+    const salary = employee.salary 
+    const executiveRenumeration = employee.executive_renumeration 
+   
+    // Check required fields
+     const requiredFields = [
+       employee.last_name,
+       employee.first_name,
+       employee.email
+     ]
+
+     // Check for empty required fields
+     for (const field of requiredFields) {
+       if (field.trim() === '') {
+         console.log('// At least one required field is empty', field)
+         return false // At least one required field is empty
+       }
+     }
+
+     // Validate email format
+     if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(employee.email)) {
+       console.log('Invalid email')
+       return false // Invalid email
+     }
+
+     // Validate based on employee type
+     if (employee.type === '0') {
+       // Regular employee: salary should be valid, executive_renumeration should be null
+       if (salary === null || isNaN(salary) || salary <= 0 || executiveRenumeration !== null) {
+         console.log('/ Invalid regular employee data')
+         return false // Invalid regular employee data
+       }
+     } else if (employee.type === '1') {
+       // Executive employee: executive_renumeration should be valid, salary should be null
+       if (
+         executiveRenumeration === null ||
+         isNaN(executiveRenumeration) ||
+         executiveRenumeration <= 0 ||
+         salary !== null
+       ) {
+         console.log('Invalid executive employee', salary, executiveRenumeration)
+         return false // Invalid executive employee data
+       }
+     } else {
+       console.log('Unknown Employee type')
+       return false // Unknown employee type
+     }
+
+     // If all validations pass, return true
+     console.log('Validation Passed for employee:', employee)
+     return true
+   })
+ }
+
 
   useEffect(() => {
     const path = location.pathname
@@ -244,7 +274,6 @@ const EmployeesRegistration = () => {
   }, [location.pathname])
 
   const handleSubmit = async (e) => {
-    console.log(employees)
 
     e.preventDefault()
     const employeeData = employees.map((empl) => ({
@@ -252,8 +281,8 @@ const EmployeesRegistration = () => {
       first_name: empl.first_name,
       type: empl.type,
       email: empl.email,
-      salary: empl.salary, // ONLY if regular employee is selected, value is submitted
-      executive_renumeration: empl.executive_renumeration, // ONLY if executive employee is selected, value is submitted
+      salary: empl.type === '0' ? (empl.salary !== '' ? empl.salary : null) : null, // Include salary only if regular
+      executive_renumeration: empl.type === '1' ? (empl.executive_renumeration !== '' ? empl.executive_renumeration : null) : null, // Include executive remuneration only if executive
       company: empl.company_name,
       business_division: empl.business_division_name,
       bonus_and_fuel_allowance: empl.bonus_and_fuel_allowance,
@@ -264,9 +293,7 @@ const EmployeesRegistration = () => {
       created_at: Date.now(),
     }))
 
-    console.log(employeeData)
-
-    if (!validateEmployees(employees)) {
+    if (!validateEmployees(employeeData)) {
       setModalMessage(translate('allFieldsRequiredInputValidationMessage', language))
       setIsModalOpen(true)
       return // Stop the submission
@@ -363,19 +390,6 @@ const EmployeesRegistration = () => {
     }
   }
 
-  const handleEmployeeTypePulldown = (e, containerIndex) => {
-    console.log(containerIndex)
-    // Reset the values when switching employee type
-    if (e.target.value === '0') {
-      // Reset executive remuneration if switching to regular employee
-      handleInputChange(containerIndex, null, { target: { name: 'executive_renumeration', value: null } })
-    } else if (e.target.value === '1') {
-      // Reset salary if switching to executive employee
-      handleInputChange(containerIndex, null, { target: { name: 'salary', value: null } })
-    }
-    // Set the employee type to 0 (Regular) or 1 (Executive)
-    setSelectedEmployeeType(e.target.value)
-  }
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
@@ -439,10 +453,10 @@ const EmployeesRegistration = () => {
                             <select
                               className='type-option'
                               name='employee_type'
-                              value={(container.type = selectedEmployeeType !== null ? selectedEmployeeType : '')}
+                              value={container.type || ''}
                               onChange={(e) => handleEmployeeTypePulldown(e, containerIndex)}
                             >
-                              <option className='type-option' value={null}>
+                              <option className='type-option' value={''}>
                                 {translate('selectEmployeeType', language)}
                               </option>
                               <option className='type-option' value={'0'}>
@@ -479,7 +493,7 @@ const EmployeesRegistration = () => {
                               name='welfare_expense'
                               value={
                                 (container.welfare_expense =
-                                  selectedEmployeeType === '0'
+                                  container.type === '0'
                                     ? (Number(container.salary) * 0.0048).toFixed(2).toString()
                                     : (Number(container.executive_renumeration) * 0.0048).toFixed(2).toString())
                               }
@@ -498,7 +512,7 @@ const EmployeesRegistration = () => {
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
                             />
                           </div>
-                          {selectedEmployeeType === '1' ? (
+                          {container.type === '1' && (
                             <div className='EmployeesRegistration_executive_renumeration-div'>
                               <label className='executive-renumeration-label'>
                                 {translate('executiveRenumeration', language)}
@@ -508,10 +522,11 @@ const EmployeesRegistration = () => {
                                 name='executive_renumeration'
                                 value={container.executive_renumeration || ''} // Ensure empty string as fallback for controlled input
                                 onChange={(e) => handleInputChange(containerIndex, null, e)}
-                                disabled={selectedEmployeeType !== '1'} // Disabled when not an executive employee
+                                disabled={container.type !== '1'} // Disabled when not an executive employee
                               />
                             </div>
-                          ) : (
+                          )}
+                          {container.type === '0' && (
                             <div className='EmployeesRegistration_salary-div'>
                               <label className='salary'>{translate('salary', language)}</label>
                               <input
@@ -519,7 +534,19 @@ const EmployeesRegistration = () => {
                                 name='salary'
                                 value={container.salary || ''} // Ensure empty string as fallback for controlled input
                                 onChange={(e) => handleInputChange(containerIndex, null, e)}
-                                disabled={selectedEmployeeType !== '0'} // Disabled when not a regular employee
+                                disabled={container.type !== '0'} // Disabled when not a regular employee
+                              />
+                            </div>
+                          )}
+                          {container.type === '' && (
+                            <div className='EmployeesRegistration_no_selection-div'>
+                              <label className='no-selection-label'>{translate('noSelection', language)}</label>
+                              <input
+                                // type='number'
+                                // name=''
+                                // value= {null} // NO VALUE
+                                // onChange={(e) => handleInputChange(containerIndex, null, e)}
+                                disabled={true} // Disabled e
                               />
                             </div>
                           )}
@@ -581,7 +608,7 @@ const EmployeesRegistration = () => {
                               name='statutory_welfare_expense'
                               value={
                                 (container.statutory_welfare_expense =
-                                  selectedEmployeeType === '0'
+                                  container.type === '0'
                                     ? (Number(container.salary) * 0.1451).toFixed(2).toString()
                                     : (Number(container.executive_renumeration) * 0.1451).toFixed(2).toString())
                               }
