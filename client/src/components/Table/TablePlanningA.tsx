@@ -386,7 +386,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
             firstHalfTotal(grossProfitValues),
             secondHalfTotal(grossProfitValues),
             total(grossProfitValues),
-            ''
+            '',
           ],
         },
         // start for employee expense section
@@ -423,7 +423,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
           ],
         },
         {
-          label: 'fuelAllowance',
+          label: 'bonusAndFuelAllowance',
           values: [
             ...bonusAndFuelAllowanceValues,
             firstHalfTotal(bonusAndFuelAllowanceValues),

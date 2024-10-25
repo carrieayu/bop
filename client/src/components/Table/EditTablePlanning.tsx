@@ -641,7 +641,7 @@ const EditTablePlanning = () => {
           },
           {
             id: bonusAndFuelAllowanceValues.map((fuel) => fuel.id),
-            label: 'fuelAllowance',
+            label: 'bonusAndFuelAllowance',
             values: [
               ...bonusAndFuelAllowanceValues,
               firstHalfTotal(bonusAndFuelAllowanceValues),
@@ -1070,7 +1070,7 @@ const EditTablePlanning = () => {
           },
           {
             id: bonusAndFuelAllowanceValues.map((fuel) => fuel.id),
-            label: 'fuelAllowance',
+            label: 'bonusAndFuelAllowance',
             values: [
               ...bonusAndFuelAllowanceValues,
               firstHalfTotal(bonusAndFuelAllowanceValues),
