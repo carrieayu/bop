@@ -17,14 +17,15 @@ const EditTablePlanning = () => {
       return
     }
     axios
-      // .get('http://127.0.0.1:8000/api/planning/all/', {
-        axios.get('http://54.178.202.58:8000/api/planning/all/', {
+      .get('http://127.0.0.1:8000/api/planning', {
+        // axios.get('http://54.178.202.58:8000/api/planning/all/', {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
       })
       .then((response) => {
+        console.log(response.data)
         const aggregatedData = response.data.cost_of_sales.reduce((acc, item) => {
           const { month, ...values } = item
           if (!acc[month]) {
@@ -39,10 +40,86 @@ const EditTablePlanning = () => {
         const aggregatedExpensesData = response.data.expenses.reduce((acc, item) => {
           const { month, ...values } = item
           if (!acc[month]) {
-            acc[month] = { month, ...values } 
+            acc[month] = { month, ...values } // Include month in the object
           } else {
             Object.keys(values).forEach((key) => {
               acc[month][key] += values[key]
+            })
+          }
+          return acc
+        }, {})
+
+        const aggregateEmployeeData = (employees) => {
+          // Initialize an empty object to store aggregated monthly data
+          const aggregatedData = {}
+          // Calculate the total annual salary, bonus, and welfare once for all employees
+          let totalAnnualExecutive = 0
+          let totalAnnualSalary = 0
+          let totalBonusAndFuelAllowance = 0
+          let totalWelfareExpense = 0
+          let totalStatutoryWelfareExpense = 0
+          let totalInsurancePremium = 0
+
+          employees.forEach((employee) => {
+            totalAnnualExecutive += employee.executive_renumeration
+            totalAnnualSalary += employee.salary
+            totalBonusAndFuelAllowance += employee.bonus_and_fuel_allowance
+            totalWelfareExpense += parseFloat(employee.welfare_expense) // Convert string to number if necessary
+            totalStatutoryWelfareExpense += parseFloat(employee.statutory_welfare_expense)
+            totalInsurancePremium += parseFloat(employee.insurance_premium)
+          })
+
+          // Distribute the totals equally across all months by dividing by 12
+          const monthlyExecutive = totalAnnualExecutive / 12
+          const monthlySalary = totalAnnualSalary / 12
+          const yearlyBonusAndFuelAllowance = totalBonusAndFuelAllowance
+          const monthlyWelfareExpense = (totalAnnualSalary * 0.0048) / 12
+          const monthStatutoryWelfareExpense = (totalAnnualSalary * 0.0048) / 12
+          const monthlyInsurancePremium = totalInsurancePremium / 12
+
+          // Fill the aggregatedData for each month with the calculated monthly amounts
+          months.forEach((month) => {
+            aggregatedData[month] = {
+              executive_renumeration: monthlyExecutive,
+              salary: monthlySalary,
+              bonus_and_fuel_allowance: yearlyBonusAndFuelAllowance,
+              welfare_expense: monthlyWelfareExpense,
+              statutory_welfare_expense: monthStatutoryWelfareExpense,
+              insurance_premium: monthlyInsurancePremium,
+            }
+          })
+
+          return aggregatedData
+        }
+
+        const aggregatedPlanningAssign = response.data.planning_assign_data.reduce((acc, item) => {
+          const { month, employee, project, ...values } = item // Destructure employee and project
+
+          // Initialize month if not already present
+          if (!acc[month]) {
+            acc[month] = {
+              month,
+              employees: [employee], // Store employees as an array
+              projects: [project], // Store projects as an array
+              totalSalary: employee.salary || 0, // Initialize totalSalary with the first employee's salary
+              ...values,
+            }
+          } else {
+            // Add the new employee and project objects to the array
+            acc[month].employees.push(employee)
+            acc[month].projects.push(project)
+
+            // Add the employee's salary to the total
+            acc[month].totalSalary += employee.salary || 0
+
+            // Aggregate other numeric fields
+            Object.keys(values).forEach((key) => {
+              if (typeof values[key] === 'number') {
+                acc[month][key] += values[key]
+              } else if (typeof values[key] === 'string') {
+                // Handle strings like `created_at`, `updated_at`, and other concatenation-sensitive fields
+                acc[month][key] = values[key] // Keep the latest value or handle as needed
+              }
             })
           }
           return acc
@@ -53,6 +130,7 @@ const EditTablePlanning = () => {
             acc[month] = { month }
           }
           Object.keys(values).forEach((key) => {
+            // Convert value to a float
             const value = parseFloat(values[key])
             if (!isNaN(value)) {
               acc[month][key] = (acc[month][key] || 0) + value
@@ -61,328 +139,329 @@ const EditTablePlanning = () => {
 
           return acc
         }, {})
-        const aggregatedPlanningAssign = response.data.planning_assign_data.reduce((acc, item) => {
-          const { month, ...values } = item
-          if (!acc[month]) {
-            acc[month] = { month, ...values } 
-          } else {
-            Object.keys(values).forEach((key) => {
-              acc[month][key] += values[key]
-            })
-          }
-          return acc
-        }, {})
 
         const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
+        // SALES REVENUE
+        const salesValues = months.map((month) => aggregatedPlanningProjectData[month]?.sales_revenue || 0)
+
         //COST OF SALES
-        const costOfSalesValues = months.map((month) => aggregatedData[month]?.cost_of_sales || 0)
+        const costOfSalesValues = months.map((month) => {
+          const purchases = aggregatedData[month]?.purchase || 0
+          const outsourcing = aggregatedData[month]?.outsourcing_expense || 0
+          const productPurchase = aggregatedData[month]?.product_purchase || 0
+          const dispatchLabor = aggregatedData[month]?.dispatch_labor_expense || 0
+          const communicationCost = aggregatedData[month]?.communication_expense || 0
+          const workInProgress = aggregatedData[month]?.work_in_progress_expense || 0
+          const amortization = aggregatedData[month]?.amortization_expense || 0
+          return (
+            purchases +
+            outsourcing +
+            productPurchase +
+            dispatchLabor +
+            communicationCost +
+            workInProgress +
+            amortization
+          )
+        })
         const purchasesValues = months.map((month) => {
           const dataEntry = aggregatedData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.id,
-              purchase: dataEntry.purchases || 0,
+              id: dataEntry.cost_of_sale_id,
+              purchase: dataEntry.purchase || 0, // Ensure we have a purchase value or fallback to 0
             }
           }
-          return { id: null, purchase: 0 }
+          return { id: null, purchase: 0 } // Default case if dataEntry is missing
         })
-        // const outsourcingValues = months.map((month) => aggregatedData[month]?.outsourcing_costs || 0)
-        const outsourcingValues = months.map((month) => {
+        // const outsourcingExpenseValues = months.map((month) => aggregatedData[month]?.outsourcing_expense || 0)
+        const outsourcingExpenseValues = months.map((month) => {
           const dataEntry = aggregatedData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.id,
-              outsourcing_costs: dataEntry.outsourcing_costs || 0,
+              id: dataEntry.cost_of_sale_id,
+              outsourcing_expense: dataEntry.outsourcing_expense || 0,
             }
           }
-          return { id: null, outsourcing_costs: 0 }
+          return { id: null, outsourcing_expense: 0 }
         })
-
-        // const productPurchaseValues = months.map((month) => aggregatedData[month]?.product_purchases || 0)
+        // const productPurchaseValues = months.map((month) => aggregatedData[month]?.product_purchase || 0)
         const productPurchaseValues = months.map((month) => {
           const dataEntry = aggregatedData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.id,
-              product_purchases: dataEntry.product_purchases || 0,
+              id: dataEntry.cost_of_sale_id,
+              product_purchase: dataEntry.product_purchase || 0,
             }
           }
-          return { id: null, product_purchases: 0 }
+          return { id: null, product_purchase: 0 }
         })
-        // const dispatchLaborValues = months.map((month) => aggregatedData[month]?.dispatch_labor_costs || 0)
-        const dispatchLaborValues = months.map((month) => {
+        // const dispatchLaborExpenseValues = months.map((month) => aggregatedData[month]?.dispatch_labor_expense || 0)
+        const dispatchLaborExpenseValues = months.map((month) => {
           const dataEntry = aggregatedData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.id,
-              dispatch_labor_costs: dataEntry.dispatch_labor_costs || 0,
+              id: dataEntry.cost_of_sale_id,
+              dispatch_labor_expense: dataEntry.dispatch_labor_expense || 0,
             }
           }
-          return { id: null, dispatch_labor_costs: 0 }
+          return { id: null, dispatch_labor_expense: 0 }
         })
-        // const communicationCostValues = months.map((month) => aggregatedData[month]?.communication_costs || 0)
+        // const communicationCostValues = months.map((month) => aggregatedData[month]?.communication_expense || 0)
         const communicationCostValues = months.map((month) => {
           const dataEntry = aggregatedData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.id,
-              communication_costs: dataEntry.communication_costs || 0,
+              id: dataEntry.cost_of_sale_id,
+              communication_expense: dataEntry.communication_expense || 0,
             }
           }
-          return { id: null, communication_costs: 0 }
+          return { id: null, communication_expense: 0 }
         })
-        // const inProgressValues = months.map((month) => aggregatedData[month]?.work_in_progress || 0)
-        const inProgressValues = months.map((month) => {
+        // const workInProgressValues = months.map((month) => aggregatedData[month]?.work_in_progress_expense || 0)
+        const workInProgressValues = months.map((month) => {
           const dataEntry = aggregatedData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.id,
-              work_in_progress: dataEntry.work_in_progress || 0,
+              id: dataEntry.cost_of_sale_id,
+              work_in_progress_expense: dataEntry.work_in_progress_expense || 0,
             }
           }
-          return { id: null, work_in_progress: 0 }
+          return { id: null, work_in_progress_expense: 0 }
         })
-        // const amortizationValues = months.map((month) => aggregatedData[month]?.amortization || 0)
+        // const amortizationValues = months.map((month) => aggregatedData[month]?.amortization_expense || 0)
         const amortizationValues = months.map((month) => {
           const dataEntry = aggregatedData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.id,
-              amortization: dataEntry.amortization || 0,
+              id: dataEntry.cost_of_sale_id,
+              amortization_expense: dataEntry.amortization_expense || 0,
             }
           }
-          return { id: null, amortization: 0 }
+          return { id: null, amortization_expense: 0 }
         })
-        //PLANNING ASSIGN
-        // const renumerationValues = months.map((month) => aggregatedExpensesData[month]?.remuneration || 0)
-        const renumerationValues = months.map((month) => {
-          const dataEntry = aggregatedExpensesData[month]
-          if (dataEntry) {
-            return {
-              id: dataEntry.id,
-              remuneration: dataEntry.remuneration || 0,
-            }
-          }
-          return { id: null, remuneration: 0 }
+
+        // GROSS PROFIT
+        const grossProfitValues = months.map((month, index) => {
+          const totalSales = salesValues[index] // Get the sales revenue for the current month
+          const totalCostOfSales = costOfSalesValues[index] // Get the cost of sales for the current month
+          const grossProfit = totalSales - totalCostOfSales // Calculate gross profit
+          return grossProfit
         })
-        // const consumableValues = months.map((month) => aggregatedExpensesData[month]?.consumables_expenses || 0)
+
+        // EMPLOYEE EXPENSE
+        const employeeExpensesValues = months.map((month) => {
+          const executiveRenumeration = aggregatedExpensesData[month]?.executive_renumeration || 0
+          const salary = aggregatedPlanningAssign[month]?.totalSalary || 0
+          const fuel_allowance = aggregatedExpensesData[month]?.fuel_allowance || 0
+          const statutory_welfare_expense = aggregatedExpensesData[month]?.statutory_welfare_expense || 0
+          const welfare_expense = aggregatedExpensesData[month]?.welfare_expense || 0
+          const insurance_premiums = aggregatedExpensesData[month]?.insurance_premiums || 0
+
+          return (
+            executiveRenumeration +
+            salary +
+            fuel_allowance +
+            statutory_welfare_expense +
+            welfare_expense +
+            insurance_premiums
+          )
+        })
+
+        // EMPLOYEES
+        const result = aggregateEmployeeData(response.data.employees)
+        console.log(result)
+        const executiveRenumerationValues = months.map((month) => result[month]?.executive_renumeration || 0)
+        const salaryValues = months.map((month) => result[month]?.salary || 0)
+        const totalBonusAndFuelAllowance = result[12]?.bonus_and_fuel_allowance || 0
+        const bonusAndFuelAllowanceValues = months.map((month) => {
+          return month === 12 ? totalBonusAndFuelAllowance : 0 // Only display total for December
+        })
+        const statutoryWelfareExpenseValues = months.map((month) => result[month]?.statutory_welfare_expense || 0)
+        const welfareExpenseValues = months.map((month) => result[month]?.welfare_expense || 0)
+        const insurancePremiumsValues = months.map((month) => result[month]?.insurance_premium || 0)
+
+        // EXPENSES
+        const expenseValues = months.map((month) => {
+          const consumables = aggregatedExpensesData[month]?.consumable_expense || 0
+          const rent = aggregatedExpensesData[month]?.rent_expense || 0
+          const taxAndPublicCharge = aggregatedExpensesData[month]?.tax_and_public_charge || 0
+          const depreciation = aggregatedExpensesData[month]?.depreciation_expense || 0
+          const travel_expense = aggregatedExpensesData[month]?.travel_expense || 0
+          const communication_expense = aggregatedExpensesData[month]?.communication_expense || 0
+          const utilities_expense = aggregatedExpensesData[month]?.utilities_expense || 0
+          const transaction_fee = aggregatedExpensesData[month]?.transaction_fee || 0
+          const advertising_expense = aggregatedExpensesData[month]?.advertising_expense || 0
+          const entertainment_expense = aggregatedExpensesData[month]?.entertainment_expense || 0
+          const professional_service_fee = aggregatedExpensesData[month]?.professional_service_fee || 0
+          return (
+            consumables +
+            rent +
+            taxAndPublicCharge +
+            depreciation +
+            travel_expense +
+            communication_expense +
+            utilities_expense +
+            transaction_fee +
+            advertising_expense +
+            entertainment_expense +
+            professional_service_fee
+          )
+        })
+        // const consumableValues = months.map((month) => aggregatedExpensesData[month]?.consumable_expense || 0)
         const consumableValues = months.map((month) => {
           const dataEntry = aggregatedExpensesData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.id,
-              consumables_expenses: dataEntry.consumables_expenses || 0,
+              id: dataEntry.expense_id,
+              consumable_expense: dataEntry.consumable_expense || 0,
             }
           }
-          return { id: null, consumables_expenses: 0 }
+          return { id: null, consumable_expense: 0 }
         })
 
-        const assign_unit_priceValues = months.map(
-          (month) => aggregatedPlanningAssign[month]?.assignment_unit_price || 0,
-        ) //assignment_unit_price value data
-        // const travelExpenseValues = months.map((month) => aggregatedExpensesData[month]?.travel_expenses || 0)
-        const travelExpenseValues = months.map((month) => {
-          const dataEntry = aggregatedExpensesData[month]
-          if (dataEntry) {
-            return {
-              id: dataEntry.id,
-              travel_expenses: dataEntry.travel_expenses || 0,
-            }
-          }
-          return { id: null, travel_expenses: 0 }
-        })
-        // const taxesPublicChargesValues = months.map((month) => aggregatedExpensesData[month]?.taxes_and_public_charges || 0,)
-        const taxesPublicChargesValues = months.map((month) => {
-          const dataEntry = aggregatedExpensesData[month]
-          if (dataEntry) {
-            return {
-              id: dataEntry.id,
-              taxes_and_public_charges: dataEntry.taxes_and_public_charges || 0,
-            }
-          }
-          return { id: null, taxes_and_public_charges: 0 }
-        })
-        // const utilitiesValues = months.map((month) => aggregatedExpensesData[month]?.utilities_expenses || 0)
-        const utilitiesValues = months.map((month) => {
-          const dataEntry = aggregatedExpensesData[month]
-          if (dataEntry) {
-            return {
-              id: dataEntry.id,
-              utilities_expenses: dataEntry.utilities_expenses || 0,
-            }
-          }
-          return { id: null, utilities_expenses: 0 }
-        })
-
-        //FOR EXPENSES
-        // const rentValues = months.map((month) => aggregatedExpensesData[month]?.rent || 0)
+        // const rentValues = months.map((month) => aggregatedExpensesData[month]?.rent_expense || 0)
         const rentValues = months.map((month) => {
           const dataEntry = aggregatedExpensesData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.id,
-              rent: dataEntry.rent || 0,
+              id: dataEntry.expense_id,
+              rent_expense: dataEntry.rent_expense || 0,
             }
           }
-          return { id: null, rent: 0 }
+          return { id: null, rent_expense: 0 }
         })
-
-        // const paymentFeeValues = months.map((month) => aggregatedExpensesData[month]?.payment_fees || 0)
-        const paymentFeeValues = months.map((month) => {
-          const dataEntry = aggregatedExpensesData[month]
-          if (dataEntry) {
-            return {
-              id: dataEntry.id,
-              payment_fees: dataEntry.payment_fees || 0,
-            }
-          }
-          return { id: null, payment_fees: 0 }
-        })
-        // const depreciationExpensesValues = months.map((month) => aggregatedExpensesData[month]?.depreciation_expenses || 0,)
+        const taxesPublicChargesValues = months.map(
+          (month) => aggregatedExpensesData[month]?.tax_and_public_charge || 0,
+        )
+        // const depreciationExpensesValues = months.map(
+        //   (month) => aggregatedExpensesData[month]?.depreciation_expense || 0,
+        // )
         const depreciationExpensesValues = months.map((month) => {
           const dataEntry = aggregatedExpensesData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.id,
-              depreciation_expenses: dataEntry.depreciation_expenses || 0,
+              id: dataEntry.expense_id,
+              depreciation_expense: dataEntry.depreciation_expense || 0,
             }
           }
-          return { id: null, depreciation_expenses: 0 }
+          return { id: null, depreciation_expense: 0 }
         })
-        // const communicationExpenseValues = months.map((month) => aggregatedExpensesData[month]?.communication_expenses || 0,)
+
+        // const travelExpenseValues = months.map((month) => aggregatedExpensesData[month]?.travel_expense || 0)
+        const travelExpenseValues = months.map((month) => {
+          const dataEntry = aggregatedExpensesData[month]
+          if (dataEntry) {
+            return {
+              id: dataEntry.expense_id,
+              travel_expense: dataEntry.travel_expense || 0,
+            }
+          }
+          return { id: null, travel_expense: 0 }
+        })
+        // const communicationExpenseValues = months.map(
+        //   (month) => aggregatedExpensesData[month]?.communication_expense || 0,
+        // )
         const communicationExpenseValues = months.map((month) => {
           const dataEntry = aggregatedExpensesData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.id,
-              communication_expenses: dataEntry.communication_expenses || 0,
+              id: dataEntry.expense_id,
+              communication_expense: dataEntry.communication_expense || 0,
             }
           }
-          return { id: null, communication_expenses: 0 }
+          return { id: null, communication_expense: 0 }
         })
-        // const advertisingExpenseValues = months.map((month) => aggregatedExpensesData[month]?.advertising_expenses || 0)
+        // const utilitiesValues = months.map((month) => aggregatedExpensesData[month]?.utilities_expense || 0)
+        const utilitiesValues = months.map((month) => {
+          const dataEntry = aggregatedExpensesData[month]
+          if (dataEntry) {
+            return {
+              id: dataEntry.expense_id,
+              utilities_expense: dataEntry.utilities_expense || 0,
+            }
+          }
+          return { id: null, utilities_expense: 0 }
+        })
+        // const transactionFeeValues = months.map((month) => aggregatedExpensesData[month]?.transaction_fee || 0)
+        const transactionFeeValues = months.map((month) => {
+          const dataEntry = aggregatedExpensesData[month]
+          if (dataEntry) {
+            return {
+              id: dataEntry.expense_id,
+              transaction_fee: dataEntry.transaction_fee || 0,
+            }
+          }
+          return { id: null, transaction_fee: 0 }
+        })
+        // const advertisingExpenseValues = months.map((month) => aggregatedExpensesData[month]?.advertising_expense || 0)
         const advertisingExpenseValues = months.map((month) => {
           const dataEntry = aggregatedExpensesData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.id,
-              advertising_expenses: dataEntry.advertising_expenses || 0,
+              id: dataEntry.expense_id,
+              advertising_expense: dataEntry.advertising_expense || 0,
             }
           }
-          return { id: null, advertising_expenses: 0 }
+          return { id: null, advertising_expense: 0 }
         })
-        // const entertainmentExpenseValues = months.map((month) => aggregatedExpensesData[month]?.entertainment_expenses || 0,)
+        // const entertainmentExpenseValues = months.map(
+        //   (month) => aggregatedExpensesData[month]?.entertainment_expense || 0,
+        // )
         const entertainmentExpenseValues = months.map((month) => {
           const dataEntry = aggregatedExpensesData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.id,
-              entertainment_expenses: dataEntry.entertainment_expenses || 0,
+              id: dataEntry.expense_id,
+              entertainment_expense: dataEntry.entertainment_expense || 0,
             }
           }
-          return { id: null, entertainment_expenses: 0 }
+          return { id: null, entertainment_expense: 0 }
+        })
+
+        // const professionalServiceFeeValues = months.map(
+        //   (month) => aggregatedExpensesData[month]?.professional_service_fee || 0,
+        // )
+        const professionalServiceFeeValues = months.map((month) => {
+          const dataEntry = aggregatedExpensesData[month]
+          if (dataEntry) {
+            return {
+              id: dataEntry.expense_id,
+              professional_service_fee: dataEntry.professional_service_fee || 0,
+            }
+          }
+          return { id: null, professional_service_fee: 0 }
+        })
+
+        // SELLING AND GENERAL ADMIN EXPENSES
+        const sellingAndGeneralAdminExpenseValues = months.map((month, index) => {
+          const total_employee_expense = employeeExpensesValues[index] // Get the total employee expense for the current month
+          const total_expense = expenseValues[index] // Get the total expense for the current month
+          const sellingAndGeneralAdminExpense = total_employee_expense + total_expense // Calculation for Selling and General Admin Expense
+          return sellingAndGeneralAdminExpense
+        })
+
+        // OPERATING INCOME
+        const operatingIncomeValues = months.map((month, index) => {
+          const gross_profit = grossProfitValues[index] // Get the gross profit for the current month
+          const selling_and_general_admin = sellingAndGeneralAdminExpenseValues[index] // Get the Selling and General Admin Expense for the current month
+          const operating_income_value = gross_profit - selling_and_general_admin // Calculate operating income value
+          return operating_income_value
         })
         //NoN Operating Income & Expense
         const nonOperatingIncomeValues = months.map(
-          (month) => aggregatedPlanningProjectData[month]?.non_operating_income || 0,
+          (month) => aggregatedPlanningProjectData[month]?.non_operating_profit || 0,
         )
         const nonOperatingExpensesValues = months.map(
-          (month) => aggregatedPlanningProjectData[month]?.non_operating_expenses || 0,
-        )
-
-        // console.log("Non Operating: " , nonOperatingIncomeValues)
-        const personnelExpensesValues = months.map((month) => {
-          const totalExpenses =
-            aggregatedExpensesData[month]?.remuneration +
-              aggregatedPlanningAssign[month]?.assignment_unit_price +
-              aggregatedExpensesData[month]?.travel_expenses +
-              aggregatedExpensesData[month]?.taxes_and_public_charges +
-              aggregatedExpensesData[month]?.utilities_expenses || 0
-
-          return totalExpenses
-        })
-        const generalExpenseValues = months.map((month) => {
-          const personnelExpenses =
-            (aggregatedExpensesData[month]?.remuneration || 0) +
-            (aggregatedExpensesData[month]?.consumables_expenses || 0) +
-            (aggregatedExpensesData[month]?.travel_expenses || 0) +
-            (aggregatedExpensesData[month]?.taxes_and_public_charges || 0) +
-            (aggregatedExpensesData[month]?.utilities_expenses || 0)
-
-          const totalExpense =
-            aggregatedExpensesData[month]?.rent +
-              aggregatedExpensesData[month]?.consumables_expenses +
-              aggregatedExpensesData[month]?.payment_fees +
-              aggregatedExpensesData[month]?.taxes_and_public_charges +
-              aggregatedExpensesData[month]?.depreciation_expenses +
-              aggregatedExpensesData[month]?.travel_expenses +
-              aggregatedExpensesData[month]?.communication_expenses +
-              aggregatedExpensesData[month]?.utilities_expenses +
-              aggregatedExpensesData[month]?.advertising_expenses +
-              aggregatedExpensesData[month]?.advertising_expenses +
-              aggregatedExpensesData[month]?.entertainment_expenses +
-              aggregatedExpensesData[month]?.payment_fees || 0
-
-          const generalTotal = personnelExpenses + totalExpense
-          return {
-            month,
-            personnelExpenses,
-            totalExpense,
-            generalTotal,
-          }
-        })
-
-        const expenseTotalValues = months.map((month) => {
-          const totalExpense =
-            aggregatedExpensesData[month]?.rent +
-              aggregatedExpensesData[month]?.consumables_expenses +
-              aggregatedExpensesData[month]?.payment_fees +
-              aggregatedExpensesData[month]?.taxes_and_public_charges +
-              aggregatedExpensesData[month]?.depreciation_expenses +
-              aggregatedExpensesData[month]?.travel_expenses +
-              aggregatedExpensesData[month]?.communication_expenses +
-              aggregatedExpensesData[month]?.utilities_expenses +
-              aggregatedExpensesData[month]?.advertising_expenses +
-              aggregatedExpensesData[month]?.advertising_expenses +
-              aggregatedExpensesData[month]?.entertainment_expenses +
-              aggregatedExpensesData[month]?.payment_fees || 0
-
-          return totalExpense
-        })
-        const firstHalfTotal = (arr) => arr.slice(0, 6).reduce((acc, value) => acc + parseFloat(value), 0)
-        const secondHalfTotal = (arr) => arr.slice(6).reduce((acc, value) => acc + parseFloat(value), 0)
-        const total = (arr) => arr.reduce((acc, value) => acc + parseFloat(value), 0)
-
-        // Compute gross profit for each month
-        const grossProfitValues = months.map((month) => {
-          const totalRevenue = aggregatedData[month]?.product_purchases + aggregatedData[month]?.purchases || 0
-          const grossProfit = totalRevenue - (aggregatedData[month]?.cost_of_sales || 0)
-          return grossProfit
-        })
-
-        const grossProfitData = {
-          label: 'grossProfit',
-          values: [
-            ...grossProfitValues,
-            firstHalfTotal(grossProfitValues),
-            secondHalfTotal(grossProfitValues),
-            total(grossProfitValues),
-            '',
-          ],
-        }
-
-        const sellingGeneralValues = generalExpenseValues.map((item) => item.generalTotal)
-        const operatingProfitValues = grossProfitValues.map(
-          (grossProfit, index) => grossProfit - sellingGeneralValues[index],
+          (month) => aggregatedPlanningProjectData[month]?.non_operating_expense || 0,
         )
 
         const ordinaryProfitValues = months.map((month, index) => {
-          const operatingProfitValuess = operatingProfitValues[index]
-          const nonOperatingIncome = nonOperatingIncomeValues[index]
-          const nonOperatingExpenses = nonOperatingExpensesValues[index]
-          const operatingTotal = operatingProfitValuess + nonOperatingIncome + nonOperatingExpenses
+          const operating_income = operatingIncomeValues[index]
+          const non_operating_income = nonOperatingIncomeValues[index]
+          const totalOperating = operating_income + non_operating_income
+          const totalOrdinaryIncome = totalOperating - nonOperatingExpensesValues[index]
 
-          return operatingTotal
+          return totalOrdinaryIncome
         })
 
         const cumulativeSum = (arr) => {
@@ -391,18 +470,37 @@ const EditTablePlanning = () => {
         }
         const cumulativeOrdinaryProfitValues = cumulativeSum(ordinaryProfitValues)
 
+        const firstHalfTotal = (arr) => arr.slice(0, 6).reduce((acc, value) => acc + parseFloat(value), 0)
+        const secondHalfTotal = (arr) => arr.slice(6).reduce((acc, value) => acc + parseFloat(value), 0)
+        const total = (arr) => arr.reduce((acc, value) => acc + parseFloat(value), 0)
+
         const data = [
+          //start for sales revenue section
           {
             label: 'salesRevenue',
-            values: Array(16).fill(0),
+            values: [
+              ...salesValues,
+
+              firstHalfTotal(salesValues),
+              secondHalfTotal(salesValues),
+              total(salesValues),
+              // `${(total(salesValues) / total(salesValues) * 100).toFixed(2)}%`,
+              '0',
+            ],
           },
           {
             label: 'sales',
-            values: Array(16).fill(0),
+            values: [
+              ...salesValues,
+              firstHalfTotal(salesValues),
+              secondHalfTotal(salesValues),
+              total(salesValues),
+              // `${(total(salesValues) / total(salesValues) * 100).toFixed(2)}%`,
+              '0',
+            ],
           },
           //start of cost of sales portion
           {
-            id: '',
             label: 'costOfSales',
             values: [
               ...costOfSalesValues,
@@ -417,69 +515,70 @@ const EditTablePlanning = () => {
             id: purchasesValues.map((entry) => entry.id),
             label: 'purchases',
             values: [
-              ...purchasesValues.map((entry) => entry.purchase),
-              firstHalfTotal(purchasesValues.map((entry) => entry.purchase)),
-              secondHalfTotal(purchasesValues.map((entry) => entry.purchase)),
-              total(purchasesValues.map((entry) => entry.purchase)),
-              '0',
+              ...purchasesValues.map((entry) => entry.purchase), // Extract purchase values
+              firstHalfTotal(purchasesValues.map((entry) => entry.purchase)), // First half total
+              secondHalfTotal(purchasesValues.map((entry) => entry.purchase)), // Second half total
+              total(purchasesValues.map((entry) => entry.purchase)), // Total purchases
+              // `${(total(purchasesValues.map((entry) => entry.purchase)) / total(costOfSalesValues) * 100).toFixed(2)}%`, // Optional calculation
+              '0', // Placeholder value or additional logic
             ],
           },
           {
-            id: outsourcingValues.map((outsource) => outsource.id),
+            id: outsourcingExpenseValues.map((outsource) => outsource.id), // Extract ids from the entries
             label: 'outsourcingExpenses',
             values: [
-              ...outsourcingValues.map((outsource) => outsource.outsourcing_costs),
-              firstHalfTotal(outsourcingValues.map((outsource) => outsource.outsourcing_costs)),
-              secondHalfTotal(outsourcingValues.map((outsource) => outsource.outsourcing_costs)),
-              total(outsourcingValues.map((outsource) => outsource.outsourcing_costs)),
-              '0',
+              ...outsourcingExpenseValues.map((outsource) => outsource.outsourcing_expense), // Extract the `outsourcing_expense` values
+              firstHalfTotal(outsourcingExpenseValues.map((outsource) => outsource.outsourcing_expense)), // First half total
+              secondHalfTotal(outsourcingExpenseValues.map((outsource) => outsource.outsourcing_expense)), // Second half total
+              total(outsourcingExpenseValues.map((outsource) => outsource.outsourcing_expense)), // Total outsourcing expense
+              '0', // Placeholder value
             ],
           },
           {
-            id: outsourcingValues.map((productPurchaseValues) => productPurchaseValues.id),
+            id: productPurchaseValues.map((product) => product.id),
             label: 'productPurchases',
             values: [
-              ...productPurchaseValues.map((productPurchaseValues) => productPurchaseValues.product_purchases),
-              firstHalfTotal(
-                productPurchaseValues.map((productPurchaseValues) => productPurchaseValues.product_purchases),
-              ),
-              secondHalfTotal(
-                productPurchaseValues.map((productPurchaseValues) => productPurchaseValues.product_purchases),
-              ),
-              total(productPurchaseValues.map((productPurchaseValues) => productPurchaseValues.product_purchases)),
+              ...productPurchaseValues.map((product) => product.product_purchase),
+              firstHalfTotal(productPurchaseValues.map((product) => product.product_purchase)),
+              secondHalfTotal(productPurchaseValues.map((product) => product.product_purchase)),
+              total(productPurchaseValues.map((product) => product.product_purchase)),
+              // `${(total(productPurchaseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: dispatchLaborValues.map((dispatchLaborValues) => dispatchLaborValues.id),
+            id: dispatchLaborExpenseValues.map((dispatch) => dispatch.id),
             label: 'dispatchLaborExpenses',
             values: [
-              ...dispatchLaborValues.map((dispatch) => dispatch.dispatch_labor_costs),
-              firstHalfTotal(dispatchLaborValues.map((dispatch) => dispatch.dispatch_labor_costs)),
-              secondHalfTotal(dispatchLaborValues.map((dispatch) => dispatch.dispatch_labor_costs)),
-              total(dispatchLaborValues.map((dispatch) => dispatch.dispatch_labor_costs)),
+              ...dispatchLaborExpenseValues.map((dispatch) => dispatch.dispatch_labor_expense),
+              firstHalfTotal(dispatchLaborExpenseValues.map((dispatch) => dispatch.dispatch_labor_expense)),
+              secondHalfTotal(dispatchLaborExpenseValues.map((dispatch) => dispatch.dispatch_labor_expense)),
+              total(dispatchLaborExpenseValues.map((dispatch) => dispatch.dispatch_labor_expense)),
+              // `${(total(dispatchLaborExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: communicationCostValues.map((communicationCost) => communicationCost.id),
+            id: communicationCostValues.map((communication) => communication.id),
             label: 'communicationExpenses',
             values: [
-              ...communicationCostValues.map((communication) => communication.communication_costs),
-              firstHalfTotal(communicationCostValues.map((communication) => communication.communication_costs)),
-              secondHalfTotal(communicationCostValues.map((communication) => communication.communication_costs)),
-              total(communicationCostValues.map((communication) => communication.communication_costs)),
+              ...communicationCostValues.map((communication) => communication.communication_expense),
+              firstHalfTotal(communicationCostValues.map((communication) => communication.communication_expense)),
+              secondHalfTotal(communicationCostValues.map((communication) => communication.communication_expense)),
+              total(communicationCostValues.map((communication) => communication.communication_expense)),
+              // `${(total(communicationCostValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: inProgressValues.map((inProgressValues) => inProgressValues.id),
+            id: workInProgressValues.map((wip) => wip.id),
             label: 'workInProgressExpenses',
             values: [
-              ...inProgressValues.map((inProgress) => inProgress.work_in_progress),
-              firstHalfTotal(inProgressValues.map((inProgress) => inProgress.work_in_progress)),
-              secondHalfTotal(inProgressValues.map((inProgress) => inProgress.work_in_progress)),
-              total(inProgressValues.map((inProgress) => inProgress.work_in_progress)),
+              ...workInProgressValues.map((wip) => wip.work_in_progress_expense),
+              firstHalfTotal(workInProgressValues.map((wip) => wip.work_in_progress_expense)),
+              secondHalfTotal(workInProgressValues.map((wip) => wip.work_in_progress_expense)),
+              total(workInProgressValues.map((wip) => wip.work_in_progress_expense)),
+              // `${(total(workInProgressValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
@@ -487,267 +586,282 @@ const EditTablePlanning = () => {
             id: amortizationValues.map((amortization) => amortization.id),
             label: 'amortizationExpenses',
             values: [
-              ...amortizationValues.map((amortizationValues) => amortizationValues.amortization),
-              firstHalfTotal(amortizationValues.map((amortizationValues) => amortizationValues.amortization)),
-              secondHalfTotal(amortizationValues.map((amortizationValues) => amortizationValues.amortization)),
-              total(amortizationValues.map((amortizationValues) => amortizationValues.amortization)),
+              ...amortizationValues.map((amortization) => amortization.amortization_expense),
+              firstHalfTotal(amortizationValues.map((amortization) => amortization.amortization_expense)),
+              secondHalfTotal(amortizationValues.map((amortization) => amortization.amortization_expense)),
+              total(amortizationValues.map((amortization) => amortization.amortization_expense)),
+              // `${(total(amortizationValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
-          //end of cost of sales portion
-          //start for planning assign data portion
-          grossProfitData, //gross profit
+          // end for cost of sales section
           {
-            id: '',
+            label: 'grossProfit',
+            values: [
+              ...grossProfitValues,
+              firstHalfTotal(grossProfitValues),
+              secondHalfTotal(grossProfitValues),
+              total(grossProfitValues),
+              '',
+            ],
+          },
+          // start for employee expense section
+          {
             label: 'employeeExpenses',
             values: [
-              ...personnelExpensesValues,
-              firstHalfTotal(personnelExpensesValues),
-              secondHalfTotal(personnelExpensesValues),
-              total(personnelExpensesValues),
-              // `${(total(personnelExpensesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+              ...employeeExpensesValues,
+              firstHalfTotal(employeeExpensesValues),
+              secondHalfTotal(employeeExpensesValues),
+              total(employeeExpensesValues),
               '0',
             ],
           },
           {
-            id: renumerationValues.map((renumerationValues) => renumerationValues.id),
+            id: executiveRenumerationValues.map((renumeration) => renumeration.id),
             label: 'executiveRenumeration',
             values: [
-              ...renumerationValues.map((remuneration) => remuneration.remuneration),
-              firstHalfTotal(renumerationValues.map((remuneration) => remuneration.remuneration)),
-              secondHalfTotal(renumerationValues.map((remuneration) => remuneration.remuneration)),
-              total(renumerationValues.map((remuneration) => remuneration.remuneration)),
+              ...executiveRenumerationValues,
+              firstHalfTotal(executiveRenumerationValues),
+              secondHalfTotal(executiveRenumerationValues),
+              total(executiveRenumerationValues),
+              // `${(total(executiveRenumerationValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: '',
             label: 'salary',
             values: [
-              ...assign_unit_priceValues,
-              firstHalfTotal(assign_unit_priceValues),
-              secondHalfTotal(assign_unit_priceValues),
-              total(assign_unit_priceValues),
-              // `${(total(consumableValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+              ...salaryValues,
+              firstHalfTotal(salaryValues),
+              secondHalfTotal(salaryValues),
+              total(salaryValues),
+              // `${(total(salaryValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: travelExpenseValues.map((travelExpenseValues) => travelExpenseValues.id),
+            id: bonusAndFuelAllowanceValues.map((fuel) => fuel.id),
             label: 'fuelAllowance',
             values: [
-              ...travelExpenseValues.map((travel) => travel.travel_expenses),
-              firstHalfTotal(travelExpenseValues.map((travel) => travel.travel_expenses)),
-              secondHalfTotal(travelExpenseValues.map((travel) => travel.travel_expenses)),
-              total(travelExpenseValues.map((travel) => travel.travel_expenses)),
+              ...bonusAndFuelAllowanceValues,
+              firstHalfTotal(bonusAndFuelAllowanceValues),
+              secondHalfTotal(bonusAndFuelAllowanceValues),
+              total(bonusAndFuelAllowanceValues),
+              // `${(total(fuelAllowanceValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: taxesPublicChargesValues.map((taxesPublicChargesValues) => taxesPublicChargesValues.id),
+            id: statutoryWelfareExpenseValues.map((statutory) => statutory.id),
             label: 'statutoryWelfareExpenses',
             values: [
-              ...taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges),
-              firstHalfTotal(taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges)),
-              secondHalfTotal(taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges)),
-              total(taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges)),
+              ...statutoryWelfareExpenseValues,
+              firstHalfTotal(statutoryWelfareExpenseValues),
+              secondHalfTotal(statutoryWelfareExpenseValues),
+              total(statutoryWelfareExpenseValues),
+              // `${(total(statutoryWelfareExpenseValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: utilitiesValues.map((utilitiesValues) => utilitiesValues.id),
+            id: welfareExpenseValues.map((welfare) => welfare.id),
             label: 'welfareExpenses',
             values: [
-              ...utilitiesValues.map((utility) => utility.utilities_expenses),
-              firstHalfTotal(utilitiesValues.map((utility) => utility.utilities_expenses)),
-              secondHalfTotal(utilitiesValues.map((utility) => utility.utilities_expenses)),
-              total(utilitiesValues.map((utility) => utility.utilities_expenses)),
-              '0',
-            ],
-          },
-          //end for planning portion
-          //start for expenses portion
-          {
-            id: '',
-            label: 'expenses',
-            values: [
-              ...expenseTotalValues,
-              firstHalfTotal(expenseTotalValues),
-              secondHalfTotal(expenseTotalValues),
-              total(expenseTotalValues),
-              // `${(total(expenseTotalValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+              ...welfareExpenseValues,
+              firstHalfTotal(welfareExpenseValues),
+              secondHalfTotal(welfareExpenseValues),
+              total(welfareExpenseValues),
+              // `${(total(welfareExpenseValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: consumableValues.map((consumableValues) => consumableValues.id),
-            //same value to " 給与手当 " ?
-            label: 'consumableExpenses',
-            values: [
-              ...consumableValues.map((consumable) => consumable.consumables_expenses),
-              firstHalfTotal(consumableValues.map((consumable) => consumable.consumables_expenses)),
-              secondHalfTotal(consumableValues.map((consumable) => consumable.consumables_expenses)),
-              total(consumableValues.map((consumable) => consumable.consumables_expenses)),
-              '0',
-            ],
-          },
-          {
-            id: rentValues.map((rentValues) => rentValues.id),
-            label: 'rentExpenses',
-            values: [
-              ...rentValues.map((rent) => rent.rent),
-              firstHalfTotal(rentValues.map((rent) => rent.rent)),
-              secondHalfTotal(rentValues.map((rent) => rent.rent)),
-              total(rentValues.map((rent) => rent.rent)),
-              '0',
-            ],
-          },
-          {
-            id: paymentFeeValues.map((paymentFeeValues) => paymentFeeValues.id),
             label: 'insurancePremiums',
             values: [
-              ...paymentFeeValues.map((payment) => payment.payment_fees),
-              firstHalfTotal(paymentFeeValues.map((payment) => payment.payment_fees)),
-              secondHalfTotal(paymentFeeValues.map((payment) => payment.payment_fees)),
-              total(paymentFeeValues.map((payment) => payment.payment_fees)),
+              ...insurancePremiumsValues,
+              firstHalfTotal(insurancePremiumsValues),
+              secondHalfTotal(insurancePremiumsValues),
+              total(insurancePremiumsValues),
+              // `${(total(insurancePremiumsValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
+          //end for employee expense section
+          //start for expenses section
           {
-            id: taxesPublicChargesValues.map((taxesPublicChargesValues) => taxesPublicChargesValues.id),
-            //same "法定福利費 "
-            label: 'taxesAndpublicCharges',
+            label: 'expenses',
             values: [
-              ...taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges),
-              firstHalfTotal(taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges)),
-              secondHalfTotal(taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges)),
-              total(taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges)),
+              ...expenseValues,
+              firstHalfTotal(expenseValues),
+              secondHalfTotal(expenseValues),
+              total(expenseValues),
               '0',
             ],
-            // values: [
-            //   ...taxesPublicChargesValues,
-            //   firstHalfTotal(taxesPublicChargesValues),
-            //   secondHalfTotal(taxesPublicChargesValues),
-            //   total(taxesPublicChargesValues),
-            //   // `${(total(taxesPublicChargesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
-            //   '0',
-            // ],
           },
           {
-            id: depreciationExpensesValues.map((depreciationExpensesValues) => depreciationExpensesValues.id),
+            //same value to " 給与手当 " ?
+            id: consumableValues.map((consumable) => consumable.id),
+            label: 'consumableExpenses',
+            values: [
+              ...consumableValues.map((consumable) => consumable.consumable_expense),
+              firstHalfTotal(consumableValues.map((consumable) => consumable.consumable_expense)),
+              secondHalfTotal(consumableValues.map((consumable) => consumable.consumable_expense)),
+              total(consumableValues.map((consumable) => consumable.consumable_expense)),
+              // `${(total(consumableValues) / total(expenseValues) * 100).toFixed(2)}%`,
+              '0',
+            ],
+          },
+          {
+            id: rentValues.map((rent) => rent.id),
+            label: 'rentExpenses',
+            values: [
+              ...rentValues.map((rent) => rent.rent_expense),
+              firstHalfTotal(rentValues.map((rent) => rent.rent_expense)),
+              secondHalfTotal(rentValues.map((rent) => rent.rent_expense)),
+              total(rentValues.map((rent) => rent.rent_expense)),
+              // `${(total(rentValues) / total(expenseValues) * 100).toFixed(2)}%`,
+              '0',
+            ],
+          },
+          {
+            label: 'taxesAndPublicCharges',
+            values: [
+              ...taxesPublicChargesValues,
+              firstHalfTotal(taxesPublicChargesValues),
+              secondHalfTotal(taxesPublicChargesValues),
+              total(taxesPublicChargesValues),
+              // `${(total(taxesPublicChargesValues) / total(expenseValues) * 100).toFixed(2)}%`,
+              '0',
+            ],
+          },
+          {
+            id: depreciationExpensesValues.map((depreciation) => depreciation.id),
             label: 'depreciationExpenses',
             values: [
-              ...depreciationExpensesValues.map((depreciation) => depreciation.depreciation_expenses),
-              firstHalfTotal(depreciationExpensesValues.map((depreciation) => depreciation.depreciation_expenses)),
-              secondHalfTotal(depreciationExpensesValues.map((depreciation) => depreciation.depreciation_expenses)),
-              total(depreciationExpensesValues.map((depreciation) => depreciation.depreciation_expenses)),
+              ...depreciationExpensesValues.map((depreciation) => depreciation.depreciation_expense),
+              firstHalfTotal(depreciationExpensesValues.map((depreciation) => depreciation.depreciation_expense)),
+              secondHalfTotal(depreciationExpensesValues.map((depreciation) => depreciation.depreciation_expense)),
+              total(depreciationExpensesValues.map((depreciation) => depreciation.depreciation_expense)),
+              // `${(total(depreciationExpensesValues) / total(expenseValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: travelExpenseValues.map((travelExpenseValues) => travelExpenseValues.id),
+            id: travelExpenseValues.map((travel) => travel.id),
             label: 'travelExpenses',
             values: [
-              ...travelExpenseValues.map((travel) => travel.travel_expenses),
-              firstHalfTotal(travelExpenseValues.map((travel) => travel.travel_expenses)),
-              secondHalfTotal(travelExpenseValues.map((travel) => travel.travel_expenses)),
-              total(travelExpenseValues.map((travel) => travel.travel_expenses)),
+              ...travelExpenseValues.map((travel) => travel.travel_expense),
+              firstHalfTotal(travelExpenseValues.map((travel) => travel.travel_expense)),
+              secondHalfTotal(travelExpenseValues.map((travel) => travel.travel_expense)),
+              total(travelExpenseValues.map((travel) => travel.travel_expense)),
+              // `${(total(travelExpenseValues) / total(expenseValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: communicationExpenseValues.map((communicationExpenseValues) => communicationExpenseValues.id),
+            id: communicationExpenseValues.map((communicationExpense) => communicationExpense.id),
             label: 'communicationExpenses',
             values: [
-              ...communicationExpenseValues.map((communication) => communication.communication_expenses),
-              firstHalfTotal(communicationExpenseValues.map((communication) => communication.communication_expenses)),
-              secondHalfTotal(communicationExpenseValues.map((communication) => communication.communication_expenses)),
-              total(communicationExpenseValues.map((communication) => communication.communication_expenses)),
+              ...communicationExpenseValues.map((communicationExpense) => communicationExpense.communication_expense),
+              firstHalfTotal(
+                communicationExpenseValues.map((communicationExpense) => communicationExpense.communication_expense),
+              ),
+              secondHalfTotal(
+                communicationExpenseValues.map((communicationExpense) => communicationExpense.communication_expense),
+              ),
+              total(
+                communicationExpenseValues.map((communicationExpense) => communicationExpense.communication_expense),
+              ),
+              // `${(total(communicationExpenseValues) / total(expenseValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: utilitiesValues.map((utilitiesValues) => utilitiesValues.id),
+            id: utilitiesValues.map((utils) => utils.id),
             label: 'utilitiesExpenses',
             values: [
-              ...utilitiesValues.map((utility) => utility.utilities_expenses),
-              firstHalfTotal(utilitiesValues.map((utility) => utility.utilities_expenses)),
-              secondHalfTotal(utilitiesValues.map((utility) => utility.utilities_expenses)),
-              total(utilitiesValues.map((utility) => utility.utilities_expenses)),
+              ...utilitiesValues.map((utils) => utils.utilities_expense),
+              firstHalfTotal(utilitiesValues.map((utils) => utils.utilities_expense)),
+              secondHalfTotal(utilitiesValues.map((utils) => utils.utilities_expense)),
+              total(utilitiesValues.map((utils) => utils.utilities_expense)),
+              // `${(total(utilitiesValues) / total(expenseValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: advertisingExpenseValues.map((advertisingExpenseValues) => advertisingExpenseValues.id),
+            id: transactionFeeValues.map((transaction) => transaction.id),
             label: 'transactionFees',
             values: [
-              ...advertisingExpenseValues.map((advertising) => advertising.advertising_expenses),
-              firstHalfTotal(advertisingExpenseValues.map((advertising) => advertising.advertising_expenses)),
-              secondHalfTotal(advertisingExpenseValues.map((advertising) => advertising.advertising_expenses)),
-              total(advertisingExpenseValues.map((advertising) => advertising.advertising_expenses)),
+              ...transactionFeeValues.map((transaction) => transaction.transaction_fee),
+              firstHalfTotal(transactionFeeValues.map((transaction) => transaction.transaction_fee)),
+              secondHalfTotal(transactionFeeValues.map((transaction) => transaction.transaction_fee)),
+              total(transactionFeeValues.map((transaction) => transaction.transaction_fee)),
+              // `${(total(transactionFeeValues) / total(expenseValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: advertisingExpenseValues.map((advertisingExpenseValues) => advertisingExpenseValues.id),
+            id: advertisingExpenseValues.map((advertising) => advertising.id),
             label: 'advertisingExpenses',
             values: [
-              ...advertisingExpenseValues.map((advertising) => advertising.advertising_expenses),
-              firstHalfTotal(advertisingExpenseValues.map((advertising) => advertising.advertising_expenses)),
-              secondHalfTotal(advertisingExpenseValues.map((advertising) => advertising.advertising_expenses)),
-              total(advertisingExpenseValues.map((advertising) => advertising.advertising_expenses)),
+              ...advertisingExpenseValues.map((advertising) => advertising.advertising_expense),
+              firstHalfTotal(advertisingExpenseValues.map((advertising) => advertising.advertising_expense)),
+              secondHalfTotal(advertisingExpenseValues.map((advertising) => advertising.advertising_expense)),
+              total(advertisingExpenseValues.map((advertising) => advertising.advertising_expense)),
+              // `${(total(advertisingExpenseValues) / total(expenseValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: entertainmentExpenseValues.map((entertainmentExpenseValues) => entertainmentExpenseValues.id),
+            id: entertainmentExpenseValues.map((entertainment) => entertainment.id),
             label: 'entertainmentExpenses',
             values: [
-              ...entertainmentExpenseValues.map((entertainment) => entertainment.entertainment_expenses),
-              firstHalfTotal(entertainmentExpenseValues.map((entertainment) => entertainment.entertainment_expenses)),
-              secondHalfTotal(entertainmentExpenseValues.map((entertainment) => entertainment.entertainment_expenses)),
-              total(entertainmentExpenseValues.map((entertainment) => entertainment.entertainment_expenses)),
+              ...entertainmentExpenseValues.map((entertainment) => entertainment.entertainment_expense),
+              firstHalfTotal(entertainmentExpenseValues.map((entertainment) => entertainment.entertainment_expense)),
+              secondHalfTotal(entertainmentExpenseValues.map((entertainment) => entertainment.entertainment_expense)),
+              total(entertainmentExpenseValues.map((entertainment) => entertainment.entertainment_expense)),
+              // `${(total(entertainmentExpenseValues) / total(expenseValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: paymentFeeValues.map((paymentFeeValues) => paymentFeeValues.id),
+            id: professionalServiceFeeValues.map((professional) => professional.id),
             label: 'professionalServicesFees',
             values: [
-              ...paymentFeeValues.map((payment) => payment.payment_fees),
-              firstHalfTotal(paymentFeeValues.map((payment) => payment.payment_fees)),
-              secondHalfTotal(paymentFeeValues.map((payment) => payment.payment_fees)),
-              total(paymentFeeValues.map((payment) => payment.payment_fees)),
+              ...professionalServiceFeeValues.map((professional) => professional.professional_service_fee),
+              firstHalfTotal(professionalServiceFeeValues.map((professional) => professional.professional_service_fee)),
+              secondHalfTotal(
+                professionalServiceFeeValues.map((professional) => professional.professional_service_fee),
+              ),
+              total(professionalServiceFeeValues.map((professional) => professional.professional_service_fee)),
+              // `${(total(professionalServiceFeeValues) / total(expenseValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
+          // end for expense section
           {
-            id: '',
             //add 人件費 + 経費 field
             label: 'sellingAndGeneralAdminExpenses',
-            // values: Array(16).fill(0),
             values: [
-              ...generalExpenseValues.map((item) => item.generalTotal),
-              firstHalfTotal(generalExpenseValues.map((item) => item.generalTotal)),
-              secondHalfTotal(generalExpenseValues.map((item) => item.generalTotal)),
-              total(generalExpenseValues.map((item) => item.generalTotal)),
+              ...sellingAndGeneralAdminExpenseValues,
+              firstHalfTotal(sellingAndGeneralAdminExpenseValues),
+              secondHalfTotal(sellingAndGeneralAdminExpenseValues),
+              total(sellingAndGeneralAdminExpenseValues),
               '0',
             ],
           },
           //Operating income 営業利益 ①
           {
-            id: '',
             label: 'operatingIncome',
             values: [
-              ...operatingProfitValues,
-              firstHalfTotal(operatingProfitValues),
-              secondHalfTotal(operatingProfitValues),
-              total(operatingProfitValues),
+              ...operatingIncomeValues,
+              firstHalfTotal(operatingIncomeValues),
+              secondHalfTotal(operatingIncomeValues),
+              total(operatingIncomeValues),
               '0',
             ],
           },
           {
-            id: '',
             label: 'nonOperatingIncome',
             values: [
               ...nonOperatingIncomeValues,
@@ -758,7 +872,6 @@ const EditTablePlanning = () => {
             ],
           },
           {
-            id: '',
             label: 'nonOperatingExpenses',
             values: [
               ...nonOperatingExpensesValues,
@@ -769,7 +882,6 @@ const EditTablePlanning = () => {
             ],
           },
           {
-            id: '',
             label: 'ordinaryIncome',
             values: [
               ...ordinaryProfitValues,
@@ -780,7 +892,6 @@ const EditTablePlanning = () => {
             ],
           },
           {
-            id: '',
             label: 'cumulativeOrdinaryIncome',
             values: [
               ...cumulativeOrdinaryProfitValues,
@@ -792,18 +903,33 @@ const EditTablePlanning = () => {
           },
         ]
 
-        const data2 = [
+        const previousData = [
+          //start for sales revenue section
           {
             label: 'salesRevenue',
-            values: Array(16).fill(0),
+            values: [
+              ...salesValues,
+
+              firstHalfTotal(salesValues),
+              secondHalfTotal(salesValues),
+              total(salesValues),
+              // `${(total(salesValues) / total(salesValues) * 100).toFixed(2)}%`,
+              '0',
+            ],
           },
           {
             label: 'sales',
-            values: Array(16).fill(0),
+            values: [
+              ...salesValues,
+              firstHalfTotal(salesValues),
+              secondHalfTotal(salesValues),
+              total(salesValues),
+              // `${(total(salesValues) / total(salesValues) * 100).toFixed(2)}%`,
+              '0',
+            ],
           },
           //start of cost of sales portion
           {
-            id: '',
             label: 'costOfSales',
             values: [
               ...costOfSalesValues,
@@ -818,69 +944,70 @@ const EditTablePlanning = () => {
             id: purchasesValues.map((entry) => entry.id),
             label: 'purchases',
             values: [
-              ...purchasesValues.map((entry) => entry.purchase),
-              firstHalfTotal(purchasesValues.map((entry) => entry.purchase)),
-              secondHalfTotal(purchasesValues.map((entry) => entry.purchase)),
-              total(purchasesValues.map((entry) => entry.purchase)),
-              '0',
+              ...purchasesValues.map((entry) => entry.purchase), // Extract purchase values
+              firstHalfTotal(purchasesValues.map((entry) => entry.purchase)), // First half total
+              secondHalfTotal(purchasesValues.map((entry) => entry.purchase)), // Second half total
+              total(purchasesValues.map((entry) => entry.purchase)), // Total purchases
+              // `${(total(purchasesValues.map((entry) => entry.purchase)) / total(costOfSalesValues) * 100).toFixed(2)}%`, // Optional calculation
+              '0', // Placeholder value or additional logic
             ],
           },
           {
-            id: outsourcingValues.map((outsource) => outsource.id),
+            id: outsourcingExpenseValues.map((outsource) => outsource.id), // Extract ids from the entries
             label: 'outsourcingExpenses',
             values: [
-              ...outsourcingValues.map((outsource) => outsource.outsourcing_costs),
-              firstHalfTotal(outsourcingValues.map((outsource) => outsource.outsourcing_costs)),
-              secondHalfTotal(outsourcingValues.map((outsource) => outsource.outsourcing_costs)),
-              total(outsourcingValues.map((outsource) => outsource.outsourcing_costs)),
-              '0',
+              ...outsourcingExpenseValues.map((outsource) => outsource.outsourcing_expense), // Extract the `outsourcing_expense` values
+              firstHalfTotal(outsourcingExpenseValues.map((outsource) => outsource.outsourcing_expense)), // First half total
+              secondHalfTotal(outsourcingExpenseValues.map((outsource) => outsource.outsourcing_expense)), // Second half total
+              total(outsourcingExpenseValues.map((outsource) => outsource.outsourcing_expense)), // Total outsourcing expense
+              '0', // Placeholder value
             ],
           },
           {
-            id: outsourcingValues.map((productPurchaseValues) => productPurchaseValues.id),
+            id: productPurchaseValues.map((product) => product.id),
             label: 'productPurchases',
             values: [
-              ...productPurchaseValues.map((productPurchaseValues) => productPurchaseValues.product_purchases),
-              firstHalfTotal(
-                productPurchaseValues.map((productPurchaseValues) => productPurchaseValues.product_purchases),
-              ),
-              secondHalfTotal(
-                productPurchaseValues.map((productPurchaseValues) => productPurchaseValues.product_purchases),
-              ),
-              total(productPurchaseValues.map((productPurchaseValues) => productPurchaseValues.product_purchases)),
+              ...productPurchaseValues.map((product) => product.product_purchase),
+              firstHalfTotal(productPurchaseValues.map((product) => product.product_purchase)),
+              secondHalfTotal(productPurchaseValues.map((product) => product.product_purchase)),
+              total(productPurchaseValues.map((product) => product.product_purchase)),
+              // `${(total(productPurchaseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: dispatchLaborValues.map((dispatchLaborValues) => dispatchLaborValues.id),
+            id: dispatchLaborExpenseValues.map((dispatch) => dispatch.id),
             label: 'dispatchLaborExpenses',
             values: [
-              ...dispatchLaborValues.map((dispatch) => dispatch.dispatch_labor_costs),
-              firstHalfTotal(dispatchLaborValues.map((dispatch) => dispatch.dispatch_labor_costs)),
-              secondHalfTotal(dispatchLaborValues.map((dispatch) => dispatch.dispatch_labor_costs)),
-              total(dispatchLaborValues.map((dispatch) => dispatch.dispatch_labor_costs)),
+              ...dispatchLaborExpenseValues.map((dispatch) => dispatch.dispatch_labor_expense),
+              firstHalfTotal(dispatchLaborExpenseValues.map((dispatch) => dispatch.dispatch_labor_expense)),
+              secondHalfTotal(dispatchLaborExpenseValues.map((dispatch) => dispatch.dispatch_labor_expense)),
+              total(dispatchLaborExpenseValues.map((dispatch) => dispatch.dispatch_labor_expense)),
+              // `${(total(dispatchLaborExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: communicationCostValues.map((communicationCost) => communicationCost.id),
-            label: 'communicationExpenses',
+            id: communicationCostValues.map((communication) => communication.id),
+            label: 'communicationCost',
             values: [
-              ...communicationCostValues.map((communication) => communication.communication_costs),
-              firstHalfTotal(communicationCostValues.map((communication) => communication.communication_costs)),
-              secondHalfTotal(communicationCostValues.map((communication) => communication.communication_costs)),
-              total(communicationCostValues.map((communication) => communication.communication_costs)),
+              ...communicationCostValues.map((communication) => communication.communication_expense),
+              firstHalfTotal(communicationCostValues.map((communication) => communication.communication_expense)),
+              secondHalfTotal(communicationCostValues.map((communication) => communication.communication_expense)),
+              total(communicationCostValues.map((communication) => communication.communication_expense)),
+              // `${(total(communicationCostValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: inProgressValues.map((inProgressValues) => inProgressValues.id),
+            id: workInProgressValues.map((wip) => wip.id),
             label: 'workInProgressExpenses',
             values: [
-              ...inProgressValues.map((inProgress) => inProgress.work_in_progress),
-              firstHalfTotal(inProgressValues.map((inProgress) => inProgress.work_in_progress)),
-              secondHalfTotal(inProgressValues.map((inProgress) => inProgress.work_in_progress)),
-              total(inProgressValues.map((inProgress) => inProgress.work_in_progress)),
+              ...workInProgressValues.map((wip) => wip.work_in_progress_expense),
+              firstHalfTotal(workInProgressValues.map((wip) => wip.work_in_progress_expense)),
+              secondHalfTotal(workInProgressValues.map((wip) => wip.work_in_progress_expense)),
+              total(workInProgressValues.map((wip) => wip.work_in_progress_expense)),
+              // `${(total(workInProgressValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
@@ -888,267 +1015,282 @@ const EditTablePlanning = () => {
             id: amortizationValues.map((amortization) => amortization.id),
             label: 'amortizationExpenses',
             values: [
-              ...amortizationValues.map((amortizationValues) => amortizationValues.amortization),
-              firstHalfTotal(amortizationValues.map((amortizationValues) => amortizationValues.amortization)),
-              secondHalfTotal(amortizationValues.map((amortizationValues) => amortizationValues.amortization)),
-              total(amortizationValues.map((amortizationValues) => amortizationValues.amortization)),
+              ...amortizationValues.map((amortization) => amortization.amortization_expense),
+              firstHalfTotal(amortizationValues.map((amortization) => amortization.amortization_expense)),
+              secondHalfTotal(amortizationValues.map((amortization) => amortization.amortization_expense)),
+              total(amortizationValues.map((amortization) => amortization.amortization_expense)),
+              // `${(total(amortizationValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
-          //end of cost of sales portion
-          //start for planning assign data portion
-          grossProfitData, //gross profit
+          // end for cost of sales section
           {
-            id: '',
-            label: 'personalExpenses',
+            label: 'grossProfit',
             values: [
-              ...personnelExpensesValues,
-              firstHalfTotal(personnelExpensesValues),
-              secondHalfTotal(personnelExpensesValues),
-              total(personnelExpensesValues),
-              // `${(total(personnelExpensesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+              ...grossProfitValues,
+              firstHalfTotal(grossProfitValues),
+              secondHalfTotal(grossProfitValues),
+              total(grossProfitValues),
+              '',
+            ],
+          },
+          // start for employee expense section
+          {
+            label: 'employeeExpenses',
+            values: [
+              ...employeeExpensesValues,
+              firstHalfTotal(employeeExpensesValues),
+              secondHalfTotal(employeeExpensesValues),
+              total(employeeExpensesValues),
               '0',
             ],
           },
           {
-            id: renumerationValues.map((renumerationValues) => renumerationValues.id),
+            id: executiveRenumerationValues.map((renumeration) => renumeration.id),
             label: 'executiveRenumeration',
             values: [
-              ...renumerationValues.map((remuneration) => remuneration.remuneration),
-              firstHalfTotal(renumerationValues.map((remuneration) => remuneration.remuneration)),
-              secondHalfTotal(renumerationValues.map((remuneration) => remuneration.remuneration)),
-              total(renumerationValues.map((remuneration) => remuneration.remuneration)),
+              ...executiveRenumerationValues,
+              firstHalfTotal(executiveRenumerationValues),
+              secondHalfTotal(executiveRenumerationValues),
+              total(executiveRenumerationValues),
+              // `${(total(executiveRenumerationValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: '',
             label: 'salary',
             values: [
-              ...assign_unit_priceValues,
-              firstHalfTotal(assign_unit_priceValues),
-              secondHalfTotal(assign_unit_priceValues),
-              total(assign_unit_priceValues),
-              // `${(total(consumableValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+              ...salaryValues,
+              firstHalfTotal(salaryValues),
+              secondHalfTotal(salaryValues),
+              total(salaryValues),
+              // `${(total(salaryValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: travelExpenseValues.map((travelExpenseValues) => travelExpenseValues.id),
+            id: bonusAndFuelAllowanceValues.map((fuel) => fuel.id),
             label: 'fuelAllowance',
             values: [
-              ...travelExpenseValues.map((travel) => travel.travel_expenses),
-              firstHalfTotal(travelExpenseValues.map((travel) => travel.travel_expenses)),
-              secondHalfTotal(travelExpenseValues.map((travel) => travel.travel_expenses)),
-              total(travelExpenseValues.map((travel) => travel.travel_expenses)),
+              ...bonusAndFuelAllowanceValues,
+              firstHalfTotal(bonusAndFuelAllowanceValues),
+              secondHalfTotal(bonusAndFuelAllowanceValues),
+              total(bonusAndFuelAllowanceValues),
+              // `${(total(fuelAllowanceValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: taxesPublicChargesValues.map((taxesPublicChargesValues) => taxesPublicChargesValues.id),
+            id: statutoryWelfareExpenseValues.map((statutory) => statutory.id),
             label: 'statutoryWelfareExpenses',
             values: [
-              ...taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges),
-              firstHalfTotal(taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges)),
-              secondHalfTotal(taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges)),
-              total(taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges)),
+              ...statutoryWelfareExpenseValues,
+              firstHalfTotal(statutoryWelfareExpenseValues),
+              secondHalfTotal(statutoryWelfareExpenseValues),
+              total(statutoryWelfareExpenseValues),
+              // `${(total(statutoryWelfareExpenseValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: utilitiesValues.map((utilitiesValues) => utilitiesValues.id),
+            id: welfareExpenseValues.map((welfare) => welfare.id),
             label: 'welfareExpenses',
             values: [
-              ...utilitiesValues.map((utility) => utility.utilities_expenses),
-              firstHalfTotal(utilitiesValues.map((utility) => utility.utilities_expenses)),
-              secondHalfTotal(utilitiesValues.map((utility) => utility.utilities_expenses)),
-              total(utilitiesValues.map((utility) => utility.utilities_expenses)),
-              '0',
-            ],
-          },
-          //end for planning portion
-          //start for expenses portion
-          {
-            id: '',
-            label: 'expenses',
-            values: [
-              ...expenseTotalValues,
-              firstHalfTotal(expenseTotalValues),
-              secondHalfTotal(expenseTotalValues),
-              total(expenseTotalValues),
-              // `${(total(expenseTotalValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
+              ...welfareExpenseValues,
+              firstHalfTotal(welfareExpenseValues),
+              secondHalfTotal(welfareExpenseValues),
+              total(welfareExpenseValues),
+              // `${(total(welfareExpenseValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: consumableValues.map((consumableValues) => consumableValues.id),
-            //same value to " 給与手当 " ?
-            label: 'suppliesExpenses',
-            values: [
-              ...consumableValues.map((consumable) => consumable.consumables_expenses),
-              firstHalfTotal(consumableValues.map((consumable) => consumable.consumables_expenses)),
-              secondHalfTotal(consumableValues.map((consumable) => consumable.consumables_expenses)),
-              total(consumableValues.map((consumable) => consumable.consumables_expenses)),
-              '0',
-            ],
-          },
-          {
-            id: rentValues.map((rentValues) => rentValues.id),
-            label: 'rentExpenses',
-            values: [
-              ...rentValues.map((rent) => rent.rent),
-              firstHalfTotal(rentValues.map((rent) => rent.rent)),
-              secondHalfTotal(rentValues.map((rent) => rent.rent)),
-              total(rentValues.map((rent) => rent.rent)),
-              '0',
-            ],
-          },
-          {
-            id: paymentFeeValues.map((paymentFeeValues) => paymentFeeValues.id),
             label: 'insurancePremiums',
             values: [
-              ...paymentFeeValues.map((payment) => payment.payment_fees),
-              firstHalfTotal(paymentFeeValues.map((payment) => payment.payment_fees)),
-              secondHalfTotal(paymentFeeValues.map((payment) => payment.payment_fees)),
-              total(paymentFeeValues.map((payment) => payment.payment_fees)),
+              ...insurancePremiumsValues,
+              firstHalfTotal(insurancePremiumsValues),
+              secondHalfTotal(insurancePremiumsValues),
+              total(insurancePremiumsValues),
+              // `${(total(insurancePremiumsValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
+          //end for employee expense section
+          //start for expenses section
           {
-            id: taxesPublicChargesValues.map((taxesPublicChargesValues) => taxesPublicChargesValues.id),
-            //same "法定福利費 "
-            label: 'taxesAndpublicCharges',
+            label: 'expenses',
             values: [
-              ...taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges),
-              firstHalfTotal(taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges)),
-              secondHalfTotal(taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges)),
-              total(taxesPublicChargesValues.map((taxes) => taxes.taxes_and_public_charges)),
+              ...expenseValues,
+              firstHalfTotal(expenseValues),
+              secondHalfTotal(expenseValues),
+              total(expenseValues),
               '0',
             ],
-            // values: [
-            //   ...taxesPublicChargesValues,
-            //   firstHalfTotal(taxesPublicChargesValues),
-            //   secondHalfTotal(taxesPublicChargesValues),
-            //   total(taxesPublicChargesValues),
-            //   // `${(total(taxesPublicChargesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
-            //   '0',
-            // ],
           },
           {
-            id: depreciationExpensesValues.map((depreciationExpensesValues) => depreciationExpensesValues.id),
+            //same value to " 給与手当 " ?
+            id: consumableValues.map((consumable) => consumable.id),
+            label: 'consumableExpenses',
+            values: [
+              ...consumableValues.map((consumable) => consumable.consumable_expense),
+              firstHalfTotal(consumableValues.map((consumable) => consumable.consumable_expense)),
+              secondHalfTotal(consumableValues.map((consumable) => consumable.consumable_expense)),
+              total(consumableValues.map((consumable) => consumable.consumable_expense)),
+              // `${(total(consumableValues) / total(expenseValues) * 100).toFixed(2)}%`,
+              '0',
+            ],
+          },
+          {
+            id: rentValues.map((rent) => rent.id),
+            label: 'rentExpenses',
+            values: [
+              ...rentValues.map((rent) => rent.rent_expense),
+              firstHalfTotal(rentValues.map((rent) => rent.rent_expense)),
+              secondHalfTotal(rentValues.map((rent) => rent.rent_expense)),
+              total(rentValues.map((rent) => rent.rent_expense)),
+              // `${(total(rentValues) / total(expenseValues) * 100).toFixed(2)}%`,
+              '0',
+            ],
+          },
+          {
+            label: 'taxesAndPublicCharges',
+            values: [
+              ...taxesPublicChargesValues,
+              firstHalfTotal(taxesPublicChargesValues),
+              secondHalfTotal(taxesPublicChargesValues),
+              total(taxesPublicChargesValues),
+              // `${(total(taxesPublicChargesValues) / total(expenseValues) * 100).toFixed(2)}%`,
+              '0',
+            ],
+          },
+          {
+            id: depreciationExpensesValues.map((depreciation) => depreciation.id),
             label: 'depreciationExpenses',
             values: [
-              ...depreciationExpensesValues.map((depreciation) => depreciation.depreciation_expenses),
-              firstHalfTotal(depreciationExpensesValues.map((depreciation) => depreciation.depreciation_expenses)),
-              secondHalfTotal(depreciationExpensesValues.map((depreciation) => depreciation.depreciation_expenses)),
-              total(depreciationExpensesValues.map((depreciation) => depreciation.depreciation_expenses)),
+              ...depreciationExpensesValues.map((depreciation) => depreciation.depreciation_expense),
+              firstHalfTotal(depreciationExpensesValues.map((depreciation) => depreciation.depreciation_expense)),
+              secondHalfTotal(depreciationExpensesValues.map((depreciation) => depreciation.depreciation_expense)),
+              total(depreciationExpensesValues.map((depreciation) => depreciation.depreciation_expense)),
+              // `${(total(depreciationExpensesValues) / total(expenseValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: travelExpenseValues.map((travelExpenseValues) => travelExpenseValues.id),
+            id: travelExpenseValues.map((travel) => travel.id),
             label: 'travelExpenses',
             values: [
-              ...travelExpenseValues.map((travel) => travel.travel_expenses),
-              firstHalfTotal(travelExpenseValues.map((travel) => travel.travel_expenses)),
-              secondHalfTotal(travelExpenseValues.map((travel) => travel.travel_expenses)),
-              total(travelExpenseValues.map((travel) => travel.travel_expenses)),
+              ...travelExpenseValues.map((travel) => travel.travel_expense),
+              firstHalfTotal(travelExpenseValues.map((travel) => travel.travel_expense)),
+              secondHalfTotal(travelExpenseValues.map((travel) => travel.travel_expense)),
+              total(travelExpenseValues.map((travel) => travel.travel_expense)),
+              // `${(total(travelExpenseValues) / total(expenseValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: communicationExpenseValues.map((communicationExpenseValues) => communicationExpenseValues.id),
+            id: communicationExpenseValues.map((communicationExpense) => communicationExpense.id),
             label: 'communicationExpenses',
             values: [
-              ...communicationExpenseValues.map((communication) => communication.communication_expenses),
-              firstHalfTotal(communicationExpenseValues.map((communication) => communication.communication_expenses)),
-              secondHalfTotal(communicationExpenseValues.map((communication) => communication.communication_expenses)),
-              total(communicationExpenseValues.map((communication) => communication.communication_expenses)),
+              ...communicationExpenseValues.map((communicationExpense) => communicationExpense.communication_expense),
+              firstHalfTotal(
+                communicationExpenseValues.map((communicationExpense) => communicationExpense.communication_expense),
+              ),
+              secondHalfTotal(
+                communicationExpenseValues.map((communicationExpense) => communicationExpense.communication_expense),
+              ),
+              total(
+                communicationExpenseValues.map((communicationExpense) => communicationExpense.communication_expense),
+              ),
+              // `${(total(communicationExpenseValues) / total(expenseValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: utilitiesValues.map((utilitiesValues) => utilitiesValues.id),
+            id: utilitiesValues.map((utils) => utils.id),
             label: 'utilitiesExpenses',
             values: [
-              ...utilitiesValues.map((utility) => utility.utilities_expenses),
-              firstHalfTotal(utilitiesValues.map((utility) => utility.utilities_expenses)),
-              secondHalfTotal(utilitiesValues.map((utility) => utility.utilities_expenses)),
-              total(utilitiesValues.map((utility) => utility.utilities_expenses)),
+              ...utilitiesValues.map((utils) => utils.utilities_expense),
+              firstHalfTotal(utilitiesValues.map((utils) => utils.utilities_expense)),
+              secondHalfTotal(utilitiesValues.map((utils) => utils.utilities_expense)),
+              total(utilitiesValues.map((utils) => utils.utilities_expense)),
+              // `${(total(utilitiesValues) / total(expenseValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: advertisingExpenseValues.map((advertisingExpenseValues) => advertisingExpenseValues.id),
+            id: transactionFeeValues.map((transaction) => transaction.id),
             label: 'transactionFees',
             values: [
-              ...advertisingExpenseValues.map((advertising) => advertising.advertising_expenses),
-              firstHalfTotal(advertisingExpenseValues.map((advertising) => advertising.advertising_expenses)),
-              secondHalfTotal(advertisingExpenseValues.map((advertising) => advertising.advertising_expenses)),
-              total(advertisingExpenseValues.map((advertising) => advertising.advertising_expenses)),
+              ...transactionFeeValues.map((transaction) => transaction.transaction_fee),
+              firstHalfTotal(transactionFeeValues.map((transaction) => transaction.transaction_fee)),
+              secondHalfTotal(transactionFeeValues.map((transaction) => transaction.transaction_fee)),
+              total(transactionFeeValues.map((transaction) => transaction.transaction_fee)),
+              // `${(total(transactionFeeValues) / total(expenseValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: advertisingExpenseValues.map((advertisingExpenseValues) => advertisingExpenseValues.id),
+            id: advertisingExpenseValues.map((advertising) => advertising.id),
             label: 'advertisingExpenses',
             values: [
-              ...advertisingExpenseValues.map((advertising) => advertising.advertising_expenses),
-              firstHalfTotal(advertisingExpenseValues.map((advertising) => advertising.advertising_expenses)),
-              secondHalfTotal(advertisingExpenseValues.map((advertising) => advertising.advertising_expenses)),
-              total(advertisingExpenseValues.map((advertising) => advertising.advertising_expenses)),
+              ...advertisingExpenseValues.map((advertising) => advertising.advertising_expense),
+              firstHalfTotal(advertisingExpenseValues.map((advertising) => advertising.advertising_expense)),
+              secondHalfTotal(advertisingExpenseValues.map((advertising) => advertising.advertising_expense)),
+              total(advertisingExpenseValues.map((advertising) => advertising.advertising_expense)),
+              // `${(total(advertisingExpenseValues) / total(expenseValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: entertainmentExpenseValues.map((entertainmentExpenseValues) => entertainmentExpenseValues.id),
+            id: entertainmentExpenseValues.map((entertainment) => entertainment.id),
             label: 'entertainmentExpenses',
             values: [
-              ...entertainmentExpenseValues.map((entertainment) => entertainment.entertainment_expenses),
-              firstHalfTotal(entertainmentExpenseValues.map((entertainment) => entertainment.entertainment_expenses)),
-              secondHalfTotal(entertainmentExpenseValues.map((entertainment) => entertainment.entertainment_expenses)),
-              total(entertainmentExpenseValues.map((entertainment) => entertainment.entertainment_expenses)),
+              ...entertainmentExpenseValues.map((entertainment) => entertainment.entertainment_expense),
+              firstHalfTotal(entertainmentExpenseValues.map((entertainment) => entertainment.entertainment_expense)),
+              secondHalfTotal(entertainmentExpenseValues.map((entertainment) => entertainment.entertainment_expense)),
+              total(entertainmentExpenseValues.map((entertainment) => entertainment.entertainment_expense)),
+              // `${(total(entertainmentExpenseValues) / total(expenseValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: paymentFeeValues.map((paymentFeeValues) => paymentFeeValues.id),
+            id: professionalServiceFeeValues.map((professional) => professional.id),
             label: 'professionalServicesFees',
             values: [
-              ...paymentFeeValues.map((payment) => payment.payment_fees),
-              firstHalfTotal(paymentFeeValues.map((payment) => payment.payment_fees)),
-              secondHalfTotal(paymentFeeValues.map((payment) => payment.payment_fees)),
-              total(paymentFeeValues.map((payment) => payment.payment_fees)),
+              ...professionalServiceFeeValues.map((professional) => professional.professional_service_fee),
+              firstHalfTotal(professionalServiceFeeValues.map((professional) => professional.professional_service_fee)),
+              secondHalfTotal(
+                professionalServiceFeeValues.map((professional) => professional.professional_service_fee),
+              ),
+              total(professionalServiceFeeValues.map((professional) => professional.professional_service_fee)),
+              // `${(total(professionalServiceFeeValues) / total(expenseValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
+          // end for expense section
           {
-            id: '',
             //add 人件費 + 経費 field
             label: 'sellingAndGeneralAdminExpenses',
-            // values: Array(16).fill(0),
             values: [
-              ...generalExpenseValues.map((item) => item.generalTotal),
-              firstHalfTotal(generalExpenseValues.map((item) => item.generalTotal)),
-              secondHalfTotal(generalExpenseValues.map((item) => item.generalTotal)),
-              total(generalExpenseValues.map((item) => item.generalTotal)),
+              ...sellingAndGeneralAdminExpenseValues,
+              firstHalfTotal(sellingAndGeneralAdminExpenseValues),
+              secondHalfTotal(sellingAndGeneralAdminExpenseValues),
+              total(sellingAndGeneralAdminExpenseValues),
               '0',
             ],
           },
           //Operating income 営業利益 ①
           {
-            id: '',
             label: 'operatingIncome',
             values: [
-              ...operatingProfitValues,
-              firstHalfTotal(operatingProfitValues),
-              secondHalfTotal(operatingProfitValues),
-              total(operatingProfitValues),
+              ...operatingIncomeValues,
+              firstHalfTotal(operatingIncomeValues),
+              secondHalfTotal(operatingIncomeValues),
+              total(operatingIncomeValues),
               '0',
             ],
           },
           {
-            id: '',
             label: 'nonOperatingIncome',
             values: [
               ...nonOperatingIncomeValues,
@@ -1159,7 +1301,6 @@ const EditTablePlanning = () => {
             ],
           },
           {
-            id: '',
             label: 'nonOperatingExpenses',
             values: [
               ...nonOperatingExpensesValues,
@@ -1170,7 +1311,6 @@ const EditTablePlanning = () => {
             ],
           },
           {
-            id: '',
             label: 'ordinaryIncome',
             values: [
               ...ordinaryProfitValues,
@@ -1181,7 +1321,6 @@ const EditTablePlanning = () => {
             ],
           },
           {
-            id: '',
             label: 'cumulativeOrdinaryIncome',
             values: [
               ...cumulativeOrdinaryProfitValues,
@@ -1192,7 +1331,8 @@ const EditTablePlanning = () => {
             ],
           },
         ]
-        setPreviousData(data2)
+
+        setPreviousData(previousData)
         setData(data)
       })
       .catch((error) => {
@@ -1225,10 +1365,6 @@ const EditTablePlanning = () => {
     'communicationExpenses',
     'workInProgressExpenses',
     'amortizationExpenses',
-    'executiveRenumeration',
-    'fuelAllowance',
-    'welfareExpenses',
-    'statutoryWelfareExpenses',
     'consumableExpenses',
     'rentExpenses',
     'taxesAndpublicCharges',
@@ -1269,8 +1405,8 @@ const EditTablePlanning = () => {
     }
 
     try {
-      // const response = await axios.put('http://127.0.0.1:8000/api/planning/update/', changedData, {
-        const response = await axios.put('http://54.178.202.58:8000/api/planning/update/',  changedData ,{
+      const response = await axios.put('http://127.0.0.1:8000/api/planning/update', changedData, {
+        // const response = await axios.put('http://54.178.202.58:8000/api/planning/update',  changedData ,{
         headers: {
           Authorization: `Bearer ${token}`,
         },
