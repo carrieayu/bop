@@ -115,5 +115,10 @@
   "projectNewEntry": " And save the new selected fields with: '${newEntries}'?",
   "updateMessage": "Are you sure you would like to update this data?",
   "listScreen": "List Screen",
-  "employeeExpensesDuplicateData": "The selected project already exists for ${date} for employee ${employeeName}."
+  "employeeExpensesDuplicateData": "The selected project already exists for ${date} for employee ${employeeName}.",
+  "type": "Type",
+  "executiveEmployee": "Executive",
+  "regularEmployee": "Regular",
+  "selectEmployeeType": "Select Employee Type",
+  "noSelection": "← Select Type First"
 }
