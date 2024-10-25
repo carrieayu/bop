@@ -1131,6 +1131,8 @@ class Planning(generics.ListAPIView):
         cost_of_sales = CostOfSales.objects.all()
         planning_assign = EmployeeExpenses.objects.all()
         planning_project_data = Projects.objects.all()
+        employee = EmployeesApi.objects.all()
+        employee_serializer = EmployeesSerializer(employee, many=True)
         expenses_serializer = ExpensesSerializer(expenses, many=True)
         cost_of_sales_serializer = CostOfSalesSerializer(cost_of_sales, many=True)
         planning_assign_serializer = EmployeeExpensesDataSerializer(planning_assign, many=True)
@@ -1138,6 +1140,7 @@ class Planning(generics.ListAPIView):
     
         combined_data = {
             'expenses': expenses_serializer.data,
+            'employees': employee_serializer.data,
             'cost_of_sales': cost_of_sales_serializer.data,
             'planning_assign_data': planning_assign_serializer.data,
             'planning_project_data': planning_project_data_serializer.data
@@ -1439,33 +1442,34 @@ class PlanningUpdate(generics.UpdateAPIView):
     def update(self, request, *args, **kwargs):
         costofsales_data = request.data
         expenses_data = request.data
-
+        
         for item in costofsales_data:
             ids = item.get('id', [])
             values = item.get('values', [])
             label = item.get('label', '')
-
+            
             if not ids or not values:
                 continue
 
             for idx, record_id in enumerate(ids):
+                
                 if record_id:
                     try:
-                        cost_of_sales_instance = CostOfSales.objects.get(id=record_id)
+                        cost_of_sales_instance = CostOfSales.objects.get(cost_of_sale_id=record_id)
                         if label == "purchases":
-                            cost_of_sales_instance.purchases = values[idx] if idx < len(values) else 0
+                            cost_of_sales_instance.purchase = values[idx] if idx < len(values) else 0
                         if label == "outsourcingExpenses":
-                            cost_of_sales_instance.outsourcing_costs = values[idx] if idx < len(values) else 0
+                            cost_of_sales_instance.outsourcing_expense = values[idx] if idx < len(values) else 0
                         if label == "productPurchases":
-                            cost_of_sales_instance.product_purchases = values[idx] if idx < len(values) else 0
-                        if label == "dispatchLabourExpenses":
-                            cost_of_sales_instance.dispatch_labor_costs = values[idx] if idx < len(values) else 0
+                            cost_of_sales_instance.product_purchase = values[idx] if idx < len(values) else 0
+                        if label == "dispatchLaborExpenses":
+                            cost_of_sales_instance.dispatch_labor_expense = values[idx] if idx < len(values) else 0
                         if label == "communicationExpenses":
-                            cost_of_sales_instance.communication_costs = values[idx] if idx < len(values) else 0
+                            cost_of_sales_instance.communication_expense = values[idx] if idx < len(values) else 0
                         if label == "workInProgressExpenses":
-                            cost_of_sales_instance.work_in_progress = values[idx] if idx < len(values) else 0
+                            cost_of_sales_instance.work_in_progress_expense = values[idx] if idx < len(values) else 0
                         if label == "amortizationExpenses":
-                            cost_of_sales_instance.amortization = values[idx] if idx < len(values) else 0
+                            cost_of_sales_instance.amortization_expense = values[idx] if idx < len(values) else 0
                         cost_of_sales_instance.save()
                     except CostOfSales.DoesNotExist:
                         continue
@@ -1481,37 +1485,35 @@ class PlanningUpdate(generics.UpdateAPIView):
                 for idx, record_id in enumerate(ids):
                     if record_id:
                         try:
-                            expenses_instance = Expenses.objects.get(id=record_id)
-                            if label == "executiveRenumeration":
-                                expenses_instance.remuneration = values[idx] if idx < len(values) else 0
-                            if label == "travelExpenses": #duplicate
-                                expenses_instance.travel_expenses = values[idx] if idx < len(values) else 0
-                            if label == "statutoryWelfareExpenses": #duplicate
-                                expenses_instance.taxes_and_public_charges = values[idx] if idx < len(values) else 0
-                            if label == "welfareExpenses": #duplicate
-                                expenses_instance.utilities_expenses = values[idx] if idx < len(values) else 0
-                            if label == "suppliesExpenses":
-                                expenses_instance.consumables_expenses = values[idx] if idx < len(values) else 0
+                            expenses_instance = Expenses.objects.get(expense_id=record_id)
+                            # if label == "executiveRenumeration":
+                            #     expenses_instance.remuneration = values[idx] if idx < len(values) else 0
+                            if label == "travelExpenses":
+                                expenses_instance.travel_expense = values[idx] if idx < len(values) else 0
+                            # if label == "statutoryWelfareExpenses": #duplicate
+                            #     expenses_instance.taxes_and_public_charges = values[idx] if idx < len(values) else 0
+                            # if label == "welfareExpenses": #duplicate
+                            #     expenses_instance.utilities_expenses = values[idx] if idx < len(values) else 0
+                            if label == "consumableExpenses":
+                                expenses_instance.consumable_expense = values[idx] if idx < len(values) else 0
                             if label == "rentExpenses":
-                                expenses_instance.rent = values[idx] if idx < len(values) else 0
-                            if label == "statutoryWelfareExpenses": #duplicate
-                                expenses_instance.taxes_and_public_charges = values[idx] if idx < len(values) else 0
+                                expenses_instance.rent_expense = values[idx] if idx < len(values) else 0
                             if label == "depreciationExpenses":
-                                expenses_instance.depreciation_expenses = values[idx] if idx < len(values) else 0
-                            if label == "fuelAllowance": #duplicate
-                                expenses_instance.travel_expenses = values[idx] if idx < len(values) else 0
+                                expenses_instance.depreciation_expense = values[idx] if idx < len(values) else 0
+                            # if label == "fuelAllowance": #duplicate
+                            #     expenses_instance.travel_expenses = values[idx] if idx < len(values) else 0
                             if label == "communicationExpenses":
-                                expenses_instance.communication_expenses = values[idx] if idx < len(values) else 0
+                                expenses_instance.communication_expense = values[idx] if idx < len(values) else 0
                             if label == "utilitiesExpenses": 
-                                expenses_instance.utilities_expenses = values[idx] if idx < len(values) else 0
-                            if label == "transactionFees": #duplicate
-                                expenses_instance.advertising_expenses = values[idx] if idx < len(values) else 0
+                                expenses_instance.utilities_expense = values[idx] if idx < len(values) else 0
+                            if label == "transactionFees":
+                                expenses_instance.transaction_fee = values[idx] if idx < len(values) else 0
                             if label == "advertisingExpenses":
-                                expenses_instance.advertising_expenses = values[idx] if idx < len(values) else 0
+                                expenses_instance.advertising_expense = values[idx] if idx < len(values) else 0
                             if label == "entertainmentExpenses":
-                                expenses_instance.entertainment_expenses = values[idx] if idx < len(values) else 0
+                                expenses_instance.entertainment_expense = values[idx] if idx < len(values) else 0
                             if label == "professionalServicesFees":
-                                expenses_instance.payment_fees = values[idx] if idx < len(values) else 0
+                                expenses_instance.professional_service_fee = values[idx] if idx < len(values) else 0
                             expenses_instance.save()
                         except Expenses.DoesNotExist:
                             continue
