@@ -29,8 +29,8 @@
   "entertainmentExpense": "接待交際費",
   "expenses": "経費 ",
   "expense": "経費 ",
-  "fuelAllowances": "燃料手当",
-  "fuelAllowance": "燃料手当",
+  "bonusAndFuelAllowances": "賞与・燃料手当",
+  "bonusAndFuelAllowance": "賞与・燃料手当",
   "grossProfitMargin": "売上総利益率",
   "grossProfit": "売上総利益 ",
   "insurancePremiums": "保険料",
@@ -85,6 +85,7 @@
   "firstHalfTotal": "上期計",
   "secondHalfTotal": "下期計",
   "saleRevenue": "売上高",
-  "indirectEmployeeExpense": "間接人件費"
+  "indirectEmployeeExpense": "間接人件費",
+  "ratio": "比率"
 }
 

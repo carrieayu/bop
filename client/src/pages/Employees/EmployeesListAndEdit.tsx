@@ -247,6 +247,8 @@ const EmployeesListAndEdit: React.FC = () => {
 
   const handleSubmit = async () => {
     const emails = employeesList.map((em) => em.email)
+
+    console.log(employeesList)
     if (!validateEmployees(employeesList, originalEmployeesList)) {
       setCrudMessage(translate('allFieldsRequiredInputValidationMessage', language))
       setIsCRUDOpen(true)
@@ -303,6 +305,7 @@ const EmployeesListAndEdit: React.FC = () => {
     }
 
     const modifiedFields = getModifiedFields(originalEmployeesList, employeesList)
+    console.log(modifiedFields)
     const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login'
@@ -707,7 +710,7 @@ const EmployeesListAndEdit: React.FC = () => {
                                         className='edit_input'
                                         type='number'
                                         name='bonus_and_fuel_allowance'
-                                        value={employee.bonus_and_fuel_allowance || ''}
+                                        value={employee.bonus_and_fuel_allowance}
                                         onChange={(e) => handleChange(employeeIndex, e)}
                                       />
                                     </td>
@@ -719,8 +722,8 @@ const EmployeesListAndEdit: React.FC = () => {
                                         value={
                                           (employee.statutory_welfare_expense =
                                             employee.type === '0'
-                                              ? (Number(employee.salary) * 0.1451).toString()
-                                              : (Number(employee.executive_renumeration) * 0.1451).toString())
+                                              ? (Number(employee.salary) * 0.1451).toFixed(2).toString()
+                                              : (Number(employee.executive_renumeration) * 0.1451).toFixed(2).toString())
                                         }
                                         onChange={(e) => handleStatutoryWelfare(employeeIndex, e)}
                                         readOnly
@@ -731,10 +734,10 @@ const EmployeesListAndEdit: React.FC = () => {
                                         type='text'
                                         name='welfare_expense'
                                         value={
-                                          (employee.statutory_welfare_expense =
+                                          (employee.welfare_expense =
                                             employee.type === '0'
-                                              ? (Number(employee.salary) * 0.0048).toString()
-                                              : (Number(employee.executive_renumeration) * 0.00481).toString())
+                                              ? (Number(employee.salary) * 0.0048).toFixed(2).toString()
+                                              : (Number(employee.executive_renumeration) * 0.0048).toFixed(2).toString())
                                         }
                                         onChange={(e) => handleStatutoryWelfare(employeeIndex, e)}
                                         readOnly

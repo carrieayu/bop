@@ -308,11 +308,49 @@ const ProjectsRegistration = () => {
       ]);
     } catch (error) {
       if (error.response && error.response.status === 409) {
-        // Conflict: open the overwrite confirmation modal
-        setModalMessage(translate('projectOverwriteMessage', language));
+        const existingEntries = error.response.data.existingEntries;
+
+        // Map to create a string of existing entries
+        const existingDetails = existingEntries.map(entry => 
+          `'${entry.year}, ${entry.month}, ${entry.project_name}, ${entry.client}, ${entry.business_division}'`
+        ).join(', ');
+    
+        // Create new details based on projectsData but ensure no overlap with existing entries
+        const newDetails = projectsData
+        .filter(entry => {
+          // Check if the entry already exists
+          const exists = existingEntries.some(existing =>
+            existing.year === entry.year &&
+            existing.month === entry.month &&
+            existing.project_name === entry.project_name &&
+            existing.client === clients.find(client => client.client_id === entry.client)?.client_name && // Adjust this line
+            existing.business_division === businessSelection.find(division => division.business_division_id === entry.business_division)?.business_division_name // Adjust this line
+          );
+
+          return !exists; // Keep only if it does not exist
+        })
+        .map(entry => {
+          const clientName = clients.find(client => client.client_id === entry.client)?.client_name || '';
+          const businessDivisionName = businessSelection.find(division => division.business_division_id === entry.business_division)?.business_division_name || '';
+          return `'${entry.year}, ${entry.month}, ${entry.project_name}, ${clientName}, ${businessDivisionName}'`;
+        })
+        .join(', '); // Join the new details
+    
+        // Construct the message
+        let message = translate('projectOverwriteMessage', language)
+          .replace('${existingEntries}', existingDetails);
+    
+        // Only add new entries to the message if they exist
+        if (newDetails.length > 0) {
+          message += translate('projectNewEntry', language)
+            .replace('${newEntries}', newDetails);
+        }
+    
+  
+        setModalMessage(message);
         setIsOverwriteModalOpen(true);
-        return; // Exit the function to wait for user input
-      } else if (error.response.data.project_name[0] && error.response.status === 400) {
+        return; 
+      } else if (error.response.data.project_name && Array.isArray(error.response.data.project_name) && error.response.data.project_name[0] && error.response.status === 400) {
         // Display project name already exists alert
         setModalMessage(translate('projectNameExist', language));
         setIsModalOpen(true);
@@ -509,6 +547,7 @@ const ProjectsRegistration = () => {
                             name='sales_revenue'
                             value={form.sales_revenue}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()} 
                           />
                         </div>
                         <div className='projectsRegistration_employee-expenses-div'>
@@ -520,6 +559,7 @@ const ProjectsRegistration = () => {
                             name='employee_expense'
                             value={form.employee_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                         <div className='projectsRegistration_operating-income-div'>
@@ -531,6 +571,7 @@ const ProjectsRegistration = () => {
                             name='operating_profit'
                             value={form.operating_profit}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                         <div className='projectsRegistration_ordinary-income-div'>
@@ -542,6 +583,7 @@ const ProjectsRegistration = () => {
                             name='ordinary_profit'
                             value={form.ordinary_profit}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                       </div>
@@ -588,6 +630,7 @@ const ProjectsRegistration = () => {
                             name='cost_of_sale'
                             value={form.cost_of_sale}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                         <div className='projectsRegistration_indirect-employee-expense-div'>
@@ -599,6 +642,7 @@ const ProjectsRegistration = () => {
                             name='indirect_employee_expense'
                             value={form.indirect_employee_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                         <div className='projectsRegistration_non-operating-income-div'>
@@ -610,6 +654,7 @@ const ProjectsRegistration = () => {
                             name='non_operating_profit'
                             value={form.non_operating_profit}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                         <div className='projectsRegistration_ordinary-income-margin-div'>
@@ -621,6 +666,7 @@ const ProjectsRegistration = () => {
                             name='ordinary_profit_margin'
                             value={form.ordinary_profit_margin}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                       </div>
@@ -668,6 +714,7 @@ const ProjectsRegistration = () => {
                             name='dispatch_labor_expense'
                             value={form.dispatch_labor_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
 
@@ -678,6 +725,7 @@ const ProjectsRegistration = () => {
                             name='expense'
                             value={form.expense}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
 
@@ -690,6 +738,7 @@ const ProjectsRegistration = () => {
                             name='non_operating_expense'
                             value={form.non_operating_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                       </div>

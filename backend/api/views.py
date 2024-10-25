@@ -15,6 +15,7 @@ from .serializers import (
     CustomCostOfSalesSerializer,
     CustomExpensesSerializer,
     EmployeeExpensesDataSerializer,
+    EmployeesCreateSerializer,
     EmployeesListSerializer,
     ExpensesSerializer,
     GetProjectsSerializers,
@@ -114,7 +115,7 @@ class UserUpdate(generics.UpdateAPIView):
 
 class EmployeesCreate(generics.CreateAPIView):
     queryset = EmployeesApi.objects.all()
-    serializer_class = EmployeesSerializer
+    serializer_class = EmployeesCreateSerializer
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
@@ -122,28 +123,43 @@ class EmployeesCreate(generics.CreateAPIView):
         if not isinstance(data, list):  # Ensure it's a list
             return Response({"error": "Expected a list of data"}, status=status.HTTP_400_BAD_REQUEST)
 
-        created_employees = []  # To store the successfully created employees
-        error_responses = []  # To store any errors for duplicates
-
+        error_responses = []  # To store any errors for duplicates or validation issues
+        valid_employees = []  # To store valid employee data for later saving
+        
+        # First Pass: Validation without saving
         for employee in data:
             email = employee.get('email')  # Get the employee email from the current data
+            # Check for duplicates in the DB
+            existing_employee = EmployeesApi.objects.filter(email=email).first()
+            if existing_employee:
+                error_responses.append({
+                    "email": existing_employee.email,
+                    "message": f"Employee with email '{email}' already exists."
+                })
+                continue  # Skip this employee if a duplicate is found
 
-            if EmployeesApi.objects.filter(email=email).exists():
-                error_responses.append(f"Employee with email '{email}' already exists.")
-                continue  # Skip this employee and continue with the next
-
+            # Validate the data using serializer without saving
             serializer = self.get_serializer(data=employee)
             if serializer.is_valid():
-                serializer.save()  # Use the serializer to save the new employee
-                created_employees.append(serializer.data)  # Store the created employee data
+                valid_employees.append(employee)  # Store valid employee data to save later
             else:
                 error_responses.append(serializer.errors)  # Capture validation errors
 
+        # If any errors exist, return the errors and do not save anything
         if error_responses:
             return Response({"errors": error_responses}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({"message": "Employee Created", "data": created_employees},
+        # If no errors, save all valid employees in one go
+        created_employees = []
+        for employee in valid_employees:
+            serializer = self.get_serializer(data=employee)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()  # Save the employee to the DB
+            created_employees.append(serializer.data)  # Append saved employee data to response
+
+        return Response({"message": "Employees Created", "data": created_employees},
                         status=status.HTTP_201_CREATED)
+
 
 class EmployeesDelete(generics.DestroyAPIView):
         queryset = EmployeesApi.objects.all()
@@ -231,6 +247,7 @@ class CompaniesWithBusinessDivisions(generics.ListAPIView):
         
         # If no company_id is passed, return an empty list
         return JsonResponse([], safe=False)  
+    
 class BusinessDivisionMasterCreate(generics.CreateAPIView):
     serializer_class = MasterBusinessDivisionSerializer
     permission_classes = [IsAuthenticated]
@@ -239,43 +256,59 @@ class BusinessDivisionMasterCreate(generics.CreateAPIView):
         data = request.data  # Retrieve the incoming data
         if not isinstance(data, list):  # Ensure it's an array
             return Response({"error": "Expected a list of data"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        created_business_divisions = []  # To store the successfully created divisions
-        
+
+        error_responses = []  # To store any errors for duplicates or missing references
+        valid_business_divisions = []  # To store valid business division data for later saving
+
+        # First Pass: Validation without saving
         for business_division in data:
             try:
                 # Get the related company and auth_user by their IDs
                 company = MasterCompany.objects.get(pk=business_division['company_id'])
                 auth_user = AuthUser.objects.get(pk=business_division['auth_user_id'])
-                
-                if MasterBusinessDivision.objects.filter(business_division_name=business_division['business_division_name'], company=company).exists():
-                    return Response(
-                    {"error": f"Business division with name '{business_division['business_division_name']}' already exists for this company."},
-                    
-                    status=status.HTTP_409_CONFLICT
-                )
 
-                # Create the business division
-                new_business_division = MasterBusinessDivision(
-                    business_division_name=business_division['business_division_name'],
-                    company=company,
-                    auth_user=auth_user
-                )
-                new_business_division.save()
+                # Check for duplicates
+                if MasterBusinessDivision.objects.filter(
+                        business_division_name=business_division['business_division_name'], 
+                        company=company).exists():
+                    error_responses.append({
+                        'business_division_name': business_division['business_division_name']
+                    })
+                    continue  # Skip this business division if a duplicate is found
 
-                # Serialize the saved object for the response
-                serializer = MasterBusinessDivisionSerializer(new_business_division)
-                created_business_divisions.append(serializer.data)
-                
+                # If valid, store data for saving later
+                valid_business_divisions.append({
+                    'business_division_name': business_division['business_division_name'],
+                    'company': company,
+                    'auth_user': auth_user
+                })
+
             except MasterCompany.DoesNotExist:
-                return Response({"error": f"Company with ID {business_division['company_id']} does not exist"},
-                                status=status.HTTP_404_NOT_FOUND)
+                error_responses.append(f"Company with ID {business_division['company_id']} does not exist")
             except AuthUser.DoesNotExist:
-                return Response({"error": f"User with ID {business_division['auth_user_id']} does not exist"},
-                                status=status.HTTP_404_NOT_FOUND)
+                error_responses.append(f"User with ID {business_division['auth_user_id']} does not exist")
+
+        # If any errors exist, return the errors and do not save anything
+        if error_responses:
+            return Response({"errors": error_responses}, status=status.HTTP_409_CONFLICT)
+
+        # If no errors, save all valid business divisions in one go
+        created_business_divisions = []
+        for division in valid_business_divisions:
+            new_business_division = MasterBusinessDivision(
+                business_division_name=division['business_division_name'],
+                company=division['company'],
+                auth_user=division['auth_user']
+            )
+            new_business_division.save()
+
+            # Serialize the saved object for the response
+            serializer = MasterBusinessDivisionSerializer(new_business_division)
+            created_business_divisions.append(serializer.data)
 
         return Response({"message": "Business Divisions Created", "data": created_business_divisions},
                         status=status.HTTP_201_CREATED)
+
         
 class BusinessDivisionMasterRetrieve(
     generics.RetrieveAPIView
@@ -349,27 +382,42 @@ class MasterClientCreate(generics.CreateAPIView):
         if not isinstance(data, list):  # Ensure it's a list
             return Response({"error": "Expected a list of data"}, status=status.HTTP_400_BAD_REQUEST)
 
-        created_clients = []  # To store the successfully created clients
-        error_responses = []  # To store any errors for duplicates
-
+        error_responses = []  # To store any errors for duplicates or validation issues
+        valid_clients = []    # To store valid clients for later saving
+        
+        # First Pass: Validation without saving
         for client in data:
             client_name = client.get('client_name')  # Get the client name from the current data
 
-            if MasterClient.objects.filter(client_name=client_name).exists():
-                error_responses.append(f"Client with name '{client_name}' already exists.")
-                continue  # Skip this client and continue with the next
+            # Check for duplicates in the DB
+            existing_client = MasterClient.objects.filter(client_name=client_name).first()
+            if existing_client:
+                error_responses.append({
+                    "client_name": existing_client.client_name,
+                    "message": f"Client with name '{client_name}' already exists."
+                })
+                continue  # Skip this client if a duplicate is found
 
+            # Validate the data using serializer without saving
             serializer = self.get_serializer(data=client)
             if serializer.is_valid():
-                serializer.save()  # Use the serializer to save the new client
-                created_clients.append(serializer.data)  # Store the created client data
+                valid_clients.append(client)  # Store valid client data to save later
             else:
                 error_responses.append(serializer.errors)  # Capture validation errors
 
+        # If any errors exist, return the errors and do not save anything
         if error_responses:
             return Response({"errors": error_responses}, status=status.HTTP_409_CONFLICT)
 
-        return Response({"message": "Client Created", "data": created_clients},
+        # If no errors, save all valid clients in one go
+        created_clients = []
+        for client in valid_clients:
+            serializer = self.get_serializer(data=client)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()  # Save the client to the DB
+            created_clients.append(serializer.data)  # Append saved client data to response
+
+        return Response({"message": "Clients Created", "data": created_clients},
                         status=status.HTTP_201_CREATED)
 
 
@@ -529,27 +577,52 @@ class ProjectsCreate(generics.CreateAPIView):
         if not isinstance(data, list):
             return JsonResponse({"detail": "Invalid input format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
 
+        existing_entries = []
+        for item in data:
+            client_id = item.get('client')  # Assuming 'client' is an ID
+            project_name = item.get('project_name')
+            month = item.get('month')
+            year = item.get('year')
+            business_division_id = item.get('business_division')  # Assuming 'business_division' is an ID
+
+            # Check if an entry with the same details exists
+            existing_entry = Projects.objects.filter(
+                year=year,
+                month=month,
+                client=client_id,
+                project_name=project_name,
+                business_division=business_division_id
+            ).first()
+
+            if existing_entry:
+                client_name = existing_entry.client.client_name if existing_entry.client else 'Unknown Client'
+                business_division_name = existing_entry.business_division.business_division_name if existing_entry.business_division else 'Unknown Division'
+
+                existing_entries.append({
+                    "client": client_name,
+                    "project_name": project_name,
+                    "month": month,
+                    "year": year,
+                    "business_division": business_division_name
+                })
+
+        if existing_entries:
+            return JsonResponse(
+                {
+                    "detail": "Some projects are already registered.",
+                    "existingEntries": existing_entries
+                },
+                status=status.HTTP_409_CONFLICT
+            )
+
+        # Proceed with saving data if no duplicates
         responses = []
         for item in data:
             try:
-                clientName = item.get('client')
-                projectName = item.get('project_name')
-                month = item.get('month')
-                year = item.get('year')
-                businessDivision = item.get('business_division')
-
-                existing_entry = Projects.objects.filter(year=year, month=month, client=clientName, project_name = projectName, business_division=businessDivision).first()
-
-                if existing_entry:
-                    return JsonResponse(
-                        {"detail": "duplicate"},
-                        status=status.HTTP_409_CONFLICT
-                    )
-
                 serializer = CreateProjectsSerializers(data=item)
                 if serializer.is_valid():
                     serializer.save()
-                    responses.append({"message": f"Created successfully."})
+                    responses.append({"message": f"Created successfully for {item['project_name']}."})
                 else:
                     return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -572,20 +645,29 @@ class ProjectsCreate(generics.CreateAPIView):
                 year = item.get('year')
                 businessDivision = item.get('business_division')
 
-                existing_entry = Projects.objects.filter(year=year, month=month, client=clientName, project_name = projectName, business_division=businessDivision).first()
-                
+                # Check if an entry with the same details exists
+                existing_entry = Projects.objects.filter(
+                    year=year,
+                    month=month,
+                    client=clientName,
+                    project_name=projectName,
+                    business_division=businessDivision
+                ).first()
+
                 if existing_entry:
+                    # Update existing entry
                     serializer = CreateProjectsSerializers(existing_entry, data=item, partial=True)
                     if serializer.is_valid():
                         serializer.save()
-                        responses.append({"message": f"Updated successfully for month {month}, year {year}."})
+                        responses.append({"message": f"Updated successfully for {projectName} in {month}/{year}."})
                     else:
                         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 else:
+                    # If no existing entry, create a new one
                     serializer = CreateProjectsSerializers(data=item)
                     if serializer.is_valid():
                         serializer.save()
-                        responses.append({"message": f"Created successfully for month {month}, year {year}."})
+                        responses.append({"message": f"Created successfully for {projectName} in {month}/{year}."})
                     else:
                         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -593,6 +675,7 @@ class ProjectsCreate(generics.CreateAPIView):
                 return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         return JsonResponse(responses, safe=False, status=status.HTTP_200_OK)
+
 
 
 class ProjectsDataUpdate(generics.UpdateAPIView):
@@ -889,6 +972,7 @@ class EmployeeDetailView(generics.ListAPIView):
                     'business_division_id': employee.business_division_id,
                     'statutory_welfare_expense':employee.statutory_welfare_expense,
                     'welfare_expense':employee.welfare_expense,
+                    'bonus_and_fuel_allowance':employee.bonus_and_fuel_allowance,
                     'insurance_premium':employee.insurance_premium,
                     'auth_user_id': employee.auth_user_id,
                     'created_at': employee.created_at,
@@ -917,14 +1001,13 @@ class CreateEmployeeExpenses(generics.CreateAPIView):
         if not employee_expenses_data:
             return Response({'detail': 'No employee expenses data provided.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        created_expenses = []
-        for expense_data in request.data:
+        # First loop: Validate all data and check for duplicates
+        for expense_data in employee_expenses_data:
             employee_id = expense_data.get('employee')
             if not employee_id:
                 return Response({'detail': 'Employee ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
             project_entries = expense_data.get('projectEntries', [])
-            
             if not isinstance(project_entries, list):
                 return Response({'detail': 'projectEntries must be a list.'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -933,23 +1016,26 @@ class CreateEmployeeExpenses(generics.CreateAPIView):
                     return Response({'detail': 'Project ID and Client ID cannot be empty.'}, status=status.HTTP_400_BAD_REQUEST)
 
                 try:
-                    client = MasterClient.objects.get(pk=entry['clients'])  
-                    project = Projects.objects.get(pk=entry['projects'])  
-                    employee = EmployeesApi.objects.get(pk=employee_id) 
-                    auth_user = AuthUser.objects.get(pk=entry.get('auth_id')) if entry.get('auth_id') else None  
+                    # Check if employee, client, and project exist
+                    client = MasterClient.objects.get(pk=entry['clients'])
+                    project = Projects.objects.get(pk=entry['projects'])
+                    employee = EmployeesApi.objects.get(pk=employee_id)
 
-                    new_expense = EmployeeExpenses(
-                        client=client,
-                        project=project,
+                    # Check for existing expense
+                    existing_expense = EmployeeExpenses.objects.filter(
                         employee=employee,
-                        auth_user=auth_user,
-                        year=entry.get('year', '2001'),  
-                        month=entry.get('month', '01')   
-                    )
-                    new_expense.save()
+                        project=project,
+                        year=entry.get('year', '2001'),
+                        month=entry.get('month', '01')
+                    ).first()
 
-                    serializer = EmployeeExpensesDataSerializer(new_expense)
-                    created_expenses.append(serializer.data)
+                    if existing_expense:
+                        employee_name = f"{employee.first_name} {employee.last_name}"
+                        year = entry.get('year', '2001')
+                        month = entry.get('month', '01')
+                        return Response({
+                            'detail': f'There is already an existing expense for {employee_name} for {month}/{year}.'
+                            }, status=status.HTTP_400_BAD_REQUEST)
 
                 except MasterClient.DoesNotExist:
                     return Response({"error": f"Client with ID {entry['clients']} does not exist"},
@@ -964,9 +1050,36 @@ class CreateEmployeeExpenses(generics.CreateAPIView):
                     return Response({"error": f"User with ID {entry.get('auth_id')} does not exist"},
                                     status=status.HTTP_404_NOT_FOUND)
 
+        # Second loop: If no conflicts, save all data
+        created_expenses = []
+        for expense_data in employee_expenses_data:
+            employee_id = expense_data.get('employee')
+            project_entries = expense_data.get('projectEntries', [])
+
+            for entry in project_entries:
+                client = MasterClient.objects.get(pk=entry['clients'])
+                project = Projects.objects.get(pk=entry['projects'])
+                employee = EmployeesApi.objects.get(pk=employee_id)
+                auth_user = AuthUser.objects.get(pk=entry.get('auth_id')) if entry.get('auth_id') else None
+
+                # Create and save new expense
+                new_expense = EmployeeExpenses(
+                    client=client,
+                    project=project,
+                    employee=employee,
+                    auth_user=auth_user,
+                    year=entry.get('year', '2001'),
+                    month=entry.get('month', '01')
+                )
+                new_expense.save()
+
+                serializer = EmployeeExpensesDataSerializer(new_expense)
+                created_expenses.append(serializer.data)
+
         return Response({
             "employeeExpenses": created_expenses
         }, status=status.HTTP_201_CREATED)
+
     
 
 class DeleteEmployeeExpenses(generics.DestroyAPIView):
@@ -1014,6 +1127,8 @@ class Planning(generics.ListAPIView):
         cost_of_sales = CostOfSales.objects.all()
         planning_assign = EmployeeExpenses.objects.all()
         planning_project_data = Projects.objects.all()
+        employee = EmployeesApi.objects.all()
+        employee_serializer = EmployeesSerializer(employee, many=True)
         expenses_serializer = ExpensesSerializer(expenses, many=True)
         cost_of_sales_serializer = CostOfSalesSerializer(cost_of_sales, many=True)
         planning_assign_serializer = EmployeeExpensesDataSerializer(planning_assign, many=True)
@@ -1021,6 +1136,7 @@ class Planning(generics.ListAPIView):
     
         combined_data = {
             'expenses': expenses_serializer.data,
+            'employees': employee_serializer.data,
             'cost_of_sales': cost_of_sales_serializer.data,
             'planning_assign_data': planning_assign_serializer.data,
             'planning_project_data': planning_project_data_serializer.data
@@ -1043,27 +1159,36 @@ class CostOfSalesCreate(generics.CreateAPIView):
         if not isinstance(data, list):
             return JsonResponse({"detail": "Invalid input format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Check for duplicates before saving
+        existing_entries = []
+        for item in data:
+            year = item.get('year')
+            month = item.get('month')
+            existing_entry = CostOfSales.objects.filter(year=year, month=month).first()  # Get the actual entry
+            if existing_entry:
+                existing_entries.append((year, month))  # Store year and month as a tuple
+
+        if existing_entries:
+            # Return all existing year and month pairs
+            existing_months_years = [{"year": entry[0], "month": entry[1]} for entry in existing_entries]
+
+            return JsonResponse(
+                {
+                    "detail": "選択された月は既にデータが登録されています。",
+                    "existingEntries": existing_months_years  
+                },
+                status=status.HTTP_409_CONFLICT
+            )
+
+
+        # If no duplicates, proceed with saving data
         responses = []
         for item in data:
             try:
-                year = item.get('year')
-                month = item.get('month')
-
-                # Check if an entry with the same year and month already exists
-                existing_entry = CostOfSales.objects.filter(year=year, month=month).first()
-
-                if existing_entry:
-                    # Return conflict message if data exists
-                    return JsonResponse(
-                        {"detail": "選択された月は既にデータが登録されています。 \n 上書きしますか？"},
-                        status=status.HTTP_409_CONFLICT
-                    )
-
-                # If no conflict, create a new entry
                 serializer = CostOfSalesSerializer(data=item)
                 if serializer.is_valid():
                     serializer.save()
-                    responses.append({"message": f"Created successfully for month {month}, year {year}."})
+                    responses.append({"message": f"Created successfully for month {item['month']}, year {item['year']}."})
                 else:
                     return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -1107,6 +1232,7 @@ class CostOfSalesCreate(generics.CreateAPIView):
                 return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         return JsonResponse(responses, safe=False, status=status.HTTP_200_OK)
+
 
 
 class CostOfSalesUpdate(generics.UpdateAPIView):  # Change to UpdateAPIView for update actions
@@ -1158,32 +1284,41 @@ class CostOfSalesDelete(generics.DestroyAPIView):
 class ExpensesCreate(generics.CreateAPIView):
     serializer_class = CustomExpensesSerializer
     permission_classes = [IsAuthenticated]
-    
+
     def post(self, request):
         data = JSONParser().parse(request)
         if not isinstance(data, list):
             return JsonResponse({"detail": "Invalid input format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Check for duplicates before saving
+        existing_entries = []
+        for item in data:
+            year = item.get('year')
+            month = item.get('month')
+            existing_entry = Expenses.objects.filter(year=year, month=month).first()  # Get the actual entry
+            if existing_entry:
+                existing_entries.append((year, month))  # Store year and month as a tuple
+
+        if existing_entries:
+            # Return all existing year and month pairs
+            existing_months_years = [{"year": entry[0], "month": entry[1]} for entry in existing_entries]
+
+            return JsonResponse(
+                {
+                    "detail": "選択された月は既にデータが登録されています。",
+                    "existingEntries": existing_months_years  
+                },
+                status=status.HTTP_409_CONFLICT
+            )
+
+        # If no duplicates, proceed with saving data
         responses = []
         for item in data:
             try:
-                year = item.get('year')
-                month = item.get('month')
-
-                # Check if an entry with the same year and month already exists
-                existing_entry = Expenses.objects.filter(year=year, month=month).first()
-
-                if existing_entry:
-                    # Return conflict message if data exists
-                    return JsonResponse(
-                        {"detail": "選択された月は既にデータが登録されています。 \n 上書きしますか？"},
-                        status=status.HTTP_409_CONFLICT
-                    )
-                # If no conflict, create a new entry
                 serializer = CustomExpensesSerializer(data=item)
                 if serializer.is_valid():
                     serializer.save()
-                    responses.append({"message": f"Created successfully for month {month}, year {year}."})
+                    responses.append({"message": f"Created successfully for month {item['month']}, year {item['year']}."})
                 else:
                     return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -1303,33 +1438,34 @@ class PlanningUpdate(generics.UpdateAPIView):
     def update(self, request, *args, **kwargs):
         costofsales_data = request.data
         expenses_data = request.data
-
+        
         for item in costofsales_data:
             ids = item.get('id', [])
             values = item.get('values', [])
             label = item.get('label', '')
-
+            
             if not ids or not values:
                 continue
 
             for idx, record_id in enumerate(ids):
+                
                 if record_id:
                     try:
-                        cost_of_sales_instance = CostOfSales.objects.get(id=record_id)
+                        cost_of_sales_instance = CostOfSales.objects.get(cost_of_sale_id=record_id)
                         if label == "purchases":
-                            cost_of_sales_instance.purchases = values[idx] if idx < len(values) else 0
+                            cost_of_sales_instance.purchase = values[idx] if idx < len(values) else 0
                         if label == "outsourcingExpenses":
-                            cost_of_sales_instance.outsourcing_costs = values[idx] if idx < len(values) else 0
+                            cost_of_sales_instance.outsourcing_expense = values[idx] if idx < len(values) else 0
                         if label == "productPurchases":
-                            cost_of_sales_instance.product_purchases = values[idx] if idx < len(values) else 0
-                        if label == "dispatchLabourExpenses":
-                            cost_of_sales_instance.dispatch_labor_costs = values[idx] if idx < len(values) else 0
+                            cost_of_sales_instance.product_purchase = values[idx] if idx < len(values) else 0
+                        if label == "dispatchLaborExpenses":
+                            cost_of_sales_instance.dispatch_labor_expense = values[idx] if idx < len(values) else 0
                         if label == "communicationExpenses":
-                            cost_of_sales_instance.communication_costs = values[idx] if idx < len(values) else 0
+                            cost_of_sales_instance.communication_expense = values[idx] if idx < len(values) else 0
                         if label == "workInProgressExpenses":
-                            cost_of_sales_instance.work_in_progress = values[idx] if idx < len(values) else 0
+                            cost_of_sales_instance.work_in_progress_expense = values[idx] if idx < len(values) else 0
                         if label == "amortizationExpenses":
-                            cost_of_sales_instance.amortization = values[idx] if idx < len(values) else 0
+                            cost_of_sales_instance.amortization_expense = values[idx] if idx < len(values) else 0
                         cost_of_sales_instance.save()
                     except CostOfSales.DoesNotExist:
                         continue
@@ -1345,37 +1481,35 @@ class PlanningUpdate(generics.UpdateAPIView):
                 for idx, record_id in enumerate(ids):
                     if record_id:
                         try:
-                            expenses_instance = Expenses.objects.get(id=record_id)
-                            if label == "executiveRenumeration":
-                                expenses_instance.remuneration = values[idx] if idx < len(values) else 0
-                            if label == "travelExpenses": #duplicate
-                                expenses_instance.travel_expenses = values[idx] if idx < len(values) else 0
-                            if label == "statutoryWelfareExpenses": #duplicate
-                                expenses_instance.taxes_and_public_charges = values[idx] if idx < len(values) else 0
-                            if label == "welfareExpenses": #duplicate
-                                expenses_instance.utilities_expenses = values[idx] if idx < len(values) else 0
-                            if label == "suppliesExpenses":
-                                expenses_instance.consumables_expenses = values[idx] if idx < len(values) else 0
+                            expenses_instance = Expenses.objects.get(expense_id=record_id)
+                            # if label == "executiveRenumeration":
+                            #     expenses_instance.remuneration = values[idx] if idx < len(values) else 0
+                            if label == "travelExpenses":
+                                expenses_instance.travel_expense = values[idx] if idx < len(values) else 0
+                            # if label == "statutoryWelfareExpenses": #duplicate
+                            #     expenses_instance.taxes_and_public_charges = values[idx] if idx < len(values) else 0
+                            # if label == "welfareExpenses": #duplicate
+                            #     expenses_instance.utilities_expenses = values[idx] if idx < len(values) else 0
+                            if label == "consumableExpenses":
+                                expenses_instance.consumable_expense = values[idx] if idx < len(values) else 0
                             if label == "rentExpenses":
-                                expenses_instance.rent = values[idx] if idx < len(values) else 0
-                            if label == "statutoryWelfareExpenses": #duplicate
-                                expenses_instance.taxes_and_public_charges = values[idx] if idx < len(values) else 0
+                                expenses_instance.rent_expense = values[idx] if idx < len(values) else 0
                             if label == "depreciationExpenses":
-                                expenses_instance.depreciation_expenses = values[idx] if idx < len(values) else 0
-                            if label == "fuelAllowance": #duplicate
-                                expenses_instance.travel_expenses = values[idx] if idx < len(values) else 0
+                                expenses_instance.depreciation_expense = values[idx] if idx < len(values) else 0
+                            # if label == "fuelAllowance": #duplicate
+                            #     expenses_instance.travel_expenses = values[idx] if idx < len(values) else 0
                             if label == "communicationExpenses":
-                                expenses_instance.communication_expenses = values[idx] if idx < len(values) else 0
+                                expenses_instance.communication_expense = values[idx] if idx < len(values) else 0
                             if label == "utilitiesExpenses": 
-                                expenses_instance.utilities_expenses = values[idx] if idx < len(values) else 0
-                            if label == "transactionFees": #duplicate
-                                expenses_instance.advertising_expenses = values[idx] if idx < len(values) else 0
+                                expenses_instance.utilities_expense = values[idx] if idx < len(values) else 0
+                            if label == "transactionFees":
+                                expenses_instance.transaction_fee = values[idx] if idx < len(values) else 0
                             if label == "advertisingExpenses":
-                                expenses_instance.advertising_expenses = values[idx] if idx < len(values) else 0
+                                expenses_instance.advertising_expense = values[idx] if idx < len(values) else 0
                             if label == "entertainmentExpenses":
-                                expenses_instance.entertainment_expenses = values[idx] if idx < len(values) else 0
+                                expenses_instance.entertainment_expense = values[idx] if idx < len(values) else 0
                             if label == "professionalServicesFees":
-                                expenses_instance.payment_fees = values[idx] if idx < len(values) else 0
+                                expenses_instance.professional_service_fee = values[idx] if idx < len(values) else 0
                             expenses_instance.save()
                         except Expenses.DoesNotExist:
                             continue
