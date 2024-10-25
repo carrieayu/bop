@@ -94,6 +94,82 @@
                                         border-radius: 10px;
                                     }
                                 }
+                                 .EmployeesRegistration_type-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .type-label{
+                                        margin-bottom: 5px;
+                                    }
+                                    .type-option{
+                                        // width: 400px;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                        option{
+                                            text-align: left;
+                                        }
+                                    }
+                                }
+                                .EmployeesRegistration_business_division_name-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .EmployeesRegistration_business_division_name{
+                                        margin-bottom: 5px;
+                                    }
+                                    .EmployeesRegistration_select-option{
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                        option{
+                                            text-align: left;
+                                        }
+                                    }
+                                }
+                                .EmployeesRegistration_welfare_expense-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .welfare_expense{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        background-color: #FBFAF9; 
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }        
+                                }
+                            }
+                            .EmployeesRegistration_mid-form-content-div{
+                                .EmployeesRegistration_first_name-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .first_name{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                }
+                                .EmployeesRegistration_no_selection-div{ // THIS IS FOR WHEN EMPLOYEE TYPE HAS NOT BEEN SELECTED
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .no-selection-label{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                        // background-color: #FBFAF9;
+                                    }
+                                }
                                 .EmployeesRegistration_salary-div{
                                     display: flex;
                                     flex-direction: column;
@@ -112,13 +188,52 @@
                                     margin: 0;
                                     }
                                 }
-                            }
-                            .EmployeesRegistration_mid-form-content-div{
-                                .EmployeesRegistration_first_name-div{
+                                .EmployeesRegistration_executive_renumeration-div{
                                     display: flex;
                                     flex-direction: column;
                                     margin-bottom: 10px;
-                                    .first_name{
+                                    .executive-renumeration-label{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                }
+                                .EmployeesRegistration_bonus_and_fuel_allowance-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .bonus_and_fuel_allowance{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                }
+                                .EmployeesRegistration_insurance_premium-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .insurance-premium{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                }
+                            }
+                            .EmployeesRegistration_right-form-content-div{
+                                .EmployeesRegistration_email-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .email{
                                         margin-bottom: 5px;
                                     }
                                     input{
@@ -143,38 +258,20 @@
                                         }
                                     }
                                 }
-                            }
-                            .EmployeesRegistration_right-form-content-div{
-                                .EmployeesRegistration_email-div{
+                                .EmployeesRegistration-statutory_welfare_expense-div{
                                     display: flex;
                                     flex-direction: column;
                                     margin-bottom: 10px;
-                                    .email{
+                                    .statutory_welfare_expense{
                                         margin-bottom: 5px;
                                     }
                                     input{
+                                        background-color: #FBFAF9;
                                         height: 40px;
                                         border: 1px solid #000;
                                         border-radius: 10px;
-                                    }
+                                    }        
                                 }
-                                .EmployeesRegistration_business_division_name-div{
-                                    display: flex;
-                                    flex-direction: column;
-                                    margin-bottom: 10px;
-                                    .EmployeesRegistration_business_division_name{
-                                        margin-bottom: 5px;
-                                    }
-                                    .EmployeesRegistration_select-option{
-                                        height: 40px;
-                                        border: 1px solid #000;
-                                        border-radius: 10px;
-                                        option{
-                                            text-align: left;
-                                        }
-                                    }
-                                }
-                               
                             }
                         }
                     }

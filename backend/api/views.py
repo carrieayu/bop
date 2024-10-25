@@ -15,6 +15,7 @@ from .serializers import (
     CustomCostOfSalesSerializer,
     CustomExpensesSerializer,
     EmployeeExpensesDataSerializer,
+    EmployeesCreateSerializer,
     EmployeesListSerializer,
     ExpensesSerializer,
     GetProjectsSerializers,
@@ -114,7 +115,7 @@ class UserUpdate(generics.UpdateAPIView):
 
 class EmployeesCreate(generics.CreateAPIView):
     queryset = EmployeesApi.objects.all()
-    serializer_class = EmployeesSerializer
+    serializer_class = EmployeesCreateSerializer
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
@@ -128,7 +129,6 @@ class EmployeesCreate(generics.CreateAPIView):
         # First Pass: Validation without saving
         for employee in data:
             email = employee.get('email')  # Get the employee email from the current data
-
             # Check for duplicates in the DB
             existing_employee = EmployeesApi.objects.filter(email=email).first()
             if existing_employee:
@@ -147,7 +147,7 @@ class EmployeesCreate(generics.CreateAPIView):
 
         # If any errors exist, return the errors and do not save anything
         if error_responses:
-            return Response({"errors": error_responses}, status=status.HTTP_409_CONFLICT)
+            return Response({"errors": error_responses}, status=status.HTTP_400_BAD_REQUEST)
 
         # If no errors, save all valid employees in one go
         created_employees = []
@@ -919,12 +919,15 @@ class EmployeeExpensesList(generics.ListAPIView):
                 # Safely get the employee and project data
                 employee_last_name = employee['last_name'] if employee else ''
                 employee_first_name = employee['first_name'] if employee else ''
+                employee_type = employee['type'] if employee else ''
                 employee_salary = employee['salary'] if employee else 0  # Default to 0 if None
+                employee_executive_renumeration = employee['executive_renumeration'] if employee else 0
+                employee_statutory_welfare_expense = employee['statutory_welfare_expense'] if employee else 0
+                employee_welfare_expense = employee['welfare_expense'] if employee else 0
+                employee_insurance_premium = employee['insurance_premium'] if employee else 0
                 employee_id = employee['employee_id'] if project else '' 
                 project_name = project['project_name'] if project else ''  # Default to empty string if None
                 project_id = project['project_id'] if project else ''  
-                
-
                 # print("project",project['project_id'])
 
                 employee_expenses_data.append({
@@ -933,7 +936,12 @@ class EmployeeExpensesList(generics.ListAPIView):
                     'month': expense.get('month', ''),
                     'employee_last_name': employee_last_name,
                     'employee_first_name': employee_first_name,
+                    'employee_type': employee_type,
                     'employee_salary': employee_salary,
+                    'executive_renumeration': employee_executive_renumeration,
+                    'statutory_welfare_expense':employee_statutory_welfare_expense,
+                    'welfare_expense':employee_welfare_expense,
+                    'insurance_premium':employee_insurance_premium,
                     'employee_id': employee_id,
                     'project_name': project_name,
                     'project_id': project_id
@@ -960,13 +968,19 @@ class EmployeeDetailView(generics.ListAPIView):
                     'employee_id': employee.employee_id,
                     'first_name': employee.first_name,
                     'last_name': employee.last_name,
+                    'type': employee.type,
                     'email': employee.email,
                     'salary': employee.salary,
+                    'executive_renumeration':employee.executive_renumeration,
+                    'company_id': employee.company_id,
+                    'business_division_id': employee.business_division_id,
+                    'statutory_welfare_expense':employee.statutory_welfare_expense,
+                    'welfare_expense':employee.welfare_expense,
+                    'bonus_and_fuel_allowance':employee.bonus_and_fuel_allowance,
+                    'insurance_premium':employee.insurance_premium,
+                    'auth_user_id': employee.auth_user_id,
                     'created_at': employee.created_at,
                     'updated_at': employee.updated_at,
-                    'auth_user_id': employee.auth_user_id,
-                    'company_id': employee.company_id,
-                    'business_division_id': employee.business_division_id
                 },
                 'business_divisions': list(business_divisions)
             })

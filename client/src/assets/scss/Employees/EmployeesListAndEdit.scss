@@ -8,7 +8,7 @@
             flex-direction: column;
         }
         .EmployeesListAndEdit_maincontent_wrapper{
-            width: 100%; 
+            width: 84%; 
             padding: 10px 30px 10px 30px;
             @media only screen and (min-width: 1024px) and (max-width: 1280px) {
                 /* For small laptops */
@@ -90,7 +90,7 @@
                         }
                         scrollbar-width: none; 
                     }
-                    .EmployeesListAndEdit_table_cont.editScrollable {
+                    .EmployeesListAndEdit_table_cont {
                         overflow-x: auto;
                         padding: 0px 0px 0px 0px;
                         }
@@ -149,7 +149,9 @@
                                     }
                                     .EmployeesListAndEdit_table_body_content_vertical{
                                         border: 1px solid  #d0cdcd;
+                                        width: 100%;
                                         text-align: center;
+                                        width: 140px;
                                         .edit_input{
                                             width: 100px;
                                         }
@@ -163,6 +165,9 @@
                                     }
                                 }
                             }
+                            .type{
+                             width: 60px !important;
+                             }
                         }
                         .is-editing{
                             width: 110%;

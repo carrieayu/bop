@@ -90,12 +90,18 @@ class Employees(models.Model):
     employee_id = models.CharField(max_length=10, primary_key=True, editable=False)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    type = models.IntegerField(max_length=12) # 0 = regular employee , 1 = executive employee
     email = models.EmailField(unique=True)
-    salary = models.IntegerField(max_length=12)
+    salary = models.IntegerField(max_length=12, null=True) # null if employee_type = (1/executive)
+    executive_renumeration = models.IntegerField(max_length=12, null=True) # null if employee_type = (0/regular) 
     company = models.ForeignKey(MasterCompany, on_delete=models.CASCADE)
     business_division = models.ForeignKey(
         MasterBusinessDivision, on_delete=models.CASCADE
     )
+    statutory_welfare_expense = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
+    welfare_expense = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
+    insurance_premium = models.IntegerField(max_length=12)
+    bonus_and_fuel_allowance = models.IntegerField(max_length=12)
     auth_user =  models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
