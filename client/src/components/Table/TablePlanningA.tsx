@@ -3,7 +3,12 @@ import axios from 'axios';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { translate } from '../../utils/translationUtil';
 
-const TablePlanning = () => {
+
+interface TablePlanningAProps {
+  isThousandYenChecked: boolean;
+}
+
+const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) => {
   const [data, setData] = useState([]);
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); // State for switch in translation
@@ -659,7 +664,7 @@ const TablePlanning = () => {
           ],
         },
       ]
-
+      
       setData(data);
     })
     .catch(error => {
@@ -739,7 +744,11 @@ const TablePlanning = () => {
               <tr key={index}>
                 <td className={noIndentLabels.includes(item.label) ? 'no-indent' : 'indented-label'}>{translate(item.label, language)}</td>
                 {item.values.map((value, valueIndex) => (
-                  <td key={valueIndex}>{value.toLocaleString()}</td>
+                  <td key={valueIndex}>
+                    {isThousandYenChecked 
+                      ? (Math.round(value / 1000 * 10) / 10).toLocaleString() // Rounds to 1 decimal place
+                      : value.toLocaleString()}
+                  </td>
                 ))}
               </tr>
             ))}

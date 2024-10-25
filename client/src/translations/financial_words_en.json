@@ -2,7 +2,6 @@
   "accountCategories": "Account Categories",
   "advertisingExpenses": "Advertising Expenses",
   "advertisingExpense": "Advertising Expense",
-
   "analysis": "Analysis",
   "amortizationExpenses": "Amortization Expenses",
   "amortizationExpense": "Amortization Expense",
@@ -84,5 +83,6 @@
   "secondHalfTotal": "Second Half Total",
   "saleRevenue": "Sale Revenue",
   "employeeExpense": "Employee Expense",
-  "indirectEmployeeExpense": "Indirect Employee Expense"
+  "indirectEmployeeExpense": "Indirect Employee Expense",
+  "ratio": "Ratio"
 }
