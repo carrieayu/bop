@@ -402,6 +402,7 @@ const CostOfSalesRegistration = () => {
                             name='outsourcing_expense'
                             value={form.outsourcing_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                         <div className='costOfSalesRegistration_communication_expense-div'>
@@ -413,6 +414,7 @@ const CostOfSalesRegistration = () => {
                             name='communication_expense'
                             value={form.communication_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                       </div>
@@ -443,6 +445,7 @@ const CostOfSalesRegistration = () => {
                             name='product_purchase'
                             value={form.product_purchase}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                         <div className='costOfSalesRegistration_work_in_progress_expense-div'>
@@ -454,6 +457,7 @@ const CostOfSalesRegistration = () => {
                             name='work_in_progress_expense'
                             value={form.work_in_progress_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                       </div>
@@ -465,6 +469,7 @@ const CostOfSalesRegistration = () => {
                             name='purchase'
                             value={form.purchase}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                         <div className='costOfSalesRegistration_dispatch_labor_expense-div'>
@@ -476,6 +481,7 @@ const CostOfSalesRegistration = () => {
                             name='dispatch_labor_expense'
                             value={form.dispatch_labor_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                         <div className='costOfSalesRegistration_amortization_expense-div'>
@@ -487,6 +493,7 @@ const CostOfSalesRegistration = () => {
                             name='amortization_expense'
                             value={form.amortization_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                       </div>

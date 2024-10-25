@@ -360,9 +360,11 @@ const EmployeeExpensesList: React.FC = () => {
                                       return (
                                         <tr key={employeeIndex} className='employeeExpensesList_user_name'>
                                           <td className='employeeExpensesList_td'>
-                                            <p>{`${employee.employee_last_name} ${employee.employee_first_name}`}</p>
+                                            <p className='employeeExpensesList_user_name_value'>{`${employee.employee_last_name} ${employee.employee_first_name}`}</p>
                                           </td>
-                                          <td>{yearGroup.year}</td>
+                                          <td>
+                                            <div className='employeeExpensesList_year_value'>{yearGroup.year}</div>
+                                          </td>
                                           {employee.monthlyExpenses.map((exp, monthIndex) => (
                                             <td key={monthIndex} className='employeeExpensesList_td'>
                                               {exp && exp.projects.length > 0 ? (
@@ -410,10 +412,12 @@ const EmployeeExpensesList: React.FC = () => {
                                                         </div>
                                                         <div className='employeeExpensesList_txt1_txt2_flex'>
                                                           <div className='employeeExpensesList_txt1'>
-                                                            Salary: {project.employee_salary}
+                                                            <div className='employeeExpensesList_txt1_label1'>{translate('salary', language)}</div>
+                                                            <div className='employeeExpensesList_txt1_label2'>{project.employee_salary}</div>
                                                           </div>
                                                           <div className='employeeExpensesList_txt2'>
-                                                            {Math.round((1 / exp.projects.length) * 100) + '%'}
+                                                            <div className='employeeExpensesList_txt2_label1'>{translate('ratio', language)}</div>
+                                                            <div className='employeeExpensesList_txt2_label2'>{Math.round((1 / exp.projects.length) * 100) + '%'}</div>
                                                           </div>
                                                         </div>
                                                       </div>
@@ -550,9 +554,11 @@ const EmployeeExpensesList: React.FC = () => {
                                   ...yearGroup.employees.map((employee, employeeIndex) => (
                                     <tr key={employeeIndex} className='employeeExpensesList_user_name'>
                                       <td className='employeeExpensesList_td'>
-                                        <p>{`${employee.employee_last_name} ${employee.employee_first_name}`}</p>
+                                        <p className='employeeExpensesList_user_name_value'>{`${employee.employee_last_name} ${employee.employee_first_name}`}</p>
                                       </td>
-                                      <td>{yearGroup.year}</td>
+                                      <td>
+                                        <div className='employeeExpensesList_year_value'>{yearGroup.year}</div>
+                                      </td>
                                       {employee.monthlyExpenses.map((exp, monthIndex) => (
                                         <td key={monthIndex} className='employeeExpensesList_td'>
                                           {exp && exp.projects.length > 0 ? (
@@ -567,10 +573,12 @@ const EmployeeExpensesList: React.FC = () => {
                                                   </div>
                                                   <div className='employeeExpensesList_txt1_txt2_flex'>
                                                     <div className='employeeExpensesList_txt1'>
-                                                      Salary: {project.employee_salary}
+                                                      <div className='employeeExpensesList_txt1_label1'>{translate('salary', language)}</div>
+                                                      <div className='employeeExpensesList_txt1_label2'>{project.employee_salary}</div>
                                                     </div>
                                                     <div className='employeeExpensesList_txt2'>
-                                                      {Math.round((1 / exp.projects.length) * 100) + '%'}
+                                                      <div className='employeeExpensesList_txt2_label1'>{translate('ratio', language)}</div>
+                                                      <div className='employeeExpensesList_txt2_label2'>{Math.round((1 / exp.projects.length) * 100) + '%'}</div>
                                                     </div>
                                                   </div>
                                                 </div>

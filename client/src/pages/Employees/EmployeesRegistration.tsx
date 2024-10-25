@@ -498,7 +498,7 @@ const EmployeesRegistration = () => {
                                     : (Number(container.executive_renumeration) * 0.0048).toFixed(2).toString())
                               }
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
-                              readOnly
+                              onWheel={(e) => (e.target as HTMLInputElement).blur()}
                             />
                           </div>
                         </div>
