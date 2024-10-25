@@ -26,6 +26,7 @@ const PlanningListAndEdit = () => {
   const [paginatedData, setPaginatedData] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState('/planning-list');
   const [isSwitchActive, setIsSwitchActive] = useState(false); 
+  const [isThousandYenChecked, setIsThousandYenChecked] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { language, setLanguage } = useLanguage()
@@ -34,6 +35,10 @@ const PlanningListAndEdit = () => {
 
   const [isEditing, setIsEditing] = useState(false)
   const [initialLanguage, setInitialLanguage] = useState(language);
+
+  const handleThousandYenToggle = () => {
+    setIsThousandYenChecked(prevState => !prevState);
+  }
 
   const handleClick = () => {
     setIsEditing((prevState) => {
@@ -129,7 +134,7 @@ const PlanningListAndEdit = () => {
                       </label>
                       <p className='planning_pl-label'>{translate('thousandYen', language)}</p>
                       <label className='planning_switch'>
-                        <input type='checkbox' />
+                        <input type='checkbox' checked={isThousandYenChecked} onChange={handleThousandYenToggle} />
                         <span className='planning_slider'></span>
                       </label>
                     </div>
@@ -138,7 +143,7 @@ const PlanningListAndEdit = () => {
                 <div className='planning_tbl_cont'>
                   <div className={`table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
                     {/* Render the TablePlanning component here */}
-                    {isEditing ? <EditTablePlanning /> : <TablePlanningA />}
+                    {isEditing ? <EditTablePlanning /> : <TablePlanningA isThousandYenChecked={isThousandYenChecked} />}
                   </div>
                   <div className={`table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
                     <TablePlanningB data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
