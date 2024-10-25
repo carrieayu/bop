@@ -53,6 +53,11 @@ const Dashboard = () => {
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
   const navigate = useNavigate()
   const location = useLocation()
+  const [isThousandYenChecked, setIsThousandYenChecked] = useState(false);
+
+  const handleThousandYenToggle = () => {
+    setIsThousandYenChecked(prevState => !prevState);
+  }
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -299,7 +304,7 @@ const Dashboard = () => {
                     </label>
                       <p className="dashboard_pl-label">{translate('thousandYen', language)}</p>
                       <label className="dashboard_switch">
-                        <input type="checkbox" />
+                        <input type="checkbox" checked={isThousandYenChecked} onChange={handleThousandYenToggle} />
                         <span className="dashboard_slider"></span>
                       </label>
                 </div>
@@ -307,7 +312,7 @@ const Dashboard = () => {
             <div className='dashboard_tbl_cont'>
                   <div className={`dashboard_table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
                           {/* Render the TablePlanning component here */}
-                          <TablePlanningA />
+                          <TablePlanningA isThousandYenChecked={isThousandYenChecked}/>
                   </div>
                   <div className={`dashboard_table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
                     <TablePlanningB data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
