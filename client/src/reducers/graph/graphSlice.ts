@@ -54,7 +54,7 @@ export const fetchGraphData = createAsyncThunk('graphData/fetch', async () => {
 
     aggregatedData.totalSalesByDate![date] += parseFloat(card.sales_revenue?.toString() || '0')
     aggregatedData.totalOperatingProfitByDate![date] += parseFloat(card.operating_profit?.toString() || '0')
-    aggregatedData.totalGrossProfitByDate![date] += parseFloat(card.ordinary_profit?.toString() || '0')
+    aggregatedData.totalGrossProfitByDate![date] += parseFloat(card.ordinary_income?.toString() || '0')
     aggregatedData.totalNetProfitPeriodByDate![date] += parseFloat(card.non_operating_profit?.toString() || '0')
     aggregatedData.totalGrossProfitMarginByDate![date] += parseFloat(card.ordinary_profit_margin?.toString() || '0')
     aggregatedData.totalOperatingProfitMarginByDate![date] += parseFloat(card.non_operating_expense?.toString() || '0',)

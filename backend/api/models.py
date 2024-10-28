@@ -160,7 +160,7 @@ class Projects(models.Model):
     non_operating_expense = models.DecimalField(
         max_digits=12, decimal_places=2, default=0.0
     )
-    ordinary_profit = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
+    ordinary_income = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
     ordinary_profit_margin = models.FloatField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -13,7 +13,7 @@ export default class CardEntity {
     operating_profit: number | undefined
     non_operating_profit: number | undefined
     non_operating_expense: number | undefined
-    ordinary_profit: number | undefined
+    ordinary_income: number | undefined
     ordinary_profit_margin: number | undefined
     business_division: string | undefined
     client: string | undefined
@@ -33,7 +33,7 @@ export default class CardEntity {
         this.operating_profit = data.operating_profit
         this.non_operating_profit = data.non_operating_profit
         this.non_operating_expense = data.non_operating_expense
-        this.ordinary_profit = data.ordinary_profit
+        this.ordinary_income = data.ordinary_income
         this.ordinary_profit_margin = data.ordinary_profit_margin
         this.business_division = data.business_division
         this.client = data.client
