@@ -22,12 +22,9 @@ function getSum(data: number[]) {
 }
 
 const calculateGrossProfit = (card) => Number(card.sales_revenue) - Number(card.cost_of_sale)
-const calculateGrossProfitMargin = (grossProfit, salesRevenue) =>
-  salesRevenue ? (grossProfit / salesRevenue) * 100 : 0
-const calculateCumulativeOrdinaryIncome = (card) =>
-  Number(card.operating_profit) + Number(card.non_operating_profit) - Number(card.non_operating_expense)
-const calculateOperatingProfitMargin = (operatingProfit, salesRevenue) =>
-  salesRevenue ? (operatingProfit / salesRevenue) * 100 : 0
+const calculateGrossProfitMargin = (grossProfit, salesRevenue) =>salesRevenue ? (grossProfit / salesRevenue) * 100 : 0
+const calculateCumulativeOrdinaryIncome = (card) => Number(card.operating_profit) + Number(card.non_operating_profit) - Number(card.non_operating_expense)
+const calculateOperatingProfitMargin = (operatingProfit, salesRevenue) =>salesRevenue ? (operatingProfit / salesRevenue) * 100 : 0
 const calculateOperatingIncome = (card) => {
   const salesRevenue = Number(card.sales_revenue) || 0
   const costOfSale = Number(card.cost_of_sale) || 0
