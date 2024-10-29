@@ -39,9 +39,9 @@ const Dashboard = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const totalPages = Math.ceil(tableList?.length / rowsPerPage)
   const totalSalesByDate = useAppSelector((state: RootState) => state.graph.totalSalesByDate)
-  const totalOperatingProfitByDate = useAppSelector((state: RootState) => state.graph.totalOperatingProfitByDate)
+  const totalOperatingIncomeByDate = useAppSelector((state: RootState) => state.graph.totalOperatingIncomeByDate)
   const totalGrossProfitByDate = useAppSelector((state: RootState) => state.graph.totalGrossProfitByDate)
-  const totalNetProfitPeriodByDate = useAppSelector((state: RootState) => state.graph.totalNetProfitPeriodByDate)
+  const totalCumulativeOrdinaryIncomeByDate = useAppSelector((state: RootState) => state.graph.totalCumulativeOrdinaryIncome)
   const totalGrossProfitMarginByDate = useAppSelector((state: RootState) => state.graph.totalGrossProfitMarginByDate)
   const totalOperatingProfitMarginByDate = useAppSelector((state: RootState) => state.graph.totalOperatingProfitMarginByDate)
   const month = useAppSelector((state: RootState) => state.graph.month)
@@ -127,7 +127,7 @@ const Dashboard = () => {
       {
         type: 'bar' as const,
         label: translate('operatingIncome', language),
-        data: month?.map((date) => totalOperatingProfitByDate[date]),
+        data: month?.map((date) => totalOperatingIncomeByDate[date]),
         backgroundColor: '#b8cbe2',
         borderColor: 'black',
         borderWidth: 1,
@@ -136,7 +136,7 @@ const Dashboard = () => {
       {
         type: 'bar' as const,
         label: translate('cumulativeOrdinaryIncome', language),
-        data: month?.map((date) => totalNetProfitPeriodByDate[date]),
+        data: month?.map((date) => totalCumulativeOrdinaryIncomeByDate[date]),
         backgroundColor: '#bde386',
         borderColor: 'black',
         borderWidth: 1,

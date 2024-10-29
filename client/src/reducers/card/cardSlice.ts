@@ -59,8 +59,8 @@ const cardSlice = createSlice({
         state.totalNetProfitPeriod = getSum(
           action.payload.map(
             (card) =>
-              Number(card.operating_profit || 0) +
-              Number(card.non_operating_profit || 0) -
+              Number(card.operating_income || 0) +
+              Number(card.non_operating_income || 0) -
               Number(card.non_operating_expense || 0) -
               Number(card.expense || 0),
           ),
@@ -73,7 +73,7 @@ const cardSlice = createSlice({
         );
         state.totalOperatingProfitMargin = getSum(
           action.payload.map((card) =>
-            calculateOperatingProfitMargin(Number(card.operating_profit), card.sales_revenue)
+            calculateOperatingProfitMargin(Number(card.operating_income), card.sales_revenue)
           )
         );
         state.totalCumulativeOrdinaryIncome = getSum(

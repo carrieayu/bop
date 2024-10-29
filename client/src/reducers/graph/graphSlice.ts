@@ -5,9 +5,9 @@ import CardEntity from '../../entity/cardEntity'
 interface GraphDataState {
   isLoading: boolean
   totalSalesByDate: Record<string, number>
-  totalOperatingProfitByDate: Record<string, number>
+  totalOperatingIncomeByDate: Record<string, number>
   totalGrossProfitByDate: Record<string, number>
-  totalNetProfitPeriodByDate: Record<string, number>
+  totalCumulativeOrdinaryIncome: Record<string, number>
   totalGrossProfitMarginByDate: Record<string, number>
   totalOperatingProfitMarginByDate: Record<string, number>
   month: string[]
@@ -17,9 +17,9 @@ interface GraphDataState {
 const initialState: GraphDataState = {
   isLoading: false,
   totalSalesByDate: {},
-  totalOperatingProfitByDate: {},
+  totalOperatingIncomeByDate: {},
   totalGrossProfitByDate: {},
-  totalNetProfitPeriodByDate: {},
+  totalCumulativeOrdinaryIncome: {},
   totalGrossProfitMarginByDate: {},
   totalOperatingProfitMarginByDate: {},
   month: [],
@@ -43,16 +43,21 @@ const calculateOperatingIncome = (card) => {
   return salesRevenue - costOfSale - dispatchLaborExpense - employeeExpense - indirectEmployeeExpense - otherExpense
 }
 
-
+const token = localStorage.getItem('accessToken')
 export const fetchGraphData = createAsyncThunk('graphData/fetch', async () => {
-  const response = await api.get<CardEntity[]>(`http://127.0.0.1:8000/api/projects/`)
-  // const response = await api.get<CardEntity[]>(`http://54.178.202.58:8000/api/projects/`)
+  const response = await api.get<CardEntity[]>(`http://127.0.0.1:8000/api/projects/`, {
+    // const response = await api.get<CardEntity[]>(`http://54.178.202.58:8000/api/projects/`)
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  })
   const cards = response.data.map((data) => new CardEntity(data))
   const aggregatedData: Partial<GraphDataState> = {
     totalSalesByDate: {},
-    totalOperatingProfitByDate: {},
+    totalOperatingIncomeByDate: {},
     totalGrossProfitByDate: {},
-    totalNetProfitPeriodByDate: {},
+    totalCumulativeOrdinaryIncome: {},
     totalGrossProfitMarginByDate: {},
     totalOperatingProfitMarginByDate: {},
     month: [],
@@ -65,22 +70,22 @@ export const fetchGraphData = createAsyncThunk('graphData/fetch', async () => {
 
     const cumulataiveOridinaryIncome = calculateCumulativeOrdinaryIncome(card)
     const grossProfitMargin = calculateGrossProfitMargin(calculateGrossProfit(card), card.sales_revenue)
-    const operatingProfitMargin = calculateOperatingProfitMargin(Number(card.operating_profit), card.sales_revenue)
+    const operatingProfitMargin = calculateOperatingProfitMargin(Number(card.operating_income), card.sales_revenue)
 
     if (!aggregatedData.totalSalesByDate![date]) {
       aggregatedData.totalSalesByDate![date] = 0
-      aggregatedData.totalOperatingProfitByDate![date] = 0
+      aggregatedData.totalOperatingIncomeByDate![date] = 0
       aggregatedData.totalGrossProfitByDate![date] = 0
-      aggregatedData.totalNetProfitPeriodByDate![date] = 0
+      aggregatedData.totalCumulativeOrdinaryIncome![date] = 0
       aggregatedData.totalGrossProfitMarginByDate![date] = 0
       aggregatedData.totalOperatingProfitMarginByDate![date] = 0
     }
 
     aggregatedData.totalSalesByDate![date] += parseFloat(card.sales_revenue?.toString() || '0')
-    aggregatedData.totalOperatingProfitByDate![date] += parseFloat(operatingIncome?.toString() || '0')
+    aggregatedData.totalOperatingIncomeByDate![date] += parseFloat(operatingIncome?.toString() || '0')
     aggregatedData.totalGrossProfitByDate![date] += parseFloat(grossProfit?.toString() || '0')
 
-    aggregatedData.totalNetProfitPeriodByDate![date] += parseFloat(cumulataiveOridinaryIncome?.toString() || '0')
+    aggregatedData.totalCumulativeOrdinaryIncome![date] += parseFloat(cumulataiveOridinaryIncome?.toString() || '0')
     aggregatedData.totalGrossProfitMarginByDate![date] += parseFloat(grossProfitMargin?.toString() || '0')
     aggregatedData.totalOperatingProfitMarginByDate![date] += parseFloat(operatingProfitMargin?.toString() || '0')
     aggregatedData.month.push(date)
@@ -99,9 +104,9 @@ const graphSlice = createSlice({
       .addCase(fetchGraphData.fulfilled, (state, action) => {
         state.isLoading = false
         state.totalSalesByDate = action.payload.totalSalesByDate || {}
-        state.totalOperatingProfitByDate = action.payload.totalOperatingProfitByDate || {}
+        state.totalOperatingIncomeByDate = action.payload.totalOperatingIncomeByDate || {}
         state.totalGrossProfitByDate = action.payload.totalGrossProfitByDate || {}
-        state.totalNetProfitPeriodByDate = action.payload.totalNetProfitPeriodByDate || {}
+        state.totalCumulativeOrdinaryIncome = action.payload.totalCumulativeOrdinaryIncome || {}
         state.totalGrossProfitMarginByDate = action.payload.totalGrossProfitMarginByDate || {}
         state.totalOperatingProfitMarginByDate = action.payload.totalOperatingProfitMarginByDate || {}
         state.month = action.payload.month || []
