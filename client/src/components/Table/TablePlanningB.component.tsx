@@ -98,7 +98,7 @@ useEffect(() => {
         const fieldIndex = objectEntity.indexOf(field)
         if (fieldIndex !== -1) {
           monthlyAccumulations[field].forEach((total, monthIndex) => {
-            if (['operating_profit', 'ordinary_profit', 'ordinary_profit_margin'].includes(field)) {
+            if (['operating_income', 'ordinary_profit', 'ordinary_profit_margin'].includes(field)) {
               entityGrids[entityIndex].grid[fieldIndex][monthIndex] = '-'
             } else {
               entityGrids[entityIndex].grid[fieldIndex][monthIndex] = total.toString()
@@ -112,7 +112,7 @@ useEffect(() => {
   entityGrids.forEach((entityGrid) => {
     entityGrid.grid.forEach((row, rowIndex) => {
       const fieldName = objectEntity[rowIndex]
-      if (['operating_profit', 'ordinary_profit', 'ordinary_profit_margin'].includes(fieldName)) {
+      if (['operating_income', 'ordinary_profit', 'ordinary_profit_margin'].includes(fieldName)) {
         row[gridCols - 1] = '-' // Set last column for totals to hyphen
       } else {
         const total = row.slice(0, gridCols - 1).reduce((acc, val) => acc + parseFloat(val), 0)

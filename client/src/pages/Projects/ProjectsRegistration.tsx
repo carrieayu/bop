@@ -57,8 +57,8 @@ const ProjectsRegistration = () => {
       employee_expense: '',
       indirect_employee_expense: '',
       expense: '',
-      operating_profit: '',
-      non_operating_profit: '',
+      operating_income: '',
+      non_operating_income: '',
       non_operating_expense: '',
       ordinary_profit: '',
       ordinary_profit_margin: '',
@@ -82,8 +82,8 @@ const ProjectsRegistration = () => {
           employee_expense: '',
           indirect_employee_expense: '',
           expense: '',
-          operating_profit: '',
-          non_operating_profit: '',
+          operating_income: '',
+          non_operating_income: '',
           non_operating_expense: '',
           ordinary_profit: '',
           ordinary_profit_margin: '',
@@ -144,8 +144,8 @@ const ProjectsRegistration = () => {
           employee_expense: '',
           indirect_employee_expense: '',
           expense: '',
-          operating_profit: '',
-          non_operating_profit: '',
+          operating_income: '',
+          non_operating_income: '',
           non_operating_expense: '',
           ordinary_profit: '',
           ordinary_profit_margin: '',
@@ -223,10 +223,10 @@ const ProjectsRegistration = () => {
         !isNaN(prj.indirect_employee_expense) &&
         prj.expense > 0 &&
         !isNaN(prj.expense) &&
-        prj.operating_profit > 0 &&
-        !isNaN(prj.operating_profit) &&
-        prj.non_operating_profit > 0 &&
-        !isNaN(prj.non_operating_profit) &&
+        prj.operating_income > 0 &&
+        !isNaN(prj.operating_income) &&
+        prj.non_operating_income > 0 &&
+        !isNaN(prj.non_operating_income) &&
         prj.non_operating_expense > 0 &&
         !isNaN(prj.non_operating_expense) &&
         prj.ordinary_profit > 0 &&
@@ -253,8 +253,8 @@ const ProjectsRegistration = () => {
       employee_expense: parseFloat(projects.employee_expense),
       indirect_employee_expense: parseFloat(projects.indirect_employee_expense),
       expense: parseFloat(projects.expense),
-      operating_profit: parseFloat(projects.operating_profit),
-      non_operating_profit: parseFloat(projects.non_operating_profit),
+      operating_income: parseFloat(projects.operating_income),
+      non_operating_income: parseFloat(projects.non_operating_income),
       non_operating_expense: parseFloat(projects.non_operating_expense),
       ordinary_profit: parseFloat(projects.ordinary_profit),
       ordinary_profit_margin: parseFloat(projects.ordinary_profit_margin),
@@ -299,8 +299,8 @@ const ProjectsRegistration = () => {
           employee_expense: '', 
           indirect_employee_expense: '', 
           expense: '', 
-          operating_profit: '', 
-          non_operating_profit: '', 
+          operating_income: '', 
+          non_operating_income: '', 
           non_operating_expense: '', 
           ordinary_profit: '', 
           ordinary_profit_margin: '' 
@@ -384,15 +384,14 @@ const ProjectsRegistration = () => {
       employee_expense: parseFloat(projects.employee_expense),
       indirect_employee_expense: parseFloat(projects.indirect_employee_expense),
       expense: parseFloat(projects.expense),
-      operating_profit: parseFloat(projects.operating_profit),
-      non_operating_profit: parseFloat(projects.non_operating_profit),
+      operating_income: parseFloat(projects.operating_income),
+      non_operating_income: parseFloat(projects.non_operating_income),
       non_operating_expense: parseFloat(projects.non_operating_expense),
       ordinary_profit: parseFloat(projects.ordinary_profit),
       ordinary_profit_margin: parseFloat(projects.ordinary_profit_margin),
     }));
   
     const token = localStorage.getItem('accessToken');
-  
     try {
       const overwriteResponse = await axios.put('http://127.0.0.1:8000/api/projects/create/', projectsData, {
       // const overwriteResponse = await axios.put('http://54.178.202.58:8000/api/projects/create/', projectsData, {
@@ -421,8 +420,8 @@ const ProjectsRegistration = () => {
           employee_expense: '', 
           indirect_employee_expense: '', 
           expense: '', 
-          operating_profit: '', 
-          non_operating_profit: '', 
+          operating_income: '', 
+          non_operating_income: '', 
           non_operating_expense: '', 
           ordinary_profit: '', 
           ordinary_profit_margin: '' 
@@ -568,8 +567,8 @@ const ProjectsRegistration = () => {
                           </label>
                           <input
                             type='number'
-                            name='operating_profit'
-                            value={form.operating_profit}
+                            name='operating_income'
+                            value={form.operating_income}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
@@ -651,8 +650,8 @@ const ProjectsRegistration = () => {
                           </label>
                           <input
                             type='number'
-                            name='non_operating_profit'
-                            value={form.non_operating_profit}
+                            name='non_operating_income'
+                            value={form.non_operating_income}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />

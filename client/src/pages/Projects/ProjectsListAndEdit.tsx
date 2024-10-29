@@ -56,8 +56,8 @@ const ProjectsListAndEdit: React.FC = () => {
         employee_expense: '',
         indirect_employee_expense: '',
         expense: '',
-        operating_profit: '',
-        non_operating_profit: '',
+        operating_income: '',
+        non_operating_income: '',
         non_operating_expense: '',
         ordinary_profit: '',
         ordinary_profit_margin: '',
@@ -152,10 +152,10 @@ const ProjectsListAndEdit: React.FC = () => {
           !isNaN(prj.indirect_employee_expense) &&
           prj.expense > 0 &&
           !isNaN(prj.expense) &&
-          prj.operating_profit > 0 &&
-          !isNaN(prj.operating_profit) &&
-          prj.non_operating_profit > 0 &&
-          !isNaN(prj.non_operating_profit) &&
+          prj.operating_income > 0 &&
+          !isNaN(prj.operating_income) &&
+          prj.non_operating_income > 0 &&
+          !isNaN(prj.non_operating_income) &&
           prj.non_operating_expense > 0 &&
           !isNaN(prj.non_operating_expense) &&
           prj.ordinary_profit > 0 &&
@@ -587,16 +587,16 @@ const ProjectsListAndEdit: React.FC = () => {
                                   <td className='projectsList_table_body_content_vertical'>
                                     <input
                                       type='number'
-                                      name='operating_profit'
-                                      value={project.operating_profit}
+                                      name='operating_income'
+                                      value={project.operating_income}
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
                                   <td className='projectsList_table_body_content_vertical'>
                                     <input
                                       type='number'
-                                      name='non_operating_profit'
-                                      value={project.non_operating_profit}
+                                      name='non_operating_income'
+                                      value={project.non_operating_income}
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
@@ -714,9 +714,9 @@ const ProjectsListAndEdit: React.FC = () => {
                                   {project.indirect_employee_expense}
                                 </td>
                                 <td className='projectsList_table_body_content_vertical'>{project.expense}</td>
-                                <td className='projectsList_table_body_content_vertical'>{project.operating_profit}</td>
+                                <td className='projectsList_table_body_content_vertical'>{project.operating_income}</td>
                                 <td className='projectsList_table_body_content_vertical'>
-                                  {project.non_operating_profit}
+                                  {project.non_operating_income}
                                 </td>
                                 <td className='projectsList_table_body_content_vertical'>
                                   {project.non_operating_expense}

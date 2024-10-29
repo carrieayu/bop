@@ -242,7 +242,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         return operating_income_value;
       });
       //NoN Operating Income & Expense
-      const nonOperatingIncomeValues = months.map(month => aggregatedPlanningProjectData[month]?.non_operating_profit || 0);
+      const nonOperatingIncomeValues = months.map(month => aggregatedPlanningProjectData[month]?.non_operating_income || 0);
       const nonOperatingExpensesValues = months.map(month => aggregatedPlanningProjectData[month]?.non_operating_expense || 0);
 
       const ordinaryProfitValues = months.map((month, index) => {
