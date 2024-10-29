@@ -849,7 +849,7 @@ class ForgotPasswordView(generics.CreateAPIView):
 
         try:
             user = AuthUser.objects.get(email__iexact=email)
-        except Employees.DoesNotExist:
+        except AuthUser.DoesNotExist:
             return Response({"message": "Email does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
         # Generate password reset token
@@ -863,7 +863,7 @@ class ForgotPasswordView(generics.CreateAPIView):
         # Send password reset email
         subject = _('Password Reset Request')
         message = _('Please click the link below to reset your password:\n\n') + reset_url
-        from_email = 'bopmsemail@gmail.com'  # Update with your email
+        from_email = 'MS_zAbrXd@trial-o65qngkpyq3lwr12.mlsender.net'  # Update with your email
         recipient_list = [email]
         
         send_mail(subject, message, from_email, recipient_list)
@@ -874,25 +874,21 @@ class ForgotPasswordView(generics.CreateAPIView):
         # Decode uidb64 to get user id
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
-            user = Employees.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, Employees.DoesNotExist):
+            user = AuthUser.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, AuthUser.DoesNotExist):
             user = None
 
-        # Check if user exists and token is valid
         if user is not None and PasswordResetTokenGenerator().check_token(user, token):
-            # Update user's password
             new_password = request.data.get('password')
-            user.set_password(new_password)
-            user.save()
-            return Response({"message": "Password updated successfully."}, status=status.HTTP_200_OK)
+            
+            if new_password:
+                user.set_password(new_password) 
+                user.save() 
+                return Response({"success": "Password updated successfully"}, status=200)
+            else:
+                return Response({"error": "Password not provided"}, status=400)
         else:
-            return Response({"message": "Invalid token."}, status=status.HTTP_400_BAD_REQUEST)
-            # return Response(planning_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(
-            {"message": "Project Planning Data created successfully"},
-            status=status.HTTP_201_CREATED,
-        )
+            return Response({"error": "Invalid token or user does not exist"}, status=400)
     
 class EmployeeExpensesList(generics.ListAPIView):
     serializer_class = EmployeeExpensesDataSerializer

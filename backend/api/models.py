@@ -153,8 +153,8 @@ class Projects(models.Model):
         max_digits=12, decimal_places=2, default=0.0
     )
     expense = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    operating_profit = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    non_operating_profit = models.DecimalField(
+    operating_income = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
+    non_operating_income = models.DecimalField(
         max_digits=12, decimal_places=2, default=0.0
     )
     non_operating_expense = models.DecimalField(

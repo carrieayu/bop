@@ -1,38 +1,65 @@
-import React, { useState } from "react";
-import dattLogo from  '../../assets/images/logo.png'
-import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useState } from 'react'
+import dattLogo from '../../assets/images/logo.png'
+import { useParams, useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import AlertModal from '../../components/AlertModal/AlertModal'
+import { translate } from '../../utils/translationUtil'
+import { useLanguage } from '../../contexts/LanguageContext'
+import CrudModal from '../../components/CrudModal/CrudModal'
 
 const ResetPassword = () => {
-    const { uid, token } = useParams();
-    const navigate = useNavigate();
-    const [password, setPassword] = useState('');
-    const [passwordConfirm, setPasswordConfirm] = useState('');
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(null);
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError(null);
+  const { uid, token } = useParams()
+  const navigate = useNavigate()
+  const [password, setPassword] = useState('')
+  const [passwordConfirm, setPasswordConfirm] = useState('')
+  const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(null)
+  const { language, setLanguage } = useLanguage()
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
+  const [isModalOpenRedirect, setIsModalOpenRedirect] = useState(false)
+  const [modalMessageRedirect, setModalMessageRedirect] = useState('')
 
-        
-        if (password !== passwordConfirm) {
-            alert('Password Not Matched');
-            setError("Password and confirm password do not match.");
-            return;
-        }
+  const closeModal = () => {
+    setIsModalOpen(false)
+  }
 
-        try {
-            // const response = await axios.put(`http://127.0.0.1:8000/api/reset-password/${uid}/${token}/`, {
-            const response = await axios.put(`http://54.178.202.58:8000/api/reset-password/${uid}/${token}/`, {
-                password
-            });
-            alert("Password has been resetted");
-            navigate('/login');
-        } catch (error) {
-            setError(error.response?.data?.message || "An error occurred.");
-        }
-    };
+  const redirect = () => {
+    setIsModalOpen(false)
+    navigate('/login', { replace: true })
+  }
 
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setError(null)
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/
+    if (!passwordRegex.test(password)) {
+      setModalMessage(
+        'Passwords must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character.',
+      )
+      setIsModalOpen(true)
+      return
+    } 
+
+    if (password !== passwordConfirm) {
+      alert('Password Not Matched')
+      setError('Password and confirm password do not match.')
+      return
+    }
+
+    try {
+      const response = await axios.put(`http://127.0.0.1:8000/api/reset-password/${uid}/${token}/`, {
+        // const response = await axios.put(`http://54.178.202.58:8000/api/reset-password/${uid}/${token}/`, {
+        password,
+      })
+      setModalMessageRedirect('Password has been reset.')
+      setIsModalOpenRedirect(true)
+      
+    } catch (error) {
+      setError(error.response?.data?.message || 'An error occurred.')
+    }
+  }
 
   return (
     <div className='container'>
@@ -82,20 +109,28 @@ const ResetPassword = () => {
                     />
                   </p>
                 </div>
-                {error && <div className="error"  style={{ color: "red",textAlign: "center" }}>{error}</div>}
-                {success && <div className="success">{success}</div>}
+                {error && (
+                  <div className='error' style={{ color: 'red', textAlign: 'center' }}>
+                    {error}
+                  </div>
+                )}
+                {success && <div className='success'>{success}</div>}
                 <div className='field'>
-                <p className='control has-text-centered'>
-                    <button className='button' type='submit'>Submit</button>
-                </p>
+                  <p className='control has-text-centered'>
+                    <button className='button' type='submit'>
+                      Submit
+                    </button>
+                  </p>
                 </div>
               </form>
             </div>
           </div>
         </div>
       </div>
+      <CrudModal message={modalMessage} onClose={closeModal} isCRUDOpen={isModalOpen} />
+      <CrudModal message={modalMessageRedirect} onClose={redirect} isCRUDOpen={isModalOpenRedirect} />
     </div>
-  );
-};
+  )
+}
 
-export default ResetPassword;
+export default ResetPassword
