@@ -199,8 +199,8 @@ const CostOfSalesRegistration = () => {
 
     try {
       // Attempt to create a new entry
-      const response = await axios.post('http://127.0.0.1:8000/api/cost-of-sales/create', formData, {
-        // const response = await axios.post('http://54.178.202.58:8000/api/cost-of-sales/create', formData, {
+      // const response = await axios.post('http://127.0.0.1:8000/api/cost-of-sales/create', formData, {
+        const response = await axios.post('http://54.178.202.58:8000/api/cost-of-sales/create', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -271,8 +271,8 @@ const CostOfSalesRegistration = () => {
     const token = localStorage.getItem('accessToken');
 
     try {
-      const overwriteResponse = await axios.put('http://127.0.0.1:8000/api/cost-of-sales/create', formData, {
-        // const overwriteResponse = await axios.put('http://54.178.202.58:8000/api/cost-of-sales/create', formData, {
+      // const overwriteResponse = await axios.put('http://127.0.0.1:8000/api/cost-of-sales/create', formData, {
+        const overwriteResponse = await axios.put('http://54.178.202.58:8000/api/cost-of-sales/create', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',

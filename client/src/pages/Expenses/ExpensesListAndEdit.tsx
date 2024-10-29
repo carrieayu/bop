@@ -175,19 +175,19 @@ const ExpensesList: React.FC = () => {
       return
     }
     try {
-      await axios.put('http://127.0.0.1:8000/api/expenses/update', modifiedFields, {
-        // const response = await axios.put('http://54.178.202.58:8000/api/expenses/update', modifiedFields, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      // await axios.put('http://127.0.0.1:8000/api/expenses/update', modifiedFields, {
+        await axios.put('http://54.178.202.58:8000/api/expenses/update', modifiedFields, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
       setOriginalExpensesList(expensesList)
       setCrudMessage(translate('successfullyUpdated', language));
       setIsCRUDOpen(true);
       setIsEditing(false);
 
-      const response = await axios.get('http://127.0.0.1:8000/api/expenses')
-      // const response = await axios.get('http://54.178.202.58:8000/api/expenses')
+      // const response = await axios.get('http://127.0.0.1:8000/api/expenses')
+      const response = await axios.get('http://54.178.202.58:8000/api/expenses')
 
       setExpensesList(response.data)
     } catch (error) {
@@ -217,8 +217,8 @@ const ExpensesList: React.FC = () => {
     }
 
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/expenses', {
-        // const response = await axios.get('http://54.178.202.58:8000/api/expenses/', {
+      // const response = await axios.get('http://127.0.0.1:8000/api/expenses', {
+        const response = await axios.get('http://54.178.202.58:8000/api/expenses/', {
         headers: {
           Authorization: `Bearer ${token}`, // Add token to request headers
         },
@@ -302,8 +302,8 @@ const ExpensesList: React.FC = () => {
     console.log('Confirmed action for expense:', deleteExpenseId)
     const token = localStorage.getItem('accessToken')
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/expenses/${deleteExpenseId}/delete/`, {
-        // await axios.get(`http://54.178.202.58:8000/api/expenses/${deleteExpenseId}/delete/`, {
+      // await axios.delete(`http://127.0.0.1:8000/api/expenses/${deleteExpenseId}/delete/`, {
+        await axios.get(`http://54.178.202.58:8000/api/expenses/${deleteExpenseId}/delete/`, {
         headers: {
           Authorization: `Bearer ${token}`, // Add token to request headers
         },
@@ -312,8 +312,8 @@ const ExpensesList: React.FC = () => {
       setIsCRUDOpen(true);
       setIsEditing(false);
 
-      const response = await axios.get('http://127.0.0.1:8000/api/expenses')
-      // const response = await axios.get('http://54.178.202.58:8000/api/expensess');
+      // const response = await axios.get('http://127.0.0.1:8000/api/expenses')
+      const response = await axios.get('http://54.178.202.58:8000/api/expenses');
       setExpensesList(response.data)
     } catch (error) {
       if (error.response && error.response.status === 401) {

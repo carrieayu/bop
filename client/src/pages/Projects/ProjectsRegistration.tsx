@@ -274,8 +274,8 @@ const ProjectsRegistration = () => {
   
     try {
       // Attempt to create a new entry
-      const response = await axios.post('http://127.0.0.1:8000/api/projects/create/', projectsData, {
-      // const response = await axios.post('http://54.178.202.58:8000/api/projects/create/', projectsData, {
+      // const response = await axios.post('http://127.0.0.1:8000/api/projects/create/', projectsData, {
+      const response = await axios.post('http://54.178.202.58:8000/api/projects/create/', projectsData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -393,8 +393,8 @@ const ProjectsRegistration = () => {
   
     const token = localStorage.getItem('accessToken');
     try {
-      const overwriteResponse = await axios.put('http://127.0.0.1:8000/api/projects/create/', projectsData, {
-      // const overwriteResponse = await axios.put('http://54.178.202.58:8000/api/projects/create/', projectsData, {
+      // const overwriteResponse = await axios.put('http://127.0.0.1:8000/api/projects/create/', projectsData, {
+      const overwriteResponse = await axios.put('http://54.178.202.58:8000/api/projects/create/', projectsData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',

@@ -49,8 +49,8 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await axios.put(`http://127.0.0.1:8000/api/reset-password/${uid}/${token}/`, {
-        // const response = await axios.put(`http://54.178.202.58:8000/api/reset-password/${uid}/${token}/`, {
+      // const response = await axios.put(`http://127.0.0.1:8000/api/reset-password/${uid}/${token}/`, {
+        const response = await axios.put(`http://54.178.202.58:8000/api/reset-password/${uid}/${token}/`, {
         password,
       })
       setModalMessageRedirect('Password has been reset.')
