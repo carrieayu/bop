@@ -552,7 +552,7 @@ const EmployeesRegistration = () => {
                           )}
                           <div className='EmployeesRegistration_bonus_and_fuel_allowance-div'>
                             <label className='bonus_and_fuel_allowance'>
-                              {translate('bonus', language)}・{translate('fuelAllowance', language)}
+                              {translate('bonusAndFuelAllowance', language)}
                             </label>
                             <input
                               type='number'
