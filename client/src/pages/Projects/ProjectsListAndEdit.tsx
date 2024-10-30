@@ -205,8 +205,8 @@ const ProjectsListAndEdit: React.FC = () => {
     }
 
     try {
-      const response = await axios.put('http://127.0.0.1:8000/api/projects/update/', modifiedFields, {
-        // const response = await axios.put('http://54.178.202.58:8000/api/projects/update/',  modifiedFields ,{
+      // const response = await axios.put('http://127.0.0.1:8000/api/projects/update/', modifiedFields, {
+        const response = await axios.put('http://54.178.202.58:8000/api/projects/update/',  modifiedFields ,{
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -270,8 +270,8 @@ const ProjectsListAndEdit: React.FC = () => {
         }
 
         try {
-          const response = await axios.get('http://127.0.0.1:8000/api/projects/', {
-            // const response = await axios.get('http://54.178.202.58:8000/api/projects/', {
+          // const response = await axios.get('http://127.0.0.1:8000/api/projects/', {
+            const response = await axios.get('http://54.178.202.58:8000/api/projects/', {
             headers: {
               Authorization: `Bearer ${token}`, // Add token to request headers
             },
@@ -338,8 +338,8 @@ const ProjectsListAndEdit: React.FC = () => {
           return
         }
         try {
-          const response = await axios.delete(`http://127.0.0.1:8000/api/projects/${deleteProjectsId}/delete/`, {
-            // const response = await axios.get(`http://54.178.202.58:8000/api/projects/${deleteProjectsId}/delete/`, {
+          // const response = await axios.delete(`http://127.0.0.1:8000/api/projects/${deleteProjectsId}/delete/`, {
+            const response = await axios.get(`http://54.178.202.58:8000/api/projects/${deleteProjectsId}/delete/`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

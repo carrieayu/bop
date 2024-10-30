@@ -143,8 +143,8 @@ const ClientsListAndEdit: React.FC = () => {
       }
 
       try {
-        const response = await axios.put('http://127.0.0.1:8000/api/master-client/update/', modifiedFields, {
-          // const response = await axios.put('http://54.178.202.58:8000/api/master-client/update/', modifiedFields, {
+        // const response = await axios.put('http://127.0.0.1:8000/api/master-client/update/', modifiedFields, {
+          const response = await axios.put('http://54.178.202.58:8000/api/master-client/update/', modifiedFields, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -189,8 +189,8 @@ const ClientsListAndEdit: React.FC = () => {
         }
 
         try {
-          const response = await axios.get('http://127.0.0.1:8000/api/master-clients/', {
-            // const response = await axios.get('http://54.178.202.58:8000/api/master-clients/', {
+          // const response = await axios.get('http://127.0.0.1:8000/api/master-clients/', {
+            const response = await axios.get('http://54.178.202.58:8000/api/master-clients/', {
             headers: {
               Authorization: `Bearer ${token}`, 
             },
@@ -249,8 +249,8 @@ const ClientsListAndEdit: React.FC = () => {
       // Currently no delete logic
       console.log('Confirmed action for project:', deleteId)
       try {
-        const response = await axios.delete(`http://127.0.0.1:8000/api/master-client/${deleteId}/delete/`, {
-        // const response = await axios.delete(`http://54.178.202.58:8000/api/master-client/${deleteId}/delete/`, {
+        // const response = await axios.delete(`http://127.0.0.1:8000/api/master-client/${deleteId}/delete/`, {
+        const response = await axios.delete(`http://54.178.202.58:8000/api/master-client/${deleteId}/delete/`, {
         })
         setUpdatedClients((prevList) => prevList.filter((client) => client.client_id !== deleteId))
         setCrudMessage(translate('successfullyDeleted', language));

@@ -184,8 +184,13 @@ const UsersRegistration = () => {
           return;
         }
         try {
-          await axios.post('http://127.0.0.1:8000/api/user/register/', userData);
-          // await axios.post('http://54.178.202.58:8000/api/user/register/', userData); 
+          // await axios.post('http://127.0.0.1:8000/api/user/register/', userData, {
+            await axios.post('http://54.178.202.58:8000/api/user/register/', userData, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            })
           setModalMessage(translate('successfullySaved', language));
           setIsModalOpen(true);
           setUserData({

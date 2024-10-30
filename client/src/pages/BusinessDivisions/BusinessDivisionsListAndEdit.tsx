@@ -152,12 +152,17 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
       }
     
       try {
-        const response = await axios.put('http://127.0.0.1:8000/api/master-business-division/bulk-update/', modifiedFields, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        // const response = await axios.put('http://127.0.0.1:8000/api/master-business-division/bulk-update/', modifiedFields, {
+       const response = await axios.put(
+         'http://54.178.202.58:8000/api/master-business-division/bulk-update/',
+         modifiedFields,
+         {
+           headers: {
+             'Content-Type': 'application/json',
+             Authorization: `Bearer ${token}`,
+           },
+         },
+       )
         setCrudMessage(translate('successfullyUpdated', language));
         setIsCRUDOpen(true);
         setOriginalBusinessList(business)
@@ -198,9 +203,10 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
           }
           try {
               // Fetch companies
-              const companyResponse = await axios.get('http://127.0.0.1:8000/api/master-companies/', {
-                  // headers: { Authorization: `Bearer ${token}` },
-              });
+              // const companyResponse = await axios.get('http://127.0.0.1:8000/api/master-companies/', {
+              const companyResponse = await axios.get('http://54.178.202.58:8000/api/master-companies/', {
+                // headers: { Authorization: `Bearer ${token}` },
+              })
               const companies = companyResponse.data;
               const companyMapping = companies.reduce((map, company) => {
                   map[company.company_id] = company.company_name;
@@ -208,9 +214,10 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
               }, {});
               setCompanyMap(companyMapping);
               // Fetch users
-              const userResponse = await axios.get('http://127.0.0.1:8000/api/user/list/', {
+              // const userResponse = await axios.get('http://127.0.0.1:8000/api/user/list/', {
+                const userResponse = await axios.get('http://54.178.202.58:8000/api/user/list/', {
                   // headers: { Authorization: `Bearer ${token}` },
-              });
+                })
               const users = userResponse.data;
               const userMapping = users.reduce((map, user) => {
                   map[user.user_id] = user.first_name;
@@ -233,8 +240,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         return
       }
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/master-business-divisions/', {
-          // const response = await axios.get('http://54.178.202.58:8000/api/planningprojects/', {
+        // const response = await axios.get('http://127.0.0.1:8000/api/master-business-divisions/', {
+          const response = await axios.get('http://54.178.202.58:8000/api/master-business-divisions/', {
           headers: {
             Authorization: `Bearer ${token}`, // Add token to request headers
           },
@@ -302,8 +309,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
       }
     
       try {
-        const response = await axios.delete(`http://127.0.0.1:8000/api/master-business-division/${selectedBusiness}/delete/`, {
-          // const response = await axios.delete('http://54.178.202.58:8000/api/master-business-division/${selectedBusiness}/delete/', {
+        // const response = await axios.delete(`http://127.0.0.1:8000/api/master-business-division/${selectedBusiness}/delete/`, {
+          const response = await axios.delete('http://54.178.202.58:8000/api/master-business-division/${selectedBusiness}/delete/', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
