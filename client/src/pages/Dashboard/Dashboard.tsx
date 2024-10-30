@@ -18,7 +18,7 @@ import { translate } from '../../utils/translationUtil'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 
 function formatNumberWithCommas(number: number): string {
-  return number.toLocaleString();
+  return number.toLocaleString()
 }
 
 const header = ['計画	']
@@ -27,7 +27,7 @@ const dates = ['04月', '05月', '06月', '07月', '08月', '09月', '10月', '1
 
 const Dashboard = () => {
   const [showMenu, setShowMenu] = useState(false)
-  const [tableList, setTableList] = useState<any>([]);
+  const [tableList, setTableList] = useState<any>([])
   const totalSales = useAppSelector((state: RootState) => state.cards.totalSales)
   const totalOperatingProfit = useAppSelector((state: RootState) => state.cards.totalOperatingProfit)
   const totalGrossProfit = useAppSelector((state: RootState) => state.cards.totalGrossProfit)
@@ -41,22 +41,26 @@ const Dashboard = () => {
   const totalSalesByDate = useAppSelector((state: RootState) => state.graph.totalSalesByDate)
   const totalOperatingIncomeByDate = useAppSelector((state: RootState) => state.graph.totalOperatingIncomeByDate)
   const totalGrossProfitByDate = useAppSelector((state: RootState) => state.graph.totalGrossProfitByDate)
-  const totalCumulativeOrdinaryIncomeByDate = useAppSelector((state: RootState) => state.graph.totalCumulativeOrdinaryIncome)
+  const totalCumulativeOrdinaryIncomeByDate = useAppSelector(
+    (state: RootState) => state.graph.totalCumulativeOrdinaryIncome,
+  )
   const totalGrossProfitMarginByDate = useAppSelector((state: RootState) => state.graph.totalGrossProfitMarginByDate)
-  const totalOperatingProfitMarginByDate = useAppSelector((state: RootState) => state.graph.totalOperatingProfitMarginByDate)
+  const totalOperatingProfitMarginByDate = useAppSelector(
+    (state: RootState) => state.graph.totalOperatingProfitMarginByDate,
+  )
   const month = useAppSelector((state: RootState) => state.graph.month)
   const select = [5, 10, 100]
   const [paginatedData, setPaginatedData] = useState<any[]>([])
   const [activeTab, setActiveTab] = useState('/dashboard')
-  const [isSwitchActive, setIsSwitchActive] = useState(false); 
+  const [isSwitchActive, setIsSwitchActive] = useState(false)
   const { language, setLanguage } = useLanguage()
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const navigate = useNavigate()
   const location = useLocation()
-  const [isThousandYenChecked, setIsThousandYenChecked] = useState(false);
+  const [isThousandYenChecked, setIsThousandYenChecked] = useState(false)
 
   const handleThousandYenToggle = () => {
-    setIsThousandYenChecked(prevState => !prevState);
+    setIsThousandYenChecked((prevState) => !prevState)
   }
 
   const handleTabClick = (tab) => {
@@ -70,7 +74,7 @@ const Dashboard = () => {
   const fetchData = async () => {
     try {
       const res = await dispatch(fetchAllClientData() as unknown as UnknownAction)
-      setTableList(res.payload);
+      setTableList(res.payload)
       await dispatch(fetchAllCards() as unknown as UnknownAction)
       await dispatch(fetchGraphData() as unknown as UnknownAction)
     } catch (e) {
@@ -82,26 +86,25 @@ const Dashboard = () => {
   }, [])
 
   useEffect(() => {
-    const path = location.pathname;
+    const path = location.pathname
     if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
-      setActiveTab(path);
+      setActiveTab(path)
     }
-  }, [location.pathname]);
-  
+  }, [location.pathname])
+
   useEffect(() => {
     const startIndex = currentPage * rowsPerPage
     setPaginatedData(tableList?.slice(startIndex, startIndex + rowsPerPage))
   }, [currentPage, rowsPerPage, tableList])
 
   useEffect(() => {
-    setIsTranslateSwitchActive(language === 'en');
-  }, [language]);
+    setIsTranslateSwitchActive(language === 'en')
+  }, [language])
 
   const handleTranslationSwitchToggle = () => {
-    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
-    setLanguage(newLanguage);
-  };
-
+    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
+    setLanguage(newLanguage)
+  }
 
   const graphData = {
     labels: month,
@@ -175,19 +178,19 @@ const Dashboard = () => {
   }
 
   const handleSwitchToggle = () => {
-    setIsSwitchActive(prevState => !prevState);
-  };
+    setIsSwitchActive((prevState) => !prevState)
+  }
 
   return (
     <div className='dashboard_wrapper'>
-        <HeaderButtons 
-            activeTab={activeTab}
-            handleTabClick={handleTabClick}
-            isTranslateSwitchActive={isTranslateSwitchActive}
-            handleTranslationSwitchToggle={handleTranslationSwitchToggle}
-        />
+      <HeaderButtons
+        activeTab={activeTab}
+        handleTabClick={handleTabClick}
+        isTranslateSwitchActive={isTranslateSwitchActive}
+        handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+      />
       <div className='dashboard_content_wrapper'>
-          <Sidebar />
+        <Sidebar />
         <div className='dashboard_content'>
           <div className='dashboard_body_cont'>
             <div className='dashboard_card_cont'>
@@ -202,7 +205,8 @@ const Dashboard = () => {
                   <div className='dashboard_custom-card-content'>
                     <p className='dashboard_text1'>{translate('sales', language)}</p>
                     <p className='dashboard_numTxt'>
-                      {formatNumberWithCommas(totalSales)}&nbsp;<span className='dashboard_totalTxt'>{translate('yen', language)}</span>
+                      {formatNumberWithCommas(totalSales)}&nbsp;
+                      <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
                     </p>
                     <p className='dashboard_text2'>{translate('total', language)}</p>
                   </div>
@@ -217,7 +221,8 @@ const Dashboard = () => {
                   <div className='dashboard_custom-card-content'>
                     <p className='dashboard_text1'>{translate('operatingIncome', language)}</p>
                     <p className='dashboard_numTxt'>
-                      {formatNumberWithCommas(totalOperatingProfit)}&nbsp;<span className='dashboard_totalTxt'>{translate('yen', language)}</span>
+                      {formatNumberWithCommas(totalOperatingProfit)}&nbsp;
+                      <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
                     </p>
                     <p className='dashboard_text2'>{translate('total', language)}</p>
                   </div>
@@ -250,7 +255,8 @@ const Dashboard = () => {
                   <div className='dashboard_custom-card-content'>
                     <p className='dashboard_text1'>{translate('grossProfit', language)}</p>
                     <p className='dashboard_numTxt'>
-                      {formatNumberWithCommas(totalGrossProfit)}&nbsp;<span className='dashboard_totalTxt'>{translate('yen', language)}</span>
+                      {formatNumberWithCommas(totalGrossProfit)}&nbsp;
+                      <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
                     </p>
                     <p className='dashboard_text2'>{translate('total', language)}</p>
                   </div>
@@ -265,7 +271,8 @@ const Dashboard = () => {
                   <div className='dashboard_custom-card-content'>
                     <p className='dashboard_text1'>{translate('cumulativeOrdinaryIncome', language)}</p>
                     <p className='dashboard_numTxt'>
-                      {formatNumberWithCommas(totalNetProfitPeriod)}&nbsp;<span className='dashboard_totalTxt'>{translate('yen', language)}</span>
+                      {formatNumberWithCommas(totalNetProfitPeriod)}&nbsp;
+                      <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
                     </p>
                     <p className='dashboard_text2'>{translate('total', language)}</p>
                   </div>
@@ -295,28 +302,28 @@ const Dashboard = () => {
             </div>
           </div>
           <div className='dashboard_bottom_cont'>
-            <div className="dashboard_right-content">
-              <div className="dashboard_paginate">
-                <p className="dashboard_pl-label">{translate('displayByProject', language)}</p>
-                  <label className="dashboard_switch">
-                    <input type="checkbox" checked={isSwitchActive} onChange={handleSwitchToggle} />
-                      <span className="dashboard_slider"></span>
-                    </label>
-                      <p className="dashboard_pl-label">{translate('thousandYen', language)}</p>
-                      <label className="dashboard_switch">
-                        <input type="checkbox" checked={isThousandYenChecked} onChange={handleThousandYenToggle} />
-                        <span className="dashboard_slider"></span>
-                      </label>
-                </div>
+            <div className='dashboard_right-content'>
+              <div className='dashboard_paginate'>
+                <p className='dashboard_pl-label'>{translate('displayByProject', language)}</p>
+                <label className='dashboard_switch'>
+                  <input type='checkbox' checked={isSwitchActive} onChange={handleSwitchToggle} />
+                  <span className='dashboard_slider'></span>
+                </label>
+                <p className='dashboard_pl-label'>{translate('thousandYen', language)}</p>
+                <label className='dashboard_switch'>
+                  <input type='checkbox' checked={isThousandYenChecked} onChange={handleThousandYenToggle} />
+                  <span className='dashboard_slider'></span>
+                </label>
               </div>
+            </div>
             <div className='dashboard_tbl_cont'>
-                  <div className={`dashboard_table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
-                          {/* Render the TablePlanning component here */}
-                          <TablePlanningA isThousandYenChecked={isThousandYenChecked}/>
-                  </div>
-                  <div className={`dashboard_table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
-                    <TablePlanningB data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
-                  </div>
+              <div className={`dashboard_table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
+                {/* Render the TablePlanning component here */}
+                <TablePlanningA isThousandYenChecked={isThousandYenChecked} />
+              </div>
+              <div className={`dashboard_table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
+                <TablePlanningB data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
+              </div>
             </div>
           </div>
         </div>
