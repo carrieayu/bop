@@ -863,7 +863,7 @@ class ForgotPasswordView(generics.CreateAPIView):
         # Send password reset email
         subject = _('Password Reset Request')
         message = _('Please click the link below to reset your password:\n\n') + reset_url
-        from_email = 'MS_zAbrXd@trial-o65qngkpyq3lwr12.mlsender.net'  # Update with your email
+        from_email = 'shininoue81@gmail.com'  # Update with your email
         recipient_list = [email]
         
         send_mail(subject, message, from_email, recipient_list)
