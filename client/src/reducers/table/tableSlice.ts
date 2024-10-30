@@ -8,8 +8,8 @@ const initialState = {
 }
 
 export const fetchAllClientData = createAsyncThunk('', async () => {
-  // return await api.get<TableEntity[]>(`http://127.0.0.1:8000/api/projects/`).then((res) => {
-    return await api.get<TableEntity[]>(`http://54.178.202.58:8000/api/projects/`).then((res) => {
+  return await api.get<TableEntity[]>(`http://127.0.0.1:8000/api/projects/`).then((res) => {
+    // return await api.get<TableEntity[]>(`http://54.178.202.58:8000/api/projects/`).then((res) => {
     return res.data.map((data) => new TableEntity(data))
   })
 })
