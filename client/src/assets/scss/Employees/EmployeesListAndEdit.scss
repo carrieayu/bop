@@ -147,6 +147,7 @@
                                     &:nth-child(even){
                                         background-color: #e0e0e0;
                                     }
+                            
                                     .EmployeesListAndEdit_table_body_content_vertical{
                                         border: 1px solid  #d0cdcd;
                                         width: 100%;
@@ -155,8 +156,15 @@
                                         .edit_input{
                                             width: 100px;
                                         }
+                                        .not-editable{
+                                            background-color: #EFEEEC;
+                                            width: 80px;
+                                        }
                                         .edit_select{
                                             width: 100px;
+                                        }
+                                        .email{
+                                            width: 160px;
                                         }
                                         .delete-icon{
                                             color: red;
@@ -165,9 +173,6 @@
                                     }
                                 }
                             }
-                            .type{
-                             width: 60px !important;
-                             }
                         }
                         .is-editing{
                             width: 110%;
