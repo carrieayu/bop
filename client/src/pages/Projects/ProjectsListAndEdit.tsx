@@ -9,7 +9,7 @@ import ListButtons from "../../components/ListButtons/ListButtons";
 import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
 import { useDispatch } from 'react-redux'
 import { UnknownAction } from 'redux'
-import { fetchBusinessDivisions } from "../../reducers/businessDivisions/businessDivisionsSlice";
+import { fetchBusinessDivisions } from "../../reducers/businessdivisions/businessdivisionsSlice";
 import { fetchMasterClient } from "../../reducers/client/clientSlice";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import AlertModal from "../../components/AlertModal/AlertModal";
