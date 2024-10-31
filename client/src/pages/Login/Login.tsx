@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux'
 import { login } from '../../reducers/user/userSlice'
 import { fetchApi } from '../../components/Localhost/Localhost'
 import { jwtDecode } from "jwt-decode";
+import { FaEyeSlash } from "react-icons/fa6";
 
 interface LoginFormProps {
   onSubmit: (data: LoginData) => void;
@@ -20,6 +21,7 @@ const Login = ({ onSubmit }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const dispatch = useDispatch();
+  const [isVisible, setIsVisible] = useState(false)
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -59,6 +61,14 @@ const Login = ({ onSubmit }) => {
     }
     
   };
+
+  const toggleVisible = (event) => {
+    event.preventDefault()
+    
+    setIsVisible((prevState) => 
+      !prevState
+    )
+  }
   
   return (
       <div className='container'>
@@ -101,15 +111,18 @@ const Login = ({ onSubmit }) => {
                       <label htmlFor='password' className='label'>
                         Password
                       </label>
-                      <input type='password' 
+                    <input
+                        type={isVisible ? 'text' : 'password'}
                         className='input' 
                         placeholder='*******'
                         value={password}
                         onChange={(e)=>setPassword(e.target.value)}
-                      />
+                    />
+                    <button onClick={toggleVisible}>
                       <span className='icon is-medium is-right'>
-                        <FaEye />
+                       {isVisible ? <FaEye /> : <FaEyeSlash/>}
                       </span>
+                    </button>
                     </p>
                   </div>
                   <div className='field'>
