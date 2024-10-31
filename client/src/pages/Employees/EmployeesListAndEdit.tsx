@@ -137,6 +137,14 @@ const EmployeesListAndEdit: React.FC = () => {
       const previousEmployee = prevState[index].employee
       const updatedEmployee = { ...previousEmployee, [name]: value }
 
+      // Calculate non-editable fields based on type and salary or executive_renumeration
+      if (name === 'salary' || name === 'executive_renumeration') {
+        const baseValue = name === 'salary' ? Number(value) : Number(updatedEmployee.executive_renumeration)
+        updatedEmployee.statutory_welfare_expense = (baseValue * 0.1451).toFixed(2).toString()
+        updatedEmployee.welfare_expense = (baseValue * 0.0048).toFixed(2).toString()
+        updatedEmployee.insurance_premium = (baseValue * 0.0224).toFixed(2).toString()
+      }
+
       const changes = {}
 
       for (const key in updatedEmployee) {
@@ -144,6 +152,7 @@ const EmployeesListAndEdit: React.FC = () => {
           changes[key] = updatedEmployee[key]
         }
       }
+
       updatedEmployeeData[index] = {
         ...updatedEmployeeData[index],
         employee: updatedEmployee,
@@ -583,7 +592,7 @@ const EmployeesListAndEdit: React.FC = () => {
                                   {translate('businessDivision', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('bonus', language)}・ {translate('fuelAllowance', language)}
+                                  {translate('bonusAndFuelAllowance', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
                                   {translate('statutoryWelfareExpense', language)}
@@ -651,7 +660,7 @@ const EmployeesListAndEdit: React.FC = () => {
                                     </td>
                                     <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
                                       <input
-                                        className='edit_input'
+                                        className='edit_input email'
                                         type='text'
                                         name='email'
                                         value={employee.email}
@@ -714,42 +723,34 @@ const EmployeesListAndEdit: React.FC = () => {
                                         className='edit_input'
                                         type='number'
                                         name='bonus_and_fuel_allowance'
-                                        value={employee.bonus_and_fuel_allowance}
+                                        value={employee.bonus_and_fuel_allowance || ''}
                                         onChange={(e) => handleChange(employeeIndex, e)}
                                       />
                                     </td>
 
                                     <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
                                       <input
+                                        className='not-editable'
                                         type='text'
                                         name='statutory_welfare_expense'
-                                        value={
-                                          (employee.statutory_welfare_expense =
-                                            employee.type === '0'
-                                              ? (Number(employee.salary) * 0.1451).toFixed(2).toString()
-                                              : (Number(employee.executive_renumeration) * 0.1451).toFixed(2).toString())
-                                        }
+                                        value={employee.statutory_welfare_expense || ''}
                                         onChange={(e) => handleStatutoryWelfare(employeeIndex, e)}
                                         readOnly
                                       />
                                     </td>
                                     <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
                                       <input
+                                        className='not-editable'
                                         type='text'
                                         name='welfare_expense'
-                                        value={
-                                          (employee.welfare_expense =
-                                            employee.type === '0'
-                                              ? (Number(employee.salary) * 0.0048).toFixed(2).toString()
-                                              : (Number(employee.executive_renumeration) * 0.0048).toFixed(2).toString())
-                                        }
+                                        value={employee.welfare_expense || ''}
                                         onChange={(e) => handleStatutoryWelfare(employeeIndex, e)}
                                         readOnly
                                       />
                                     </td>
                                     <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
                                       <input
-                                        className='edit_input'
+                                        className='not-editable'
                                         type='number'
                                         name='insurance_premium'
                                         value={employee.insurance_premium || ''}
@@ -807,7 +808,7 @@ const EmployeesListAndEdit: React.FC = () => {
                                 {translate('businessDivision', language)}
                               </th>
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                {translate('bonus', language)}・ {translate('fuelAllowance', language)}
+                                {translate('bonusAndFuelAllowance', language)}
                               </th>
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
                                 {translate('statutoryWelfareExpense', language)}
