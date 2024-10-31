@@ -656,7 +656,7 @@ const EmployeesListAndEdit: React.FC = () => {
                                     </td>
                                     <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
                                       <input
-                                        className='edit_input'
+                                        className='edit_input email'
                                         type='text'
                                         name='email'
                                         value={employee.email}

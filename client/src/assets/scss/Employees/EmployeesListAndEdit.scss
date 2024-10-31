@@ -158,9 +158,13 @@
                                         }
                                         .not-editable{
                                             background-color: #EFEEEC;
+                                            width: 80px;
                                         }
                                         .edit_select{
                                             width: 100px;
+                                        }
+                                        .email{
+                                            width: 160px;
                                         }
                                         .delete-icon{
                                             color: red;
@@ -169,9 +173,6 @@
                                     }
                                 }
                             }
-                            .type{
-                             width: 60px !important;
-                             }
                         }
                         .is-editing{
                             width: 110%;
