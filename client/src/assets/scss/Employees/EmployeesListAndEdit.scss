@@ -147,6 +147,7 @@
                                     &:nth-child(even){
                                         background-color: #e0e0e0;
                                     }
+                            
                                     .EmployeesListAndEdit_table_body_content_vertical{
                                         border: 1px solid  #d0cdcd;
                                         width: 100%;
@@ -154,6 +155,9 @@
                                         width: 140px;
                                         .edit_input{
                                             width: 100px;
+                                        }
+                                        .not-editable{
+                                            background-color: #EFEEEC;
                                         }
                                         .edit_select{
                                             width: 100px;

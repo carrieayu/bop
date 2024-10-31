@@ -542,17 +542,13 @@ const EmployeesRegistration = () => {
                             <div className='EmployeesRegistration_no_selection-div'>
                               <label className='no-selection-label'>{translate('noSelection', language)}</label>
                               <input
-                                // type='number'
-                                // name=''
-                                // value= {null} // NO VALUE
-                                // onChange={(e) => handleInputChange(containerIndex, null, e)}
-                                disabled={true} // Disabled e
+                                disabled={true} // Disabled 
                               />
                             </div>
                           )}
                           <div className='EmployeesRegistration_bonus_and_fuel_allowance-div'>
                             <label className='bonus_and_fuel_allowance'>
-                              {translate('bonus', language)}・{translate('fuelAllowance', language)}
+                              {translate('bonusAndFuelAllowance', language)}
                             </label>
                             <input
                               type='number'
@@ -566,8 +562,14 @@ const EmployeesRegistration = () => {
                             <input
                               type='number'
                               name='insurance_premium'
-                              value={container.insurance_premium}
+                              value={
+                                (container.insurance_premium =
+                                  container.type === '0'
+                                    ? (Number(container.salary) * 0.0224).toFixed(2).toString()
+                                    : (Number(container.executive_renumeration) * 0.0224).toFixed(2).toString())
+                              }
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
+                              readOnly
                             />
                           </div>
                         </div>
