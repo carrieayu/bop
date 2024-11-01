@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
-import { fetchBusinessDivisions } from '../../reducers/businessdivisions/businessdivisionsSlice'
+import { fetchBusinessDivisions } from '../../reducers/businessDivisions/businessDivisionsSlice'
 import { useDispatch } from 'react-redux'
 import { UnknownAction } from 'redux'
 import { fetchMasterCompany } from '../../reducers/company/companySlice'
@@ -110,10 +110,10 @@ const EmployeesRegistration = () => {
     const fetchBusinessDivisionsForCompany = async () => {
       if (selectedCompanyId) {
         try {
-          // const response = await axios.get(
-          //   `http://127.0.0.1:8000/api/business-divisions?company_id=${selectedCompanyId}`,
-          // )
-          const response = await axios.get(`http://54.178.202.58:8000/api/business-divisions?company_id=${selectedCompanyId}`, )
+          const response = await axios.get(
+            `http://127.0.0.1:8000/api/business-divisions?company_id=${selectedCompanyId}`,
+          )
+          // const response = await axios.get(`http://54.178.202.58:8000/api/business-divisions?company_id=${selectedCompanyId}`, )
           setBusinessDivisionSelection(response.data) // Update business divisions based on selected company
         } catch (error) {
           console.error('Error fetching business divisions:', error)
@@ -133,8 +133,8 @@ const EmployeesRegistration = () => {
 
     try {
       // Fetch business divisions based on the selected company ID
-      // const response = await axios.get(`http://127.0.0.1:8000/api/business-divisions/?company_id=${companyId}`)
-      const response = await axios.get(`http://54.178.202.58:8000/api/business-divisions/?company_id=${companyId}`)
+      const response = await axios.get(`http://127.0.0.1:8000/api/business-divisions/?company_id=${companyId}`)
+      // const response = await axios.get(`http://54.178.202.58:8000/api/business-divisions/?company_id=${companyId}`)
       const divisions = response.data // Assuming your API returns an array of divisions
 
       setBusinessDivisionSelection(divisions) // Update businessDivisionSelection with fetched divisions
@@ -311,8 +311,8 @@ const EmployeesRegistration = () => {
         
         const token = localStorage.getItem('accessToken')
         try {
-          // const response = await axios.post('http://127.0.0.1:8000/api/employees/create', employeeData, {
-            const response = await axios.post('http://54.178.202.58:8000/api/employees/create', employeeData, {
+          const response = await axios.post('http://127.0.0.1:8000/api/employees/create', employeeData, {
+            // const response = await axios.post('http://54.178.202.58:8000/api/employees/create', employeeData, {
             headers: {
               Authorization: `Bearer ${token}`, // Add token to request headers
             },

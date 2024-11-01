@@ -7,7 +7,7 @@ import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
-import { fetchBusinessDivisions } from '../../reducers/businessdivisions/businessdivisionsSlice'
+import { fetchBusinessDivisions } from '../../reducers/businessDivisions/businessDivisionsSlice'
 import { UnknownAction } from 'redux'
 import { useDispatch } from 'react-redux'
 import { fetchMasterClient } from '../../reducers/client/clientSlice'
@@ -274,8 +274,8 @@ const ProjectsRegistration = () => {
   
     try {
       // Attempt to create a new entry
-      // const response = await axios.post('http://127.0.0.1:8000/api/projects/create/', projectsData, {
-      const response = await axios.post('http://54.178.202.58:8000/api/projects/create/', projectsData, {
+      const response = await axios.post('http://127.0.0.1:8000/api/projects/create/', projectsData, {
+      // const response = await axios.post('http://54.178.202.58:8000/api/projects/create/', projectsData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -393,8 +393,8 @@ const ProjectsRegistration = () => {
   
     const token = localStorage.getItem('accessToken');
     try {
-      // const overwriteResponse = await axios.put('http://127.0.0.1:8000/api/projects/create/', projectsData, {
-      const overwriteResponse = await axios.put('http://54.178.202.58:8000/api/projects/create/', projectsData, {
+      const overwriteResponse = await axios.put('http://127.0.0.1:8000/api/projects/create/', projectsData, {
+      // const overwriteResponse = await axios.put('http://54.178.202.58:8000/api/projects/create/', projectsData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',

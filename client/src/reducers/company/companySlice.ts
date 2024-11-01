@@ -9,8 +9,8 @@ const initialState = {
 
 export const fetchMasterCompany = createAsyncThunk('master-company/fetch', async () => {
   try {
-    // const response = await api.get<MasterCompanyEntity[]>('http://127.0.0.1:8000/api/master-companies/')
-    const response = await api.get<MasterCompanyEntity[]>('http://54.178.202.58:8000/api/master-companies/')
+    const response = await api.get<MasterCompanyEntity[]>('http://127.0.0.1:8000/api/master-companies/')
+    // const response = await api.get<MasterCompanyEntity[]>('http://54.178.202.58:8000/api/master-companies/')
     return response.data.map((data) => new MasterCompanyEntity(data))
   } catch (error) {
     console.error('Error fetching master company', error)
