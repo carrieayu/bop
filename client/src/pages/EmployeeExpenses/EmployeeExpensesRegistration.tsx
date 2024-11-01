@@ -132,8 +132,8 @@ const EmployeeExpensesRegistration = () => {
           },
         });
         setEmployees(employeeResponse.data);
-        const projectResponse = await axios.get('http://127.0.0.1:8000/api/projects/', {
-        // const projectResponse = await axios.get('http://54.178.202.58:8000/api/projects/', {
+        const projectResponse = await axios.get('http://127.0.0.1:8000/api/projects/list/', {
+        // const projectResponse = await axios.get('http://54.178.202.58:8000/list/', {
           headers: { 
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`

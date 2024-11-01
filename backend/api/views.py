@@ -63,16 +63,16 @@ from django.utils import timezone
 from django.db.models import Max
 
 # Create your views here.
-class CreateUserView(generics.CreateAPIView):
+class UsersCreate(generics.CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
-class UserList(generics.ListAPIView):
+class UsersList(generics.ListAPIView):
     queryset = AuthUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
-class DeleteUser(generics.DestroyAPIView):
+class UsersDelete(generics.DestroyAPIView):
         queryset = AuthUser.objects.all()
         permission_classes = [AllowAny]
 
@@ -90,7 +90,7 @@ class DeleteUser(generics.DestroyAPIView):
             except:
                 return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
 
-class UserUpdate(generics.UpdateAPIView):
+class UsersUpdate(generics.UpdateAPIView):
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
     queryset = AuthUser.objects.all()
@@ -220,22 +220,24 @@ class EmployeesUpdate(generics.UpdateAPIView):
                 return Response({'error': 'Email already exists.'}, status=409)
             return Response({'error': str(e)}, status=400)
 
-class MasterCompanyList(generics.ListAPIView):
+class MasterCompaniesList(generics.ListAPIView):
     queryset = MasterCompany.objects.all()
     serializer_class = MasterCompanySerializers
     permission_classes = [AllowAny]
-class CreateMasterCompany(generics.CreateAPIView):
+class MasterCompaniesCreate(generics.CreateAPIView):
     serializer_class = MasterCompanySerializers
     permission_classes = [AllowAny]
 
 # CRUD for BusinessDivisionMaster
 
-class MasterBusinessDivisionList(generics.ListAPIView):
+class MasterBusinessDivisionsList(generics.ListAPIView):
     queryset = MasterBusinessDivision.objects.all()
     serializer_class = MasterBusinessDivisionSerializer
     permission_classes = [AllowAny]
-    
-class CompaniesWithBusinessDivisions(generics.ListAPIView):
+
+# In "Employees List And Edit Screen" [Edit Mode]:
+# Retrieve Business Divisions Connected to Company Selected in [会社名・Company_Name] Pulldown.
+class BusinessDivisionsOfCompany(generics.ListAPIView):
     permission_classes = [AllowAny]
     
     def get(self, request):
@@ -248,7 +250,7 @@ class CompaniesWithBusinessDivisions(generics.ListAPIView):
         # If no company_id is passed, return an empty list
         return JsonResponse([], safe=False)  
     
-class BusinessDivisionMasterCreate(generics.CreateAPIView):
+class MasterBusinessDivisionsCreate(generics.CreateAPIView):
     serializer_class = MasterBusinessDivisionSerializer
     permission_classes = [IsAuthenticated]
 
@@ -310,7 +312,8 @@ class BusinessDivisionMasterCreate(generics.CreateAPIView):
                         status=status.HTTP_201_CREATED)
 
         
-class BusinessDivisionMasterRetrieve(
+# -- NOT IN USE --
+class MasterBusinessDivisionsRetrieve(
     generics.RetrieveAPIView
 ):
     serializer_class = MasterBusinessDivisionSerializer
@@ -318,8 +321,10 @@ class BusinessDivisionMasterRetrieve(
 
     def get_queryset(self):
         return MasterBusinessDivision.objects.all()
+# -- END: NOT IN USE --
+
     
-class MasterBusinessDivisionUpdate(generics.UpdateAPIView):
+class MasterBusinessDivisionsUpdate(generics.UpdateAPIView):
     queryset = MasterBusinessDivision.objects.all()
     serializer_class = MasterBusinessDivisionSerializer
     permission_classes = [IsAuthenticated]
@@ -344,7 +349,7 @@ class MasterBusinessDivisionUpdate(generics.UpdateAPIView):
                 return Response({'error': 'Business Division already exists.'}, status=409)
             return Response({'error': str(e)}, status=400)
 
-class MasterBusinessDivisionDestroy(generics.DestroyAPIView):
+class MasterBusinessDivisionsDelete(generics.DestroyAPIView):
     queryset = MasterBusinessDivision.objects.all()
     permission_classes = [AllowAny]
 
@@ -364,7 +369,7 @@ class MasterBusinessDivisionDestroy(generics.DestroyAPIView):
 
 
 # CRUD for ClientMaster
-class MasterClientList(generics.ListAPIView):
+class MasterClientsList(generics.ListAPIView):
     serializer_class = MasterClientSerializer
     permission_classes = [IsAuthenticated]
 
@@ -372,7 +377,7 @@ class MasterClientList(generics.ListAPIView):
         return MasterClient.objects.all()
 
     
-class MasterClientCreate(generics.CreateAPIView):
+class MasterClientsCreate(generics.CreateAPIView):
     queryset = MasterClient.objects.all()
     serializer_class = MasterClientCreateSerializer
     permission_classes = [IsAuthenticated]
@@ -420,16 +425,16 @@ class MasterClientCreate(generics.CreateAPIView):
         return Response({"message": "Clients Created", "data": created_clients},
                         status=status.HTTP_201_CREATED)
 
-
-class MasterClientRetrieve(generics.RetrieveAPIView):
+# -- NOT IN USE --
+class MasterClientsRetrieve(generics.RetrieveAPIView):
     serializer_class = MasterClientSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return MasterClient.objects.all()
-
+# -- END: NOT IN USE --
    
-class MasterClientUpdate(generics.UpdateAPIView):
+class MasterClientsUpdate(generics.UpdateAPIView):
     queryset = MasterClient.objects.all()
     serializer_class = MasterClientUpdateSerializer
     permission_classes = [IsAuthenticated]
@@ -457,7 +462,7 @@ class MasterClientUpdate(generics.UpdateAPIView):
                 return Response({'error': 'Client name already exists.'}, status=409)
             return Response({'error': str(e)}, status=400)
     
-class MasterClientDelete(generics.DestroyAPIView):
+class MasterClientsDelete(generics.DestroyAPIView):
     queryset = MasterClient.objects.all()
     serializer_class = MasterClientSerializer
     permission_classes = [AllowAny]
@@ -477,7 +482,7 @@ class MasterClientDelete(generics.DestroyAPIView):
             return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
 
 
-class UpdateMasterCompany(generics.UpdateAPIView):
+class MasterCompaniesUpdate(generics.UpdateAPIView):
     serializer_class = UpdateMasterCompanySerializers
     permission_classes = [IsAuthenticated]
 
@@ -493,7 +498,7 @@ class UpdateMasterCompany(generics.UpdateAPIView):
         return Response({"message": "data updated !!!"}, status=status.HTTP_200_OK)
 
 
-class DeleteMasterCompany(generics.DestroyAPIView):
+class MasterCompaniesDelete(generics.DestroyAPIView):
     queryset = MasterCompany.objects.all()
     permission_classes = [IsAuthenticated]
 
@@ -512,12 +517,12 @@ class DeleteMasterCompany(generics.DestroyAPIView):
             return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
 
 
-class ResultsLists(generics.ListAPIView):
+class ResultsList(generics.ListAPIView):
     queryset = Results.objects.all()
     serializer_class = ResultListsSerializer
     permission_classes = [IsAuthenticated]
     
-class CreateResults(generics.CreateAPIView):
+class ResultsCreate(generics.CreateAPIView):
     serializer_class = CreateResultsSerializers
     permission_classes = [IsAuthenticated]
 
@@ -530,7 +535,7 @@ class CreateResults(generics.CreateAPIView):
         )
 
 
-class UpdateResults(generics.UpdateAPIView):
+class ResultsUpdate(generics.UpdateAPIView):
     serializer_class = UpdateResultsSerializers
     permission_classes = [IsAuthenticated]
 
@@ -548,7 +553,7 @@ class UpdateResults(generics.UpdateAPIView):
         )
 
 
-class DeleteResults(generics.DestroyAPIView):
+class ResultsDelete(generics.DestroyAPIView):
     queryset = Results.objects.all()
     permission_classes = [IsAuthenticated]
 
@@ -841,7 +846,7 @@ class StoreProjects(generics.CreateAPIView):
                 return Response(planning_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response({'message': 'Project Planning Data created successfully'}, status=status.HTTP_201_CREATED)
 
-class ForgotPasswordView(generics.CreateAPIView):
+class PasswordForgotView(generics.CreateAPIView):
     permission_classes = [AllowAny]
     
     def post(self, request):
@@ -946,7 +951,7 @@ class EmployeeExpensesList(generics.ListAPIView):
         return Response(employee_expenses_data)
 
 
-class EmployeeDetailView(generics.ListAPIView):
+class EmployeesEdit(generics.ListAPIView):
     permission_classes = [AllowAny]
     queryset = EmployeesApi.objects.all()
     serializer_class = EmployeesListSerializer
@@ -983,12 +988,12 @@ class EmployeeDetailView(generics.ListAPIView):
         
         return JsonResponse(employee_data, safe=False)
       
-class Employees(generics.ListAPIView):
+class EmployeesList(generics.ListAPIView):
     queryset = EmployeesApi.objects.all()
     serializer_class = EmployeesListSerializer
     permission_classes = [IsAuthenticated]
     
-class CreateEmployeeExpenses(generics.CreateAPIView):
+class EmployeeExpensesCreate(generics.CreateAPIView):
     serializer_class = EmployeeExpensesDataSerializer
     permission_classes = [IsAuthenticated]
 
@@ -1082,7 +1087,7 @@ class CreateEmployeeExpenses(generics.CreateAPIView):
 
     
 
-class DeleteEmployeeExpenses(generics.DestroyAPIView):
+class EmployeeExpensesDelete(generics.DestroyAPIView):
     serializer_class = EmployeeExpensesDataSerializer
     permission_classes = [IsAuthenticated]
 
@@ -1120,7 +1125,7 @@ class DeleteEmployeeExpenses(generics.DestroyAPIView):
             return Response({"message": "All employee expenses for this employee deleted successfully"}, status=status.HTTP_200_OK)
 
     
-class Planning(generics.ListAPIView):
+class PlanningList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
         expenses = Expenses.objects.all()
