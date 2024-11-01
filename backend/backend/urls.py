@@ -71,7 +71,7 @@ urlpatterns = [
     path('api/employees/update/', EmployeesUpdate.as_view(), name = 'employees-update'),
     path('api/employees/<int:pk>/delete/', EmployeesDelete.as_view(), name = 'employees-delete'),
     # Filters the EmployeeBusinessDivision in Edit Mode on List Screen
-    path('api/employees/edit/',  EmployeesEdit.as_view(), name = 'employees-edit'), #used for filtering business divisions when on edit mode
+    path('api/employees/edit/',  EmployeesEdit.as_view(), name = 'employees-edit'), # used for filtering business divisions when on edit mode
     
      # Users
     path("api/users/list/", UsersList.as_view(), name="users-list"), #LIST

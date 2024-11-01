@@ -124,8 +124,8 @@ const EmployeeExpensesRegistration = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const employeeResponse = await axios.get('http://127.0.0.1:8000/api/employees', {
-        // const employeeResponse = await axios.get('http://54.178.202.58:8000/api/employees', {
+        const employeeResponse = await axios.get('http://127.0.0.1:8000/api/employees/list/', {
+        // const employeeResponse = await axios.get('http://54.178.202.58:8000/api/employees/list/', {
           headers: { 
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
