@@ -15,9 +15,9 @@ urlpatterns = [
     
     # Master Clients
     path("master-clients/list/", views.MasterClientsList.as_view(), name="master-clients-list"),
-    path("master-client/create/", views.MasterClientsCreate.as_view(), name="master-clients-create"),
+    path("master-clients/create/", views.MasterClientsCreate.as_view(), name="master-clients-create"),
     # NOT IN USE
     # path("master-client/<int:pk>/", views.MasterClientRetrieve.as_view(), name="master-client-detail"),
-    path("master-client/update/", views.MasterClientsUpdate.as_view(), name="master-clients-update"),
-    path("master-client/<int:pk>/delete/", views.MasterClientsDelete.as_view(), name="master-clients-delete"),
+    path("master-clients/update/", views.MasterClientsUpdate.as_view(), name="master-clients-update"),
+    path("master-clients/<int:pk>/delete/", views.MasterClientsDelete.as_view(), name="master-clients-delete"),
 ]
