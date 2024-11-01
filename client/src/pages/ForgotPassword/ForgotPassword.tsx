@@ -13,8 +13,8 @@ const ForgotPassword = () => {
     setLoading(true);
     setError(null);
     try {
-      // const response = await axios.post('http://127.0.0.1:8000/api/forgot-password/', { email });
-      const response = await axios.post('http://54.178.202.58:8000/api/forgot-password/', { email });
+      const response = await axios.post('http://127.0.0.1:8000/api/forgot-password/', { email });
+      // const response = await axios.post('http://54.178.202.58:8000/api/forgot-password/', { email });
       setSuccessMessage(response.data.message);
     } catch (error) {
       setError(error.response.data.message);

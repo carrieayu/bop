@@ -16,8 +16,8 @@ interface PersonnelState {
   };
 
 export const fetchPersonnelData = createAsyncThunk('',async () => {
-    // const response = await fetch('http://127.0.0.1:8000/api/fetch-personnel/');
-    const response = await fetch('http://54.178.202.58:8000/api/fetch-personnel/');
+    const response = await fetch('http://127.0.0.1:8000/api/fetch-personnel/');
+    // const response = await fetch('http://54.178.202.58:8000/api/fetch-personnel/');
     const data = await response.json();
     return data;
 });

@@ -16,8 +16,8 @@ const EditTablePlanning = () => {
       return
     }
     axios
-      // .get('http://127.0.0.1:8000/api/planning/all/', {
-        axios.get('http://54.178.202.58:8000/api/planning/all/', {
+      .get('http://127.0.0.1:8000/api/planning/all/', {
+        // axios.get('http://54.178.202.58:8000/api/planning/all/', {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -870,8 +870,8 @@ const EditTablePlanning = () => {
     }
 
     try {
-      // const response = await axios.put('http://127.0.0.1:8000/api/planning/update/', changedData, {
-        const response = await axios.put('http://54.178.202.58:8000/api/planning/update/',  changedData ,{
+      const response = await axios.put('http://127.0.0.1:8000/api/planning/update/', changedData, {
+        // const response = await axios.put('http://54.178.202.58:8000/api/planning/update/',  changedData ,{
         headers: {
           Authorization: `Bearer ${token}`,
         },

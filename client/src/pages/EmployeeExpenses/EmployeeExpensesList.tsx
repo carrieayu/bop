@@ -114,8 +114,8 @@ const EmployeeExpensesList: React.FC = () => {
           }
 
           try {
-              // const response = await axios.get('http://127.0.0.1:8000/api/employee-expenses/', {
-              const response = await axios.get('http://54.178.202.58:8000/api/employee-expenses/', {
+              const response = await axios.get('http://127.0.0.1:8000/api/employee-expenses/', {
+              // const response = await axios.get('http://54.178.202.58:8000/api/employee-expenses/', {
                   headers: {
                       'Authorization': `Bearer ${token}` // Add token to request headers
                   }
@@ -161,8 +161,8 @@ const EmployeeExpensesList: React.FC = () => {
     const token = localStorage.getItem('accessToken')
     console.log('Token before delete:', token);
     try {
-      // await axios.delete(`http://127.0.0.1:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/`, {
-      await axios.delete(`http://54.178.202.58:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/`, {
+      await axios.delete(`http://127.0.0.1:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/`, {
+      // await axios.delete(`http://54.178.202.58:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/`, {
         headers: {
           'Authorization': `Bearer ${token}`  // Add token to request headers
         }
@@ -190,8 +190,8 @@ const EmployeeExpensesList: React.FC = () => {
     const token = localStorage.getItem('accessToken')
     console.log('Token before delete:', token);
     try {
-      // await axios.delete(`http://127.0.0.1:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/?project_id=${employeeProjectId.project_id}`, {
-      await axios.delete(`http://54.178.202.58:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/?project_id=${employeeProjectId.project_id}`, {
+      await axios.delete(`http://127.0.0.1:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/?project_id=${employeeProjectId.project_id}`, {
+      // await axios.delete(`http://54.178.202.58:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/?project_id=${employeeProjectId.project_id}`, {
         headers: {
           'Authorization': `Bearer ${token}`  // Add token to request headers
         }

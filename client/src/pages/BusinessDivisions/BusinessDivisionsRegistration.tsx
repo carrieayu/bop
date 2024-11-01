@@ -171,8 +171,8 @@ const BusinessDivisionsRegistration = () => {
         }
   
         try {
-          // const response = await axios.post('http://127.0.0.1:8000/api/master-business-division/create', postData, {
-          const response = await axios.post('http://54.178.202.58:8000/api/master-business-division/create', postData, {
+          const response = await axios.post('http://127.0.0.1:8000/api/master-business-division/create', postData, {
+          // const response = await axios.post('http://54.178.202.58:8000/api/master-business-division/create', postData, {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
@@ -216,8 +216,8 @@ const BusinessDivisionsRegistration = () => {
       useEffect(() => {
         const fetchCompany = async () => {
           try{
-            // const response = await axios.get('http://127.0.0.1:8000/api/master-companies/', {
-            const response = await axios.get('http://54.178.202.58:8000/api/master-companies/', {
+            const response = await axios.get('http://127.0.0.1:8000/api/master-companies/', {
+            // const response = await axios.get('http://54.178.202.58:8000/api/master-companies/', {
               headers: { 
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}` 
