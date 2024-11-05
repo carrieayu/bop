@@ -129,7 +129,7 @@ class Projects(models.Model):
     project_id = models.CharField(
         max_length=10, primary_key=True, editable=False
     )
-    project_name = models.CharField(unique=True,max_length=100)
+    project_name = models.CharField(max_length=100)
     project_type = models.CharField(max_length=50, null=True)
     client = models.ForeignKey(
         "MasterClient", on_delete=models.CASCADE, related_name="mst_client"
