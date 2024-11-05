@@ -270,8 +270,8 @@ const ProjectsListAndEdit: React.FC = () => {
         }
 
         try {
-          const response = await axios.get('http://127.0.0.1:8000/api/projects/', {
-            // const response = await axios.get('http://54.178.202.58:8000/api/projects/', {
+          const response = await axios.get('http://127.0.0.1:8000/api/projects/list/', {
+            // const response = await axios.get('http://54.178.202.58:8000/api/projects/list/', {
             headers: {
               Authorization: `Bearer ${token}`, // Add token to request headers
             },

@@ -117,9 +117,8 @@ const EmployeesListAndEdit: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get('http://127.0.0.1:8000/api/master-business-divisions/')
-      // .get('http://54.178.202.58:8000/api/master-business-divisions/')
-      // axios.get(`http://54.178.202.58:8000/api/master-business-divisions/`, {
+      .get('http://127.0.0.1:8000/api/master-master-business-divisions-companies/list/')
+      // .get('http://54.178.202.58:8000/api/master-master-business-divisions-companies/list/')
       .then((response) => {
         setAllBusinessDivisions(response.data)
       })
@@ -177,8 +176,8 @@ const EmployeesListAndEdit: React.FC = () => {
         setEmployeesList(updatedEmployeeData)
 
         axios
-          .get(`http://127.0.0.1:8000/api/business-divisions/?company_id=${value}`)
-          // .get(`http://54.178.202.58:8000/api/business-divisions/?company_id=${value}`)
+          .get(`http://127.0.0.1:8000/api/business-divisions-of-company/?company_id=${value}`)
+          // .get(`http://54.178.202.58:8000/api/business-divisions-of-company/?company_id=${value}`)
           .then((response) => {
             const employeeBusinessDivisions = response.data.filter(
               (division) => division.employee_id === updatedEmployeeData[index].employee_id,
@@ -368,8 +367,8 @@ const EmployeesListAndEdit: React.FC = () => {
     }
 
     try {
-      const url = isEditing ? 'http://127.0.0.1:8000/api/employees/edit/' : 'http://127.0.0.1:8000/api/employees'
-      // const url = isEditing ? 'http://54.178.202.58:8000/api/employees/edit/' : 'http://54.178.202.58:8000/api/employees'
+      const url = isEditing ? 'http://127.0.0.1:8000/api/employees/edit/' : 'http://127.0.0.1:8000/api/employees/list/'
+      // const url = isEditing ? 'http://54.178.202.58:8000/api/employees/edit/' : 'http://54.178.202.58:8000/api/employees/list/'
       const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${token}`, // Add token to request headers
@@ -385,8 +384,8 @@ const EmployeesListAndEdit: React.FC = () => {
       // Update business divisions for each employee
       employeesListWithBusinessSelection.forEach((employee, index) => {
         axios
-          .get(`http://127.0.0.1:8000/api/business-divisions/?company_id=${employee.company_id}`)
-          // .get(`http://54.178.202.58:8000/api/business-divisions/?company_id=${employee.company_id}`)
+          .get(`http://127.0.0.1:8000/api/business-divisions-of-company/?company_id=${employee.company_id}`)
+          // .get(`http://54.178.202.58:8000/api/business-divisions-of-company/?company_id=${employee.company_id}`)
           .then((response) => {
             const employeeBusinessDivisions = response.data.filter(
               (division) => division.employee_id === employee.employee_id,

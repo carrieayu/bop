@@ -45,9 +45,8 @@ const calculateOperatingIncome = (card) => {
 
 const token = localStorage.getItem('accessToken')
 export const fetchGraphData = createAsyncThunk('graphData/fetch', async () => {
-  const response = await api.get<CardEntity[]>(`http://127.0.0.1:8000/api/projects/`, {
-  // const response = await api.get<CardEntity[]>(`http://54.178.202.58:8000/api/projects/`, {
-    // const response = await api.get<CardEntity[]>(`http://54.178.202.58:8000/api/projects/`)
+  const response = await api.get<CardEntity[]>(`http://127.0.0.1:8000/api/projects/list/`, {
+  // const response = await api.get<CardEntity[]>(`http://54.178.202.58:8000/api/project/list/`, {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',

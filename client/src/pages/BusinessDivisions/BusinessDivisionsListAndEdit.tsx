@@ -152,9 +152,9 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
       }
     
       try {
-        const response = await axios.put('http://127.0.0.1:8000/api/master-business-division/bulk-update/', modifiedFields, {
+        const response = await axios.put('http://127.0.0.1:8000/api/master-business-divisions/bulk-update/', modifiedFields, {
       //  const response = await axios.put(
-      //    'http://54.178.202.58:8000/api/master-business-division/bulk-update/',
+      //    'http://54.178.202.58:8000/api/master-business-divisions/bulk-update/',
       //    modifiedFields,
       //    {
            headers: {
@@ -203,8 +203,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
           }
           try {
               // Fetch companies
-              const companyResponse = await axios.get('http://127.0.0.1:8000/api/master-companies/', {
-              // const companyResponse = await axios.get('http://54.178.202.58:8000/api/master-companies/', {
+              const companyResponse = await axios.get('http://127.0.0.1:8000/api/master-companies/list/', {
+              // const companyResponse = await axios.get('http://54.178.202.58:8000/api/master-companies/list/', {
                 // headers: { Authorization: `Bearer ${token}` },
               })
               const companies = companyResponse.data;
@@ -214,8 +214,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
               }, {});
               setCompanyMap(companyMapping);
               // Fetch users
-              const userResponse = await axios.get('http://127.0.0.1:8000/api/user/list/', {
-                // const userResponse = await axios.get('http://54.178.202.58:8000/api/user/list/', {
+              const userResponse = await axios.get('http://127.0.0.1:8000/api/users/list/', {
+                // const userResponse = await axios.get('http://54.178.202.58:8000/api/users/list/', {
                   // headers: { Authorization: `Bearer ${token}` },
                 })
               const users = userResponse.data;
@@ -240,8 +240,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         return
       }
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/master-business-divisions/', {
-          // const response = await axios.get('http://54.178.202.58:8000/api/master-business-divisions/', {
+        const response = await axios.get('http://127.0.0.1:8000/api/master-business-divisions/list/', {
+          // const response = await axios.get('http://54.178.202.58:8000/api/master-business-divisions/list/', {
           headers: {
             Authorization: `Bearer ${token}`, // Add token to request headers
           },
@@ -309,8 +309,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
       }
     
       try {
-        const response = await axios.delete(`http://127.0.0.1:8000/api/master-business-division/${selectedBusiness}/delete/`, {
-          // const response = await axios.delete('http://54.178.202.58:8000/api/master-business-division/${selectedBusiness}/delete/', {
+        const response = await axios.delete(`http://127.0.0.1:8000/api/master-business-divisions/${selectedBusiness}/delete/`, {
+          // const response = await axios.delete('http://54.178.202.58:8000/api/master-business-divisions/${selectedBusiness}/delete/', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
