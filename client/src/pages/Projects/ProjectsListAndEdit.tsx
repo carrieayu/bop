@@ -9,12 +9,12 @@ import ListButtons from "../../components/ListButtons/ListButtons";
 import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
 import { useDispatch } from 'react-redux'
 import { UnknownAction } from 'redux'
-import { fetchBusinessDivisions } from "../../reducers/businessDivisions/businessDivisionsSlice";
+import { fetchBusinessDivisions } from "../../reducers/businessdivisions/businessdivisionsSlice";
 import { fetchMasterClient } from "../../reducers/client/clientSlice";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import AlertModal from "../../components/AlertModal/AlertModal";
 import CrudModal from "../../components/CrudModal/CrudModal";
-
+import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 const ProjectsListAndEdit: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -205,8 +205,7 @@ const ProjectsListAndEdit: React.FC = () => {
     }
 
     try {
-      const response = await axios.put('http://127.0.0.1:8000/api/projects/update/', modifiedFields, {
-        // const response = await axios.put('http://54.178.202.58:8000/api/projects/update/',  modifiedFields ,{
+      const response = await axios.put(`${getReactActiveEndpoint()}/api/projects/update/`, modifiedFields, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -270,8 +269,7 @@ const ProjectsListAndEdit: React.FC = () => {
         }
 
         try {
-          const response = await axios.get('http://127.0.0.1:8000/api/projects/list/', {
-            // const response = await axios.get('http://54.178.202.58:8000/api/projects/list/', {
+          const response = await axios.get(`${getReactActiveEndpoint()}/api/projects/list/`, {
             headers: {
               Authorization: `Bearer ${token}`, // Add token to request headers
             },
@@ -338,8 +336,7 @@ const ProjectsListAndEdit: React.FC = () => {
           return
         }
         try {
-          const response = await axios.delete(`http://127.0.0.1:8000/api/projects/${deleteProjectsId}/delete/`, {
-            // const response = await axios.get(`http://54.178.202.58:8000/api/projects/${deleteProjectsId}/delete/`, {
+          const response = await axios.delete(`${getReactActiveEndpoint()}/api/projects/${deleteProjectsId}/delete/`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

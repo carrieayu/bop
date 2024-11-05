@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { translate } from '../../utils/translationUtil';
-
+import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 interface TablePlanningAProps {
   isThousandYenChecked: boolean;
@@ -20,8 +20,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
       window.location.href = '/login';
       return;
     }
-    axios.get('http://127.0.0.1:8000/api/planning/list/', {
-    // axios.get('http://54.178.202.58:8000/api/planning/list/', {
+    axios.get(`${getReactActiveEndpoint()}/api/planning/list/`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,

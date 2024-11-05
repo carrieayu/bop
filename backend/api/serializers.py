@@ -114,23 +114,6 @@ class MasterClientDeleteSerializer(serializers.ModelSerializer):
             'auth_user',
         ]
 
-# -----------------------------------
-# CHECK: NOT BEING USED 
-# -----------------------------------
-
-# class MasterClientSerializer(serializers.ModelSerializer):
-#      auth_user = serializers.StringRelatedField()
-#      class Meta:
-#         model = MasterClient
-#         fields = [
-#             'client_id',
-#             'client_name',
-#             'created_at',
-#             'updated_at',
-#             'auth_user',
-#         ]
-
-# -----------------------------------
 
 # Master Companies
 class MasterCompaniesListSerializer(serializers.ModelSerializer):
@@ -158,24 +141,8 @@ class ProjectsListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Projects
         fields = '__all__'
-        # fields = [
-        #     "planning_project_name",
-        #     "planning_project_type",
-        #     "planning",
-        #     "sales_revenue",
-        #     "cost_of_goods_sold",
-        #     "dispatched_personnel_expenses",
-        #     "personal_expenses",
-        #     "indirect_personal_expenses",
-        #     "expenses",
-        #     "operating_profit",
-        #     "non_operating_income",
-        #     "ordinary_profit",
-        #     "ordinary_profit_margin"
-        #     ]
 
 class ProjectsCreateSerializer(serializers.ModelSerializer):
-    # client = MasterClientSerializer(source='client_id', read_only=True)
     client = serializers.PrimaryKeyRelatedField(queryset=MasterClient.objects.all())
     class Meta:
         model = Projects
@@ -362,13 +329,7 @@ class ResultsUpdateSerializer(serializers.ModelSerializer):
             "ordinary_profit_margin",
             ]
 
-# --------------------------------------------------------------
-# CHECK: DO NOT KNOW WHAT THESE ARE FOR? DO WE NEED THEM?
-# --------------------------------------------------------------
 
-# -----------------------------------
-# # 1
-# -----------------------------------
 class ClientMasterPlanningProjectDataSerializer(serializers.ModelSerializer):
     # other_planning_data = CreateOtherPlanningSerializers(many=True, read_only=True, source='other_planning')
     class Meta:

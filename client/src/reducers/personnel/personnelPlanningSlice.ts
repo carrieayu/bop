@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import PersonnelPlanningEntity from "../../entity/personnelplanningEntity";
+import { getReactActiveEndpoint } from '../../toggleEndpoint'
 // import personnelSlice from "./personnelSlice";
 
 const initialState = {
@@ -10,14 +11,13 @@ const initialState = {
 
 export const fetchPlanning = createAsyncThunk('personnel/fetchPlanning', async () => {
     const token = localStorage.getItem('accessToken'); // Replace with your actual token
-    const response = await fetch('http://127.0.0.1:8000/api/projects/list/', {
-    // const response = await fetch('http://54.178.202.58:8000/api/projects/list/', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        }
-    });
+    const response = await fetch(`${getReactActiveEndpoint()}/api/projects/list/`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
 
     if (!response.ok) {
         throw new Error('Network response was not ok');

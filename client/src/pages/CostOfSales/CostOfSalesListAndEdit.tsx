@@ -11,7 +11,7 @@ import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
 import AlertModal from "../../components/AlertModal/AlertModal";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import CrudModal from "../../components/CrudModal/CrudModal";
-
+import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 const CostOfSalesList: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -156,8 +156,7 @@ const CostOfSalesList: React.FC = () => {
         return
       }
       try {
-        await axios.put('http://127.0.0.1:8000/api/cost-of-sales/update/', modifiedFields, {
-        // await axios.put('http://54.178.202.58:8000/api/cost-of-sales/update/', modifiedFields, {
+        await axios.put(`${getReactActiveEndpoint()}/api/cost-of-sales/update/`, modifiedFields, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -167,8 +166,7 @@ const CostOfSalesList: React.FC = () => {
         setIsCRUDOpen(true);
         setIsEditing(false);
 
-        const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales/list/')
-        // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales/list/');
+        const response = await axios.get(`${getReactActiveEndpoint()}/api/cost-of-sales/list/`)
         setCostOfSales(response.data)
         setOriginalCostOfSales(response.data)
       } catch (error) {
@@ -199,12 +197,11 @@ const CostOfSalesList: React.FC = () => {
           }
     
           try {
-            const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales/list/', {
-            // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales/list/', {
+            const response = await axios.get(`${getReactActiveEndpoint()}/api/cost-of-sales/list/`, {
               headers: {
-                'Authorization': `Bearer ${token}`  // Add token to request headers
-              }
-            });
+                Authorization: `Bearer ${token}`, // Add token to request headers
+              },
+            })
             setCostOfSales(response.data);
             setOriginalCostOfSales(response.data)
           } catch (error) {
@@ -299,8 +296,7 @@ const CostOfSalesList: React.FC = () => {
     const handleConfirm = async () => {
       const token = localStorage.getItem('accessToken')
       try {
-        await axios.delete(`http://127.0.0.1:8000/api/cost-of-sales/${deleteCostOfSalesId}/delete/`, {
-        // await axios.delete(`http://54.178.202.58:8000/api/cost-of-sales/${deleteCostOfSalesId}/delete/`, {
+        await axios.delete(`${getReactActiveEndpoint()}/api/cost-of-sales/${deleteCostOfSalesId}/delete/`, {
           headers: {
             Authorization: `Bearer ${token}`, // Add token to request headers
           },
@@ -310,8 +306,7 @@ const CostOfSalesList: React.FC = () => {
         setIsCRUDOpen(true);
         setIsEditing(false);
 
-        const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales/list/');
-        // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales/list/');
+        const response = await axios.get(`${getReactActiveEndpoint()}/api/cost-of-sales/list/`)
         setCostOfSales(response.data);
       } catch (error) {
         if (error.response && error.response.status === 401) {
