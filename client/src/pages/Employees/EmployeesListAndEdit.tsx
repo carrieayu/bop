@@ -14,6 +14,7 @@ import { fetchMasterCompany } from "../../reducers/company/companySlice";
 import { useDispatch } from "react-redux";
 import { UnknownAction } from "redux";
 import CrudModal from "../../components/CrudModal/CrudModal";
+import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 const EmployeesListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -74,8 +75,7 @@ const EmployeesListAndEdit: React.FC = () => {
       const resMasterCompany = await dispatch(fetchMasterCompany() as unknown as UnknownAction)
       setCompanySelection(resMasterCompany.payload)
       if (isEditing) {
-        // const response = await axios.get(`http://127.0.0.1:8000/api/employees/edit/`, {
-          const response = await axios.get(`http://54.178.202.58:8000/api/employees/edit/`, {
+        const response = await axios.get(`${getReactActiveEndpoint()}/api/employees/edit/`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
@@ -117,9 +117,7 @@ const EmployeesListAndEdit: React.FC = () => {
 
   useEffect(() => {
     axios
-      // .get('http://127.0.0.1:8000/api/master-business-divisions/')
-      .get('http://54.178.202.58:8000/api/master-business-divisions/')
-      // axios.get(`http://54.178.202.58:8000/api/master-business-divisions/`, {
+      .get(`${getReactActiveEndpoint()}/api/master-master-business-divisions-companies/list/`)
       .then((response) => {
         setAllBusinessDivisions(response.data)
       })
@@ -177,8 +175,7 @@ const EmployeesListAndEdit: React.FC = () => {
         setEmployeesList(updatedEmployeeData)
 
         axios
-          // .get(`http://127.0.0.1:8000/api/business-divisions/?company_id=${value}`)
-          .get(`http://54.178.202.58:8000/api/business-divisions/?company_id=${value}`)
+          .get(`${getReactActiveEndpoint()}/api/business-divisions-of-company/?company_id=${value}`)
           .then((response) => {
             const employeeBusinessDivisions = response.data.filter(
               (division) => division.employee_id === updatedEmployeeData[index].employee_id,
@@ -323,8 +320,7 @@ const EmployeesListAndEdit: React.FC = () => {
       return
     }
     try {
-      // const response = await axios.put('http://127.0.0.1:8000/api/employees/update/', modifiedFields, {
-        const response = await axios.put('http://54.178.202.58:8000/api/employees/update/',  modifiedFields ,{
+      const response = await axios.put(`${getReactActiveEndpoint()}/api/employees/update/`, modifiedFields, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -368,8 +364,7 @@ const EmployeesListAndEdit: React.FC = () => {
     }
 
     try {
-      // const url = isEditing ? 'http://127.0.0.1:8000/api/employees/edit/' : 'http://127.0.0.1:8000/api/employees'
-      const url = isEditing ? 'http://54.178.202.58:8000/api/employees/edit/' : 'http://54.178.202.58:8000/api/employees'
+      const url = isEditing ? `${getReactActiveEndpoint()}/api/employees/edit/` : `${getReactActiveEndpoint()}/api/employees/list/`
       const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${token}`, // Add token to request headers
@@ -385,8 +380,7 @@ const EmployeesListAndEdit: React.FC = () => {
       // Update business divisions for each employee
       employeesListWithBusinessSelection.forEach((employee, index) => {
         axios
-          // .get(`http://127.0.0.1:8000/api/business-divisions/?company_id=${employee.company_id}`)
-          .get(`http://54.178.202.58:8000/api/business-divisions/?company_id=${employee.company_id}`)
+          .get(`${getReactActiveEndpoint()}/api/business-divisions-of-company/?company_id=${employee.company_id}`)
           .then((response) => {
             const employeeBusinessDivisions = response.data.filter(
               (division) => division.employee_id === employee.employee_id,
@@ -458,8 +452,7 @@ const EmployeesListAndEdit: React.FC = () => {
 
   const handleConfirm = async () => {
     try {
-      // const response = await axios.delete(`http://127.0.0.1:8000/api/employees/${deleteId}/delete/`, {
-        const response = await axios.delete(`http://54.178.202.58:8000/api/employees/${deleteId}/delete/`, {
+      const response = await axios.delete(`${getReactActiveEndpoint()}/api/employees/${deleteId}/delete/`, {
       })
       setEmployeesList((prevList) => prevList.filter((employee) => employee.employee_id !== deleteId))
       setCrudMessage(translate('successfullyDeleted', language))

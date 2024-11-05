@@ -15,6 +15,7 @@ import AlertModal from '../../components/AlertModal/AlertModal'
 import { NULL } from 'sass'
 import CrudModal from '../../components/CrudModal/CrudModal'
 import { escape } from 'querystring'
+import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 const EmployeesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -110,10 +111,9 @@ const EmployeesRegistration = () => {
     const fetchBusinessDivisionsForCompany = async () => {
       if (selectedCompanyId) {
         try {
-          // const response = await axios.get(
-          //   `http://127.0.0.1:8000/api/business-divisions?company_id=${selectedCompanyId}`,
-          // )
-          const response = await axios.get(`http://54.178.202.58:8000/api/business-divisions?company_id=${selectedCompanyId}`, )
+          const response = await axios.get(
+            `${getReactActiveEndpoint()}/api/business-divisions-of-company/?company_id=${selectedCompanyId}`,
+          )
           setBusinessDivisionSelection(response.data) // Update business divisions based on selected company
         } catch (error) {
           console.error('Error fetching business divisions:', error)
@@ -133,8 +133,9 @@ const EmployeesRegistration = () => {
 
     try {
       // Fetch business divisions based on the selected company ID
-      // const response = await axios.get(`http://127.0.0.1:8000/api/business-divisions/?company_id=${companyId}`)
-      const response = await axios.get(`http://54.178.202.58:8000/api/business-divisions/?company_id=${companyId}`)
+      const response = await axios.get(
+        `${getReactActiveEndpoint()}/api/business-divisions-of-company/?company_id=${companyId}`,
+      )
       const divisions = response.data // Assuming your API returns an array of divisions
 
       setBusinessDivisionSelection(divisions) // Update businessDivisionSelection with fetched divisions
@@ -311,8 +312,7 @@ const EmployeesRegistration = () => {
         
         const token = localStorage.getItem('accessToken')
         try {
-          // const response = await axios.post('http://127.0.0.1:8000/api/employees/create', employeeData, {
-            const response = await axios.post('http://54.178.202.58:8000/api/employees/create', employeeData, {
+          const response = await axios.post(`${getReactActiveEndpoint()}/api/employees/create/`, employeeData, {
             headers: {
               Authorization: `Bearer ${token}`, // Add token to request headers
             },

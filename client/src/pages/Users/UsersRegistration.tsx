@@ -9,6 +9,7 @@ import RegistrationButtons from '../../components/RegistrationButtons/Registrati
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import CrudModal from '../../components/CrudModal/CrudModal'
+import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 const UsersRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -184,13 +185,12 @@ const UsersRegistration = () => {
           return;
         }
         try {
-          // await axios.post('http://127.0.0.1:8000/api/user/register/', userData, {
-            await axios.post('http://54.178.202.58:8000/api/user/register/', userData, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-            })
+          await axios.post(`${getReactActiveEndpoint()}/api/users/create/`, userData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          })
           setModalMessage(translate('successfullySaved', language));
           setIsModalOpen(true);
           setUserData({

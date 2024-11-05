@@ -10,6 +10,7 @@ import AlertModal from '../../components/AlertModal/AlertModal'
 import { RiDeleteBin6Fill } from 'react-icons/ri'
 import { log } from 'console'
 import CrudModal from '../../components/CrudModal/CrudModal'
+import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 const months: number[] = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]; // Store as numbers
 
@@ -114,12 +115,11 @@ const EmployeeExpensesList: React.FC = () => {
           }
 
           try {
-              // const response = await axios.get('http://127.0.0.1:8000/api/employee-expenses/', {
-              const response = await axios.get('http://54.178.202.58:8000/api/employee-expenses/', {
-                  headers: {
-                      'Authorization': `Bearer ${token}` // Add token to request headers
-                  }
-              });
+              const response = await axios.get(`${getReactActiveEndpoint()}/api/employee-expenses/list/`, {
+                headers: {
+                  Authorization: `Bearer ${token}`, // Add token to request headers
+                },
+              })
               setEmployeeExpenses(response.data); // Assuming response.data is an array of expenses
               console.log("Employee expenses: ", response.data);
           } catch (error) {
@@ -161,8 +161,7 @@ const EmployeeExpensesList: React.FC = () => {
     const token = localStorage.getItem('accessToken')
     console.log('Token before delete:', token);
     try {
-      // await axios.delete(`http://127.0.0.1:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/`, {
-      await axios.delete(`http://54.178.202.58:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/`, {
+      await axios.delete(`${getReactActiveEndpoint()}/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/`, {
         headers: {
           'Authorization': `Bearer ${token}`  // Add token to request headers
         }
@@ -190,8 +189,7 @@ const EmployeeExpensesList: React.FC = () => {
     const token = localStorage.getItem('accessToken')
     console.log('Token before delete:', token);
     try {
-      // await axios.delete(`http://127.0.0.1:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/?project_id=${employeeProjectId.project_id}`, {
-      await axios.delete(`http://54.178.202.58:8000/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/?project_id=${employeeProjectId.project_id}`, {
+      await axios.delete(`${getReactActiveEndpoint()}/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/?project_id=${employeeProjectId.project_id}`, {
         headers: {
           'Authorization': `Bearer ${token}`  // Add token to request headers
         }

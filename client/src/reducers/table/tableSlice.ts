@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import api from '../../api/api'
 import TableEntity from '../../entity/tableEntity'
+import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 const initialState = {
   isLoading: false,
@@ -8,8 +9,7 @@ const initialState = {
 }
 
 export const fetchAllClientData = createAsyncThunk('', async () => {
-  // return await api.get<TableEntity[]>(`http://127.0.0.1:8000/api/projects/`).then((res) => {
-    return await api.get<TableEntity[]>(`http://54.178.202.58:8000/api/projects/`).then((res) => {
+  return await api.get<TableEntity[]>(`${getReactActiveEndpoint()}/api/projects/list/`).then((res) => {
     return res.data.map((data) => new TableEntity(data))
   })
 })

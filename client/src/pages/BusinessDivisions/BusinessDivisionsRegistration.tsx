@@ -9,6 +9,7 @@ import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import axios from 'axios'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import CrudModal from '../../components/CrudModal/CrudModal'
+import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 const BusinessDivisionsRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -171,8 +172,7 @@ const BusinessDivisionsRegistration = () => {
         }
   
         try {
-          // const response = await axios.post('http://127.0.0.1:8000/api/master-business-division/create', postData, {
-          const response = await axios.post('http://54.178.202.58:8000/api/master-business-division/create', postData, {
+          const response = await axios.post(`${getReactActiveEndpoint()}/api/master-business-divisions/create/`, postData, {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
@@ -216,8 +216,7 @@ const BusinessDivisionsRegistration = () => {
       useEffect(() => {
         const fetchCompany = async () => {
           try{
-            // const response = await axios.get('http://127.0.0.1:8000/api/master-companies/', {
-            const response = await axios.get('http://54.178.202.58:8000/api/master-companies/', {
+            const response = await axios.get(`${getReactActiveEndpoint()}/api/master-companies/list/`, {
               headers: { 
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}` 

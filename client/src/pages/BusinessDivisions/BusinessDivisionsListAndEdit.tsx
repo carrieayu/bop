@@ -10,6 +10,7 @@ import { RiDeleteBin6Fill } from "react-icons/ri";
 import ListButtons from "../../components/ListButtons/ListButtons";
 import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
 import CrudModal from "../../components/CrudModal/CrudModal";
+import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 const BusinessDivisionsListAndEdit: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -152,11 +153,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
       }
     
       try {
-        // const response = await axios.put('http://127.0.0.1:8000/api/master-business-division/bulk-update/', modifiedFields, {
-       const response = await axios.put(
-         'http://54.178.202.58:8000/api/master-business-division/bulk-update/',
-         modifiedFields,
-         {
+          await axios.put(`${getReactActiveEndpoint()}/api/master-business-divisions/bulk-update/`, modifiedFields, {
            headers: {
              'Content-Type': 'application/json',
              Authorization: `Bearer ${token}`,
@@ -203,8 +200,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
           }
           try {
               // Fetch companies
-              // const companyResponse = await axios.get('http://127.0.0.1:8000/api/master-companies/', {
-              const companyResponse = await axios.get('http://54.178.202.58:8000/api/master-companies/', {
+              const companyResponse = await axios.get(`${getReactActiveEndpoint()}/api/master-companies/list/`, {
                 // headers: { Authorization: `Bearer ${token}` },
               })
               const companies = companyResponse.data;
@@ -214,10 +210,9 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
               }, {});
               setCompanyMap(companyMapping);
               // Fetch users
-              // const userResponse = await axios.get('http://127.0.0.1:8000/api/user/list/', {
-                const userResponse = await axios.get('http://54.178.202.58:8000/api/user/list/', {
-                  // headers: { Authorization: `Bearer ${token}` },
-                })
+              const userResponse = await axios.get(`${getReactActiveEndpoint()}/api/users/list/`, {
+                // headers: { Authorization: `Bearer ${token}` },
+              })
               const users = userResponse.data;
               const userMapping = users.reduce((map, user) => {
                   map[user.user_id] = user.first_name;
@@ -240,8 +235,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         return
       }
       try {
-        // const response = await axios.get('http://127.0.0.1:8000/api/master-business-divisions/', {
-          const response = await axios.get('http://54.178.202.58:8000/api/master-business-divisions/', {
+        const response = await axios.get(`${getReactActiveEndpoint()}/api/master-business-divisions/list/`, {
           headers: {
             Authorization: `Bearer ${token}`, // Add token to request headers
           },
@@ -309,8 +303,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
       }
     
       try {
-        // const response = await axios.delete(`http://127.0.0.1:8000/api/master-business-division/${selectedBusiness}/delete/`, {
-          const response = await axios.delete('http://54.178.202.58:8000/api/master-business-division/${selectedBusiness}/delete/', {
+        const response = await axios.delete(`${getReactActiveEndpoint()}/api/master-business-divisions/${selectedBusiness}/delete/`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

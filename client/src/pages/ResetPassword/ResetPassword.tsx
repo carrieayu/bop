@@ -6,6 +6,7 @@ import AlertModal from '../../components/AlertModal/AlertModal'
 import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
 import CrudModal from '../../components/CrudModal/CrudModal'
+import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 const ResetPassword = () => {
   const { uid, token } = useParams()
@@ -49,8 +50,7 @@ const ResetPassword = () => {
     }
 
     try {
-      // const response = await axios.put(`http://127.0.0.1:8000/api/reset-password/${uid}/${token}/`, {
-        const response = await axios.put(`http://54.178.202.58:8000/api/reset-password/${uid}/${token}/`, {
+      const response = await axios.put(`${getReactActiveEndpoint()}/api/password-reset/${uid}/${token}/`, {
         password,
       })
       setModalMessageRedirect('Password has been reset.')

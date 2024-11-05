@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import CardEntity from '../../entity/cardEntity'
 import api from '../../api/api'
 import { OtherPlanningEntity } from '../../entity/otherPlanningEntity'
+import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 const initialState = {
   isLoading: false,
@@ -38,8 +39,7 @@ const calculateOperatingIncome = (card) => {
 
 
 export const fetchAllCards = createAsyncThunk('', async () => {
-  // return await api.get<CardEntity[]>(`http://127.0.0.1:8000/api/projects/`).then((res) => {
-  return await api.get<CardEntity[]>(`http://54.178.202.58:8000/api/projects/`).then((res) => {
+  return await api.get<CardEntity[]>(`${getReactActiveEndpoint()}/api/projects/list/`).then((res) => {
     return res.data.map((data) => new CardEntity(data))
   })
 })

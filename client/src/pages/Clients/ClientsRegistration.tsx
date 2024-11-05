@@ -9,6 +9,7 @@ import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import axios from 'axios'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import CrudModal from '../../components/CrudModal/CrudModal'
+import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 const ClientsRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -125,8 +126,7 @@ const ClientsRegistration = () => {
         
         const token = localStorage.getItem('accessToken')
         try {
-          // const response = await axios.post('http://127.0.0.1:8000/api/master-client/create/', client, {
-            const response = await axios.post('http://54.178.202.58:8000/api/master-client/create/', client, {
+          const response = await axios.post(`${getReactActiveEndpoint()}/api/master-clients/create/`, client, {
             headers: {
               // 'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,

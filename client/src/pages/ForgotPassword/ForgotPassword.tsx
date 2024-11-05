@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import dattLogo from  '../../assets/images/logo.png'
 import axios from "axios";
+import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -13,8 +14,7 @@ const ForgotPassword = () => {
     setLoading(true);
     setError(null);
     try {
-      // const response = await axios.post('http://127.0.0.1:8000/api/forgot-password/', { email });
-      const response = await axios.post('http://54.178.202.58:8000/api/forgot-password/', { email });
+      const response = await axios.post(`${getReactActiveEndpoint()}/api/password-forgot/`, { email })
       setSuccessMessage(response.data.message);
     } catch (error) {
       setError(error.response.data.message);

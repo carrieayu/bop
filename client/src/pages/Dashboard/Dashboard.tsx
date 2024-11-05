@@ -17,6 +17,7 @@ import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 
+
 function formatNumberWithCommas(number: number): string {
   return number.toLocaleString()
 }

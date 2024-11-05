@@ -11,7 +11,7 @@ import DatePicker from 'react-datepicker'
 import ListButtons from "../../components/ListButtons/ListButtons";
 import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
 import CrudModal from "../../components/CrudModal/CrudModal";
-
+import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 const UsersListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -159,8 +159,7 @@ const UsersListAndEdit: React.FC = () => {
         return
       }
       try {
-        // const response = await axios.put('http://127.0.0.1:8000/api/user/update/', userList, {
-          const response = await axios.put('http://54.178.202.58:8000/api/user/update/',  userList ,{
+        const response = await axios.put(`${getReactActiveEndpoint()}/api/users/update/`, userList, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -192,8 +191,7 @@ const UsersListAndEdit: React.FC = () => {
         }
 
         try {
-          // const response = await axios.get('http://127.0.0.1:8000/api/user/list/', {
-            const response = await axios.get('http://54.178.202.58:8000/api/user/list/', {
+          const response = await axios.get(`${getReactActiveEndpoint()}/api/users/list/`, {
           })
           setUserList(response.data)
         } catch (error) {
@@ -258,8 +256,7 @@ const UsersListAndEdit: React.FC = () => {
       console.log('Confirmed action for project:', deleteId)
       const token = localStorage.getItem('accessToken')
       try {
-        // const response = await axios.delete(`http://127.0.0.1:8000/api/user/list/${deleteId}/delete/`, {
-          const response = await axios.get(`http://54.178.202.58:8000/api/user/list/${deleteId}/delete/`, {
+        const response = await axios.delete(`${getReactActiveEndpoint()}/api/users/list/${deleteId}/delete/`, {
         })
         setUserList((prevList) => prevList.filter((user) => user.id !== deleteId))
         setCrudMessage(translate('successfullyDeleted', language));

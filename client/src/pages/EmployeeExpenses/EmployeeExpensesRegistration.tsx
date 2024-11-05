@@ -9,6 +9,7 @@ import HeaderButtons from '../../components/HeaderButtons/HeaderButtons';
 import axios from 'axios';
 import AlertModal from '../../components/AlertModal/AlertModal'
 import CrudModal from '../../components/CrudModal/CrudModal';
+import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -124,16 +125,14 @@ const EmployeeExpensesRegistration = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const employeeResponse = await axios.get('http://127.0.0.1:8000/api/employees', {
-        const employeeResponse = await axios.get('http://54.178.202.58:8000/api/employees', {
+        const employeeResponse = await axios.get(`${getReactActiveEndpoint()}/api/employees/list/`, {
           headers: { 
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
           },
         });
         setEmployees(employeeResponse.data);
-        // const projectResponse = await axios.get('http://127.0.0.1:8000/api/projects/', {
-        const projectResponse = await axios.get('http://54.178.202.58:8000/api/projects/', {
+        const projectResponse = await axios.get(`${getReactActiveEndpoint()}/api/projects/list/`, {
           headers: { 
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
@@ -300,8 +299,7 @@ const EmployeeExpensesRegistration = () => {
 
     const token = localStorage.getItem('accessToken')
     try {
-      // const response = await axios.post('http://127.0.0.1:8000/api/employee-expenses/create/', employeeContainers, {
-        const response = await axios.post('http://54.178.202.58:8000/api/employee-expenses/create', employeeContainers, {
+      const response = await axios.post(`${getReactActiveEndpoint()}/api/employee-expenses/create/`, employeeContainers, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
