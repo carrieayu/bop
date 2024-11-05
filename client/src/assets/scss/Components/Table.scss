@@ -76,7 +76,7 @@ td.td_first {
         width: 0; 
     }
     &:hover {
-        scrollbar-width: thin; 
+        scrollbar-width: none; 
         scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
         &::-webkit-scrollbar {
             width: 8px; 
