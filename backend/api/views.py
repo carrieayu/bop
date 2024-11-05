@@ -1150,8 +1150,6 @@ class CostOfSalesCreate(generics.CreateAPIView):
                 },
                 status=status.HTTP_409_CONFLICT
             )
-
-
         # If no duplicates, proceed with saving data
         responses = []
         for item in data:
@@ -1324,22 +1322,14 @@ class PlanningUpdate(generics.UpdateAPIView):
                     if record_id:
                         try:
                             expenses_instance = Expenses.objects.get(expense_id=record_id)
-                            # if label == "executiveRenumeration":
-                            #     expenses_instance.remuneration = values[idx] if idx < len(values) else 0
                             if label == "travelExpenses":
                                 expenses_instance.travel_expense = values[idx] if idx < len(values) else 0
-                            # if label == "statutoryWelfareExpenses": #duplicate
-                            #     expenses_instance.taxes_and_public_charges = values[idx] if idx < len(values) else 0
-                            # if label == "welfareExpenses": #duplicate
-                            #     expenses_instance.utilities_expenses = values[idx] if idx < len(values) else 0
                             if label == "consumableExpenses":
                                 expenses_instance.consumable_expense = values[idx] if idx < len(values) else 0
                             if label == "rentExpenses":
                                 expenses_instance.rent_expense = values[idx] if idx < len(values) else 0
                             if label == "depreciationExpenses":
                                 expenses_instance.depreciation_expense = values[idx] if idx < len(values) else 0
-                            # if label == "fuelAllowance": #duplicate
-                            #     expenses_instance.travel_expenses = values[idx] if idx < len(values) else 0
                             if label == "communicationExpenses":
                                 expenses_instance.communication_expense = values[idx] if idx < len(values) else 0
                             if label == "utilitiesExpenses": 
@@ -1422,152 +1412,3 @@ class ResultsDelete(generics.DestroyAPIView):
         except:
             return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
         
-# -------------------------------------------------------------------------------------------------
-# #2
-# -------------------------------------------------------------------------------------------------
-
-# class MasterClientsRetrieve(generics.RetrieveAPIView):
-#     serializer_class = MasterClientListSerializer
-#     permission_classes = [IsAuthenticated]
-
-#     def get_queryset(self):
-#         return MasterClient.objects.all()
-
-# -------------------------------------------------------------------------------------------------
-# #3
-# -------------------------------------------------------------------------------------------------
-
-# class MasterBusinessDivisionsRetrieve(
-#     generics.RetrieveAPIView
-# ):
-#     serializer_class = MasterBusinessDivisionSerializer
-#     permission_classes = [IsAuthenticated]
-
-#     def get_queryset(self):
-#         return MasterBusinessDivision.objects.all()
-# -- END: NOT IN USE --
-    
-
-# -------------------------------------------------------------------------------------------------
-# NEED TO CHECK WHETHER TO DELETE OR NOT : I am unsure of things below this line 
-# -------------------------------------------------------------------------------------------------
-# CHECK #1 : Is this a different function for projects or a duplicate?
-# -------------------------------------------------------------------------------------------------
-
-
-# class ProjectsUpdate(generics.UpdateAPIView):
-#     serializer_class = ProjectsUpdateSerializer
-#     permission_classes = [IsAuthenticated]
-#     queryset = Projects.objects.all()
-
-#     def update(self, request, *args, **kwargs):
-#         print("ProjectsUpdate #1 What is this?");
-
-#         received_data = request.data
-#         for project_id, changes in received_data.items():
-#             try:
-#                 project = Projects.objects.get(planning_project_id=int(project_id))
-#                 for field, value in changes.items():
-#                     if field.startswith("client."):
-#                         nested_field = field.split('.')[1]
-#                         setattr(project.client_id, nested_field, value)
-#                         project.client_id.save() 
-#                     else:
-#                         setattr(project, field, value)
-                
-#                 project.save()
-            
-#             except Projects.DoesNotExist:
-#                 return Response({"error": f"Project with ID {project_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
-
-#         return Response({"message": "Data updated successfully"}, status=status.HTTP_200_OK)
-
-# -------------------------------------------------------------------------------------------------
-# CHECK #2 : Is this a different function for projects or a duplicate?
-# -------------------------------------------------------------------------------------------------
-
-
-# class StoreProjects(generics.CreateAPIView):
-#     def post(self, request):
-#         client_data = request.data.get("client", {})
-#         business_data = request.data.get("business", {})
-#         planning_data = request.data.get("planning", {})
-
-
-#         clients = []
-#         for i in range(len(client_data.get("client_name", []))):
-#                 client_instance_data = {
-#                     'client_name': client_data.get("client_name")[i],
-#                     'registered_user_id': client_data.get("registered_user_id")[i] or None
-#                 }
-#                 client_serializer = MasterClientSerializer(data=client_instance_data)
-                
-#                 if client_serializer.is_valid():
-#                     client = client_serializer.save()
-#                     clients.append(client)
-#                 else:
-#                     return Response(client_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-#         businesses = []
-#         max_business_division_id = (
-#             MasterBusinessDivision.objects.aggregate(
-#                 max_business_division_id=Max("business_division_id")
-#             )["max_business_division_id"]
-#             or "0000"
-#         )
-#         current_max_id = int(max_business_division_id)
-
-#         for i in range(len(business_data.get("business_division_name", []))):
-#             company, created = MasterCompany.objects.get_or_create(
-#                 company_id=business_data.get("company_id")[i]
-#             )
-
-#             current_max_id += 1
-#             new_business_division_id = str(current_max_id).zfill(4)
-
-#             business_instance_data = {
-#                 'business_division_id': new_business_division_id,
-#                 'business_division_name': business_data.get("business_division_name")[i],
-#                 'registered_user_id': business_data.get("registered_user_id")[i] or 0,
-#                 'company_id': company.company_id
-#             }
-            
-            
-#             business_serializer = MasterBusinessDivisionSerializer(data=business_instance_data)
-#             if business_serializer.is_valid():
-#                 business = business_serializer.save()
-#                 businesses.append(business)
-#             else:
-#                 return Response(business_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-#         for i in range(len(planning_data.get("project_name", []))):
-#             planning_instance_data = {
-#                 'planning_project_name': planning_data.get("project_name")[i],
-#                 'month': planning_data.get("month")[i],
-#                 'sales_revenue': float(planning_data.get("sales_revenue")[i] or 0),
-#                 'non_operating_income': float(planning_data.get("non_operating_income")[i] or 0),
-#                 'non_operating_expenses': float(planning_data.get("non_operating_expenses")[i] or 0),
-#                 'planning_project_type': "Type A",
-#                 'client_id': "0001",
-#             }
-#             planning_serializer = ProjectsCreateSerializer(data=planning_instance_data)
-#             if planning_serializer.is_valid():
-#                 planning_serializer.save()
-#             else:
-#                 print(planning_serializer.errors)
-#                 return Response(planning_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#         return Response({'message': 'Project Planning Data created successfully'}, status=status.HTTP_201_CREATED)
-
-
-# -------------------------------------------------------------------------------------------------
-# CHECK #3 : What is this and is it necessary? Possibly Related to Old Code
-# -------------------------------------------------------------------------------------------------
-
-
-# class MasterClientTableList(generics.ListAPIView):
-#     queryset = MasterClient.objects.all()
-#     serializer_class = CreateTableListSerializers
-#     permission_classes = [IsAuthenticated]
-
-#     def get_queryset(self):
-#         return MasterClient.objects.all()

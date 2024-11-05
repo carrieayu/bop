@@ -89,11 +89,4 @@ urlpatterns = [
     path('api/results/<int:pk>/delete/', ResultsDelete.as_view(), name="results-delete"), 
     # END: NOT BEING USED CURRENTLY
 
-
-    # ------ NEED TO CHECK -------
-
-    # Projects needs to trace on where it is used
-    # path('api/projects/tablelist/', MasterClientTableList.as_view(), name="projects-table-lists"), 
-    # path('api/projects/store/', StoreProjects.as_view(), name="projects-store"), #the nested views for storing projects
-    # path('api/projects/update', ProjectsUpdate.as_view()),
 ]
