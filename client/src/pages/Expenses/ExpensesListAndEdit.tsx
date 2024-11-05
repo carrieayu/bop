@@ -186,8 +186,8 @@ const ExpensesList: React.FC = () => {
       setIsCRUDOpen(true);
       setIsEditing(false);
 
-      const response = await axios.get('http://127.0.0.1:8000/api/expenses')
-      // const response = await axios.get('http://54.178.202.58:8000/api/expenses')
+      const response = await axios.get('http://127.0.0.1:8000/api/expenses/list/')
+      // const response = await axios.get('http://54.178.202.58:8000/api/expenses/list/')
 
       setExpensesList(response.data)
     } catch (error) {
@@ -217,8 +217,8 @@ const ExpensesList: React.FC = () => {
     }
 
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/expenses', {
-        // const response = await axios.get('http://54.178.202.58:8000/api/expenses/', {
+      const response = await axios.get('http://127.0.0.1:8000/api/expenses/list/', {
+        // const response = await axios.get('http://54.178.202.58:8000/api/expenseslist/', {
         headers: {
           Authorization: `Bearer ${token}`, // Add token to request headers
         },
@@ -308,12 +308,12 @@ const ExpensesList: React.FC = () => {
           Authorization: `Bearer ${token}`, // Add token to request headers
         },
       })
-      setCrudMessage(translate('successfullyDeleted', language));
-      setIsCRUDOpen(true);
-      setIsEditing(false);
+      setCrudMessage(translate('successfullyDeleted', language))
+      setIsCRUDOpen(true)
+      setIsEditing(false)
 
-      const response = await axios.get('http://127.0.0.1:8000/api/expenses')
-      // const response = await axios.get('http://54.178.202.58:8000/api/expenses');
+      const response = await axios.get('http://127.0.0.1:8000/api/expenses/list/')
+      // const response = await axios.get('http://54.178.202.58:8000/api/expenses/list/');
       setExpensesList(response.data)
     } catch (error) {
       if (error.response && error.response.status === 401) {

@@ -156,8 +156,8 @@ const CostOfSalesList: React.FC = () => {
         return
       }
       try {
-        await axios.put('http://127.0.0.1:8000/api/cost-of-sales/update', modifiedFields, {
-        // await axios.put('http://54.178.202.58:8000/api/cost-of-sales/update', modifiedFields, {
+        await axios.put('http://127.0.0.1:8000/api/cost-of-sales/update/', modifiedFields, {
+        // await axios.put('http://54.178.202.58:8000/api/cost-of-sales/update/', modifiedFields, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -167,8 +167,8 @@ const CostOfSalesList: React.FC = () => {
         setIsCRUDOpen(true);
         setIsEditing(false);
 
-        const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales')
-        // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales');
+        const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales/list/')
+        // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales/list/');
         setCostOfSales(response.data)
         setOriginalCostOfSales(response.data)
       } catch (error) {
@@ -199,8 +199,8 @@ const CostOfSalesList: React.FC = () => {
           }
     
           try {
-            const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales', {
-            // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales', {
+            const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales/list/', {
+            // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales/list/', {
               headers: {
                 'Authorization': `Bearer ${token}`  // Add token to request headers
               }
@@ -310,8 +310,8 @@ const CostOfSalesList: React.FC = () => {
         setIsCRUDOpen(true);
         setIsEditing(false);
 
-        const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales');
-        // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales');
+        const response = await axios.get('http://127.0.0.1:8000/api/cost-of-sales/list/');
+        // const response = await axios.get('http://54.178.202.58:8000/api/cost-of-sales/list/');
         setCostOfSales(response.data);
       } catch (error) {
         if (error.response && error.response.status === 401) {

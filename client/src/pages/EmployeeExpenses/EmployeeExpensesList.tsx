@@ -114,8 +114,8 @@ const EmployeeExpensesList: React.FC = () => {
           }
 
           try {
-              const response = await axios.get('http://127.0.0.1:8000/api/employee-expenses/', {
-              // const response = await axios.get('http://54.178.202.58:8000/api/employee-expenses/', {
+              const response = await axios.get('http://127.0.0.1:8000/api/employee-expenses/list/', {
+              // const response = await axios.get('http://54.178.202.58:8000/api/employee-expenses/list/', {
                   headers: {
                       'Authorization': `Bearer ${token}` // Add token to request headers
                   }
