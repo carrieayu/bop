@@ -7,16 +7,31 @@ const initialState = {
   isLoading: false,
   masterCompanyList: [new MasterCompanyEntity({})],
 }
+const POLLING_INTERVAL = 60000
+const MAX_RETRIES = 12
+
+async function fetchWithPolling(retries = MAX_RETRIES): Promise<MasterCompanyEntity[]> {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await api.get<MasterCompanyEntity[]>(`${getReactActiveEndpoint()}/api/master-companies/list/`)
+
+      if (response.data && response.data.length > 0) {
+        return response.data.map((data) => new MasterCompanyEntity(data))
+      } else {
+        console.log(`Attempt ${attempt}: Data is empty, retrying in 5 minutes...`)
+      }
+    } catch (error) {
+      console.error(`Attempt ${attempt}: Error fetching data -`, error)
+    }
+    await new Promise((resolve) => setTimeout(resolve, POLLING_INTERVAL))
+  }
+  throw new Error('Failed to fetch data after maximum retries.')
+}
 
 export const fetchMasterCompany = createAsyncThunk('master-company/fetch', async () => {
-  try {
-    const response = await api.get<MasterCompanyEntity[]>(`${getReactActiveEndpoint()}/api/master-companies/list/`)
-    return response.data.map((data) => new MasterCompanyEntity(data))
-  } catch (error) {
-    console.error('Error fetching master company', error)
-    throw error
-  }
+  return await fetchWithPolling()
 })
+
 
 const masterCompany = createSlice({
   name: 'master-company',

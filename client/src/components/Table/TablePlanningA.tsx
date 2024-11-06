@@ -185,7 +185,6 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
       })
       // EMPLOYEES
       const result = aggregateEmployeeData(response.data.employees)
-      console.log('data: ', response.data)
       const executiveRenumerationValues = months.map((month) => result[month]?.executive_renumeration || 0)
       const salaryValues = months.map((month) => result[month]?.salary || 0)
       const totalBonusAndFuelAllowance = result[12]?.bonus_and_fuel_allowance || 0
@@ -710,20 +709,20 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
   const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable'];
 
   return (
-    <div className="table-planning-container">
-      <div className="table-planning">
+    <div className='table-planning-container'>
+      <div className='table-planning'>
         <table>
           <thead>
             <tr>
-              <th>{translate('item', language)}</th>
+              <th></th>
               {months.map((month, index) => (
-                <th key={index} className={(month >= 10 || month <= 3) ? 'light-txt' : 'orange-txt'}>
-                  {language === "en" ? monthNames[month].en : monthNames[month].jp}
+                <th key={index} className={month >= 10 || month <= 3 ? 'light-txt' : 'orange-txt'}>
+                  {language === 'en' ? monthNames[month].en : monthNames[month].jp}
                 </th>
               ))}
               {halfYears.map((halfYear, index) => (
-                <th key={index} className="sky-txt">
-                  {translate('planning', language)}
+                <th key={index} className='sky-txt'>
+                  {translate(`${halfYear}`, language)}
                 </th>
               ))}
               <th className='total-txt'>{translate('salesRatio', language)}</th>
@@ -734,18 +733,22 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
                 <th key={index}>{translate('planning', language)}</th>
               ))}
               {halfYears.map((_, index) => (
-                <th key={index} className=''>{translate('planning', language)}</th>
+                <th key={index} className=''>
+                  {translate('planning', language)}
+                </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {data.map((item, index) => (
               <tr key={index}>
-                <td className={noIndentLabels.includes(item.label) ? 'no-indent' : 'indented-label'}>{translate(item.label, language)}</td>
+                <td className={noIndentLabels.includes(item.label) ? 'no-indent' : 'indented-label'}>
+                  {translate(item.label, language)}
+                </td>
                 {item.values.map((value, valueIndex) => (
                   <td key={valueIndex}>
-                    {isThousandYenChecked 
-                      ? (Math.round(value / 1000 * 10) / 10).toLocaleString() // Rounds to 1 decimal place
+                    {isThousandYenChecked
+                      ? (Math.round((value / 1000) * 10) / 10).toLocaleString() // Rounds to 1 decimal place
                       : value.toLocaleString()}
                   </td>
                 ))}
@@ -755,7 +758,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         </table>
       </div>
     </div>
-  );
+  )
 };
 
 export default TablePlanning;

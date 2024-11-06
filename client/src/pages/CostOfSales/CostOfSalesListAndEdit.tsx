@@ -143,7 +143,6 @@ const CostOfSalesList: React.FC = () => {
       })
 
       if (areFieldsEmpty) {
-        console.log(costOfSales)
         setCrudMessage(translate('allFieldsRequiredInputValidationMessage', language));
         setIsCRUDOpen(true);
         return

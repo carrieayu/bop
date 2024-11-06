@@ -110,14 +110,12 @@ const BusinessDivisionsRegistration = () => {
         }]);
       }
       else {
-        console.log("business limits to 10")
       }
     }
   
   
     const validateBusinessDivision = (businessDivision) => {
       return businessDivision.every((bd) => {
-        console.log(businessDivision)
         return bd.business_division_name.trim() !== ''
       })
     }
@@ -138,7 +136,6 @@ const BusinessDivisionsRegistration = () => {
     
       const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(formData)
   
         const postData = formData.map((business) => ({
           business_division_name: business.business_division_name,
