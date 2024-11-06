@@ -273,7 +273,6 @@ const EmployeeExpensesList: React.FC = () => {
                               <tbody className='employeeExpensesList_table_body'>
                                 {employeeExpenses
                                   .reduce((acc, expense) => {
-                                    // console.log("acc", acc)
                                     const existingYearIndex = acc.findIndex((year) => year.year === expense.year)
 
                                     // If the year does not exist, create a new entry
@@ -317,7 +316,6 @@ const EmployeeExpensesList: React.FC = () => {
                                         })
                                         monthlyExpenses[monthIndex].total_salary += expense.employee_salary
                                       }
-                                      console.log('expense', expense)
                                       yearGroup.employees.push({
                                         employee_expense_id: expense.employee_expense_id,
                                         project_id: expense.project_id,
@@ -354,7 +352,6 @@ const EmployeeExpensesList: React.FC = () => {
                                       : []),
                                     // Map through employees
                                     ...yearGroup.employees.map((employee, employeeIndex) => {
-                                      console.log('employee', employee)
                                       return (
                                         <tr key={employeeIndex} className='employeeExpensesList_user_name'>
                                           <td className='employeeExpensesList_td'>

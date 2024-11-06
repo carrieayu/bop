@@ -64,7 +64,6 @@ const CostOfSalesRegistration = () => {
         // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
       })
       setFormData(newFormData)
-      console.log('add:' + formData)
     } else {
       console.log('You can only add up to 10 forms.')
     }

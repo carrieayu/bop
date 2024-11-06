@@ -108,7 +108,6 @@ const UsersListAndEdit: React.FC = () => {
   const validateUser = (users) => {
     return users.every((user) => {
       const { username, first_name, last_name, email, date_joined } = user
-      console.log(user.date_joined)
 
       if (!username || !email || !date_joined) {
         setCrudMessage(translate('usersValidationText6', language));
