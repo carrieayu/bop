@@ -1,0 +1,288 @@
+
+table, th, td {
+  box-sizing: border-box;
+}
+
+.table-b-table_header {
+    width: 100%;
+    // background-color: #ddd;
+    border: solid 1px #ddd;
+}
+.table-b-container {
+    margin: 14px;
+}
+.table-b-planning-tr-header{
+    text-align: center;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    background-color: #e3e3e3;
+    width: 100%;
+    padding: 2px 0px 2px 0px;
+    box-sizing: border-box;
+}
+.table-b-client-header{
+  width: 9% !important;
+  text-align: center !important;
+  justify-content: center;
+  // border-top: solid 1px #ddd;
+  border-left: solid 1px #ddd;
+}
+
+
+.table-b-client-data{
+  width: 9% !important;
+  text-align: center;
+  vertical-align: middle;
+  border-left: solid 1px #ddd;
+  
+  padding:10px;
+  box-sizing: border-box;
+}
+
+
+.table-b-categories-header{
+  width:  9% !important;
+  text-align: center !important;
+  // border-top: solid 1px #ddd;
+  border-left: solid 1px #ddd;
+
+}
+
+.table-b-categories-data{
+  width: 9% !important;
+  text-align: center;
+  border-bottom: solid 1px #ddd;
+}
+
+.table-b-months-header{
+  width: 6% !important;
+  text-align: center !important;
+}
+
+
+.table-b-months-data{
+  width: 6% !important;
+  text-align: center;
+  border-left: solid 1px #ddd;  
+}
+
+
+
+.table-b-total-header{
+  width: 6% !important;
+  text-align: center !important;
+  background-color: lightcyan;
+  
+}
+.table-b-total-data{
+  width: 6% !important;
+  border: solid 1px #ddd;
+}
+// <td className='table-b-client-data'
+    //                   style={{
+    //                     width: '8%', // Adjust this width to match your table's needs
+    //                     textAlign: 'center',
+    //                     border: '1px solid #ddd',
+    //                     fontWeight: 'bold',
+    //                     padding: '10px',
+    //                     verticalAlign: 'middle', // Ensures it aligns properly with the rows below
+    //                   }}
+
+// .table-b-tr_title{
+//     border-left: 1px solid black;
+//     border-right: 1px solid black;
+//     background-color: #e3e3e3;
+// }
+
+// .table-b-tr_dates{
+//     border-left: 1px solid black;
+//     border-bottom: 1px solid black;
+//     border-right: 1px solid black;
+//     background-color: #e3e3e3;
+// }
+
+// table-b-td.td_right {
+//     text-align: center !important;
+//     padding: 13px 0px;
+//     border: 1px solid;
+// }
+
+// table-b-td.td_center {
+//     text-align: center !important;
+//     padding: 13px 0px;
+// }
+
+// table-b-tr.tr_underline {
+//     border-bottom: 5px solid #e3e3e3;
+// }
+
+// table-b-tr.tr_input_underline {
+//     border-bottom: 2px solid #b5b5b5;
+// }
+
+// table-b-td.td_first {
+//     padding: 13px 0px;
+// }
+
+// .table-b-header_center{
+//     text-align: center !important;
+//     border-left: 1px solid black;
+// }
+
+// .table-b-input_right{
+//     text-align: right;
+//     border: 2px solid #b5b5b5
+// }
+// .table-b-input_right:focus {
+//     border-color:  #b5b5b5 !important;
+// }
+
+// .table-b-tableGrid{
+//     border: 1px solid black;
+//     width: 100%;
+// }
+
+.table-b-scrollable_container {
+    max-height: 500px; 
+    overflow-y: auto;
+    overflow-x: hidden; 
+    scrollbar-width: none; 
+    transition: scrollbar-color 0.3s ease;
+    &::-webkit-scrollbar {
+        width: 0; 
+    }
+    &:hover {
+        scrollbar-width: thin; 
+        scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+        &::-webkit-scrollbar {
+            width: 8px; 
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px; 
+        }
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+    }
+}
+.table-b-td_no {
+    width: 100px;
+    text-align: 'center';
+}
+
+table-b-td.td_border {
+    border-right: 1px solid black;
+}
+
+
+.table-b-wrapper{
+  max-width: 2560px;
+  .table-b-content-wrapper{
+    // display: flex;
+    // background-color: #EFEDEA;
+    @media only screen and (max-width: 1000px){
+        flex-direction: column;
+    }
+.table-b-container {
+    // background-color: #f5f5f5;
+    // margin: 14px;
+    padding: 10px;
+    // width: 180vh;
+    height: 100%;
+    overflow-y: auto; 
+    overflow-x: auto;
+    scrollbar-width: none;
+    transition: scrollbar-color 0.3s ease;
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+    }
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    &:hover {
+        scrollbar-width: thin; 
+        scrollbar-color: rgba(0, 0, 0, 0.3) transparent; 
+        &::-webkit-scrollbar {
+            width: 8px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+    }
+    .table-b-grid{
+      width: 100%;
+    }
+//     .table-b-planning {
+//       width: 100%;
+//       table-b {
+//         width: 100%;
+//         // border-collapse: collapse;
+//         // border: 1px solid  #d0cdcd;
+//         @media only screen and (min-width: 1920px){
+//           height: 119vh;
+//         }
+//         th, td {
+//           // border: 1px solid #ddd;
+//           border: 1px solid  #d0cdcd;
+
+//           padding: 2px;
+//           text-align: right;
+//           // font-size: 11.7px;
+//           &.indented-label {
+//             text-align: right;
+//             font-size: 12.6px;
+//             font-weight: bold;
+//           }
+//           &.no-indent {
+//             text-align: left;
+//             font-size: 12.6px;
+//             font-weight: bold;
+//           }
+//         }
+//         .input_tag{
+//           text-align: right;
+//           width: 67px;
+//         }
+//         th {
+//           white-space: nowrap;
+//         }
+        
+//         td {
+//           white-space: nowrap;
+//         }
+  
+//         .orange-txt {
+//           background-color: #fce5cd;
+//         }
+  
+//         .light-txt {
+//           background-color: #c9daf8;
+//         }
+  
+//         .sky-txt {
+//           background-color: #00ffff;
+//         }
+  
+//         .total-txt {
+//           background-color: #daeef3;
+//         }
+  
+//         .highlight {
+//           background-color: #f9f9f9;
+//         }
+      }
+    }
+  }
+// }
+// }
+  
+  

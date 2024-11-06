@@ -185,6 +185,16 @@ class Projects(models.Model):
             self.project_id = self.generate_project_id()
         super().save(*args, **kwargs)
 
+    def get_employee_salaries(self):
+        employee_expenses = EmployeeExpenses.objects.filter(project_id=self)
+        # Extract employee IDs from the expenses
+        employee_ids = employee_expenses.values_list('employee_id', flat=True)
+        
+        # Query the Employee model to get salaries of these employees
+        salaries = Employees.objects.filter(employee_id__in=employee_ids).values_list('salary', flat=True)
+
+        return list(salaries)
+
 # Performance Data -> Results
 class Results(models.Model):
     result_id = models.CharField(max_length=10, primary_key=True, editable=False)
@@ -199,7 +209,7 @@ class Results(models.Model):
     work_in_progress_expense = models.IntegerField(max_length=12)
     amortization_expense = models.IntegerField(max_length=12)
     gross_profit = models.IntegerField(max_length=12)
-    employee_expense = models.IntegerField(max_length=12)
+    employee_expense = models.IntegerField(max_length=12) # DELETE ?? MAY NOT BE NEEDED.
     executive_renumeration = models.IntegerField(max_length=12)
     salary = models.IntegerField(max_length=12)
     fuel_allowance = models.IntegerField(max_length=12)
