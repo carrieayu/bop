@@ -714,7 +714,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         <table>
           <thead>
             <tr>
-              <th>{translate('item', language)}</th>
+              <th></th>
               {months.map((month, index) => (
                 <th key={index} className={month >= 10 || month <= 3 ? 'light-txt' : 'orange-txt'}>
                   {language === 'en' ? monthNames[month].en : monthNames[month].jp}
