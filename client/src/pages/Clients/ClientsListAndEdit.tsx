@@ -136,7 +136,6 @@ const ClientsListAndEdit: React.FC = () => {
         return modifiedFields
       }
       const modifiedFields = getModifiedFields(originalClientsList, updatedClients)
-      console.log('Data:', modifiedFields)
       const token = localStorage.getItem('accessToken')
       if (!token) {
         window.location.href = '/login'

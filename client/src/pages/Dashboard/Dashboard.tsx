@@ -334,6 +334,3 @@ const Dashboard = () => {
 }
 
 export default Dashboard
-function debounce(handleInputChange: any, arg1: number): any {
-  throw new Error('Function not implemented.')
-}

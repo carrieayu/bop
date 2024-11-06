@@ -297,7 +297,6 @@ const ExpensesList: React.FC = () => {
   }
 
   const handleConfirm = async () => {
-    console.log('Confirmed action for expense:', deleteExpenseId)
     const token = localStorage.getItem('accessToken')
     try {
       await axios.delete(`${getReactActiveEndpoint()}/api/expenses/${deleteExpenseId}/delete/`, {

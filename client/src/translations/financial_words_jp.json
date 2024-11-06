@@ -86,6 +86,9 @@
   "secondHalfTotal": "下期計",
   "saleRevenue": "売上高",
   "indirectEmployeeExpense": "間接人件費",
-  "ratio": "比率"
+  "ratio": "比率",
+  "firstHalftotal" : "上期計",
+  "secondHalftotal" : "下期計",
+  "totalTable" : "合計"
 }
 

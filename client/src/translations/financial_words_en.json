@@ -84,5 +84,8 @@
   "saleRevenue": "Sale Revenue",
   "employeeExpense": "Employee Expense",
   "indirectEmployeeExpense": "Indirect Employee Expense",
-  "ratio": "Ratio"
+  "ratio": "Ratio",
+  "firstHalftotal" : "1st Half Totals",
+  "secondHalftotal" : "2nd Half Totals",
+  "totalTable" : "Year Totals"
 }

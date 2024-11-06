@@ -25,7 +25,6 @@ const EditTablePlanning = () => {
         },
       })
       .then((response) => {
-        console.log(response.data)
         const aggregatedData = response.data.cost_of_sales.reduce((acc, item) => {
           const { month, ...values } = item
           if (!acc[month]) {
@@ -269,7 +268,6 @@ const EditTablePlanning = () => {
 
         // EMPLOYEES
         const result = aggregateEmployeeData(response.data.employees)
-        console.log(result)
         const executiveRenumerationValues = months.map((month) => result[month]?.executive_renumeration || 0)
         const salaryValues = months.map((month) => result[month]?.salary || 0)
         const totalBonusAndFuelAllowance = result[12]?.bonus_and_fuel_allowance || 0
@@ -1385,7 +1383,6 @@ const EditTablePlanning = () => {
     const updatedData = [...data]
 
     if (!updatedData[rowIndex] || !updatedData[rowIndex].values) {
-      console.error(`Row at index ${rowIndex} is undefined or missing 'values'`)
       return
     }
 
@@ -1454,7 +1451,6 @@ const EditTablePlanning = () => {
       })
       .filter((row) => row !== null)
 
-    // console.log('Updated Data:', updatedData)
     saveData(updatedData)
   }
 
@@ -1472,7 +1468,7 @@ const EditTablePlanning = () => {
               ))}
               {halfYears.map((halfYear, index) => (
                 <th key={index} className='sky-txt'>
-                  {translate('planning', language)}
+                  {translate(`${halfYear}`, language)}
                 </th>
               ))}
               <th className='total-txt'>{translate('sales', language)}</th>
