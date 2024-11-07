@@ -12,9 +12,10 @@ table, th, td {
 }
 .table-b-planning-tr-header{
     text-align: center;
+    border-top: 1px solid #ddd;
     border-left: 1px solid #ddd;
     border-right: 1px solid #ddd;
-    background-color: #e3e3e3;
+    background-color: #fff;
     width: 100%;
     padding: 2px 0px 2px 0px;
     box-sizing: border-box;
@@ -39,44 +40,43 @@ table, th, td {
 .table-b-categories-header{
   width:  9% !important;
   text-align: center !important;
-  // border-top: solid 1px #ddd;
   border-left: solid 1px #ddd;
-
 }
 .table-b-categories-data{
   width: 9% !important;
   text-align: center;
   border-bottom: solid 1px #ddd;
   text-align: center;
+  font-weight: bold;
 }
 .table-b-months-header{
   width: 6% !important;
+  border: solid 1px #ddd;  
   text-align: center !important;
 }
 .table-b-months-data{
   width: 6% !important;
   text-align: center;
-  border-left: solid 1px #ddd;  
+  background-color: #fff;
+  border-left: solid 1px #ddd;
 }
 .table-b-total-header{
   width: 6% !important;
   text-align: center !important;
-  
 }
 .table-b-total-data{
   width: 6% !important;
   border: solid 1px #ddd;
-  
+  background-color: #fff;
 }
+
 .table-b-sum-of-totals{
-    border-left: solid 1px #ddd;  
-    display: flex;
-    justify-content: center;
-    // background-color: #e0ffff
+  border-left: solid 1px #ddd;  
+  display: flex;
+  justify-content: center;
 }
 .table-b-divider{
-  background-color: #e3e3e3;
-  
+  background-color: #fff;  
 }
 .orange-txt{
     background-color: #fce5cd;
@@ -103,10 +103,16 @@ table, th, td {
   background-color: #fbd6c8;
 }
 .green-txt{
-  background-color: #cdf4c7;
+  background-color: #c9f8e7
 }
 .light-green-txt{
-  background-color: #e4f9e1;
+  background-color: #dafdf0
+}
+.white{
+  background-color: #fff;
+}
+.grey{
+background-color: #e0e0e0;
 }
 
 .table-b-scrollable_container {

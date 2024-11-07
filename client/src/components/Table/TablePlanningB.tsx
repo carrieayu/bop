@@ -4,11 +4,13 @@ import { translate } from '../../utils/translationUtil'
 import axios from 'axios'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
+
 type TableProps = {
   header: string[]
   dates: string[]
   smallDate: string[]
   data: any
+  isThousandYenChecked: boolean
 }
 
 const objectEntity = [
@@ -131,6 +133,14 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
     12: { en: 'December', jp: '12月' },
   }
 
+  const thousandYenConversion = (value) => {
+    return (Math.round((value / 1000) * 10) / 10).toLocaleString() // Rounds to 1 decimal place  
+  }
+
+  console.log(
+    thousandYenConversion(200000)
+  )
+  
   return (
     <div className='table-b-wrapper'>
       <div className='table-b-content-wrapper'>
@@ -143,8 +153,8 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
             </thead>
             <tbody>
               <tr>
-                <th className='table-b-client-header salmon-txt'>{translate('client', language)}</th>
-                <th className='table-b-categories-header green-txt'>{translate('accountCategories', language)}</th>
+                <th className='table-b-client-header'>{translate('client', language)}</th>
+                <th className='table-b-categories-header'>{translate('accountCategories', language)}</th>
                 {months.map((month, index) => (
                   <th
                     key={index}
@@ -168,7 +178,7 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
                 <div key={entityIndex}>
                   <table className='table-b-grid' style={{ border: '1px solid #ddd' }}>
                     <tbody className='table-b-client-table'>
-                      <td className='table-b-client-data light-salmon-txt' rowSpan={8}>
+                      <td className='table-b-client-data grey' rowSpan={8}>
                         {entityGrid.clientName}
                       </td>
                       {entityGrid.grid.map((row, rowIndex) => {
@@ -176,9 +186,10 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
                         totalSum += rowTotal // Accumulate the row total
                         return (
                           <tr key={rowIndex}>
-                            <td className='table-b-categories-data light-green-txt' >{translate(headerTitle[rowIndex], language)}</td>
+                            <td className='table-b-categories-data' >{translate(headerTitle[rowIndex], language)}</td>
                             {row.map((cell, colIndex) => (
-                              <td
+                              <td className='table-b-months-data'
+                                
                                 key={colIndex}
                                 style={{
                                   width: '6%',
@@ -188,11 +199,12 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
                                   borderRight: '1px solid #ddd',
                                 }}
                               >
-                                {cell}
+                                {props.isThousandYenChecked ? thousandYenConversion(cell) :cell}
+                               
                               </td>
                             ))}
                             <td className='table-b-total-data' style={{ textAlign: 'center', fontWeight: 'light' }}>
-                              {rowTotal}
+                              {props.isThousandYenChecked ? thousandYenConversion(rowTotal) : rowTotal}
                             </td>
                           </tr>
                         )
@@ -201,7 +213,9 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
                         <td className='table-b-divider' colSpan={14}>
                           {' '}
                         </td>
-                        <td className='table-b-sum-of-totals sky-txt'>{totalSum}</td>
+                        <td className='table-b-sum-of-totals sky-txt'>
+                          {props.isThousandYenChecked ? thousandYenConversion(totalSum) : totalSum}
+                        </td>
                       </tr>
                     </tbody>
                   </table>
