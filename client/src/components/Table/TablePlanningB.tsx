@@ -192,11 +192,7 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
                                 className='table-b-months-data'
                                 key={colIndex}
                                 style={{
-                                  width: '6%',
-                                  textAlign: 'center',
-                                  borderBottom: '1px solid #ddd',
-                                  borderLeft: '1px solid #ddd',
-                                  borderRight: '1px solid #ddd',
+                                  textAlign: 'center', // for some reason this would not work in scss file so I left it here.
                                 }}
                               >
                                 {props.isThousandYenChecked ? thousandYenConversion(cell) : cell}
