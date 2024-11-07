@@ -9,7 +9,7 @@ import RegistrationButtons from '../../components/RegistrationButtons/Registrati
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import CrudModal from '../../components/CrudModal/CrudModal'
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { createUser } from '../../api/UserEndpoint/CreateUser'
 
 const UsersRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -184,29 +184,25 @@ const UsersRegistration = () => {
           window.location.href = '/login';
           return;
         }
-        try {
-          await axios.post(`${getReactActiveEndpoint()}/api/users/create/`, userData, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
+        createUser(userData, token)
+          .then((data) => {
+            setModalMessage(translate('successfullySaved', language))
+            setIsModalOpen(true)
+            setUserData({
+              username: '',
+              first_name: '',
+              last_name: '',
+              password: '',
+              email: '',
+              confirm_password: '',
+              confirm_email: '',
+            })
           })
-          setModalMessage(translate('successfullySaved', language));
-          setIsModalOpen(true);
-          setUserData({
-            username: '',
-            first_name: '',
-            last_name: '',
-            password: '',
-            email: '',
-            confirm_password: '',
-            confirm_email: '',
-          });
-        } catch (error) {
-          setModalMessage(translate('usersValidationText7', language));
-          setIsModalOpen(true);
-          console.error(error);
-        }
+          .catch((error) => {
+            setModalMessage(translate('usersValidationText7', language))
+            setIsModalOpen(true)
+            console.error(error)
+          })
       };
     
 
