@@ -6,7 +6,7 @@ import Sidebar from '../../components/Sidebar/Sidebar'
 import Btn from '../../components/Button/Button'
 import { useLocation, useNavigate } from 'react-router-dom'
 import TablePlanningA from '../../components/Table/TablePlanningA'
-import { TablePlanningB } from '../../components/Table/TablePlanningB.component'
+import { TablePlanningB } from '../../components/Table/TablePlanningB'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 import EditTablePlanning from '../../components/Table/EditTablePlanning'
@@ -149,7 +149,13 @@ const PlanningListAndEdit = () => {
                     {isEditing ? <EditTablePlanning /> : <TablePlanningA isThousandYenChecked={isThousandYenChecked} />}
                   </div>
                   <div className={`table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
-                    <TablePlanningB data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
+                    <TablePlanningB
+                      data={paginatedData}
+                      header={header}
+                      dates={dates}
+                      smallDate={smallDate}
+                      isThousandYenChecked={isThousandYenChecked}
+                    />
                   </div>
                 </div>
               </div>

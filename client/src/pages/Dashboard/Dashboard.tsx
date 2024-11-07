@@ -6,7 +6,7 @@ import { fetchAllCards } from '../../reducers/card/cardSlice'
 import { UnknownAction } from '@reduxjs/toolkit'
 import { useAppSelector } from '../../actions/hooks'
 import { RootState } from '../../app/store'
-import { TablePlanningB } from '../../components/Table/TablePlanningB.component'
+import { TablePlanningB } from '../../components/Table/TablePlanningB'
 import { fetchAllClientData } from '../../reducers/table/tableSlice'
 import { fetchGraphData } from '../../reducers/graph/graphSlice'
 import Sidebar from '../../components/Sidebar/Sidebar'
@@ -323,7 +323,13 @@ const Dashboard = () => {
                 <TablePlanningA isThousandYenChecked={isThousandYenChecked} />
               </div>
               <div className={`dashboard_table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
-                <TablePlanningB data={paginatedData} header={header} dates={dates} smallDate={smallDate} />
+                <TablePlanningB
+                  data={paginatedData}
+                  header={header}
+                  dates={dates}
+                  smallDate={smallDate}
+                  isThousandYenChecked={isThousandYenChecked}
+                />
               </div>
             </div>
           </div>
