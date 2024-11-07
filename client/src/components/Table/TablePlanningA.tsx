@@ -712,7 +712,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
     <div className='table-planning-container'>
       <div className='table-planning'>
         <table>
-          <thead>
+          <thead >
             <tr>
               <th></th>
               {months.map((month, index) => (

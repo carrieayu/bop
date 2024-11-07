@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from api.views import PasswordForgotView
-from api.views import PlanningList, PlanningUpdate
+from api.views import PlanningList, PlanningUpdate, PlanningDisplayByProjects
 from api.views import MasterCompaniesList, MasterCompaniesCreate, MasterCompaniesUpdate, MasterCompaniesDelete
 from api.views import ProjectsList,  ProjectsCreate, ProjectsUpdate, ProjectsDelete 
 from api.views import EmployeeExpensesList, EmployeeExpensesCreate, EmployeeExpensesDelete #No Update Function on this Page.
@@ -40,6 +40,8 @@ urlpatterns = [
     # Planning
     path('api/planning/list/', PlanningList.as_view(), name="planning-list"),
     path('api/planning/update/', PlanningUpdate.as_view(), name="planning-update"),
+    # Planning: Display By Projects
+    path('api/planning/display-by-projects/', PlanningDisplayByProjects.as_view(), name="planning-display-by-projects"),
 
     # Projects
     path('api/projects/list/', ProjectsList.as_view(), name="projects-list"), 

@@ -38,6 +38,7 @@ from .serializers import (
     MasterCompaniesCreateSerializer,
     MasterCompaniesUpdateSerializer,
     # Planning
+    PlanningDisplayByProjectstSerializer,
     UpdatePlanningSerializer,
     # Users
     UserSerializer,
@@ -55,8 +56,8 @@ from .serializers import (
     # CHECK: DO WE NEED ANY OF THESE? UNUSED SERIALIZERS
     # ------------------------
     # MasterClientSerializer,
-    ProjectsUpdateSerializer,
-    ProjectsUpdateSerializer,
+    # ProjectsUpdateSerializer,
+    # ProjectsUpdateSerializer,
     AuthenticationSerializer,
     CreateTableListSerializers,
     GetUserMasterSerializer,
@@ -699,7 +700,7 @@ class ProjectsUpdate(generics.UpdateAPIView):
                     
                     projects = Projects.objects.get(project_id=int(project_id))
                     business_division_id = client.get('business_division')
-                    client_id = client.get('client_id')
+                    client_id = client.get('client')
                     if business_division_id:
                         try:
                             business_division_instance = MasterBusinessDivision.objects.get(pk=business_division_id)
@@ -1348,6 +1349,13 @@ class PlanningUpdate(generics.UpdateAPIView):
 
         return Response({"message": "Data updated successfully"}, status=status.HTTP_200_OK)
     
+class PlanningDisplayByProjects(generics.ListAPIView):
+    queryset = Projects.objects.all()
+    serializer_class = PlanningDisplayByProjectstSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return Projects.objects.all()
 
 # -------------------------------------------------------------------------------------------------
 # -- NOT IN USE --
