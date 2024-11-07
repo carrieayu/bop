@@ -138,9 +138,31 @@ class MasterCompaniesUpdateSerializer(serializers.ModelSerializer):
 
 # Projects
 class ProjectsListSerializer(serializers.ModelSerializer):
+    client_name = serializers.CharField(source="client.client_name", read_only=True)
     class Meta:
         model = Projects
-        fields = '__all__'
+        # fields = '__all__'
+        fields = [
+            "project_id",
+            "project_name",
+            "project_type",
+            "year",
+            "month",
+            "sales_revenue",
+            "cost_of_sale",
+            "dispatch_labor_expense",
+            "employee_expense",
+            "indirect_employee_expense",
+            "expense",
+            "operating_income",
+            "non_operating_income",
+            "non_operating_expense",
+            "ordinary_profit",
+            "ordinary_profit_margin",
+            "business_division", # business_division_id in TABLE
+            "client", # client_id in TABLE
+            "client_name"
+            ]
 
 class ProjectsCreateSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(queryset=MasterClient.objects.all())
@@ -152,19 +174,24 @@ class ProjectsUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Projects
         fields = [
-            "planning_project_name",
-            "planning_project_type",
-            "planning",
+            "project_id",
+            "project_name",
+            "project_type",
+            "year",
+            "month",
             "sales_revenue",
-            "cost_of_goods_sold",
-            "dispatched_personnel_expenses",
-            "personal_expenses",
-            "indirect_personal_expenses",
-            "expenses",
-            "operating_profit",
+            "cost_of_sale",
+            "dispatch_labor_expense",
+            "employee_expense",
+            "indirect_employee_expense",
+            "expense",
+            "operating_income",
             "non_operating_income",
+            "non_operating_expense",
             "ordinary_profit",
-            "ordinary_profit_margin"
+            "ordinary_profit_margin",
+            "client_id"
+            "business_division_id",
             ]
 
 class GetBusinessDivisionMasterSerializer(serializers.ModelSerializer):
@@ -296,8 +323,46 @@ class UpdatePlanningSerializer(serializers.ModelSerializer):
     class Meta:
         model = CostOfSales
         fields =  '__all__'
+class PlanningDisplayByProjectstSerializer(serializers.ModelSerializer):
+    client_name = serializers.CharField(source="client.client_name", read_only=True)
+    employee_salaries = serializers.SerializerMethodField()
+    class Meta:
+        model = Projects
+        fields = [
+            "project_name",
+            "project_type",
+            "year",
+            "month",
+            "sales_revenue",
+            "cost_of_sale",
+            "dispatch_labor_expense",
+            "employee_expense",
+            "indirect_employee_expense",
+            "expense",
+            "operating_income",
+            "non_operating_income",
+            "non_operating_expense",
+            "ordinary_profit",
+            "ordinary_profit_margin",
+            "business_division_id",
+            "client",
+            "client_name", # Client Name 
+            "employee_salaries",  # New field for salaries for employees in speicific projects
+        ]
 
+    def get_employee_salaries(self, obj):
+        return obj.get_employee_salaries()
+    
+    # def get_employee_salaries(self, obj):
+    #     # Assuming you have a related name for employee expenses in the Projects model
+    #     employee_expenses = obj.employee_expenses.all()  # Adjust this to your actual related name
+    #     salaries = []
+        
+    #     for expense in employee_expenses:
+    #         employee_salary = expense.employee.salary if expense.employee else None  # Adjust the relationship as needed
+    #         salaries.append(employee_salary)
 
+    #     return salaries
 
 # --------------------------------------------------------------
 # NOT BEING USED IN APPLICATION CURRENTLY
