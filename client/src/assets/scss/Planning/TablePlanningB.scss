@@ -5,7 +5,7 @@ table, th, td {
 .table-b-table_header {
     width: 100%;
     // background-color: #ddd;
-    border: solid 1px #ddd;
+    // border: solid 1px #ddd;
 }
 .table-b-container {
     // margin: 14px;
@@ -25,6 +25,10 @@ table, th, td {
   text-align: center !important;
   justify-content: center;
   border-left: solid 1px #ddd;
+  border-top: solid 1px #ddd;
+  background-color: #efedea;
+
+
 }
 .table-b-client-data{
   width: 9% !important;
@@ -36,18 +40,27 @@ table, th, td {
   border-right: solid 1px #ddd;
   padding:10px;
   box-sizing: border-box;
+  background-color: #e0e0e0;
+  
 }
 .table-b-categories-header{
   width:  9% !important;
   text-align: center !important;
   border-left: solid 1px #ddd;
+  border-top: solid 1px #ddd;
+    background-color: #f9f9f9cf;
+
+
 }
 .table-b-categories-data{
+  box-sizing: border-box;
   width: 9% !important;
   text-align: center;
   border-bottom: solid 1px #ddd;
   text-align: center;
   font-weight: bold;
+  padding: 1px 0px 1px 2px;
+  background-color: #f9f9f9;
 }
 .table-b-months-header{
   width: 6% !important;
@@ -56,13 +69,17 @@ table, th, td {
 }
 .table-b-months-data{
   width: 6% !important;
-  text-align: center;
+  // text-align: center !important;
   background-color: #fff;
   border-left: solid 1px #ddd;
+  border-bottom: solid 1px #ddd;
+  border-right: solid 1px #ddd;
 }
 .table-b-total-header{
   width: 6% !important;
   text-align: center !important;
+  border-top: solid 1px #ddd;
+
 }
 .table-b-total-data{
   width: 6% !important;
@@ -114,6 +131,9 @@ table, th, td {
 .grey{
 background-color: #e0e0e0;
 }
+.smaller-font{
+  font-size: small;
+}
 
 .table-b-scrollable_container {
     height: 80vh;
@@ -145,7 +165,7 @@ background-color: #e0e0e0;
 }
 
 table-b-td.td_border {
-    border-right: 1px solid black;
+    // border-right: 1px solid black;
 }
 .table-b-wrapper{
   max-width: 2560px;

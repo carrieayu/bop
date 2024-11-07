@@ -153,7 +153,7 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
             </thead>
             <tbody>
               <tr>
-                <th className='table-b-client-header'>{translate('client', language)}</th>
+                <th className={`table-b-client-header ${isTranslateSwitchActive  ? 'smaller-font' : ''}`}>{translate('client', language)}</th>
                 <th className='table-b-categories-header'>{translate('accountCategories', language)}</th>
                 {months.map((month, index) => (
                   <th
@@ -186,21 +186,16 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
                         totalSum += rowTotal // Accumulate the row total
                         return (
                           <tr key={rowIndex}>
-                            <td className='table-b-categories-data' >{translate(headerTitle[rowIndex], language)}</td>
+                            <td className={`table-b-categories-data ${isTranslateSwitchActive  ? 'smaller-font' : ''}`}>{translate(headerTitle[rowIndex], language)}</td>
                             {row.map((cell, colIndex) => (
-                              <td className='table-b-months-data'
-                                
+                              <td
+                                className='table-b-months-data'
                                 key={colIndex}
                                 style={{
-                                  width: '6%',
-                                  textAlign: 'center',
-                                  borderBottom: '1px solid #ddd',
-                                  borderLeft: '1px solid #ddd',
-                                  borderRight: '1px solid #ddd',
+                                  textAlign: 'center', // for some reason this would not work in scss file so I left it here.
                                 }}
                               >
-                                {props.isThousandYenChecked ? thousandYenConversion(cell) :cell}
-                               
+                                {props.isThousandYenChecked ? thousandYenConversion(cell) : cell}
                               </td>
                             ))}
                             <td className='table-b-total-data' style={{ textAlign: 'center', fontWeight: 'light' }}>
