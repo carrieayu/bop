@@ -1,5 +1,6 @@
 .table-planning-container {
-    padding: 10px;
+    margin-top: 10px;
+    padding: 0px 10px 10px 10px;
     width: 180vh;
     height: 85vh;
     overflow-y: auto; 
@@ -38,6 +39,12 @@
         border: 1px solid black;
         @media only screen and (min-width: 1920px){
           height: 119vh;
+        }
+        .table-header-sticky{
+          position: sticky;
+          background-color: white;
+          z-index: 2;
+          top: -1px !important; // Need this to deal with padding on container so content does not reappear above header when scrolling
         }
         th, td {
           border: 1px solid #ddd;

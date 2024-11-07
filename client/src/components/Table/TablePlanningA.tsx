@@ -712,11 +712,11 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
     <div className='table-planning-container'>
       <div className='table-planning'>
         <table>
-          <thead >
-            <tr>
-              <th></th>
+          <thead>
+            <tr className='table-header-sticky' >
+              <th>{''}</th>
               {months.map((month, index) => (
-                <th key={index} className={month >= 10 || month <= 3 ? 'light-txt' : 'orange-txt'}>
+                <th  key={index} className={month >= 10 || month <= 3 ? 'light-txt' : 'orange-txt'}>
                   {language === 'en' ? monthNames[month].en : monthNames[month].jp}
                 </th>
               ))}
@@ -737,6 +737,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
                   {translate('planning', language)}
                 </th>
               ))}
+              <th>{''}</th>
             </tr>
           </thead>
           <tbody>
