@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-// import { RootState } from '../../app/store'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 import axios from 'axios'
-// import { fetchMasterClient } from '../../reducers/client/clientSlice'
-// import { UnknownAction } from 'redux'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 type TableProps = {
@@ -49,8 +45,6 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
   const [data, setData] = useState<any[]>([])
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const [clients, setClients] = useState<any>([])
-  const dispatch = useDispatch()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -149,8 +143,8 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
             </thead>
             <tbody>
               <tr>
-                <th className='table-b-client-header'>{translate('client', language)}</th>
-                <th className='table-b-categories-header'>{translate('accountCategories', language)}</th>
+                <th className='table-b-client-header salmon-txt'>{translate('client', language)}</th>
+                <th className='table-b-categories-header green-txt'>{translate('accountCategories', language)}</th>
                 {months.map((month, index) => (
                   <th
                     key={index}
@@ -163,59 +157,57 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
                     {language === 'en' ? monthNames[month].en : monthNames[month].jp}
                   </th>
                 ))}
-                <th style={{ width: '10%', border: '1px solid #ddd' }} className='table-b-total-header'>
-                  {translate('totalAmount', language)}
-                </th>
+                <th className='table-b-total-header sky-txt'>{translate('totalAmount', language)}</th>
               </tr>
             </tbody>
           </table>
           <div className='table-b-scrollable_container table-b-planning_scrollable'>
-            {grid.map((entityGrid, entityIndex) => (
-              <div key={entityIndex}>
-                <table className='table-b-grid' style={{ border: '1px solid #ddd'}}>
-                  <tbody className='table-b-client-table'>
-                    <td className='table-b-client-data' rowSpan={8}>
-                      {entityGrid.clientName}
-                    </td>
-                    {entityGrid.grid.map((row, rowIndex) => {
-                      const rowTotal = row.reduce((acc, cell) => acc + (parseFloat(cell) || 0), 0)
-                      return (
-                        <tr key={rowIndex}>
-                          <td
-                            style={{
-                              width: '9%',
-                              height: '20px',
-                              textAlign: 'center',
-                              border: '1px solid #ddd',
-                              fontWeight: 'light',
-                            }}
-                          >
-                            {translate(headerTitle[rowIndex], language)}
-                          </td>
-                          {row.map((cell, colIndex) => (
-                            <td
-                              key={colIndex}
-                              style={{
-                                width: '6%',
-                                textAlign: 'center',
-                                borderBottom: '1px solid #ddd',
-                                borderLeft: '1px solid #ddd',
-                                borderRight: '1px solid #ddd',
-                              }}
-                            >
-                              {cell}
+            {grid.map((entityGrid, entityIndex) => {
+              let totalSum = 0 // used for sum totals of projects for each client
+              return (
+                <div key={entityIndex}>
+                  <table className='table-b-grid' style={{ border: '1px solid #ddd' }}>
+                    <tbody className='table-b-client-table'>
+                      <td className='table-b-client-data light-salmon-txt' rowSpan={8}>
+                        {entityGrid.clientName}
+                      </td>
+                      {entityGrid.grid.map((row, rowIndex) => {
+                        const rowTotal = row.reduce((acc, cell) => acc + (parseFloat(cell) || 0), 0)
+                        totalSum += rowTotal // Accumulate the row total
+                        return (
+                          <tr key={rowIndex}>
+                            <td className='table-b-categories-data light-green-txt' >{translate(headerTitle[rowIndex], language)}</td>
+                            {row.map((cell, colIndex) => (
+                              <td
+                                key={colIndex}
+                                style={{
+                                  width: '6%',
+                                  textAlign: 'center',
+                                  borderBottom: '1px solid #ddd',
+                                  borderLeft: '1px solid #ddd',
+                                  borderRight: '1px solid #ddd',
+                                }}
+                              >
+                                {cell}
+                              </td>
+                            ))}
+                            <td className='table-b-total-data' style={{ textAlign: 'center', fontWeight: 'light' }}>
+                              {rowTotal}
                             </td>
-                          ))}
-                          <td className='table-b-total-data' style={{ textAlign: 'center', fontWeight: 'light' }}>
-                            {rowTotal}
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            ))}
+                          </tr>
+                        )
+                      })}
+                      <tr>
+                        <td className='table-b-divider' colSpan={14}>
+                          {' '}
+                        </td>
+                        <td className='table-b-sum-of-totals sky-txt'>{totalSum}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
