@@ -3,6 +3,7 @@ import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 import axios from 'axios'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { getPlanningB } from '../../api/PlanningEndpoint/GetPlanningB'
 
 
 type TableProps = {
@@ -50,50 +51,46 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await axios.get(`${getReactActiveEndpoint()}/api/planning/display-by-projects/`, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        })
+      
+      getPlanningB(token)
+        .then((data) => {
+          const groupedData: { [key: string]: EntityGrid } = {}
 
-        const groupedData: { [key: string]: EntityGrid } = {}
+          data.forEach((project) => {
+            const clientId = project.client
+            const clientName = project.client_name
 
-        response.data.forEach((project) => {
-          const clientId = project.client
-          const clientName = project.client_name
-
-          if (!groupedData[clientId]) {
-            groupedData[clientId] = {
-              clientName,
-              grid: Array.from({ length: gridRows }, () => Array.from({ length: gridCols }, () => '0')),
-              clientId,
-            }
-          }
-
-          const month = project.month - 1
-          const adjustedMonth = (month + 9) % 12
-
-          objectEntity.forEach((field, index) => {
-            if (field === 'employee_salaries') {
-              const total_employee_salaries = project[field].reduce((acc, current) => acc + current, 0)
-              groupedData[clientId].grid[index][adjustedMonth] = total_employee_salaries.toString()
-            } else if (project[field] !== undefined) {
-              const fieldValue = parseFloat(project[field])
-              if (!isNaN(fieldValue)) {
-                groupedData[clientId].grid[index][adjustedMonth] = (
-                  parseFloat(groupedData[clientId].grid[index][adjustedMonth]) + fieldValue
-                ).toString()
+            if (!groupedData[clientId]) {
+              groupedData[clientId] = {
+                clientName,
+                grid: Array.from({ length: gridRows }, () => Array.from({ length: gridCols }, () => '0')),
+                clientId,
               }
             }
-          })
-        })
 
-        setData(Object.values(groupedData))
-      } catch (error) {
-        console.error('Error fetching project data:', error)
-      }
+            const month = project.month - 1
+            const adjustedMonth = (month + 9) % 12
+
+            objectEntity.forEach((field, index) => {
+              if (field === 'employee_salaries') {
+                const total_employee_salaries = project[field].reduce((acc, current) => acc + current, 0)
+                groupedData[clientId].grid[index][adjustedMonth] = total_employee_salaries.toString()
+              } else if (project[field] !== undefined) {
+                const fieldValue = parseFloat(project[field])
+                if (!isNaN(fieldValue)) {
+                  groupedData[clientId].grid[index][adjustedMonth] = (
+                    parseFloat(groupedData[clientId].grid[index][adjustedMonth]) + fieldValue
+                  ).toString()
+                }
+              }
+            })
+          })
+
+          setData(Object.values(groupedData))
+        })
+        .catch((error) => {
+          console.error('Error fetching project data:', error)
+        })
     }
 
     fetchData()

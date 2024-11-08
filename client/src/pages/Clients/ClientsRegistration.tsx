@@ -9,7 +9,7 @@ import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import axios from 'axios'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import CrudModal from '../../components/CrudModal/CrudModal'
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { createClient } from '../../api/MasterClientEndpoint/CreateMasterClient'
 
 const ClientsRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -125,44 +125,46 @@ const ClientsRegistration = () => {
         }
         
         const token = localStorage.getItem('accessToken')
-        try {
-          const response = await axios.post(`${getReactActiveEndpoint()}/api/master-clients/create/`, client, {
-            headers: {
-              // 'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
+
+        createClient(client, token)
+          .then((data) => {
+            setModalMessage(translate('successfullySaved', language))
+            setIsModalOpen(true)
+            setClientData([
+              {
+                client_name: '',
+                created_at: '',
+                auth_user: '',
+              },
+            ])
           })
-          setModalMessage(translate('successfullySaved', language));
-          setIsModalOpen(true);
-          setClientData([
-            {
-              client_name: '',
-              created_at: '',
-              auth_user: '',
-            },
-          ])
-        } catch (error) {
-          if (error.response) {
-            const { status, data } = error.response
-            switch (status) {
-              case 409:
-                // setModalMessage(translate('clientNameExistsValidationMessage', language));
-                const existingClientNames = data.errors.map(err => err.client_name).join(', ') || 'Unknown client';
-                setModalMessage(translate('clientNameExistsValidationMessage', language).replace('${clientName}', existingClientNames));
-                setIsModalOpen(true);
-                break
-              case 401:
-                console.error('Validation error:', data)
-                window.location.href = '/login'
-                break
-              default:
-                console.error('There was an error creating the client data!', error)
-                setModalMessage(translate('error', language));
-                setIsModalOpen(true);
-                break
+          .catch((error) => {
+            if (error.response) {
+              const { status, data } = error.response
+              switch (status) {
+                case 409:
+                  // setModalMessage(translate('clientNameExistsValidationMessage', language));
+                  const existingClientNames = data.errors.map((err) => err.client_name).join(', ') || 'Unknown client'
+                  setModalMessage(
+                    translate('clientNameExistsValidationMessage', language).replace(
+                      '${clientName}',
+                      existingClientNames,
+                    ),
+                  )
+                  setIsModalOpen(true)
+                  break
+                case 401:
+                  console.error('Validation error:', data)
+                  window.location.href = '/login'
+                  break
+                default:
+                  console.error('There was an error creating the client data!', error)
+                  setModalMessage(translate('error', language))
+                  setIsModalOpen(true)
+                  break
+              }
             }
-          }
-        }
+          })
       }
 
       const handleAddContainer = () => {

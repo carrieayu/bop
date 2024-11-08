@@ -10,6 +10,7 @@ import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { createCostOfSale } from '../../api/CostOfSalesEndpoint/CreateCostOfSale'
 
 const months = [
    '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -47,7 +48,8 @@ const CostOfSalesRegistration = () => {
   const [modalMessage, setModalMessage] = useState('');
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false); 
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false);
-
+   const token = localStorage.getItem('accessToken')
+   
   const handleAdd = () => {
     if (formData.length < 10) {
       const newFormData = [...formData]
@@ -191,70 +193,59 @@ const CostOfSalesRegistration = () => {
       return;
     }
 
-    const token = localStorage.getItem('accessToken');
     if (!token) {
       window.location.href = '/login';
       return;
     }
 
-    try {
-      // Attempt to create a new entry
-      const response = await axios.post(`${getReactActiveEndpoint()}/api/cost-of-sales/create/`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+    createCostOfSale(formData, token)
+      .then((data) => {
+        setModalMessage(translate('successfullySaved', language))
+        setIsModalOpen(true)
+        setFormData([
+          {
+            year: '',
+            month: '',
+            purchase: '',
+            outsourcing_expense: '',
+            product_purchase: '',
+            dispatch_labor_expense: '',
+            communication_expense: '',
+            work_in_progress_expense: '',
+            amortization_expense: '',
+          },
+        ])
       })
-      console.log('Form Data before submission:', formData);
+      .catch((error) => {
+        if (error.response && error.response.status === 409) {
+          const existingEntries = error.response.data.existingEntries
 
-      setModalMessage(translate('successfullySaved', language));
-      setIsModalOpen(true);
-      // Reset form data after successful save
-      setFormData([{
-        year: '',
-        month: '',
-        purchase: '',
-        outsourcing_expense: '',
-        product_purchase: '',
-        dispatch_labor_expense: '',
-        communication_expense: '',
-        work_in_progress_expense: '',
-        amortization_expense: '',
-      }]);
-    } catch (error) {
-      if (error.response && error.response.status === 409) {
-        const existingEntries = error.response.data.existingEntries;
+          // Map to create a string of existing entries
+          const existingYearsMonths = existingEntries.map((entry) => `'${entry.year}, ${entry.month}'`).join(', ')
 
-        // Map to create a string of existing entries
-        const existingYearsMonths = existingEntries.map(entry => `'${entry.year}, ${entry.month}'`).join(', ');
-      
-        // Filter out new entries that don't match the existing entries
-        const newEntries = costOfSalesData.filter(item => {
-          return !existingEntries.some(existing => existing.year === item.year && existing.month === item.month);
-        });
-      
-        // Create a string for only the new entries being submitted
-        const newYearsMonths = newEntries.map(entry => `'${entry.year}, ${entry.month}'`).join(', ');
-      
-        // Construct the alert message
-        let message = translate('alertMessageAbove', language)
-            .replace('${existingEntries}', existingYearsMonths);
-      
-        // Only append the new entries part if there are new entries
-        if (newYearsMonths.length > 0) {
-          message += translate('alertMessageNewEntries', language)
-            .replace('${newEntries}', newYearsMonths);
+          // Filter out new entries that don't match the existing entries
+          const newEntries = costOfSalesData.filter((item) => {
+            return !existingEntries.some((existing) => existing.year === item.year && existing.month === item.month)
+          })
+
+          // Create a string for only the new entries being submitted
+          const newYearsMonths = newEntries.map((entry) => `'${entry.year}, ${entry.month}'`).join(', ')
+
+          // Construct the alert message
+          let message = translate('alertMessageAbove', language).replace('${existingEntries}', existingYearsMonths)
+
+          // Only append the new entries part if there are new entries
+          if (newYearsMonths.length > 0) {
+            message += translate('alertMessageNewEntries', language).replace('${newEntries}', newYearsMonths)
+          }
+
+          setModalMessage(message)
+          setIsOverwriteModalOpen(true)
+          return 
+        } else {
+          console.error('There was an error with expenses registration!', error)
         }
-      
-
-        setModalMessage(message);
-        setIsOverwriteModalOpen(true);
-        return; // Exit the function to wait for user input
-      } else {
-        // Handle any other errors
-        console.error('There was an error with expenses registration!', error);
-      }
-    }
+      })
   };
 
   // Handle overwrite confirmation

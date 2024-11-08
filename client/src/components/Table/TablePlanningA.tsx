@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { translate } from '../../utils/translationUtil';
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { getPlanningA } from '../../api/PlanningEndpoint/GetPlanningA';
 
 interface TablePlanningAProps {
   isThousandYenChecked: boolean;
@@ -20,14 +21,10 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
       window.location.href = '/login';
       return;
     }
-    axios.get(`${getReactActiveEndpoint()}/api/planning/list/`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      }
-    })
-    .then(response => {
-      const aggregatedData = response.data.cost_of_sales.reduce((acc, item) => {
+
+    getPlanningA(token)
+      .then(response => {
+      const aggregatedData = response.cost_of_sales.reduce((acc, item) => {
         const { month, ...values } = item;
         if (!acc[month]) {
           acc[month] = { ...values };
@@ -38,7 +35,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         }
         return acc;
       }, {});
-      const aggregatedExpensesData = response.data.expenses.reduce((acc, item) => {
+      const aggregatedExpensesData = response.expenses.reduce((acc, item) => {
         const { month, ...values } = item;
         if (!acc[month]) {
           acc[month] = { month, ...values };  // Include month in the object
@@ -93,7 +90,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         return aggregatedData
       }
       
-      const aggregatedPlanningAssign = response.data.planning_assign_data.reduce((acc, item) => {
+      const aggregatedPlanningAssign = response.planning_assign_data.reduce((acc, item) => {
         const { month, employee, project, ...values } = item;  // Destructure employee and project
         
         // Initialize month if not already present
@@ -125,7 +122,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         }
         return acc;
     }, {});
-      const aggregatedPlanningProjectData = response.data.planning_project_data.reduce((acc, item) => {
+      const aggregatedPlanningProjectData = response.planning_project_data.reduce((acc, item) => {
         const { month, ...values } = item;
         if (!acc[month]) {
           acc[month] = { month };
@@ -184,7 +181,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         return executiveRenumeration + salary + fuel_allowance + statutory_welfare_expense + welfare_expense + insurance_premiums;
       })
       // EMPLOYEES
-      const result = aggregateEmployeeData(response.data.employees)
+      const result = aggregateEmployeeData(response.employees)
       const executiveRenumerationValues = months.map((month) => result[month]?.executive_renumeration || 0)
       const salaryValues = months.map((month) => result[month]?.salary || 0)
       const totalBonusAndFuelAllowance = result[12]?.bonus_and_fuel_allowance || 0

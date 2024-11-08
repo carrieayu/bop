@@ -1,16 +1,19 @@
-import React, { useEffect, useState } from "react";
-import Btn from "../../components/Button/Button";
-import axios from "axios";
-import Sidebar from "../../components/Sidebar/Sidebar";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useLanguage } from "../../contexts/LanguageContext";
-import { translate } from "../../utils/translationUtil";
-import ListButtons from "../../components/ListButtons/ListButtons";
-import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
+import React, { useEffect, useState } from 'react'
+import Btn from '../../components/Button/Button'
+import axios from 'axios'
+import Sidebar from '../../components/Sidebar/Sidebar'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { translate } from '../../utils/translationUtil'
+import ListButtons from '../../components/ListButtons/ListButtons'
+import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { RiDeleteBin6Fill } from 'react-icons/ri'
-import CrudModal from "../../components/CrudModal/CrudModal";
+import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { deleteExpense } from '../../api/ExpenseEndpoint/DeleteExpense'
+import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
+import { updateExpense } from '../../api/ExpenseEndpoint/UpdateExpense'
 
 const ExpensesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -27,12 +30,12 @@ const ExpensesList: React.FC = () => {
   const [selectedExpense, setSelectedExpense] = useState<any>(null)
   const [expensesList, setExpensesList] = useState([])
   const [originalExpenseList, setOriginalExpensesList] = useState(expensesList)
-
+  const token = localStorage.getItem('accessToken')
   const [changes, setChanges] = useState({}) //ians code maybe i do not need.
 
-  const [isCRUDOpen, setIsCRUDOpen] = useState(false);
-  const [crudMessage, setCrudMessage] = useState('');
-  const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
+  const [isCRUDOpen, setIsCRUDOpen] = useState(false)
+  const [crudMessage, setCrudMessage] = useState('')
+  const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
 
   const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
   const monthNames: { [key: number]: { en: string; jp: string } } = {
@@ -112,7 +115,6 @@ const ExpensesList: React.FC = () => {
   }
 
   const handleSubmit = async () => {
-
     const getModifiedFields = (original, updated) => {
       const modifiedFields = []
 
@@ -120,14 +122,14 @@ const ExpensesList: React.FC = () => {
         const originalExpense = original.find((exp) => exp.expense_id === updatedExpense.expense_id)
 
         if (originalExpense) {
-          const changes = { expense_id: updatedExpense.expense_id } 
+          const changes = { expense_id: updatedExpense.expense_id }
 
-          let hasChanges = false 
+          let hasChanges = false
           for (const key in updatedExpense) {
             if (key === 'expense_id' || key === 'month') continue
             if (updatedExpense[key] !== originalExpense[key] && updatedExpense[key] !== '') {
-              changes[key] = updatedExpense[key] 
-              hasChanges = true 
+              changes[key] = updatedExpense[key]
+              hasChanges = true
             }
           }
 
@@ -165,8 +167,8 @@ const ExpensesList: React.FC = () => {
     })
 
     if (areFieldsEmpty) {
-      setCrudMessage(translate('allFieldsRequiredInputValidationMessage', language));
-      setIsCRUDOpen(true);
+      setCrudMessage(translate('allFieldsRequiredInputValidationMessage', language))
+      setIsCRUDOpen(true)
       return
     }
 
@@ -175,38 +177,39 @@ const ExpensesList: React.FC = () => {
       window.location.href = '/login'
       return
     }
-    try {
-      await axios.put(`${getReactActiveEndpoint()}/api/expenses/update`, modifiedFields, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-      setOriginalExpensesList(expensesList)
-      setCrudMessage(translate('successfullyUpdated', language));
-      setIsCRUDOpen(true);
-      setIsEditing(false);
 
-      const response = await axios.get(`${getReactActiveEndpoint()}/api/expenses/list/`)
-
-      setExpensesList(response.data)
-    } catch (error) {
-      if (error.response) {
-        console.error('Error response:', error.response.data)
-        if (error.response.status === 401) {
-          window.location.href = '/login'
+    updateExpense(modifiedFields, token)
+      .then(() => {
+        setOriginalExpensesList(expensesList)
+        setCrudMessage(translate('successfullyUpdated', language))
+        setIsCRUDOpen(true)
+        setIsEditing(false)
+        getExpense(token)
+          .then((data) => {
+            setExpensesList(data)
+          })
+          .catch((error) => {
+            console.error('Error fetching expense:', error)
+          })
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.error('Error response:', error.response.data)
+          if (error.response.status === 401) {
+            window.location.href = '/login'
+          } else {
+            console.error('There was an error updating the expenses data!', error.response.data)
+          }
         } else {
-          console.error('There was an error updating the expenses data!', error.response.data)
+          console.error('Error', error.message)
         }
-      } else {
-        console.error('Error', error.message)
-      }
-    }
+      })
   }
 
   const handleUpdateConfirm = async () => {
-    await handleSubmit(); // Call the submit function for update
-    setIsUpdateConfirmationOpen(false);
-};
+    await handleSubmit() // Call the submit function for update
+    setIsUpdateConfirmationOpen(false)
+  }
 
   const fetchExpenses = async () => {
     const token = localStorage.getItem('accessToken')
@@ -293,30 +296,30 @@ const ExpensesList: React.FC = () => {
   const closeModal = () => {
     setSelectedExpense(null)
     setModalIsOpen(false)
-    setIsCRUDOpen(false);
+    setIsCRUDOpen(false)
   }
 
   const handleConfirm = async () => {
-    const token = localStorage.getItem('accessToken')
-    try {
-      await axios.delete(`${getReactActiveEndpoint()}/api/expenses/${deleteExpenseId}/delete/`, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Add token to request headers
-        },
+    deleteExpense(deleteExpenseId, token)
+      .then(() => {
+        setCrudMessage(translate('successfullyDeleted', language))
+        setIsCRUDOpen(true)
+        setIsEditing(false)
+        getExpense(token)
+          .then((data) => {
+            setExpensesList(data)
+          })
+          .catch((error) => {
+            console.error('Error fetching expense:', error)
+          })
       })
-      setCrudMessage(translate('successfullyDeleted', language))
-      setIsCRUDOpen(true)
-      setIsEditing(false)
-
-      const response = await axios.get(`${getReactActiveEndpoint()}/api/expenses/list/`)
-      setExpensesList(response.data)
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        window.location.href = '/login' // Redirect to login if unauthorized
-      } else {
-        console.error('Error deleting expenses:', error)
-      }
-    }
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login' // Redirect to login if unauthorized
+        } else {
+          console.error('Error deleting expenses:', error)
+        }
+      })
   }
 
   const handleNewRegistrationClick = () => {
@@ -360,269 +363,269 @@ const ExpensesList: React.FC = () => {
                 <div className={`expensesList_table_cont ${isEditing ? 'editScrollable' : ''}`}>
                   {/* <div className='expensesList_table_cont'> */}
                   {/* <div className='columns is-mobile'> */}
-                    {/* <div className='column'> */}
-                      {isEditing ? (
-                        <div className='editScroll'>
-                          <table className='table is-bordered is-hoverable'>
-                            <thead>
-                              <tr className='expensesList_table_title '>
-                                <th className='expensesList_table_title_content_vertical has-text-centered'>
-                                  {translate('year', language)}
-                                </th>
-                                <th className='expensesList_table_title_content_vertical has-text-centered'>
-                                  {translate('month', language)}
-                                </th>
-                                <th className='expensesList_table_title_content_vertical has-text-centered'>
-                                  {translate('consumableExpenses', language)}
-                                </th>
-                                <th className='expensesList_table_title_content_vertical has-text-centered'>
-                                  {translate('rentExpenses', language)}
-                                </th>
-                                <th className='expensesList_table_title_content_vertical has-text-centered'>
-                                  {translate('taxesAndPublicCharges', language)}
-                                </th>
-                                <th className='expensesList_table_title_content_vertical has-text-centered'>
-                                  {translate('depreciationExpenses', language)}
-                                </th>
-                                <th className='expensesList_table_title_content_vertical has-text-centered'>
-                                  {translate('travelExpenses', language)}
-                                </th>
-                                <th className='expensesList_table_title_content_vertical has-text-centered'>
-                                  {translate('communicationExpenses', language)}
-                                </th>
-                                <th className='expensesList_table_title_content_vertical has-text-centered'>
-                                  {translate('utilitiesExpenses', language)}
-                                </th>
-                                <th className='expensesList_table_title_content_vertical has-text-centered'>
-                                  {translate('transactionFees', language)}
-                                </th>
-                                <th className='expensesList_table_title_content_vertical has-text-centered'>
-                                  {translate('advertisingExpenses', language)}
-                                </th>
-                                <th className='expensesList_table_title_content_vertical has-text-centered'>
-                                  {translate('entertainmentExpenses', language)}
-                                </th>
-                                <th className='expensesList_table_title_content_vertical has-text-centered'>
-                                  {translate('professionalServicesFees', language)}
-                                </th>
-                                <th className='expensesList_table_title_content_vertical has-text-centered'></th>
-                              </tr>
-                            </thead>
-                            <tbody className='expensesList_table_body'>
-                              {combinedData.map((expense, index) => {
-                                const isNewYear = index === 0 || combinedData[index - 1].year !== expense.year
-                                const isLastExpenseOfYear =
-                                  index !== combinedData.length - 1 && combinedData[index + 1].year !== expense.year
+                  {/* <div className='column'> */}
+                  {isEditing ? (
+                    <div className='editScroll'>
+                      <table className='table is-bordered is-hoverable'>
+                        <thead>
+                          <tr className='expensesList_table_title '>
+                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                              {translate('year', language)}
+                            </th>
+                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                              {translate('month', language)}
+                            </th>
+                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                              {translate('consumableExpenses', language)}
+                            </th>
+                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                              {translate('rentExpenses', language)}
+                            </th>
+                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                              {translate('taxesAndPublicCharges', language)}
+                            </th>
+                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                              {translate('depreciationExpenses', language)}
+                            </th>
+                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                              {translate('travelExpenses', language)}
+                            </th>
+                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                              {translate('communicationExpenses', language)}
+                            </th>
+                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                              {translate('utilitiesExpenses', language)}
+                            </th>
+                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                              {translate('transactionFees', language)}
+                            </th>
+                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                              {translate('advertisingExpenses', language)}
+                            </th>
+                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                              {translate('entertainmentExpenses', language)}
+                            </th>
+                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                              {translate('professionalServicesFees', language)}
+                            </th>
+                            <th className='expensesList_table_title_content_vertical has-text-centered'></th>
+                          </tr>
+                        </thead>
+                        <tbody className='expensesList_table_body'>
+                          {combinedData.map((expense, index) => {
+                            const isNewYear = index === 0 || combinedData[index - 1].year !== expense.year
+                            const isLastExpenseOfYear =
+                              index !== combinedData.length - 1 && combinedData[index + 1].year !== expense.year
 
-                                const isEditable = expense.expense_id !== null
+                            const isEditable = expense.expense_id !== null
 
-                                return (
-                                  <React.Fragment key={index}>
-                                    {expense ? (
-                                      <tr key={index} className='expensesList_table_body_content_horizontal'>
-                                        <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                          {expense.year}
-                                        </td>
-                                        <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                          {expense.month}
-                                        </td>
-                                        <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                          <input
-                                            type='number'
-                                            name='consumable_expense'
-                                            value={expense.consumable_expense}
-                                            onChange={(e) => handleChange(index, e)}
-                                            disabled={!isEditable}
-                                          />
-                                        </td>
-                                        <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                          <input
-                                            type='number'
-                                            name='rent_expense'
-                                            value={expense.rent_expense}
-                                            onChange={(e) => handleChange(index, e)}
-                                            disabled={!isEditable}
-                                          />
-                                        </td>
-                                        <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                          <input
-                                            type='number'
-                                            name='tax_and_public_charge'
-                                            value={expense.tax_and_public_charge}
-                                            onChange={(e) => handleChange(index, e)}
-                                            disabled={!isEditable}
-                                          />
-                                        </td>
-                                        <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                          <input
-                                            type='number'
-                                            name='depreciation_expense'
-                                            value={expense.depreciation_expense}
-                                            onChange={(e) => handleChange(index, e)}
-                                            disabled={!isEditable}
-                                          />
-                                        </td>
-                                        <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                          <input
-                                            type='number'
-                                            name='travel_expense'
-                                            value={expense.travel_expense}
-                                            onChange={(e) => handleChange(index, e)}
-                                            disabled={!isEditable}
-                                          />
-                                        </td>
-                                        <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                          <input
-                                            type='number'
-                                            name='communication_expense'
-                                            value={expense.communication_expense}
-                                            onChange={(e) => handleChange(index, e)}
-                                            disabled={!isEditable}
-                                          />
-                                        </td>
-
-                                        <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                          <input
-                                            type='number'
-                                            name='utilities_expense'
-                                            value={expense.utilities_expense}
-                                            onChange={(e) => handleChange(index, e)}
-                                            disabled={!isEditable}
-                                          />
-                                        </td>
-                                        <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                          <input
-                                            type='number'
-                                            name='transaction_fee'
-                                            value={expense.transaction_fee}
-                                            onChange={(e) => handleChange(index, e)}
-                                            disabled={!isEditable}
-                                          />
-                                        </td>
-                                        <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                          <input
-                                            type='number'
-                                            name='advertising_expense'
-                                            value={expense.advertising_expense}
-                                            onChange={(e) => handleChange(index, e)}
-                                            disabled={!isEditable}
-                                          />
-                                        </td>
-                                        <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                          <input
-                                            type='number'
-                                            name='entertainment_expense'
-                                            value={expense.entertainment_expense}
-                                            onChange={(e) => handleChange(index, e)}
-                                            disabled={!isEditable}
-                                          />
-                                        </td>
-                                        <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                          <input
-                                            type='number'
-                                            name='professional_service_fee'
-                                            value={expense.professional_service_fee}
-                                            onChange={(e) => handleChange(index, e)}
-                                            disabled={!isEditable}
-                                          />
-                                        </td>
-                                        <td className='expensesList_table_body_content_vertical delete_icon'>
-                                          <RiDeleteBin6Fill
-                                            className='delete-icon'
-                                            onClick={() => openModal('expenses', expense.expense_id)}
-                                            style={{ color: 'red' }}
-                                          />
-                                        </td>
-                                      </tr>
-                                    ) : null}
-                                    {isLastExpenseOfYear && (
-                                      <tr className='year-separator'>
-                                        <td className='horizontal-line-cell' colSpan={9}>
-                                          <div className='horizontal-line' />
-                                        </td>
-                                      </tr>
-                                    )}
-                                  </React.Fragment>
-                                )
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
-                      ) : (
-                        <table className='table is-bordered is-hoverable'>
-                          <thead>
-                            <tr className='expensesList_table_title '>
-                              {header.map((head, index) => (
-                                <th key={index} className='expensesList_table_title_content_vertical has-text-centered'>
-                                  {translate(head, language)}
-                                </th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody className='expensesList_table_body'>
-                            {combinedData.map((expense, index) => {
-                              const isNewYear = index === 0 || combinedData[index - 1].year !== expense.year
-                              const isLastExpenseOfYear =
-                                index !== combinedData.length - 1 && combinedData[index + 1].year !== expense.year
-
-                              return (
-                                <React.Fragment key={index}>
-                                  <tr className='expensesList_table_body_content_horizontal'>
+                            return (
+                              <React.Fragment key={index}>
+                                {expense ? (
+                                  <tr key={index} className='expensesList_table_body_content_horizontal'>
                                     <td className='expensesList_table_body_content_vertical has-text-centered'>
                                       {expense.year}
                                     </td>
                                     <td className='expensesList_table_body_content_vertical has-text-centered'>
                                       {expense.month}
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical'>
-                                      {expense.consumable_expense || 0}
+                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                      <input
+                                        type='number'
+                                        name='consumable_expense'
+                                        value={expense.consumable_expense}
+                                        onChange={(e) => handleChange(index, e)}
+                                        disabled={!isEditable}
+                                      />
                                     </td>
                                     <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                      {expense.rent_expense || 0}
+                                      <input
+                                        type='number'
+                                        name='rent_expense'
+                                        value={expense.rent_expense}
+                                        onChange={(e) => handleChange(index, e)}
+                                        disabled={!isEditable}
+                                      />
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-right'>
-                                      {expense.tax_and_public_charge || 0}
+                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                      <input
+                                        type='number'
+                                        name='tax_and_public_charge'
+                                        value={expense.tax_and_public_charge}
+                                        onChange={(e) => handleChange(index, e)}
+                                        disabled={!isEditable}
+                                      />
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-right'>
-                                      {expense.depreciation_expense || 0}
+                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                      <input
+                                        type='number'
+                                        name='depreciation_expense'
+                                        value={expense.depreciation_expense}
+                                        onChange={(e) => handleChange(index, e)}
+                                        disabled={!isEditable}
+                                      />
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-right'>
-                                      {expense.travel_expense || 0}
+                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                      <input
+                                        type='number'
+                                        name='travel_expense'
+                                        value={expense.travel_expense}
+                                        onChange={(e) => handleChange(index, e)}
+                                        disabled={!isEditable}
+                                      />
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-right'>
-                                      {expense.communication_expense || 0}
+                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                      <input
+                                        type='number'
+                                        name='communication_expense'
+                                        value={expense.communication_expense}
+                                        onChange={(e) => handleChange(index, e)}
+                                        disabled={!isEditable}
+                                      />
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-right'>
-                                      {expense.utilities_expense || 0}
+
+                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                      <input
+                                        type='number'
+                                        name='utilities_expense'
+                                        value={expense.utilities_expense}
+                                        onChange={(e) => handleChange(index, e)}
+                                        disabled={!isEditable}
+                                      />
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-right'>
-                                      {expense.transaction_fee || 0}
+                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                      <input
+                                        type='number'
+                                        name='transaction_fee'
+                                        value={expense.transaction_fee}
+                                        onChange={(e) => handleChange(index, e)}
+                                        disabled={!isEditable}
+                                      />
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-right'>
-                                      {expense.advertising_expense || 0}
+                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                      <input
+                                        type='number'
+                                        name='advertising_expense'
+                                        value={expense.advertising_expense}
+                                        onChange={(e) => handleChange(index, e)}
+                                        disabled={!isEditable}
+                                      />
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-right'>
-                                      {expense.entertainment_expense || 0}
+                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                      <input
+                                        type='number'
+                                        name='entertainment_expense'
+                                        value={expense.entertainment_expense}
+                                        onChange={(e) => handleChange(index, e)}
+                                        disabled={!isEditable}
+                                      />
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-right'>
-                                      {expense.professional_service_fee || 0}
+                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                      <input
+                                        type='number'
+                                        name='professional_service_fee'
+                                        value={expense.professional_service_fee}
+                                        onChange={(e) => handleChange(index, e)}
+                                        disabled={!isEditable}
+                                      />
+                                    </td>
+                                    <td className='expensesList_table_body_content_vertical delete_icon'>
+                                      <RiDeleteBin6Fill
+                                        className='delete-icon'
+                                        onClick={() => openModal('expenses', expense.expense_id)}
+                                        style={{ color: 'red' }}
+                                      />
                                     </td>
                                   </tr>
-                                  {isLastExpenseOfYear && (
-                                    <tr className='year-separator'>
-                                      <td className='horizontal-line-cell' colSpan={9}>
-                                        <div className='horizontal-line' />
-                                      </td>
-                                    </tr>
-                                  )}
-                                </React.Fragment>
-                              )
-                            })}
-                          </tbody>
-                        </table>
-                      )}
-                    {/* </div> */}
-                    {/* </div> */}
+                                ) : null}
+                                {isLastExpenseOfYear && (
+                                  <tr className='year-separator'>
+                                    <td className='horizontal-line-cell' colSpan={9}>
+                                      <div className='horizontal-line' />
+                                    </td>
+                                  </tr>
+                                )}
+                              </React.Fragment>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <table className='table is-bordered is-hoverable'>
+                      <thead>
+                        <tr className='expensesList_table_title '>
+                          {header.map((head, index) => (
+                            <th key={index} className='expensesList_table_title_content_vertical has-text-centered'>
+                              {translate(head, language)}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className='expensesList_table_body'>
+                        {combinedData.map((expense, index) => {
+                          const isNewYear = index === 0 || combinedData[index - 1].year !== expense.year
+                          const isLastExpenseOfYear =
+                            index !== combinedData.length - 1 && combinedData[index + 1].year !== expense.year
+
+                          return (
+                            <React.Fragment key={index}>
+                              <tr className='expensesList_table_body_content_horizontal'>
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {expense.year}
+                                </td>
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {expense.month}
+                                </td>
+                                <td className='expensesList_table_body_content_vertical'>
+                                  {expense.consumable_expense || 0}
+                                </td>
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {expense.rent_expense || 0}
+                                </td>
+                                <td className='expensesList_table_body_content_vertical has-text-right'>
+                                  {expense.tax_and_public_charge || 0}
+                                </td>
+                                <td className='expensesList_table_body_content_vertical has-text-right'>
+                                  {expense.depreciation_expense || 0}
+                                </td>
+                                <td className='expensesList_table_body_content_vertical has-text-right'>
+                                  {expense.travel_expense || 0}
+                                </td>
+                                <td className='expensesList_table_body_content_vertical has-text-right'>
+                                  {expense.communication_expense || 0}
+                                </td>
+                                <td className='expensesList_table_body_content_vertical has-text-right'>
+                                  {expense.utilities_expense || 0}
+                                </td>
+                                <td className='expensesList_table_body_content_vertical has-text-right'>
+                                  {expense.transaction_fee || 0}
+                                </td>
+                                <td className='expensesList_table_body_content_vertical has-text-right'>
+                                  {expense.advertising_expense || 0}
+                                </td>
+                                <td className='expensesList_table_body_content_vertical has-text-right'>
+                                  {expense.entertainment_expense || 0}
+                                </td>
+                                <td className='expensesList_table_body_content_vertical has-text-right'>
+                                  {expense.professional_service_fee || 0}
+                                </td>
+                              </tr>
+                              {isLastExpenseOfYear && (
+                                <tr className='year-separator'>
+                                  <td className='horizontal-line-cell' colSpan={9}>
+                                    <div className='horizontal-line' />
+                                  </td>
+                                </tr>
+                              )}
+                            </React.Fragment>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  )}
+                  {/* </div> */}
+                  {/* </div> */}
                   {/* </div> */}
                 </div>
               </div>
@@ -631,7 +634,12 @@ const ExpensesList: React.FC = () => {
               <div className='expensesList_is_editing_cont'>
                 {isEditing ? (
                   <div className='expensesList_edit_submit_btn_cont'>
-                    <button className='expensesList_edit_submit_btn' onClick={() => {setIsUpdateConfirmationOpen(true)}}>
+                    <button
+                      className='expensesList_edit_submit_btn'
+                      onClick={() => {
+                        setIsUpdateConfirmationOpen(true)
+                      }}
+                    >
                       更新
                     </button>
                   </div>
@@ -650,11 +658,7 @@ const ExpensesList: React.FC = () => {
         onCancel={closeModal}
         message={translate('deleteMessage', language)}
       />
-      <CrudModal
-        isCRUDOpen={isCRUDOpen}
-        onClose={closeModal}
-        message={crudMessage}
-      />
+      <CrudModal isCRUDOpen={isCRUDOpen} onClose={closeModal} message={crudMessage} />
       <AlertModal
         isOpen={isUpdateConfirmationOpen}
         onConfirm={handleUpdateConfirm}
@@ -663,6 +667,6 @@ const ExpensesList: React.FC = () => {
       />
     </div>
   )
-};
+}
 
-export default ExpensesList;
+export default ExpensesList

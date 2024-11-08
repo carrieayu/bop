@@ -34,7 +34,7 @@ export const fetchMasterClient = createAsyncThunk('client/fetch', async () => {
 
 
 const masterClients = createSlice({
-  name: 'business-divisions',
+  name: 'master-clients',
   initialState,
   reducers: {},
   extraReducers(builder) {

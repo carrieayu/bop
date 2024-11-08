@@ -15,6 +15,9 @@ import { RiDeleteBin6Fill } from "react-icons/ri";
 import AlertModal from "../../components/AlertModal/AlertModal";
 import CrudModal from "../../components/CrudModal/CrudModal";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { getProject } from "../../api/ProjectsEndpoint/GetProject";
+import { updateProject } from "../../api/ProjectsEndpoint/UpdateProject";
+import { deleteProject } from "../../api/ProjectsEndpoint/DeleteProject";
 
 const ProjectsListAndEdit: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -67,7 +70,7 @@ const ProjectsListAndEdit: React.FC = () => {
     const [isCRUDOpen, setIsCRUDOpen] = useState(false);
     const [crudMessage, setCrudMessage] = useState('');
     const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
-
+    const token = localStorage.getItem('accessToken')
     
     for (let year = 2020; year <= new Date().getFullYear(); year++) {
       years.push(year)
@@ -198,42 +201,37 @@ const ProjectsListAndEdit: React.FC = () => {
       return modifiedFields
     }
     const modifiedFields = getModifiedFields(originalProjectsList, projects)
-    const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login'
       return
     }
 
-    try {
-      const response = await axios.put(`${getReactActiveEndpoint()}/api/projects/update/`, modifiedFields, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    updateProject(modifiedFields, token)
+      .then(() => {
+        setCrudMessage(translate('successfullyUpdated', language))
+        setIsCRUDOpen(true)
+        setIsEditing(false)
       })
-      setCrudMessage(translate('successfullyUpdated', language));
-      setIsCRUDOpen(true);
-      setIsEditing(false);
-    } catch (error) {
-      if (error.response) {
-        const { status, data } = error.response
-
-        switch (status) {
-          case 409:
-            setCrudMessage(translate('projectNameExist', language));
-            setIsCRUDOpen(true);
-            break
-          case 401:
-            console.error('Validation error:', data)
-            window.location.href = '/login'
-            break
-          default:
-            console.error('There was an error creating the project data!', error)
-            setCrudMessage(translate('error', language));
-            setIsCRUDOpen(true);
-            break
+      .catch((error) => {
+        if (error.response) {
+          const { status, data } = error.response
+          switch (status) {
+            case 409:
+              setCrudMessage(translate('projectNameExist', language))
+              setIsCRUDOpen(true)
+              break
+            case 401:
+              console.error('Validation error:', data)
+              window.location.href = '/login'
+              break
+            default:
+              console.error('There was an error creating the project data!', error)
+              setCrudMessage(translate('error', language))
+              setIsCRUDOpen(true)
+              break
+          }
         }
-      }
-    }
+      })
   }  
 
   const handleUpdateConfirm = async () => {
@@ -262,27 +260,24 @@ const ProjectsListAndEdit: React.FC = () => {
 
     useEffect(() => {
       const fetchProjects = async () => {
-        const token = localStorage.getItem('accessToken')
         if (!token) {
           window.location.href = '/login' // Redirect to login if no token found
           return
         }
 
-        try {
-          const response = await axios.get(`${getReactActiveEndpoint()}/api/projects/list/`, {
-            headers: {
-              Authorization: `Bearer ${token}`, // Add token to request headers
-            },
+        getProject(token)
+          .then((data) => {
+            setProjects(data)
+            setOriginalProjectsList(data)
           })
-          setProjects(response.data)
-          setOriginalProjectsList(response.data)
-        } catch (error) {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('There was an error fetching the projects!', error)
-          }
-        }
+          .catch((error) => {
+            if (error.response && error.response.status === 401) {
+              window.location.href = '/login' // Redirect to login if unauthorized
+            } else {
+              console.error('There was an error fetching the projects!', error)
+            }
+          })
+
       }
       fetchDivision()
       fetchClient()
@@ -330,28 +325,25 @@ const ProjectsListAndEdit: React.FC = () => {
       }
 
       const handleConfirm = async () => {
-        const token = localStorage.getItem('accessToken')
         if (!token) {
           window.location.href = '/login' 
           return
         }
-        try {
-          const response = await axios.delete(`${getReactActiveEndpoint()}/api/projects/${deleteProjectsId}/delete/`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+
+        deleteProject(deleteProjectsId, token)
+          .then(() => {
+            setProjects((prevList) => prevList.filter((pr) => pr.project_id !== deleteProjectsId))
+            setCrudMessage(translate('successfullyDeleted', language))
+            setIsCRUDOpen(true)
+            setIsEditing(false)
           })
-          setProjects((prevList) => prevList.filter((pr) => pr.project_id !== deleteProjectsId))
-          setCrudMessage(translate('successfullyDeleted', language));
-          setIsCRUDOpen(true);
-          setIsEditing(false);
-        } catch (error) {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login'
-          } else {
-            console.error('Error deleting projects', error)
-          }
-        }
+          .catch((error) => {
+            if (error.response && error.response.status === 401) {
+              window.location.href = '/login'
+            } else {
+              console.error('Error deleting projects', error)
+            }
+          })
       }
 
   return (
