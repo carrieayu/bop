@@ -11,6 +11,8 @@ import { RiDeleteBin6Fill } from 'react-icons/ri'
 import { log } from 'console'
 import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import '../../assets/scss/Components/SliderToggle.scss'
+
 
 const months: number[] = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]; // Store as numbers
 
@@ -226,9 +228,15 @@ const EmployeeExpensesList: React.FC = () => {
             <div className='employeeExpensesList_top_content'>
               <div className='employeeExpensesList_top_body_cont'>
                 <div className='employeeExpensesList_mode_switch_datalist'>
-                  <button className='employeeExpensesList_mode_switch' onClick={handleClick}>
-                    {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
-                  </button>
+                  <div className='mode_switch_container'>
+                    <p className='slider_mode_switch'>
+                      {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
+                    </p>
+                    <label className='slider_switch'>
+                      <input type='checkbox' checked={isEditing} onChange={handleClick} />
+                      <span className='slider'></span>
+                    </label>
+                  </div>
                 </div>
               </div>
               <div className='employeeExpensesList_mid_body_cont'>
@@ -434,9 +442,7 @@ const EmployeeExpensesList: React.FC = () => {
                                           )}
                                         </td>
                                       ))}
-                                      <td
-                                        style={{ textAlign: 'center', verticalAlign: 'middle', height: '100px' }}
-                                      >
+                                      <td style={{ textAlign: 'center', verticalAlign: 'middle', height: '100px' }}>
                                         <RiDeleteBin6Fill
                                           className='delete-icon'
                                           style={{ color: 'red', cursor: 'pointer' }}

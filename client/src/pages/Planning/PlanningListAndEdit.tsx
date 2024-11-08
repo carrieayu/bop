@@ -39,17 +39,6 @@ const PlanningListAndEdit = () => {
     setIsThousandYenChecked((prevState) => !prevState)
   }
 
-  // const handleClick = () => {
-  //   setIsEditing((prevState) => {
-  //     const newEditingState = !prevState
-  //     if (newEditingState) {
-  //       setLanguage(initialLanguage)
-  //     }
-
-  //     return newEditingState
-  //   })
-  // }
-
   const handleEditModeToggle = () => {
     setIsEditing((prevState) => {
       const newEditingState = !prevState
@@ -145,7 +134,6 @@ const PlanningListAndEdit = () => {
                         <input type='checkbox' checked={isEditing} onChange={handleEditModeToggle} />
                         <span className='planning_slider'></span>
                       </label>
-
                       <p className='planning_pl-label'>{translate('displayByProject', language)}</p>
                       <label className='planning_switch'>
                         <input type='checkbox' checked={isSwitchActive} onChange={handleSwitchToggle} />
