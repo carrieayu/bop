@@ -1479,12 +1479,11 @@ const EditTablePlanning = () => {
                 <th key={index}>{translate('planning', language)}</th>
               ))}
               {halfYears.map((_, index) => (
-                <th key={index} className=''>
                   <th key={index} className=''>
                     {translate('planning', language)}
                   </th>
-                </th>
               ))}
+              <th>{''}</th>
             </tr>
           </thead>
           <tbody>
