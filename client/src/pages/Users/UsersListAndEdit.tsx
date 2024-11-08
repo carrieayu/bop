@@ -12,6 +12,7 @@ import ListButtons from "../../components/ListButtons/ListButtons";
 import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
 import CrudModal from "../../components/CrudModal/CrudModal";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import '../../assets/scss/Components/SliderToggle.scss'
 
 const UsersListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -288,9 +289,15 @@ const UsersListAndEdit: React.FC = () => {
           <div className='UsersListAndEdit_top_content'>
             <div className='UsersListAndEdit_top_body_cont'>
               <div className='UsersListAndEdit_mode_switch_datalist'>
-                <button className='UsersListAndEdit_mode_switch' onClick={handleClick}>
-                  {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
-                </button>
+                <div className='mode_switch_container'>
+                  <p className='slider_mode_switch'>
+                    {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
+                  </p>
+                  <label className='slider_switch'>
+                    <input type='checkbox' checked={isEditing} onChange={handleClick} />
+                    <span className='slider'></span>
+                  </label>
+                </div>
               </div>
             </div>
             <div className='UsersListAndEdit_mid_body_cont'>
@@ -440,7 +447,12 @@ const UsersListAndEdit: React.FC = () => {
                 <div className='UsersListAndEdit_is_editing_cont'>
                   {isEditing ? (
                     <div className='UsersListAndEdit_edit_submit_btn_cont'>
-                      <button className='UsersListAndEdit_edit_submit_btn' onClick={() => {setIsUpdateConfirmationOpen(true)}}>
+                      <button
+                        className='UsersListAndEdit_edit_submit_btn'
+                        onClick={() => {
+                          setIsUpdateConfirmationOpen(true)
+                        }}
+                      >
                         更新
                       </button>
                     </div>
@@ -459,11 +471,7 @@ const UsersListAndEdit: React.FC = () => {
         onCancel={closeModal}
         message={translate('deleteMessage', language)}
       />
-      <CrudModal
-        isCRUDOpen={isCRUDOpen}
-        onClose={closeModal}
-        message={crudMessage}
-      />
+      <CrudModal isCRUDOpen={isCRUDOpen} onClose={closeModal} message={crudMessage} />
       <AlertModal
         isOpen={isUpdateConfirmationOpen}
         onConfirm={handleUpdateConfirm}
