@@ -114,7 +114,7 @@
                                         scrollbar-width: none; 
                                     }                          
                                     .table{
-                                        width: 125%;
+                                        width: 100%;
                                         .employeeExpensesList_table_title{
                                             position: sticky;
                                             top: 0;
@@ -129,6 +129,11 @@
                                             }
                                         }
                                         .employeeExpensesList_table_body{
+                                            .employeeExpensesList_td{
+                                                // background-color: #66d1ff;
+                                                // width: 7%;
+                                                // min-width: fit-content;
+                                            }
                                             .employeeExpensesList_year{
                                                 border: none;
                                                 .horizontal-line {
@@ -150,30 +155,67 @@
                                                     background-color: #e0e0e0;
                                                 }
                                                 .employeeExpensesList_user_name_value{
-                                                    width: 150px;
+                                                    // width: 7%;
                                                 }
                                                 .employeeExpensesList_year_value{
-                                                    width: 80px;
+                                                    // width: 7%;
                                                     text-align: center;
                                                 }
                                             }
+                                            // .employeeExpensesList_project_div:hover{
+                                            //     overflow: visible;
+                                            //     background-color: #555;
+                                            //     color: #c6d4e7;
+                                            // }
                                             .employeeExpensesList_project_div{
+                                                width: 100px;
+                                                // background-color: #66d1ff;
+                                                // word-wrap: break-word;
+                                                // max-width: 190px;
+                                                // width: 100%;
                                                 .project-even {
-                                                    width: 100%;
+                                                    border-radius: 5px;
+                                                    // min-width: fit-content;
                                                     background-color: #f0f0f0; 
-                                                  }
-                                                  
-                                                  .project-odd {
-                                                    width: 100%;
+                                                    position: relative;
+                                                }
+                                                .project-odd {
+                                                    border-radius: 5px;
+                                                    position: relative;
+                                                    // min-width: fit-content;
                                                     background-color: #ffffff; 
-                                                  }
-                                                .employeeExpensesList_txt0{
-                                                    margin-bottom: 5px;
-                                                    padding: 2px;
-                                                    font-weight: bold;
-                                                    font-size: 14px;     
-                                                    width: 180px;  
-                                                    height: 50px; 
+                                                }
+                                                .employeeExpensesList_Delete-icon{
+                                                    position: absolute;
+                                                    // bottom: 0px;
+                                                    right: 2%;
+                                                    bottom: 0;
+                                                    z-index: 1;
+                                                }
+                                                .employeeExpensesList_txt0-container{
+                                                    // background-color: palegreen;
+                                                    padding: 2px 2px 2px 2px;
+                                                    box-sizing: content-box;
+                                                    
+                                                    .employeeExpensesList_txt0{
+                                                        border-radius: 5px;
+                                                        overflow-x: hidden;
+                                                        // margin-bottom: 5px;
+                                                        padding: 2px;
+                                                        font-weight: bold;
+                                                        font-size: 14px;     
+                                                        // width: 100%;  
+                                                        height: 50px; 
+                                                        text-align: center;
+                                                        box-sizing: border-box;
+                                                        // background-color: palegoldenrod;
+                                                        // padding: 5px 3px 0px 3px;
+                                                    }
+                                                    .employeeExpensesList_txt0:hover{
+                                                        border-radius: 5px;
+                                                        overflow-x: auto;
+                                                        background-color: #c6d4e7;
+                                                    }
                                                 }
                                                 .employeeExpensesList_txt1_txt2_flex{
                                                     margin-top: 10px;
@@ -181,29 +223,27 @@
                                                     padding: 5px;
                                                     display: flex;
                                                     flex-direction: column;
-                                                    // width: 100%;
                                                     align-items: center;
                                                     .employeeExpensesList_txt1{
                                                         font-size: 14px;
-                                                        width: 50%;
+                                                        // width: 50%;
                                                         @media only screen and (max-width: 1875px){
                                                             font-size: 14px;
                                                         }
                                                         .employeeExpensesList_txt1_label1{
                                                             background-color: #c6d4e7;
-                                                            // width: 100%;
                                                             text-align: center;
                                                             border: 1px solid #c6d4e7;
                                                             border-radius: 5px;
                                                         }
                                                         .employeeExpensesList_txt1_label2{
-                                                            padding-left: 24px;
+                                                            text-align: center;
                                                         }
                                                     }
                                                     .employeeExpensesList_txt2{                                               
                                                         font-size: 14px;
                                                         padding: 5px 0px;
-                                                        width: 50%;
+                                                        // width: 50%;
                                                         display: flex;
                                                         flex-direction: column;
                                                         justify-content: center;

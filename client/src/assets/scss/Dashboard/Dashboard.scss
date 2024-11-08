@@ -4,13 +4,21 @@
     .dashboard_content_wrapper{
         display: flex;
         background-color: #EFEDEA;
-        width: 100vw; 
+        // background-color: pink;
+        // width: 100%; 
         height: 98vh;
         @media only screen and (max-width: 1000px){
             flex-direction: column;
         }
+        .dashboard_table_wrapper{
+            width: 100%;
+            height: 100%;
+            // background-color: palegoldenrod;
+            
+        }
         .dashboard_content{
-            width: 84%;
+            width:100%;
+            // width: 84%;
             padding: 5px;
             overflow-y: auto;
             scroll-behavior: smooth;
@@ -37,7 +45,7 @@
                     display: block;
                 }
                 .dashboard_card_cont{
-                    width: 100%;
+                    width: 50%;
                     display: flex;
                     padding: 5px;
                     @media only screen and (max-width: 1000px){
@@ -174,13 +182,17 @@
                     margin-bottom: 10px;
                     .dashboard_table_content_planning{
                         .table-planning-container{
-                          width: 100% !important;
-                          height: 100vh !important;
-                          .table-planning{
+                            // background-color: #2196F3;
+                            width: 100% !important;
+                            height: 100vh !important;
+                            @media only screen and (min-width: 1920px){
+                          
+                        }
+                        //   .table-planning{
                             table{
                                 background-color: #fff;
                             }
-                          }
+                        //   }
                         }
                       }
                       .hidden {

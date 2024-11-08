@@ -1,5 +1,5 @@
 {
-  "accountCategories": "Account Categories",
+  "accountCategories": "Categories",
   "advertisingExpenses": "Advertising Expenses",
   "advertisingExpense": "Advertising Expense",
   "analysis": "Analysis",
@@ -66,7 +66,7 @@
   "taxAndPublicCharge": "Tax and Public Charge",
   "toggle0YenExpenses": "Toggle 0 Yen Expenses",
   "total": "Total",
-  "totalAmount": "Total Amount",
+  "totalAmount": "Total",
   "totalSalesRevenue": "Total Sales Revenue",
   "salesRevenue": "Sales Revenue",
   "transactionFees": "Transaction Fees",
@@ -85,7 +85,12 @@
   "employeeExpense": "Employee Expense",
   "indirectEmployeeExpense": "Indirect Employee Expense",
   "ratio": "Ratio",
-  "firstHalftotal" : "1st Half Totals",
-  "secondHalftotal" : "2nd Half Totals",
-  "totalTable" : "Year Totals"
+  "firstHalftotal": "H1",
+  "secondHalftotal": "H2",
+  "totalTable": "Year Totals",
+  "sellingAndGeneralAdminExpensesShort": "SG&A Expenses",
+  "salesRatioShort": "Sales %",
+  "cumulativeOrdinaryIncomeShort": "Cumulative Ord. Inc.",
+  "operatingIncomeShort": "Op. Income",
+  "operatingProfitMarginShort": "Op. Profit Margin"
 }
