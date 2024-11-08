@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import Btn from '../../components/Button/Button'
-import axios from 'axios'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../contexts/LanguageContext'
@@ -13,7 +11,8 @@ import { useDispatch } from 'react-redux'
 import { fetchMasterClient } from '../../reducers/client/clientSlice'
 import CrudModal from '../../components/CrudModal/CrudModal'
 import AlertModal from '../../components/AlertModal/AlertModal'
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { createProject } from '../../api/ProjectsEndpoint/CreateProject'
+import { overwriteProject } from '../../api/ProjectsEndpoint/OverwriteProject'
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -261,7 +260,7 @@ const ProjectsRegistration = () => {
       ordinary_profit_margin: parseFloat(projects.ordinary_profit_margin),
     }));
   
-    const token = localStorage.getItem('accessToken');
+    
     if (!token) {
       window.location.href = '/login';
       return;
@@ -272,92 +271,95 @@ const ProjectsRegistration = () => {
       setIsModalOpen(true);
       return; // Stop the submission
     }
-  
-    try {
-      // Attempt to create a new entry
-      const response = await axios.post(`${getReactActiveEndpoint()}/api/projects/create/`, projectsData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      setModalMessage(translate('successfullySaved', language));
-      setIsModalOpen(true);
-      
-      // Reset form data after successful save
-      setProjects([
-        { 
-          year: '', 
-          month: '', 
-          project_name: '', 
-          project_type: '', 
-          client: '', 
-          business_division: '', 
-          sales_revenue: '', 
-          cost_of_sale: '', 
-          dispatch_labor_expense: '', 
-          employee_expense: '', 
-          indirect_employee_expense: '', 
-          expense: '', 
-          operating_income: '', 
-          non_operating_income: '', 
-          non_operating_expense: '', 
-          ordinary_profit: '', 
-          ordinary_profit_margin: '' 
-        }
-      ]);
-    } catch (error) {
-      if (error.response && error.response.status === 409) {
-        const existingEntries = error.response.data.existingEntries;
 
-        // Map to create a string of existing entries
-        const existingDetails = existingEntries.map(entry => 
-          `'${entry.year}, ${entry.month}, ${entry.project_name}, ${entry.client}, ${entry.business_division}'`
-        ).join(', ');
-    
-        // Create new details based on projectsData but ensure no overlap with existing entries
-        const newDetails = projectsData
-        .filter(entry => {
-          // Check if the entry already exists
-          const exists = existingEntries.some(existing =>
-            existing.year === entry.year &&
-            existing.month === entry.month &&
-            existing.project_name === entry.project_name &&
-            existing.client === clients.find(client => client.client_id === entry.client)?.client_name && // Adjust this line
-            existing.business_division === businessSelection.find(division => division.business_division_id === entry.business_division)?.business_division_name // Adjust this line
-          );
+    createProject(projectsData, token)
+      .then((data) => {
+          setModalMessage(translate('successfullySaved', language))
+          setIsModalOpen(true)
+          setProjects([
+            {
+              year: '',
+              month: '',
+              project_name: '',
+              project_type: '',
+              client: '',
+              business_division: '',
+              sales_revenue: '',
+              cost_of_sale: '',
+              dispatch_labor_expense: '',
+              employee_expense: '',
+              indirect_employee_expense: '',
+              expense: '',
+              operating_income: '',
+              non_operating_income: '',
+              non_operating_expense: '',
+              ordinary_profit: '',
+              ordinary_profit_margin: '',
+            },
+          ])
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 409) {
+          const existingEntries = error.response.data.existingEntries
 
-          return !exists; // Keep only if it does not exist
-        })
-        .map(entry => {
-          const clientName = clients.find(client => client.client_id === entry.client)?.client_name || '';
-          const businessDivisionName = businessSelection.find(division => division.business_division_id === entry.business_division)?.business_division_name || '';
-          return `'${entry.year}, ${entry.month}, ${entry.project_name}, ${clientName}, ${businessDivisionName}'`;
-        })
-        .join(', '); // Join the new details
-    
-        // Construct the message
-        let message = translate('projectOverwriteMessage', language)
-          .replace('${existingEntries}', existingDetails);
-    
-        // Only add new entries to the message if they exist
-        if (newDetails.length > 0) {
-          message += translate('projectNewEntry', language)
-            .replace('${newEntries}', newDetails);
+          // Map to create a string of existing entries
+          const existingDetails = existingEntries
+            .map(
+              (entry) =>
+                `'${entry.year}, ${entry.month}, ${entry.project_name}, ${entry.client}, ${entry.business_division}'`,
+            )
+            .join(', ')
+
+          // Create new details based on projectsData but ensure no overlap with existing entries
+          const newDetails = projectsData
+            .filter((entry) => {
+              // Check if the entry already exists
+              const exists = existingEntries.some(
+                (existing) =>
+                  existing.year === entry.year &&
+                  existing.month === entry.month &&
+                  existing.project_name === entry.project_name &&
+                  existing.client === clients.find((client) => client.client_id === entry.client)?.client_name && // Adjust this line
+                  existing.business_division ===
+                    businessSelection.find((division) => division.business_division_id === entry.business_division)
+                      ?.business_division_name, // Adjust this line
+              )
+
+              return !exists // Keep only if it does not exist
+            })
+            .map((entry) => {
+              const clientName = clients.find((client) => client.client_id === entry.client)?.client_name || ''
+              const businessDivisionName =
+                businessSelection.find((division) => division.business_division_id === entry.business_division)
+                  ?.business_division_name || ''
+              return `'${entry.year}, ${entry.month}, ${entry.project_name}, ${clientName}, ${businessDivisionName}'`
+            })
+            .join(', ') // Join the new details
+
+          // Construct the message
+          let message = translate('projectOverwriteMessage', language).replace('${existingEntries}', existingDetails)
+
+          // Only add new entries to the message if they exist
+          if (newDetails.length > 0) {
+            message += translate('projectNewEntry', language).replace('${newEntries}', newDetails)
+          }
+
+          setModalMessage(message)
+          setIsOverwriteModalOpen(true)
+          return
+        } else if (
+          error.response.data.project_name &&
+          Array.isArray(error.response.data.project_name) &&
+          error.response.data.project_name[0] &&
+          error.response.status === 400
+        ) {
+          // Display project name already exists alert
+          setModalMessage(translate('projectNameExist', language))
+          setIsModalOpen(true)
+        } else {
+          console.error('There was an error with expenses registration!', error)
         }
-    
-  
-        setModalMessage(message);
-        setIsOverwriteModalOpen(true);
-        return; 
-      } else if (error.response.data.project_name && Array.isArray(error.response.data.project_name) && error.response.data.project_name[0] && error.response.status === 400) {
-        // Display project name already exists alert
-        setModalMessage(translate('projectNameExist', language));
-        setIsModalOpen(true);
-      } else {
-        console.error('There was an error with expenses registration!', error);
-      }
-    }
+      })
   };
   
 
@@ -391,52 +393,43 @@ const ProjectsRegistration = () => {
       ordinary_profit_margin: parseFloat(projects.ordinary_profit_margin),
     }));
   
-    const token = localStorage.getItem('accessToken');
-    try {
-      const overwriteResponse = await axios.put(`${getReactActiveEndpoint()}/api/projects/create/`, projectsData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      // Display data successfully overwritten message
-      setModalMessage(translate('overWrite', language));
-      setIsModalOpen(true);
-      
-      // Reset form data after successful overwrite
-      setProjects([
-        { 
-          year: '', 
-          month: '', 
-          project_name: '', 
-          project_type: '', 
-          client: '', 
-          business_division: '', 
-          sales_revenue: '', 
-          cost_of_sale: '', 
-          dispatch_labor_expense: '', 
-          employee_expense: '', 
-          indirect_employee_expense: '', 
-          expense: '', 
-          operating_income: '', 
-          non_operating_income: '', 
-          non_operating_expense: '', 
-          ordinary_profit: '', 
-          ordinary_profit_margin: '' 
+    overwriteProject(projectsData, token)
+      .then((data) => {
+        setModalMessage(translate('overWrite', language))
+        setIsModalOpen(true)
+        setProjects([
+          {
+            year: '',
+            month: '',
+            project_name: '',
+            project_type: '',
+            client: '',
+            business_division: '',
+            sales_revenue: '',
+            cost_of_sale: '',
+            dispatch_labor_expense: '',
+            employee_expense: '',
+            indirect_employee_expense: '',
+            expense: '',
+            operating_income: '',
+            non_operating_income: '',
+            non_operating_expense: '',
+            ordinary_profit: '',
+            ordinary_profit_margin: '',
+          },
+        ])
+      })
+      .catch((overwriteError) => {
+        if (overwriteError.response.status === 400) {
+          // Display project name already exists alert
+          setModalMessage(translate('projectNameExist', language))
+          setIsModalOpen(true)
+        } else {
+          console.error('Error overwriting data:', overwriteError)
         }
-      ]);
-    } catch (overwriteError) {
-      if (overwriteError.response.status === 400) {
-        // Display project name already exists alert
-        setModalMessage(translate('projectNameExist', language));
-        setIsModalOpen(true);
-      } else {
-        console.error('Error overwriting data:', overwriteError);
-      }
-    } finally {
-      setIsOverwriteConfirmed(false); // Reset overwrite confirmation
-    }
+      }).finally(() => {
+        setIsOverwriteConfirmed(false) // Reset overwrite confirmation
+      });
   };
   
 

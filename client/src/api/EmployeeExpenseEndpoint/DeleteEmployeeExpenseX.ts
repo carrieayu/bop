@@ -1,13 +1,13 @@
 import axios from 'axios'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
-export async function updateCostOfSale(costOfSaleList, token: string) {
-  const endpoint = `${getReactActiveEndpoint()}/api/cost-of-sales/update/`
+export async function deleteEmployeeExpenseX(deleteId: any, token: string) {
+  const endpoint = `${getReactActiveEndpoint()}/api/employee-expenses/${deleteId}/delete/`
+
   try {
-    const response = await axios.put(endpoint, costOfSaleList, {
+    const response = await axios.delete(endpoint, {
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
       },
     })
     return response.data
@@ -15,7 +15,7 @@ export async function updateCostOfSale(costOfSaleList, token: string) {
     if (error.response && error.response.status === 401) {
       window.location.href = '/login'
     } else {
-      console.error('There was an error updating the cost of sale data!', error)
+      console.error('Error deleting employee expense:', error)
     }
     throw error
   }

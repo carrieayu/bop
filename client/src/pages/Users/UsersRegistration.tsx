@@ -25,7 +25,7 @@ const UsersRegistration = () => {
     const [isEmailValid, setIsEmailValid] = useState(true)
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
     const [modalIsOpen, setModalIsOpen] = useState(false)
-
+    const token = localStorage.getItem('accessToken')
     const [userData, setUserData] = useState(
       {
         username: '',
@@ -117,7 +117,7 @@ const UsersRegistration = () => {
 
       const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('accessToken');
+        
         const { username, first_name, last_name, password, confirm_password, email, confirm_email } = userData;
     
         if (!username || !email || !password || !confirm_password) {

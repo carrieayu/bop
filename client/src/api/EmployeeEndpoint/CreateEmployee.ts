@@ -1,11 +1,11 @@
 import axios from 'axios'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
-export async function createCostOfSale(costOfSaleData, token: string) {
-  const endpoint = `${getReactActiveEndpoint()}/api/cost-of-sales/create/`
+export async function createEmployee(employeeData, token: string) {
+  const endpoint = `${getReactActiveEndpoint()}/api/employees/create/`
 
   try {
-    const response = await axios.post(endpoint, costOfSaleData, {
+    const response = await axios.post(endpoint, employeeData, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -13,7 +13,7 @@ export async function createCostOfSale(costOfSaleData, token: string) {
     })
     return response.data
   } catch (error) {
-    console.error('Error creating cost of sale:', error)
+    console.error('Error creating employee:', error)
     throw error
   }
 }
