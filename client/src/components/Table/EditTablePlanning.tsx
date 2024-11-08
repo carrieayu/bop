@@ -839,7 +839,7 @@ const EditTablePlanning = () => {
           // end for expense section
           {
             //add 人件費 + 経費 field
-            label: 'sellingAndGeneralAdminExpenses',
+            label: 'sellingAndGeneralAdminExpensesShort',
             values: [
               ...sellingAndGeneralAdminExpenseValues,
               firstHalfTotal(sellingAndGeneralAdminExpenseValues),

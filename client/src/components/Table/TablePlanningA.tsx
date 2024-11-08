@@ -601,7 +601,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         // end for expense section
         {
           //add 人件費 + 経費 field
-          label: language === 'en' ? 'sellingAndGeneralAdminExpensesShort' : 'sellingAndGeneralAdminExpenses',
+          label: 'sellingAndGeneralAdminExpensesShort', // shortened version as it is too long in English Mode
           values: [
             ...sellingAndGeneralAdminExpenseValues,
             firstHalfTotal(sellingAndGeneralAdminExpenseValues),
@@ -685,11 +685,11 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
     'grossProfit',
     'employeeExpenses',
     'expenses',
-    'sellingAndGeneralAdminExpenses',
+    'sellingAndGeneralAdminExpensesShort', // Just a shorter version for English Language Mode
     'operatingIncome',
     'ordinaryIncome',
     'cumulativeOrdinaryIncome',
-  ];
+  ]
 
   const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3];
   const monthNames: { [key: number]: { en: string; jp: string } } = {
@@ -714,7 +714,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         <table>
           <thead>
             <tr className='table-header-sticky'>
-              <th>{''}</th>
+              <th className=''>{''}</th>
               {months.map((month, index) => (
                 <th key={index} className={month >= 10 || month <= 3 ? 'light-txt' : 'orange-txt'}>
                   {language === 'en' ? monthNames[month].en : monthNames[month].jp}
@@ -728,7 +728,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
               <th className='total-txt'>{translate(language === 'en' ? 'salesRatioShort' : 'salesRatio', language)}</th>
             </tr>
             <tr className='scnd-row'>
-              <th className='borderless'></th>
+              <th className='borderless'>{''}</th>
               {months.map((month, index) => (
                 <th key={index}>{translate('planning', language)}</th>
               ))}
@@ -743,13 +743,13 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
           <tbody>
             {data.map((item, index) => (
               <tr key={index}>
-                <td
-                  className={`${noIndentLabels.includes(item.label) ? (language !== 'en' ? 'no-indent' : 'no-indent-english-mode') : language !== 'en' ? 'indented-label' : 'indented-label-english-mode'}`}
-                >
-                  {translate(item.label, language)}
-                </td>
+                  <td
+                    className={`${noIndentLabels.includes(item.label) ? (language !== 'en' ? 'no-indent' : 'no-indent-english-mode') : language !== 'en' ? 'indented-label' : 'indented-label-english-mode'}`}
+                  >
+                    {translate(item.label, language)}
+                  </td>
                 {item.values.map((value, valueIndex) => (
-                  <td key={valueIndex}>
+                  <td className='month-data' key={valueIndex}>
                     {isThousandYenChecked
                       ? (Math.round((value / 1000) * 10) / 10).toLocaleString() // Rounds to 1 decimal place
                       : value.toLocaleString()}

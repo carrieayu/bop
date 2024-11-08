@@ -46,6 +46,9 @@
           z-index: 2;
           top: -1px !important; // Need this to deal with padding on container so content does not reappear above header when scrolling
         }
+        .month-data{
+          width: 7%;
+        }
         th, td {
           border: 1px solid #ddd;
           padding: 2px;
@@ -64,7 +67,7 @@
           }
           &.indented-label-english-mode{
             text-align: right;
-            // background-color: palegoldenrod;
+            width: fit-content;
           }
           &.no-indent-english-mode{
             text-align: left;
