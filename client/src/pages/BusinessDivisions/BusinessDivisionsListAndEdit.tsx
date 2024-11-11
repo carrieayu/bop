@@ -12,6 +12,11 @@ import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
 import CrudModal from "../../components/CrudModal/CrudModal";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss'
+import { getBusinessDivision } from "../../api/BusinessDivisionEndpoint/GetBusinessDivision";
+import { getUser } from "../../api/UserEndpoint/GetUser";
+import { getCompany } from "../../api/CompanyEndpoint/GetCompany";
+import { deleteBusinessDivision } from "../../api/BusinessDivisionEndpoint/DeleteBusinessDivision";
+import { updateBusinessDivision } from "../../api/BusinessDivisionEndpoint/UpdateBusinessDivision";
 
 const BusinessDivisionsListAndEdit: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -152,40 +157,34 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         window.location.href = '/login';
         return;
       }
-    
-      try {
-          await axios.put(`${getReactActiveEndpoint()}/api/master-business-divisions/bulk-update/`, modifiedFields, {
-           headers: {
-             'Content-Type': 'application/json',
-             Authorization: `Bearer ${token}`,
-           },
-         },
-       )
-        setCrudMessage(translate('successfullyUpdated', language));
-        setIsCRUDOpen(true);
-        setOriginalBusinessList(business)
-        setIsEditing(false)
-      } catch (error) {
-         if (error.response) {
-            const { status, data } = error.response
 
-            switch (status) {
-              case 409:
-                setCrudMessage(translate('businessDivisionNameExistsValidationMessage', language));
-                setIsCRUDOpen(true);
-                break
-              case 401:
-                console.error('Validation error:', data)
-                window.location.href = '/login'
-                break
-              default:
-                console.error('There was an error creating the business division data!', error)
-                setCrudMessage(translate('error', language));
-                setIsCRUDOpen(true);
-                break
+      updateBusinessDivision(modifiedFields, token)
+        .then(() => {
+            setCrudMessage(translate('successfullyUpdated', language));
+            setIsCRUDOpen(true);
+            setOriginalBusinessList(business)
+            setIsEditing(false)
+        })
+        .catch((error) => {
+            if (error.response) {
+              const { status, data } = error.response
+              switch (status) {
+                case 409:
+                  setCrudMessage(translate('businessDivisionNameExistsValidationMessage', language));
+                  setIsCRUDOpen(true);
+                  break
+                case 401:
+                  console.error('Validation error:', data)
+                  window.location.href = '/login'
+                  break
+                default:
+                  console.error('There was an error creating the business division data!', error)
+                  setCrudMessage(translate('error', language));
+                  setIsCRUDOpen(true);
+                  break
+              }
             }
-          }
-        }
+        })
       };
     
       const handleUpdateConfirm = async () => {
@@ -201,25 +200,32 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
           }
           try {
               // Fetch companies
-              const companyResponse = await axios.get(`${getReactActiveEndpoint()}/api/master-companies/list/`, {
-                // headers: { Authorization: `Bearer ${token}` },
+              getCompany(token).then((data) => {
+                const companies = data
+                const companyMapping = companies.reduce((map, company) => {
+                  map[company.company_id] = company.company_name
+                  return map
+                }, {})
+                setCompanyMap(companyMapping)
               })
-              const companies = companyResponse.data;
-              const companyMapping = companies.reduce((map, company) => {
-                  map[company.company_id] = company.company_name;
-                  return map;
-              }, {});
-              setCompanyMap(companyMapping);
+              
               // Fetch users
-              const userResponse = await axios.get(`${getReactActiveEndpoint()}/api/users/list/`, {
-                // headers: { Authorization: `Bearer ${token}` },
-              })
-              const users = userResponse.data;
-              const userMapping = users.reduce((map, user) => {
-                  map[user.user_id] = user.first_name;
-                  return map;
-              }, {});
-              setUserMap(userMapping);
+              getUser(token)
+                .then((data) => {
+                  const users = data
+                  const userMapping = users.reduce((map, user) => {
+                    map[user.user_id] = user.first_name
+                    return map
+                  }, {})
+                  setUserMap(userMapping)
+                })
+                .catch((error) => {
+                  if (error.response && error.response.status === 401) {
+                    console.log(error)
+                  } else {
+                    console.error('There was an error fetching the projects!', error)
+                  }
+                })
           } catch (error) {
               if (error.response && error.response.status === 401) {
                   window.location.href = '/login';
@@ -235,21 +241,24 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         window.location.href = '/login' // Redirect to login if no token found
         return
       }
-      try {
-        const response = await axios.get(`${getReactActiveEndpoint()}/api/master-business-divisions/list/`, {
-          headers: {
-            Authorization: `Bearer ${token}`, // Add token to request headers
-          },
+
+      getBusinessDivision(token)
+        .then((data) => {
+            setBusiness(data)
+            setOriginalBusinessList(data)
         })
-        setBusiness(response.data)
-        setOriginalBusinessList(response.data)
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login' // Redirect to login if unauthorized
-        } else {
-          console.error('There was an error fetching the projects!', error)
-        }
-      }
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            console.log(error)
+          } else {
+              if (error.response && error.response.status === 401) {
+                window.location.href = '/login' 
+              } else {
+                console.error('There was an error fetching the business!', error)
+              }
+          }
+        })
+
     }
 
     useEffect(() => {
@@ -302,27 +311,21 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         window.location.href = '/login';
         return;
       }
-    
-      try {
-        const response = await axios.delete(`${getReactActiveEndpoint()}/api/master-business-divisions/${selectedBusiness}/delete/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log('Deleted successfully');
-        // Update the business data after deletion
-        const updatedBusiness = business.filter((item) => item.business_division_id !== selectedBusiness);
-        setCrudMessage(translate('successfullyDeleted', language));
-        setIsCRUDOpen(true);
-        setIsEditing(false);
-        setBusiness(updatedBusiness);
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
+      deleteBusinessDivision(selectedBusiness, token)
+        .then(() => {
+            const updatedBusiness = business.filter((item) => item.business_division_id !== selectedBusiness);
+            setCrudMessage(translate('successfullyDeleted', language));
+            setIsCRUDOpen(true);
+            setIsEditing(false);
+            setBusiness(updatedBusiness);
+        })
+        .catch((error) => {
+            if (error.response && error.response.status === 401) {
           window.location.href = '/login';
         } else {
           console.error('Error deleting data:', error);
         }
-      }
+        })
     };
 
     const handleNewRegistrationClick = () => {

@@ -13,6 +13,9 @@ import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
 import CrudModal from "../../components/CrudModal/CrudModal";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss'
+import { getUser } from "../../api/UserEndpoint/GetUser";
+import { deleteUser } from "../../api/UserEndpoint/DeleteUser";
+import { updateUser } from "../../api/UserEndpoint/UpdateUser";
 
 const UsersListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -158,23 +161,20 @@ const UsersListAndEdit: React.FC = () => {
         window.location.href = '/login'
         return
       }
-      try {
-        const response = await axios.put(`${getReactActiveEndpoint()}/api/users/update/`, userList, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
+
+      updateUser(userList, token)
+        .then(() => {
+            setCrudMessage(translate('successfullyUpdated', language))
+            setIsCRUDOpen(true)
+            setIsEditing(false)
         })
-        setCrudMessage(translate('successfullyUpdated', language));
-        setIsCRUDOpen(true);
-        setIsEditing(false);
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login'
-        } else {
-          console.error('There was an error updating the user data!', error)
-        }
-      }
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            window.location.href = '/login'
+          } else {
+            console.error('There was an error updating the user data!', error)
+          }
+        })
     }
 
     const handleUpdateConfirm = async () => {
@@ -190,18 +190,17 @@ const UsersListAndEdit: React.FC = () => {
           return
         }
 
-        try {
-          const response = await axios.get(`${getReactActiveEndpoint()}/api/users/list/`, {
+        getUser(token)
+          .then((data) => {
+            setUserList(data) 
           })
-          setUserList(response.data)
-        } catch (error) {
-          if (error.response && error.response.status === 401) {
-            console.log(error)
-            // window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('There was an error fetching the projects!', error)
-          }
-        }
+          .catch((error) => {
+            if (error.response && error.response.status === 401) {
+              console.log(error)
+            } else {
+              console.error('There was an error fetching the projects!', error)
+            }
+          })
       }
 
       fetchProjects()
@@ -252,23 +251,17 @@ const UsersListAndEdit: React.FC = () => {
     }
 
     const handleConfirm = async () => {
-      // Currently no delete logic
-      console.log('Confirmed action for project:', deleteId)
       const token = localStorage.getItem('accessToken')
-      try {
-        const response = await axios.delete(`${getReactActiveEndpoint()}/api/users/list/${deleteId}/delete/`, {
+      deleteUser(deleteId, token)
+        .then(() => {
+            setUserList((prevList) => prevList.filter((user) => user.id !== deleteId))
+            setCrudMessage(translate('successfullyDeleted', language))
+            setIsCRUDOpen(true)
+            setIsEditing(false)
         })
-        setUserList((prevList) => prevList.filter((user) => user.id !== deleteId))
-        setCrudMessage(translate('successfullyDeleted', language));
-        setIsCRUDOpen(true);
-        setIsEditing(false);
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login' // Redirect to login if unauthorized
-        } else {
-          console.error('Error deleting project:', error)
-        }
-      }
+        .catch((error) => {
+          console.error('Error deleting user:', error)
+        })
     };
 
     const handleNewRegistrationClick = () => {

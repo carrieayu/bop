@@ -1,18 +1,21 @@
-import React, { useEffect, useState } from "react";
-import Btn from "../../components/Button/Button";
-import axios from "axios";
-import Sidebar from "../../components/Sidebar/Sidebar";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useLanguage } from "../../contexts/LanguageContext";
-import { translate } from "../../utils/translationUtil";
-import ListButtons from "../../components/ListButtons/ListButtons";
-import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
+import React, { useEffect, useState } from 'react'
+import Btn from '../../components/Button/Button'
+import axios from 'axios'
+import Sidebar from '../../components/Sidebar/Sidebar'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { translate } from '../../utils/translationUtil'
+import ListButtons from '../../components/ListButtons/ListButtons'
+import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { RiDeleteBin6Fill } from 'react-icons/ri'
-import CrudModal from "../../components/CrudModal/CrudModal";
+import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss'
 
+import { deleteExpense } from '../../api/ExpenseEndpoint/DeleteExpense'
+import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
+import { updateExpense } from '../../api/ExpenseEndpoint/UpdateExpense'
 
 const ExpensesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -29,12 +32,12 @@ const ExpensesList: React.FC = () => {
   const [selectedExpense, setSelectedExpense] = useState<any>(null)
   const [expensesList, setExpensesList] = useState([])
   const [originalExpenseList, setOriginalExpensesList] = useState(expensesList)
-
+  const token = localStorage.getItem('accessToken')
   const [changes, setChanges] = useState({}) //ians code maybe i do not need.
 
-  const [isCRUDOpen, setIsCRUDOpen] = useState(false);
-  const [crudMessage, setCrudMessage] = useState('');
-  const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
+  const [isCRUDOpen, setIsCRUDOpen] = useState(false)
+  const [crudMessage, setCrudMessage] = useState('')
+  const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
 
   const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
   const monthNames: { [key: number]: { en: string; jp: string } } = {
@@ -114,7 +117,6 @@ const ExpensesList: React.FC = () => {
   }
 
   const handleSubmit = async () => {
-
     const getModifiedFields = (original, updated) => {
       const modifiedFields = []
 
@@ -122,14 +124,14 @@ const ExpensesList: React.FC = () => {
         const originalExpense = original.find((exp) => exp.expense_id === updatedExpense.expense_id)
 
         if (originalExpense) {
-          const changes = { expense_id: updatedExpense.expense_id } 
+          const changes = { expense_id: updatedExpense.expense_id }
 
-          let hasChanges = false 
+          let hasChanges = false
           for (const key in updatedExpense) {
             if (key === 'expense_id' || key === 'month') continue
             if (updatedExpense[key] !== originalExpense[key] && updatedExpense[key] !== '') {
-              changes[key] = updatedExpense[key] 
-              hasChanges = true 
+              changes[key] = updatedExpense[key]
+              hasChanges = true
             }
           }
 
@@ -167,8 +169,8 @@ const ExpensesList: React.FC = () => {
     })
 
     if (areFieldsEmpty) {
-      setCrudMessage(translate('allFieldsRequiredInputValidationMessage', language));
-      setIsCRUDOpen(true);
+      setCrudMessage(translate('allFieldsRequiredInputValidationMessage', language))
+      setIsCRUDOpen(true)
       return
     }
 
@@ -177,38 +179,39 @@ const ExpensesList: React.FC = () => {
       window.location.href = '/login'
       return
     }
-    try {
-      await axios.put(`${getReactActiveEndpoint()}/api/expenses/update`, modifiedFields, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-      setOriginalExpensesList(expensesList)
-      setCrudMessage(translate('successfullyUpdated', language));
-      setIsCRUDOpen(true);
-      setIsEditing(false);
 
-      const response = await axios.get(`${getReactActiveEndpoint()}/api/expenses/list/`)
-
-      setExpensesList(response.data)
-    } catch (error) {
-      if (error.response) {
-        console.error('Error response:', error.response.data)
-        if (error.response.status === 401) {
-          window.location.href = '/login'
+    updateExpense(modifiedFields, token)
+      .then(() => {
+        setOriginalExpensesList(expensesList)
+        setCrudMessage(translate('successfullyUpdated', language))
+        setIsCRUDOpen(true)
+        setIsEditing(false)
+        getExpense(token)
+          .then((data) => {
+            setExpensesList(data)
+          })
+          .catch((error) => {
+            console.error('Error fetching expense:', error)
+          })
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.error('Error response:', error.response.data)
+          if (error.response.status === 401) {
+            window.location.href = '/login'
+          } else {
+            console.error('There was an error updating the expenses data!', error.response.data)
+          }
         } else {
-          console.error('There was an error updating the expenses data!', error.response.data)
+          console.error('Error', error.message)
         }
-      } else {
-        console.error('Error', error.message)
-      }
-    }
+      })
   }
 
   const handleUpdateConfirm = async () => {
-    await handleSubmit(); // Call the submit function for update
-    setIsUpdateConfirmationOpen(false);
-};
+    await handleSubmit() // Call the submit function for update
+    setIsUpdateConfirmationOpen(false)
+  }
 
   const fetchExpenses = async () => {
     const token = localStorage.getItem('accessToken')
@@ -295,30 +298,30 @@ const ExpensesList: React.FC = () => {
   const closeModal = () => {
     setSelectedExpense(null)
     setModalIsOpen(false)
-    setIsCRUDOpen(false);
+    setIsCRUDOpen(false)
   }
 
   const handleConfirm = async () => {
-    const token = localStorage.getItem('accessToken')
-    try {
-      await axios.delete(`${getReactActiveEndpoint()}/api/expenses/${deleteExpenseId}/delete/`, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Add token to request headers
-        },
+    deleteExpense(deleteExpenseId, token)
+      .then(() => {
+        setCrudMessage(translate('successfullyDeleted', language))
+        setIsCRUDOpen(true)
+        setIsEditing(false)
+        getExpense(token)
+          .then((data) => {
+            setExpensesList(data)
+          })
+          .catch((error) => {
+            console.error('Error fetching expense:', error)
+          })
       })
-      setCrudMessage(translate('successfullyDeleted', language))
-      setIsCRUDOpen(true)
-      setIsEditing(false)
-
-      const response = await axios.get(`${getReactActiveEndpoint()}/api/expenses/list/`)
-      setExpensesList(response.data)
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        window.location.href = '/login' // Redirect to login if unauthorized
-      } else {
-        console.error('Error deleting expenses:', error)
-      }
-    }
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login' // Redirect to login if unauthorized
+        } else {
+          console.error('Error deleting expenses:', error)
+        }
+      })
   }
 
   const handleNewRegistrationClick = () => {
@@ -672,6 +675,6 @@ const ExpensesList: React.FC = () => {
       />
     </div>
   )
-};
+}
 
-export default ExpensesList;
+export default ExpensesList

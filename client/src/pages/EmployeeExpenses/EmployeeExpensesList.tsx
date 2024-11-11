@@ -13,6 +13,9 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss'
 
+import { getEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/GetEmployeeExpense'
+import { deleteEmployeeExpenseX } from '../../api/EmployeeExpenseEndpoint/DeleteEmployeeExpenseX'
+import { deleteProjectAssociation } from '../../api/EmployeeExpenseEndpoint/DeleteProjectAssociation'
 
 const months: number[] = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]; // Store as numbers
 
@@ -31,7 +34,7 @@ const EmployeeExpensesList: React.FC = () => {
     const [selectedEmployeeExpenses, setSelectedEmployeeExpenses] = useState<any>(null);
     const [deleteEmployeeExpensesId, setDeleteEmployeeExpensesId] = useState([])
     const [employeeProjectId, setEmployeeProjectId ] = useState<{employee_expense_id:string,project_id:string,mode:"employee_expense" | "project"}>({} as {employee_expense_id:string,project_id:string,mode:"employee_expense"})
-
+    const token = localStorage.getItem('accessToken')
     const [isCRUDOpen, setIsCRUDOpen] = useState(false);
     const [crudMessage, setCrudMessage] = useState('');
 
@@ -110,27 +113,23 @@ const EmployeeExpensesList: React.FC = () => {
     // Fetch employee expenses data
     useEffect(() => {
       const fetchEmployeeExpenses = async () => {
-          const token = localStorage.getItem('accessToken');
+          
           if (!token) {
               window.location.href = '/login'; // Redirect to login if no token found
               return;
           }
-
-          try {
-              const response = await axios.get(`${getReactActiveEndpoint()}/api/employee-expenses/list/`, {
-                headers: {
-                  Authorization: `Bearer ${token}`, // Add token to request headers
-                },
-              })
-              setEmployeeExpenses(response.data); // Assuming response.data is an array of expenses
-              console.log("Employee expenses: ", response.data);
-          } catch (error) {
+          
+          getEmployeeExpense(token)
+            .then((data) => {
+              setEmployeeExpenses(data)
+            })
+            .catch((error) => {
               if (error.response && error.response.status === 401) {
-                  window.location.href = '/login'; // Redirect to login if unauthorized
+                window.location.href = '/login' // Redirect to login if unauthorized
               } else {
-                  console.error('Error fetching employee expenses:', error);
+                console.error('Error fetching employee expenses:', error)
               }
-          }
+            })
       };
       
       fetchEmployeeExpenses();
@@ -159,58 +158,46 @@ const EmployeeExpensesList: React.FC = () => {
   }
 
   const handleDeleteExpense = async () => {
-    console.log('Confirmed action for employee expense:', employeeProjectId)
-    const token = localStorage.getItem('accessToken')
-    console.log('Token before delete:', token);
-    try {
-      await axios.delete(`${getReactActiveEndpoint()}/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/`, {
-        headers: {
-          'Authorization': `Bearer ${token}`  // Add token to request headers
+
+    deleteEmployeeExpenseX(employeeProjectId.employee_expense_id, token)
+      .then(() => {
+        setEmployeeExpenses((prevExpenses) =>
+          prevExpenses.filter((expense) => expense.employee_expense_id !== employeeProjectId.employee_expense_id),
+        )
+
+        setCrudMessage(translate('successfullyDeleted', language))
+        setIsCRUDOpen(true)
+        setIsEditing(false)
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login' // Redirect to login if unauthorized
+        } else {
+          console.error('Error deleting employee expense:', error)
         }
-      });
+      })
 
-      setEmployeeExpenses(prevExpenses => 
-        prevExpenses.filter(expense => expense.employee_expense_id !== employeeProjectId.employee_expense_id)
-      );
-
-      setCrudMessage(translate('successfullyDeleted', language));
-      setIsCRUDOpen(true);
-      setIsEditing(false);
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        window.location.href = '/login' // Redirect to login if unauthorized
-      } else {
-        console.error('Error deleting employee expense:', error)
-      }
-    }
   };
 
   const handleRemoveProjectAssociation = async () => {
-    console.log("data", employeeProjectId)
-    console.log('Confirmed action for employee expense:', employeeProjectId)
-    const token = localStorage.getItem('accessToken')
-    console.log('Token before delete:', token);
-    try {
-      await axios.delete(`${getReactActiveEndpoint()}/api/employee-expenses/${employeeProjectId.employee_expense_id}/delete/?project_id=${employeeProjectId.project_id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`  // Add token to request headers
-        }
-      });
 
-      setEmployeeExpenses(prevExpenses => 
-        prevExpenses.filter(expense => expense.employee_expense_id !== employeeProjectId.employee_expense_id)
-      );
-      
-      setCrudMessage(translate('employeeExpensesRemoveProject', language));
-      setIsCRUDOpen(true);
-      setIsEditing(false);
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        window.location.href = '/login' // Redirect to login if unauthorized
-      } else {
-        console.error("Error removing project association:", error)
-      }
-    }
+    deleteProjectAssociation(employeeProjectId.employee_expense_id, employeeProjectId.project_id, token)
+      .then(() => {
+        setEmployeeExpenses((prevExpenses) =>
+          prevExpenses.filter((expense) => expense.employee_expense_id !== employeeProjectId.employee_expense_id),
+        )
+
+        setCrudMessage(translate('employeeExpensesRemoveProject', language))
+        setIsCRUDOpen(true)
+        setIsEditing(false)
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login' // Redirect to login if unauthorized
+        } else {
+          console.error('Error removing project association:', error)
+        }
+      })
   };
   
 
