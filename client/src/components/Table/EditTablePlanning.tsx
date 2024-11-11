@@ -33,6 +33,7 @@ const EditTablePlanning = () => {
           return acc
         }, {})
         const aggregatedExpensesData = response.expenses.reduce((acc, item) => {
+          
           const { month, ...values } = item
           if (!acc[month]) {
             acc[month] = { month, ...values } // Include month in the object

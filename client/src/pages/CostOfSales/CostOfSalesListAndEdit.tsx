@@ -292,7 +292,11 @@ const CostOfSalesList: React.FC = () => {
         .then(() => {
           setCrudMessage(translate('successfullyDeleted', language))
           setIsCRUDOpen(true)
-          setIsEditing(false)
+          getCostOfSale(token).then((data) => {
+            console.log(data)
+            setCostOfSales(data)
+            setIsEditing(false)
+          }).catch(() => {});
         })
         .catch((error) => {
           if (error.response && error.response.status === 401) {

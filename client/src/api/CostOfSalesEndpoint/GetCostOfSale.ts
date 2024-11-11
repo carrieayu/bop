@@ -2,7 +2,7 @@ import axios from 'axios'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 export async function getCostOfSale(token: string) {
-  const endpoint = `${getReactActiveEndpoint()}/api/master-business-divisions/list/`
+  const endpoint = `${getReactActiveEndpoint()}/api/cost-of-sales/list/`
 
   try {
     const response = await axios.get(endpoint, {
