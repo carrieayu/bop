@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import Btn from '../../components/Button/Button'
 import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
-import { fetchBusinessDivisions } from '../../reducers/businessDivisions/businessdivisionsSlice'
 import { useDispatch } from 'react-redux'
 import { UnknownAction } from 'redux'
 import { fetchMasterCompany } from '../../reducers/company/companySlice'
 import axios from 'axios'
 import AlertModal from '../../components/AlertModal/AlertModal'
-import { NULL } from 'sass'
 import CrudModal from '../../components/CrudModal/CrudModal'
-import { escape } from 'querystring'
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { getSelectedBusinessDivisionCompany } from '../../api/BusinessDivisionEndpoint/GetSelectedBusinessDivisionCompany'
+import { createEmployee } from '../../api/EmployeeEndpoint/CreateEmployee'
 
 const EmployeesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -31,7 +28,7 @@ const EmployeesRegistration = () => {
   const [companySelection, setCompanySelection] = useState<any>([])
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [selectedEmployeeType, setSelectedEmployeeType] = useState<any>([])
-
+  const token = localStorage.getItem('accessToken')
   const [employees, setEmployees] = useState([
     {
       last_name: '',
@@ -110,14 +107,13 @@ const EmployeesRegistration = () => {
   useEffect(() => {
     const fetchBusinessDivisionsForCompany = async () => {
       if (selectedCompanyId) {
-        try {
-          const response = await axios.get(
-            `${getReactActiveEndpoint()}/api/business-divisions-of-company/?company_id=${selectedCompanyId}`,
-          )
-          setBusinessDivisionSelection(response.data) // Update business divisions based on selected company
-        } catch (error) {
-          console.error('Error fetching business divisions:', error)
-        }
+        getSelectedBusinessDivisionCompany(selectedCompanyId, token)
+          .then((data) => {
+            setBusinessDivisionSelection(data)
+          })
+          .catch((error) => {
+            console.error('Error fetching business divisions:', error)
+          })
       } else {
         setBusinessDivisionSelection([]) // Clear if no company is selected
       }
@@ -131,17 +127,13 @@ const EmployeesRegistration = () => {
     newContainers[containerIndex].company_name = companyId // Set the selected company ID
     setEmployees(newContainers)
 
-    try {
-      // Fetch business divisions based on the selected company ID
-      const response = await axios.get(
-        `${getReactActiveEndpoint()}/api/business-divisions-of-company/?company_id=${companyId}`,
-      )
-      const divisions = response.data // Assuming your API returns an array of divisions
-
-      setBusinessDivisionSelection(divisions) // Update businessDivisionSelection with fetched divisions
-    } catch (error) {
-      console.error('Error fetching business divisions:', error)
-    }
+    getSelectedBusinessDivisionCompany(companyId, token)
+      .then((data) => {
+        setBusinessDivisionSelection(data)
+      })
+      .catch((error) => {
+        console.error('Error fetching business divisions:', error)
+      })
   }
 
   const handleTabClick = (tab) => {
@@ -310,54 +302,50 @@ const EmployeesRegistration = () => {
           return
         }
         
-        const token = localStorage.getItem('accessToken')
-        try {
-          const response = await axios.post(`${getReactActiveEndpoint()}/api/employees/create/`, employeeData, {
-            headers: {
-              Authorization: `Bearer ${token}`, // Add token to request headers
-            },
+        createEmployee(employeeData, token)
+          .then(() => {
+            setModalMessage(translate('successfullySaved', language))
+            setIsModalOpen(true)
+            setEmployees([
+              {
+                last_name: '',
+                first_name: '',
+                type: '',
+                email: '',
+                salary: '',
+                executive_renumeration: '',
+                company_name: '',
+                business_division_name: '',
+                bonus_and_fuel_allowance: '',
+                statutory_welfare_expense: '',
+                welfare_expense: '',
+                insurance_premium: '',
+                auth_id: '',
+                created_at: '',
+              },
+            ])
           })
-          setModalMessage(translate('successfullySaved', language));
-          setIsModalOpen(true);
-          setEmployees([
-            {
-              last_name: '',
-              first_name: '',
-              type:'',
-              email: '',
-              salary: '',
-              executive_renumeration:'',
-              company_name: '',
-              business_division_name: '',
-              bonus_and_fuel_allowance: '',
-              statutory_welfare_expense: '',
-              welfare_expense: '',
-              insurance_premium: '',
-              auth_id: '',
-              created_at: ''
-            },
-          ])
-        } catch (error) {
-         if (error.response) {
-            const { status, data } = error.response
-            switch (status) {
-              case 409:
-                const existingEmail = data.errors.map(err => err.email).join(',') || 'Unknown email';
-                setModalMessage(translate('emailExistsMessage', language).replace('${email}', existingEmail));
-                setIsModalOpen(true);
-                break
-              case 401:
-                console.error('Validation error:', data)
-                window.location.href = '/login'
-                break
-              default:
-                console.error('There was an error creating the employee data!', error)
-                setModalMessage(translate('error', language));
-                setIsModalOpen(true);
-                break
+          .catch((error) => {
+            if (error.response) {
+              const { status, data } = error.response
+              switch (status) {
+                case 409:
+                  const existingEmail = data.errors.map((err) => err.email).join(',') || 'Unknown email'
+                  setModalMessage(translate('emailExistsMessage', language).replace('${email}', existingEmail))
+                  setIsModalOpen(true)
+                  break
+                case 401:
+                  console.error('Validation error:', data)
+                  window.location.href = '/login'
+                  break
+                default:
+                  console.error('There was an error creating the employee data!', error)
+                  setModalMessage(translate('error', language))
+                  setIsModalOpen(true)
+                  break
+              }
             }
-          }
-        }
+          })
       }
 
   const handleAddContainer = () => {

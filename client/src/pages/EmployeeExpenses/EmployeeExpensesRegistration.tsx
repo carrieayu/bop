@@ -10,6 +10,9 @@ import axios from 'axios';
 import AlertModal from '../../components/AlertModal/AlertModal'
 import CrudModal from '../../components/CrudModal/CrudModal';
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { createEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/CreateEmployeeExpense';
+import { getProject } from '../../api/ProjectsEndpoint/GetProject';
+import { getEmployee } from '../../api/EmployeeEndpoint/GetEmployee';
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -125,20 +128,31 @@ const EmployeeExpensesRegistration = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const employeeResponse = await axios.get(`${getReactActiveEndpoint()}/api/employees/list/`, {
-          headers: { 
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          },
-        });
-        setEmployees(employeeResponse.data);
-        const projectResponse = await axios.get(`${getReactActiveEndpoint()}/api/projects/list/`, {
-          headers: { 
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          },
-        });
-        setProjects(projectResponse.data);
+        
+        getEmployee(token)
+          .then((data) => {
+            setEmployees(data)
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 401) {
+              console.log(error)
+            } else {
+              console.error('There was an error fetching the employee!', error)
+            }
+          })
+        
+        getProject(token)
+          .then((data) => {
+            setProjects(data)
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 401) {
+              console.log(error)
+            } else {
+              console.error('There was an error fetching the projects!', error)
+            }
+          })
+
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -297,51 +311,47 @@ const EmployeeExpensesRegistration = () => {
       return; // Prevent form submission
     }
 
-    const token = localStorage.getItem('accessToken')
-    try {
-      const response = await axios.post(`${getReactActiveEndpoint()}/api/employee-expenses/create/`, employeeContainers, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+    createEmployeeExpense(employeeContainers, token)
+      .then(() => {
+        setModalMessage(translate('successfullySaved', language))
+        setIsModalOpen(true)
+        setEmployeeContainers([
+          {
+            id: 1,
+            employee: '',
+            projectEntries: [{ id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '' }],
+          },
+        ])
       })
-      setModalMessage(translate('successfullySaved', language));
-      setIsModalOpen(true);
-      setEmployeeContainers([
-        {
-          id: 1,
-          employee: '',
-          projectEntries: [{ id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '' }],
-        },
-      ])
-    } catch (error) {
-      console.log('Error response:', error.response);
-      if (error.response && error.response.status === 400) {
-        const errorMessage = error.response.data.detail;
+      .catch((error) => {
+        if (error.response && error.response.status === 400) {
+          const errorMessage = error.response.data.detail
 
-    // Check if the error message indicates a duplicate expense
-    if (errorMessage.includes('There is already an existing expense')) {
-      // Extract the employee name, year, and month from the error message
-      const matches = errorMessage.match(/already an existing expense for (.+) for (\d{1,2}\/\d{4})/);
-      if (matches) {
-        const employeeName = matches[1]; // Extracted employee name
-        const date = matches[2]; // Extracted date (month/year)
+          // Check if the error message indicates a duplicate expense
+          if (errorMessage.includes('There is already an existing expense')) {
+            // Extract the employee name, year, and month from the error message
+            const matches = errorMessage.match(/already an existing expense for (.+) for (\d{1,2}\/\d{4})/)
+            if (matches) {
+              const employeeName = matches[1] // Extracted employee name
+              const date = matches[2] // Extracted date (month/year)
 
-        // Set the modal message with the employee name and date
-        setModalMessage(translate('employeeExpensesDuplicateData', language)
-          .replace('${employeeName}', employeeName)
-          .replace('${date}', date)); // Assuming you want to format the date in the message
-      }
-    } else {
-      setModalMessage(translate('error', language)); // General error handling
-    }
-        setIsModalOpen(true);
-      } else {
-        console.log(error); // Log other errors for debugging
-        setModalMessage(translate('error', language));
-        setIsModalOpen(true);
-      }
-    }
+              // Set the modal message with the employee name and date
+              setModalMessage(
+                translate('employeeExpensesDuplicateData', language)
+                  .replace('${employeeName}', employeeName)
+                  .replace('${date}', date),
+              ) // Assuming you want to format the date in the message
+            }
+          } else {
+            setModalMessage(translate('error', language)) // General error handling
+          }
+          setIsModalOpen(true)
+        } else {
+          console.log(error) // Log other errors for debugging
+          setModalMessage(translate('error', language))
+          setIsModalOpen(true)
+        }
+      })
   }
 
   const handleListClick = () => { 

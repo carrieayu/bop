@@ -3,7 +3,8 @@ import axios from 'axios'
 import { id } from '../../../jest.config'
 import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { getPlanningA } from '../../api/PlanningEndpoint/GetPlanningA'
+import { updatePlanning } from '../../api/PlanningEndpoint/UpdatePlanning'
 
 const EditTablePlanning = () => {
   const [data, setData] = useState([])
@@ -17,15 +18,10 @@ const EditTablePlanning = () => {
       window.location.href = '/login'
       return
     }
-    axios
-      .get(`${getReactActiveEndpoint()}/api/planning/list/`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      })
+
+    getPlanningA(token)
       .then((response) => {
-        const aggregatedData = response.data.cost_of_sales.reduce((acc, item) => {
+        const aggregatedData = response.cost_of_sales.reduce((acc, item) => {
           const { month, ...values } = item
           if (!acc[month]) {
             acc[month] = { ...values }
@@ -36,7 +32,8 @@ const EditTablePlanning = () => {
           }
           return acc
         }, {})
-        const aggregatedExpensesData = response.data.expenses.reduce((acc, item) => {
+        const aggregatedExpensesData = response.expenses.reduce((acc, item) => {
+          
           const { month, ...values } = item
           if (!acc[month]) {
             acc[month] = { month, ...values } // Include month in the object
@@ -91,7 +88,7 @@ const EditTablePlanning = () => {
           return aggregatedData
         }
 
-        const aggregatedPlanningAssign = response.data.planning_assign_data.reduce((acc, item) => {
+        const aggregatedPlanningAssign = response.planning_assign_data.reduce((acc, item) => {
           const { month, employee, project, ...values } = item // Destructure employee and project
 
           // Initialize month if not already present
@@ -123,7 +120,7 @@ const EditTablePlanning = () => {
           }
           return acc
         }, {})
-        const aggregatedPlanningProjectData = response.data.planning_project_data.reduce((acc, item) => {
+        const aggregatedPlanningProjectData = response.planning_project_data.reduce((acc, item) => {
           const { month, ...values } = item
           if (!acc[month]) {
             acc[month] = { month }
@@ -267,7 +264,7 @@ const EditTablePlanning = () => {
         })
 
         // EMPLOYEES
-        const result = aggregateEmployeeData(response.data.employees)
+        const result = aggregateEmployeeData(response.employees)
         const executiveRenumerationValues = months.map((month) => result[month]?.executive_renumeration || 0)
         const salaryValues = months.map((month) => result[month]?.salary || 0)
         const totalBonusAndFuelAllowance = result[12]?.bonus_and_fuel_allowance || 0
@@ -839,7 +836,7 @@ const EditTablePlanning = () => {
           // end for expense section
           {
             //add 人件費 + 経費 field
-            label: 'sellingAndGeneralAdminExpenses',
+            label: 'sellingAndGeneralAdminExpensesShort',
             values: [
               ...sellingAndGeneralAdminExpenseValues,
               firstHalfTotal(sellingAndGeneralAdminExpenseValues),
@@ -1400,20 +1397,17 @@ const EditTablePlanning = () => {
       return
     }
 
-    try {
-      await axios.put(`${getReactActiveEndpoint()}/api/planning/update/`, changedData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    updatePlanning(changedData, token)
+      .then(() => {
+        alert('Sucessfully updated')
       })
-      alert('Sucessfully updated')
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        window.location.href = '/login'
-      } else {
-        console.error('There was an error updating the planning data!', error)
-      }
-    }
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login'
+        } else {
+          console.error('There was an error updating the planning data!', error)
+        }
+      })
   }
 
   const handleSubmit = (event) => {
@@ -1479,12 +1473,11 @@ const EditTablePlanning = () => {
                 <th key={index}>{translate('planning', language)}</th>
               ))}
               {halfYears.map((_, index) => (
-                <th key={index} className=''>
                   <th key={index} className=''>
                     {translate('planning', language)}
                   </th>
-                </th>
               ))}
+              <th>{''}</th>
             </tr>
           </thead>
           <tbody>

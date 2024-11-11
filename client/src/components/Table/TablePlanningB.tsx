@@ -3,6 +3,7 @@ import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 import axios from 'axios'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { getPlanningB } from '../../api/PlanningEndpoint/GetPlanningB'
 
 
 type TableProps = {
@@ -50,50 +51,46 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await axios.get(`${getReactActiveEndpoint()}/api/planning/display-by-projects/`, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        })
+      
+      getPlanningB(token)
+        .then((data) => {
+          const groupedData: { [key: string]: EntityGrid } = {}
 
-        const groupedData: { [key: string]: EntityGrid } = {}
+          data.forEach((project) => {
+            const clientId = project.client
+            const clientName = project.client_name
 
-        response.data.forEach((project) => {
-          const clientId = project.client
-          const clientName = project.client_name
-
-          if (!groupedData[clientId]) {
-            groupedData[clientId] = {
-              clientName,
-              grid: Array.from({ length: gridRows }, () => Array.from({ length: gridCols }, () => '0')),
-              clientId,
-            }
-          }
-
-          const month = project.month - 1
-          const adjustedMonth = (month + 9) % 12
-
-          objectEntity.forEach((field, index) => {
-            if (field === 'employee_salaries') {
-              const total_employee_salaries = project[field].reduce((acc, current) => acc + current, 0)
-              groupedData[clientId].grid[index][adjustedMonth] = total_employee_salaries.toString()
-            } else if (project[field] !== undefined) {
-              const fieldValue = parseFloat(project[field])
-              if (!isNaN(fieldValue)) {
-                groupedData[clientId].grid[index][adjustedMonth] = (
-                  parseFloat(groupedData[clientId].grid[index][adjustedMonth]) + fieldValue
-                ).toString()
+            if (!groupedData[clientId]) {
+              groupedData[clientId] = {
+                clientName,
+                grid: Array.from({ length: gridRows }, () => Array.from({ length: gridCols }, () => '0')),
+                clientId,
               }
             }
-          })
-        })
 
-        setData(Object.values(groupedData))
-      } catch (error) {
-        console.error('Error fetching project data:', error)
-      }
+            const month = project.month - 1
+            const adjustedMonth = (month + 9) % 12
+
+            objectEntity.forEach((field, index) => {
+              if (field === 'employee_salaries') {
+                const total_employee_salaries = project[field].reduce((acc, current) => acc + current, 0)
+                groupedData[clientId].grid[index][adjustedMonth] = total_employee_salaries.toString()
+              } else if (project[field] !== undefined) {
+                const fieldValue = parseFloat(project[field])
+                if (!isNaN(fieldValue)) {
+                  groupedData[clientId].grid[index][adjustedMonth] = (
+                    parseFloat(groupedData[clientId].grid[index][adjustedMonth]) + fieldValue
+                  ).toString()
+                }
+              }
+            })
+          })
+
+          setData(Object.values(groupedData))
+        })
+        .catch((error) => {
+          console.error('Error fetching project data:', error)
+        })
     }
 
     fetchData()
@@ -119,18 +116,18 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
 
   const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
   const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
+    1: { en: 'Jan', jp: '1月' }, // January
+    2: { en: 'Feb', jp: '2月' }, //February
+    3: { en: 'Mar', jp: '3月' }, // March
+    4: { en: 'Apr', jp: '4月' }, //April
+    5: { en: 'May', jp: '5月' }, //May
+    6: { en: 'Jun', jp: '6月' }, //June
+    7: { en: 'Jul', jp: '7月' }, //July
+    8: { en: 'Aug', jp: '8月' }, //August
+    9: { en: 'Sep', jp: '9月' }, //September
+    10: { en: 'Oct', jp: '10月' }, //October
+    11: { en: 'Nov', jp: '11月' }, //November
+    12: { en: 'Dec', jp: '12月' }, //December
   }
 
   const thousandYenConversion = (value) => {
@@ -153,7 +150,7 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
             </thead>
             <tbody>
               <tr>
-                <th className={`table-b-client-header ${isTranslateSwitchActive  ? 'smaller-font' : ''}`}>{translate('client', language)}</th>
+                <th className={`table-b-client-header ${isTranslateSwitchActive  ? '' : ''}`}>{translate('client', language)}</th>
                 <th className='table-b-categories-header'>{translate('accountCategories', language)}</th>
                 {months.map((month, index) => (
                   <th

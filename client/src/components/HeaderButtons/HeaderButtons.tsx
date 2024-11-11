@@ -57,7 +57,11 @@ const HeaderButtons: React.FC<HeaderButtonsProps> = ({ activeTab, handleTabClick
         />
       </div>
       <div className='HeaderButtons_language-toggle'>
-        <p className='HeaderButtons_pl-label'>English</p>
+        {isTranslateSwitchActive ?
+          <p className='HeaderButtons_pl-label'>English</p>
+          :
+          <p className='HeaderButtons_pl-label'>日本語</p>
+        }
         <label className='HeaderButtons_switch'>
           <input type='checkbox' checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle} />
           <span className='HeaderButtons_slider'></span>

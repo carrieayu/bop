@@ -12,6 +12,10 @@ import AlertModal from "../../components/AlertModal/AlertModal";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import CrudModal from "../../components/CrudModal/CrudModal";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import '../../assets/scss/Components/SliderToggle.scss'
+import { deleteCostOfSale } from "../../api/CostOfSalesEndpoint/DeleteCostOfSale";
+import { getCostOfSale } from "../../api/CostOfSalesEndpoint/GetCostOfSale";
+import { updateCostOfSale } from "../../api/CostOfSalesEndpoint/UpdateCostOfSale";
 
 const CostOfSalesList: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -32,7 +36,7 @@ const CostOfSalesList: React.FC = () => {
     const [costOfSales, setCostOfSales] = useState([])
     const [originalCostOfSales, setOriginalCostOfSales] = useState(costOfSales)
     const totalPages = Math.ceil(100 / 10);
-
+    const token = localStorage.getItem('accessToken')
     const [isCRUDOpen, setIsCRUDOpen] = useState(false);
     const [crudMessage, setCrudMessage] = useState('');
     const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
@@ -148,38 +152,29 @@ const CostOfSalesList: React.FC = () => {
         return
       }
 
-      // Use validData instead of combinedData
-      const token = localStorage.getItem('accessToken')
       if (!token) {
         window.location.href = '/login'
         return
       }
-      try {
-        await axios.put(`${getReactActiveEndpoint()}/api/cost-of-sales/update/`, modifiedFields, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      updateCostOfSale(modifiedFields, token)
+        .then(() => {
+          setOriginalCostOfSales(costOfSales)
+          setCrudMessage(translate('successfullyUpdated', language))
+          setIsCRUDOpen(true)
+          setIsEditing(false)
         })
-        setOriginalCostOfSales(costOfSales)
-        setCrudMessage(translate('successfullyUpdated', language));
-        setIsCRUDOpen(true);
-        setIsEditing(false);
-
-        const response = await axios.get(`${getReactActiveEndpoint()}/api/cost-of-sales/list/`)
-        setCostOfSales(response.data)
-        setOriginalCostOfSales(response.data)
-      } catch (error) {
-        if (error.response) {
-          console.error('Error response:', error.response.data)
-          if (error.response.status === 401) {
-            window.location.href = '/login'
-          } else {
-            console.error('There was an error updating the cost of sales data!', error.response.data)
-          }
-        } else {
-          console.error('Error', error.message)
-        }
-      }
+        .catch((error) => {
+            if (error.response) {
+              console.error('Error response:', error.response.data)
+              if (error.response.status === 401) {
+                window.location.href = '/login'
+              } else {
+                console.error('There was an error updating the cost of sales data!', error.response.data)
+              }
+            } else {
+              console.error('Error', error.message)
+            }
+        })
     };
 
     const handleUpdateConfirm = async () => {
@@ -293,28 +288,24 @@ const CostOfSalesList: React.FC = () => {
     };
 
     const handleConfirm = async () => {
-      const token = localStorage.getItem('accessToken')
-      try {
-        await axios.delete(`${getReactActiveEndpoint()}/api/cost-of-sales/${deleteCostOfSalesId}/delete/`, {
-          headers: {
-            Authorization: `Bearer ${token}`, // Add token to request headers
-          },
-        })
-
-        setCrudMessage(translate('successfullyDeleted', language));
-        setIsCRUDOpen(true);
-        setIsEditing(false);
-
-        const response = await axios.get(`${getReactActiveEndpoint()}/api/cost-of-sales/list/`)
-        setCostOfSales(response.data);
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login' // Redirect to login if unauthorized
-        } else {
-          console.error('Error deleting cost of sale:', error)
-        }
-      }
       
+      deleteCostOfSale(deleteCostOfSalesId, token)
+        .then(() => {
+          setCrudMessage(translate('successfullyDeleted', language))
+          setIsCRUDOpen(true)
+          getCostOfSale(token).then((data) => {
+            console.log(data)
+            setCostOfSales(data)
+            setIsEditing(false)
+          }).catch(() => {});
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            window.location.href = '/login' // Redirect to login if unauthorized
+          } else {
+            console.error('Error deleting cost of sale:', error)
+          }
+        })
     };
 
     const handleNewRegistrationClick = () => {
@@ -335,9 +326,15 @@ const CostOfSalesList: React.FC = () => {
           <div className='costOfSalesList_top_content'>
             <div className='costOfSalesList_top_body_cont'>
               <div className='costOfSalesList_mode_switch_datalist'>
-                <button className='costOfSalesList_mode_switch' onClick={handleClick}>
-                  {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
-                </button>
+                <div className='mode_switch_container'>
+                  <p className='slider_mode_switch'>
+                    {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
+                  </p>
+                  <label className='slider_switch'>
+                    <input type='checkbox' checked={isEditing} onChange={handleClick} />
+                    <span className='slider'></span>
+                  </label>
+                </div>
               </div>
             </div>
             <div className='costOfSalesList_mid_body_cont'>
@@ -356,229 +353,229 @@ const CostOfSalesList: React.FC = () => {
               <div className={`costOfSalesList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                 <div className='costOfSalesList_table_cont'>
                   {/* <div className='columns is-mobile'> */}
-                    {/* <div className='column'> */}
-                      {isEditing ? (
-                        <div>
-                          <table className='table is-bordered is-hoverable'>
-                            <thead>
-                              <tr className='costOfSalesList_table_title '>
-                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                                  {translate('year', language)}
-                                </th>
-                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                                  {translate('month', language)}
-                                </th>
-                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                                  {translate('purchases', language)}
-                                </th>
-                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                                  {translate('outsourcingExpenses', language)}
-                                </th>
-                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                                  {translate('productPurchases', language)}
-                                </th>
-                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                                  {translate('dispatchLaborExpenses', language)}
-                                </th>
-                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                                  {translate('communicationExpenses', language)}
-                                </th>
-                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                                  {translate('workInProgressExpenses', language)}
-                                </th>
-                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                                  {translate('amortizationExpenses', language)}
-                                </th>
-                                <th className='costOfSalesList_table_title_content_vertical has-text-centered'></th>
-                              </tr>
-                            </thead>
-                            <tbody className='costOfSalesList_table_body'>
-                              {combinedData.map((costOfSale, index) => {
-                                const isNewYear = index === 0 || combinedData[index - 1].year !== costOfSale.year
-                                const isLastcostOfSaleOfYear =
-                                  index !== combinedData.length - 1 && combinedData[index + 1].year !== costOfSale.year
+                  {/* <div className='column'> */}
+                  {isEditing ? (
+                    <div>
+                      <table className='table is-bordered is-hoverable'>
+                        <thead>
+                          <tr className='costOfSalesList_table_title '>
+                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                              {translate('year', language)}
+                            </th>
+                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                              {translate('month', language)}
+                            </th>
+                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                              {translate('purchases', language)}
+                            </th>
+                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                              {translate('outsourcingExpenses', language)}
+                            </th>
+                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                              {translate('productPurchases', language)}
+                            </th>
+                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                              {translate('dispatchLaborExpenses', language)}
+                            </th>
+                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                              {translate('communicationExpenses', language)}
+                            </th>
+                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                              {translate('workInProgressExpenses', language)}
+                            </th>
+                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                              {translate('amortizationExpenses', language)}
+                            </th>
+                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'></th>
+                          </tr>
+                        </thead>
+                        <tbody className='costOfSalesList_table_body'>
+                          {combinedData.map((costOfSale, index) => {
+                            const isNewYear = index === 0 || combinedData[index - 1].year !== costOfSale.year
+                            const isLastcostOfSaleOfYear =
+                              index !== combinedData.length - 1 && combinedData[index + 1].year !== costOfSale.year
 
-                                const isEditable = costOfSale.cost_of_sale_id !== null
+                            const isEditable = costOfSale.cost_of_sale_id !== null
 
-                                return (
-                                  <React.Fragment key={index}>
-                                    {costOfSale ? (
-                                      <tr className='costOfSalesList_table_body_content_horizontal'>
-                                        <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                          {costOfSale.year}
-                                        </td>
-                                        <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                          {costOfSale.month}
-                                        </td>
-                                        <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                          <input
-                                            type='number'
-                                            name='purchase'
-                                            value={costOfSale.purchase}
-                                            onChange={(e) => handleChange(index, e)}
-                                            disabled={!isEditable}
-                                          />
-                                        </td>
-                                        <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                          <input
-                                            type='number'
-                                            name='outsourcing_expense'
-                                            value={costOfSale.outsourcing_expense}
-                                            onChange={(e) => handleChange(index, e)}
-                                            disabled={!isEditable}
-                                          />
-                                        </td>
-                                        <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                          <input
-                                            type='number'
-                                            name='product_purchase'
-                                            value={costOfSale.product_purchase}
-                                            onChange={(e) => handleChange(index, e)}
-                                            disabled={!isEditable}
-                                          />
-                                        </td>
-                                        <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                          <input
-                                            type='number'
-                                            name='dispatch_labor_expense'
-                                            value={costOfSale.dispatch_labor_expense}
-                                            onChange={(e) => handleChange(index, e)}
-                                            disabled={!isEditable}
-                                          />
-                                        </td>
-                                        <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                          <input
-                                            type='number'
-                                            name='communication_expense'
-                                            value={costOfSale.communication_expense}
-                                            onChange={(e) => handleChange(index, e)}
-                                            disabled={!isEditable}
-                                          />
-                                        </td>
-                                        <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                          <input
-                                            type='number'
-                                            name='work_in_progress_expense'
-                                            value={costOfSale.work_in_progress_expense}
-                                            onChange={(e) => handleChange(index, e)}
-                                            disabled={!isEditable}
-                                          />
-                                        </td>
-                                        <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                          <input
-                                            type='number'
-                                            name='amortization_expense'
-                                            value={costOfSale.amortization_expense}
-                                            onChange={(e) => handleChange(index, e)}
-                                            disabled={!isEditable}
-                                          />
-                                        </td>
-                                        <td className='costOfSalesList_table_body_content_vertical delete_icon'>
-                                          <RiDeleteBin6Fill
-                                            className='delete-icon'
-                                            onClick={() => openModal('costOfSales', costOfSale.cost_of_sale_id)}
-                                            style={{ color: 'red' }}
-                                          />
-                                        </td>
-                                      </tr>
-                                    ) : null}
-                                    {isLastcostOfSaleOfYear && (
-                                      <tr className='year-separator'>
-                                        <td className='horizontal-line-cell' colSpan={9}>
-                                          <div className='horizontal-line' />
-                                        </td>
-                                      </tr>
-                                    )}
-                                  </React.Fragment>
-                                )
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
-                      ) : (
-                        <table className='table is-bordered is-hoverable'>
-                          <thead>
-                            <tr className='costOfSalesList_table_title '>
-                              <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                                {translate('year', language)}
-                              </th>
-                              <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                                {translate('month', language)}
-                              </th>
-                              <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                                {translate('purchases', language)}
-                              </th>
-                              <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                                {translate('outsourcingExpenses', language)}
-                              </th>
-                              <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                                {translate('productPurchases', language)}
-                              </th>
-                              <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                                {translate('dispatchLaborExpenses', language)}
-                              </th>
-                              <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                                {translate('communicationExpenses', language)}
-                              </th>
-                              <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                                {translate('workInProgressExpenses', language)}
-                              </th>
-                              <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                                {translate('amortizationExpenses', language)}
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className='costOfSalesList_table_body'>
-                            {combinedData.map((costOfSale, index) => {
-                              const isNewYear = index === 0 || combinedData[index - 1].year !== costOfSale.year
-                              const isLastcostOfSaleOfYear =
-                                index !== combinedData.length - 1 && combinedData[index + 1].year !== costOfSale.year
-
-                              return (
-                                <React.Fragment key={index}>
+                            return (
+                              <React.Fragment key={index}>
+                                {costOfSale ? (
                                   <tr className='costOfSalesList_table_body_content_horizontal'>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                      {costOfSale.year || 0}
+                                      {costOfSale.year}
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
                                       {costOfSale.month}
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                      {costOfSale.purchase || 0}
+                                      <input
+                                        type='number'
+                                        name='purchase'
+                                        value={costOfSale.purchase}
+                                        onChange={(e) => handleChange(index, e)}
+                                        disabled={!isEditable}
+                                      />
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                      {costOfSale.outsourcing_expense || 0}
+                                      <input
+                                        type='number'
+                                        name='outsourcing_expense'
+                                        value={costOfSale.outsourcing_expense}
+                                        onChange={(e) => handleChange(index, e)}
+                                        disabled={!isEditable}
+                                      />
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                      {costOfSale.product_purchase || 0}
+                                      <input
+                                        type='number'
+                                        name='product_purchase'
+                                        value={costOfSale.product_purchase}
+                                        onChange={(e) => handleChange(index, e)}
+                                        disabled={!isEditable}
+                                      />
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                      {costOfSale.dispatch_labor_expense || 0}
+                                      <input
+                                        type='number'
+                                        name='dispatch_labor_expense'
+                                        value={costOfSale.dispatch_labor_expense}
+                                        onChange={(e) => handleChange(index, e)}
+                                        disabled={!isEditable}
+                                      />
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                      {costOfSale.communication_expense || 0}
+                                      <input
+                                        type='number'
+                                        name='communication_expense'
+                                        value={costOfSale.communication_expense}
+                                        onChange={(e) => handleChange(index, e)}
+                                        disabled={!isEditable}
+                                      />
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                      {costOfSale.work_in_progress_expense || 0}
+                                      <input
+                                        type='number'
+                                        name='work_in_progress_expense'
+                                        value={costOfSale.work_in_progress_expense}
+                                        onChange={(e) => handleChange(index, e)}
+                                        disabled={!isEditable}
+                                      />
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                      {costOfSale.amortization_expense || 0}
+                                      <input
+                                        type='number'
+                                        name='amortization_expense'
+                                        value={costOfSale.amortization_expense}
+                                        onChange={(e) => handleChange(index, e)}
+                                        disabled={!isEditable}
+                                      />
+                                    </td>
+                                    <td className='costOfSalesList_table_body_content_vertical delete_icon'>
+                                      <RiDeleteBin6Fill
+                                        className='delete-icon'
+                                        onClick={() => openModal('costOfSales', costOfSale.cost_of_sale_id)}
+                                        style={{ color: 'red' }}
+                                      />
                                     </td>
                                   </tr>
-                                  {isLastcostOfSaleOfYear && (
-                                    <tr className='year-separator'>
-                                      <td className='horizontal-line-cell' colSpan={9}>
-                                        <div className='horizontal-line' />
-                                      </td>
-                                    </tr>
-                                  )}
-                                </React.Fragment>
-                              )
-                            })}
-                          </tbody>
-                        </table>
-                      )}
-                    {/* </div> */}
+                                ) : null}
+                                {isLastcostOfSaleOfYear && (
+                                  <tr className='year-separator'>
+                                    <td className='horizontal-line-cell' colSpan={9}>
+                                      <div className='horizontal-line' />
+                                    </td>
+                                  </tr>
+                                )}
+                              </React.Fragment>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <table className='table is-bordered is-hoverable'>
+                      <thead>
+                        <tr className='costOfSalesList_table_title '>
+                          <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                            {translate('year', language)}
+                          </th>
+                          <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                            {translate('month', language)}
+                          </th>
+                          <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                            {translate('purchases', language)}
+                          </th>
+                          <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                            {translate('outsourcingExpenses', language)}
+                          </th>
+                          <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                            {translate('productPurchases', language)}
+                          </th>
+                          <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                            {translate('dispatchLaborExpenses', language)}
+                          </th>
+                          <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                            {translate('communicationExpenses', language)}
+                          </th>
+                          <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                            {translate('workInProgressExpenses', language)}
+                          </th>
+                          <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                            {translate('amortizationExpenses', language)}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className='costOfSalesList_table_body'>
+                        {combinedData.map((costOfSale, index) => {
+                          const isNewYear = index === 0 || combinedData[index - 1].year !== costOfSale.year
+                          const isLastcostOfSaleOfYear =
+                            index !== combinedData.length - 1 && combinedData[index + 1].year !== costOfSale.year
+
+                          return (
+                            <React.Fragment key={index}>
+                              <tr className='costOfSalesList_table_body_content_horizontal'>
+                                <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                  {costOfSale.year || 0}
+                                </td>
+                                <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                  {costOfSale.month}
+                                </td>
+                                <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                  {costOfSale.purchase || 0}
+                                </td>
+                                <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                  {costOfSale.outsourcing_expense || 0}
+                                </td>
+                                <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                  {costOfSale.product_purchase || 0}
+                                </td>
+                                <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                  {costOfSale.dispatch_labor_expense || 0}
+                                </td>
+                                <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                  {costOfSale.communication_expense || 0}
+                                </td>
+                                <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                  {costOfSale.work_in_progress_expense || 0}
+                                </td>
+                                <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                  {costOfSale.amortization_expense || 0}
+                                </td>
+                              </tr>
+                              {isLastcostOfSaleOfYear && (
+                                <tr className='year-separator'>
+                                  <td className='horizontal-line-cell' colSpan={9}>
+                                    <div className='horizontal-line' />
+                                  </td>
+                                </tr>
+                              )}
+                            </React.Fragment>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  )}
+                  {/* </div> */}
                   {/* </div> */}
                 </div>
               </div>
@@ -586,7 +583,12 @@ const CostOfSalesList: React.FC = () => {
                 <div className='costOfSalesList_is_editing_cont'>
                   {isEditing ? (
                     <div className='costOfSalesList_edit_submit_btn_cont'>
-                      <button className='costOfSalesList_edit_submit_btn' onClick={() => {setIsUpdateConfirmationOpen(true)}}>
+                      <button
+                        className='costOfSalesList_edit_submit_btn'
+                        onClick={() => {
+                          setIsUpdateConfirmationOpen(true)
+                        }}
+                      >
                         更新
                       </button>
                     </div>
@@ -605,11 +607,7 @@ const CostOfSalesList: React.FC = () => {
         onCancel={closeModal}
         message={translate('deleteMessage', language)}
       />
-      <CrudModal
-        isCRUDOpen={isCRUDOpen}
-        onClose={closeModal}
-        message={crudMessage}
-      />
+      <CrudModal isCRUDOpen={isCRUDOpen} onClose={closeModal} message={crudMessage} />
       <AlertModal
         isOpen={isUpdateConfirmationOpen}
         onConfirm={handleUpdateConfirm}

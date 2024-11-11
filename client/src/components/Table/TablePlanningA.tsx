@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { translate } from '../../utils/translationUtil';
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { getPlanningA } from '../../api/PlanningEndpoint/GetPlanningA';
 
 interface TablePlanningAProps {
   isThousandYenChecked: boolean;
@@ -20,14 +21,10 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
       window.location.href = '/login';
       return;
     }
-    axios.get(`${getReactActiveEndpoint()}/api/planning/list/`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      }
-    })
-    .then(response => {
-      const aggregatedData = response.data.cost_of_sales.reduce((acc, item) => {
+
+    getPlanningA(token)
+      .then(response => {
+      const aggregatedData = response.cost_of_sales.reduce((acc, item) => {
         const { month, ...values } = item;
         if (!acc[month]) {
           acc[month] = { ...values };
@@ -38,7 +35,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         }
         return acc;
       }, {});
-      const aggregatedExpensesData = response.data.expenses.reduce((acc, item) => {
+      const aggregatedExpensesData = response.expenses.reduce((acc, item) => {
         const { month, ...values } = item;
         if (!acc[month]) {
           acc[month] = { month, ...values };  // Include month in the object
@@ -93,7 +90,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         return aggregatedData
       }
       
-      const aggregatedPlanningAssign = response.data.planning_assign_data.reduce((acc, item) => {
+      const aggregatedPlanningAssign = response.planning_assign_data.reduce((acc, item) => {
         const { month, employee, project, ...values } = item;  // Destructure employee and project
         
         // Initialize month if not already present
@@ -125,7 +122,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         }
         return acc;
     }, {});
-      const aggregatedPlanningProjectData = response.data.planning_project_data.reduce((acc, item) => {
+      const aggregatedPlanningProjectData = response.planning_project_data.reduce((acc, item) => {
         const { month, ...values } = item;
         if (!acc[month]) {
           acc[month] = { month };
@@ -184,7 +181,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         return executiveRenumeration + salary + fuel_allowance + statutory_welfare_expense + welfare_expense + insurance_premiums;
       })
       // EMPLOYEES
-      const result = aggregateEmployeeData(response.data.employees)
+      const result = aggregateEmployeeData(response.employees)
       const executiveRenumerationValues = months.map((month) => result[month]?.executive_renumeration || 0)
       const salaryValues = months.map((month) => result[month]?.salary || 0)
       const totalBonusAndFuelAllowance = result[12]?.bonus_and_fuel_allowance || 0
@@ -601,7 +598,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         // end for expense section
         {
           //add 人件費 + 経費 field
-          label: 'sellingAndGeneralAdminExpenses',
+          label: 'sellingAndGeneralAdminExpensesShort', // shortened version as it is too long in English Mode
           values: [
             ...sellingAndGeneralAdminExpenseValues,
             firstHalfTotal(sellingAndGeneralAdminExpenseValues),
@@ -685,36 +682,36 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
     'grossProfit',
     'employeeExpenses',
     'expenses',
-    'sellingAndGeneralAdminExpenses',
+    'sellingAndGeneralAdminExpensesShort', // Just a shorter version for English Language Mode
     'operatingIncome',
     'ordinaryIncome',
     'cumulativeOrdinaryIncome',
-  ];
+  ]
 
   const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3];
   const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: "January", jp: "1月" },
-    2: { en: "February", jp: "2月" },
-    3: { en: "March", jp: "3月" },
-    4: { en: "April", jp: "4月" },
-    5: { en: "May", jp: "5月" },
-    6: { en: "June", jp: "6月" },
-    7: { en: "July", jp: "7月" },
-    8: { en: "August", jp: "8月" },
-    9: { en: "September", jp: "9月" },
-    10: { en: "October", jp: "10月" },
-    11: { en: "November", jp: "11月" },
-    12: { en: "December", jp: "12月" },
-  };
+    1: { en: 'Jan', jp: '1月' }, // January
+    2: { en: 'Feb', jp: '2月' }, //February
+    3: { en: 'Mar', jp: '3月' }, // March
+    4: { en: 'Apr', jp: '4月' }, //April
+    5: { en: 'May', jp: '5月' }, //May
+    6: { en: 'Jun', jp: '6月' }, //June
+    7: { en: 'Jul', jp: '7月' }, //July
+    8: { en: 'Aug', jp: '8月' }, //August
+    9: { en: 'Sep', jp: '9月' }, //September
+    10: { en: 'Oct', jp: '10月' }, //October
+    11: { en: 'Nov', jp: '11月' }, //November
+    12: { en: 'Dec', jp: '12月' }, //December
+  }
   const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable'];
 
   return (
     <div className='table-planning-container'>
       <div className='table-planning'>
         <table>
-          <thead >
-            <tr>
-              <th></th>
+          <thead>
+            <tr className='table-header-sticky'>
+              <th className=''>{''}</th>
               {months.map((month, index) => (
                 <th key={index} className={month >= 10 || month <= 3 ? 'light-txt' : 'orange-txt'}>
                   {language === 'en' ? monthNames[month].en : monthNames[month].jp}
@@ -725,10 +722,10 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
                   {translate(`${halfYear}`, language)}
                 </th>
               ))}
-              <th className='total-txt'>{translate('salesRatio', language)}</th>
+              <th className='total-txt'>{translate(language === 'en' ? 'salesRatioShort' : 'salesRatio', language)}</th>
             </tr>
             <tr className='scnd-row'>
-              <th className='borderless'></th>
+              <th className='borderless'>{''}</th>
               {months.map((month, index) => (
                 <th key={index}>{translate('planning', language)}</th>
               ))}
@@ -737,16 +734,19 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
                   {translate('planning', language)}
                 </th>
               ))}
+              <th>{''}</th>
             </tr>
           </thead>
           <tbody>
             {data.map((item, index) => (
               <tr key={index}>
-                <td className={noIndentLabels.includes(item.label) ? 'no-indent' : 'indented-label'}>
-                  {translate(item.label, language)}
-                </td>
+                  <td
+                    className={`${noIndentLabels.includes(item.label) ? (language !== 'en' ? 'no-indent' : 'no-indent-english-mode') : language !== 'en' ? 'indented-label' : 'indented-label-english-mode'}`}
+                  >
+                    {translate(item.label, language)}
+                  </td>
                 {item.values.map((value, valueIndex) => (
-                  <td key={valueIndex}>
+                  <td className='month-data' key={valueIndex}>
                     {isThousandYenChecked
                       ? (Math.round((value / 1000) * 10) / 10).toLocaleString() // Rounds to 1 decimal place
                       : value.toLocaleString()}

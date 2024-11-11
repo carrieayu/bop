@@ -9,12 +9,20 @@ import AlertModal from "../../components/AlertModal/AlertModal";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import ListButtons from "../../components/ListButtons/ListButtons";
 import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
-import { fetchBusinessDivisions } from "../../reducers/businessDivisions/businessdivisionsSlice";
+import { fetchBusinessDivisions } from "../../reducers/businessDivisions/businessDivisionsSlice";
 import { fetchMasterCompany } from "../../reducers/company/companySlice";
 import { useDispatch } from "react-redux";
 import { UnknownAction } from "redux";
 import CrudModal from "../../components/CrudModal/CrudModal";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import '../../assets/scss/Components/SliderToggle.scss'
+import { getBusinessDivision } from "../../api/BusinessDivisionEndpoint/GetBusinessDivision";
+import { getMasterBusinessDivisionCompany } from "../../api/BusinessDivisionEndpoint/GetMasterBusinessDivisionCompany";
+import { updateEmployee } from "../../api/EmployeeEndpoint/UpdateEmployee";
+import { getSelectedBusinessDivisionCompany } from "../../api/BusinessDivisionEndpoint/GetSelectedBusinessDivisionCompany";
+import { deleteEmployee } from "../../api/EmployeeEndpoint/DeleteEmployee";
+import { editEmployee } from "../../api/EmployeeEndpoint/EditEmployee";
+import { getEmployee } from "../../api/EmployeeEndpoint/GetEmployee";
 
 const EmployeesListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -39,7 +47,7 @@ const EmployeesListAndEdit: React.FC = () => {
   const dispatch = useDispatch()
   const totalPages = Math.ceil(100 / 10)
   const [allBusinessDivisions, setAllBusinessDivisions] = useState([])
-
+  const token = localStorage.getItem('accessToken')
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
@@ -75,17 +83,17 @@ const EmployeesListAndEdit: React.FC = () => {
       const resMasterCompany = await dispatch(fetchMasterCompany() as unknown as UnknownAction)
       setCompanySelection(resMasterCompany.payload)
       if (isEditing) {
-        const response = await axios.get(`${getReactActiveEndpoint()}/api/employees/edit/`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          },
-        })
-
-        const businessDivisions = response.data.reduce((acc, item) => acc.concat(item.business_divisions), [])
-        setBusinessSelection(businessDivisions)
-        // Ensure employeesList is set from the fetched employee data if necessary
-        const fetchedEmployeesList = response.data // or transform response as needed
-        setEmployeesList(fetchedEmployeesList)
+        editEmployee(token)
+          .then((data) => {
+            const businessDivisions = data.reduce((acc, item) => acc.concat(item.business_divisions), [])
+            setBusinessSelection(businessDivisions)
+            // Ensure employeesList is set from the fetched employee data if necessary
+            const fetchedEmployeesList = data // or transform response as needed
+            setEmployeesList(fetchedEmployeesList)
+          })
+          .catch((error) => {
+            console.error(error.message)
+          })
       } else {
         const resBusinessDivisions = await dispatch(fetchBusinessDivisions() as unknown as UnknownAction)
         setBusinessSelection(resBusinessDivisions.payload)
@@ -116,10 +124,10 @@ const EmployeesListAndEdit: React.FC = () => {
   }
 
   useEffect(() => {
-    axios
-      .get(`${getReactActiveEndpoint()}/api/master-master-business-divisions-companies/list/`)
-      .then((response) => {
-        setAllBusinessDivisions(response.data)
+
+    getMasterBusinessDivisionCompany(token)
+      .then((data) => {
+        setAllBusinessDivisions(data)
       })
       .catch((error) => {
         console.error('Error fetching business divisions:', error)
@@ -174,10 +182,9 @@ const EmployeesListAndEdit: React.FC = () => {
 
         setEmployeesList(updatedEmployeeData)
 
-        axios
-          .get(`${getReactActiveEndpoint()}/api/business-divisions-of-company/?company_id=${value}`)
-          .then((response) => {
-            const employeeBusinessDivisions = response.data.filter(
+        getSelectedBusinessDivisionCompany(value, token)
+          .then((data) => {
+            const employeeBusinessDivisions = data.filter(
               (division) => division.employee_id === updatedEmployeeData[index].employee_id,
             )
 
@@ -319,36 +326,34 @@ const EmployeesListAndEdit: React.FC = () => {
       window.location.href = '/login'
       return
     }
-    try {
-      const response = await axios.put(`${getReactActiveEndpoint()}/api/employees/update/`, modifiedFields, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+
+    updateEmployee(modifiedFields, token)
+      .then(() => {
+        setOriginalEmployeesList(employeesList)
+        setCrudMessage(translate('successfullyUpdated', language))
+        setIsCRUDOpen(true)
+        setIsEditing(false)
       })
-      setOriginalEmployeesList(employeesList)
-      setCrudMessage(translate('successfullyUpdated', language))
-      setIsCRUDOpen(true)
-      setIsEditing(false)
-    } catch (error) {
-      if (error.response) {
-        const { status, data } = error.response
-        switch (status) {
-          case 409:
-            setCrudMessage(translate('emailExistsMessage', language))
-            setIsCRUDOpen(true)
-            break
-          case 401:
-            console.error('Validation error:', data)
-            window.location.href = '/login'
-            break
-          default:
-            console.error('There was an error creating the employee data!', error)
-            setCrudMessage(translate('error', language))
-            setIsCRUDOpen(true)
-            break
+      .catch((error) => {
+        if (error.response) {
+          const { status, data } = error.response
+          switch (status) {
+            case 409:
+              setCrudMessage(translate('emailExistsMessage', language))
+              setIsCRUDOpen(true)
+              break
+            case 401:
+              console.error('Validation error:', data)
+              window.location.href = '/login'
+              break
+            default:
+              console.error('There was an error creating the employee data!', error)
+              setCrudMessage(translate('error', language))
+              setIsCRUDOpen(true)
+              break
+          }
         }
-      }
-    }
+      })
   }
 
   const handleUpdateConfirm = async () => {
@@ -364,14 +369,8 @@ const EmployeesListAndEdit: React.FC = () => {
     }
 
     try {
-      const url = isEditing ? `${getReactActiveEndpoint()}/api/employees/edit/` : `${getReactActiveEndpoint()}/api/employees/list/`
-      const response = await axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Add token to request headers
-        },
-      })
-
-      const employeesListWithBusinessSelection = response.data.map((employee) => ({
+      const url = isEditing ? await editEmployee(token) : await getEmployee(token)
+      const employeesListWithBusinessSelection = url.map((employee) => ({
         ...employee,
         businessSelection: [], // Initialize businessSelection as an empty array
       }))
@@ -379,10 +378,10 @@ const EmployeesListAndEdit: React.FC = () => {
       setOriginalEmployeesList(employeesListWithBusinessSelection)
       // Update business divisions for each employee
       employeesListWithBusinessSelection.forEach((employee, index) => {
-        axios
-          .get(`${getReactActiveEndpoint()}/api/business-divisions-of-company/?company_id=${employee.company_id}`)
-          .then((response) => {
-            const employeeBusinessDivisions = response.data.filter(
+
+        getSelectedBusinessDivisionCompany(employee.company_id, token)
+          .then((data) => {
+            const employeeBusinessDivisions = data.filter(
               (division) => division.employee_id === employee.employee_id,
             )
             const updatedEmployeesList = [...employeesListWithBusinessSelection]
@@ -451,20 +450,20 @@ const EmployeesListAndEdit: React.FC = () => {
   }
 
   const handleConfirm = async () => {
-    try {
-      const response = await axios.delete(`${getReactActiveEndpoint()}/api/employees/${deleteId}/delete/`, {
+    deleteEmployee(deleteId, token)
+      .then(() => {
+        setEmployeesList((prevList) => prevList.filter((employee) => employee.employee_id !== deleteId))
+        setCrudMessage(translate('successfullyDeleted', language))
+        setIsCRUDOpen(true)
+        setIsEditing(false)
       })
-      setEmployeesList((prevList) => prevList.filter((employee) => employee.employee_id !== deleteId))
-      setCrudMessage(translate('successfullyDeleted', language))
-      setIsCRUDOpen(true)
-      setIsEditing(false)
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        window.location.href = '/login'
-      } else {
-        console.error('Error deleting project:', error)
-      }
-    }
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login'
+        } else {
+          console.error('Error deleting project:', error)
+        }
+      })
   }
 
   const formatDate = (dateString) => {
@@ -532,9 +531,15 @@ const EmployeesListAndEdit: React.FC = () => {
           <div className='EmployeesListAndEdit_top_content'>
             <div className='EmployeesListAndEdit_top_body_cont'>
               <div className='EmployeesListAndEdit_mode_switch_datalist'>
-                <button className='EmployeesListAndEdit_mode_switch' onClick={handleClick}>
-                  {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
-                </button>
+                <div className='mode_switch_container'>
+                  <p className='slider_mode_switch'>
+                    {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
+                  </p>
+                  <label className='slider_switch'>
+                    <input type='checkbox' checked={isEditing} onChange={handleClick} />
+                    <span className='slider'></span>
+                  </label>
+                </div>
               </div>
             </div>
             <div className='EmployeesListAndEdit_mid_body_cont'>
