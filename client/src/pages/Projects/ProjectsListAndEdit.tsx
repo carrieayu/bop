@@ -16,6 +16,8 @@ import AlertModal from "../../components/AlertModal/AlertModal";
 import CrudModal from "../../components/CrudModal/CrudModal";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss';
+import { validateField } from '../../utils/validationUtil'
+
 
 import { getProject } from "../../api/ProjectsEndpoint/GetProject";
 import { updateProject } from "../../api/ProjectsEndpoint/UpdateProject";
@@ -137,24 +139,15 @@ const ProjectsListAndEdit: React.FC = () => {
     })
   }
 
-  // Checks For EMPTY INPUTS & Number Values Less than 0
-  const validateField = (value, fieldName, isNumber, projectId) => {
-    console.log('in validate field:', value, fieldName, isNumber)
-    if (!isNaN(value) && value < 0) return `${fieldName} cannotBeLessThanZero ${projectId}`
-    console.log('is not number:', !isNaN(value), typeof value)
-    if (typeof value === 'string' && value.trim() === '') return `${fieldName} inputCannotBeEmpty ${projectId}`
-    return '' // No error
-  }
-
   // REQUIRED FIELDS FOR CHECKS
   const validateProjects = (projectsValidate) => {
     const fieldChecks = [
       { field: 'year', fieldName: 'year', isNumber: true },
       { field: 'month', fieldName: 'month', isNumber: true },
       { field: 'project_name', fieldName: 'projectName', isNumber: false },
-      // { field: 'project_type', fieldName: 'projectType', isNumber: false },
-      { field: 'sales_revenue', fieldName: 'salesRevenue', isNumber: true },
-      { field: 'cost_of_sale', fieldName: 'costOfSale', isNumber: true },
+      // { field: 'project_type', fieldName: 'projectType', isNumber: false }, // Currently Allowed to be NULL
+      { field: 'sales_revenue', fieldName: 'salesRevenue', isNumber: true }, 
+      { field: 'cost_of_sale', fieldName: 'costOfSale', isNumber: true }, // Cost Of Sale in projects may not be needed.
       { field: 'dispatch_labor_expense', fieldName: 'dispatchLaborExpense', isNumber: true },
       { field: 'employee_expense', fieldName: 'employeeExpense', isNumber: true },
       { field: 'indirect_employee_expense', fieldName: 'indirectEmployeeExpense', isNumber: true },
@@ -163,7 +156,7 @@ const ProjectsListAndEdit: React.FC = () => {
       { field: 'non_operating_income', fieldName: 'nonOperatingIncome', isNumber: true },
       { field: 'non_operating_expense', fieldName: 'nonOperatingExpense', isNumber: true },
       { field: 'ordinary_profit', fieldName: 'ordinaryProfit', isNumber: true },
-      // { field: 'ordinary_profit_margin', fieldName: 'ordinaryProfitMargin', isNumber: true },
+      // { field: 'ordinary_profit_margin', fieldName: 'ordinaryProfitMargin', isNumber: true }, // Not Currently displayed on this screen. Maybe not needed
     ]
 
     let allErrors = []
