@@ -11,6 +11,8 @@ import AlertModal from '../../components/AlertModal/AlertModal'
 import { RiDeleteBin6Fill } from 'react-icons/ri'
 import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import '../../assets/scss/Components/SliderToggle.scss'
+
 import { deleteExpense } from '../../api/ExpenseEndpoint/DeleteExpense'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
 import { updateExpense } from '../../api/ExpenseEndpoint/UpdateExpense'
@@ -341,9 +343,15 @@ const ExpensesList: React.FC = () => {
           <div className='expensesList_top_content'>
             <div className='expensesList_top_body_cont'>
               <div className='expensesList_mode_switch_datalist'>
-                <button className='expensesList_mode_switch' onClick={handleClick}>
-                  {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
-                </button>
+                <div className='mode_switch_container'>
+                  <p className='slider_mode_switch'>
+                    {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
+                  </p>
+                  <label className='slider_switch'>
+                    <input type='checkbox' checked={isEditing} onChange={handleClick} />
+                    <span className='slider'></span>
+                  </label>
+                </div>
               </div>
             </div>
             <div className='expensesList_mid_body_cont'>

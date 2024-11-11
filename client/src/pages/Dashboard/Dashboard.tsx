@@ -192,150 +192,164 @@ const Dashboard = () => {
       />
       <div className='dashboard_content_wrapper'>
         <Sidebar />
-        <div className='dashboard_content'>
-          <div className='dashboard_body_cont'>
-            <div className='dashboard_card_cont'>
-              <div className='dashboard_left_card'>
-                <Card
-                  backgroundColor='#fff'
-                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-                  border='2px solid #ccc'
-                  width='auto'
-                  height='120px'
-                >
-                  <div className='dashboard_custom-card-content'>
-                    <p className='dashboard_text1'>{translate('sales', language)}</p>
-                    <p className='dashboard_numTxt'>
-                      {formatNumberWithCommas(totalSales)}&nbsp;
-                      <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
-                    </p>
-                    <p className='dashboard_text2'>{translate('total', language)}</p>
-                  </div>
-                </Card>
-                <Card
-                  backgroundColor='#fff'
-                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-                  border='2px solid #ccc'
-                  width='auto'
-                  height='120px'
-                >
-                  <div className='dashboard_custom-card-content'>
-                    <p className='dashboard_text1'>{translate('operatingIncome', language)}</p>
-                    <p className='dashboard_numTxt'>
-                      {formatNumberWithCommas(totalOperatingProfit)}&nbsp;
-                      <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
-                    </p>
-                    <p className='dashboard_text2'>{translate('total', language)}</p>
-                  </div>
-                </Card>
-                <Card
-                  backgroundColor='#fff'
-                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-                  border='2px solid #ccc'
-                  width='auto'
-                  height='120px'
-                >
-                  <div className='dashboard_custom-card-content'>
-                    <p className='dashboard_text1'>{translate('grossProfitMargin', language)}</p>
-                    <p className='dashboard_numTxt'>
-                      {totalGrossProfitMargin}&nbsp;<span className='dashboard_totalTxt'>%</span>
-                    </p>
-                    <p className='dashboard_text2'>{translate('total', language)}</p>
-                  </div>
-                </Card>
+        {/* <div className='dashboard_table_wrapper'> */}
+          <div className='dashboard_content'>
+            <div className='dashboard_body_cont'>
+              <div className='dashboard_card_cont'>
+                <div className='dashboard_left_card'>
+                  <Card
+                    backgroundColor='#fff'
+                    shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
+                    border='2px solid #ccc'
+                    width='auto'
+                    height='120px'
+                  >
+                    <div className='dashboard_custom-card-content'>
+                      <p className='dashboard_text1'>{translate('sales', language)}</p>
+                      <p className='dashboard_numTxt'>
+                        {formatNumberWithCommas(totalSales)}&nbsp;
+                        <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
+                      </p>
+                      <p className='dashboard_text2'>{translate('total', language)}</p>
+                    </div>
+                  </Card>
+                  <Card
+                    backgroundColor='#fff'
+                    shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
+                    border='2px solid #ccc'
+                    width='auto'
+                    height='120px'
+                  >
+                    <div className='dashboard_custom-card-content'>
+                      <p className='dashboard_text1 tooltip'>
+                        {translate(language === 'en' ? 'operatingIncomeShort' : 'operatingIncome', language)}{' '}
+                      </p>
+                      <p className='dashboard_numTxt'>
+                        {formatNumberWithCommas(totalOperatingProfit)}&nbsp;
+                        <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
+                      </p>
+                      <p className='dashboard_text2'>{translate('total', language)}</p>
+                    </div>
+                  </Card>
+                  <Card
+                    backgroundColor='#fff'
+                    shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
+                    border='2px solid #ccc'
+                    width='auto'
+                    height='120px'
+                  >
+                    <div className='dashboard_custom-card-content'>
+                      <p className='dashboard_text1'>{translate('grossProfitMargin', language)}</p>
+                      <p className='dashboard_numTxt'>
+                        {totalGrossProfitMargin.toFixed(2)}&nbsp;<span className='dashboard_totalTxt'>%</span>
+                      </p>
+                      <p className='dashboard_text2'>{translate('total', language)}</p>
+                    </div>
+                  </Card>
+                </div>
+                &nbsp;&nbsp;&nbsp;
+                <div className='dashboard_right_card'>
+                  <Card
+                    backgroundColor='#fff'
+                    shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
+                    border='2px solid #ccc'
+                    width='auto'
+                    height='120px'
+                  >
+                    <div className='dashboard_custom-card-content'>
+                      <p className='dashboard_text1'>{translate('grossProfit', language)}</p>
+                      <p className='dashboard_numTxt'>
+                        {formatNumberWithCommas(totalGrossProfit)}&nbsp;
+                        <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
+                      </p>
+                      <p className='dashboard_text2'>{translate('total', language)}</p>
+                    </div>
+                  </Card>
+                  <Card
+                    backgroundColor='#fff'
+                    shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
+                    border='2px solid #ccc'
+                    width='auto'
+                    height='120px'
+                  >
+                    <div className='dashboard_custom-card-content'>
+                      <p className='dashboard_text1'>
+                        {translate(
+                          language === 'en' ? 'cumulativeOrdinaryIncomeShort' : 'cumulativeOrdinaryIncome',
+                          language,
+                        )}
+                      </p>
+                      <p className='dashboard_numTxt'>
+                        {formatNumberWithCommas(totalNetProfitPeriod)}&nbsp;
+                        <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
+                      </p>
+                      <p className='dashboard_text2'>{translate('total', language)}</p>
+                    </div>
+                  </Card>
+                  <Card
+                    backgroundColor='#fff'
+                    shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
+                    border='2px solid #ccc'
+                    width='auto'
+                    height='120px'
+                  >
+                    <div className='dashboard_custom-card-content'>
+                      <p className='dashboard_text1'>
+                        {translate(
+                          language === 'en' ? 'operatingProfitMarginShort' : 'operatingProfitMargin',
+                          language,
+                        )}
+                      </p>
+                      <p className='dashboard_numTxt'>
+                        {totalOperatingProfitMargin.toFixed(2)}&nbsp;<span className='dashboard_totalTxt'>%</span>
+                      </p>
+                      <p className='dashboard_text2'>{translate('total', language)}</p>
+                    </div>
+                  </Card>
+                </div>
               </div>
               &nbsp;&nbsp;&nbsp;
-              <div className='dashboard_right_card'>
-                <Card
-                  backgroundColor='#fff'
-                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-                  border='2px solid #ccc'
-                  width='auto'
-                  height='120px'
-                >
-                  <div className='dashboard_custom-card-content'>
-                    <p className='dashboard_text1'>{translate('grossProfit', language)}</p>
-                    <p className='dashboard_numTxt'>
-                      {formatNumberWithCommas(totalGrossProfit)}&nbsp;
-                      <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
-                    </p>
-                    <p className='dashboard_text2'>{translate('total', language)}</p>
-                  </div>
-                </Card>
-                <Card
-                  backgroundColor='#fff'
-                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-                  border='2px solid #ccc'
-                  width='auto'
-                  height='120px'
-                >
-                  <div className='dashboard_custom-card-content'>
-                    <p className='dashboard_text1'>{translate('cumulativeOrdinaryIncome', language)}</p>
-                    <p className='dashboard_numTxt'>
-                      {formatNumberWithCommas(totalNetProfitPeriod)}&nbsp;
-                      <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
-                    </p>
-                    <p className='dashboard_text2'>{translate('total', language)}</p>
-                  </div>
-                </Card>
-                <Card
-                  backgroundColor='#fff'
-                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-                  border='2px solid #ccc'
-                  width='auto'
-                  height='120px'
-                >
-                  <div className='dashboard_custom-card-content'>
-                    <p className='dashboard_text1'>{translate('operatingProfitMargin', language)}</p>
-                    <p className='dashboard_numTxt'>
-                      {totalOperatingProfitMargin}&nbsp;<span className='dashboard_totalTxt'>%</span>
-                    </p>
-                    <p className='dashboard_text2'>{translate('total', language)}</p>
-                  </div>
-                </Card>
+              <div className='dashboard_graph_cont'>
+                <div className='dashboard_graph_wrap'>
+                  <GraphDashboard data={graphData} />
+                </div>
               </div>
             </div>
-            &nbsp;&nbsp;&nbsp;
-            <div className='dashboard_graph_cont'>
-              <div className='dashboard_graph_wrap'>
-                <GraphDashboard data={graphData} />
+            <div className='dashboard_bottom_cont'>
+              <div className='dashboard_right-content'>
+                <div className='dashboard_paginate'>
+                  <p className='dashboard_pl-label'>{translate('displayByProject', language)}</p>
+                  <label className='dashboard_switch'>
+                    <input type='checkbox' checked={isSwitchActive} onChange={handleSwitchToggle} />
+                    <span className='dashboard_slider'></span>
+                  </label>
+                  <p className='dashboard_pl-label'>{translate('thousandYen', language)}</p>
+                  <label className='dashboard_switch'>
+                    <input type='checkbox' checked={isThousandYenChecked} onChange={handleThousandYenToggle} />
+                    <span className='dashboard_slider'></span>
+                  </label>
+                </div>
               </div>
-            </div>
-          </div>
-          <div className='dashboard_bottom_cont'>
-            <div className='dashboard_right-content'>
-              <div className='dashboard_paginate'>
-                <p className='dashboard_pl-label'>{translate('displayByProject', language)}</p>
-                <label className='dashboard_switch'>
-                  <input type='checkbox' checked={isSwitchActive} onChange={handleSwitchToggle} />
-                  <span className='dashboard_slider'></span>
-                </label>
-                <p className='dashboard_pl-label'>{translate('thousandYen', language)}</p>
-                <label className='dashboard_switch'>
-                  <input type='checkbox' checked={isThousandYenChecked} onChange={handleThousandYenToggle} />
-                  <span className='dashboard_slider'></span>
-                </label>
-              </div>
-            </div>
-            <div className='dashboard_tbl_cont'>
-              <div className={`dashboard_table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
-                {/* Render the TablePlanning component here */}
-                <TablePlanningA isThousandYenChecked={isThousandYenChecked} />
-              </div>
-              <div className={`dashboard_table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
-                <TablePlanningB
-                  data={paginatedData}
-                  header={header}
-                  dates={dates}
-                  smallDate={smallDate}
-                  isThousandYenChecked={isThousandYenChecked}
-                />
+              <div className='dashboard_tbl_cont'>
+                <div className={`dashboard_table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
+                  {/* Render the TablePlanning component here */}
+                  <TablePlanningA isThousandYenChecked={isThousandYenChecked} />
+                </div>
+                <div className={`dashboard_table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
+                  <TablePlanningB
+                    data={paginatedData}
+                    header={header}
+                    dates={dates}
+                    smallDate={smallDate}
+                    isThousandYenChecked={isThousandYenChecked}
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    // </div>
   )
 }
 

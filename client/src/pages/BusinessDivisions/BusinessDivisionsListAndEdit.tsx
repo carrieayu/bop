@@ -11,6 +11,7 @@ import ListButtons from "../../components/ListButtons/ListButtons";
 import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
 import CrudModal from "../../components/CrudModal/CrudModal";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import '../../assets/scss/Components/SliderToggle.scss'
 import { getBusinessDivision } from "../../api/BusinessDivisionEndpoint/GetBusinessDivision";
 import { getUser } from "../../api/UserEndpoint/GetUser";
 import { getCompany } from "../../api/CompanyEndpoint/GetCompany";
@@ -353,9 +354,15 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
           <div className='BusinessDivisionsListAndEdit_top_content'>
             <div className='BusinessDivisionsListAndEdit_top_body_cont'>
               <div className='BusinessDivisionsListAndEdit_mode_switch_datalist'>
-                <button className='BusinessDivisionsListAndEdit_mode_switch' onClick={handleClick}>
-                  {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
-                </button>
+                <div className='mode_switch_container'>
+                  <p className='slider_mode_switch'>
+                    {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
+                  </p>
+                  <label className='slider_switch'>
+                    <input type='checkbox' checked={isEditing} onChange={handleClick} />
+                    <span className='slider'></span>
+                  </label>
+                </div>
               </div>
             </div>
             <div className='BusinessDivisionsListAndEdit_mid_body_cont'>
@@ -422,11 +429,11 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                                   <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
                                     <select
                                       className='edit_select'
-                                      name='company' 
-                                      value={business_data.company || ''} 
-                                      onChange={(e) => handleChange(index, e)} 
+                                      name='company'
+                                      value={business_data.company || ''}
+                                      onChange={(e) => handleChange(index, e)}
                                     >
-                                      <option value=''>Select a company</option> 
+                                      <option value=''>Select a company</option>
                                       {Object.entries(companyMap).map(([companyId, companyName]) => (
                                         <option key={companyId} value={companyId}>
                                           {companyName as String}
@@ -515,7 +522,12 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                 <div className='BusinessDivisionsListAndEdit_is_editing_cont'>
                   {isEditing ? (
                     <div className='BusinessDivisionsListAndEdit_edit_submit_btn_cont'>
-                      <button className='BusinessDivisionsListAndEdit_edit_submit_btn' onClick={() => {setIsUpdateConfirmationOpen(true)}}>
+                      <button
+                        className='BusinessDivisionsListAndEdit_edit_submit_btn'
+                        onClick={() => {
+                          setIsUpdateConfirmationOpen(true)
+                        }}
+                      >
                         更新
                       </button>
                     </div>
@@ -534,11 +546,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         onCancel={closeModal}
         message={translate('deleteMessage', language)}
       />
-      <CrudModal
-        isCRUDOpen={isCRUDOpen}
-        onClose={closeModal}
-        message={crudMessage}
-      />
+      <CrudModal isCRUDOpen={isCRUDOpen} onClose={closeModal} message={crudMessage} />
       <AlertModal
         isOpen={isUpdateConfirmationOpen}
         onConfirm={handleUpdateConfirm}

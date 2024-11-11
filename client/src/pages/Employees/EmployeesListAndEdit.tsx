@@ -15,6 +15,7 @@ import { useDispatch } from "react-redux";
 import { UnknownAction } from "redux";
 import CrudModal from "../../components/CrudModal/CrudModal";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import '../../assets/scss/Components/SliderToggle.scss'
 import { getBusinessDivision } from "../../api/BusinessDivisionEndpoint/GetBusinessDivision";
 import { getMasterBusinessDivisionCompany } from "../../api/BusinessDivisionEndpoint/GetMasterBusinessDivisionCompany";
 import { updateEmployee } from "../../api/EmployeeEndpoint/UpdateEmployee";
@@ -530,9 +531,15 @@ const EmployeesListAndEdit: React.FC = () => {
           <div className='EmployeesListAndEdit_top_content'>
             <div className='EmployeesListAndEdit_top_body_cont'>
               <div className='EmployeesListAndEdit_mode_switch_datalist'>
-                <button className='EmployeesListAndEdit_mode_switch' onClick={handleClick}>
-                  {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
-                </button>
+                <div className='mode_switch_container'>
+                  <p className='slider_mode_switch'>
+                    {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
+                  </p>
+                  <label className='slider_switch'>
+                    <input type='checkbox' checked={isEditing} onChange={handleClick} />
+                    <span className='slider'></span>
+                  </label>
+                </div>
               </div>
             </div>
             <div className='EmployeesListAndEdit_mid_body_cont'>
