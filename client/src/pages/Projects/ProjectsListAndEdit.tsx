@@ -202,7 +202,7 @@ const handleSubmit = async () => {
       // Return the combined translated error message
 
       const message = `${translatedProjectId}:${projectId} ${translatedField}${language === 'en' ? '' : 'は'}${translatedMessage}`
-      
+      console.log(message)
       finalValidationMessages.push(message)
       return finalValidationMessages
     });

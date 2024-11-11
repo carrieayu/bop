@@ -122,7 +122,7 @@
   "selectEmployeeType": "Select Employee Type",
   "noSelection": "← Select Type First",
   "ExceedsMaximumLengthOfCharacters(100)":"Exceeds The Maximum Length Of Allowed Characters (100)",
-  "inputCannotBeEmpty":"'${fieldName}' Cannot Be Empty.",
+  "inputCannotBeEmpty":"Cannot Be Empty.",
   "cannotBeLessThanZero":"Cannot Be Less Than 0.",
   "projectId":"Project ID:"
 }
