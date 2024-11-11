@@ -22,162 +22,203 @@ import { updateProject } from "../../api/ProjectsEndpoint/UpdateProject";
 import { deleteProject } from "../../api/ProjectsEndpoint/DeleteProject";
 
 const ProjectsListAndEdit: React.FC = () => {
-    const [activeTab, setActiveTab] = useState('/planning-list')
-    const navigate = useNavigate()
-    const location = useLocation()
-    const [activeTabOther, setActiveTabOther] = useState('project')
-    const [currentPage, setCurrentPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5)
-    const [paginatedData, setPaginatedData] = useState<any[]>([])
-    const select = [5, 10, 100]
-    const { language, setLanguage } = useLanguage()
-    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
-    const [isEditing, setIsEditing] = useState(false)
-    const [projects, setProjects] = useState([])
-    const [originalProjectsList, setOriginalProjectsList] = useState(projects)
-    const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
-    const years = []
-    const [initialLanguage, setInitialLanguage] = useState(language);
-    const dispatch = useDispatch()
-    const [clients, setClients] = useState<any>([])
-    const [businessSelection, setBusinessSelection] = useState<any>([])
-    const totalPages = Math.ceil(100 / 10);
-    const [modalIsOpen, setModalIsOpen] = useState(false)
-    const [selectedProject, setSelectedProject] = useState<any>(null)
-    const [deleteProjectsId, setDeleteProjectsId] = useState([])
-    const [clientMap, setClientMap] = useState({})
-    const [businessMap, setBusinessMap] = useState({})
-    const [formProjects, setFormProjects] = useState([
-      {
-        year: '',
-        month: '',
-        project_name: '',
-        project_type: '',
-        client: '',
-        business_division: '',
-        sales_revenue: '',
-        cost_of_sale: '',
-        dispatch_labor_expense: '',
-        employee_expense: '',
-        indirect_employee_expense: '',
-        expense: '',
-        operating_income: '',
-        non_operating_income: '',
-        non_operating_expense: '',
-        ordinary_profit: '',
-        ordinary_profit_margin: '',
-      },
-    ])
+  const [activeTab, setActiveTab] = useState('/planning-list')
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [activeTabOther, setActiveTabOther] = useState('project')
+  const [currentPage, setCurrentPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
+  const [paginatedData, setPaginatedData] = useState<any[]>([])
+  const select = [5, 10, 100]
+  const { language, setLanguage } = useLanguage()
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
+  const [isEditing, setIsEditing] = useState(false)
+  const [projects, setProjects] = useState([])
+  const [originalProjectsList, setOriginalProjectsList] = useState(projects)
+  const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
+  const years = []
+  const [initialLanguage, setInitialLanguage] = useState(language)
+  const dispatch = useDispatch()
+  const [clients, setClients] = useState<any>([])
+  const [businessSelection, setBusinessSelection] = useState<any>([])
+  const totalPages = Math.ceil(100 / 10)
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [selectedProject, setSelectedProject] = useState<any>(null)
+  const [deleteProjectsId, setDeleteProjectsId] = useState([])
+  const [clientMap, setClientMap] = useState({})
+  const [businessMap, setBusinessMap] = useState({})
+  const [formProjects, setFormProjects] = useState([
+    {
+      year: '',
+      month: '',
+      project_name: '',
+      project_type: '',
+      client: '',
+      business_division: '',
+      sales_revenue: '',
+      cost_of_sale: '',
+      dispatch_labor_expense: '',
+      employee_expense: '',
+      indirect_employee_expense: '',
+      expense: '',
+      operating_income: '',
+      non_operating_income: '',
+      non_operating_expense: '',
+      ordinary_profit: '',
+      ordinary_profit_margin: '',
+    },
+  ])
 
-    const [isCRUDOpen, setIsCRUDOpen] = useState(false);
-    const [crudMessage, setCrudMessage] = useState('');
-    const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
-    const token = localStorage.getItem('accessToken')
-    
-    for (let year = 2020; year <= new Date().getFullYear(); year++) {
-      years.push(year)
+  const [isCRUDOpen, setIsCRUDOpen] = useState(false)
+  const [crudMessage, setCrudMessage] = useState('')
+  const [crudValidationErrors, setCrudValidationErrors] = useState([]);
+  const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
+  const token = localStorage.getItem('accessToken')
+
+  for (let year = 2020; year <= new Date().getFullYear(); year++) {
+    years.push(year)
+  }
+  const handleTabClick = (tab) => {
+    setActiveTab(tab)
+    navigate(tab)
+  }
+
+  const handleTabsClick = (tab) => {
+    setActiveTabOther(tab)
+    switch (tab) {
+      case 'project':
+        navigate('/projects-list')
+        break
+      case 'employeeExpenses':
+        navigate('/employee-expenses-list')
+        break
+      case 'expenses':
+        navigate('/expenses-list')
+        break
+      case 'costOfSales':
+        navigate('/cost-of-sales-list')
+        break
+      default:
+        break
     }
-    const handleTabClick = (tab) => {
-        setActiveTab(tab)
-        navigate(tab)
+  }
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+  }
+
+  const handleRowsPerPageChange = (numRows: number) => {
+    setRowsPerPage(numRows)
+    setCurrentPage(0)
+  }
+
+  const handleClick = () => {
+    setIsEditing((prevState) => {
+      const newEditingState = !prevState
+      if (newEditingState) {
+        setLanguage(initialLanguage)
       }
+
+      return newEditingState
+    })
+  }
+
+  const handleChange = (index, event) => {
+    const { name, value } = event.target
+    setProjects((prevState) => {
+      const updatedProjectsData = [...prevState]
+      updatedProjectsData[index] = {
+        ...updatedProjectsData[index],
+        [name]: value,
+      }
+      setFormProjects(updatedProjectsData)
+
+      return updatedProjectsData
+    })
+  }
+
+  // Checks For EMPTY INPUTS & Number Values Less than 0
+  const validateField = (value, fieldName, isNumber, projectId) => {
+    console.log('in validate field:', value, fieldName, isNumber)
+    if (!isNaN(value) && value < 0) return `${fieldName} cannotBeLessThanZero ${projectId}`
+    console.log('is not number:', !isNaN(value), typeof value)
+    if (typeof value === 'string' && value.trim() === '') return `${fieldName} inputCannotBeEmpty ${projectId}`
+    return '' // No error
+  }
+
+  // REQUIRED FIELDS FOR CHECKS
+  const validateProjects = (projectsValidate) => {
+    const fieldChecks = [
+      { field: 'year', fieldName: 'year', isNumber: true },
+      { field: 'month', fieldName: 'month', isNumber: true },
+      { field: 'project_name', fieldName: 'projectName', isNumber: false },
+      // { field: 'project_type', fieldName: 'projectType', isNumber: false },
+      { field: 'sales_revenue', fieldName: 'salesRevenue', isNumber: true },
+      { field: 'cost_of_sale', fieldName: 'costOfSale', isNumber: true },
+      { field: 'dispatch_labor_expense', fieldName: 'dispatchLaborExpense', isNumber: true },
+      { field: 'employee_expense', fieldName: 'employeeExpense', isNumber: true },
+      { field: 'indirect_employee_expense', fieldName: 'indirectEmployeeExpense', isNumber: true },
+      { field: 'expense', fieldName: 'expense', isNumber: true },
+      { field: 'operating_income', fieldName: 'operatingIncome', isNumber: true },
+      { field: 'non_operating_income', fieldName: 'nonOperatingIncome', isNumber: true },
+      { field: 'non_operating_expense', fieldName: 'nonOperatingExpense', isNumber: true },
+      { field: 'ordinary_profit', fieldName: 'ordinaryProfit', isNumber: true },
+      // { field: 'ordinary_profit_margin', fieldName: 'ordinaryProfitMargin', isNumber: true },
+    ]
+
+    let allErrors = []
+
+    for (const prj of projectsValidate) {
+      for (const check of fieldChecks) {
+        console.log(prj[check.field])
+
+        const errorMessage = validateField(prj[check.field], check.fieldName, check.isNumber, prj.project_id)
+
+        console.log('errorMessage', errorMessage)
+
+        if (errorMessage) {
+          allErrors.push(errorMessage)
+        }
+      }
+    }
+    console.log('allerrors:', allErrors)
+    return allErrors // no errors
+  }
+
+const handleSubmit = async () => {
+  const validationErrors = validateProjects(formProjects); // Get the array of error messages
+
+  if (validationErrors.length > 0) {
+    console.log('validationErrors', validationErrors);
+
+    let finalValidationMessages = [];
+    // Build the message for the modal by translating each error
+    const translatedErrors = validationErrors.map((validationError) => {
+      const [fieldName, validationErrormessage, projectId] = validationError.split(' ');
+      const translatedField = translate(fieldName, language);
+      const translatedMessage = translate(validationErrormessage, language);
+      const translatedProjectId = translate('projectId',language)
+
+      // Return the combined translated error message
+
+      const message = `${translatedProjectId}:${projectId} ${translatedField}${language === 'en' ? '' : 'は'}${translatedMessage}`
       
-      const handleTabsClick = (tab) => {
-        setActiveTabOther(tab)
-        switch (tab) {
-          case 'project':
-            navigate('/projects-list');
-            break;
-          case 'employeeExpenses':
-            navigate('/employee-expenses-list');
-            break;
-          case 'expenses':
-            navigate('/expenses-list');
-            break;
-          case 'costOfSales':
-            navigate('/cost-of-sales-list');
-            break;
-          default:
-            break;
-        }
-      }
-    
-    const handlePageChange = (page: number) => {
-      setCurrentPage(page);
-    };
+      finalValidationMessages.push(message)
+      return finalValidationMessages
+    });
 
-    const handleRowsPerPageChange = (numRows: number) => {
-        setRowsPerPage(numRows)
-        setCurrentPage(0) 
-    }
+    // Join all translated errors with a newline or another separator
+    setCrudMessage(translatedErrors.join()); // '\n' adds a newline between errors
+    console.log('crudMessage:', crudMessage)
+    console.log('finalValidationMessages:', finalValidationMessages)
 
-    const handleClick = () => {
-      setIsEditing((prevState) => {
-        const newEditingState = !prevState;
-        if (newEditingState) {
-          setLanguage(initialLanguage);
-        }
-    
-        return newEditingState;
-      });
-    }
+    setCrudValidationErrors(finalValidationMessages)
+    setIsCRUDOpen(true);
 
+    return;
+  }
 
-    const handleChange = (index, event) => {
-      const { name, value } = event.target
-      setProjects((prevState) => {
-        const updatedProjectsData = [...prevState]
-        updatedProjectsData[index] = {
-          ...updatedProjectsData[index],
-          [name]: value,
-        }
-        setFormProjects(updatedProjectsData)
-
-        return updatedProjectsData
-      })
-    }
-  
-    const validateProjects = (projectsValidate) => {
-      return projectsValidate.every((prj) => {
-        return (
-          prj.year.trim() !== '' &&
-          prj.month.trim() !== '' &&
-          prj.business_division.trim() !== '' &&
-          prj.client.trim() !== '' &&
-          !isNaN(prj.sales_revenue) &&
-          prj.sales_revenue > 0 &&
-          !isNaN(prj.sales_revenue) &&
-          prj.cost_of_sale > 0 &&
-          !isNaN(prj.cost_of_sale) &&
-          prj.dispatch_labor_expense > 0 &&
-          !isNaN(prj.dispatch_labor_expense) &&
-          prj.employee_expense > 0 &&
-          !isNaN(prj.employee_expense) &&
-          prj.indirect_employee_expense > 0 &&
-          !isNaN(prj.indirect_employee_expense) &&
-          prj.expense > 0 &&
-          !isNaN(prj.expense) &&
-          prj.operating_income > 0 &&
-          !isNaN(prj.operating_income) &&
-          prj.non_operating_income > 0 &&
-          !isNaN(prj.non_operating_income) &&
-          prj.non_operating_expense > 0 &&
-          !isNaN(prj.non_operating_expense) &&
-          prj.ordinary_profit > 0 &&
-          !isNaN(prj.ordinary_profit) &&
-          prj.ordinary_profit_margin > 0 &&
-          !isNaN(prj.ordinary_profit_margin)
-        )
-      })
-    }
-
-  const handleSubmit = async () => {
-
-    if (!validateProjects(formProjects)) {
-      setCrudMessage(translate('usersValidationText6', language));
-      setIsCRUDOpen(true);
-      return // Stop the submission
-    }
+  // Continue with submission if no validation errors
 
     const getModifiedFields = (original, updated) => {
       const modifiedFields = []
@@ -234,119 +275,117 @@ const ProjectsListAndEdit: React.FC = () => {
           }
         }
       })
-  }  
+  }
 
   const handleUpdateConfirm = async () => {
-    await handleSubmit(); // Call the submit function for update
-    setIsUpdateConfirmationOpen(false);
-};
+    await handleSubmit() // Call the submit function for update
+    setIsUpdateConfirmationOpen(false)
+  }
 
-    const fetchClient = async () => {
-      try {
-        const resMasterClients = await dispatch(fetchMasterClient() as unknown as UnknownAction)
-        setClients(resMasterClients.payload)
-      } catch (e) {
-        console.error(e)
+  const fetchClient = async () => {
+    try {
+      const resMasterClients = await dispatch(fetchMasterClient() as unknown as UnknownAction)
+      setClients(resMasterClients.payload)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const fetchDivision = async () => {
+    try {
+      const resBusinessDivisions = await dispatch(fetchBusinessDivisions() as unknown as UnknownAction)
+      setBusinessSelection(resBusinessDivisions.payload)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      if (!token) {
+        window.location.href = '/login' // Redirect to login if no token found
+        return
       }
+
+      getProject(token)
+        .then((data) => {
+          setProjects(data)
+          setOriginalProjectsList(data)
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            window.location.href = '/login' // Redirect to login if unauthorized
+          } else {
+            console.error('There was an error fetching the projects!', error)
+          }
+        })
+    }
+    fetchDivision()
+    fetchClient()
+    fetchProjects()
+  }, [])
+
+  useEffect(() => {
+    const startIndex = currentPage * rowsPerPage
+    setPaginatedData(projects.slice(startIndex, startIndex + rowsPerPage))
+  }, [currentPage, rowsPerPage, projects])
+
+  useEffect(() => {
+    const path = location.pathname
+    if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
+      setActiveTab(path)
+    }
+  }, [location.pathname])
+
+  useEffect(() => {
+    setIsTranslateSwitchActive(language === 'en')
+  }, [language])
+
+  const handleTranslationSwitchToggle = () => {
+    if (!isEditing) {
+      const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
+      setInitialLanguage(language)
+      setLanguage(newLanguage)
+    }
+  }
+
+  const handleNewRegistrationClick = () => {
+    navigate('/projects-registration')
+  }
+
+  const openModal = (projects, id) => {
+    setSelectedProject(projects)
+    setModalIsOpen(true)
+    setDeleteProjectsId(id)
+  }
+
+  const closeModal = () => {
+    setSelectedProject(null)
+    setModalIsOpen(false)
+    setIsCRUDOpen(false)
+  }
+
+  const handleConfirm = async () => {
+    if (!token) {
+      window.location.href = '/login'
+      return
     }
 
-    const fetchDivision = async () => {
-      try {
-        const resBusinessDivisions = await dispatch(fetchBusinessDivisions() as unknown as UnknownAction)
-        setBusinessSelection(resBusinessDivisions.payload)
-      } catch (e) {
-        console.error(e)
-      }
-    }
-
-
-    useEffect(() => {
-      const fetchProjects = async () => {
-        if (!token) {
-          window.location.href = '/login' // Redirect to login if no token found
-          return
+    deleteProject(deleteProjectsId, token)
+      .then(() => {
+        setProjects((prevList) => prevList.filter((pr) => pr.project_id !== deleteProjectsId))
+        setCrudMessage(translate('successfullyDeleted', language))
+        setIsCRUDOpen(true)
+        setIsEditing(false)
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login'
+        } else {
+          console.error('Error deleting projects', error)
         }
-
-        getProject(token)
-          .then((data) => {
-            setProjects(data)
-            setOriginalProjectsList(data)
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 401) {
-              window.location.href = '/login' // Redirect to login if unauthorized
-            } else {
-              console.error('There was an error fetching the projects!', error)
-            }
-          })
-
-      }
-      fetchDivision()
-      fetchClient()
-      fetchProjects()
-    }, [])
-
-      useEffect(() => {
-        const startIndex = currentPage * rowsPerPage
-        setPaginatedData(projects.slice(startIndex, startIndex + rowsPerPage))
-      }, [currentPage, rowsPerPage, projects])
-
-      useEffect(() => {
-        const path = location.pathname;
-        if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
-          setActiveTab(path);
-        }
-      }, [location.pathname]);
-
-      useEffect(() => {
-        setIsTranslateSwitchActive(language === 'en');
-      }, [language]);
-    
-      const handleTranslationSwitchToggle = () => {
-        if (!isEditing) {
-          const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
-          setInitialLanguage(language); 
-          setLanguage(newLanguage);
-        }
-      };
-
-  const handleNewRegistrationClick = () => { 
-        navigate('/projects-registration');
-      };
-
-      const openModal = (projects, id) => {
-        setSelectedProject(projects)
-        setModalIsOpen(true)
-        setDeleteProjectsId(id)
-      }
-
-      const closeModal = () => {
-        setSelectedProject(null)
-        setModalIsOpen(false)
-        setIsCRUDOpen(false);
-      }
-
-      const handleConfirm = async () => {
-        if (!token) {
-          window.location.href = '/login' 
-          return
-        }
-
-        deleteProject(deleteProjectsId, token)
-          .then(() => {
-            setProjects((prevList) => prevList.filter((pr) => pr.project_id !== deleteProjectsId))
-            setCrudMessage(translate('successfullyDeleted', language))
-            setIsCRUDOpen(true)
-            setIsEditing(false)
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 401) {
-              window.location.href = '/login'
-            } else {
-              console.error('Error deleting projects', error)
-            }
-          })
-      }
+      })
+  }
 
   return (
     <div className='projectsList_wrapper'>
@@ -764,7 +803,12 @@ const ProjectsListAndEdit: React.FC = () => {
         onCancel={closeModal}
         message={translate('deleteProjectMessage', language)}
       />
-      <CrudModal isCRUDOpen={isCRUDOpen} onClose={closeModal} message={crudMessage} />
+      <CrudModal
+        isCRUDOpen={isCRUDOpen}
+        onClose={closeModal}
+        message={crudMessage}
+        validationMessages={crudValidationErrors}
+      />
       <AlertModal
         isOpen={isUpdateConfirmationOpen}
         onConfirm={handleUpdateConfirm}

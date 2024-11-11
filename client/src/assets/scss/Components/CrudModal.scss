@@ -1,17 +1,19 @@
 .Crud_alert-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0, 0, 0, 0.5); /* darken the overlay */
-    z-index: 50;
-  }
-  
-  .Crud_alert-modal-content {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5); /* darken the overlay */
+  z-index: 50;
+}
+
+.Crud_alert-modal-content {
+    overflow:scroll;
+    max-height: 75%;
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -38,5 +40,12 @@
     &:hover {
       background-color: #2779bd;
     }
+  }
+  .crud_alert_validation_error_list_container{
+    background-color: #ade6ff;
+    border-radius: 5px;
+    text-align: left;
+    padding-left: 5%;
+
   }
   
