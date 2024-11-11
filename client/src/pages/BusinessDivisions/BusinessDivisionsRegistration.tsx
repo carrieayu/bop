@@ -10,6 +10,7 @@ import axios from 'axios'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { createBusinessDivision } from '../../api/BusinessDivisionEndpoint/CreateBusinessDivision'
 
 const BusinessDivisionsRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -167,47 +168,47 @@ const BusinessDivisionsRegistration = () => {
           window.location.href = '/login'
           return
         }
-  
-        try {
-          const response = await axios.post(`${getReactActiveEndpoint()}/api/master-business-divisions/create/`, postData, {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          })
-          setModalMessage(translate('successfullySaved', language));
-          setIsModalOpen(true);
-          setFormData([
-            {
-             business_division_name: '',
-             company_id: '',
-             auth_user_id: authUserID
-            },
-          ])
-        }
-        catch (error)
-        {
-          if (error.response) {
-            const { status, data } = error.response
 
-            switch (status) {
-              case 409:
-                const existingDivisions = data.errors.map(err => err.business_division_name).join(', ') || 'Unknown division';
-                setModalMessage(translate('businessDivisionNameExistsValidationMessage', language).replace('${businessDivisionName}', existingDivisions));
-                setIsModalOpen(true);
-                break
-              case 401:
-                console.error('Validation error:', data)
-                window.location.href = '/login'
-                break
-              default:
-                console.error('There was an error creating the business division data!', error)
-                setModalMessage(translate('error', language));
-                setIsModalOpen(true);
-                break
+        createBusinessDivision(postData, token)
+          .then((data) => {
+            setModalMessage(translate('successfullySaved', language))
+            setIsModalOpen(true)
+            setFormData([
+              {
+                business_division_name: '',
+                company_id: '',
+                auth_user_id: authUserID,
+              },
+            ])
+          })
+          .catch((error) => {
+            if (error.response) {
+              const { status, data } = error.response
+
+              switch (status) {
+                case 409:
+                  const existingDivisions =
+                    data.errors.map((err) => err.business_division_name).join(', ') || 'Unknown division'
+                  setModalMessage(
+                    translate('businessDivisionNameExistsValidationMessage', language).replace(
+                      '${businessDivisionName}',
+                      existingDivisions,
+                    ),
+                  )
+                  setIsModalOpen(true)
+                  break
+                case 401:
+                  console.error('Validation error:', data)
+                  window.location.href = '/login'
+                  break
+                default:
+                  console.error('There was an error creating the business division data!', error)
+                  setModalMessage(translate('error', language))
+                  setIsModalOpen(true)
+                  break
+              }
             }
-          }
-        }
+          })
       }
   
       useEffect(() => {

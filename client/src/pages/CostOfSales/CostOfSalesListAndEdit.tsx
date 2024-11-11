@@ -12,6 +12,9 @@ import AlertModal from "../../components/AlertModal/AlertModal";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import CrudModal from "../../components/CrudModal/CrudModal";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { deleteCostOfSale } from "../../api/CostOfSalesEndpoint/DeleteCostOfSale";
+import { getCostOfSale } from "../../api/CostOfSalesEndpoint/GetCostOfSale";
+import { updateCostOfSale } from "../../api/CostOfSalesEndpoint/UpdateCostOfSale";
 
 const CostOfSalesList: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -32,7 +35,7 @@ const CostOfSalesList: React.FC = () => {
     const [costOfSales, setCostOfSales] = useState([])
     const [originalCostOfSales, setOriginalCostOfSales] = useState(costOfSales)
     const totalPages = Math.ceil(100 / 10);
-
+    const token = localStorage.getItem('accessToken')
     const [isCRUDOpen, setIsCRUDOpen] = useState(false);
     const [crudMessage, setCrudMessage] = useState('');
     const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
@@ -148,38 +151,29 @@ const CostOfSalesList: React.FC = () => {
         return
       }
 
-      // Use validData instead of combinedData
-      const token = localStorage.getItem('accessToken')
       if (!token) {
         window.location.href = '/login'
         return
       }
-      try {
-        await axios.put(`${getReactActiveEndpoint()}/api/cost-of-sales/update/`, modifiedFields, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      updateCostOfSale(modifiedFields, token)
+        .then(() => {
+          setOriginalCostOfSales(costOfSales)
+          setCrudMessage(translate('successfullyUpdated', language))
+          setIsCRUDOpen(true)
+          setIsEditing(false)
         })
-        setOriginalCostOfSales(costOfSales)
-        setCrudMessage(translate('successfullyUpdated', language));
-        setIsCRUDOpen(true);
-        setIsEditing(false);
-
-        const response = await axios.get(`${getReactActiveEndpoint()}/api/cost-of-sales/list/`)
-        setCostOfSales(response.data)
-        setOriginalCostOfSales(response.data)
-      } catch (error) {
-        if (error.response) {
-          console.error('Error response:', error.response.data)
-          if (error.response.status === 401) {
-            window.location.href = '/login'
-          } else {
-            console.error('There was an error updating the cost of sales data!', error.response.data)
-          }
-        } else {
-          console.error('Error', error.message)
-        }
-      }
+        .catch((error) => {
+            if (error.response) {
+              console.error('Error response:', error.response.data)
+              if (error.response.status === 401) {
+                window.location.href = '/login'
+              } else {
+                console.error('There was an error updating the cost of sales data!', error.response.data)
+              }
+            } else {
+              console.error('Error', error.message)
+            }
+        })
     };
 
     const handleUpdateConfirm = async () => {
@@ -293,28 +287,24 @@ const CostOfSalesList: React.FC = () => {
     };
 
     const handleConfirm = async () => {
-      const token = localStorage.getItem('accessToken')
-      try {
-        await axios.delete(`${getReactActiveEndpoint()}/api/cost-of-sales/${deleteCostOfSalesId}/delete/`, {
-          headers: {
-            Authorization: `Bearer ${token}`, // Add token to request headers
-          },
-        })
-
-        setCrudMessage(translate('successfullyDeleted', language));
-        setIsCRUDOpen(true);
-        setIsEditing(false);
-
-        const response = await axios.get(`${getReactActiveEndpoint()}/api/cost-of-sales/list/`)
-        setCostOfSales(response.data);
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login' // Redirect to login if unauthorized
-        } else {
-          console.error('Error deleting cost of sale:', error)
-        }
-      }
       
+      deleteCostOfSale(deleteCostOfSalesId, token)
+        .then(() => {
+          setCrudMessage(translate('successfullyDeleted', language))
+          setIsCRUDOpen(true)
+          getCostOfSale(token).then((data) => {
+            console.log(data)
+            setCostOfSales(data)
+            setIsEditing(false)
+          }).catch(() => {});
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            window.location.href = '/login' // Redirect to login if unauthorized
+          } else {
+            console.error('Error deleting cost of sale:', error)
+          }
+        })
     };
 
     const handleNewRegistrationClick = () => {

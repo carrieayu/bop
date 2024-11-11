@@ -10,6 +10,8 @@ import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { createExpense } from '../../api/ExpenseEndpoint/CreateExpense'
+import { overwriteExpense } from '../../api/ExpenseEndpoint/OverwriteExpense'
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -166,77 +168,66 @@ const ExpensesRegistration = () => {
       return
     }
 
-    const token = localStorage.getItem('accessToken');
     if (!token) {
       window.location.href = '/login';
       return;
     }
 
-    try {
-      // Attempt to create a new entry
-      const response = await axios.post(`${getReactActiveEndpoint()}/api/expenses/create/`, formData, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+    createExpense(formData, token)
+      .then(() => {
+        setModalMessage(translate('successfullySaved', language))
+        setIsModalOpen(true)
+        setFormData([
+          {
+            year: '',
+            month: '',
+            tax_and_public_charge: '',
+            communication_expense: '',
+            advertising_expense: '',
+            consumable_expense: '',
+            depreciation_expense: '',
+            utilities_expense: '',
+            entertainment_expense: '',
+            rent_expense: '',
+            travel_expense: '',
+            transaction_fee: '',
+            professional_service_fee: '',
+            registered_user_id: localStorage.getItem('userID'),
+            updated_at: '',
+          },
+        ])
       })
-      console.log('Form Data before submission:', formData);
+      .catch((error) => {
+        if (error.response && error.response.status === 409) {
+          const existingEntries = error.response.data.existingEntries
 
-      setModalMessage(translate('successfullySaved', language));
-      setIsModalOpen(true);
-      // Reset form data after successful save
-      setFormData([
-        {
-          year: '',
-          month: '',
-          tax_and_public_charge: '',
-          communication_expense: '',
-          advertising_expense: '',
-          consumable_expense: '',
-          depreciation_expense: '',
-          utilities_expense: '',
-          entertainment_expense: '',
-          rent_expense: '',
-          travel_expense: '',
-          transaction_fee: '',
-          professional_service_fee: '',
-          registered_user_id: localStorage.getItem('userID'),
-          updated_at: '',
-        },
-      ])
-    } catch (error) {
-      if (error.response && error.response.status === 409) {
-        const existingEntries = error.response.data.existingEntries;
+          // Map to create a string of existing entries
+          const existingYearsMonths = existingEntries.map((entry) => `'${entry.year}, ${entry.month}'`).join(', ')
 
-        // Map to create a string of existing entries
-        const existingYearsMonths = existingEntries.map(entry => `'${entry.year}, ${entry.month}'`).join(', ');
-      
-        // Filter out new entries that don't match the existing entries
-        const newEntries = expensesData.filter(item => {
-          return !existingEntries.some(existing => existing.year === item.year && existing.month === item.month);
-        });
-      
-        // Create a string for only the new entries being submitted
-        const newYearsMonths = newEntries.map(entry => `'${entry.year}, ${entry.month}'`).join(', ');
-      
-        // Construct the alert message
-        let message = translate('alertMessageAbove', language)
-            .replace('${existingEntries}', existingYearsMonths);
-      
-        // Only append the new entries part if there are new entries
-        if (newYearsMonths.length > 0) {
-          message += translate('alertMessageNewEntries', language)
-            .replace('${newEntries}', newYearsMonths);
+          // Filter out new entries that don't match the existing entries
+          const newEntries = expensesData.filter((item) => {
+            return !existingEntries.some((existing) => existing.year === item.year && existing.month === item.month)
+          })
+
+          // Create a string for only the new entries being submitted
+          const newYearsMonths = newEntries.map((entry) => `'${entry.year}, ${entry.month}'`).join(', ')
+
+          // Construct the alert message
+          let message = translate('alertMessageAbove', language).replace('${existingEntries}', existingYearsMonths)
+
+          // Only append the new entries part if there are new entries
+          if (newYearsMonths.length > 0) {
+            message += translate('alertMessageNewEntries', language).replace('${newEntries}', newYearsMonths)
+          }
+
+          setModalMessage(message)
+          setIsOverwriteModalOpen(true)
+          return // Exit the function to wait for user input
+        } else {
+          // Handle any other errors
+          console.error('There was an error with expenses registration!', error)
         }
-
-        setModalMessage(message);
-        setIsOverwriteModalOpen(true);
-        return; // Exit the function to wait for user input
-      } else {
-        // Handle any other errors
-        console.error('There was an error with expenses registration!', error);
-      }
-    }
+      })
   };
 
   // Handle overwrite confirmation
@@ -249,43 +240,38 @@ const ExpensesRegistration = () => {
   };
 
   const handleSubmitConfirmed = async () => {
-    const token = localStorage.getItem('accessToken');
 
-    try {
-      const response = await axios.put(`${getReactActiveEndpoint()}/api/expenses/create/`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+    overwriteExpense(formData, token)
+      .then(() => {
+        setModalMessage(translate('overWrite', language))
+        setIsModalOpen(true)
+        setFormData([
+          {
+            year: '',
+            month: '',
+            tax_and_public_charge: '',
+            communication_expense: '',
+            advertising_expense: '',
+            consumable_expense: '',
+            depreciation_expense: '',
+            utilities_expense: '',
+            entertainment_expense: '',
+            rent_expense: '',
+            travel_expense: '',
+            transaction_fee: '',
+            professional_service_fee: '',
+            registered_user_id: localStorage.getItem('userID'),
+            updated_at: '',
+          },
+        ])
+      })
+      .catch((error) => {
+        console.error('Error overwriting data:', error)
+      })
+      .finally(() => {
+        setIsOverwriteConfirmed(false)
       })
 
-      setModalMessage(translate('overWrite', language));
-      setIsModalOpen(true);
-      // Reset form data after successful overwrite
-      setFormData([
-        {
-          year: '',
-          month: '',
-          tax_and_public_charge: '',
-          communication_expense: '',
-          advertising_expense: '',
-          consumable_expense: '',
-          depreciation_expense: '',
-          utilities_expense: '',
-          entertainment_expense: '',
-          rent_expense: '',
-          travel_expense: '',
-          transaction_fee: '',
-          professional_service_fee: '',
-          registered_user_id: localStorage.getItem('userID'),
-          updated_at: '',
-        },
-      ])
-    } catch (overwriteError) {
-      console.error('Error overwriting data:', overwriteError);
-    } finally {
-      setIsOverwriteConfirmed(false); // Reset overwrite confirmation
-    }
   };
 
   const handleTabClick = (tab) => {

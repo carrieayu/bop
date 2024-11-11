@@ -11,6 +11,9 @@ import ListButtons from "../../components/ListButtons/ListButtons";
 import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
 import CrudModal from "../../components/CrudModal/CrudModal";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { getClient } from "../../api/MasterClientEndpoint/GetMasterClient";
+import { deleteClient } from "../../api/MasterClientEndpoint/DeleteMasterClient";
+import { updateMasterClient } from "../../api/MasterClientEndpoint/UpdateMasterClient";
 
 const ClientsListAndEdit: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -30,9 +33,8 @@ const ClientsListAndEdit: React.FC = () => {
     const [initialLanguage, setInitialLanguage] = useState(language);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedClient, setSelectedClient] = useState<any>(null);
-
+    const token = localStorage.getItem('accessToken')
     const totalPages = Math.ceil(100 / 10);
-
     const [isCRUDOpen, setIsCRUDOpen] = useState(false);
     const [crudMessage, setCrudMessage] = useState('');
     const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
@@ -142,35 +144,32 @@ const ClientsListAndEdit: React.FC = () => {
         return
       }
 
-      try {
-        const response = await axios.put(`${getReactActiveEndpoint()}/api/master-clients/update/`, modifiedFields, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      updateMasterClient(modifiedFields, token)
+        .then(() => {
+          setCrudMessage(translate('successfullyUpdated', language))
+          setIsCRUDOpen(true)
+          setIsEditing(false)
         })
-        setCrudMessage(translate('successfullyUpdated', language));
-        setIsCRUDOpen(true);
-        setIsEditing(false);
-      } catch (error) {
-        if (error.response) {
-          const { status, data } = error.response
-          switch (status) {
-            case 409:
-              setCrudMessage(translate('clientNameExistsUpdateValidationMessage', language));
-              setIsCRUDOpen(true);
-              break
-            case 401:
-              console.error('Validation error:', data)
-              window.location.href = '/login'
-              break
-            default:
-              console.error('There was an error updating the clients data!', error)
-              setCrudMessage(translate('error', language));
-              setIsCRUDOpen(true);
-              break
+        .catch((error) => {
+          if (error.response) {
+            const { status, data } = error.response
+            switch (status) {
+              case 409:
+                setCrudMessage(translate('clientNameExistsUpdateValidationMessage', language))
+                setIsCRUDOpen(true)
+                break
+              case 401:
+                console.error('Validation error:', data)
+                window.location.href = '/login'
+                break
+              default:
+                console.error('There was an error updating the clients data!', error)
+                setCrudMessage(translate('error', language))
+                setIsCRUDOpen(true)
+                break
+            }
           }
-        }
-      }
+        })
     }
 
     const handleUpdateConfirm = async () => {
@@ -186,24 +185,19 @@ const ClientsListAndEdit: React.FC = () => {
           window.location.href = '/login' // Redirect to login if no token found
           return
         }
-
-        try {
-          const response = await axios.get(`${getReactActiveEndpoint()}/api/master-clients/list/`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        getClient(token)
+          .then((data) => {
+            setUpdatedClients(data)
+            setOriginalClientsList(data)
           })
-          setUpdatedClients(response.data)
-          setOriginalClientsList(response.data)
-        } catch (error) {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('There was an error fetching the projects!', error)
-          }
-        }
+          .catch((error) => {
+            if (error.response && error.response.status === 401) {
+              window.location.href = '/login' // Redirect to login if unauthorized
+            } else {
+              console.error('There was an error fetching the projects!', error)
+            }
+          })
       }
-
       fetchProjects()
     }, [])
 
@@ -244,21 +238,21 @@ const ClientsListAndEdit: React.FC = () => {
     };
 
     const handleConfirm = async () => {
-      // Currently no delete logic
-      console.log('Confirmed action for project:', deleteId)
-      try {
-        const response = await axios.delete(`${getReactActiveEndpoint()}/api/master-clients/${deleteId}/delete/`, {})
-        setUpdatedClients((prevList) => prevList.filter((client) => client.client_id !== deleteId))
-        setCrudMessage(translate('successfullyDeleted', language));
-        setIsCRUDOpen(true);
-        setIsEditing(false);
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login'
-        } else {
-          console.error('Error deleting client:', error)
-        }
-      }
+
+      deleteClient(deleteId, token)
+        .then(() => {
+          setUpdatedClients((prevList) => prevList.filter((client) => client.client_id !== deleteId))
+          setCrudMessage(translate('successfullyDeleted', language))
+          setIsCRUDOpen(true)
+          setIsEditing(false)
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            window.location.href = '/login'
+          } else {
+            console.error('Error deleting client:', error)
+          }
+        })
     }
 
     const handleNewRegistrationClick = () => {
