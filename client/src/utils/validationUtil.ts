@@ -1,16 +1,28 @@
-// Checks For EMPTY INPUTS & Number Values Less than 0
-// ID is the type of thing being input like (project, user, employee etc.)
+import { translate } from '../utils/translationUtil'
 
-export const validateField = (value, fieldName, isNumber, id) => {
-    console.log('in validate field:', value, fieldName, isNumber)
+// HELPER FUNCTION FOR TRANSLATING AND FORMATTING ERROR MESSAGES
+export const translateAndFormatErrors = (errors, language) => {
+
+  return errors.map((error) => {
+    const [fieldName, validationErrorMessage, recordId, recordType] = error.split(' ')
+    const translatedField = translate(fieldName, language)
+    const translatedMessage = translate(validationErrorMessage, language)
+    const translatedRecordId = translate(recordId, language)
+    const translatedRecordType = translate(recordType, language)
+
+    // Formatted Message. If in Japanese a particle は is added.
+    return `${translatedRecordType}:${translatedRecordId} ${translatedField}${language === 'en' ? '' : 'は'}${translatedMessage}`
     
-  if (!isNaN(value) && value < 0) return `${fieldName} cannotBeLessThanZero ${id}`
-    console.log('is not number:', !isNaN(value), typeof value)
-    
-  if (typeof value === 'string' && value.trim() === '') return `${fieldName} inputCannotBeEmpty ${id}`
-  
-  return '' // No error
-  
+  })
 }
 
+// HELPER FUNCTION FOR CHECKING FOR EMPTY INPUTS & NUMBER VALUES LESS THAN 0
+// recordType is the type of record being registered: For example: (project, user, employee etc.)
+export const validateField = (value, fieldName, isNumber, recordId, recordType) => {
 
+  if (!isNaN(value) && value < 0) return `${fieldName} cannotBeLessThanZero ${recordId} ${recordType}`
+
+  if (typeof value === 'string' && value.trim() === '') return `${fieldName} inputCannotBeEmpty ${recordId} ${recordType}`
+
+  return '' // No error
+}

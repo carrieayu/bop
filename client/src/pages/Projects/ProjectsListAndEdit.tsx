@@ -16,7 +16,8 @@ import AlertModal from "../../components/AlertModal/AlertModal";
 import CrudModal from "../../components/CrudModal/CrudModal";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss';
-import { validateField } from '../../utils/validationUtil'
+import { validateField } from '../../utils/validationUtil';
+import { translateAndFormatErrors } from '../../utils/validationUtil';
 
 
 import { getProject } from "../../api/ProjectsEndpoint/GetProject";
@@ -146,7 +147,7 @@ const ProjectsListAndEdit: React.FC = () => {
       { field: 'month', fieldName: 'month', isNumber: true },
       { field: 'project_name', fieldName: 'projectName', isNumber: false },
       // { field: 'project_type', fieldName: 'projectType', isNumber: false }, // Currently Allowed to be NULL
-      { field: 'sales_revenue', fieldName: 'salesRevenue', isNumber: true }, 
+      { field: 'sales_revenue', fieldName: 'salesRevenue', isNumber: true },
       { field: 'cost_of_sale', fieldName: 'costOfSale', isNumber: true }, // Cost Of Sale in projects may not be needed.
       { field: 'dispatch_labor_expense', fieldName: 'dispatchLaborExpense', isNumber: true },
       { field: 'employee_expense', fieldName: 'employeeExpense', isNumber: true },
@@ -159,60 +160,43 @@ const ProjectsListAndEdit: React.FC = () => {
       // { field: 'ordinary_profit_margin', fieldName: 'ordinaryProfitMargin', isNumber: true }, // Not Currently displayed on this screen. Maybe not needed
     ]
 
-    let allErrors = []
+    let validationErrors = []
 
     for (const prj of projectsValidate) {
       for (const check of fieldChecks) {
-        console.log(prj[check.field])
-
-        const errorMessage = validateField(prj[check.field], check.fieldName, check.isNumber, prj.project_id)
-
-        console.log('errorMessage', errorMessage)
+        // Get Relevant information for Error Message and Push to Error Array
+        const errorMessage = validateField(
+          prj[check.field],
+          check.fieldName,
+          check.isNumber,
+          prj.project_id,
+          'projects',
+        )
 
         if (errorMessage) {
-          allErrors.push(errorMessage)
+          validationErrors.push(errorMessage)
         }
       }
     }
-    console.log('allerrors:', allErrors)
-    return allErrors // no errors
+    // Array of errors OR no errors (this in handleSubmit below: validationErrors)
+    return validationErrors
   }
 
-const handleSubmit = async () => {
+  const handleSubmit = async () => {
+  // CLIENT SIDE VALIDATION CHECK
   const validationErrors = validateProjects(formProjects); // Get the array of error messages
 
   if (validationErrors.length > 0) {
-    console.log('validationErrors', validationErrors);
-
-    let finalValidationMessages = [];
-    // Build the message for the modal by translating each error
-    const translatedErrors = validationErrors.map((validationError) => {
-      const [fieldName, validationErrormessage, projectId] = validationError.split(' ');
-      const translatedField = translate(fieldName, language);
-      const translatedMessage = translate(validationErrormessage, language);
-      const translatedProjectId = translate('projectId',language)
-
-      // Return the combined translated error message
-
-      const message = `${translatedProjectId}:${projectId} ${translatedField}${language === 'en' ? '' : 'は'}${translatedMessage}`
-      console.log(message)
-      finalValidationMessages.push(message)
-      return finalValidationMessages
-    });
-
-    // Join all translated errors with a newline or another separator
-    setCrudMessage(translatedErrors.join()); // '\n' adds a newline between errors
-    console.log('crudMessage:', crudMessage)
-    console.log('finalValidationMessages:', finalValidationMessages)
-
-    setCrudValidationErrors(finalValidationMessages)
+    // Build the Error Messagse for the modal by translating an d formatting each error
+    const translatedAndFormattedValidationErrors = translateAndFormatErrors(validationErrors, language);
+    // Set Error Messages for Modal
+    setCrudMessage(translatedAndFormattedValidationErrors) 
+    setCrudValidationErrors(translatedAndFormattedValidationErrors)
     setIsCRUDOpen(true);
-
     return;
   }
 
   // Continue with submission if no validation errors
-
     const getModifiedFields = (original, updated) => {
       const modifiedFields = []
 
