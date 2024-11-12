@@ -52,7 +52,6 @@ const ProjectsRegistration = () => {
       client: '',
       business_division: '',
       sales_revenue: '',
-      cost_of_sale: '',
       dispatch_labor_expense: '',
       employee_expense: '',
       indirect_employee_expense: '',
@@ -77,7 +76,6 @@ const ProjectsRegistration = () => {
           client: '',
           business_division: '',
           sales_revenue: '',
-          cost_of_sale: '',
           dispatch_labor_expense: '',
           employee_expense: '',
           indirect_employee_expense: '',
@@ -139,7 +137,6 @@ const ProjectsRegistration = () => {
           client: '',
           business_division: '',
           sales_revenue: '',
-          cost_of_sale: '',
           dispatch_labor_expense: '',
           employee_expense: '',
           indirect_employee_expense: '',
@@ -213,8 +210,6 @@ const ProjectsRegistration = () => {
         !isNaN(prj.sales_revenue) &&
         prj.sales_revenue > 0 &&
         !isNaN(prj.sales_revenue) &&
-        prj.cost_of_sale > 0 &&
-        !isNaN(prj.cost_of_sale) &&
         prj.dispatch_labor_expense > 0 &&
         !isNaN(prj.dispatch_labor_expense) &&
         prj.employee_expense > 0 &&
@@ -248,7 +243,6 @@ const ProjectsRegistration = () => {
       client: projects.client,
       business_division: projects.business_division,
       sales_revenue: parseFloat(projects.sales_revenue),
-      cost_of_sale: parseFloat(projects.cost_of_sale),
       dispatch_labor_expense: parseFloat(projects.dispatch_labor_expense),
       employee_expense: parseFloat(projects.employee_expense),
       indirect_employee_expense: parseFloat(projects.indirect_employee_expense),
@@ -285,7 +279,6 @@ const ProjectsRegistration = () => {
               client: '',
               business_division: '',
               sales_revenue: '',
-              cost_of_sale: '',
               dispatch_labor_expense: '',
               employee_expense: '',
               indirect_employee_expense: '',
@@ -381,7 +374,6 @@ const ProjectsRegistration = () => {
       client: projects.client,
       business_division: projects.business_division,
       sales_revenue: parseFloat(projects.sales_revenue),
-      cost_of_sale: parseFloat(projects.cost_of_sale),
       dispatch_labor_expense: parseFloat(projects.dispatch_labor_expense),
       employee_expense: parseFloat(projects.employee_expense),
       indirect_employee_expense: parseFloat(projects.indirect_employee_expense),
@@ -406,7 +398,6 @@ const ProjectsRegistration = () => {
             client: '',
             business_division: '',
             sales_revenue: '',
-            cost_of_sale: '',
             dispatch_labor_expense: '',
             employee_expense: '',
             indirect_employee_expense: '',
@@ -611,18 +602,6 @@ const ProjectsRegistration = () => {
                               </option>
                             ))}
                           </select>
-                        </div>
-                        <div className='projectsRegistration_cost-of-sale-div'>
-                          <label className='projectsRegistration_cost-of-sale'>
-                            {translate('costOfSale', language)}
-                          </label>
-                          <input
-                            type='number'
-                            name='cost_of_sale'
-                            value={form.cost_of_sale}
-                            onChange={(e) => handleChange(index, e)}
-                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
-                          />
                         </div>
                         <div className='projectsRegistration_indirect-employee-expense-div'>
                           <label className='projectsRegistration_indirect-employee-expense'>

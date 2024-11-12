@@ -127,12 +127,14 @@
                 padding: 0px 8px;
               }
               button.edit_submit_btn {
-                border: 2px solid #fdd7b3;
-                padding: 2px 13px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 1%;
+                padding: 5px 20px 5px 20px;
                 border-radius: 7px;
                 margin-top: 6px;
-                background: #2e2eff;
-                color: white;
+                background: #66d1ff;
               }
             }
           }
