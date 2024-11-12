@@ -13,6 +13,8 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { createProject } from '../../api/ProjectsEndpoint/CreateProject'
 import { overwriteProject } from '../../api/ProjectsEndpoint/OverwriteProject'
+import { validateField, translateAndFormatErrors, getFieldChecks } from '../../utils/validationUtil'
+
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -32,6 +34,8 @@ const ProjectsRegistration = () => {
   const [selectedClient, setSelectedClient] = useState([]);
   const [businessSelection, setBusinessSelection] = useState<any>([])
   const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
+
 
   const dispatch = useDispatch()
   for (let year = 2021; year <= new Date().getFullYear(); year++) {
@@ -203,43 +207,41 @@ const ProjectsRegistration = () => {
     }
   }, [location.pathname]);
 
+  // CLIENT SIDE VALIDATION
+
+  // Specify the record type for validation (e.g., "projects" or "employees" or "expenses" etc.)
+  const recordType = 'projects'
+
+  // Get the field checks based on the record type from validationUtil HELPER
+  const fieldChecks = getFieldChecks(recordType)
+
   const validateProjects = (projectsValidate) => {
-    return projectsValidate.every((prj) => {
-      return (
-        prj.year.trim() !== '' &&
-        prj.month.trim() !== '' &&
-        prj.business_division.trim() !== '' &&
-        prj.client.trim() !== '' &&
-        !isNaN(prj.sales_revenue) &&
-        prj.sales_revenue > 0 &&
-        !isNaN(prj.sales_revenue) &&
-        prj.cost_of_sale > 0 &&
-        !isNaN(prj.cost_of_sale) &&
-        prj.dispatch_labor_expense > 0 &&
-        !isNaN(prj.dispatch_labor_expense) &&
-        prj.employee_expense > 0 &&
-        !isNaN(prj.employee_expense) &&
-        prj.indirect_employee_expense > 0 &&
-        !isNaN(prj.indirect_employee_expense) &&
-        prj.expense > 0 &&
-        !isNaN(prj.expense) &&
-        prj.operating_income > 0 &&
-        !isNaN(prj.operating_income) &&
-        prj.non_operating_income > 0 &&
-        !isNaN(prj.non_operating_income) &&
-        prj.non_operating_expense > 0 &&
-        !isNaN(prj.non_operating_expense) &&
-        prj.ordinary_profit > 0 &&
-        !isNaN(prj.ordinary_profit) &&
-        prj.ordinary_profit_margin > 0 &&
-        !isNaN(prj.ordinary_profit_margin)
+
+  let validationErrors = []
+
+  for (const [index, prj] of projectsValidate.entries()) {
+    for (const check of fieldChecks) {
+      // Get Relevant information for Error Message and Push to Error Array
+      const errorMessage = validateField(
+        prj[check.field],
+        check.fieldName,
+        check.isNumber,
+        index + 1, // Gives a Temporary ID for projects to display in error messages in modal
+        'Project',
       )
-    })
+
+      if (errorMessage) {
+        validationErrors.push(errorMessage)
+      }
+    }
+  }
+    // Array of errors OR no errors (this in handleSubmit below: validationErrors)
+    return validationErrors
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-  
+    e.preventDefault()
+
     const projectsData = formProjects.map((projects) => ({
       year: projects.year,
       month: projects.month,
@@ -258,45 +260,50 @@ const ProjectsRegistration = () => {
       non_operating_expense: parseFloat(projects.non_operating_expense),
       ordinary_profit: parseFloat(projects.ordinary_profit),
       ordinary_profit_margin: parseFloat(projects.ordinary_profit_margin),
-    }));
-  
-    
+    }))
+
     if (!token) {
-      window.location.href = '/login';
-      return;
+      window.location.href = '/login'
+      return
     }
-  
-    if (!validateProjects(formProjects)) {
-      setModalMessage(translate('usersValidationText6', language));
-      setIsModalOpen(true);
-      return; // Stop the submission
-    }
+
+    // CLIENT SIDE VALIDATION CHECK.  ( Calls Helper Function in validationUtil )
+    const validationErrors = validateProjects(formProjects) // Get the array of error messages
+  if (validationErrors.length > 0) {
+    // Build the Error Messagse for the modal by translating an d formatting each error. ( Calls Helper Function in validationUtil )
+    const translatedAndFormattedValidationErrors = translateAndFormatErrors(validationErrors, language)
+    // Set Error Messages for Modal
+    setModalMessage(translatedAndFormattedValidationErrors)
+    setCrudValidationErrors(translatedAndFormattedValidationErrors)
+    setIsModalOpen(true)
+    return
+  }
 
     createProject(projectsData, token)
       .then((data) => {
-          setModalMessage(translate('successfullySaved', language))
-          setIsModalOpen(true)
-          setProjects([
-            {
-              year: '',
-              month: '',
-              project_name: '',
-              project_type: '',
-              client: '',
-              business_division: '',
-              sales_revenue: '',
-              cost_of_sale: '',
-              dispatch_labor_expense: '',
-              employee_expense: '',
-              indirect_employee_expense: '',
-              expense: '',
-              operating_income: '',
-              non_operating_income: '',
-              non_operating_expense: '',
-              ordinary_profit: '',
-              ordinary_profit_margin: '',
-            },
-          ])
+        setModalMessage(translate('successfullySaved', language))
+        setIsModalOpen(true)
+        setProjects([
+          {
+            year: '',
+            month: '',
+            project_name: '',
+            project_type: '',
+            client: '',
+            business_division: '',
+            sales_revenue: '',
+            cost_of_sale: '',
+            dispatch_labor_expense: '',
+            employee_expense: '',
+            indirect_employee_expense: '',
+            expense: '',
+            operating_income: '',
+            non_operating_income: '',
+            non_operating_expense: '',
+            ordinary_profit: '',
+            ordinary_profit_margin: '',
+          },
+        ])
       })
       .catch((error) => {
         if (error.response && error.response.status === 409) {
@@ -538,7 +545,7 @@ const ProjectsRegistration = () => {
                             name='sales_revenue'
                             value={form.sales_revenue}
                             onChange={(e) => handleChange(index, e)}
-                            onWheel={(e) => (e.target as HTMLInputElement).blur()} 
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                         <div className='projectsRegistration_employee-expenses-div'>
@@ -763,16 +770,17 @@ const ProjectsRegistration = () => {
           </div>
         </div>
       </div>
-       <AlertModal
+      <AlertModal
         isOpen={modalIsOpen}
         onConfirm={handleRemoveInputData}
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
-        />
+      />
       <CrudModal
         message={modalMessage}
         onClose={() => setIsModalOpen(false)}
         isCRUDOpen={isModalOpen}
+        validationMessages={crudValidationErrors}
       />
       <AlertModal
         isOpen={isOverwriteModalOpen}
