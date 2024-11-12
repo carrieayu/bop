@@ -24,7 +24,7 @@ function getSum(data: number[]) {
   }, 0)
 }
 
-const calculateGrossProfit = (card) => Number(card.sales_revenue) - Number(card.cost_of_sale)
+const calculateGrossProfit = (card) => Number(card.sales_revenue) - Number(card.cost_of_sale) // Need to update the calculation since cost of sale is removed.
 const calculateGrossProfitMargin = (grossProfit, salesRevenue) =>salesRevenue ? (grossProfit / salesRevenue) * 100 : 0
 const calculateCumulativeOrdinaryIncome = (card) => Number(card.operating_income) + Number(card.non_operating_income) - Number(card.non_operating_expense)
 const calculateOperatingProfitMargin = (operatingProfit, salesRevenue) =>salesRevenue ? (operatingProfit / salesRevenue) * 100 : 0

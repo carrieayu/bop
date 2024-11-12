@@ -529,7 +529,7 @@ const ProjectsRegistration = () => {
                             name='sales_revenue'
                             value={form.sales_revenue}
                             onChange={(e) => handleChange(index, e)}
-                            onWheel={(e) => (e.target as HTMLInputElement).blur()} 
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                         <div className='projectsRegistration_employee-expenses-div'>
@@ -651,6 +651,11 @@ const ProjectsRegistration = () => {
                             name='project_name'
                             value={form.project_name}
                             onChange={(e) => handleChange(index, e)}
+                            style={{
+                              overflowX: 'auto',
+                              whiteSpace: 'nowrap',
+                              textOverflow: 'ellipsis',
+                            }}
                           />
                         </div>
 
@@ -742,17 +747,13 @@ const ProjectsRegistration = () => {
           </div>
         </div>
       </div>
-       <AlertModal
+      <AlertModal
         isOpen={modalIsOpen}
         onConfirm={handleRemoveInputData}
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
-        />
-      <CrudModal
-        message={modalMessage}
-        onClose={() => setIsModalOpen(false)}
-        isCRUDOpen={isModalOpen}
       />
+      <CrudModal message={modalMessage} onClose={() => setIsModalOpen(false)} isCRUDOpen={isModalOpen} />
       <AlertModal
         isOpen={isOverwriteModalOpen}
         onCancel={() => setIsOverwriteModalOpen(false)}
