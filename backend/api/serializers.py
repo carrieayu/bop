@@ -332,7 +332,6 @@ class PlanningDisplayByProjectstSerializer(serializers.ModelSerializer):
             "year",
             "month",
             "sales_revenue",
-            "cost_of_sale",
             "dispatch_labor_expense",
             "employee_expense",
             "indirect_employee_expense",
