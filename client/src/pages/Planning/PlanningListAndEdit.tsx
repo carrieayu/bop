@@ -172,11 +172,23 @@ const PlanningListAndEdit = () => {
                         </label>
                       )}
 
-                      <p className='planning_pl-label'>{translate('thousandYen', language)}</p>
-                      <label className='planning_switch'>
-                        <input type='checkbox' checked={isThousandYenChecked} onChange={handleThousandYenToggle} />
-                        <span className='planning_slider'></span>
-                      </label>
+                      {isEditing ? (
+                        <p className='planning_pl-label_disabled'>{translate('thousandYen', language)}</p>
+                      ) : (
+                        <p className='planning_pl-label'>{translate('thousandYen', language)}</p>
+                      )}
+
+                      {isEditing ? (
+                        <label className='planning_switch'>
+                          <input type='checkbox' checked={isThousandYenChecked} onChange={handleThousandYenToggle} disabled/>
+                          <span className='planning_slider'></span>
+                        </label>
+                      ) : (
+                        <label className='planning_switch'>
+                          <input type='checkbox' checked={isThousandYenChecked} onChange={handleThousandYenToggle} />
+                          <span className='planning_slider'></span>
+                        </label>
+                      )}
                     </div>
                   </div>
                 </div>
