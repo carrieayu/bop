@@ -36,16 +36,17 @@ const PlanningListAndEdit = () => {
   const [initialLanguage, setInitialLanguage] = useState(language)
 
   const handleThousandYenToggle = () => {
-    setIsThousandYenChecked((prevState) => !prevState)
+      setIsThousandYenChecked((prevState) => !prevState)
+    
   }
 
   const handleEditModeToggle = () => {
+    setIsThousandYenChecked(false)
     setIsEditing((prevState) => {
       const newEditingState = !prevState
       if (newEditingState) {
         setLanguage(initialLanguage)
       }
-
       return newEditingState
     })
   }
