@@ -26,7 +26,7 @@ const initialState: GraphDataState = {
   month: [],
 }
 
-const calculateGrossProfit = (card) => Number(card.sales_revenue) - Number(card.cost_of_sale)
+const calculateGrossProfit = (card) => Number(card.sales_revenue) - Number(card.cost_of_sale) // Need to update the calculation since cost of sale from projects is removed.
 const calculateGrossProfitMargin = (grossProfit, salesRevenue) =>
   salesRevenue ? (grossProfit / salesRevenue) * 100 : 0
 const calculateCumulativeOrdinaryIncome = (card) =>
@@ -35,7 +35,7 @@ const calculateOperatingProfitMargin = (operatingProfit, salesRevenue) =>
   salesRevenue ? (operatingProfit / salesRevenue) * 100 : 0
 const calculateOperatingIncome = (card) => {
   const salesRevenue = Number(card.sales_revenue) || 0
-  const costOfSale = Number(card.cost_of_sale) || 0
+  const costOfSale = Number(card.cost_of_sale) || 0 // TODO Need to update
   const dispatchLaborExpense = Number(card.dispatch_labor_expense) || 0
   const employeeExpense = Number(card.employee_expense) || 0
   const indirectEmployeeExpense = Number(card.indirect_employee_expense) || 0

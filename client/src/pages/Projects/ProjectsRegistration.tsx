@@ -56,7 +56,6 @@ const ProjectsRegistration = () => {
       client: '',
       business_division: '',
       sales_revenue: '',
-      cost_of_sale: '',
       dispatch_labor_expense: '',
       employee_expense: '',
       indirect_employee_expense: '',
@@ -81,7 +80,6 @@ const ProjectsRegistration = () => {
           client: '',
           business_division: '',
           sales_revenue: '',
-          cost_of_sale: '',
           dispatch_labor_expense: '',
           employee_expense: '',
           indirect_employee_expense: '',
@@ -143,7 +141,6 @@ const ProjectsRegistration = () => {
           client: '',
           business_division: '',
           sales_revenue: '',
-          cost_of_sale: '',
           dispatch_labor_expense: '',
           employee_expense: '',
           indirect_employee_expense: '',
@@ -250,7 +247,6 @@ const ProjectsRegistration = () => {
       client: projects.client,
       business_division: projects.business_division,
       sales_revenue: parseFloat(projects.sales_revenue),
-      cost_of_sale: parseFloat(projects.cost_of_sale),
       dispatch_labor_expense: parseFloat(projects.dispatch_labor_expense),
       employee_expense: parseFloat(projects.employee_expense),
       indirect_employee_expense: parseFloat(projects.indirect_employee_expense),
@@ -281,29 +277,28 @@ const ProjectsRegistration = () => {
 
     createProject(projectsData, token)
       .then((data) => {
-        setModalMessage(translate('successfullySaved', language))
-        setIsModalOpen(true)
-        setProjects([
-          {
-            year: '',
-            month: '',
-            project_name: '',
-            project_type: '',
-            client: '',
-            business_division: '',
-            sales_revenue: '',
-            cost_of_sale: '',
-            dispatch_labor_expense: '',
-            employee_expense: '',
-            indirect_employee_expense: '',
-            expense: '',
-            operating_income: '',
-            non_operating_income: '',
-            non_operating_expense: '',
-            ordinary_profit: '',
-            ordinary_profit_margin: '',
-          },
-        ])
+          setModalMessage(translate('successfullySaved', language))
+          setIsModalOpen(true)
+          setProjects([
+            {
+              year: '',
+              month: '',
+              project_name: '',
+              project_type: '',
+              client: '',
+              business_division: '',
+              sales_revenue: '',
+              dispatch_labor_expense: '',
+              employee_expense: '',
+              indirect_employee_expense: '',
+              expense: '',
+              operating_income: '',
+              non_operating_income: '',
+              non_operating_expense: '',
+              ordinary_profit: '',
+              ordinary_profit_margin: '',
+            },
+          ])
       })
       .catch((error) => {
         if (error.response && error.response.status === 409) {
@@ -388,7 +383,6 @@ const ProjectsRegistration = () => {
       client: projects.client,
       business_division: projects.business_division,
       sales_revenue: parseFloat(projects.sales_revenue),
-      cost_of_sale: parseFloat(projects.cost_of_sale),
       dispatch_labor_expense: parseFloat(projects.dispatch_labor_expense),
       employee_expense: parseFloat(projects.employee_expense),
       indirect_employee_expense: parseFloat(projects.indirect_employee_expense),
@@ -413,7 +407,6 @@ const ProjectsRegistration = () => {
             client: '',
             business_division: '',
             sales_revenue: '',
-            cost_of_sale: '',
             dispatch_labor_expense: '',
             employee_expense: '',
             indirect_employee_expense: '',
@@ -619,18 +612,6 @@ const ProjectsRegistration = () => {
                             ))}
                           </select>
                         </div>
-                        <div className='projectsRegistration_cost-of-sale-div'>
-                          <label className='projectsRegistration_cost-of-sale'>
-                            {translate('costOfSale', language)}
-                          </label>
-                          <input
-                            type='number'
-                            name='cost_of_sale'
-                            value={form.cost_of_sale}
-                            onChange={(e) => handleChange(index, e)}
-                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
-                          />
-                        </div>
                         <div className='projectsRegistration_indirect-employee-expense-div'>
                           <label className='projectsRegistration_indirect-employee-expense'>
                             {translate('indirectEmployeeExpense', language)}
@@ -679,6 +660,11 @@ const ProjectsRegistration = () => {
                             name='project_name'
                             value={form.project_name}
                             onChange={(e) => handleChange(index, e)}
+                            style={{
+                              overflowX: 'auto',
+                              whiteSpace: 'nowrap',
+                              textOverflow: 'ellipsis',
+                            }}
                           />
                         </div>
 

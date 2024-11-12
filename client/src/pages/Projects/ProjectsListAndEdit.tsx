@@ -23,52 +23,51 @@ import { updateProject } from "../../api/ProjectsEndpoint/UpdateProject";
 import { deleteProject } from "../../api/ProjectsEndpoint/DeleteProject";
 
 const ProjectsListAndEdit: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('/planning-list')
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('project')
-  const [currentPage, setCurrentPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(5)
-  const [paginatedData, setPaginatedData] = useState<any[]>([])
-  const select = [5, 10, 100]
-  const { language, setLanguage } = useLanguage()
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const [isEditing, setIsEditing] = useState(false)
-  const [projects, setProjects] = useState([])
-  const [originalProjectsList, setOriginalProjectsList] = useState(projects)
-  const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
-  const years = []
-  const [initialLanguage, setInitialLanguage] = useState(language)
-  const dispatch = useDispatch()
-  const [clients, setClients] = useState<any>([])
-  const [businessSelection, setBusinessSelection] = useState<any>([])
-  const totalPages = Math.ceil(100 / 10)
-  const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [selectedProject, setSelectedProject] = useState<any>(null)
-  const [deleteProjectsId, setDeleteProjectsId] = useState([])
-  const [clientMap, setClientMap] = useState({})
-  const [businessMap, setBusinessMap] = useState({})
-  const [formProjects, setFormProjects] = useState([
-    {
-      year: '',
-      month: '',
-      project_name: '',
-      project_type: '',
-      client: '',
-      business_division: '',
-      sales_revenue: '',
-      cost_of_sale: '',
-      dispatch_labor_expense: '',
-      employee_expense: '',
-      indirect_employee_expense: '',
-      expense: '',
-      operating_income: '',
-      non_operating_income: '',
-      non_operating_expense: '',
-      ordinary_profit: '',
-      ordinary_profit_margin: '',
-    },
-  ])
+    const [activeTab, setActiveTab] = useState('/planning-list')
+    const navigate = useNavigate()
+    const location = useLocation()
+    const [activeTabOther, setActiveTabOther] = useState('project')
+    const [currentPage, setCurrentPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5)
+    const [paginatedData, setPaginatedData] = useState<any[]>([])
+    const select = [5, 10, 100]
+    const { language, setLanguage } = useLanguage()
+    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
+    const [isEditing, setIsEditing] = useState(false)
+    const [projects, setProjects] = useState([])
+    const [originalProjectsList, setOriginalProjectsList] = useState(projects)
+    const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
+    const years = []
+    const [initialLanguage, setInitialLanguage] = useState(language);
+    const dispatch = useDispatch()
+    const [clients, setClients] = useState<any>([])
+    const [businessSelection, setBusinessSelection] = useState<any>([])
+    const totalPages = Math.ceil(100 / 10);
+    const [modalIsOpen, setModalIsOpen] = useState(false)
+    const [selectedProject, setSelectedProject] = useState<any>(null)
+    const [deleteProjectsId, setDeleteProjectsId] = useState([])
+    const [clientMap, setClientMap] = useState({})
+    const [businessMap, setBusinessMap] = useState({})
+    const [formProjects, setFormProjects] = useState([
+      {
+        year: '',
+        month: '',
+        project_name: '',
+        project_type: '',
+        client: '',
+        business_division: '',
+        sales_revenue: '',
+        dispatch_labor_expense: '',
+        employee_expense: '',
+        indirect_employee_expense: '',
+        expense: '',
+        operating_income: '',
+        non_operating_income: '',
+        non_operating_expense: '',
+        ordinary_profit: '',
+        ordinary_profit_margin: '',
+      },
+    ])
 
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
@@ -414,9 +413,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                     {translate('saleRevenue', language)}
                                   </th>
                                   <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                    {translate('costOfSale', language)}
-                                  </th>
-                                  <th className='projectsList_table_title_content_vertical has-text-centered'>
                                     {translate('dispatchLaborExpense', language)}
                                   </th>
                                   <th className='projectsList_table_title_content_vertical has-text-centered'>
@@ -540,14 +536,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                     <td className='projectsList_table_body_content_vertical'>
                                       <input
                                         type='number'
-                                        name='cost_of_sale'
-                                        value={project.cost_of_sale}
-                                        onChange={(e) => handleChange(index, e)}
-                                      />
-                                    </td>
-                                    <td className='projectsList_table_body_content_vertical'>
-                                      <input
-                                        type='number'
                                         name='dispatch_labor_expense'
                                         value={project.dispatch_labor_expense}
                                         onChange={(e) => handleChange(index, e)}
@@ -646,9 +634,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                   {translate('saleRevenue', language)}
                                 </th>
                                 <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                  {translate('costOfSale', language)}
-                                </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
                                   {translate('dispatchLaborExpense', language)}
                                 </th>
                                 <th className='projectsList_table_title_content_vertical has-text-centered'>
@@ -700,7 +685,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                     )}
                                   </td>
                                   <td className='projectsList_table_body_content_vertical'>{project.sales_revenue}</td>
-                                  <td className='projectsList_table_body_content_vertical'>{project.cost_of_sale}</td>
                                   <td className='projectsList_table_body_content_vertical'>
                                     {project.dispatch_labor_expense}
                                   </td>
@@ -743,7 +727,7 @@ const ProjectsListAndEdit: React.FC = () => {
                           setIsUpdateConfirmationOpen(true)
                         }}
                       >
-                        更新
+                        {translate('update', language)}
                       </button>
                     </div>
                   ) : (
