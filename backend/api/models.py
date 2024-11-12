@@ -140,9 +140,6 @@ class Projects(models.Model):
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
     sales_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    cost_of_sale = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0.0
-    )
     dispatch_labor_expense = models.DecimalField(
         max_digits=12, decimal_places=2, default=0.0
     )

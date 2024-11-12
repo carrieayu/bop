@@ -36,16 +36,17 @@ const PlanningListAndEdit = () => {
   const [initialLanguage, setInitialLanguage] = useState(language)
 
   const handleThousandYenToggle = () => {
-    setIsThousandYenChecked((prevState) => !prevState)
+      setIsThousandYenChecked((prevState) => !prevState)
+    
   }
 
   const handleEditModeToggle = () => {
+    setIsThousandYenChecked(false)
     setIsEditing((prevState) => {
       const newEditingState = !prevState
       if (newEditingState) {
         setLanguage(initialLanguage)
       }
-
       return newEditingState
     })
   }
@@ -125,25 +126,70 @@ const PlanningListAndEdit = () => {
                   </div>
                   <div className='planning_right-content'>
                     <div className='planning_paginate'>
-                      <p className='planning_mode_switch'>
-                        {isEditing
-                          ? translate('switchToDisplayMode', language)
-                          : translate('switchToEditMode', language)}
-                      </p>
+                      {isSwitchActive ? (
+                        <p className='planning_mode_switch_disabled'>
+                          {isEditing
+                            ? translate('switchToDisplayMode', language)
+                            : translate('switchToEditMode', language)}
+                        </p>
+                      ) : (
+                        <p className='planning_mode_switch'>
+                          {isEditing
+                            ? translate('switchToDisplayMode', language)
+                            : translate('switchToEditMode', language)}
+                        </p>
+                      )}
+
                       <label className='planning_switch'>
-                        <input type='checkbox' checked={isEditing} onChange={handleEditModeToggle} />
-                        <span className='planning_slider'></span>
+                        {isSwitchActive ? (
+                          <label className='swith_edit'>
+                            <input type='checkbox' checked={isEditing} onChange={handleEditModeToggle} disabled />
+                            <span className='planning_slider'></span>
+                          </label>
+                        ) : (
+                          <div>
+                            <label className='swith_edit'>
+                              <input type='checkbox' checked={isEditing} onChange={handleEditModeToggle} />
+                              <span className='planning_slider'></span>
+                            </label>
+                          </div>
+                        )}
                       </label>
-                      <p className='planning_pl-label'>{translate('displayByProject', language)}</p>
-                      <label className='planning_switch'>
-                        <input type='checkbox' checked={isSwitchActive} onChange={handleSwitchToggle} />
-                        <span className='planning_slider'></span>
-                      </label>
-                      <p className='planning_pl-label'>{translate('thousandYen', language)}</p>
-                      <label className='planning_switch'>
-                        <input type='checkbox' checked={isThousandYenChecked} onChange={handleThousandYenToggle} />
-                        <span className='planning_slider'></span>
-                      </label>
+                      {isEditing ? (
+                        <p className='planning_pl-label_disabled'>{translate('displayByProject', language)}</p>
+                      ) : (
+                        <p className='planning_pl-label'>{translate('displayByProject', language)}</p>
+                      )}
+
+                      {isEditing ? (
+                        <label className='planning_switch'>
+                          <input type='checkbox' checked={isSwitchActive} onChange={handleSwitchToggle} disabled />
+                          <span className='planning_slider'></span>
+                        </label>
+                      ) : (
+                        <label className='planning_switch'>
+                          <input type='checkbox' checked={isSwitchActive} onChange={handleSwitchToggle} />
+                          <span className='planning_slider'></span>
+                        </label>
+                      )}
+
+                      {isEditing ? (
+                        <p className='planning_pl-label_disabled'>{translate('thousandYen', language)}</p>
+                      ) : (
+                        <p className='planning_pl-label'>{translate('thousandYen', language)}</p>
+                      )}
+
+                      {isEditing ? (
+                        <label className='planning_switch'>
+                          <input type='checkbox' checked={isThousandYenChecked} onChange={handleThousandYenToggle} disabled/>
+                          <span className='planning_slider'></span>
+                        </label>
+                      ) : (
+                        <label className='planning_switch'>
+                          <input type='checkbox' checked={isThousandYenChecked} onChange={handleThousandYenToggle} />
+                          <span className='planning_slider'></span>
+                        </label>
+                      )}
                     </div>
                   </div>
                 </div>

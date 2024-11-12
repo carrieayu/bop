@@ -56,7 +56,6 @@ const ProjectsListAndEdit: React.FC = () => {
         client: '',
         business_division: '',
         sales_revenue: '',
-        cost_of_sale: '',
         dispatch_labor_expense: '',
         employee_expense: '',
         indirect_employee_expense: '',
@@ -147,8 +146,6 @@ const ProjectsListAndEdit: React.FC = () => {
           !isNaN(prj.sales_revenue) &&
           prj.sales_revenue > 0 &&
           !isNaN(prj.sales_revenue) &&
-          prj.cost_of_sale > 0 &&
-          !isNaN(prj.cost_of_sale) &&
           prj.dispatch_labor_expense > 0 &&
           !isNaN(prj.dispatch_labor_expense) &&
           prj.employee_expense > 0 &&
@@ -417,9 +414,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                     {translate('saleRevenue', language)}
                                   </th>
                                   <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                    {translate('costOfSale', language)}
-                                  </th>
-                                  <th className='projectsList_table_title_content_vertical has-text-centered'>
                                     {translate('dispatchLaborExpense', language)}
                                   </th>
                                   <th className='projectsList_table_title_content_vertical has-text-centered'>
@@ -543,14 +537,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                     <td className='projectsList_table_body_content_vertical'>
                                       <input
                                         type='number'
-                                        name='cost_of_sale'
-                                        value={project.cost_of_sale}
-                                        onChange={(e) => handleChange(index, e)}
-                                      />
-                                    </td>
-                                    <td className='projectsList_table_body_content_vertical'>
-                                      <input
-                                        type='number'
                                         name='dispatch_labor_expense'
                                         value={project.dispatch_labor_expense}
                                         onChange={(e) => handleChange(index, e)}
@@ -649,9 +635,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                   {translate('saleRevenue', language)}
                                 </th>
                                 <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                  {translate('costOfSale', language)}
-                                </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
                                   {translate('dispatchLaborExpense', language)}
                                 </th>
                                 <th className='projectsList_table_title_content_vertical has-text-centered'>
@@ -703,7 +686,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                     )}
                                   </td>
                                   <td className='projectsList_table_body_content_vertical'>{project.sales_revenue}</td>
-                                  <td className='projectsList_table_body_content_vertical'>{project.cost_of_sale}</td>
                                   <td className='projectsList_table_body_content_vertical'>
                                     {project.dispatch_labor_expense}
                                   </td>
@@ -746,7 +728,7 @@ const ProjectsListAndEdit: React.FC = () => {
                           setIsUpdateConfirmationOpen(true)
                         }}
                       >
-                        更新
+                        {translate('update', language)}
                       </button>
                     </div>
                   ) : (

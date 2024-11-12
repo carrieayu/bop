@@ -1,13 +1,13 @@
 .sidebar {
-    min-width: 16%;
+    max-width: 330px;
     height: 98vh;
     display: flex;
     flex-direction: column;
     padding: 5px;
     background-color: #1c302c;
-        @media only screen and (max-width: 1980px){
-            flex-direction: column;
-            // background-color: #4caf50;
+        @media only screen and (max-width: 1536px){
+            max-width: 269px;
+            white-space: normal;
         }
     .sidebar-nav {
       margin-top: 50px;
@@ -39,6 +39,7 @@
           margin-bottom: 20px;
           display: flex;
           align-items: center;
+          width: 205px;
           span {
             color: white;
             margin-right: 10px;
@@ -48,6 +49,11 @@
             text-decoration: none;
             font-size: 16px;
             margin-right: 10px;
+          }
+          a.active {
+              background: #7f7f7f;;
+              width: 100%;
+              border-radius: 5px;
           }
         }
         .sub_menu {
