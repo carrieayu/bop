@@ -321,7 +321,7 @@ class CostOfSales(models.Model):
     def __str__(self):
         return self.cost_of_sale_id
     
-class Expenses(models.Model):
+class ExpensesPlanning(models.Model):
     expense_id = models.CharField(max_length=10, primary_key=True)
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
@@ -339,12 +339,12 @@ class Expenses(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :
-        db_table = u'expenses'
+        db_table = u'expenses_planning'
 
     def save(self, *args, **kwargs):
         if not self.expense_id:
             # Get the maximum existing ID and increment it
-            max_expense_id = Expenses.objects.aggregate(max_expense_id=Max("expense_id"))["max_expense_id"]
+            max_expense_id = ExpensesPlanning.objects.aggregate(max_expense_id=Max("expense_id"))["max_expense_id"]
             if max_expense_id:
                 numeric_part = int(max_expense_id[1:]) + 1  # Extract numeric part after 'B'
             else:
@@ -359,7 +359,7 @@ class Expenses(models.Model):
 
 class ExpensesResults(models.Model):
     expense_result_id  = models.CharField(max_length=10, primary_key=True)
-    expense_id = models.ForeignKey(Expenses, on_delete=models.CASCADE, null=True)
+    expense_id = models.ForeignKey(ExpensesPlanning, on_delete=models.CASCADE, null=True)
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
     consumable_expense = models.IntegerField(max_length=12)

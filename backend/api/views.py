@@ -69,7 +69,7 @@ from .serializers import CreateTableListSerializers, UserSerializer, Authenticat
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import (
     CostOfSales,
-    Expenses,
+    ExpensesPlanning,
     ExpensesResults,
     MasterBusinessDivision,
     MasterClient,
@@ -750,16 +750,16 @@ class ProjectsDelete(generics.DestroyAPIView):
             return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
 
 # Expenses
-class ExpensesList(generics.ListAPIView):
-    queryset = Expenses.objects.all()
+class ExpensesPlanningList(generics.ListAPIView):
+    queryset = ExpensesPlanning.objects.all()
     serializer_class = ExpensesListSerializer
     permission_classes = [AllowAny]
 
 
     def get_queryset(self):
-        return Expenses.objects.all()
+        return ExpensesPlanning.objects.all()
 
-class ExpensesCreate(generics.CreateAPIView):
+class ExpensesPlanningCreate(generics.CreateAPIView):
     serializer_class =ExpensesCreateSerializer
     permission_classes = [IsAuthenticated]
 
@@ -773,7 +773,7 @@ class ExpensesCreate(generics.CreateAPIView):
         for item in data:
             year = item.get('year')
             month = item.get('month')
-            existing_entry = Expenses.objects.filter(year=year, month=month).first()  # Get the actual entry
+            existing_entry = ExpensesPlanning.objects.filter(year=year, month=month).first()  # Get the actual entry
             if existing_entry:
                 existing_entries.append((year, month))  # Store year and month as a tuple
 
@@ -817,7 +817,7 @@ class ExpensesCreate(generics.CreateAPIView):
                 month = item.get('month')
 
                 # Check if an entry with the same year and month exists
-                existing_entry = Expenses.objects.filter(year=year, month=month).first()
+                existing_entry = ExpensesPlanning.objects.filter(year=year, month=month).first()
 
                 if existing_entry:
                     # Update existing entry (except year and month)
@@ -841,10 +841,10 @@ class ExpensesCreate(generics.CreateAPIView):
 
         return JsonResponse(responses, safe=False, status=status.HTTP_200_OK)
 
-class ExpensesUpdate(generics.UpdateAPIView):
+class ExpensesPlanningUpdate(generics.UpdateAPIView):
     serializer_class = ExpensesUpdateSerializer
     permission_classes = [IsAuthenticated]
-    queryset = Expenses.objects.all()
+    queryset = ExpensesPlanning.objects.all()
 
     def update(self, request, *args, **kwargs):
         received_data = request.data  # This is expected to be a list of expense data
@@ -853,33 +853,33 @@ class ExpensesUpdate(generics.UpdateAPIView):
             expense_id = expense_data.get('expense_id')  # Adjusted to match your model
             try:
                 # Fetch the existing record based on expense_id
-                expense = Expenses.objects.get(expense_id=expense_id)
+                expense = ExpensesPlanning.objects.get(expense_id=expense_id)
                 # Update each field except for the primary key
                 for field, value in expense_data.items():
                     if field not in ['expense_data', 'month']:  # Skip primary key and month field
                         setattr(expense, field, value)
                 
                 expense.save()  # Save the updated record
-            except Expenses.DoesNotExist:
+            except ExpensesPlanning.DoesNotExist:
                 return Response({"error": f"Expense with ID {expense_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({"success": "Expenses updated successfully."}, status=status.HTTP_200_OK)
 
 
-class ExpensesDelete(generics.DestroyAPIView):
-    queryset = Expenses.objects.all()
+class ExpensesPlanningDelete(generics.DestroyAPIView):
+    queryset = ExpensesPlanning.objects.all()
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         pk = self.kwargs.get("pk")
-        return Expenses.objects.filter(expense_id=pk)
+        return ExpensesPlanning.objects.filter(expense_id=pk)
 
     def destroy(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
             instance.delete()
             return Response({"message": "deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
-        except Expenses.DoesNotExist:
+        except ExpensesPlanning.DoesNotExist:
             return Response({"message": "Expense not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"message": "failed", "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -996,7 +996,7 @@ class ExpensesResultsUpdate(generics.UpdateAPIView):
                         setattr(expenseResults, field, value)
                 
                 expenseResults.save()  # Save the updated record
-            except Expenses.DoesNotExist:
+            except ExpensesPlanning.DoesNotExist:
                 return Response({"error": f"Expense with ID {expense_result_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({"success": "Expenses updated successfully."}, status=status.HTTP_200_OK)
@@ -1390,7 +1390,7 @@ class CostOfSalesDelete(generics.DestroyAPIView):
 class PlanningList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        expenses = Expenses.objects.all()
+        expenses = ExpensesPlanning.objects.all()
         cost_of_sales = CostOfSales.objects.all()
         planning_assign = EmployeeExpenses.objects.all()
         planning_project_data = Projects.objects.all()
@@ -1461,7 +1461,7 @@ class PlanningUpdate(generics.UpdateAPIView):
                 for idx, record_id in enumerate(ids):
                     if record_id:
                         try:
-                            expenses_instance = Expenses.objects.get(expense_id=record_id)
+                            expenses_instance = ExpensesPlanning.objects.get(expense_id=record_id)
                             if label == "travelExpenses":
                                 expenses_instance.travel_expense = values[idx] if idx < len(values) else 0
                             if label == "consumableExpenses":
@@ -1483,7 +1483,7 @@ class PlanningUpdate(generics.UpdateAPIView):
                             if label == "professionalServicesFees":
                                 expenses_instance.professional_service_fee = values[idx] if idx < len(values) else 0
                             expenses_instance.save()
-                        except Expenses.DoesNotExist:
+                        except ExpensesPlanning.DoesNotExist:
                             continue
 
         return Response({"message": "Data updated successfully"}, status=status.HTTP_200_OK)

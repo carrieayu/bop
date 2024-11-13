@@ -16,7 +16,6 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { deleteExpense } from '../../api/ExpenseEndpoint/DeleteExpense'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
 import { updateExpense } from '../../api/ExpenseEndpoint/UpdateExpense'
-import { deleteExpenseResults } from '../../api/ExpenseResultEndpoint/DeleteExpenseResult'
 
 const ExpensesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -302,7 +301,7 @@ const ExpensesList: React.FC = () => {
   }
 
   const handleConfirm = async () => {
-    deleteExpenseResults(deleteExpenseId, token)
+    deleteExpense(deleteExpenseId, token)
       .then(() => {
         setCrudMessage(translate('successfullyDeleted', language))
         setIsCRUDOpen(true)

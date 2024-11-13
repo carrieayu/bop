@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import CostOfSales, Expenses, ExpensesResults, MasterBusinessDivision, MasterClient, MasterCompany, Projects, Results, Employees as Employees, EmployeeExpenses
+from .models import CostOfSales, ExpensesPlanning, ExpensesResults, MasterBusinessDivision, MasterClient, MasterCompany, Projects, Results, Employees as Employees, EmployeeExpenses
 
 
 # Employees
@@ -244,14 +244,14 @@ class CostOfSalesSerializer(serializers.ModelSerializer):
 class ExpensesListSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Expenses
+        model = ExpensesPlanning
         fields = '__all__'
 
 class ExpensesCreateSerializer(serializers.ModelSerializer):
 
     expense_id = serializers.CharField(required=False)
     class Meta:
-        model = Expenses
+        model = ExpensesPlanning
         fields = [
             'expense_id',
             'year',
@@ -275,7 +275,7 @@ class ExpensesUpdateSerializer(serializers.ModelSerializer):
 
     expense_id = serializers.CharField(required=False)
     class Meta:
-        model = Expenses
+        model = ExpensesPlanning
         fields = [
             'expense_id',
             'year',

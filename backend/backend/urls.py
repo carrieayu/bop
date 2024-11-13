@@ -1,11 +1,11 @@
 from django.contrib import admin
 from django.urls import path, include
+from api.views import ExpensesPlanningCreate, ExpensesPlanningDelete, ExpensesPlanningList, ExpensesPlanningUpdate
 from api.views import ExpensesResultsCreate, ExpensesResultsDelete, ExpensesResultsList, ExpensesResultsUpdate, PasswordForgotView
 from api.views import PlanningList, PlanningUpdate, PlanningDisplayByProjects
 from api.views import MasterCompaniesList, MasterCompaniesCreate, MasterCompaniesUpdate, MasterCompaniesDelete
 from api.views import ProjectsList,  ProjectsCreate, ProjectsUpdate, ProjectsDelete 
 from api.views import EmployeeExpensesList, EmployeeExpensesCreate, EmployeeExpensesDelete #No Update Function on this Page.
-from api.views import ExpensesList, ExpensesCreate, ExpensesUpdate, ExpensesDelete
 from api.views import CostOfSalesList, CostOfSalesCreate, CostOfSalesUpdate, CostOfSalesDelete
 from api.views import EmployeesList, EmployeesCreate, EmployeesUpdate, EmployeesDelete, EmployeesEdit #Edit Mode Has Api call to filter EmployeeBusinessDivision
 from api.views import UsersList, UsersCreate, UsersUpdate, UsersDelete
@@ -56,10 +56,10 @@ urlpatterns = [
     path('api/employee-expenses/<str:pk>/delete/', EmployeeExpensesDelete.as_view(), name='employee-expenses-delete'),
     
     # Expenses
-    path('api/expenses/list/', ExpensesList.as_view(), name = 'expenses-list'),
-    path('api/expenses/create/', ExpensesCreate.as_view(), name = 'expenses-create'),
-    path('api/expenses/update/', ExpensesUpdate.as_view(), name = 'expenses-update'),
-    path('api/expenses/<str:pk>/delete/', ExpensesDelete.as_view(), name='expenses-delete'),
+    path('api/expenses/list/', ExpensesPlanningList.as_view(), name = 'expenses-list'),
+    path('api/expenses/create/', ExpensesPlanningCreate.as_view(), name = 'expenses-create'),
+    path('api/expenses/update/', ExpensesPlanningUpdate.as_view(), name = 'expenses-update'),
+    path('api/expenses/<str:pk>/delete/', ExpensesPlanningDelete.as_view(), name='expenses-delete'),
 
     # Expenses Results
     path('api/expenses-results/list/', ExpensesResultsList.as_view(), name = 'expenses-results-list'),
