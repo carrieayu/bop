@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import PasswordForgotView
+from api.views import ExpensesResultsCreate, ExpensesResultsDelete, ExpensesResultsList, ExpensesResultsUpdate, PasswordForgotView
 from api.views import PlanningList, PlanningUpdate, PlanningDisplayByProjects
 from api.views import MasterCompaniesList, MasterCompaniesCreate, MasterCompaniesUpdate, MasterCompaniesDelete
 from api.views import ProjectsList,  ProjectsCreate, ProjectsUpdate, ProjectsDelete 
@@ -60,6 +60,12 @@ urlpatterns = [
     path('api/expenses/create/', ExpensesCreate.as_view(), name = 'expenses-create'),
     path('api/expenses/update/', ExpensesUpdate.as_view(), name = 'expenses-update'),
     path('api/expenses/<str:pk>/delete/', ExpensesDelete.as_view(), name='expenses-delete'),
+
+    # Expenses Results
+    path('api/expenses-results/list/', ExpensesResultsList.as_view(), name = 'expenses-results-list'),
+    path('api/expenses-results/create/', ExpensesResultsCreate.as_view(), name = 'expenses-results-create'),
+    path('api/expenses-results/update/', ExpensesResultsUpdate.as_view(), name = 'expenses-results-update'),
+    path('api/expenses-results/<str:pk>/delete/', ExpensesResultsDelete.as_view(), name='expenses-results-delete'),
 
     # Cost of Sales
     path('api/cost-of-sales/list/', CostOfSalesList.as_view(), name='cost-of-sales-list'),

@@ -355,3 +355,40 @@ class Expenses(models.Model):
 
     def __str__(self):
         return self.expense_id
+    
+
+class ExpensesResults(models.Model):
+    expense_result_id  = models.CharField(max_length=10, primary_key=True)
+    expense_id = models.ForeignKey(Expenses, on_delete=models.CASCADE, null=True)
+    year = models.CharField(max_length=4, default="2001")
+    month = models.CharField(max_length=2, default="01")
+    consumable_expense = models.IntegerField(max_length=12)
+    rent_expense = models.IntegerField(max_length=12)
+    tax_and_public_charge = models.IntegerField(max_length=12)
+    depreciation_expense = models.IntegerField(max_length=12)
+    travel_expense = models.IntegerField(max_length=12)
+    communication_expense = models.IntegerField(max_length=12)
+    utilities_expense = models.IntegerField(max_length=12)
+    transaction_fee = models.IntegerField(max_length=12)
+    advertising_expense = models.IntegerField(max_length=12)
+    entertainment_expense = models.IntegerField(max_length=12)
+    professional_service_fee = models.IntegerField(max_length=12)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta :
+        db_table = u'expenses_results'
+
+    def save(self, *args, **kwargs):
+        if not self.expense_result_id:
+            # Get the maximum existing ID and increment it
+            max_expense_results_id = ExpensesResults.objects.aggregate(max_expense_results_id=Max("expense_result_id"))["max_expense_results_id"]
+            if max_expense_results_id:
+                numeric_part = int(max_expense_results_id[1:]) + 1  # Extract numeric part after 'B'
+            else:
+                numeric_part = 1  # Start with 1 if no records exist
+            self.expense_result_id = f'B{numeric_part:09d}'  # Format as 'B000000001'
+        
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.expense_result_id

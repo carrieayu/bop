@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import CostOfSales, Expenses, MasterBusinessDivision, MasterClient, MasterCompany, Projects, Results, Employees as Employees, EmployeeExpenses
+from .models import CostOfSales, Expenses, ExpensesResults, MasterBusinessDivision, MasterClient, MasterCompany, Projects, Results, Employees as Employees, EmployeeExpenses
 
 
 # Employees
@@ -293,6 +293,61 @@ class ExpensesUpdateSerializer(serializers.ModelSerializer):
             'professional_service_fee',
             'updated_at',
         ]
+
+# Expenses
+class ExpensesResultsListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ExpensesResults
+        fields = '__all__'
+
+class ExpensesResultsCreateSerializer(serializers.ModelSerializer):
+
+    expense_result_id = serializers.CharField(required=False)
+    class Meta:
+        model = ExpensesResults
+        fields = [
+            'expense_result_id',
+            'year',
+            'month',
+            'tax_and_public_charge',
+            'communication_expense',
+            'advertising_expense',
+            'consumable_expense',
+            'depreciation_expense',
+            'utilities_expense',
+            'entertainment_expense',
+            'rent_expense',
+            'travel_expense',
+            'transaction_fee',
+            'professional_service_fee',
+            'created_at',
+            'updated_at',
+        ]
+
+class ExpensesUpdateSerializer(serializers.ModelSerializer):
+
+    expense_result_id = serializers.CharField(required=False)
+    class Meta:
+        model = ExpensesResults
+        fields = [
+            'expense_result_id',
+            'year',
+            'month',
+            'tax_and_public_charge',
+            'communication_expense',
+            'advertising_expense',
+            'consumable_expense',
+            'depreciation_expense',
+            'utilities_expense',
+            'entertainment_expense',
+            'rent_expense',
+            'travel_expense',
+            'transaction_fee',
+            'professional_service_fee',
+            'updated_at',
+        ]
+
 
 # Users
 

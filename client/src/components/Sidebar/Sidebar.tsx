@@ -62,9 +62,7 @@ const Sidebar = () => {
                 <span className='icons'>
                   <FaTableList />
                 </span>
-                <NavLink to='/projects-list'>
-                  {translate('projectsList', language)}
-                </NavLink>
+                <NavLink to='/projects-list'>{translate('projectsList', language)}</NavLink>
               </li>
               <li className='sub_menu'>
                 <span className='icons'>
@@ -82,7 +80,9 @@ const Sidebar = () => {
                 <span className='icons'>
                   <BsPersonFillAdd />
                 </span>
-                <NavLink to='/employee-expenses-registration'>{translate('employeeExpensesRegistration', language)}</NavLink>
+                <NavLink to='/employee-expenses-registration'>
+                  {translate('employeeExpensesRegistration', language)}
+                </NavLink>
               </li>
               <li className='sub_menu'>
                 <span className='icons'>
@@ -95,6 +95,18 @@ const Sidebar = () => {
                   <AiFillFileAdd />
                 </span>
                 <NavLink to='/expenses-registration'>{translate('expensesRegistration', language)}</NavLink>
+              </li>
+              <li className='sub_menu'>
+                <span className='icons'>
+                  <FaTableList />
+                </span>
+                <NavLink to='/expenses-results-list'>{translate('expensesResultsList', language)}</NavLink>
+              </li>
+              <li className='sub_menu'>
+                <span className='icons'>
+                  <AiFillFileAdd />
+                </span>
+                <NavLink to='/expenses-results-registration'>{translate('expensesResultsRegistration', language)}</NavLink>
               </li>
               <li className='sub_menu'>
                 <span className='icons'>

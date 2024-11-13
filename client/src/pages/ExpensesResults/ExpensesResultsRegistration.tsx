@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import Btn from '../../components/Button/Button'
-import axios from 'axios'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../contexts/LanguageContext'
@@ -9,23 +7,20 @@ import RegistrationButtons from '../../components/RegistrationButtons/Registrati
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import CrudModal from '../../components/CrudModal/CrudModal'
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
-import { createExpense } from '../../api/ExpenseEndpoint/CreateExpense'
-import { overwriteExpense } from '../../api/ExpenseEndpoint/OverwriteExpense'
+import { createExpenseResults } from '../../api/ExpenseResultEndpoint/CreateExpenseResult'
+import { overwriteExpenseResults } from '../../api/ExpenseResultEndpoint/OverwriteExpenseResult'
 
-const months = [
-  '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
-];
+const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 
-const ExpensesRegistration = () => {
+const ExpensesResultsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('expenses')
+  const [activeTabOther, setActiveTabOther] = useState('expensesResults')
   const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
   const token = localStorage.getItem('accessToken')
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [formData, setFormData] = useState([
     {
@@ -47,14 +42,14 @@ const ExpensesRegistration = () => {
     },
   ])
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
-  const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false); 
-  const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
+  const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
+  const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
 
   const handleTranslationSwitchToggle = () => {
-     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
-     setLanguage(newLanguage)
+    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
+    setLanguage(newLanguage)
   }
 
   const handleChange = (index, event) => {
@@ -85,7 +80,7 @@ const ExpensesRegistration = () => {
         transaction_fee: '',
         professional_service_fee: '',
         registered_user_id: storedUserID,
-        updated_at:'',
+        updated_at: '',
       })
       setFormData(newFormData)
       console.log('add:' + formData)
@@ -107,11 +102,10 @@ const ExpensesRegistration = () => {
     }
   }, [location.pathname])
 
-
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
-     const expensesData = formData.map((ex) => ({
+    const expensesData = formData.map((ex) => ({
       year: ex.year,
       month: ex.month,
       consumable_expense: ex.consumable_expense,
@@ -143,11 +137,11 @@ const ExpensesRegistration = () => {
         !entry.transaction_fee,
     )
 
-     if (areFieldsEmpty) {
-        setModalMessage(translate('allFieldsRequiredInputValidationMessage', language));
-        setIsModalOpen(true);
-       return
-     }
+    if (areFieldsEmpty) {
+      setModalMessage(translate('allFieldsRequiredInputValidationMessage', language))
+      setIsModalOpen(true)
+      return
+    }
 
     // Combine year and month for easier duplicate checking
     const expenses = formData.map((expense) => ({
@@ -156,24 +150,24 @@ const ExpensesRegistration = () => {
       //combines them so duplicate inputs can be checked
       yearMonth: `${expense.year}-${expense.month}`,
     }))
-    
+
     // Check for duplicates in the [inputs] submitted cost of sales (year and month combination)
     const hasDuplicateEntries = (entries, key) => {
       return entries.some((entry, index) => entries.findIndex((e) => e[key] === entry[key]) !== index)
     }
 
     if (hasDuplicateEntries(expenses, 'yearMonth')) {
-      setModalMessage(translate('duplicateYearAndMonthInputValidationMessage', language));
-      setIsModalOpen(true);
+      setModalMessage(translate('duplicateYearAndMonthInputValidationMessage', language))
+      setIsModalOpen(true)
       return
     }
 
     if (!token) {
-      window.location.href = '/login';
-      return;
+      window.location.href = '/login'
+      return
     }
 
-    createExpense(formData, token)
+    createExpenseResults(formData, token)
       .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
@@ -228,20 +222,19 @@ const ExpensesRegistration = () => {
           console.error('There was an error with expenses registration!', error)
         }
       })
-  };
+  }
 
   // Handle overwrite confirmation
   const handleOverwriteConfirmation = async () => {
-    setIsOverwriteModalOpen(false); // Close the overwrite modal
-    setIsOverwriteConfirmed(true); // Set overwrite confirmed state
+    setIsOverwriteModalOpen(false) // Close the overwrite modal
+    setIsOverwriteConfirmed(true) // Set overwrite confirmed state
 
     // Call the submission method again after confirmation
-    await handleSubmitConfirmed();
-  };
+    await handleSubmitConfirmed()
+  }
 
   const handleSubmitConfirmed = async () => {
-
-    overwriteExpense(formData, token)
+    overwriteExpenseResults(formData, token)
       .then(() => {
         setModalMessage(translate('overWrite', language))
         setIsModalOpen(true)
@@ -271,8 +264,7 @@ const ExpensesRegistration = () => {
       .finally(() => {
         setIsOverwriteConfirmed(false)
       })
-
-  };
+  }
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -301,75 +293,72 @@ const ExpensesRegistration = () => {
     }
   }
 
-   const handleCancel = () => {
-     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-     openModal()
-   }
+  const handleCancel = () => {
+    //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
+    openModal()
+  }
 
-   const handleRemoveInputData = () => {
-     setFormData([
-       {
-         year: '',
-         month: '',
-         tax_and_public_charge: '',
-         communication_expense: '',
-         advertising_expense: '',
-         consumable_expense: '',
-         depreciation_expense: '',
-         utilities_expense: '',
-         entertainment_expense: '',
-         rent_expense: '',
-         travel_expense: '',
-         transaction_fee: '',
-         professional_service_fee: '',
-         registered_user_id: '',
-         updated_at: ''
-       },
-     ])
-     closeModal()
-   }
+  const handleRemoveInputData = () => {
+    setFormData([
+      {
+        year: '',
+        month: '',
+        tax_and_public_charge: '',
+        communication_expense: '',
+        advertising_expense: '',
+        consumable_expense: '',
+        depreciation_expense: '',
+        utilities_expense: '',
+        entertainment_expense: '',
+        rent_expense: '',
+        travel_expense: '',
+        transaction_fee: '',
+        professional_service_fee: '',
+        registered_user_id: '',
+        updated_at: '',
+      },
+    ])
+    closeModal()
+  }
 
-   const openModal = () => {
-     setModalIsOpen(true)
-   }
+  const openModal = () => {
+    setModalIsOpen(true)
+  }
 
-   const closeModal = () => {
-     setModalIsOpen(false)
-   }
-  
-  useEffect(() => {
-  }, [formData])
+  const closeModal = () => {
+    setModalIsOpen(false)
+  }
 
+  useEffect(() => {}, [formData])
 
   useEffect(() => {
-    setIsTranslateSwitchActive(language === 'en');
-  }, [language]);
-
+    setIsTranslateSwitchActive(language === 'en')
+  }, [language])
 
   const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: "January", jp: "1月" },
-    2: { en: "February", jp: "2月" },
-    3: { en: "March", jp: "3月" },
-    4: { en: "April", jp: "4月" },
-    5: { en: "May", jp: "5月" },
-    6: { en: "June", jp: "6月" },
-    7: { en: "July", jp: "7月" },
-    8: { en: "August", jp: "8月" },
-    9: { en: "September", jp: "9月" },
-    10: { en: "October", jp: "10月" },
-    11: { en: "November", jp: "11月" },
-    12: { en: "December", jp: "12月" },
-  };
+    1: { en: 'January', jp: '1月' },
+    2: { en: 'February', jp: '2月' },
+    3: { en: 'March', jp: '3月' },
+    4: { en: 'April', jp: '4月' },
+    5: { en: 'May', jp: '5月' },
+    6: { en: 'June', jp: '6月' },
+    7: { en: 'July', jp: '7月' },
+    8: { en: 'August', jp: '8月' },
+    9: { en: 'September', jp: '9月' },
+    10: { en: 'October', jp: '10月' },
+    11: { en: 'November', jp: '11月' },
+    12: { en: 'December', jp: '12月' },
+  }
 
   // Creates an Array of years for dropdown input. 5 years before AND after current year.
-  const currentYear = new Date().getFullYear();
-  const startYear = currentYear - 1;
-  const endYear = currentYear + 2;
-  const years = Array.from({length:endYear - startYear + 1},(val,index)=> (startYear + index))
+  const currentYear = new Date().getFullYear()
+  const startYear = currentYear - 1
+  const endYear = currentYear + 2
+  const years = Array.from({ length: endYear - startYear + 1 }, (val, index) => startYear + index)
 
-  const handleListClick = () => { 
-    navigate('/expenses-list');
-  };
+  const handleListClick = () => {
+    navigate('/expenses-results-list')
+  }
 
   return (
     <div className='expensesRegistration_wrapper'>
@@ -627,4 +616,4 @@ const ExpensesRegistration = () => {
   )
 }
 
-export default ExpensesRegistration
+export default ExpensesResultsRegistration

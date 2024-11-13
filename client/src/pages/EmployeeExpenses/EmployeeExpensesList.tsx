@@ -59,19 +59,22 @@ const EmployeeExpensesList: React.FC = () => {
         setActiveTabOther(tab)
         switch (tab) {
           case 'project':
-            navigate('/projects-list');
-            break;
+            navigate('/projects-list')
+            break
           case 'employeeExpenses':
-            navigate('/employee-expenses-list');
-            break;
+            navigate('/employee-expenses-list')
+            break
           case 'expenses':
-            navigate('/expenses-list');
-            break;
+            navigate('/expenses-list')
+            break
+          case 'expensesResults':
+            navigate('/expenses-results-list')
+            break
           case 'costOfSales':
-            navigate('/cost-of-sales-list');
-            break;
+            navigate('/cost-of-sales-list')
+            break
           default:
-            break;
+            break
         }
       }
     
@@ -236,6 +239,7 @@ const EmployeeExpensesList: React.FC = () => {
                     { labelKey: 'project', tabKey: 'project' },
                     { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
                     { labelKey: 'expenses', tabKey: 'expenses' },
+                    { labelKey: 'expensesResults', tabKey: 'expensesResults' },
                     { labelKey: 'costOfSales', tabKey: 'costOfSales' },
                   ]}
                 />

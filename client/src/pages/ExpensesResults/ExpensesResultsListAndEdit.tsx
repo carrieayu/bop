@@ -10,19 +10,17 @@ import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { RiDeleteBin6Fill } from 'react-icons/ri'
 import CrudModal from '../../components/CrudModal/CrudModal'
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss'
-
-import { deleteExpense } from '../../api/ExpenseEndpoint/DeleteExpense'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
-import { updateExpense } from '../../api/ExpenseEndpoint/UpdateExpense'
+import { getExpenseResults } from '../../api/ExpenseResultEndpoint/GetExpenseResult'
+import { updateExpenseResults } from '../../api/ExpenseResultEndpoint/UpdateExpenseResult'
 import { deleteExpenseResults } from '../../api/ExpenseResultEndpoint/DeleteExpenseResult'
 
-const ExpensesList: React.FC = () => {
+const ExpensesResultsList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('expenses')
+  const [activeTabOther, setActiveTabOther] = useState('expensesResults')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   // added -ed
@@ -31,8 +29,8 @@ const ExpensesList: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [deleteExpenseId, setDeleteExpenseId] = useState([])
   const [selectedExpense, setSelectedExpense] = useState<any>(null)
-  const [expensesList, setExpensesList] = useState([])
-  const [originalExpenseList, setOriginalExpensesList] = useState(expensesList)
+  const [expensesResultsList, setExpensesResultsList] = useState([])
+  const [originalExpenseResultsList, setOriginalExpensesResultsList] = useState(expensesResultsList)
   const token = localStorage.getItem('accessToken')
   const [changes, setChanges] = useState({}) //ians code maybe i do not need.
 
@@ -117,7 +115,7 @@ const ExpensesList: React.FC = () => {
       ...updatedData[index],
       [name]: value,
     }
-    setExpensesList(updatedData)
+    setExpensesResultsList(updatedData)
   }
 
   const handleSubmit = async () => {
@@ -125,14 +123,14 @@ const ExpensesList: React.FC = () => {
       const modifiedFields = []
 
       updated.forEach((updatedExpense) => {
-        const originalExpense = original.find((exp) => exp.expense_id === updatedExpense.expense_id)
+        const originalExpense = original.find((exp) => exp.expense_result_id === updatedExpense.expense_result_id)
 
         if (originalExpense) {
-          const changes = { expense_id: updatedExpense.expense_id }
+          const changes = { expense_result_id: updatedExpense.expense_result_id }
 
           let hasChanges = false
           for (const key in updatedExpense) {
-            if (key === 'expense_id' || key === 'month') continue
+            if (key === 'expense_result_id' || key === 'month') continue
             if (updatedExpense[key] !== originalExpense[key] && updatedExpense[key] !== '') {
               changes[key] = updatedExpense[key]
               hasChanges = true
@@ -147,14 +145,14 @@ const ExpensesList: React.FC = () => {
       return modifiedFields
     }
 
-    const modifiedFields = getModifiedFields(originalExpenseList, validData)
+    const modifiedFields = getModifiedFields(originalExpenseResultsList, validData)
     if (modifiedFields.length === 0) {
       return
     }
     // Checks if any fields are empty for entries that have a expense_id
-    const areFieldsEmpty = expensesList.some((entry) => {
+    const areFieldsEmpty = expensesResultsList.some((entry) => {
       // Only check entries that have a valid expense_id
-      if (entry.expense_id) {
+      if (entry.expense_result_id) {
         return (
           !entry.consumable_expense ||
           !entry.rent_expense ||
@@ -183,16 +181,16 @@ const ExpensesList: React.FC = () => {
       window.location.href = '/login'
       return
     }
-
-    updateExpense(modifiedFields, token)
+    console.log(modifiedFields)
+    updateExpenseResults(modifiedFields, token)
       .then(() => {
-        setOriginalExpensesList(expensesList)
+        setOriginalExpensesResultsList(expensesResultsList)
         setCrudMessage(translate('successfullyUpdated', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
-        getExpense(token)
+        getExpenseResults(token)
           .then((data) => {
-            setExpensesList(data)
+            setExpensesResultsList(data)
           })
           .catch((error) => {
             console.error('Error fetching expense:', error)
@@ -223,18 +221,20 @@ const ExpensesList: React.FC = () => {
       window.location.href = '/login' // Redirect to login if no token found
       return
     }
-        getExpense(token)
-          .then((data) => {
-            setExpensesList(data)
-            setOriginalExpensesList(data)
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('There was an error fetching the expenses!', error)
-          }
-        })
+
+    getExpenseResults(token)
+      .then((data) => {
+        console.log(data)
+        setExpensesResultsList(data)
+        setOriginalExpensesResultsList(data)
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login' // Redirect to login if unauthorized
+        } else {
+          console.error('There was an error fetching the expenses!', error)
+        }
+      })
   }
 
   useEffect(() => {
@@ -249,15 +249,15 @@ const ExpensesList: React.FC = () => {
   }, [location.pathname])
 
   // Extract unique years from the expenses data
-  const uniqueYears = Array.from(new Set(expensesList.map((item) => item.year))).sort((a, b) => a - b)
+  const uniqueYears = Array.from(new Set(expensesResultsList.map((item) => item.year))).sort((a, b) => a - b)
 
   // Combine static months with dynamic data
   const combinedData = uniqueYears.flatMap((year) => {
     return months.map((month) => {
-      const foundData = expensesList.find((item) => parseInt(item.month, 10) === month && item.year === year)
+      const foundData = expensesResultsList.find((item) => parseInt(item.month, 10) === month && item.year === year)
 
       return {
-        expense_id: foundData ? foundData.expense_id : null,
+        expense_result_id: foundData ? foundData.expense_result_id : null,
         month,
         year,
         consumable_expense: foundData ? foundData.consumable_expense : '',
@@ -275,7 +275,7 @@ const ExpensesList: React.FC = () => {
     })
   })
 
-  const validData = combinedData.filter((data) => data.expense_id !== null)
+  const validData = combinedData.filter((data) => data.expense_result_id !== null)
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
@@ -302,14 +302,15 @@ const ExpensesList: React.FC = () => {
   }
 
   const handleConfirm = async () => {
+    console.log(deleteExpenseId)
     deleteExpenseResults(deleteExpenseId, token)
       .then(() => {
         setCrudMessage(translate('successfullyDeleted', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
-        getExpense(token)
+        getExpenseResults(token)
           .then((data) => {
-            setExpensesList(data)
+            setExpensesResultsList(data)
           })
           .catch((error) => {
             console.error('Error fetching expense:', error)
@@ -325,7 +326,7 @@ const ExpensesList: React.FC = () => {
   }
 
   const handleNewRegistrationClick = () => {
-    navigate('/expenses-registration')
+    navigate('/expenses-results-registration')
   }
 
   return (
@@ -421,28 +422,28 @@ const ExpensesList: React.FC = () => {
                           </tr>
                         </thead>
                         <tbody className='expensesList_table_body'>
-                          {combinedData.map((expense, index) => {
-                            const isNewYear = index === 0 || combinedData[index - 1].year !== expense.year
+                          {combinedData.map((expenseResults, index) => {
+                            const isNewYear = index === 0 || combinedData[index - 1].year !== expenseResults.year
                             const isLastExpenseOfYear =
-                              index !== combinedData.length - 1 && combinedData[index + 1].year !== expense.year
+                              index !== combinedData.length - 1 && combinedData[index + 1].year !== expenseResults.year
 
-                            const isEditable = expense.expense_id !== null
+                            const isEditable = expenseResults.expense_result_id !== null
 
                             return (
                               <React.Fragment key={index}>
-                                {expense ? (
+                                {expenseResults ? (
                                   <tr key={index} className='expensesList_table_body_content_horizontal'>
                                     <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                      {expense.year}
+                                      {expenseResults.year}
                                     </td>
                                     <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                      {expense.month}
+                                      {expenseResults.month}
                                     </td>
                                     <td className='expensesList_table_body_content_vertical has-text-centered'>
                                       <input
                                         type='number'
                                         name='consumable_expense'
-                                        value={expense.consumable_expense}
+                                        value={expenseResults.consumable_expense}
                                         onChange={(e) => handleChange(index, e)}
                                         disabled={!isEditable}
                                       />
@@ -451,7 +452,7 @@ const ExpensesList: React.FC = () => {
                                       <input
                                         type='number'
                                         name='rent_expense'
-                                        value={expense.rent_expense}
+                                        value={expenseResults.rent_expense}
                                         onChange={(e) => handleChange(index, e)}
                                         disabled={!isEditable}
                                       />
@@ -460,7 +461,7 @@ const ExpensesList: React.FC = () => {
                                       <input
                                         type='number'
                                         name='tax_and_public_charge'
-                                        value={expense.tax_and_public_charge}
+                                        value={expenseResults.tax_and_public_charge}
                                         onChange={(e) => handleChange(index, e)}
                                         disabled={!isEditable}
                                       />
@@ -469,7 +470,7 @@ const ExpensesList: React.FC = () => {
                                       <input
                                         type='number'
                                         name='depreciation_expense'
-                                        value={expense.depreciation_expense}
+                                        value={expenseResults.depreciation_expense}
                                         onChange={(e) => handleChange(index, e)}
                                         disabled={!isEditable}
                                       />
@@ -478,7 +479,7 @@ const ExpensesList: React.FC = () => {
                                       <input
                                         type='number'
                                         name='travel_expense'
-                                        value={expense.travel_expense}
+                                        value={expenseResults.travel_expense}
                                         onChange={(e) => handleChange(index, e)}
                                         disabled={!isEditable}
                                       />
@@ -487,7 +488,7 @@ const ExpensesList: React.FC = () => {
                                       <input
                                         type='number'
                                         name='communication_expense'
-                                        value={expense.communication_expense}
+                                        value={expenseResults.communication_expense}
                                         onChange={(e) => handleChange(index, e)}
                                         disabled={!isEditable}
                                       />
@@ -497,7 +498,7 @@ const ExpensesList: React.FC = () => {
                                       <input
                                         type='number'
                                         name='utilities_expense'
-                                        value={expense.utilities_expense}
+                                        value={expenseResults.utilities_expense}
                                         onChange={(e) => handleChange(index, e)}
                                         disabled={!isEditable}
                                       />
@@ -506,7 +507,7 @@ const ExpensesList: React.FC = () => {
                                       <input
                                         type='number'
                                         name='transaction_fee'
-                                        value={expense.transaction_fee}
+                                        value={expenseResults.transaction_fee}
                                         onChange={(e) => handleChange(index, e)}
                                         disabled={!isEditable}
                                       />
@@ -515,7 +516,7 @@ const ExpensesList: React.FC = () => {
                                       <input
                                         type='number'
                                         name='advertising_expense'
-                                        value={expense.advertising_expense}
+                                        value={expenseResults.advertising_expense}
                                         onChange={(e) => handleChange(index, e)}
                                         disabled={!isEditable}
                                       />
@@ -524,7 +525,7 @@ const ExpensesList: React.FC = () => {
                                       <input
                                         type='number'
                                         name='entertainment_expense'
-                                        value={expense.entertainment_expense}
+                                        value={expenseResults.entertainment_expense}
                                         onChange={(e) => handleChange(index, e)}
                                         disabled={!isEditable}
                                       />
@@ -533,7 +534,7 @@ const ExpensesList: React.FC = () => {
                                       <input
                                         type='number'
                                         name='professional_service_fee'
-                                        value={expense.professional_service_fee}
+                                        value={expenseResults.professional_service_fee}
                                         onChange={(e) => handleChange(index, e)}
                                         disabled={!isEditable}
                                       />
@@ -541,7 +542,7 @@ const ExpensesList: React.FC = () => {
                                     <td className='expensesList_table_body_content_vertical delete_icon'>
                                       <RiDeleteBin6Fill
                                         className='delete-icon'
-                                        onClick={() => openModal('expenses', expense.expense_id)}
+                                        onClick={() => openModal('expenses', expenseResults.expense_result_id)}
                                         style={{ color: 'red' }}
                                       />
                                     </td>
@@ -572,52 +573,52 @@ const ExpensesList: React.FC = () => {
                         </tr>
                       </thead>
                       <tbody className='expensesList_table_body'>
-                        {combinedData.map((expense, index) => {
-                          const isNewYear = index === 0 || combinedData[index - 1].year !== expense.year
+                        {combinedData.map((expenseResults, index) => {
+                          const isNewYear = index === 0 || combinedData[index - 1].year !== expenseResults.year
                           const isLastExpenseOfYear =
-                            index !== combinedData.length - 1 && combinedData[index + 1].year !== expense.year
+                            index !== combinedData.length - 1 && combinedData[index + 1].year !== expenseResults.year
 
                           return (
                             <React.Fragment key={index}>
                               <tr className='expensesList_table_body_content_horizontal'>
                                 <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                  {expense.year}
+                                  {expenseResults.year}
                                 </td>
                                 <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                  {expense.month}
+                                  {expenseResults.month}
                                 </td>
                                 <td className='expensesList_table_body_content_vertical'>
-                                  {expense.consumable_expense || 0}
+                                  {expenseResults.consumable_expense || 0}
                                 </td>
                                 <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                  {expense.rent_expense || 0}
+                                  {expenseResults.rent_expense || 0}
                                 </td>
                                 <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.tax_and_public_charge || 0}
+                                  {expenseResults.tax_and_public_charge || 0}
                                 </td>
                                 <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.depreciation_expense || 0}
+                                  {expenseResults.depreciation_expense || 0}
                                 </td>
                                 <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.travel_expense || 0}
+                                  {expenseResults.travel_expense || 0}
                                 </td>
                                 <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.communication_expense || 0}
+                                  {expenseResults.communication_expense || 0}
                                 </td>
                                 <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.utilities_expense || 0}
+                                  {expenseResults.utilities_expense || 0}
                                 </td>
                                 <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.transaction_fee || 0}
+                                  {expenseResults.transaction_fee || 0}
                                 </td>
                                 <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.advertising_expense || 0}
+                                  {expenseResults.advertising_expense || 0}
                                 </td>
                                 <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.entertainment_expense || 0}
+                                  {expenseResults.entertainment_expense || 0}
                                 </td>
                                 <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.professional_service_fee || 0}
+                                  {expenseResults.professional_service_fee || 0}
                                 </td>
                               </tr>
                               {isLastExpenseOfYear && (
@@ -678,4 +679,4 @@ const ExpensesList: React.FC = () => {
   )
 }
 
-export default ExpensesList
+export default ExpensesResultsList
