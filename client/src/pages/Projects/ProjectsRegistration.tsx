@@ -208,39 +208,13 @@ const ProjectsRegistration = () => {
   const fieldChecks = getFieldChecks(recordType)
 
 
-  const validateProjects = (projectsValidate) => {
-    console.log(projectsValidate, 'projects val')
+  const validateProjects = (records) => {
     // Call the helper function for validation
-    const validationErrors = validateRecords(projectsValidate, fieldChecks, 'project')
+    const validationErrors = validateRecords(records, fieldChecks, 'project')
 
     return validationErrors
   }
   
-  // const validateProjects = (projectsValidate) => {
-  //   let validationErrors = []
-
-  //   for (const [index, prj] of projectsValidate.entries()) {
-  //     for (const check of fieldChecks) {
-  //       // Get Relevant information for Error Message and Push to Error Array
-  //       const errorMessage = validateField(
-  //         prj[check.field],
-  //         check.fieldName,
-  //         check.isNumber,
-  //         index + 1, // Gives a Temporary ID for projects to display in error messages in modal
-  //         'Project',
-  //       )
-
-  //       if (errorMessage) {
-  //         validationErrors.push(errorMessage)
-  //       }
-  //     }
-  //   }
-  //   console.log('validationErrors',validationErrors)
-  //   // Array of errors OR no errors (this in handleSubmit below: validationErrors)
-  //   return validationErrors
-  // }
-
-
   const handleSubmit = async (e) => {
     e.preventDefault()
 

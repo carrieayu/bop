@@ -7,7 +7,7 @@ export const getFieldChecks = (recordType) => {
   switch (recordType) {
     case 'projects':
       return [
-        { field: 'project_id', fieldName: 'projectId', isNumber: true, duplicateCheck: true },
+        // { field: 'project_id', fieldName: 'projectId', isNumber: true, duplicateCheck: true },
         { field: 'year', fieldName: 'year', isNumber: true, duplicateCheck: true },
         { field: 'month', fieldName: 'month', isNumber: true, duplicateCheck: true },
         { field: 'project_name', fieldName: 'projectName', isNumber: false, duplicateCheck: true },
@@ -80,20 +80,22 @@ export const validateField = (
   recordId,
   recordType,
 ) => {
-  const maxDecimal = 9999999999.99;
-  const maxInteger = 2147483647;
+  const maxDecimal = 9999999999.99
+  const maxInteger = 2147483647
 
+  // NUMBER LESS THAN 0 
   if (isNumber && value < 0) {
     return {
       fieldName: fieldName,
       errorMessage: 'cannotBeLessThanZero',
       recordId: recordId,
       recordType: recordType,
-    };
+    }
     // EXAMPLE MESSAGE
     // Project 6000000001: 売上高は 0未満にはできません。
   }
 
+  // NUMBER TO LARGE
   if (isNumber && Number.isInteger(value) && value > maxInteger) {
     return {
       fieldName: fieldName,
@@ -105,6 +107,7 @@ export const validateField = (
     // Project 6000000001: 派遣人件費は 値が大きすぎます。
   }
 
+  // NUMBER TO LARGE
   if (isNumber && !Number.isInteger(value) && value > maxDecimal) {
     return {
       fieldName: fieldName,
@@ -116,7 +119,9 @@ export const validateField = (
     // Project 6000000001: 派遣人件費は 値が大きすぎます。
   }
 
+  // EMPTY INPUT
   if (typeof value === 'string' && value.trim() === '') {
+    console.log('test id',recordId)
     return {
       fieldName: fieldName,
       errorMessage: 'inputCannotBeEmpty',
@@ -127,7 +132,7 @@ export const validateField = (
     // Project 6000000002: 売上高は 必須項目です。
   }
 
-  return ''; // No error
+  return '' // No error
 };
 
 export const checkForDuplicates = (records, uniqueFields, recordType, language) => {

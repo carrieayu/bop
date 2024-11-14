@@ -12,7 +12,12 @@ import { RiDeleteBin6Fill } from 'react-icons/ri'
 import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss'
-import { validateField, translateAndFormatErrors, getFieldChecks } from '../../utils/validationUtil'
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
 
 import { deleteExpense } from '../../api/ExpenseEndpoint/DeleteExpense'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
@@ -125,30 +130,23 @@ const ExpensesList: React.FC = () => {
   // Get the field checks based on the record type from validationUtil HELPER
   const fieldChecks = getFieldChecks(recordType)
 
-  const validateExpenses = (expensesValidate) => {
-    let validationErrors = []
+  const validateExpenses = (records) => {
+    // Call the helper function for validation
+    const validationErrors = validateRecords(records, fieldChecks, 'expense')
 
-    for (const exp of expensesValidate) {
-      for (const check of fieldChecks) {
-        // Get Relevant information for Error Message and Push to Error Array
-        const errorMessage = validateField(exp[check.field], check.fieldName, check.isNumber, exp.expense_id, 'Expense')
-
-        if (errorMessage) {
-          validationErrors.push(errorMessage)
-        }
-      }
-    }
-    // Array of errors OR no errors (this in handleSubmit below: validationErrors)
     return validationErrors
   }
 
   const handleSubmit = async () => {
     // CLIENT SIDE VALIDATION CHECK.  ( Calls Helper Function in validationUtil )
-
     // As Expenses has default 12 Records even if not all records have actually been created in DB: Need to filter out non-registered records.
     const expensesListExistingRecords = expensesList.filter((exp) => exp.expense_id !== null)
 
     const validationErrors = validateExpenses(expensesListExistingRecords) // Get the array of error messages
+
+    // NEXT STEP: CHECK IF ANY DUPLICATES EXIST
+    const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client'] // Fields to check for duplicates
+    const duplicateErrors = checkForDuplicates(expensesListExistingRecords, uniqueFields, 'project', language)
 
     if (validationErrors.length > 0) {
       // Build the Error Messagse for the modal by translating an d formatting each error. ( Calls Helper Function in validationUtil )
@@ -160,6 +158,20 @@ const ExpensesList: React.FC = () => {
       // Set Error Messages for Modal
       setCrudMessage(translatedAndFormattedValidationErrors)
       setCrudValidationErrors(translatedAndFormattedValidationErrors)
+      setIsCRUDOpen(true)
+      return
+    }
+
+    if (duplicateErrors.length > 0) {
+      // Build the Error Messagse for the modal by translating an d formatting each error. ( Calls Helper Function in validationUtil )
+      const translatedAndFormattedDuplicationErrors = translateAndFormatErrors(
+        duplicateErrors,
+        language,
+        'duplicateValidation',
+      )
+      // Set Error Messages for Modal
+      setCrudMessage(translatedAndFormattedDuplicationErrors)
+      setCrudValidationErrors(translatedAndFormattedDuplicationErrors)
       setIsCRUDOpen(true)
       return
     }

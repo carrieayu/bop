@@ -143,10 +143,9 @@ const ProjectsListAndEdit: React.FC = () => {
   // Get the field checks based on the record type from validationUtil HELPER
   const fieldChecks = getFieldChecks(recordType)
 
-  const validateProjects = (projectsValidate) => {
-    console.log(projectsValidate, 'projects val')
+  const validateProjects = (records) => {
     // Call the helper function for validation
-    const validationErrors = validateRecords(projectsValidate, fieldChecks, 'project')
+    const validationErrors = validateRecords(records, fieldChecks, 'project')
 
     return validationErrors
   }
