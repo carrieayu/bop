@@ -1,11 +1,11 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import PasswordForgotView
+from api.views import ExpensesCreate, ExpensesDelete, ExpensesList,ExpensesUpdate, PasswordForgotView
+from api.views import ExpensesResultsCreate, ExpensesResultsDelete, ExpensesResultsList, ExpensesResultsUpdate
 from api.views import PlanningList, PlanningUpdate, PlanningDisplayByProjects
 from api.views import MasterCompaniesList, MasterCompaniesCreate, MasterCompaniesUpdate, MasterCompaniesDelete
 from api.views import ProjectsList,  ProjectsCreate, ProjectsUpdate, ProjectsDelete 
 from api.views import EmployeeExpensesList, EmployeeExpensesCreate, EmployeeExpensesDelete #No Update Function on this Page.
-from api.views import ExpensesList, ExpensesCreate, ExpensesUpdate, ExpensesDelete
 from api.views import CostOfSalesList, CostOfSalesCreate, CostOfSalesUpdate, CostOfSalesDelete
 from api.views import EmployeesList, EmployeesCreate, EmployeesUpdate, EmployeesDelete, EmployeesEdit #Edit Mode Has Api call to filter EmployeeBusinessDivision
 from api.views import UsersList, UsersCreate, UsersUpdate, UsersDelete
@@ -60,6 +60,12 @@ urlpatterns = [
     path('api/expenses/create/', ExpensesCreate.as_view(), name = 'expenses-create'),
     path('api/expenses/update/', ExpensesUpdate.as_view(), name = 'expenses-update'),
     path('api/expenses/<str:pk>/delete/', ExpensesDelete.as_view(), name='expenses-delete'),
+
+    # Expenses Results
+    path('api/expenses-results/list/', ExpensesResultsList.as_view(), name = 'expenses-results-list'),
+    path('api/expenses-results/create/', ExpensesResultsCreate.as_view(), name = 'expenses-results-create'),
+    path('api/expenses-results/update/', ExpensesResultsUpdate.as_view(), name = 'expenses-results-update'),
+    path('api/expenses-results/<str:pk>/delete/', ExpensesResultsDelete.as_view(), name='expenses-results-delete'),
 
     # Cost of Sales
     path('api/cost-of-sales/list/', CostOfSalesList.as_view(), name='cost-of-sales-list'),

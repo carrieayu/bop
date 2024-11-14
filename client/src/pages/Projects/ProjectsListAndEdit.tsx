@@ -104,7 +104,7 @@ const ProjectsListAndEdit: React.FC = () => {
   }
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page)
+    setCurrentPage(page);
   }
 
   const handleRowsPerPageChange = (numRows: number) => {

@@ -18,6 +18,9 @@ const Sidebar = () => {
   const [isGroup2Visible, setIsGroup2Visible] = useState(
     () => JSON.parse(localStorage.getItem('isGroup2Visible') || 'false')
   );
+  const [isGroup3Visible, setIsGroup3Visible] = useState(() =>
+    JSON.parse(localStorage.getItem('isGroup3Visible') || 'false'),
+  )
 
   useEffect(() => {
     localStorage.setItem('isGroup1Visible', JSON.stringify(isGroup1Visible));
@@ -26,6 +29,10 @@ const Sidebar = () => {
   useEffect(() => {
     localStorage.setItem('isGroup2Visible', JSON.stringify(isGroup2Visible));
   }, [isGroup2Visible]);
+
+  useEffect(() => {
+    localStorage.setItem('isGroup3Visible', JSON.stringify(isGroup3Visible))
+  }, [isGroup3Visible])
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en');
@@ -38,6 +45,10 @@ const Sidebar = () => {
   const toggleGroup2Visibility = () => {
     setIsGroup2Visible(!isGroup2Visible);
   };
+
+  const toggleGroup3Visibility = () => {
+    setIsGroup3Visible(!isGroup3Visible)
+  }
 
   return (
     <div className='sidebar'>
@@ -62,9 +73,7 @@ const Sidebar = () => {
                 <span className='icons'>
                   <FaTableList />
                 </span>
-                <NavLink to='/projects-list'>
-                  {translate('projectsList', language)}
-                </NavLink>
+                <NavLink to='/projects-list'>{translate('projectsList', language)}</NavLink>
               </li>
               <li className='sub_menu'>
                 <span className='icons'>
@@ -82,7 +91,9 @@ const Sidebar = () => {
                 <span className='icons'>
                   <BsPersonFillAdd />
                 </span>
-                <NavLink to='/employee-expenses-registration'>{translate('employeeExpensesRegistration', language)}</NavLink>
+                <NavLink to='/employee-expenses-registration'>
+                  {translate('employeeExpensesRegistration', language)}
+                </NavLink>
               </li>
               <li className='sub_menu'>
                 <span className='icons'>
@@ -110,20 +121,39 @@ const Sidebar = () => {
               </li>
             </>
           )}
-          <li>
-            <span className='icons'>
-              <MdDashboard />
-            </span>
-            <NavLink to='/*'>{translate('results', language)}</NavLink>
-          </li>
           <li onClick={toggleGroup2Visibility} style={{ cursor: 'pointer' }}>
             <span className='icons'>
               <MdDashboard />
             </span>
-            <span>{translate('masterMaintenance', language)}</span>
+            <span>{translate('results', language)}</span>
             <span className='icon-right'>{isGroup2Visible ? <BiSolidUpArrow /> : <BiSolidDownArrow />}</span>
           </li>
           {isGroup2Visible && (
+            <>
+              <li className='sub_menu'>
+                <span className='icons'>
+                  <FaTableList />
+                </span>
+                <NavLink to='/expenses-results-list'>{translate('expensesResultsList', language)}</NavLink>
+              </li>
+              <li className='sub_menu'>
+                <span className='icons'>
+                  <AiFillFileAdd />
+                </span>
+                <NavLink to='/expenses-results-registration'>
+                  {translate('expensesResultsRegistration', language)}
+                </NavLink>
+              </li>
+            </>
+          )}
+          <li onClick={toggleGroup3Visibility} style={{ cursor: 'pointer' }}>
+            <span className='icons'>
+              <MdDashboard />
+            </span>
+            <span>{translate('masterMaintenance', language)}</span>
+            <span className='icon-right'>{isGroup3Visible ? <BiSolidUpArrow /> : <BiSolidDownArrow />}</span>
+          </li>
+          {isGroup3Visible && (
             <>
               <li className='sub_menu'>
                 <span className='icons'>

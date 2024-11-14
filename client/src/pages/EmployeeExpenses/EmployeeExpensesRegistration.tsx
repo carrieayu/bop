@@ -54,19 +54,19 @@ const EmployeeExpensesRegistration = () => {
     setActiveTabOther(tab);
     switch (tab) {
       case 'project':
-        navigate('/projects-registration');
-        break;
+        navigate('/projects-registration')
+        break
       case 'employeeExpenses':
-        navigate('/employee-expenses-registration');
-        break;
+        navigate('/employee-expenses-registration')
+        break
       case 'expenses':
-        navigate('/expenses-registration');
-        break;
+        navigate('/expenses-registration')
+        break
       case 'costOfSales':
-        navigate('/cost-of-sales-registration');
-        break;
+        navigate('/cost-of-sales-registration')
+        break
       default:
-        break;
+        break
     }
   };
 
@@ -536,11 +536,7 @@ const EmployeeExpensesRegistration = () => {
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
       />
-      <CrudModal
-        message={modalMessage}
-        onClose={() => setIsModalOpen(false)}
-        isCRUDOpen={isModalOpen}
-      />
+      <CrudModal message={modalMessage} onClose={() => setIsModalOpen(false)} isCRUDOpen={isModalOpen} />
     </div>
   )
 };
