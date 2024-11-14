@@ -329,20 +329,20 @@ const ExpensesResultsList: React.FC = () => {
   }
 
   return (
-    <div className={'expensesList_wrapper'}>
+    <div className={'expensesResultsList_wrapper'}>
       <HeaderButtons
         activeTab={activeTab}
         handleTabClick={handleTabClick}
         isTranslateSwitchActive={isTranslateSwitchActive}
         handleTranslationSwitchToggle={handleTranslationSwitchToggle}
       />
-      <div className={'expensesList_cont_wrapper'}>
+      <div className={'expensesResultsList_cont_wrapper'}>
         <Sidebar />
-        <div className={`expensesList_wrapper ${isEditing ? 'editMode' : ''}`}>
+        <div className={`expensesResultsList_wrapper ${isEditing ? 'editMode' : ''}`}>
           {/* <div className='expensesList_btn_cont_wrapper'> */}
-          <div className='expensesList_top_content'>
-            <div className='expensesList_top_body_cont'>
-              <div className='expensesList_mode_switch_datalist'>
+          <div className='expensesResultsList_top_content'>
+            <div className='expensesResultsList_top_body_cont'>
+              <div className='expensesResultsList_mode_switch_datalist'>
                 <div className='mode_switch_container'>
                   <p className='slider_mode_switch'>
                     {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
@@ -354,7 +354,7 @@ const ExpensesResultsList: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className='expensesList_mid_body_cont'>
+            <div className='expensesResultsList_mid_body_cont'>
               <ListButtons
                 activeTabOther={activeTabOther}
                 message={translate(isEditing ? 'expensesEdit' : 'expensesList', language)}
@@ -368,8 +368,8 @@ const ExpensesResultsList: React.FC = () => {
                   { labelKey: 'costOfSales', tabKey: 'costOfSales' },
                 ]}
               />
-              <div className={`expensesList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
-                <div className={`expensesList_table_cont ${isEditing ? 'editScrollable' : ''}`}>
+              <div className={`expensesResultsList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
+                <div className={`expensesResultsList_table_cont ${isEditing ? 'editScrollable' : ''}`}>
                   {/* <div className='expensesList_table_cont'> */}
                   {/* <div className='columns is-mobile'> */}
                   {/* <div className='column'> */}
@@ -377,50 +377,50 @@ const ExpensesResultsList: React.FC = () => {
                     <div className='editScroll'>
                       <table className='table is-bordered is-hoverable'>
                         <thead>
-                          <tr className='expensesList_table_title '>
-                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                          <tr className='expensesResultsList_table_title '>
+                            <th className='expensesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('year', language)}
                             </th>
-                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                            <th className='expensesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('month', language)}
                             </th>
-                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                            <th className='expensesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('consumableExpenses', language)}
                             </th>
-                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                            <th className='expensesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('rentExpenses', language)}
                             </th>
-                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                            <th className='expensesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('taxesAndPublicCharges', language)}
                             </th>
-                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                            <th className='expensesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('depreciationExpenses', language)}
                             </th>
-                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                            <th className='expensesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('travelExpenses', language)}
                             </th>
-                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                            <th className='expensesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('communicationExpenses', language)}
                             </th>
-                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                            <th className='expensesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('utilitiesExpenses', language)}
                             </th>
-                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                            <th className='expensesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('transactionFees', language)}
                             </th>
-                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                            <th className='expensesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('advertisingExpenses', language)}
                             </th>
-                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                            <th className='expensesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('entertainmentExpenses', language)}
                             </th>
-                            <th className='expensesList_table_title_content_vertical has-text-centered'>
+                            <th className='expensesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('professionalServicesFees', language)}
                             </th>
-                            <th className='expensesList_table_title_content_vertical has-text-centered'></th>
+                            <th className='expensesResultsList_table_title_content_vertical has-text-centered'></th>
                           </tr>
                         </thead>
-                        <tbody className='expensesList_table_body'>
+                        <tbody className='expensesResultsList_table_body'>
                           {combinedData.map((expenseResults, index) => {
                             const isNewYear = index === 0 || combinedData[index - 1].year !== expenseResults.year
                             const isLastExpenseOfYear =
@@ -431,14 +431,14 @@ const ExpensesResultsList: React.FC = () => {
                             return (
                               <React.Fragment key={index}>
                                 {expenseResults ? (
-                                  <tr key={index} className='expensesList_table_body_content_horizontal'>
-                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  <tr key={index} className='expensesResultsList_table_body_content_horizontal'>
+                                    <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       {expenseResults.year}
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                    <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       {expenseResults.month}
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                    <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
                                         type='number'
                                         name='consumable_expense'
@@ -447,7 +447,7 @@ const ExpensesResultsList: React.FC = () => {
                                         disabled={!isEditable}
                                       />
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                    <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
                                         type='number'
                                         name='rent_expense'
@@ -456,7 +456,7 @@ const ExpensesResultsList: React.FC = () => {
                                         disabled={!isEditable}
                                       />
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                    <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
                                         type='number'
                                         name='tax_and_public_charge'
@@ -465,7 +465,7 @@ const ExpensesResultsList: React.FC = () => {
                                         disabled={!isEditable}
                                       />
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                    <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
                                         type='number'
                                         name='depreciation_expense'
@@ -474,7 +474,7 @@ const ExpensesResultsList: React.FC = () => {
                                         disabled={!isEditable}
                                       />
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                    <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
                                         type='number'
                                         name='travel_expense'
@@ -483,7 +483,7 @@ const ExpensesResultsList: React.FC = () => {
                                         disabled={!isEditable}
                                       />
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                    <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
                                         type='number'
                                         name='communication_expense'
@@ -493,7 +493,7 @@ const ExpensesResultsList: React.FC = () => {
                                       />
                                     </td>
 
-                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                    <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
                                         type='number'
                                         name='utilities_expense'
@@ -502,7 +502,7 @@ const ExpensesResultsList: React.FC = () => {
                                         disabled={!isEditable}
                                       />
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                    <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
                                         type='number'
                                         name='transaction_fee'
@@ -511,7 +511,7 @@ const ExpensesResultsList: React.FC = () => {
                                         disabled={!isEditable}
                                       />
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                    <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
                                         type='number'
                                         name='advertising_expense'
@@ -520,7 +520,7 @@ const ExpensesResultsList: React.FC = () => {
                                         disabled={!isEditable}
                                       />
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                    <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
                                         type='number'
                                         name='entertainment_expense'
@@ -529,7 +529,7 @@ const ExpensesResultsList: React.FC = () => {
                                         disabled={!isEditable}
                                       />
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                    <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
                                         type='number'
                                         name='professional_service_fee'
@@ -538,7 +538,7 @@ const ExpensesResultsList: React.FC = () => {
                                         disabled={!isEditable}
                                       />
                                     </td>
-                                    <td className='expensesList_table_body_content_vertical delete_icon'>
+                                    <td className='expensesResultsList_table_body_content_vertical delete_icon'>
                                       <RiDeleteBin6Fill
                                         className='delete-icon'
                                         onClick={() => openModal('expenses', expenseResults.expense_result_id)}
@@ -563,15 +563,18 @@ const ExpensesResultsList: React.FC = () => {
                   ) : (
                     <table className='table is-bordered is-hoverable'>
                       <thead>
-                        <tr className='expensesList_table_title '>
+                        <tr className='expensesResultsList_table_title '>
                           {header.map((head, index) => (
-                            <th key={index} className='expensesList_table_title_content_vertical has-text-centered'>
+                            <th
+                              key={index}
+                              className='expensesResultsList_table_title_content_vertical has-text-centered'
+                            >
                               {translate(head, language)}
                             </th>
                           ))}
                         </tr>
                       </thead>
-                      <tbody className='expensesList_table_body'>
+                      <tbody className='expensesResultsList_table_body'>
                         {combinedData.map((expenseResults, index) => {
                           const isNewYear = index === 0 || combinedData[index - 1].year !== expenseResults.year
                           const isLastExpenseOfYear =
@@ -579,44 +582,44 @@ const ExpensesResultsList: React.FC = () => {
 
                           return (
                             <React.Fragment key={index}>
-                              <tr className='expensesList_table_body_content_horizontal'>
-                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                              <tr className='expensesResultsList_table_body_content_horizontal'>
+                                <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                   {expenseResults.year}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                   {expenseResults.month}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical'>
+                                <td className='expensesResultsList_table_body_content_vertical'>
                                   {expenseResults.consumable_expense || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                   {expenseResults.rent_expense || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
+                                <td className='expensesResultsList_table_body_content_vertical has-text-right'>
                                   {expenseResults.tax_and_public_charge || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
+                                <td className='expensesResultsList_table_body_content_vertical has-text-right'>
                                   {expenseResults.depreciation_expense || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
+                                <td className='expensesResultsList_table_body_content_vertical has-text-right'>
                                   {expenseResults.travel_expense || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
+                                <td className='expensesResultsList_table_body_content_vertical has-text-right'>
                                   {expenseResults.communication_expense || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
+                                <td className='expensesResultsList_table_body_content_vertical has-text-right'>
                                   {expenseResults.utilities_expense || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
+                                <td className='expensesResultsList_table_body_content_vertical has-text-right'>
                                   {expenseResults.transaction_fee || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
+                                <td className='expensesResultsList_table_body_content_vertical has-text-right'>
                                   {expenseResults.advertising_expense || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
+                                <td className='expensesResultsList_table_body_content_vertical has-text-right'>
                                   {expenseResults.entertainment_expense || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
+                                <td className='expensesResultsList_table_body_content_vertical has-text-right'>
                                   {expenseResults.professional_service_fee || 0}
                                 </td>
                               </tr>
@@ -639,12 +642,12 @@ const ExpensesResultsList: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className='expensesList_is_editing_wrapper'>
-              <div className='expensesList_is_editing_cont'>
+            <div className='expensesResultsList_is_editing_wrapper'>
+              <div className='expensesResultsList_is_editing_cont'>
                 {isEditing ? (
-                  <div className='expensesList_edit_submit_btn_cont'>
+                  <div className='expensesResultsList_edit_submit_btn_cont'>
                     <button
-                      className='expensesList_edit_submit_btn'
+                      className='expensesResultsList_edit_submit_btn'
                       onClick={() => {
                         setIsUpdateConfirmationOpen(true)
                       }}

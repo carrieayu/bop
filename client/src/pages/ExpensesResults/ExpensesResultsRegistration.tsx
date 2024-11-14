@@ -361,20 +361,20 @@ const ExpensesResultsRegistration = () => {
   }
 
   return (
-    <div className='expensesRegistration_wrapper'>
+    <div className='expensesResultsRegistration_wrapper'>
       <HeaderButtons
         activeTab={activeTab}
         handleTabClick={handleTabClick}
         isTranslateSwitchActive={isTranslateSwitchActive}
         handleTranslationSwitchToggle={handleTranslationSwitchToggle}
       />
-      <div className='expensesRegistration_content_wrapper'>
+      <div className='expensesResultsRegistration_content_wrapper'>
         <Sidebar />
-        <div className='expensesRegistration_data_content'>
-          <div className='expensesRegistration_top_body_cont'>
+        <div className='expensesResultsRegistration_data_content'>
+          <div className='expensesResultsRegistration_top_body_cont'>
             <RegistrationButtons
               activeTabOther={activeTabOther}
-              message={translate('expensesRegistration', language)}
+              message={translate('expensesResultsRegistration', language)}
               handleTabsClick={handleTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
@@ -386,23 +386,23 @@ const ExpensesResultsRegistration = () => {
               ]}
             />
           </div>
-          <div className='expensesRegistration_mid_body_cont'>
-            <form className='expensesRegistration_inputs_and_buttons' onSubmit={handleSubmit}>
-              <div className='expensesRegistration_mid_form_cont'>
+          <div className='expensesResultsRegistration_mid_body_cont'>
+            <form className='expensesResultsRegistration_inputs_and_buttons' onSubmit={handleSubmit}>
+              <div className='expensesResultsRegistration_mid_form_cont'>
                 {formData.map((form, index) => (
                   <div
                     key={index}
-                    className={`expensesRegistration_form-content ${index > 0 ? 'expensesRegistration_form-content-special' : ''}`}
+                    className={`expensesResultsRegistration_form-content ${index > 0 ? 'expensesResultsRegistration_form-content-special' : ''}`}
                   >
                     <div
-                      className={`expensesRegistration_form-content ${index > 0 ? 'expensesRegistration_form-line' : ''}`}
+                      className={`expensesResultsRegistration_form-content ${index > 0 ? 'expensesResultsRegistration_form-line' : ''}`}
                     ></div>
-                    <div className='expensesRegistration_form-content-div'>
-                      <div className='expensesRegistration_left-form-div expensesRegistration_calc'>
-                        <div className='expensesRegistration_year-div'>
-                          <label className='expensesRegistration_year'>{translate('year', language)}</label>
+                    <div className='expensesResultsRegistration_form-content-div'>
+                      <div className='expensesResultsRegistration_left-form-div expensesResultsRegistration_calc'>
+                        <div className='expensesResultsRegistration_year-div'>
+                          <label className='expensesResultsRegistration_year'>{translate('year', language)}</label>
                           <select
-                            className='expensesRegistration_select-option'
+                            className='expensesResultsRegistration_select-option'
                             name='year'
                             value={form.year}
                             onChange={(e) => handleChange(index, e)}
@@ -416,8 +416,8 @@ const ExpensesResultsRegistration = () => {
                             ))}
                           </select>
                         </div>
-                        <div className='expensesRegistration_rent_expenses-div'>
-                          <label className='expensesRegistration_rent_expenses'>
+                        <div className='expensesResultsRegistration_rent_expenses-div'>
+                          <label className='expensesResultsRegistration_rent_expenses'>
                             {translate('rentExpense', language)}
                           </label>
                           <input
@@ -428,8 +428,8 @@ const ExpensesResultsRegistration = () => {
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
-                        <div className='expensesRegistration_travel_expenses-div'>
-                          <label className='expensesRegistration_travel_expenses'>
+                        <div className='expensesResultsRegistration_travel_expenses-div'>
+                          <label className='expensesResultsRegistration_travel_expenses'>
                             {translate('travelExpense', language)}
                           </label>
                           <input
@@ -440,8 +440,8 @@ const ExpensesResultsRegistration = () => {
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
-                        <div className='expensesRegistration_transaction_fees-div'>
-                          <label className='expensesRegistration_transaction_fees'>
+                        <div className='expensesResultsRegistration_transaction_fees-div'>
+                          <label className='expensesResultsRegistration_transaction_fees'>
                             {translate('transactionFee', language)}
                           </label>
                           <input
@@ -452,8 +452,8 @@ const ExpensesResultsRegistration = () => {
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
-                        <div className='expensesRegistration_professional_services_fees-div'>
-                          <label className='expensesRegistration_professional_services_fees'>
+                        <div className='expensesResultsRegistration_professional_services_fees-div'>
+                          <label className='expensesResultsRegistration_professional_services_fees'>
                             {translate('professionalServicesFee', language)}
                           </label>
                           <input
@@ -465,11 +465,11 @@ const ExpensesResultsRegistration = () => {
                           />
                         </div>
                       </div>
-                      <div className='expensesRegistration_middle-form-div expensesRegistration_calc'>
-                        <div className='expensesRegistration_month-div'>
-                          <label className='expensesRegistration_month'>{translate('month', language)}</label>
+                      <div className='expensesResultsRegistration_middle-form-div expensesResultsRegistration_calc'>
+                        <div className='expensesResultsRegistration_month-div'>
+                          <label className='expensesResultsRegistration_month'>{translate('month', language)}</label>
                           <select
-                            className='expensesRegistration_select-option'
+                            className='expensesResultsRegistration_select-option'
                             name='month'
                             value={form.month}
                             onChange={(e) => handleChange(index, e)}
@@ -483,8 +483,8 @@ const ExpensesResultsRegistration = () => {
                             ))}
                           </select>
                         </div>
-                        <div className='expensesRegistration_taxes_and_public_charges-div'>
-                          <label className='expensesRegistration_taxes_and_public_charges'>
+                        <div className='expensesResultsRegistration_taxes_and_public_charges-div'>
+                          <label className='expensesResultsRegistration_taxes_and_public_charges'>
                             {translate('taxAndPublicCharge', language)}
                           </label>
                           <input
@@ -495,8 +495,8 @@ const ExpensesResultsRegistration = () => {
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
-                        <div className='expensesRegistration_communication_expenses-div'>
-                          <label className='expensesRegistration_communication_expenses'>
+                        <div className='expensesResultsRegistration_communication_expenses-div'>
+                          <label className='expensesResultsRegistration_communication_expenses'>
                             {translate('communicationExpense', language)}
                           </label>
                           <input
@@ -507,8 +507,8 @@ const ExpensesResultsRegistration = () => {
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
-                        <div className='expensesRegistration_advertising_expenses-div'>
-                          <label className='expensesRegistration_advertising_expenses'>
+                        <div className='expensesResultsRegistration_advertising_expenses-div'>
+                          <label className='expensesResultsRegistration_advertising_expenses'>
                             {translate('advertisingExpense', language)}
                           </label>
                           <input
@@ -520,9 +520,9 @@ const ExpensesResultsRegistration = () => {
                           />
                         </div>
                       </div>
-                      <div className='expensesRegistration_right-form-div expensesRegistration_calc'>
-                        <div className='expensesRegistration_consumable_expenses-div'>
-                          <label className='expensesRegistration_consumable_expenses'>
+                      <div className='expensesResultsRegistration_right-form-div expensesResultsRegistration_calc'>
+                        <div className='expensesResultsRegistration_consumable_expenses-div'>
+                          <label className='expensesResultsRegistration_consumable_expenses'>
                             {translate('consumableExpense', language)}
                           </label>
                           <input
@@ -533,8 +533,8 @@ const ExpensesResultsRegistration = () => {
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
-                        <div className='expensesRegistration_depreciation_expenses-div'>
-                          <label className='expensesRegistration_depreciation_expenses'>
+                        <div className='expensesResultsRegistration_depreciation_expenses-div'>
+                          <label className='expensesResultsRegistration_depreciation_expenses'>
                             {translate('depreciationExpense', language)}
                           </label>
                           <input
@@ -545,8 +545,8 @@ const ExpensesResultsRegistration = () => {
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
-                        <div className='expensesRegistration_utilities_expenses-div'>
-                          <label className='expensesRegistration_utilities_expenses'>
+                        <div className='expensesResultsRegistration_utilities_expenses-div'>
+                          <label className='expensesResultsRegistration_utilities_expenses'>
                             {translate('utilitiesExpense', language)}
                           </label>
                           <input
@@ -557,8 +557,8 @@ const ExpensesResultsRegistration = () => {
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
-                        <div className='expensesRegistration_entertainment_expenses-div'>
-                          <label className='expensesRegistration_entertainment_expenses'>
+                        <div className='expensesResultsRegistration_entertainment_expenses-div'>
+                          <label className='expensesResultsRegistration_entertainment_expenses'>
                             {translate('entertainmentExpense', language)}
                           </label>
                           <input
@@ -575,17 +575,17 @@ const ExpensesResultsRegistration = () => {
                   </div>
                 ))}
               </div>
-              <div className='expensesRegistration_lower_form_cont'>
-                <div className='expensesRegistration_form-content'>
-                  <div className='expensesRegistration_plus-btn'>
-                    <button className='expensesRegistration_inc' type='button' onClick={handleAdd}>
+              <div className='expensesResultsRegistration_lower_form_cont'>
+                <div className='expensesResultsRegistration_form-content'>
+                  <div className='expensesResultsRegistration_plus-btn'>
+                    <button className='expensesResultsRegistration_inc' type='button' onClick={handleAdd}>
                       +
                     </button>
-                    <button className='expensesRegistration_dec' type='button' onClick={handleMinus}>
+                    <button className='expensesResultsRegistration_dec' type='button' onClick={handleMinus}>
                       -
                     </button>
                   </div>
-                  <div className='expensesRegistration_options-btn'>
+                  <div className='expensesResultsRegistration_options-btn'>
                     <button type='button' className='button is-light' onClick={handleCancel}>
                       {translate('cancel', language)}
                     </button>
