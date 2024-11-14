@@ -13,7 +13,7 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { createProject } from '../../api/ProjectsEndpoint/CreateProject'
 import { overwriteProject } from '../../api/ProjectsEndpoint/OverwriteProject'
-import { validateField, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
+import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -208,31 +208,37 @@ const ProjectsRegistration = () => {
   const fieldChecks = getFieldChecks(recordType)
 
 
-
-  
   const validateProjects = (projectsValidate) => {
-    let validationErrors = []
+    console.log(projectsValidate, 'projects val')
+    // Call the helper function for validation
+    const validationErrors = validateRecords(projectsValidate, fieldChecks, 'project')
 
-    for (const [index, prj] of projectsValidate.entries()) {
-      for (const check of fieldChecks) {
-        // Get Relevant information for Error Message and Push to Error Array
-        const errorMessage = validateField(
-          prj[check.field],
-          check.fieldName,
-          check.isNumber,
-          index + 1, // Gives a Temporary ID for projects to display in error messages in modal
-          'Project',
-        )
-
-        if (errorMessage) {
-          validationErrors.push(errorMessage)
-        }
-      }
-    }
-    console.log('validationErrors',validationErrors)
-    // Array of errors OR no errors (this in handleSubmit below: validationErrors)
     return validationErrors
   }
+  
+  // const validateProjects = (projectsValidate) => {
+  //   let validationErrors = []
+
+  //   for (const [index, prj] of projectsValidate.entries()) {
+  //     for (const check of fieldChecks) {
+  //       // Get Relevant information for Error Message and Push to Error Array
+  //       const errorMessage = validateField(
+  //         prj[check.field],
+  //         check.fieldName,
+  //         check.isNumber,
+  //         index + 1, // Gives a Temporary ID for projects to display in error messages in modal
+  //         'Project',
+  //       )
+
+  //       if (errorMessage) {
+  //         validationErrors.push(errorMessage)
+  //       }
+  //     }
+  //   }
+  //   console.log('validationErrors',validationErrors)
+  //   // Array of errors OR no errors (this in handleSubmit below: validationErrors)
+  //   return validationErrors
+  // }
 
 
   const handleSubmit = async (e) => {
@@ -264,16 +270,15 @@ const ProjectsRegistration = () => {
 
     // CLIENT SIDE VALIDATION CHECK.  ( Calls Helper Function in validationUtil )
     const validationErrors = validateProjects(formProjects) // Get the array of error messages
-    console.log('formProjects', formProjects)
 
     // NEXT STEP: CHECK IF ANY DUPLICATES EXIST
     // Fields to check for duplicates
     const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client'];
-    const duplicateErrors = checkForDuplicates(formProjects, uniqueFields, 'project');
-    console.log('duplicate errors', duplicateErrors)
+    const duplicateErrors = checkForDuplicates(formProjects, uniqueFields, 'project', language);
+
     // TRANSLATE AND DISPLAY MODAL WITH ERRORS
     if (validationErrors.length > 0) {
-      // Build the Error Messagse for the modal by translating an d formatting each error. ( Calls Helper Function in validationUtil )
+      // Build the Error Messagse for the modal by translating and formatting each error. ( Calls Helper Function in validationUtil )
       const translatedAndFormattedValidationErrors = translateAndFormatErrors(validationErrors, language, 'normalValidation')
       // Set Error Messages for Modal
       setModalMessage(translatedAndFormattedValidationErrors)
@@ -283,7 +288,7 @@ const ProjectsRegistration = () => {
     }
 
     if (duplicateErrors.length > 0) {
-      // Build the Error Messagse for the modal by translating an d formatting each error. ( Calls Helper Function in validationUtil )
+      // Build the Error Messagse for the modal by translating and formatting each error. ( Calls Helper Function in validationUtil )
       const translatedAndFormattedDuplicationErrors = translateAndFormatErrors(duplicateErrors, language, 'duplicateValidation')
       // Set Error Messages for Modal
       setModalMessage(translatedAndFormattedDuplicationErrors)
@@ -291,10 +296,6 @@ const ProjectsRegistration = () => {
       setIsModalOpen(true)
       return
     }
-
-
-
-
 
     createProject(projectsData, token)
       .then((data) => {

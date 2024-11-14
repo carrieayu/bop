@@ -158,7 +158,7 @@ const ProjectsListAndEdit: React.FC = () => {
     // NEXT STEP: CHECK IF ANY DUPLICATES EXIST
     // Fields to check for duplicates
     const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client']
-    const duplicateErrors = checkForDuplicates(formProjects, uniqueFields, 'project')
+    const duplicateErrors = checkForDuplicates(formProjects, uniqueFields, 'project', language)
     console.log('duplicate errors', duplicateErrors)
 
     if (validationErrors.length > 0) {

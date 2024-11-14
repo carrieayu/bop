@@ -57,7 +57,7 @@ export const validateRecords = (records, fieldChecks, recordType) => {
     // EXAMPLE: 'project' → 'project_id'
     const recordIdField = `${recordType}_id`
     // In Error Message: If Registration Screen the Index is used. If Edit Screen then record ID will be used.
-    const recordId = record[recordIdField] || `Index ${records.indexOf(record) + 1}`
+    const recordId = record[recordIdField] || `${records.indexOf(record) + 1}`
 
     for (const check of fieldChecks) {
       const errorMessage = validateField(record[check.field], check.fieldName, check.isNumber, recordId , recordType);
@@ -130,7 +130,7 @@ export const validateField = (
   return ''; // No error
 };
 
-export const checkForDuplicates = (records, uniqueFields, recordType) => {
+export const checkForDuplicates = (records, uniqueFields, recordType, language) => {
   const duplicates = []
 
   for (let i = 0; i < records.length; i++) {
@@ -149,7 +149,7 @@ export const checkForDuplicates = (records, uniqueFields, recordType) => {
         const fieldName = uniqueFields.join(', ')
 
         // Dynamically get the IDs using the appropriate record id field (e.g., project_id, expense_id)
-        const recordIds = `${record[recordIdField] || `Index ${i + 1}`} and ${comparisonRecord[recordIdField] || `Index ${j + 1}`}`
+        const recordIds = `${record[recordIdField] || `${i + 1}`} ${translate('and',language)} ${comparisonRecord[recordIdField] || `${j + 1}`}`
 
         // Add duplicate details to the duplicates array
         duplicates.push({
