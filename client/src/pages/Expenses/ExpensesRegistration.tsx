@@ -12,6 +12,8 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { createExpense } from '../../api/ExpenseEndpoint/CreateExpense'
 import { overwriteExpense } from '../../api/ExpenseEndpoint/OverwriteExpense'
+import { validateField, translateAndFormatErrors, getFieldChecks } from '../../utils/validationUtil'
+
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -27,6 +29,7 @@ const ExpensesRegistration = () => {
   const token = localStorage.getItem('accessToken')
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
   const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [formData, setFormData] = useState([
     {
       year: '',
@@ -107,11 +110,56 @@ const ExpensesRegistration = () => {
     }
   }, [location.pathname])
 
+  // CLIENT SIDE VALIDATION FOR EMPTY OR INVALID INPUTS
+  // Specify the record type for validation (e.g., "projects" or "employees" or "expenses" etc.)
+  const recordType = 'expenses'
+  // Get the field checks based on the record type from validationUtil HELPER
+  const fieldChecks = getFieldChecks(recordType)
+  
+  const validateExpenses = (expensesValidate) => {
+
+  let validationErrors = []
+
+  for (const [index, exp] of expensesValidate.entries()) {
+    for (const check of fieldChecks) {
+      // Get Relevant information for Error Message and Push to Error Array
+      const errorMessage = validateField(
+        exp[check.field],
+        check.fieldName,
+        check.isNumber,
+        index + 1, // Gives a Temporary ID for projects to display in error messages in modal
+        'Expense',
+      )
+
+      if (errorMessage) {
+        validationErrors.push(errorMessage)
+      }
+    }
+  }
+    // Array of errors OR no errors (this in handleSubmit below: validationErrors)
+    return validationErrors
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
-     const expensesData = formData.map((ex) => ({
+    // CLIENT SIDE VALIDATION CHECK.  ( Calls Helper Function in validationUtil )
+    const validationErrors = validateExpenses(formData) // Get the array of error messages
+    if (validationErrors.length > 0) {
+      // Build the Error Messagse for the modal by translating an d formatting each error. ( Calls Helper Function in validationUtil )
+      const translatedAndFormattedValidationErrors = translateAndFormatErrors(
+        validationErrors,
+        language,
+        'normalValidation',
+      )
+      // Set Error Messages for Modal
+      setModalMessage(translatedAndFormattedValidationErrors)
+      setCrudValidationErrors(translatedAndFormattedValidationErrors)
+      setIsModalOpen(true)
+      // return
+    }
+
+    const expensesData = formData.map((ex) => ({
       year: ex.year,
       month: ex.month,
       consumable_expense: ex.consumable_expense,
@@ -126,29 +174,6 @@ const ExpensesRegistration = () => {
       transaction_fee: ex.transaction_fee,
     }))
 
-    // Checks if any inputs are empty
-    const areFieldsEmpty = expensesData.some(
-      (entry) =>
-        !entry.year ||
-        !entry.month ||
-        !entry.consumable_expense ||
-        !entry.tax_and_public_charge ||
-        !entry.communication_expense ||
-        !entry.advertising_expense ||
-        !entry.depreciation_expense ||
-        !entry.utilities_expense ||
-        !entry.entertainment_expense ||
-        !entry.rent_expense ||
-        !entry.travel_expense ||
-        !entry.transaction_fee,
-    )
-
-     if (areFieldsEmpty) {
-        setModalMessage(translate('allFieldsRequiredInputValidationMessage', language));
-        setIsModalOpen(true);
-       return
-     }
-
     // Combine year and month for easier duplicate checking
     const expenses = formData.map((expense) => ({
       year: expense.year,
@@ -156,21 +181,22 @@ const ExpensesRegistration = () => {
       //combines them so duplicate inputs can be checked
       yearMonth: `${expense.year}-${expense.month}`,
     }))
-    
+
     // Check for duplicates in the [inputs] submitted cost of sales (year and month combination)
     const hasDuplicateEntries = (entries, key) => {
+      console.log('entries', entries)
       return entries.some((entry, index) => entries.findIndex((e) => e[key] === entry[key]) !== index)
     }
 
     if (hasDuplicateEntries(expenses, 'yearMonth')) {
-      setModalMessage(translate('duplicateYearAndMonthInputValidationMessage', language));
-      setIsModalOpen(true);
+      setModalMessage(translate('duplicateYearAndMonthInputValidationMessage', language))
+      setIsModalOpen(true)
       return
     }
 
     if (!token) {
-      window.location.href = '/login';
-      return;
+      window.location.href = '/login'
+      return
     }
 
     createExpense(formData, token)
@@ -611,11 +637,12 @@ const ExpensesRegistration = () => {
         onConfirm={handleRemoveInputData}
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
-        />
+      />
       <CrudModal
         message={modalMessage}
         onClose={() => setIsModalOpen(false)}
         isCRUDOpen={isModalOpen}
+        validationMessages={crudValidationErrors}
       />
       <AlertModal
         isOpen={isOverwriteModalOpen}

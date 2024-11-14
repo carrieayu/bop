@@ -16,58 +16,58 @@ import AlertModal from "../../components/AlertModal/AlertModal";
 import CrudModal from "../../components/CrudModal/CrudModal";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss';
-import { validateField, translateAndFormatErrors, getFieldChecks } from '../../utils/validationUtil'
+import {validateRecords, validateField, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
 
 import { getProject } from "../../api/ProjectsEndpoint/GetProject";
 import { updateProject } from "../../api/ProjectsEndpoint/UpdateProject";
 import { deleteProject } from "../../api/ProjectsEndpoint/DeleteProject";
 
 const ProjectsListAndEdit: React.FC = () => {
-    const [activeTab, setActiveTab] = useState('/planning-list')
-    const navigate = useNavigate()
-    const location = useLocation()
-    const [activeTabOther, setActiveTabOther] = useState('project')
-    const [currentPage, setCurrentPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5)
-    const [paginatedData, setPaginatedData] = useState<any[]>([])
-    const select = [5, 10, 100]
-    const { language, setLanguage } = useLanguage()
-    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
-    const [isEditing, setIsEditing] = useState(false)
-    const [projects, setProjects] = useState([])
-    const [originalProjectsList, setOriginalProjectsList] = useState(projects)
-    const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
-    const years = []
-    const [initialLanguage, setInitialLanguage] = useState(language);
-    const dispatch = useDispatch()
-    const [clients, setClients] = useState<any>([])
-    const [businessSelection, setBusinessSelection] = useState<any>([])
-    const totalPages = Math.ceil(100 / 10);
-    const [modalIsOpen, setModalIsOpen] = useState(false)
-    const [selectedProject, setSelectedProject] = useState<any>(null)
-    const [deleteProjectsId, setDeleteProjectsId] = useState([])
-    const [clientMap, setClientMap] = useState({})
-    const [businessMap, setBusinessMap] = useState({})
-    const [formProjects, setFormProjects] = useState([
-      {
-        year: '',
-        month: '',
-        project_name: '',
-        project_type: '',
-        client: '',
-        business_division: '',
-        sales_revenue: '',
-        dispatch_labor_expense: '',
-        employee_expense: '',
-        indirect_employee_expense: '',
-        expense: '',
-        operating_income: '',
-        non_operating_income: '',
-        non_operating_expense: '',
-        ordinary_profit: '',
-        ordinary_profit_margin: '',
-      },
-    ])
+  const [activeTab, setActiveTab] = useState('/planning-list')
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [activeTabOther, setActiveTabOther] = useState('project')
+  const [currentPage, setCurrentPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
+  const [paginatedData, setPaginatedData] = useState<any[]>([])
+  const select = [5, 10, 100]
+  const { language, setLanguage } = useLanguage()
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
+  const [isEditing, setIsEditing] = useState(false)
+  const [projects, setProjects] = useState([])
+  const [originalProjectsList, setOriginalProjectsList] = useState(projects)
+  const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
+  const years = []
+  const [initialLanguage, setInitialLanguage] = useState(language)
+  const dispatch = useDispatch()
+  const [clients, setClients] = useState<any>([])
+  const [businessSelection, setBusinessSelection] = useState<any>([])
+  const totalPages = Math.ceil(100 / 10)
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [selectedProject, setSelectedProject] = useState<any>(null)
+  const [deleteProjectsId, setDeleteProjectsId] = useState([])
+  const [clientMap, setClientMap] = useState({})
+  const [businessMap, setBusinessMap] = useState({})
+  const [formProjects, setFormProjects] = useState([
+    {
+      year: '',
+      month: '',
+      project_name: '',
+      project_type: '',
+      client: '',
+      business_division: '',
+      sales_revenue: '',
+      dispatch_labor_expense: '',
+      employee_expense: '',
+      indirect_employee_expense: '',
+      expense: '',
+      operating_income: '',
+      non_operating_income: '',
+      non_operating_expense: '',
+      ordinary_profit: '',
+      ordinary_profit_margin: '',
+    },
+  ])
 
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
@@ -137,28 +137,17 @@ const ProjectsListAndEdit: React.FC = () => {
     })
   }
 
-  // CLIENT SIDE VALIDATION
-
-  // Specify the record type for validation (e.g., "projects" or "employees" or "expenses" etc.)
+  // CLIENT SIDE VALIDATION FOR EMPTY OR INVALID INPUTS
   const recordType = 'projects'
 
   // Get the field checks based on the record type from validationUtil HELPER
   const fieldChecks = getFieldChecks(recordType)
 
   const validateProjects = (projectsValidate) => {
-    let validationErrors = []
+    console.log(projectsValidate, 'projects val')
+    // Call the helper function for validation
+    const validationErrors = validateRecords(projectsValidate, fieldChecks, 'project')
 
-    for (const prj of projectsValidate) {
-      for (const check of fieldChecks) {
-        // Get Relevant information for Error Message and Push to Error Array
-        const errorMessage = validateField(prj[check.field], check.fieldName, check.isNumber, prj.project_id, 'Project')
-
-        if (errorMessage) {
-          validationErrors.push(errorMessage)
-        }
-      }
-    }
-    // Array of errors OR no errors (this in handleSubmit below: validationErrors)
     return validationErrors
   }
 
@@ -166,12 +155,36 @@ const ProjectsListAndEdit: React.FC = () => {
     // CLIENT SIDE VALIDATION CHECK.  ( Calls Helper Function in validationUtil )
     const validationErrors = validateProjects(formProjects) // Get the array of error messages
 
+    // NEXT STEP: CHECK IF ANY DUPLICATES EXIST
+    // Fields to check for duplicates
+    const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client']
+    const duplicateErrors = checkForDuplicates(formProjects, uniqueFields, 'project')
+    console.log('duplicate errors', duplicateErrors)
+
     if (validationErrors.length > 0) {
       // Build the Error Messagse for the modal by translating an d formatting each error. ( Calls Helper Function in validationUtil )
-      const translatedAndFormattedValidationErrors = translateAndFormatErrors(validationErrors, language)
+      const translatedAndFormattedValidationErrors = translateAndFormatErrors(
+        validationErrors,
+        language,
+        'normalValidation',
+      )
       // Set Error Messages for Modal
       setCrudMessage(translatedAndFormattedValidationErrors)
       setCrudValidationErrors(translatedAndFormattedValidationErrors)
+      setIsCRUDOpen(true)
+      return
+    }
+
+    if (duplicateErrors.length > 0) {
+      // Build the Error Messagse for the modal by translating an d formatting each error. ( Calls Helper Function in validationUtil )
+      const translatedAndFormattedDuplicationErrors = translateAndFormatErrors(
+        duplicateErrors,
+        language,
+        'duplicateValidation',
+      )
+      // Set Error Messages for Modal
+      setCrudMessage(translatedAndFormattedDuplicationErrors)
+      setCrudValidationErrors(translatedAndFormattedDuplicationErrors)
       setIsCRUDOpen(true)
       return
     }

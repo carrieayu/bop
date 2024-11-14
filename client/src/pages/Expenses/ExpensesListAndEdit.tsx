@@ -12,6 +12,7 @@ import { RiDeleteBin6Fill } from 'react-icons/ri'
 import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss'
+import { validateField, translateAndFormatErrors, getFieldChecks } from '../../utils/validationUtil'
 
 import { deleteExpense } from '../../api/ExpenseEndpoint/DeleteExpense'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
@@ -37,6 +38,7 @@ const ExpensesList: React.FC = () => {
 
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
 
   const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
@@ -116,7 +118,52 @@ const ExpensesList: React.FC = () => {
     setExpensesList(updatedData)
   }
 
+  // CLIENT SIDE VALIDATION FOR EMPTY OR INVALID INPUTS
+  // Specify the record type for validation (e.g., "projects" or "employees" or "expenses" etc.)
+  const recordType = 'expenses'
+
+  // Get the field checks based on the record type from validationUtil HELPER
+  const fieldChecks = getFieldChecks(recordType)
+
+  const validateExpenses = (expensesValidate) => {
+    let validationErrors = []
+
+    for (const exp of expensesValidate) {
+      for (const check of fieldChecks) {
+        // Get Relevant information for Error Message and Push to Error Array
+        const errorMessage = validateField(exp[check.field], check.fieldName, check.isNumber, exp.expense_id, 'Expense')
+
+        if (errorMessage) {
+          validationErrors.push(errorMessage)
+        }
+      }
+    }
+    // Array of errors OR no errors (this in handleSubmit below: validationErrors)
+    return validationErrors
+  }
+
   const handleSubmit = async () => {
+    // CLIENT SIDE VALIDATION CHECK.  ( Calls Helper Function in validationUtil )
+
+    // As Expenses has default 12 Records even if not all records have actually been created in DB: Need to filter out non-registered records.
+    const expensesListExistingRecords = expensesList.filter((exp) => exp.expense_id !== null)
+
+    const validationErrors = validateExpenses(expensesListExistingRecords) // Get the array of error messages
+
+    if (validationErrors.length > 0) {
+      // Build the Error Messagse for the modal by translating an d formatting each error. ( Calls Helper Function in validationUtil )
+      const translatedAndFormattedValidationErrors = translateAndFormatErrors(
+        validationErrors,
+        language,
+        'normalValidation',
+      )
+      // Set Error Messages for Modal
+      setCrudMessage(translatedAndFormattedValidationErrors)
+      setCrudValidationErrors(translatedAndFormattedValidationErrors)
+      setIsCRUDOpen(true)
+      return
+    }
+
     const getModifiedFields = (original, updated) => {
       const modifiedFields = []
 
@@ -666,7 +713,12 @@ const ExpensesList: React.FC = () => {
         onCancel={closeModal}
         message={translate('deleteMessage', language)}
       />
-      <CrudModal isCRUDOpen={isCRUDOpen} onClose={closeModal} message={crudMessage} />
+      <CrudModal
+        isCRUDOpen={isCRUDOpen}
+        onClose={closeModal}
+        message={crudMessage}
+        validationMessages={crudValidationErrors}
+      />
       <AlertModal
         isOpen={isUpdateConfirmationOpen}
         onConfirm={handleUpdateConfirm}

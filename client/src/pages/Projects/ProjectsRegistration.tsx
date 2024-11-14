@@ -13,8 +13,7 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { createProject } from '../../api/ProjectsEndpoint/CreateProject'
 import { overwriteProject } from '../../api/ProjectsEndpoint/OverwriteProject'
-import { validateField, translateAndFormatErrors, getFieldChecks } from '../../utils/validationUtil'
-
+import { validateField, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -27,25 +26,24 @@ const ProjectsRegistration = () => {
   const [activeTabOther, setActiveTabOther] = useState('project')
   const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
-  const years = [];
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
+  const years = []
   const token = localStorage.getItem('accessToken')
   const [clients, setClients] = useState<any>([])
-  const [selectedClient, setSelectedClient] = useState([]);
+  const [selectedClient, setSelectedClient] = useState([])
   const [businessSelection, setBusinessSelection] = useState<any>([])
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
 
-
   const dispatch = useDispatch()
   for (let year = 2021; year <= new Date().getFullYear(); year++) {
-    years.push(year);
+    years.push(year)
   }
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
-  const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false); 
-  const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
+  const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
+  const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
 
   const [formProjects, setProjects] = useState([
     {
@@ -92,15 +90,15 @@ const ProjectsRegistration = () => {
         },
       ])
     } else {
-      console.log('You can only add up to 10 forms.');
+      console.log('You can only add up to 10 forms.')
     }
-  };
+  }
 
   const handleMinus = () => {
     if (formProjects.length > 1) {
       setProjects(formProjects.slice(0, -1))
     }
-  };
+  }
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -110,49 +108,49 @@ const ProjectsRegistration = () => {
     setActiveTabOther(tab)
     switch (tab) {
       case 'project':
-        navigate('/projects-registration');
-        break;
+        navigate('/projects-registration')
+        break
       case 'employeeExpenses':
-        navigate('/employee-expenses-registration');
-        break;
+        navigate('/employee-expenses-registration')
+        break
       case 'expenses':
-        navigate('/expenses-registration');
-        break;
+        navigate('/expenses-registration')
+        break
       case 'costOfSales':
-        navigate('/cost-of-sales-registration');
-        break;
+        navigate('/cost-of-sales-registration')
+        break
       default:
-        break;
+        break
     }
   }
 
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal();
+    openModal()
   }
 
   const handleRemoveInputData = () => {
-      setProjects([
-        {
-          year: '',
-          month: '',
-          project_name: '',
-          project_type: '',
-          client: '',
-          business_division: '',
-          sales_revenue: '',
-          dispatch_labor_expense: '',
-          employee_expense: '',
-          indirect_employee_expense: '',
-          expense: '',
-          operating_income: '',
-          non_operating_income: '',
-          non_operating_expense: '',
-          ordinary_profit: '',
-          ordinary_profit_margin: '',
-        },
-      ])
-      closeModal()
+    setProjects([
+      {
+        year: '',
+        month: '',
+        project_name: '',
+        project_type: '',
+        client: '',
+        business_division: '',
+        sales_revenue: '',
+        dispatch_labor_expense: '',
+        employee_expense: '',
+        indirect_employee_expense: '',
+        expense: '',
+        operating_income: '',
+        non_operating_income: '',
+        non_operating_expense: '',
+        ordinary_profit: '',
+        ordinary_profit_margin: '',
+      },
+    ])
+    closeModal()
   }
 
   const openModal = () => {
@@ -160,7 +158,7 @@ const ProjectsRegistration = () => {
   }
 
   const closeModal = () => {
-      setModalIsOpen(false)
+    setModalIsOpen(false)
   }
 
   const fetchClients = async () => {
@@ -181,7 +179,6 @@ const ProjectsRegistration = () => {
     }
   }
 
-
   const handleChange = (index, event) => {
     const { name, value } = event.target
     const updatedFormData = [...formProjects]
@@ -190,51 +187,53 @@ const ProjectsRegistration = () => {
       [name]: value,
     }
     setProjects(updatedFormData)
-  } 
+  }
   useEffect(() => {}, [formProjects])
 
   const HandleClientChange = (e) => {
-    setSelectedClient(e.target.value);
-  };
+    setSelectedClient(e.target.value)
+  }
 
   useEffect(() => {
-    const path = location.pathname;
+    const path = location.pathname
     if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
-      setActiveTab(path);
+      setActiveTab(path)
     }
-  }, [location.pathname]);
+  }, [location.pathname])
 
-  // CLIENT SIDE VALIDATION
-
+  // CLIENT SIDE VALIDATION FOR EMPTY OR INVALID INPUTS
   // Specify the record type for validation (e.g., "projects" or "employees" or "expenses" etc.)
   const recordType = 'projects'
-
   // Get the field checks based on the record type from validationUtil HELPER
   const fieldChecks = getFieldChecks(recordType)
 
+
+
+  
   const validateProjects = (projectsValidate) => {
+    let validationErrors = []
 
-  let validationErrors = []
+    for (const [index, prj] of projectsValidate.entries()) {
+      for (const check of fieldChecks) {
+        // Get Relevant information for Error Message and Push to Error Array
+        const errorMessage = validateField(
+          prj[check.field],
+          check.fieldName,
+          check.isNumber,
+          index + 1, // Gives a Temporary ID for projects to display in error messages in modal
+          'Project',
+        )
 
-  for (const [index, prj] of projectsValidate.entries()) {
-    for (const check of fieldChecks) {
-      // Get Relevant information for Error Message and Push to Error Array
-      const errorMessage = validateField(
-        prj[check.field],
-        check.fieldName,
-        check.isNumber,
-        index + 1, // Gives a Temporary ID for projects to display in error messages in modal
-        'Project',
-      )
-
-      if (errorMessage) {
-        validationErrors.push(errorMessage)
+        if (errorMessage) {
+          validationErrors.push(errorMessage)
+        }
       }
     }
-  }
+    console.log('validationErrors',validationErrors)
     // Array of errors OR no errors (this in handleSubmit below: validationErrors)
     return validationErrors
   }
+
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -265,40 +264,62 @@ const ProjectsRegistration = () => {
 
     // CLIENT SIDE VALIDATION CHECK.  ( Calls Helper Function in validationUtil )
     const validationErrors = validateProjects(formProjects) // Get the array of error messages
-  if (validationErrors.length > 0) {
-    // Build the Error Messagse for the modal by translating an d formatting each error. ( Calls Helper Function in validationUtil )
-    const translatedAndFormattedValidationErrors = translateAndFormatErrors(validationErrors, language)
-    // Set Error Messages for Modal
-    setModalMessage(translatedAndFormattedValidationErrors)
-    setCrudValidationErrors(translatedAndFormattedValidationErrors)
-    setIsModalOpen(true)
-    return
-  }
+    console.log('formProjects', formProjects)
+
+    // NEXT STEP: CHECK IF ANY DUPLICATES EXIST
+    // Fields to check for duplicates
+    const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client'];
+    const duplicateErrors = checkForDuplicates(formProjects, uniqueFields, 'project');
+    console.log('duplicate errors', duplicateErrors)
+    // TRANSLATE AND DISPLAY MODAL WITH ERRORS
+    if (validationErrors.length > 0) {
+      // Build the Error Messagse for the modal by translating an d formatting each error. ( Calls Helper Function in validationUtil )
+      const translatedAndFormattedValidationErrors = translateAndFormatErrors(validationErrors, language, 'normalValidation')
+      // Set Error Messages for Modal
+      setModalMessage(translatedAndFormattedValidationErrors)
+      setCrudValidationErrors(translatedAndFormattedValidationErrors)
+      setIsModalOpen(true)
+      return
+    }
+
+    if (duplicateErrors.length > 0) {
+      // Build the Error Messagse for the modal by translating an d formatting each error. ( Calls Helper Function in validationUtil )
+      const translatedAndFormattedDuplicationErrors = translateAndFormatErrors(duplicateErrors, language, 'duplicateValidation')
+      // Set Error Messages for Modal
+      setModalMessage(translatedAndFormattedDuplicationErrors)
+      setCrudValidationErrors(translatedAndFormattedDuplicationErrors)
+      setIsModalOpen(true)
+      return
+    }
+
+
+
+
 
     createProject(projectsData, token)
       .then((data) => {
-          setModalMessage(translate('successfullySaved', language))
-          setIsModalOpen(true)
-          setProjects([
-            {
-              year: '',
-              month: '',
-              project_name: '',
-              project_type: '',
-              client: '',
-              business_division: '',
-              sales_revenue: '',
-              dispatch_labor_expense: '',
-              employee_expense: '',
-              indirect_employee_expense: '',
-              expense: '',
-              operating_income: '',
-              non_operating_income: '',
-              non_operating_expense: '',
-              ordinary_profit: '',
-              ordinary_profit_margin: '',
-            },
-          ])
+        setModalMessage(translate('successfullySaved', language))
+        setIsModalOpen(true)
+        setProjects([
+          {
+            year: '',
+            month: '',
+            project_name: '',
+            project_type: '',
+            client: '',
+            business_division: '',
+            sales_revenue: '',
+            dispatch_labor_expense: '',
+            employee_expense: '',
+            indirect_employee_expense: '',
+            expense: '',
+            operating_income: '',
+            non_operating_income: '',
+            non_operating_expense: '',
+            ordinary_profit: '',
+            ordinary_profit_margin: '',
+          },
+        ])
       })
       .catch((error) => {
         if (error.response && error.response.status === 409) {
@@ -362,17 +383,16 @@ const ProjectsRegistration = () => {
           console.error('There was an error with expenses registration!', error)
         }
       })
-  };
-  
+  }
 
   // Handle overwrite confirmation
   const handleOverwriteConfirmation = async () => {
-    setIsOverwriteModalOpen(false); // Close the overwrite modal
-    setIsOverwriteConfirmed(true); // Set overwrite confirmed state
+    setIsOverwriteModalOpen(false) // Close the overwrite modal
+    setIsOverwriteConfirmed(true) // Set overwrite confirmed state
 
     // Call the submission method again after confirmation
-    await handleSubmitConfirmed();
-  };
+    await handleSubmitConfirmed()
+  }
 
   const handleSubmitConfirmed = async () => {
     const projectsData = formProjects.map((projects) => ({
@@ -392,8 +412,8 @@ const ProjectsRegistration = () => {
       non_operating_expense: parseFloat(projects.non_operating_expense),
       ordinary_profit: parseFloat(projects.ordinary_profit),
       ordinary_profit_margin: parseFloat(projects.ordinary_profit_margin),
-    }));
-  
+    }))
+
     overwriteProject(projectsData, token)
       .then((data) => {
         setModalMessage(translate('overWrite', language))
@@ -427,42 +447,42 @@ const ProjectsRegistration = () => {
         } else {
           console.error('Error overwriting data:', overwriteError)
         }
-      }).finally(() => {
+      })
+      .finally(() => {
         setIsOverwriteConfirmed(false) // Reset overwrite confirmation
-      });
-  };
-  
+      })
+  }
 
   useEffect(() => {
-    setIsTranslateSwitchActive(language === 'en');
-  }, [language]);
+    setIsTranslateSwitchActive(language === 'en')
+  }, [language])
 
   const handleTranslationSwitchToggle = () => {
-    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
-    setLanguage(newLanguage);
-  };
+    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
+    setLanguage(newLanguage)
+  }
   useEffect(() => {
     fetchDivision()
     fetchClients()
-  }, [token]);
+  }, [token])
   const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: "January", jp: "1月" },
-    2: { en: "February", jp: "2月" },
-    3: { en: "March", jp: "3月" },
-    4: { en: "April", jp: "4月" },
-    5: { en: "May", jp: "5月" },
-    6: { en: "June", jp: "6月" },
-    7: { en: "July", jp: "7月" },
-    8: { en: "August", jp: "8月" },
-    9: { en: "September", jp: "9月" },
-    10: { en: "October", jp: "10月" },
-    11: { en: "November", jp: "11月" },
-    12: { en: "December", jp: "12月" },
-  };
+    1: { en: 'January', jp: '1月' },
+    2: { en: 'February', jp: '2月' },
+    3: { en: 'March', jp: '3月' },
+    4: { en: 'April', jp: '4月' },
+    5: { en: 'May', jp: '5月' },
+    6: { en: 'June', jp: '6月' },
+    7: { en: 'July', jp: '7月' },
+    8: { en: 'August', jp: '8月' },
+    9: { en: 'September', jp: '9月' },
+    10: { en: 'October', jp: '10月' },
+    11: { en: 'November', jp: '11月' },
+    12: { en: 'December', jp: '12月' },
+  }
 
-  const handleListClick = () => { 
-    navigate('/projects-list');
-  };
+  const handleListClick = () => {
+    navigate('/projects-list')
+  }
 
   return (
     <div className='projectsRegistration_wrapper'>
