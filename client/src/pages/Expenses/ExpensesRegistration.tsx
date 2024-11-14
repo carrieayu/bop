@@ -110,56 +110,49 @@ const ExpensesRegistration = () => {
     }
   }, [location.pathname])
 
-  // CLIENT SIDE VALIDATION FOR EMPTY OR INVALID INPUTS
-  // Specify the record type for validation (e.g., "projects" or "employees" or "expenses" etc.)
-  const recordType = 'expenses'
-  // Get the field checks based on the record type from validationUtil HELPER
-  const fieldChecks = getFieldChecks(recordType)
-
-  const validateExpenses = (records) => {
-    // Call the helper function for validation
-    const validationErrors = validateRecords(records, fieldChecks, 'expense')
-
-    return validationErrors
-  }
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    setModalMessage('') // Reset Modal Message Content
 
-    // CLIENT SIDE VALIDATION CHECK.  ( Calls Helper Function in validationUtil )
+
+    e.preventDefault()
+    // Validation
+
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'expenses'
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateExpenses = (records) => validateRecords(records, fieldChecks, 'expense')
+
+    // Step 2: Validate client-side input
     const validationErrors = validateExpenses(formData) // Get the array of error messages
-    // NEXT STEP: CHECK IF ANY DUPLICATES EXIST
-    // Fields to check for duplicates
+
+    // Step 3: Check for duplicate entries on specific fields
     const uniqueFields = ['year', 'month']
     const duplicateErrors = checkForDuplicates(formData, uniqueFields, 'expense', language)
 
-    // TRANSLATE AND DISPLAY MODAL WITH ERRORS
-    if (validationErrors.length > 0) {
-      // Build the Error Messagse for the modal by translating and formatting each error. ( Calls Helper Function in validationUtil )
-      const translatedAndFormattedValidationErrors = translateAndFormatErrors(
-        validationErrors,
-        language,
-        'normalValidation',
-      )
-      // Set Error Messages for Modal
-      setModalMessage(translatedAndFormattedValidationErrors)
-      setCrudValidationErrors(translatedAndFormattedValidationErrors)
-      setIsModalOpen(true)
-      return
-    }
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
 
-    if (duplicateErrors.length > 0) {
-      // Build the Error Messagse for the modal by translating and formatting each error. ( Calls Helper Function in validationUtil )
-      const translatedAndFormattedDuplicationErrors = translateAndFormatErrors(
-        duplicateErrors,
-        language,
-        'duplicateValidation',
-      )
-      // Set Error Messages for Modal
-      setModalMessage(translatedAndFormattedDuplicationErrors)
-      setCrudValidationErrors(translatedAndFormattedDuplicationErrors)
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+    if (firstError) {
+      console.log(firstError, 'first error')
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      setModalMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
       setIsModalOpen(true)
       return
+    } else {
+      setCrudValidationErrors([])
     }
+    // Continue with submission if no errors
 
     const expensesData = formData.map((ex) => ({
       year: ex.year,
@@ -176,26 +169,6 @@ const ExpensesRegistration = () => {
       transaction_fee: ex.transaction_fee,
     }))
 
-    // Combine year and month for easier duplicate checking
-    const expenses = formData.map((expense) => ({
-      year: expense.year,
-      month: expense.month,
-      //combines them so duplicate inputs can be checked
-      yearMonth: `${expense.year}-${expense.month}`,
-    }))
-
-    // Check for duplicates in the [inputs] submitted cost of sales (year and month combination)
-    const hasDuplicateEntries = (entries, key) => {
-      console.log('entries', entries)
-      return entries.some((entry, index) => entries.findIndex((e) => e[key] === entry[key]) !== index)
-    }
-
-    if (hasDuplicateEntries(expenses, 'yearMonth')) {
-      setModalMessage(translate('duplicateYearAndMonthInputValidationMessage', language))
-      setIsModalOpen(true)
-      return
-    }
-
     if (!token) {
       window.location.href = '/login'
       return
@@ -203,7 +176,10 @@ const ExpensesRegistration = () => {
 
     createExpense(formData, token)
       .then(() => {
+        console.log('in create function')
         setModalMessage(translate('successfullySaved', language))
+        console.log('in create function:modal message',modalMessage)
+
         setIsModalOpen(true)
         setFormData([
           {

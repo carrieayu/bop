@@ -1,50 +1,13 @@
 import { translate } from '../utils/translationUtil'
-
+import { inputFieldConfigurations } from '../inputFieldConfigurations'
 
 // HELPER FUNCTION FOR GETTING FIELDS AND VALIDATION CONFIGURATIONS BASED ON RECORD TYPE
+export const getFieldChecks = (recordType: string) => {
+  // Check if the recordType exists in the inputFieldConfigurations object
+  const recordInputConfig = inputFieldConfigurations[recordType]
 
-export const getFieldChecks = (recordType) => {
-  switch (recordType) {
-    case 'projects':
-      return [
-        // { field: 'project_id', fieldName: 'projectId', isNumber: true, duplicateCheck: true },
-        { field: 'year', fieldName: 'year', isNumber: true, duplicateCheck: true },
-        { field: 'month', fieldName: 'month', isNumber: true, duplicateCheck: true },
-        { field: 'project_name', fieldName: 'projectName', isNumber: false, duplicateCheck: true },
-        { field: 'project_type', fieldName: 'projectType', isNumber: false, duplicateCheck: true }, // Currently Allowed to be NULL
-        { field: 'business_division', fieldName: 'businessDivision', isNumber: false, duplicateCheck: true }, // business_division_id
-        { field: 'client', fieldName: 'clientName', isNumber: false, duplicateCheck: true }, // client_id
-        { field: 'sales_revenue', fieldName: 'salesRevenue', isNumber: true },
-        { field: 'dispatch_labor_expense', fieldName: 'dispatchLaborExpense', isNumber: true },
-        { field: 'employee_expense', fieldName: 'employeeExpense', isNumber: true },
-        { field: 'indirect_employee_expense', fieldName: 'indirectEmployeeExpense', isNumber: true },
-        { field: 'expense', fieldName: 'expense', isNumber: true },
-        { field: 'operating_income', fieldName: 'operatingIncome', isNumber: true },
-        { field: 'non_operating_income', fieldName: 'nonOperatingIncome', isNumber: true },
-        { field: 'non_operating_expense', fieldName: 'nonOperatingExpense', isNumber: true },
-        { field: 'ordinary_profit', fieldName: 'ordinaryProfit', isNumber: true },
-        // { field: 'ordinary_profit_margin', fieldName: 'ordinaryProfitMargin', isNumber: true }, // Not Currently displayed on this screen. Maybe not needed
-      ]
-    case 'expenses':
-      return [
-        // { field: 'expense_id', fieldName: 'expenseId', isNumber: true },
-        { field: 'year', fieldName: 'year', isNumber: true },
-        { field: 'month', fieldName: 'month', isNumber: true },
-        { field: 'consumable_expense', fieldName: 'consumableExpense', isNumber: true },
-        { field: 'rent_expense', fieldName: 'rentExpense', isNumber: true },
-        { field: 'tax_and_public_charge', fieldName: 'taxAndPublicCharge', isNumber: true },
-        { field: 'depreciation_expense', fieldName: 'depreciationExpense', isNumber: true },
-        { field: 'travel_expense', fieldName: 'travelExpense', isNumber: true },
-        { field: 'communication_expense', fieldName: 'communicationExpense', isNumber: true },
-        { field: 'utilities_expense', fieldName: 'utilitiesExpense', isNumber: true },
-        { field: 'transaction_fee', fieldName: 'transactionFee', isNumber: true },
-        { field: 'advertising_expense', fieldName: 'advertisingExpense', isNumber: true },
-        { field: 'entertainment_expense', fieldName: 'entertainmentExpense', isNumber: true },
-        { field: 'professional_service_fee', fieldName: 'professionalServicesFee', isNumber: true },
-      ]
-    default:
-      return []
-  }
+  // If recordType exists, return the configuration, else return an empty array
+  return recordInputConfig ? recordInputConfig : []
 }
 
 // HELPER FUNCTION TO VALIDATE RECORDS BASED ON FIELD CHECKS
@@ -180,9 +143,12 @@ export const translateAndFormatErrors = (errors, language, errorType) => {
       const translatedRecordId = translate(recordId, language);
       const translatedRecordType = translate(recordType, language);
 
-      return `${translatedRecordType} ${translatedRecordId}: ${translatedField}${
-        language === 'en' ? ' ' : 'は'
-      } ${translatedMessage}`;
+      return (
+        `${translatedRecordType} ${translatedRecordId}:
+         "${translatedField}" 
+         ${language === 'en' ? ' ' : 'は'}
+         ${translatedMessage}`
+      );
     });
   }
 
@@ -198,14 +164,14 @@ export const translateAndFormatErrors = (errors, language, errorType) => {
       const finalRecordIds = recordIdArray.join(` ${translate('and', language)} `)
 
       const translatedFieldNames = formattedFieldNames.map((field) => translate(field, language))
-      const translatedFieldNamesFormatted = `[${translatedFieldNames.join(', ')}]${language === 'ja' ? 'は' : ''}`
+      const translatedFieldNamesFormatted = `[${translatedFieldNames.join(', ')}]${language === 'en' ? ' ':'は'}`
 
       const translatedMessage = translate(errorMessage, language)
       const translatedRecordType = translate(recordType, language)
 
       // Example Message:
       // 案件 [1 と 2]: [年, 月, 案件名, 受注事業部 , 顧客] 重複してはならない
-      return `${translatedRecordType} [${finalRecordIds}]: ${translatedFieldNamesFormatted} ${translatedMessage}`
+      return `${translatedRecordType} [${finalRecordIds}]: ${translatedFieldNamesFormatted}${translatedMessage}`
     });
   }
 };

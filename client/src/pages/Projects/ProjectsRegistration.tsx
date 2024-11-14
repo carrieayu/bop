@@ -201,20 +201,7 @@ const ProjectsRegistration = () => {
     }
   }, [location.pathname])
 
-  // CLIENT SIDE VALIDATION FOR EMPTY OR INVALID INPUTS
-  // Specify the record type for validation (e.g., "projects" or "employees" or "expenses" etc.)
-  const recordType = 'projects'
-  // Get the field checks based on the record type from validationUtil HELPER
-  const fieldChecks = getFieldChecks(recordType)
 
-
-  const validateProjects = (records) => {
-    // Call the helper function for validation
-    const validationErrors = validateRecords(records, fieldChecks, 'project')
-
-    return validationErrors
-  }
-  
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -242,34 +229,43 @@ const ProjectsRegistration = () => {
       return
     }
 
-    // CLIENT SIDE VALIDATION CHECK.  ( Calls Helper Function in validationUtil )
-    const validationErrors = validateProjects(formProjects) // Get the array of error messages
+    // Validation
+    
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'projects'
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateProjects = (records) => validateRecords(records, fieldChecks, 'project')
 
-    // NEXT STEP: CHECK IF ANY DUPLICATES EXIST
-    // Fields to check for duplicates
-    const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client'];
-    const duplicateErrors = checkForDuplicates(formProjects, uniqueFields, 'project', language);
+    // Step 2: Validate client-side input
+    const validationErrors = validateProjects(formProjects)
 
-    // TRANSLATE AND DISPLAY MODAL WITH ERRORS
-    if (validationErrors.length > 0) {
-      // Build the Error Messagse for the modal by translating and formatting each error. ( Calls Helper Function in validationUtil )
-      const translatedAndFormattedValidationErrors = translateAndFormatErrors(validationErrors, language, 'normalValidation')
-      // Set Error Messages for Modal
-      setModalMessage(translatedAndFormattedValidationErrors)
-      setCrudValidationErrors(translatedAndFormattedValidationErrors)
+    // Step 3: Check for duplicate entries on specific fields
+    const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client']
+    const duplicateErrors = checkForDuplicates(formProjects, uniqueFields, 'project', language)
+
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
+
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      setModalMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
       setIsModalOpen(true)
       return
+    } else {
+      setCrudValidationErrors([])
     }
-
-    if (duplicateErrors.length > 0) {
-      // Build the Error Messagse for the modal by translating and formatting each error. ( Calls Helper Function in validationUtil )
-      const translatedAndFormattedDuplicationErrors = translateAndFormatErrors(duplicateErrors, language, 'duplicateValidation')
-      // Set Error Messages for Modal
-      setModalMessage(translatedAndFormattedDuplicationErrors)
-      setCrudValidationErrors(translatedAndFormattedDuplicationErrors)
-      setIsModalOpen(true)
-      return
-    }
+    // Continue with submission if no errors
 
     createProject(projectsData, token)
       .then((data) => {

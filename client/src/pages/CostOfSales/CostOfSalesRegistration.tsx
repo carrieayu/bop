@@ -11,6 +11,13 @@ import AlertModal from '../../components/AlertModal/AlertModal'
 import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { createCostOfSale } from '../../api/CostOfSalesEndpoint/CreateCostOfSale'
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+
 
 const months = [
    '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -23,18 +30,18 @@ const CostOfSalesRegistration = () => {
   const [activeTabOther, setActiveTabOther] = useState('costOfSales')
   const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
-  const currentYear = new Date().getFullYear();
-  const startYear = currentYear - 1;
-  const endYear = currentYear + 2;
-  const years = Array.from({ length: endYear - startYear + 1 }, (val, i) => startYear + i);
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
+  const currentYear = new Date().getFullYear()
+  const startYear = currentYear - 1
+  const endYear = currentYear + 2
+  const years = Array.from({ length: endYear - startYear + 1 }, (val, i) => startYear + i)
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [formData, setFormData] = useState([
     {
-      year: '', 
+      year: '',
       month: '',
       purchase: '',
-      outsourcing_expense: '', 
+      outsourcing_expense: '',
       product_purchase: '',
       dispatch_labor_expense: '',
       communication_expense: '',
@@ -44,20 +51,21 @@ const CostOfSalesRegistration = () => {
     },
   ])
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
-  const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false); 
-  const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false);
-   const token = localStorage.getItem('accessToken')
-   
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
+  const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
+  const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
+  const token = localStorage.getItem('accessToken')
+
   const handleAdd = () => {
     if (formData.length < 10) {
       const newFormData = [...formData]
       newFormData.push({
-        year: '', 
+        year: '',
         month: '',
         purchase: '',
-        outsourcing_expense: '', 
+        outsourcing_expense: '',
         product_purchase: '',
         dispatch_labor_expense: '',
         communication_expense: '',
@@ -102,7 +110,6 @@ const CostOfSalesRegistration = () => {
     }
   }
 
-
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
     openModal()
@@ -142,9 +149,9 @@ const CostOfSalesRegistration = () => {
     }
     setFormData(newFormData)
   }
-
+  
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     const costOfSalesData = formData.map((cos) => ({
       year: cos.year,
@@ -156,46 +163,50 @@ const CostOfSalesRegistration = () => {
       communication_expense: cos.communication_expense,
       work_in_progress_expense: cos.work_in_progress_expense,
       amortization_expense: cos.amortization_expense,
-    }));
+    }))
 
-    // Checks if any inputs are empty
-    const areFieldsEmpty = costOfSalesData.some(
-      (entry) => !entry.year || 
-                 !entry.month || 
-                 !entry.purchase || 
-                 !entry.outsourcing_expense || 
-                 !entry.product_purchase || 
-                 !entry.dispatch_labor_expense || 
-                 !entry.communication_expense || 
-                 !entry.work_in_progress_expense || 
-                 !entry.amortization_expense,
-    );
+    // Validation
 
-    if (areFieldsEmpty) {
-      setModalMessage(translate('allFieldsRequiredInputValidationMessage', language));
-      setIsModalOpen(true);
-      return;
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'costOfSales'
+
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateCostOfSales = (records) => validateRecords(records, fieldChecks, 'costOfSales')
+
+    // Step 2: Validate client-side input
+    const validationErrors = validateCostOfSales(formData)
+
+    // Step 3: Check for duplicate entries on specific fields
+    const uniqueFields = ['year', 'month']
+    const duplicateErrors = checkForDuplicates(formData, uniqueFields, 'costOfSales', language)
+
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
+
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      setModalMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
+      setIsModalOpen(true)
+      return
+    } else {
+      setCrudValidationErrors([])
     }
-
-    // Combine year and month for easier duplicate checking
-    const costOfSales = costOfSalesData.map((costOfSale) => ({
-      yearMonth: `${costOfSale.year}-${costOfSale.month}`,
-    }));
-
-    // Check for duplicates in the submitted cost of sales (year and month combination)
-    const hasDuplicateEntries = (entries, key) => {
-      return entries.some((entry, index) => entries.findIndex((e) => e[key] === entry[key]) !== index);
-    };
-
-    if (hasDuplicateEntries(costOfSales, 'yearMonth')) {
-      setModalMessage(translate('duplicateYearAndMonthInputValidationMessage', language));
-      setIsModalOpen(true);
-      return;
-    }
+    // Continue with submission if no errors
 
     if (!token) {
-      window.location.href = '/login';
-      return;
+      window.location.href = '/login'
+      return
     }
 
     createCostOfSale(formData, token)
@@ -241,24 +252,24 @@ const CostOfSalesRegistration = () => {
 
           setModalMessage(message)
           setIsOverwriteModalOpen(true)
-          return 
+          return
         } else {
           console.error('There was an error with expenses registration!', error)
         }
       })
-  };
+  }
 
   // Handle overwrite confirmation
   const handleOverwriteConfirmation = async () => {
-    setIsOverwriteModalOpen(false); // Close the overwrite modal
-    setIsOverwriteConfirmed(true); // Set overwrite confirmed state
+    setIsOverwriteModalOpen(false) // Close the overwrite modal
+    setIsOverwriteConfirmed(true) // Set overwrite confirmed state
 
     // Call the submission method again after confirmation
-    await handleSubmitConfirmed();
-  };
+    await handleSubmitConfirmed()
+  }
 
   const handleSubmitConfirmed = async () => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('accessToken')
 
     try {
       const overwriteResponse = await axios.put(`${getReactActiveEndpoint()}/api/cost-of-sales/create/`, formData, {
@@ -268,64 +279,65 @@ const CostOfSalesRegistration = () => {
         },
       })
 
-      setModalMessage(translate('overWrite', language));
-      setIsModalOpen(true);
+      setModalMessage(translate('overWrite', language))
+      setIsModalOpen(true)
       // Reset form data after successful overwrite
-      setFormData([{
-        year: '',
-        month: '',
-        purchase: '',
-        outsourcing_expense: '',
-        product_purchase: '',
-        dispatch_labor_expense: '',
-        communication_expense: '',
-        work_in_progress_expense: '',
-        amortization_expense: '',
-      }]);
+      setFormData([
+        {
+          year: '',
+          month: '',
+          purchase: '',
+          outsourcing_expense: '',
+          product_purchase: '',
+          dispatch_labor_expense: '',
+          communication_expense: '',
+          work_in_progress_expense: '',
+          amortization_expense: '',
+        },
+      ])
     } catch (overwriteError) {
-      console.error('Error overwriting data:', overwriteError);
+      console.error('Error overwriting data:', overwriteError)
     } finally {
-      setIsOverwriteConfirmed(false); // Reset overwrite confirmation
+      setIsOverwriteConfirmed(false) // Reset overwrite confirmation
     }
-  };
+  }
+
+  useEffect(() => {}, [formData])
 
   useEffect(() => {
-  }, [formData])
-
-  useEffect(() => {
-    const path = location.pathname;
+    const path = location.pathname
     if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
-      setActiveTab(path);
+      setActiveTab(path)
     }
-  }, [location.pathname]);
+  }, [location.pathname])
 
   useEffect(() => {
-    setIsTranslateSwitchActive(language === 'en');
-  }, [language]);
+    setIsTranslateSwitchActive(language === 'en')
+  }, [language])
 
   const handleTranslationSwitchToggle = () => {
-    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
-    setLanguage(newLanguage);
-  };
+    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
+    setLanguage(newLanguage)
+  }
 
   const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: "January", jp: "1月" },
-    2: { en: "February", jp: "2月" },
-    3: { en: "March", jp: "3月" },
-    4: { en: "April", jp: "4月" },
-    5: { en: "May", jp: "5月" },
-    6: { en: "June", jp: "6月" },
-    7: { en: "July", jp: "7月" },
-    8: { en: "August", jp: "8月" },
-    9: { en: "September", jp: "9月" },
-    10: { en: "October", jp: "10月" },
-    11: { en: "November", jp: "11月" },
-    12: { en: "December", jp: "12月" },
-  };
+    1: { en: 'January', jp: '1月' },
+    2: { en: 'February', jp: '2月' },
+    3: { en: 'March', jp: '3月' },
+    4: { en: 'April', jp: '4月' },
+    5: { en: 'May', jp: '5月' },
+    6: { en: 'June', jp: '6月' },
+    7: { en: 'July', jp: '7月' },
+    8: { en: 'August', jp: '8月' },
+    9: { en: 'September', jp: '9月' },
+    10: { en: 'October', jp: '10月' },
+    11: { en: 'November', jp: '11月' },
+    12: { en: 'December', jp: '12月' },
+  }
 
-  const handleListClick = () => { 
-    navigate('/cost-of-sales-list');
-  };
+  const handleListClick = () => {
+    navigate('/cost-of-sales-list')
+  }
 
   return (
     <div className='costOfSalesRegistration_wrapper'>
@@ -521,7 +533,12 @@ const CostOfSalesRegistration = () => {
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
       />
-      <CrudModal message={modalMessage} onClose={() => setIsModalOpen(false)} isCRUDOpen={isModalOpen} />
+      <CrudModal
+        message={modalMessage}
+        onClose={() => setIsModalOpen(false)}
+        isCRUDOpen={isModalOpen}
+        validationMessages={crudValidationErrors}
+      />
       <AlertModal
         isOpen={isOverwriteModalOpen}
         onCancel={() => setIsOverwriteModalOpen(false)}
