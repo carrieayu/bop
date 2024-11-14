@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import ExpensesPlanningCreate, ExpensesPlanningDelete, ExpensesPlanningList, ExpensesPlanningUpdate
-from api.views import ExpensesResultsCreate, ExpensesResultsDelete, ExpensesResultsList, ExpensesResultsUpdate, PasswordForgotView
+from api.views import ExpensesCreate, ExpensesDelete, ExpensesList,ExpensesUpdate, PasswordForgotView
+from api.views import ExpensesResultsCreate, ExpensesResultsDelete, ExpensesResultsList, ExpensesResultsUpdate
 from api.views import PlanningList, PlanningUpdate, PlanningDisplayByProjects
 from api.views import MasterCompaniesList, MasterCompaniesCreate, MasterCompaniesUpdate, MasterCompaniesDelete
 from api.views import ProjectsList,  ProjectsCreate, ProjectsUpdate, ProjectsDelete 
@@ -56,10 +56,10 @@ urlpatterns = [
     path('api/employee-expenses/<str:pk>/delete/', EmployeeExpensesDelete.as_view(), name='employee-expenses-delete'),
     
     # Expenses
-    path('api/expenses/list/', ExpensesPlanningList.as_view(), name = 'expenses-list'),
-    path('api/expenses/create/', ExpensesPlanningCreate.as_view(), name = 'expenses-create'),
-    path('api/expenses/update/', ExpensesPlanningUpdate.as_view(), name = 'expenses-update'),
-    path('api/expenses/<str:pk>/delete/', ExpensesPlanningDelete.as_view(), name='expenses-delete'),
+    path('api/expenses/list/', ExpensesList.as_view(), name = 'expenses-list'),
+    path('api/expenses/create/', ExpensesCreate.as_view(), name = 'expenses-create'),
+    path('api/expenses/update/', ExpensesUpdate.as_view(), name = 'expenses-update'),
+    path('api/expenses/<str:pk>/delete/', ExpensesDelete.as_view(), name='expenses-delete'),
 
     # Expenses Results
     path('api/expenses-results/list/', ExpensesResultsList.as_view(), name = 'expenses-results-list'),

@@ -93,9 +93,6 @@ const ProjectsListAndEdit: React.FC = () => {
           case 'expenses':
             navigate('/expenses-list')
             break
-          case 'expensesResults':
-            navigate('/expenses-results-list')
-            break
           case 'costOfSales':
             navigate('/cost-of-sales-list')
             break
@@ -382,7 +379,6 @@ const ProjectsListAndEdit: React.FC = () => {
                   { labelKey: 'project', tabKey: 'project' },
                   { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
                   { labelKey: 'expenses', tabKey: 'expenses' },
-                  { labelKey: 'expensesResults', tabKey: 'expensesResults' },
                   { labelKey: 'costOfSales', tabKey: 'costOfSales' },
                 ]}
               />

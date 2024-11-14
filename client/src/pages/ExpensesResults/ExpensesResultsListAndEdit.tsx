@@ -76,21 +76,10 @@ const ExpensesResultsList: React.FC = () => {
   const handleTabsClick = (tab) => {
     setActiveTabOther(tab)
     switch (tab) {
-      case 'project':
-        navigate('/projects-list')
-        break
-      case 'employeeExpenses':
-        navigate('/employee-expenses-list')
-        break
-      case 'expenses':
-        navigate('/expenses-list')
-        break
       case 'expensesResults':
         navigate('/expenses-results-list')
         break
-      case 'costOfSales':
-        navigate('/cost-of-sales-list')
-        break
+    
       default:
         break
     }
@@ -357,15 +346,11 @@ const ExpensesResultsList: React.FC = () => {
             <div className='expensesResultsList_mid_body_cont'>
               <ListButtons
                 activeTabOther={activeTabOther}
-                message={translate(isEditing ? 'expensesEdit' : 'expensesList', language)}
+                message={translate(isEditing ? 'expensesEdit' : 'expensesResultsList', language)}
                 handleTabsClick={handleTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
-                  { labelKey: 'project', tabKey: 'project' },
-                  { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
-                  { labelKey: 'expenses', tabKey: 'expenses' },
                   { labelKey: 'expensesResults', tabKey: 'expensesResults' },
-                  { labelKey: 'costOfSales', tabKey: 'costOfSales' },
                 ]}
               />
               <div className={`expensesResultsList_table_wrapper ${isEditing ? 'editMode' : ''}`}>

@@ -94,9 +94,6 @@ const CostOfSalesRegistration = () => {
       case 'expenses':
         navigate('/expenses-registration')
         break
-      case 'expensesResults':
-        navigate('/expenses-results-list')
-        break
       case 'costOfSales':
         navigate('/cost-of-sales-registration')
         break
@@ -351,7 +348,6 @@ const CostOfSalesRegistration = () => {
                 { labelKey: 'project', tabKey: 'project' },
                 { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
                 { labelKey: 'expenses', tabKey: 'expenses' },
-                { labelKey: 'expensesResults', tabKey: 'expensesResults' },
                 { labelKey: 'costOfSales', tabKey: 'costOfSales' },
               ]}
             />
