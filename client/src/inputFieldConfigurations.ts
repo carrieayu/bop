@@ -1,6 +1,10 @@
 
+// 未来： I NEED TO DOUBLE CHECK "isNumber" - in DB sometimes these values are VARCHAR. 
+// Maybe can leave this for backend validation ? -Ed
+
 // INPUT FIELDS FOR Registration & ListAndEdit SCREENS USED IN CLIENT-SIDE VALIDATION 
 export const inputFieldConfigurations = {
+  // Projects
   projects: [
     { field: 'year', fieldName: 'year', isNumber: true, duplicateCheck: true },
     { field: 'month', fieldName: 'month', isNumber: true, duplicateCheck: true },
@@ -18,7 +22,7 @@ export const inputFieldConfigurations = {
     { field: 'non_operating_expense', fieldName: 'nonOperatingExpense', isNumber: true },
     { field: 'ordinary_profit', fieldName: 'ordinaryProfit', isNumber: true },
   ],
-
+  // Expenses
   expenses: [
     { field: 'year', fieldName: 'year', isNumber: true },
     { field: 'month', fieldName: 'month', isNumber: true },
@@ -34,7 +38,7 @@ export const inputFieldConfigurations = {
     { field: 'entertainment_expense', fieldName: 'entertainmentExpense', isNumber: true },
     { field: 'professional_service_fee', fieldName: 'professionalServicesFee', isNumber: true },
   ],
-
+  // Cost Of Sales
   costOfSales: [
     { field: 'year', fieldName: 'year', isNumber: true },
     { field: 'month', fieldName: 'month', isNumber: true },
@@ -46,5 +50,19 @@ export const inputFieldConfigurations = {
     { field: 'work_in_progress_expense', fieldName: 'workInProgressExpense', isNumber: true },
     { field: 'transaction_fee', fieldName: 'transactionFee', isNumber: true },
     { field: 'amortization_expense', fieldName: 'amortizationExpense', isNumber: true },
+  ],
+  // Employee Expenses
+  employeeExpenses: [
+    { field: 'employee', fieldName: 'employee', isRequired: true },
+    { field: 'projectEntries', fieldName: 'projectEntries', isRequired: true, isNested: true },
+    { field: 'employee_id', fieldName: 'employeeId', isNumber: true },
+  ],
+
+  // Employee Expenses: nested containers
+  // Field checks for the containers: `projectEntries` in employeeExpenses
+  employeeExpensesProjectContainers: [
+    { field: 'projects', fieldName: 'projects', isRequired: true, isNumber: false },
+    { field: 'year', fieldName: 'year', isRequired: true, isNumber: true },
+    { field: 'month', fieldName: 'month', isRequired: true, isNumber: true },
   ],
 }
