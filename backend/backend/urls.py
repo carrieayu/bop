@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import ExpensesCreate, ExpensesDelete, ExpensesList,ExpensesUpdate, PasswordForgotView
+from api.views import ExpensesCreate, ExpensesDelete, ExpensesList,ExpensesUpdate, PasswordForgotView, ProjectSalesResultsFilter
+from api.views import ProjectSalesResultsCreate, ProjectSalesResultsDelete, ProjectSalesResultsList, ProjectSalesResultsUpdate
 from api.views import ExpensesResultsCreate, ExpensesResultsDelete, ExpensesResultsList, ExpensesResultsUpdate
 from api.views import PlanningList, PlanningUpdate, PlanningDisplayByProjects
 from api.views import MasterCompaniesList, MasterCompaniesCreate, MasterCompaniesUpdate, MasterCompaniesDelete
@@ -49,6 +50,13 @@ urlpatterns = [
     path('api/projects/update/', ProjectsUpdate.as_view(), name="projects-update"),   
     path('api/projects/<int:pk>/delete/', ProjectsDelete.as_view(), name="projects-delete"), 
 
+    # Project Sales Results
+    path('api/project-sales-results/list/', ProjectSalesResultsList.as_view(), name="project-list"), 
+    path('api/project-sales-results/create/', ProjectSalesResultsCreate.as_view(), name="project-sales-results-create"), 
+    path('api/project-sales-results/update/', ProjectSalesResultsUpdate.as_view(), name="project-sales-results-update"),   
+    path('api/project-sales-results/<int:pk>/delete/', ProjectSalesResultsDelete.as_view(), name="project-sales-results-delete"),
+    path('api/project-sales-results/filter/', ProjectSalesResultsFilter.as_view(), name="project-sales-filtered-list"),
+
     # EmployeeExpenses
     path('api/employee-expenses/list/', EmployeeExpensesList.as_view(), name = 'employee-expenses-list'),
     path('api/employee-expenses/create/', EmployeeExpensesCreate.as_view(), name = 'employee-expenses-create'),
@@ -81,7 +89,7 @@ urlpatterns = [
     # Filters the EmployeeBusinessDivision in Edit Mode on List Screen
     path('api/employees/edit/',  EmployeesEdit.as_view(), name = 'employees-edit'), # used for filtering business divisions when on edit mode
     
-     # Users
+    # Users
     path("api/users/list/", UsersList.as_view(), name="users-list"), #LIST
     path("api/users/create/", UsersCreate.as_view(), name="users-create"), #CREATE
     path('api/users/update/', UsersUpdate.as_view(), name= "users-update"), #UPDATE

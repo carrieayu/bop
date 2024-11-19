@@ -276,6 +276,9 @@ const ExpensesResultsRegistration = () => {
       case 'expensesResults':
         navigate('/expenses-results-list')
         break
+      case 'projectSalesResults':
+        navigate('/project-sales-results-list')
+        break
       default:
         break
     }
@@ -367,6 +370,7 @@ const ExpensesResultsRegistration = () => {
               handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'expensesResults', tabKey: 'expensesResults' },
+                { labelKey: 'projectSalesResults', tabKey: 'projectSalesResults' },
               ]}
             />
           </div>

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import CostOfSales, Expenses, ExpensesResults, MasterBusinessDivision, MasterClient, MasterCompany, Projects, Results, Employees as Employees, EmployeeExpenses
+from .models import CostOfSales, Expenses, ExpensesResults, MasterBusinessDivision, MasterClient, MasterCompany, Projects, ProjectsSalesResults, Results, Employees as Employees, EmployeeExpenses
 
 
 # Employees
@@ -192,6 +192,35 @@ class ProjectsUpdateSerializer(serializers.ModelSerializer):
             "business_division_id",
             ]
 
+# Project Sales Results
+class ProjectSalesResultsListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProjectsSalesResults
+        fields = '__all__'
+
+class ProjectSalesResultsCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProjectsSalesResults
+        fields = '__all__'
+
+class ProjectSalesResultsUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProjectsSalesResults
+        fields = [
+            "sales_revenue",
+            "dispatch_labor_expense",
+            "employee_expense",
+            "indirect_employee_expense",
+            "expense",
+            "operating_income",
+            "non_operating_income",
+            "non_operating_expense",
+            "ordinary_profit",
+            "ordinary_profit_margin",
+            'created_at',
+            'updated_at',
+            ]
+        
 class GetBusinessDivisionMasterSerializer(serializers.ModelSerializer):
     company = MasterCompaniesListSerializer(source='company_id', read_only=True)
 
