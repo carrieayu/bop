@@ -192,7 +192,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
 
       getProjectSalesResults(token)
         .then((data) => {
-          console.log(data)
           setProjectSalesResults(data)
           setOriginalProjectSalesResultsList(data)
         })
