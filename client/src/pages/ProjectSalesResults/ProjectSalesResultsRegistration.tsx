@@ -14,6 +14,8 @@ import AlertModal from '../../components/AlertModal/AlertModal'
 import { overwriteProject } from '../../api/ProjectsEndpoint/OverwriteProject'
 import { getFilteredProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/FilteredGetProjectSalesResults'
 import { createProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/CreateProjectSalesResults'
+import { overwriteProjectSalesResult } from '../../api/ProjectSalesResultsEndpoint/OverwriteProjectSalesResults'
+import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
 
 
 const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
@@ -22,7 +24,7 @@ const ProjectSalesResultsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('project')
+  const [activeTabOther, setActiveTabOther] = useState('projectSalesResults')
   const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
@@ -35,6 +37,7 @@ const ProjectSalesResultsRegistration = () => {
   const [businessDivisionFilter, setBusinessDivisionFilter] = useState<any>([])
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [projectList, setProjectsList] = useState<any>([])
+  const [projectListSelection, setProjectsListSelection] = useState<any>([])
   const [enable , setEnabled] = useState(false)
   const dispatch = useDispatch()
   for (let year = 2021; year <= new Date().getFullYear(); year++) {
@@ -202,8 +205,7 @@ const ProjectSalesResultsRegistration = () => {
           ...(year !== null && { year }),
           ...(projectId !== null && { projectId }),
         }
-        if (filterParams.year && filterParams.month) {
-          setEnabled(true)
+        if (filterParams.year && filterParams.month && filterParams.projectId) {
           getFilteredProjectSalesResults(filterParams, token)
             .then((data) => {
               let matchedClients = []
@@ -227,7 +229,16 @@ const ProjectSalesResultsRegistration = () => {
               setProjectsList(data)
             })
             .catch((error) => {
-              console.error('Error fetching project list:', error)
+              console.error('Error fetching project sales result list:', error)
+            })
+        } else if (filterParams.year && filterParams.month) {
+          setEnabled(true)
+          getFilteredProjectSalesResults(filterParams, token)
+            .then((data) => {
+              setProjectsListSelection(data)
+            })
+            .catch((error) => {
+              console.error('Error fetching project sales result list:', error)
             })
         } else {
           setEnabled(false)
@@ -283,9 +294,10 @@ const ProjectSalesResultsRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-
     const getProjectId = projectList.map((projects) => ({
       project: projects.project_id,
+      client: projects.client,
+      business_division : projects.business_division
     }))
 
     const projectsData = formProjects.map((projects) => ({
@@ -346,7 +358,19 @@ const ProjectSalesResultsRegistration = () => {
         ])
       })
       .catch((error) => {
-        console.error('There was an error with project sales results registration!', error)
+        const existingEntries = error.response.data.existingEntries
+        const existingDetails = existingEntries
+          .map(
+            (entry) =>
+              `'${entry.project_id}'`,
+          )
+          .join(', ')
+
+        let message = translate('projectOverwriteMessage', language).replace('${existingEntries}', existingDetails)
+        
+        setModalMessage(message)
+        setIsOverwriteModalOpen(true)
+        return
       })
   }
 
@@ -360,13 +384,14 @@ const ProjectSalesResultsRegistration = () => {
   }
 
   const handleSubmitConfirmed = async () => {
-    const projectsData = formProjects.map((projects) => ({
-      year: projects.year,
-      month: projects.month,
+    const getProjectId = projectList.map((projects) => ({
+      project_id : projects.project_id,
       project_name: projects.project_name,
-      project_type: projects.project_type,
       client: projects.client,
       business_division: projects.business_division,
+    }))
+
+    const projectsData = formProjects.map((projects) => ({
       sales_revenue: parseFloat(projects.sales_revenue),
       dispatch_labor_expense: parseFloat(projects.dispatch_labor_expense),
       employee_expense: parseFloat(projects.employee_expense),
@@ -379,7 +404,12 @@ const ProjectSalesResultsRegistration = () => {
       ordinary_profit_margin: parseFloat(projects.ordinary_profit_margin),
     }))
 
-    overwriteProject(projectsData, token)
+    const combinedObject = getProjectId.map((item, index) => ({
+      ...item,
+      ...projectsData[index],
+    }))
+
+    overwriteProjectSalesResult(combinedObject, token)
       .then((data) => {
         setModalMessage(translate('overWrite', language))
         setIsModalOpen(true)
@@ -463,7 +493,7 @@ const ProjectSalesResultsRegistration = () => {
           <div className='projectSalesResultsRegistration_top_body_cont'>
             <RegistrationButtons
               activeTabOther={activeTabOther}
-              message={translate('projectsRegistration', language)}
+              message={translate('projectsSalesResultsRegistration', language)}
               handleTabsClick={handleTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
@@ -658,8 +688,8 @@ const ProjectSalesResultsRegistration = () => {
                               value={form.project_name}
                               onChange={(e) => handleChange(index, e)}
                             >
-                              <option value=''>-- Reset --</option>
-                              {projectList.map((project, index) => (
+                              <option value=''></option>
+                              {projectListSelection.map((project, index) => (
                                 <option key={index} value={project.project_id} title={project.client_name}>
                                   {project.project_name}
                                 </option>
