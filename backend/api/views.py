@@ -9,6 +9,9 @@ from django.db import IntegrityError
 from .serializers import (
     # Cost Of Sales
     CostOfSalesSerializer,
+    EmployeeExpensesResultsCreateSerializer,
+    EmployeeExpensesResultsDeleteSerializer,
+    EmployeeExpensesResultsListSerializer,
     ExpensesResultsCreateSerializer,
     ExpensesResultsListSerializer,
     ExpensesResultsUpdateSerializer,
@@ -1363,6 +1366,20 @@ class EmployeeExpensesDelete(generics.DestroyAPIView):
             employee_id = instance.employee_id 
             EmployeeExpenses.objects.filter(employee_id=employee_id).delete()
             return Response({"message": "All employee expenses for this employee deleted successfully"}, status=status.HTTP_200_OK)
+
+# Employee Expenses Results
+class EmployeeExpensesResultsList(generics.ListAPIView):
+    serializer_class = EmployeeExpensesResultsListSerializer
+    permission_classes = [IsAuthenticated]
+
+class EmployeeExpensesResultsCreate(generics.CreateAPIView):
+    serializer_class = EmployeeExpensesResultsCreateSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class EmployeeExpensesResultsDelete(generics.DestroyAPIView):
+    serializer_class = EmployeeExpensesResultsDeleteSerializer
+    permission_classes = [IsAuthenticated]
 
 # Cost Of Sales
 class CostOfSalesList(generics.ListAPIView):

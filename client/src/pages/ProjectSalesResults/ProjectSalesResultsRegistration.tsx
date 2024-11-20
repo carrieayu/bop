@@ -22,7 +22,7 @@ const ProjectSalesResultsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('project')
+  const [activeTabOther, setActiveTabOther] = useState('projectSalesResults')
   const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
@@ -113,6 +113,9 @@ const ProjectSalesResultsRegistration = () => {
         break
       case 'projectSalesResults':
         navigate('/project-sales-results-list')
+        break
+      case 'employeeExpensesResults':
+        navigate('/mployee-expenses-results-list')
         break
       default:
         break
@@ -469,6 +472,7 @@ const ProjectSalesResultsRegistration = () => {
               buttonConfig={[
                 { labelKey: 'expensesResults', tabKey: 'expensesResults' },
                 { labelKey: 'projectSalesResults', tabKey: 'projectSalesResults' },
+                { labelKey: 'employeeExpensesResults', tabKey: 'employeeExpensesResults' },
               ]}
             />
           </div>

@@ -279,6 +279,9 @@ const ExpensesResultsRegistration = () => {
       case 'projectSalesResults':
         navigate('/project-sales-results-list')
         break
+      case 'employeeExpensesResults':
+        navigate('/mployee-expenses-results-list')
+        break
       default:
         break
     }
@@ -371,6 +374,7 @@ const ExpensesResultsRegistration = () => {
               buttonConfig={[
                 { labelKey: 'expensesResults', tabKey: 'expensesResults' },
                 { labelKey: 'projectSalesResults', tabKey: 'projectSalesResults' },
+                { labelKey: 'employeeExpensesResults', tabKey: 'employeeExpensesResults' },
               ]}
             />
           </div>

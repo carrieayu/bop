@@ -440,3 +440,40 @@ class ProjectsSalesResults(models.Model):
         if not self.project_sales_result_id:
             self.project_sales_result_id = self.generate_project_sales_result_id()
         super().save(*args, **kwargs)
+
+class EmployeeExpensesResults(models.Model):
+    employee_expense_result_id  = models.CharField(max_length=10, primary_key=True, editable=False) 
+    employee = models.ForeignKey(Employees, on_delete=models.CASCADE, null=True)
+    year = models.CharField(max_length=4, default="2001")
+    month = models.CharField(max_length=2, default="01")
+    auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
+    client = models.ForeignKey(MasterClient, on_delete=models.CASCADE)
+    project = models.ForeignKey(Projects, on_delete=models.CASCADE, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = u'employee_expenses_results'
+
+    def save(self, *args, **kwargs):
+        if not self.employee_expense_result_id:
+            # Get the maximum existing ID and increment it
+            max_id = EmployeeExpensesResults.objects.aggregate(max_id=Max("employee_expense_result_id"))["max_id"]
+            
+            if max_id is not None:  # Check if max_id is not None
+                max_id_str = str(max_id)  # Convert max_id to string
+                
+                if len(max_id_str) > 1 and max_id_str.startswith('E'):
+                    # Ensure there is a numeric part after 'E'
+                    numeric_part = int(max_id_str[1:]) + 1  # Extract numeric part after 'E'
+                else:
+                    numeric_part = 1  # Start with 1 if the format is unexpected
+            else:
+                numeric_part = 1  # Start with 1 if no records exist
+                
+            self.employee_expense_result_id = f'E{numeric_part:09d}'  # Format as 'E000000001'
+        
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.employee_expense_result_id

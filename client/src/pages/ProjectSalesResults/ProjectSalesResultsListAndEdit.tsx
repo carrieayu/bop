@@ -78,6 +78,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
       case 'projectSalesResults':
         navigate('/project-sales-results-list')
         break
+      case 'employeeExpensesResults':
+        navigate('/mployee-expenses-results-list')
+        break
       default:
         break
     }
@@ -303,6 +306,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                 buttonConfig={[
                   { labelKey: 'expensesResults', tabKey: 'expensesResults' },
                   { labelKey: 'projectSalesResults', tabKey: 'projectSalesResults' },
+                  { labelKey: 'employeeExpensesResults', tabKey: 'employeeExpensesResults' },
                 ]}
               />
               <div className={`projectSalesResultsList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
@@ -483,7 +487,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
                                     {project.project_sales_result_id}
                                   </td>
-                                  <td className='projectSalesResultsList_table_body_content_vertical'>{project.sales_revenue}</td>
+                                  <td className='projectSalesResultsList_table_body_content_vertical'>
+                                    {project.sales_revenue}
+                                  </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
                                     {project.dispatch_labor_expense}
                                   </td>
@@ -493,7 +499,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
                                     {project.indirect_employee_expense}
                                   </td>
-                                  <td className='projectSalesResultsList_table_body_content_vertical'>{project.expense}</td>
+                                  <td className='projectSalesResultsList_table_body_content_vertical'>
+                                    {project.expense}
+                                  </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
                                     {project.operating_income}
                                   </td>

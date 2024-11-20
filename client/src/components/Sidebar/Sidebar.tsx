@@ -158,6 +158,22 @@ const Sidebar = () => {
                   {translate('projectSalesResultsRegistration', language)}
                 </NavLink>
               </li>
+              <li className='sub_menu'>
+                <span className='icons'>
+                  <FaTableList />
+                </span>
+                <NavLink to='/employee-expenses-results-list'>
+                  {translate('employeeExpensesResultsList', language)}
+                </NavLink>
+              </li>
+              <li className='sub_menu'>
+                <span className='icons'>
+                  <AiFillFileAdd />
+                </span>
+                <NavLink to='/employee-expenses-results-registration'>
+                  {translate('employeeExpensesResultsRegistration', language)}
+                </NavLink>
+              </li>
             </>
           )}
           <li onClick={toggleGroup3Visibility} style={{ cursor: 'pointer' }}>
