@@ -17,6 +17,12 @@ import { getUser } from "../../api/UserEndpoint/GetUser";
 import { getCompany } from "../../api/CompanyEndpoint/GetCompany";
 import { deleteBusinessDivision } from "../../api/BusinessDivisionEndpoint/DeleteBusinessDivision";
 import { updateBusinessDivision } from "../../api/BusinessDivisionEndpoint/UpdateBusinessDivision";
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
 
 const BusinessDivisionsListAndEdit: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -44,6 +50,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
     const [isCRUDOpen, setIsCRUDOpen] = useState(false);
     const [crudMessage, setCrudMessage] = useState('');
     const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
+    const [crudValidationErrors, setCrudValidationErrors] = useState([])
+
 
     const handleTabClick = (tab) => {
         setActiveTab(tab)
@@ -93,15 +101,54 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
       const { name, value } = event.target
       setBusiness((prevBusiness) => prevBusiness.map((item, i) => (i === index ? { ...item, [name]: value } : item)))
     }
-  
-    const validateBusinessDivision = (businessDivision) => {
-      return businessDivision.every((bd) => {
-        return bd.business_division_name.trim() !== ''
-      })
-    }
-    
+      
     const handleSubmit = async () => {
       
+      const token = localStorage.getItem('accessToken')
+      if (!token) {
+        window.location.href = '/login'
+        return
+      }
+
+      // # Client Side Validation
+
+      // Step 1: Preparartion for validation
+      // Set record type for validation
+      const recordType = 'businessDivisions'
+      // Retrieve field validation checks based on the record type
+      const fieldChecks = getFieldChecks(recordType)
+      console.log(fieldChecks)
+      // Validate records for the specified project fields
+      const validateBusinessDivision = (records) => validateRecords(records, fieldChecks, 'businessDivision')
+
+      // Step 2: Validate client-side input
+      const validationErrors = validateBusinessDivision(business) // Only one User can be registered but function expects an Array.
+
+      // Step 3: Check for duplicate entries on specific fields
+      const uniqueFields = ['business_division_name', 'company_id']
+      const duplicateErrors = checkForDuplicates(business, uniqueFields, 'businessDivision', language)
+
+      // Step 4: Map error types to data and translation keys for handling in the modal
+      const errorMapping = [
+        { errors: validationErrors, errorType: 'normalValidation' },
+        { errors: duplicateErrors, errorType: 'duplicateValidation' },
+      ]
+
+      // Step 5: Display the first set of errors found, if any
+      const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+      if (firstError) {
+        const { errors, errorType } = firstError
+        const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+        console.log(translatedErrors, 'trans errors')
+        setCrudMessage(translatedErrors)
+        setCrudValidationErrors(translatedErrors)
+        setIsCRUDOpen(true)
+        return
+      } else {
+        setCrudValidationErrors([])
+      }
+
       const getModifiedFields = (original, updated) => {
         const modifiedFields = []
 
@@ -129,63 +176,37 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
       }
       const modifiedFields = getModifiedFields(originalBusiness, business)
       if (modifiedFields.length === 0) {
-        return 
-      }
-        const isDuplicate = business.some((currentBusiness, index) => {
-          return business.some(
-            (otherBusiness, otherIndex) =>
-              index !== otherIndex &&
-              currentBusiness.business_division_name.trim() === otherBusiness.business_division_name.trim() &&
-              currentBusiness.company === otherBusiness.company,
-          )
-        })
-
-      if (!validateBusinessDivision(business)) {
-        setCrudMessage(translate('allFieldsRequiredInputValidationMessage', language));
-        setIsCRUDOpen(true);
         return
-      }
-    
-      if (isDuplicate) {
-        setCrudMessage(translate('businessDivisionUpdateFailed', language));
-        setIsCRUDOpen(true);
-        return;
-      }
-    
-      const token = localStorage.getItem('accessToken');
-      if (!token) {
-        window.location.href = '/login';
-        return;
       }
 
       updateBusinessDivision(modifiedFields, token)
         .then(() => {
-            setCrudMessage(translate('successfullyUpdated', language));
-            setIsCRUDOpen(true);
-            setOriginalBusinessList(business)
-            setIsEditing(false)
+          setCrudMessage(translate('successfullyUpdated', language))
+          setIsCRUDOpen(true)
+          setOriginalBusinessList(business)
+          setIsEditing(false)
         })
         .catch((error) => {
-            if (error.response) {
-              const { status, data } = error.response
-              switch (status) {
-                case 409:
-                  setCrudMessage(translate('businessDivisionNameExistsValidationMessage', language));
-                  setIsCRUDOpen(true);
-                  break
-                case 401:
-                  console.error('Validation error:', data)
-                  window.location.href = '/login'
-                  break
-                default:
-                  console.error('There was an error creating the business division data!', error)
-                  setCrudMessage(translate('error', language));
-                  setIsCRUDOpen(true);
-                  break
-              }
+          if (error.response) {
+            const { status, data } = error.response
+            switch (status) {
+              case 409:
+                setCrudMessage(translate('businessDivisionNameExistsValidationMessage', language))
+                setIsCRUDOpen(true)
+                break
+              case 401:
+                console.error('Validation error:', data)
+                window.location.href = '/login'
+                break
+              default:
+                console.error('There was an error creating the business division data!', error)
+                setCrudMessage(translate('error', language))
+                setIsCRUDOpen(true)
+                break
             }
+          }
         })
-      };
+    };
     
       const handleUpdateConfirm = async () => {
         await handleSubmit(); // Call the submit function for update
@@ -433,7 +454,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                                       value={business_data.company || ''}
                                       onChange={(e) => handleChange(index, e)}
                                     >
-                                      <option value=''>Select a company</option>
                                       {Object.entries(companyMap).map(([companyId, companyName]) => (
                                         <option key={companyId} value={companyId}>
                                           {companyName as String}
@@ -546,7 +566,12 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         onCancel={closeModal}
         message={translate('deleteMessage', language)}
       />
-      <CrudModal isCRUDOpen={isCRUDOpen} onClose={closeModal} message={crudMessage} />
+      <CrudModal
+        isCRUDOpen={isCRUDOpen}
+        onClose={closeModal}
+        message={crudMessage}
+        validationMessages={crudValidationErrors}
+      />
       <AlertModal
         isOpen={isUpdateConfirmationOpen}
         onConfirm={handleUpdateConfirm}

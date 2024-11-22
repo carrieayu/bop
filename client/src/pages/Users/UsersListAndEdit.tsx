@@ -16,6 +16,12 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getUser } from "../../api/UserEndpoint/GetUser";
 import { deleteUser } from "../../api/UserEndpoint/DeleteUser";
 import { updateUser } from "../../api/UserEndpoint/UpdateUser";
+import {
+  validateUserRecord,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicateUsers,
+} from '../../utils/validationUtil'
 
 const UsersListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -51,6 +57,8 @@ const UsersListAndEdit: React.FC = () => {
   const [isCRUDOpen, setIsCRUDOpen] = useState(false);
   const [crudMessage, setCrudMessage] = useState('');
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
+
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -109,164 +117,164 @@ const UsersListAndEdit: React.FC = () => {
     })
   }
   
-  const validateUser = (users) => {
-    return users.every((user) => {
-      const { username, first_name, last_name, email, date_joined } = user
-
-      if (!username || !email || !date_joined) {
-        setCrudMessage(translate('usersValidationText6', language));
-        setIsCRUDOpen(true);
-        return false
-      }
-
-      if (!first_name || !last_name) {
-        setCrudMessage(translate('usersValidationText2', language));
-        setIsCRUDOpen(true);
-        return
-      }
-
-      const usernameRegex = /^[a-zA-Z]+_[a-zA-Z]+$/
-      if (!usernameRegex.test(username)) {
-        setIsUsernameValid(usernameRegex.test(username))
-        setCrudMessage(translate('usersValidationText1', language));
-        setIsCRUDOpen(true);
-        return false
-      } else {
-        setIsUsernameValid(true)
-      }
-
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-      if (!emailRegex.test(email)) {
-        setIsEmailValid(false)
-        setCrudMessage(translate('usersValidationText4', language));
-        setIsCRUDOpen(true);
-        return false
-      } else {
-        setIsEmailValid(true)
-      }
-
-      return true
-      
-    })
-  }
-
   const handleSubmit = async () => {
 
-      if (!validateUser(userList)) {
-        return
-      }
+    const token = localStorage.getItem('accessToken')
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
 
+    // Client Side Validation
+
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'usersList'
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateUser = (records) => validateUserRecord(records, fieldChecks, 'usersList')
+
+    // Step 2: Validate client-side input
+    const validationErrors = validateUser(userList) // Only one User can be registered but function expects an Array.
+
+    // Step 3: Check for duplicate entries on specific fields
+    const uniqueFields = ['email', 'username']
+    const duplicateErrors = checkForDuplicateUsers(userList, uniqueFields, 'usersList', language)
+
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
+
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      console.log(translatedErrors, 'trans errors')
+      setCrudMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
+      setIsCRUDOpen(true)
+      return
+    } else {
+      setCrudValidationErrors([])
+    }
+
+    updateUser(userList, token)
+      .then(() => {
+        setCrudMessage(translate('successfullyUpdated', language))
+        setIsCRUDOpen(true)
+        setIsEditing(false)
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login'
+        } else {
+          console.error('There was an error updating the user data!', error)
+        }
+      })
+  }
+
+  const handleUpdateConfirm = async () => {
+    await handleSubmit(); // Call the submit function for update
+    setIsUpdateConfirmationOpen(false);
+  };
+
+  useEffect(() => {
+    const fetchUsers = async () => {
       const token = localStorage.getItem('accessToken')
       if (!token) {
-        window.location.href = '/login'
+        window.location.href = '/login' // Redirect to login if no token found
         return
       }
 
-      updateUser(userList, token)
-        .then(() => {
-            setCrudMessage(translate('successfullyUpdated', language))
-            setIsCRUDOpen(true)
-            setIsEditing(false)
+      getUser(token)
+        .then((data) => {
+          // Update Date Format For Display: Formats the Date so it appears correctly in the Edit Page;
+          const updatedData = data.map((user) => {
+            return {
+              ...user, // Keep other properties intact
+              date_joined: formatDate(user.date_joined), // Update the date format
+            }
+          })
+          setUserList(updatedData) // Update state with the modified array
         })
         .catch((error) => {
           if (error.response && error.response.status === 401) {
-            window.location.href = '/login'
+            console.log(error)
           } else {
-            console.error('There was an error updating the user data!', error)
+            console.error('There was an error fetching the users!', error)
           }
         })
-    }
-
-    const handleUpdateConfirm = async () => {
-      await handleSubmit(); // Call the submit function for update
-      setIsUpdateConfirmationOpen(false);
-  };
-
-    useEffect(() => {
-      const fetchProjects = async () => {
-        const token = localStorage.getItem('accessToken')
-        if (!token) {
-          window.location.href = '/login' // Redirect to login if no token found
-          return
-        }
-
-        getUser(token)
-          .then((data) => {
-            setUserList(data) 
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 401) {
-              console.log(error)
-            } else {
-              console.error('There was an error fetching the projects!', error)
-            }
-          })
       }
-
-      fetchProjects()
+      fetchUsers()
     }, [])
 
-      useEffect(() => {
-        const startIndex = currentPage * rowsPerPage
-        setPaginatedData(userList.slice(startIndex, startIndex + rowsPerPage))
-      }, [currentPage, rowsPerPage, userList])
+    useEffect(() => {
+      const startIndex = currentPage * rowsPerPage
+      setPaginatedData(userList.slice(startIndex, startIndex + rowsPerPage))
+    }, [currentPage, rowsPerPage, userList])
 
-      useEffect(() => {
-        const path = location.pathname;
-        if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
-          setActiveTab(path);
-        }
-      }, [location.pathname]);
+    useEffect(() => {
+      const path = location.pathname;
+      if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
+        setActiveTab(path);
+      }
+    }, [location.pathname]);
 
-      useEffect(() => {
-        setIsTranslateSwitchActive(language === 'en');
-      }, [language]);
-    
-      const handleTranslationSwitchToggle = () => {
-        if (!isEditing) {
-          const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
-          setInitialLanguage(language); 
-          setLanguage(newLanguage);
-        }
-      };
-
-      const openModal = (users, id) => {
-        setSelectedProject(users)
-        setModalIsOpen(true);
-        setDeleteUserId(id)
+    useEffect(() => {
+      setIsTranslateSwitchActive(language === 'en');
+    }, [language]);
+  
+    const handleTranslationSwitchToggle = () => {
+      if (!isEditing) {
+        const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
+        setInitialLanguage(language); 
+        setLanguage(newLanguage);
+      }
     };
 
-    const closeModal = () => {
-        setSelectedProject(null);
-        setModalIsOpen(false);
-        setIsCRUDOpen(false);
-    };
+    const openModal = (users, id) => {
+      setSelectedProject(users)
+      setModalIsOpen(true);
+      setDeleteUserId(id)
+  };
 
-    const formatDate = (dateString) => {
-      const date = new Date(dateString)
-      const month = String(date.getMonth() + 1).padStart(2, '0') // Get month (0-indexed, so +1)
-      const day = String(date.getDate()).padStart(2, '0') // Get day
-      const year = date.getFullYear() // Get full year
-      return `${month}/${day}/${year}`
-    }
+  const closeModal = () => {
+      setSelectedProject(null);
+      setModalIsOpen(false);
+      setIsCRUDOpen(false);
+  };
+  
+  const formatDate = (dateString) => {
+    if (!dateString) return '' // Handle null or undefined dates
+    const date = new Date(dateString)
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0') // Month is 0-indexed
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}` // Format for HTML input type="date"
+  }
 
-    const handleConfirm = async () => {
-      const token = localStorage.getItem('accessToken')
-      deleteUser(deleteId, token)
-        .then(() => {
-            setUserList((prevList) => prevList.filter((user) => user.id !== deleteId))
-            setCrudMessage(translate('successfullyDeleted', language))
-            setIsCRUDOpen(true)
-            setIsEditing(false)
-        })
-        .catch((error) => {
-          console.error('Error deleting user:', error)
-        })
-    };
+  const handleConfirm = async () => {
+    const token = localStorage.getItem('accessToken')
+    deleteUser(deleteId, token)
+      .then(() => {
+          setUserList((prevList) => prevList.filter((user) => user.id !== deleteId))
+          setCrudMessage(translate('successfullyDeleted', language))
+          setIsCRUDOpen(true)
+          setIsEditing(false)
+      })
+      .catch((error) => {
+        console.error('Error deleting user:', error)
+      })
+  };
 
-    const handleNewRegistrationClick = () => {
-      navigate('/users-registration');
-    };
+  const handleNewRegistrationClick = () => {
+    navigate('/users-registration');
+  };
 
   return (
     <div className='UsersListAndEdit_wrapper'>
@@ -424,9 +432,7 @@ const UsersListAndEdit: React.FC = () => {
                                 <td className='UsersListAndEdit_table_body_content_vertical'>{users.last_name}</td>
                                 <td className='UsersListAndEdit_table_body_content_vertical'>{users.first_name}</td>
                                 <td className='UsersListAndEdit_table_body_content_vertical'>{users.email}</td>
-                                <td className='UsersListAndEdit_table_body_content_vertical'>
-                                  {formatDate(users.date_joined)}
-                                </td>
+                                <td className='UsersListAndEdit_table_body_content_vertical'>{users.date_joined}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -464,7 +470,12 @@ const UsersListAndEdit: React.FC = () => {
         onCancel={closeModal}
         message={translate('deleteMessage', language)}
       />
-      <CrudModal isCRUDOpen={isCRUDOpen} onClose={closeModal} message={crudMessage} />
+      <CrudModal
+        isCRUDOpen={isCRUDOpen}
+        onClose={closeModal}
+        message={crudMessage}
+        validationMessages={crudValidationErrors}
+      />
       <AlertModal
         isOpen={isUpdateConfirmationOpen}
         onConfirm={handleUpdateConfirm}

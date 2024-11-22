@@ -11,6 +11,13 @@ import AlertModal from '../../components/AlertModal/AlertModal'
 import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { createBusinessDivision } from '../../api/BusinessDivisionEndpoint/CreateBusinessDivision'
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+
 
 const BusinessDivisionsRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -37,6 +44,8 @@ const BusinessDivisionsRegistration = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
+    const [crudValidationErrors, setCrudValidationErrors] = useState([])
+
 
     const handleTabClick = (tab) => {
         setActiveTab(tab)
@@ -136,37 +145,56 @@ const BusinessDivisionsRegistration = () => {
 
     
       const handleSubmit = async (e) => {
-        e.preventDefault();
-  
+        e.preventDefault()
+
         const postData = formData.map((business) => ({
           business_division_name: business.business_division_name,
           company_id: business.company_id,
           auth_user_id: business.auth_user_id,
         }))
 
-        // Extract business division names from postData
-        const businessDivisionNames = postData.map((bd) => bd.business_division_name)
-        const companyIds = postData.map((company) => company.company_id)
-
-        // Check for duplicates in the [inputs] submitted business division names
-        const hasDuplicates = businessDivisionNames.some((name, index) => businessDivisionNames.indexOf(name) !== index) &&
-        (companyIds.some((id,index)=> companyIds.indexOf(id) !== index))
-
-        if (!validateBusinessDivision(formData)) {
-          setModalMessage(translate('allFieldsRequiredInputValidationMessage', language));
-          setIsModalOpen(true);
-          return
-        }
-
-        if (hasDuplicates ) {
-          setModalMessage(translate('businessDivisionDuplicateNameInputValidationMessage', language));
-          setIsModalOpen(true);
-          return
-        }
-
         if (!token) {
           window.location.href = '/login'
           return
+        }
+
+        // # Client Side Validation
+
+        // Step 1: Preparartion for validation
+        // Set record type for validation
+        const recordType = 'businessDivisions'
+        // Retrieve field validation checks based on the record type
+        const fieldChecks = getFieldChecks(recordType)
+        console.log(fieldChecks)
+        // Validate records for the specified project fields
+        const validateBusinessDivision = (records) => validateRecords(records, fieldChecks, 'businessDivision')
+
+        // Step 2: Validate client-side input
+        const validationErrors = validateBusinessDivision(formData) // Only one User can be registered but function expects an Array.
+
+        // Step 3: Check for duplicate entries on specific fields
+        const uniqueFields = ['business_division_name', 'company_id']
+        const duplicateErrors = checkForDuplicates(formData, uniqueFields, 'businessDivision', language)
+
+        // Step 4: Map error types to data and translation keys for handling in the modal
+        const errorMapping = [
+          { errors: validationErrors, errorType: 'normalValidation' },
+          { errors: duplicateErrors, errorType: 'duplicateValidation' },
+        ]
+
+        // Step 5: Display the first set of errors found, if any
+        const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+        if (firstError) {
+          const { errors, errorType } = firstError
+          const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+          console.log(translatedErrors, 'trans errors')
+          setModalMessage(translatedErrors)
+          setCrudValidationErrors(translatedErrors)
+          setIsModalOpen(true)
+          return
+        } else {
+          setCrudValidationErrors([])
         }
 
         createBusinessDivision(postData, token)
@@ -182,6 +210,7 @@ const BusinessDivisionsRegistration = () => {
             ])
           })
           .catch((error) => {
+            console.log('error',error)
             if (error.response) {
               const { status, data } = error.response
 
@@ -276,7 +305,9 @@ const BusinessDivisionsRegistration = () => {
                     key={index}
                     className='BusinessDivisionsRegistration_form-content BusinessDivisionsRegistration_ForImplementationOfPlusAndMinus'
                   >
-                    <div className={`BusinessDivisionsRegistration_form-content ${index > 0 ? 'HorizontalLineBelow': ''}`}></div>
+                    <div
+                      className={`BusinessDivisionsRegistration_form-content ${index > 0 ? 'HorizontalLineBelow' : ''}`}
+                    ></div>
                     <div className='BusinessDivisionsRegistration_form-div'>
                       <div className='BusinessDivisionsRegistration_form-content-div'>
                         <div className='BusinessDivisionsRegistration_business_division_name-div'>
@@ -299,7 +330,7 @@ const BusinessDivisionsRegistration = () => {
                             // onChange={handleCompanyChange}
                             onChange={(e) => handleChange(index, e)}
                           >
-                            <option value=''></option>
+                            <option value=''>Select a Company</option>
                             {companyList.map((company) => (
                               <option key={company.company_id} value={company.company_id}>
                                 {company.company_name}
@@ -314,24 +345,24 @@ const BusinessDivisionsRegistration = () => {
                 ))}
               </div>
               {/* <div className='BusinessDivisionsRegistration_lower_form_cont'> */}
-                <div className='BusinessDivisionsRegistration_form-btn-content'>
-                  <div className='BusinessDivisionsRegistration_plus-btn'>
-                    <button className='BusinessDivisionsRegistration_inc' type='button' onClick={handleAdd}>
-                      +
-                    </button>
-                    <button className='BusinessDivisionsRegistration_dec' type='button' onClick={handleMinus}>
-                      -
-                    </button>
-                  </div>
-                  <div className='BusinessDivisionsRegistration_options-btn'>
-                    <button type='button' className='button is-light' onClick={handleCancel}>
-                      {translate('cancel', language)}
-                    </button>
-                    <button type='submit' className='button is-info'>
-                      {translate('submit', language)}
-                    </button>
-                  </div>
+              <div className='BusinessDivisionsRegistration_form-btn-content'>
+                <div className='BusinessDivisionsRegistration_plus-btn'>
+                  <button className='BusinessDivisionsRegistration_inc' type='button' onClick={handleAdd}>
+                    +
+                  </button>
+                  <button className='BusinessDivisionsRegistration_dec' type='button' onClick={handleMinus}>
+                    -
+                  </button>
                 </div>
+                <div className='BusinessDivisionsRegistration_options-btn'>
+                  <button type='button' className='button is-light' onClick={handleCancel}>
+                    {translate('cancel', language)}
+                  </button>
+                  <button type='submit' className='button is-info'>
+                    {translate('submit', language)}
+                  </button>
+                </div>
+              </div>
               {/* </div> */}
             </form>
           </div>
@@ -347,6 +378,7 @@ const BusinessDivisionsRegistration = () => {
         message={modalMessage}
         onClose={() => setIsModalOpen(false)}
         isCRUDOpen={isModalOpen}
+        validationMessages={crudValidationErrors}
       />
     </div>
   )

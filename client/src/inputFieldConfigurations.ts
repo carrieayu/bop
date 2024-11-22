@@ -57,12 +57,50 @@ export const inputFieldConfigurations = {
     { field: 'projectEntries', fieldName: 'projectEntries', isRequired: true, isNested: true },
     { field: 'employee_id', fieldName: 'employeeId', isNumber: true },
   ],
-
   // Employee Expenses: nested containers
   // Field checks for the containers: `projectEntries` in employeeExpenses
   employeeExpensesProjectContainers: [
     { field: 'projects', fieldName: 'projects', isRequired: true, isNumber: false },
     { field: 'year', fieldName: 'year', isRequired: true, isNumber: true },
     { field: 'month', fieldName: 'month', isRequired: true, isNumber: true },
+  ],
+
+  users: [
+    { field: 'username', fieldName: 'username', isRequired: true, isNumber: false, isUsername: true },
+    { field: 'last_name', fieldName: 'lastName', isRequired: true, isNumber: false },
+    { field: 'first_name', fieldName: 'firstName', isRequired: true, isNumber: false },
+    { field: 'password', fieldName: 'password', isRequired: true, isNumber: false, isPassword: true },
+    { field: 'confirm_password', fieldName: 'confirmPassword', isRequired: true, isNumber: false, isPassword: true },
+    { field: 'email', fieldName: 'email', isRequired: true, isNumber: false, isEmail: true },
+    { field: 'confirm_email', fieldName: 'confirmEmail', isRequired: true, isNumber: false, isEmail: true },
+  ],
+  usersList: [
+    { field: 'username', fieldName: 'username', isRequired: true, isNumber: false },
+    { field: 'last_name', fieldName: 'lastName', isRequired: true, isNumber: false },
+    { field: 'first_name', fieldName: 'firstName', isRequired: true, isNumber: false },
+    { field: 'email', fieldName: 'email', isRequired: true, isNumber: false, isEmail: true },
+    { field: 'date_joined', fieldName: 'dateJoined', isRequired: true, isNumber: false },
+  ],
+  clients: [{ field: 'client_name', fieldName: 'clientName', isRequired: true, isNumber: false }],
+  // BUSINESS DIVISIONS
+  businessDivisions: [
+    { field: 'business_division_name', fieldName: 'businessDivision', isRequired: true, isNumber: false },
+    { field: 'company_id', fieldName: 'company', isRequired: true, isNumber: false },
+  ],
+  // EMPLOYEES
+  employees: [
+    { field: 'last_name', fieldName: 'lastName', isRequired: true, isNumber: false },
+    { field: 'first_name', fieldName: 'firstName', isRequired: true, isNumber: false },
+    { field: 'email', fieldName: 'email', isRequired: true, isNumber: false, isEmail: true },
+    { field: 'type', fieldName: 'type', isRequired: true, isNumber: false },
+    { field: 'company_name', fieldName: 'companyName', isRequired: true, isNumber: false },
+    { field: 'salary', fieldName: 'salary', isNumber: true },
+    { field: 'executive_renumeration', fieldName: 'executiveRenumeration', isNumber: true },
+    { field: 'business_division_name', fieldName: 'businessDivision', isNumber: false },
+    { field: 'bonus_and_fuel_allowance', fieldName: 'bonusAndFuelAllowance', isRequired: true, isNumber: false },
+  ],
+  login: [
+    { field: 'username', fieldName: 'username', isRequired: true, isNumber: false },
+    { field: 'password', fieldName: 'password', isRequired: true, isNumber: false },
   ],
 }

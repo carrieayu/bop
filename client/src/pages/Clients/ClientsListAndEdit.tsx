@@ -15,6 +15,13 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getClient } from "../../api/MasterClientEndpoint/GetMasterClient";
 import { deleteClient } from "../../api/MasterClientEndpoint/DeleteMasterClient";
 import { updateMasterClient } from "../../api/MasterClientEndpoint/UpdateMasterClient";
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+
 
 const ClientsListAndEdit: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -39,6 +46,7 @@ const ClientsListAndEdit: React.FC = () => {
     const [isCRUDOpen, setIsCRUDOpen] = useState(false);
     const [crudMessage, setCrudMessage] = useState('');
     const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
+    const [crudValidationErrors, setCrudValidationErrors] = useState([])
 
     const handleTabClick = (tab) => {
         setActiveTab(tab)
@@ -105,14 +113,43 @@ const ClientsListAndEdit: React.FC = () => {
     }
 
     const handleSubmit = async () => {
+ 
+      // # Client Side Validation
 
-      // Extract client names from updatedClients
-      const clientNames = updatedClients.map((cl) => cl.client_name)
-      // Check no inputs are empty on Edit Screen
-      if (!validateClient(updatedClients)) {
-        setCrudMessage(translate('allFieldsRequiredInputValidationMessage', language));
-        setIsCRUDOpen(true);
+      // Step 1: Preparartion for validation
+      // Set record type for validation
+      const recordType = 'clients'
+      // Retrieve field validation checks based on the record type
+      const fieldChecks = getFieldChecks(recordType)
+      // Validate records for the specified project fields
+      const validateUser = (records) => validateRecords(records, fieldChecks, 'client')
+
+      // Step 2: Validate client-side input
+      const validationErrors = validateUser(updatedClients) // Only one User can be registered but function expects an Array.
+
+      // Step 3: Check for duplicate entries on specific fields
+      const uniqueFields = ['client_name']
+      const duplicateErrors = checkForDuplicates(updatedClients, uniqueFields, 'client', language)
+
+      // Step 4: Map error types to data and translation keys for handling in the modal
+      const errorMapping = [
+        { errors: validationErrors, errorType: 'normalValidation' },
+        { errors: duplicateErrors, errorType: 'duplicateValidation' },
+      ]
+
+      // Step 5: Display the first set of errors found, if any
+      const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+      if (firstError) {
+        const { errors, errorType } = firstError
+        const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+        console.log(translatedErrors, 'trans errors')
+        setCrudMessage(translatedErrors)
+        setCrudValidationErrors(translatedErrors)
+        setIsCRUDOpen(true)
         return
+      } else {
+        setCrudValidationErrors([])
       }
 
       const getModifiedFields = (original, updated) => {
@@ -440,7 +477,12 @@ const ClientsListAndEdit: React.FC = () => {
         onCancel={closeModal}
         message={translate('clientDeleteMessage', language)}
       />
-      <CrudModal isCRUDOpen={isCRUDOpen} onClose={closeModal} message={crudMessage} />
+      <CrudModal
+        isCRUDOpen={isCRUDOpen}
+        onClose={closeModal}
+        message={crudMessage}
+        validationMessages={crudValidationErrors}
+      />
       <AlertModal
         isOpen={isUpdateConfirmationOpen}
         onConfirm={handleUpdateConfirm}

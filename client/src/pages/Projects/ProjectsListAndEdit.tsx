@@ -17,6 +17,7 @@ import CrudModal from "../../components/CrudModal/CrudModal";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss';
 import {validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
+import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 import { getProject } from "../../api/ProjectsEndpoint/GetProject";
 import { updateProject } from "../../api/ProjectsEndpoint/UpdateProject";
@@ -139,7 +140,8 @@ const ProjectsListAndEdit: React.FC = () => {
 
 
   const handleSubmit = async () => {
-    // Validation
+    
+    // # Client Side Validation
 
     // Step 1: Preparartion for validation
     // Set record type for validation
@@ -173,7 +175,7 @@ const ProjectsListAndEdit: React.FC = () => {
       setIsCRUDOpen(true)
       return
     } else {
-      setCrudValidationErrors([]);
+      setCrudValidationErrors([])
     }
     // Continue with submission if no errors
 
@@ -327,13 +329,13 @@ const ProjectsListAndEdit: React.FC = () => {
       window.location.href = '/login'
       return
     }
-
+    
     deleteProject(deleteProjectsId, token)
       .then(() => {
-        setProjects((prevList) => prevList.filter((pr) => pr.project_id !== deleteProjectsId))
         setCrudMessage(translate('successfullyDeleted', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
+        setProjects((prevList) => prevList.filter((pr) => pr.project_id !== deleteProjectsId))
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
@@ -531,6 +533,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         name='sales_revenue'
                                         value={project.sales_revenue}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
@@ -539,6 +542,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         name='dispatch_labor_expense'
                                         value={project.dispatch_labor_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
@@ -547,6 +551,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         name='employee_expense'
                                         value={project.employee_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
@@ -555,6 +560,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         name='indirect_employee_expense'
                                         value={project.indirect_employee_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
@@ -563,6 +569,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         name='expense'
                                         value={project.expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
@@ -571,6 +578,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         name='operating_income'
                                         value={project.operating_income}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
@@ -579,6 +587,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         name='non_operating_income'
                                         value={project.non_operating_income}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
@@ -587,6 +596,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         name='non_operating_expense'
                                         value={project.non_operating_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
@@ -595,6 +605,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         name='ordinary_profit'
                                         value={project.ordinary_profit}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='EmployeesListAndEdit_table_body_content_vertical'>

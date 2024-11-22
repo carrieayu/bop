@@ -243,72 +243,10 @@ const EmployeeExpensesRegistration = () => {
     setEmployeeContainers(newContainers) 
   }
 
-  const hasDuplicateProjects = () => {
-    for (const container of employeeContainers) {
-      const projectMap = new Map();
-      
-      for (const projectEntry of container.projectEntries) {
-        const projectId = projectEntry.projects;
-  
-        // Ensure the projectId is not empty before checking
-        if (projectId) {
-          // Check if the project is already present for the same employee
-          if (projectMap.has(projectId)) {
-            return true; // Duplicate project found for the same employee
-          }
-          projectMap.set(projectId, true);
-        }
-      }
-    }
-    
-    return false; // No duplicates found for any employee
-  };
-
-//   const handleValidation = () => {
-//     const projectField = translate('project', language);
-//     const yearField = translate('year', language);
-//     const monthField = translate('month', language);
-
-//     const allFields = [projectField, yearField, monthField];
-  
-//     for (const container of employeeContainers) {
-//         if (!container.employee) {
-//             setModalMessage(translate('employeeExpensesValidation1', language));
-//             setIsModalOpen(true);
-//             return false;
-//         }
-  
-//         for (const projectEntry of container.projectEntries) {
-//             const missingFields = [];
-//             if (!projectEntry.projects) {
-//                 missingFields.push(translate('project', language)); 
-//             }
-//             if (!projectEntry.year) {
-//                 missingFields.push(translate('year', language));
-//             }
-//             if (!projectEntry.month) {
-//                 missingFields.push(translate('month', language));
-//             }
-
-//             // If there are any missing fields, create a message
-//             if (missingFields.length > 0) {
-//                 const fieldsMessage = missingFields.join(', ');
-//                 setModalMessage(translate('employeeExpensesValidation3', language).replace('${fieldsMessage}', fieldsMessage));
-//                 setIsModalOpen(true);
-//                 return false;
-//             }
-//         }
-//     }
-  
-//     return true;
-// };
-
-
   const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log('employee containers', employeeContainers)
-
-    // Validation
+    
+    // # Client Side Validation
 
     // Step 1: Preparartion for validation
     // Set record type for validation
@@ -330,7 +268,13 @@ const EmployeeExpensesRegistration = () => {
 
     // Step 3: Check for duplicate entries on specific fields
     const uniqueFields = ['year', 'month', 'employee', 'projects']
-    const duplicateErrors = checkForDuplicates(employeeContainers, uniqueFields, 'employeeExpenses', language, 'projectEntries')
+    const duplicateErrors = checkForDuplicates(
+      employeeContainers,
+      uniqueFields,
+      'employeeExpenses',
+      language,
+      'projectEntries',
+    )
 
     // Step 4: Map error types to data and translation keys for handling in the modal
     const errorMapping = [

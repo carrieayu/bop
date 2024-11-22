@@ -12,7 +12,8 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { createExpense } from '../../api/ExpenseEndpoint/CreateExpense'
 import { overwriteExpense } from '../../api/ExpenseEndpoint/OverwriteExpense'
-import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates} from '../../utils/validationUtil'
+import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
+import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 
 const months = [
@@ -60,15 +61,19 @@ const ExpensesRegistration = () => {
     setLanguage(newLanguage)
   }
 
-  const handleChange = (index, event) => {
-    const { name, value } = event.target
-    const newFormData = [...formData]
-    newFormData[index] = {
-      ...newFormData[index],
-      [name]: value,
-    }
-    setFormData(newFormData)
+const handleChange = (index, event) => {
+  
+  const { name, value } = event.target
+
+  // Update form data
+  const newFormData = [...formData]
+  newFormData[index] = {
+    ...newFormData[index],
+    [name]: value,
   }
+
+  setFormData(newFormData)
+}
 
   const handleAdd = () => {
     if (formData.length < 10) {
@@ -113,9 +118,9 @@ const ExpensesRegistration = () => {
   const handleSubmit = async (e) => {
     setModalMessage('') // Reset Modal Message Content
 
-
     e.preventDefault()
-    // Validation
+    
+    // # Client Side Validation
 
     // Step 1: Preparartion for validation
     // Set record type for validation
@@ -142,7 +147,6 @@ const ExpensesRegistration = () => {
     const firstError = errorMapping.find(({ errors }) => errors.length > 0)
 
     if (firstError) {
-      console.log(firstError, 'first error')
       const { errors, errorType } = firstError
       const translatedErrors = translateAndFormatErrors(errors, language, errorType)
       setModalMessage(translatedErrors)
@@ -178,7 +182,7 @@ const ExpensesRegistration = () => {
       .then(() => {
         console.log('in create function')
         setModalMessage(translate('successfullySaved', language))
-        console.log('in create function:modal message',modalMessage)
+        console.log('in create function:modal message', modalMessage)
 
         setIsModalOpen(true)
         setFormData([
@@ -431,6 +435,7 @@ const ExpensesRegistration = () => {
                             name='rent_expense'
                             value={form.rent_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -443,6 +448,7 @@ const ExpensesRegistration = () => {
                             name='travel_expense'
                             value={form.travel_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -455,6 +461,7 @@ const ExpensesRegistration = () => {
                             name='transaction_fee'
                             value={form.transaction_fee}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -467,6 +474,7 @@ const ExpensesRegistration = () => {
                             name='professional_service_fee'
                             value={form.professional_service_fee}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -498,6 +506,7 @@ const ExpensesRegistration = () => {
                             name='tax_and_public_charge'
                             value={form.tax_and_public_charge}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -510,6 +519,7 @@ const ExpensesRegistration = () => {
                             name='communication_expense'
                             value={form.communication_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -522,6 +532,7 @@ const ExpensesRegistration = () => {
                             name='advertising_expense'
                             value={form.advertising_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -536,6 +547,7 @@ const ExpensesRegistration = () => {
                             name='consumable_expense'
                             value={form.consumable_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -548,6 +560,7 @@ const ExpensesRegistration = () => {
                             name='depreciation_expense'
                             value={form.depreciation_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -560,6 +573,7 @@ const ExpensesRegistration = () => {
                             name='utilities_expense'
                             value={form.utilities_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -572,6 +586,7 @@ const ExpensesRegistration = () => {
                             name='entertainment_expense'
                             value={form.entertainment_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>

@@ -14,6 +14,7 @@ import AlertModal from '../../components/AlertModal/AlertModal'
 import { createProject } from '../../api/ProjectsEndpoint/CreateProject'
 import { overwriteProject } from '../../api/ProjectsEndpoint/OverwriteProject'
 import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
+import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -205,32 +206,8 @@ const ProjectsRegistration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    const projectsData = formProjects.map((projects) => ({
-      year: projects.year,
-      month: projects.month,
-      project_name: projects.project_name,
-      project_type: projects.project_type,
-      client: projects.client,
-      business_division: projects.business_division,
-      sales_revenue: parseFloat(projects.sales_revenue),
-      dispatch_labor_expense: parseFloat(projects.dispatch_labor_expense),
-      employee_expense: parseFloat(projects.employee_expense),
-      indirect_employee_expense: parseFloat(projects.indirect_employee_expense),
-      expense: parseFloat(projects.expense),
-      operating_income: parseFloat(projects.operating_income),
-      non_operating_income: parseFloat(projects.non_operating_income),
-      non_operating_expense: parseFloat(projects.non_operating_expense),
-      ordinary_profit: parseFloat(projects.ordinary_profit),
-      ordinary_profit_margin: parseFloat(projects.ordinary_profit_margin),
-    }))
+    // Client Side Validation
 
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
-    // Validation
-    
     // Step 1: Preparartion for validation
     // Set record type for validation
     const recordType = 'projects'
@@ -266,6 +243,30 @@ const ProjectsRegistration = () => {
       setCrudValidationErrors([])
     }
     // Continue with submission if no errors
+
+    const projectsData = formProjects.map((projects) => ({
+      year: projects.year,
+      month: projects.month,
+      project_name: projects.project_name,
+      project_type: projects.project_type,
+      client: projects.client,
+      business_division: projects.business_division,
+      sales_revenue: parseFloat(projects.sales_revenue),
+      dispatch_labor_expense: parseFloat(projects.dispatch_labor_expense),
+      employee_expense: parseFloat(projects.employee_expense),
+      indirect_employee_expense: parseFloat(projects.indirect_employee_expense),
+      expense: parseFloat(projects.expense),
+      operating_income: parseFloat(projects.operating_income),
+      non_operating_income: parseFloat(projects.non_operating_income),
+      non_operating_expense: parseFloat(projects.non_operating_expense),
+      ordinary_profit: parseFloat(projects.ordinary_profit),
+      ordinary_profit_margin: parseFloat(projects.ordinary_profit_margin),
+    }))
+
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
 
     createProject(projectsData, token)
       .then((data) => {
@@ -529,6 +530,7 @@ const ProjectsRegistration = () => {
                             name='sales_revenue'
                             value={form.sales_revenue}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -541,6 +543,7 @@ const ProjectsRegistration = () => {
                             name='employee_expense'
                             value={form.employee_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -553,6 +556,7 @@ const ProjectsRegistration = () => {
                             name='operating_income'
                             value={form.operating_income}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -565,6 +569,7 @@ const ProjectsRegistration = () => {
                             name='ordinary_profit'
                             value={form.ordinary_profit}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -612,6 +617,7 @@ const ProjectsRegistration = () => {
                             name='indirect_employee_expense'
                             value={form.indirect_employee_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -624,6 +630,7 @@ const ProjectsRegistration = () => {
                             name='non_operating_income'
                             value={form.non_operating_income}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -636,6 +643,7 @@ const ProjectsRegistration = () => {
                             name='ordinary_profit_margin'
                             value={form.ordinary_profit_margin}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -689,6 +697,7 @@ const ProjectsRegistration = () => {
                             name='dispatch_labor_expense'
                             value={form.dispatch_labor_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -700,6 +709,7 @@ const ProjectsRegistration = () => {
                             name='expense'
                             value={form.expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -713,6 +723,7 @@ const ProjectsRegistration = () => {
                             name='non_operating_expense'
                             value={form.non_operating_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>

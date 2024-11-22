@@ -13,6 +13,14 @@ import AlertModal from '../../components/AlertModal/AlertModal'
 import CrudModal from '../../components/CrudModal/CrudModal'
 import { getSelectedBusinessDivisionCompany } from '../../api/BusinessDivisionEndpoint/GetSelectedBusinessDivisionCompany'
 import { createEmployee } from '../../api/EmployeeEndpoint/CreateEmployee'
+import {
+  validateEmployeeRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+
 
 const EmployeesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -51,6 +59,8 @@ const EmployeesRegistration = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
+
 
   const fetchData = async () => {
     try {
@@ -201,64 +211,6 @@ const EmployeesRegistration = () => {
     setLanguage(newLanguage)
   }
 
- const validateEmployees = (employeeData) => {
-   return employeeData.every((employee) => {
-     
-    // Just removing employee to make them shorter
-    const salary = employee.salary 
-    const executiveRenumeration = employee.executive_renumeration 
-   
-    // Check required fields
-     const requiredFields = [
-       employee.last_name,
-       employee.first_name,
-       employee.email
-     ]
-
-     // Check for empty required fields
-     for (const field of requiredFields) {
-       if (field.trim() === '') {
-         console.log('// At least one required field is empty', field)
-         return false // At least one required field is empty
-       }
-     }
-
-     // Validate email format
-     if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(employee.email)) {
-       console.log('Invalid email')
-       return false // Invalid email
-     }
-
-     // Validate based on employee type
-     if (employee.type === '0') {
-       // Regular employee: salary should be valid, executive_renumeration should be null
-       if (salary === null || isNaN(salary) || salary <= 0 || executiveRenumeration !== null) {
-         console.log('/ Invalid regular employee data')
-         return false // Invalid regular employee data
-       }
-     } else if (employee.type === '1') {
-       // Executive employee: executive_renumeration should be valid, salary should be null
-       if (
-         executiveRenumeration === null ||
-         isNaN(executiveRenumeration) ||
-         executiveRenumeration <= 0 ||
-         salary !== null
-       ) {
-         console.log('Invalid executive employee', salary, executiveRenumeration)
-         return false // Invalid executive employee data
-       }
-     } else {
-       console.log('Unknown Employee type')
-       return false // Unknown employee type
-     }
-
-     // If all validations pass, return true
-     console.log('Validation Passed for employee:', employee)
-     return true
-   })
- }
-
-
   useEffect(() => {
     const path = location.pathname
     if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
@@ -267,15 +219,54 @@ const EmployeesRegistration = () => {
   }, [location.pathname])
 
   const handleSubmit = async (e) => {
-
     e.preventDefault()
+
+    // # Client Side Validation
+
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'employees'
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateEmployees = (records) => validateEmployeeRecords(records, fieldChecks, 'employee')
+
+    // Step 2: Validate client-side input
+    const validationErrors = validateEmployees(employees) // Only one User can be registered but function expects an Array.
+
+    // Step 3: Check for duplicate entries on specific fields
+    const uniqueFields = ['email']
+    const duplicateErrors = checkForDuplicates(employees, uniqueFields, 'employee', language)
+
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
+
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      console.log(translatedErrors, 'trans errors')
+      setModalMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
+      setIsModalOpen(true)
+      return
+    } else {
+      setCrudValidationErrors([])
+    }
+
     const employeeData = employees.map((empl) => ({
       last_name: empl.last_name,
       first_name: empl.first_name,
       type: empl.type,
       email: empl.email,
       salary: empl.type === '0' ? (empl.salary !== '' ? empl.salary : null) : null, // Include salary only if regular
-      executive_renumeration: empl.type === '1' ? (empl.executive_renumeration !== '' ? empl.executive_renumeration : null) : null, // Include executive remuneration only if executive
+      executive_renumeration:
+        empl.type === '1' ? (empl.executive_renumeration !== '' ? empl.executive_renumeration : null) : null, // Include executive remuneration only if executive
       company: empl.company_name,
       business_division: empl.business_division_name,
       bonus_and_fuel_allowance: empl.bonus_and_fuel_allowance,
@@ -286,67 +277,67 @@ const EmployeesRegistration = () => {
       created_at: Date.now(),
     }))
 
-    if (!validateEmployees(employeeData)) {
-      setModalMessage(translate('allFieldsRequiredInputValidationMessage', language))
-      setIsModalOpen(true)
-      return // Stop the submission
-    }
+    // if (!validateEmployees(employeeData)) {
+    //   setModalMessage(translate('allFieldsRequiredInputValidationMessage', language))
+    //   setIsModalOpen(true)
+    //   return // Stop the submission
+    // }
     // Check for duplicates in the email [input] submitted in enmployee
-    const hasDuplicateEntries = (entries, key) => {
-      return entries.some((entry, index) => entries.findIndex((e) => e[key] === entry[key]) !== index)
-    }
+    // const hasDuplicateEntries = (entries, key) => {
+    //   return entries.some((entry, index) => entries.findIndex((e) => e[key] === entry[key]) !== index)
+    // }
 
-        if (hasDuplicateEntries(employees, 'email')) {
-          setModalMessage(translate('employeeDuplicateInputValidationMessage', language));
-          setIsModalOpen(true);
-          return
+    // if (hasDuplicateEntries(employees, 'email')) {
+    //   setModalMessage(translate('employeeDuplicateInputValidationMessage', language));
+    //   setIsModalOpen(true);
+    //   return
+    // }
+
+    createEmployee(employeeData, token)
+      .then(() => {
+        setModalMessage(translate('successfullySaved', language))
+        setIsModalOpen(true)
+        setEmployees([
+          {
+            last_name: '',
+            first_name: '',
+            type: '',
+            email: '',
+            salary: '',
+            executive_renumeration: '',
+            company_name: '',
+            business_division_name: '',
+            bonus_and_fuel_allowance: '',
+            statutory_welfare_expense: '',
+            welfare_expense: '',
+            insurance_premium: '',
+            auth_id: '',
+            created_at: '',
+          },
+        ])
+      })
+      .catch((error) => {
+        if (error.response) {
+          const { status, data } = error.response
+          switch (status) {
+            case 409:
+              const existingEmail = data.errors.map((err) => err.email).join(',') || 'Unknown email'
+              setModalMessage(translate('emailExistsMessage', language).replace('${email}', existingEmail))
+              setIsModalOpen(true)
+              break
+            case 401:
+              console.error('Validation error:', data)
+              window.location.href = '/login'
+              break
+            default:
+              console.error('There was an error creating the employee data!', error)
+              setModalMessage(translate('error', language))
+              setIsModalOpen(true)
+              break
+          }
         }
-        
-        createEmployee(employeeData, token)
-          .then(() => {
-            setModalMessage(translate('successfullySaved', language))
-            setIsModalOpen(true)
-            setEmployees([
-              {
-                last_name: '',
-                first_name: '',
-                type: '',
-                email: '',
-                salary: '',
-                executive_renumeration: '',
-                company_name: '',
-                business_division_name: '',
-                bonus_and_fuel_allowance: '',
-                statutory_welfare_expense: '',
-                welfare_expense: '',
-                insurance_premium: '',
-                auth_id: '',
-                created_at: '',
-              },
-            ])
-          })
-          .catch((error) => {
-            if (error.response) {
-              const { status, data } = error.response
-              switch (status) {
-                case 409:
-                  const existingEmail = data.errors.map((err) => err.email).join(',') || 'Unknown email'
-                  setModalMessage(translate('emailExistsMessage', language).replace('${email}', existingEmail))
-                  setIsModalOpen(true)
-                  break
-                case 401:
-                  console.error('Validation error:', data)
-                  window.location.href = '/login'
-                  break
-                default:
-                  console.error('There was an error creating the employee data!', error)
-                  setModalMessage(translate('error', language))
-                  setIsModalOpen(true)
-                  break
-              }
-            }
-          })
-      }
+      })
+  }
 
   const handleAddContainer = () => {
     setEmployees([
@@ -510,6 +501,7 @@ const EmployeesRegistration = () => {
                                 name='executive_renumeration'
                                 value={container.executive_renumeration || ''} // Ensure empty string as fallback for controlled input
                                 onChange={(e) => handleInputChange(containerIndex, null, e)}
+                                onKeyDown={handleDisableKeysOnNumberInputs}
                                 disabled={container.type !== '1'} // Disabled when not an executive employee
                               />
                             </div>
@@ -522,6 +514,7 @@ const EmployeesRegistration = () => {
                                 name='salary'
                                 value={container.salary || ''} // Ensure empty string as fallback for controlled input
                                 onChange={(e) => handleInputChange(containerIndex, null, e)}
+                                onKeyDown={handleDisableKeysOnNumberInputs}
                                 disabled={container.type !== '0'} // Disabled when not a regular employee
                               />
                             </div>
@@ -530,7 +523,7 @@ const EmployeesRegistration = () => {
                             <div className='EmployeesRegistration_no_selection-div'>
                               <label className='no-selection-label'>{translate('noSelection', language)}</label>
                               <input
-                                disabled={true} // Disabled 
+                                disabled={true} // Disabled
                               />
                             </div>
                           )}
@@ -542,6 +535,7 @@ const EmployeesRegistration = () => {
                               type='number'
                               name='bonus_and_fuel_allowance'
                               value={container.bonus_and_fuel_allowance}
+                              onKeyDown={handleDisableKeysOnNumberInputs}
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
                             />
                           </div>
@@ -553,8 +547,9 @@ const EmployeesRegistration = () => {
                               value={
                                 (container.insurance_premium =
                                   container.type === '0'
-                                    ? (Number(container.salary) * 0.0224).toFixed(2).toString()
-                                    : (Number(container.executive_renumeration) * 0.0224).toFixed(2).toString())
+                                    ? Math.round(Number(container.salary) * 0.0224).toString()
+                                    : Math.round(Number(container.executive_renumeration) * 0.0224).toString()
+                                )
                               }
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
                               readOnly
@@ -599,8 +594,9 @@ const EmployeesRegistration = () => {
                               value={
                                 (container.statutory_welfare_expense =
                                   container.type === '0'
-                                    ? (Number(container.salary) * 0.1451).toFixed(2).toString()
-                                    : (Number(container.executive_renumeration) * 0.1451).toFixed(2).toString())
+                                    ? Math.round(Number(container.salary) * 0.1451).toString()
+                                    : Math.round(Number(container.executive_renumeration) * 0.1451).toString()
+                                )
                               }
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
                               readOnly
@@ -642,7 +638,12 @@ const EmployeesRegistration = () => {
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
       />
-      <CrudModal message={modalMessage} onClose={() => setIsModalOpen(false)} isCRUDOpen={isModalOpen} />
+      <CrudModal
+        message={modalMessage}
+        onClose={() => setIsModalOpen(false)}
+        isCRUDOpen={isModalOpen}
+        validationMessages={crudValidationErrors}
+      />
     </div>
   )
 }

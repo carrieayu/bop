@@ -10,7 +10,6 @@ import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { RiDeleteBin6Fill } from 'react-icons/ri'
 import CrudModal from '../../components/CrudModal/CrudModal'
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss'
 import {
   validateRecords,
@@ -18,6 +17,8 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
+import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+
 
 import { deleteExpense } from '../../api/ExpenseEndpoint/DeleteExpense'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
@@ -125,7 +126,8 @@ const ExpensesList: React.FC = () => {
 
 
   const handleSubmit = async () => {
-    // Validation
+    
+    // # Client Side Validation
 
     // Step 1: Preparartion for validation
     // Set record type for validation
@@ -489,6 +491,7 @@ const ExpensesList: React.FC = () => {
                                         name='consumable_expense'
                                         value={expense.consumable_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -498,6 +501,7 @@ const ExpensesList: React.FC = () => {
                                         name='rent_expense'
                                         value={expense.rent_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -507,6 +511,7 @@ const ExpensesList: React.FC = () => {
                                         name='tax_and_public_charge'
                                         value={expense.tax_and_public_charge}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -516,6 +521,7 @@ const ExpensesList: React.FC = () => {
                                         name='depreciation_expense'
                                         value={expense.depreciation_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -525,6 +531,7 @@ const ExpensesList: React.FC = () => {
                                         name='travel_expense'
                                         value={expense.travel_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -534,6 +541,7 @@ const ExpensesList: React.FC = () => {
                                         name='communication_expense'
                                         value={expense.communication_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -544,6 +552,7 @@ const ExpensesList: React.FC = () => {
                                         name='utilities_expense'
                                         value={expense.utilities_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -553,6 +562,7 @@ const ExpensesList: React.FC = () => {
                                         name='transaction_fee'
                                         value={expense.transaction_fee}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -562,6 +572,7 @@ const ExpensesList: React.FC = () => {
                                         name='advertising_expense'
                                         value={expense.advertising_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -571,6 +582,7 @@ const ExpensesList: React.FC = () => {
                                         name='entertainment_expense'
                                         value={expense.entertainment_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -580,6 +592,7 @@ const ExpensesList: React.FC = () => {
                                         name='professional_service_fee'
                                         value={expense.professional_service_fee}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>

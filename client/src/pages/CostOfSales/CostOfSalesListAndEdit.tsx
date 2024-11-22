@@ -22,6 +22,7 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
+import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 
 const CostOfSalesList: React.FC = () => {
@@ -459,6 +460,7 @@ const CostOfSalesList: React.FC = () => {
                                         name='purchase'
                                         value={costOfSale.purchase}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -468,6 +470,7 @@ const CostOfSalesList: React.FC = () => {
                                         name='outsourcing_expense'
                                         value={costOfSale.outsourcing_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -477,6 +480,7 @@ const CostOfSalesList: React.FC = () => {
                                         name='product_purchase'
                                         value={costOfSale.product_purchase}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -486,6 +490,7 @@ const CostOfSalesList: React.FC = () => {
                                         name='dispatch_labor_expense'
                                         value={costOfSale.dispatch_labor_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -495,6 +500,7 @@ const CostOfSalesList: React.FC = () => {
                                         name='communication_expense'
                                         value={costOfSale.communication_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -504,6 +510,7 @@ const CostOfSalesList: React.FC = () => {
                                         name='work_in_progress_expense'
                                         value={costOfSale.work_in_progress_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -513,6 +520,7 @@ const CostOfSalesList: React.FC = () => {
                                         name='amortization_expense'
                                         value={costOfSale.amortization_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>

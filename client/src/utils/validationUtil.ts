@@ -1,9 +1,15 @@
 import { translate } from '../utils/translationUtil'
 import { inputFieldConfigurations } from '../inputFieldConfigurations'
 
-// HELPER FUNCTION FOR GETTING FIELDS AND VALIDATION CONFIGURATIONS BASED ON RECORD TYPE
+
+// # CLIENT SIDE //
+
+// ------------------------------------------
+// # GET FIELDS FROM inputFieldConguration.ts
+// ------------------------------------------
+
+// # HELPER FUNCTION FOR GETTING FIELDS AND VALIDATION CONFIGURATIONS BASED ON RECORD TYPE
 export const getFieldChecks = (recordType: string) => {
-  console.log(recordType)
   // Check if the recordType exists in the inputFieldConfigurations object
   const recordInputConfig = inputFieldConfigurations[recordType]
 
@@ -11,13 +17,17 @@ export const getFieldChecks = (recordType: string) => {
   return recordInputConfig ? recordInputConfig : []
 }
 
-// HELPER FUNCTION TO VALIDATE RECORDS BASED ON FIELD CHECKS
+// -------------------------------
+// # 1 PREPARE RECORDS FOR VALDATION
+// -------------------------------
+
+// # GENERAL HELPER FUNCTION TO VALIDATE RECORDS BASED ON FIELD CHECKS
+// # Projects, Cost of Sales, Expenses , Clients, Business Divisions
+
 export const validateRecords = (records, fieldChecks, recordType) => {
-  console.log('inside validate records', records, fieldChecks, recordType)
   let validationErrors = [];
   
   for (const record of records) {
-    console.log('record', record)
     // Append '_id' to whatever the record type is.
     // EXAMPLE: 'project' → 'project_id'
     const recordIdField = `${recordType}_id`
@@ -25,21 +35,112 @@ export const validateRecords = (records, fieldChecks, recordType) => {
     const recordId = record[recordIdField] || `${records.indexOf(record) + 1}`
 
     for (const check of fieldChecks) {
-      console.log('check', check)
-      const errorMessage = validateField(record[check.field], check.fieldName, check.isNumber, recordId, recordType);
-      console.log('errorMesage', errorMessage)
+      const errorMessage = validateField(
+        record[check.field],
+        check.fieldName,
+        check.isNumber,
+        recordId,
+        recordType,
+        check.isUsername,
+        check.isEmail,
+        check.isPassword,
+        {},
+        check.isRequired
+      )
+      
       if (errorMessage) {
-        validationErrors.push(errorMessage);
+        validationErrors.push(errorMessage)
       }
     }
   }
-  console.log('validation errors', validationErrors)
   return validationErrors;
 }
 
-// HELPER FUNCTION TO VALIDATE Employee Expenses RECORDS BASED ON FIELD CHECKS
+// # EMPLOYEES VALIDATION (UNIQUE): REGISTRATION & LISTANDEDIT
+// # Employees
+
+export const validateEmployeeRecords = (records, fieldChecks, recordType) => {
+  let validationErrors = []
+
+  // Loop through the records and apply validation rules based on the record's specific type.
+  for (const record of records) {
+    // const { type } = record
+
+    // Determine the validation needed for each record based on its type
+    const selectedInputToCheck = validateSalaryAndRemuneration([record])
+
+    
+    // Append '_id' to whatever the record type is.
+    const recordIdField = `${recordType}_id`
+    const recordId = record[recordIdField] || `${records.indexOf(record) + 1}`
+    
+    // Adjust field checks based on the validation result
+    let updatedFieldChecks = [...fieldChecks] // Copy the original fieldChecks
+
+    if (selectedInputToCheck === 'checkSalary') {
+      // Remove the 'executive_renumeration' field from checks if checkSalary is returned
+      updatedFieldChecks = updatedFieldChecks.filter((check) => check.field !== 'executive_renumeration')
+    } else if (selectedInputToCheck === 'checkExecutiveRenumeration') {
+      // Remove the 'salary' field from checks if checkExecutiveRenumeration is returned
+      updatedFieldChecks = updatedFieldChecks.filter((check) => check.field !== 'salary')
+    } else if (selectedInputToCheck === 'UnknownEmployeeType') {
+      updatedFieldChecks = updatedFieldChecks.filter(
+        (check) => check.field !== 'salary' && check.field !== 'executive_renumeration',
+      )
+    }
+    
+    // Validate the fields for this particular record
+    for (const check of updatedFieldChecks) {
+      const errorMessage = validateField(
+        record[check.field],
+        check.fieldName,
+        check.isNumber,
+        recordId,
+        recordType,
+        false, // isUsername
+        check.isEmail, // isEmail
+        false, // isPassword
+        {}, // record
+        check.isRequired, // isRequired
+      )
+      if (errorMessage) {
+        validationErrors.push(errorMessage)
+      }
+    }
+  }
+
+  return validationErrors
+}
+
+// EMPLOYEES: Check if Salary OR Executive Renumeration Needs to be Validated.
+// ONLY USED IN EMPLOYEES
+export const validateSalaryAndRemuneration = (records) => {
+  // Default to 'AllValid'
+  let validationStatus = 'AllValid';
+
+  for (const { type, salary, executive_renumeration } of records) {
+    if (type === '0' || type === 0) {
+      // Regular employee: salary should be valid, executive_renumeration should be null
+      validationStatus = 'checkSalary';
+    } else if (type === '1' || type === 1) {
+      // Executive employee: executive_renumeration should be valid, salary should be null
+      validationStatus = 'checkExecutiveRenumeration';
+    } else {
+      // Unknown employee type
+      validationStatus = 'UnknownEmployeeType';
+    }
+
+    // Exit once the validation type is determined
+    if (validationStatus !== 'AllValid') break;
+  }
+
+  return validationStatus;
+};
+
+// # EMPLOYEES EXEPENSES VALIDATION (UNIQUE): REGISTRATION & LISTANDEDIT
+// # Employees Expenses
+
 export const validateEmployeeExpensesRecords = (records, fieldChecks, recordType, secondaryRecordType, language) => {
-  console.log('Validating','records:',records, 'fieldChecks:',fieldChecks, 'recordType:',recordType, 'secondaryType:',secondaryRecordType)
   let validationErrors = [];
 
   for (const record of records) {
@@ -57,10 +158,8 @@ export const validateEmployeeExpensesRecords = (records, fieldChecks, recordType
           if (error) validationErrors.push(error);
         }
       } else if (isNested && Array.isArray(record[field])) {
-        console.log('inside nested', record[field])
         // Retrieve nested field checks for `projectEntries`
         const nestedFieldChecks = getFieldChecks(secondaryRecordType)
-        console.log('secondaryRecordType', secondaryRecordType)
         
         // Validate nested fields in projectEntries
         record[field].forEach((entry, entryIndex) => {
@@ -75,6 +174,11 @@ export const validateEmployeeExpensesRecords = (records, fieldChecks, recordType
               nestedCheck.isNumber,
               nestedRecordId,
               recordType,
+              false, // isUsername
+              false, // isEmail
+              false, // isPassword
+              {}, // record
+              false // isRequired
             )
             if (error) validationErrors.push(error)
           })
@@ -83,76 +187,126 @@ export const validateEmployeeExpensesRecords = (records, fieldChecks, recordType
     });
   }
 
-  console.log('Validation errors inside employee expenses validation', validationErrors);
   return validationErrors; // Return collected validation errors
 };
 
+// # USERS VALIDATION (UNIQUE): REGISTRATION & LISTANDEDIT
+// # Users
 
+// Prepare User Screen Form Data for CLient Side Validation
+export const validateUserRecord = (records, fieldChecks, recordType) => {
+  let validationErrors = []
 
-// HELPER FUNCTION FOR CHECKING FOR EMPTY INPUTS & NUMBER VALUES LESS THAN 0
-// recordType is the type of record being registered: For example: (project, user, employee etc.)
+  // Rename recordType from 'usersList' to 'users' for display purposes.
+  const displayRecordType = recordType === 'usersList' ? 'users' : recordType
+
+  for (const record of records) {
+        // Append '_id' to whatever the record type is.
+        // EXAMPLE: 'This table only has 'id' not 'name_id'
+        const recordIdField = ` `
+      // In Error Message: If Registration Screen the Index is used. If Edit Screen then record ID will be used.
+      const recordId = record[recordIdField] || `${records.indexOf(record) + 1}`
+      for (const check of fieldChecks) {
+        const errorMessage = validateField(
+          record[check.field],
+          check.fieldName,
+          check.isNumber,
+          recordId,
+          displayRecordType,
+          check.isUsername,
+          check.isEmail,
+          check.isPassword,
+          record,
+          false, // isRequired
+        )
+        if (errorMessage) {
+          validationErrors.push(errorMessage)
+        }
+      }
+    }
+    return validationErrors
+}
+
+// HELPER FUNCTION FOR DOING VALIDATION CHECKS ON EACH FIELD IN FORM
 export const validateField = (
   value,
   fieldName,
   isNumber,
-  recordId,
-  recordType,
+  recordId, // if Registration Screen will use INDEX. If EDIT Screen record ID in table is used.
+  recordType, // recordType is the type of record being registered: For example: (project, user, employee etc.)
+  isUsername = false, // optional
+  isEmail = false, // optional
+  isPassword = false, // optional
+  record = {}, // optional
+  isRequired = false // optional
 ) => {
-  const maxDecimal = 9999999999.99
-  const maxInteger = 2147483647
+  const maxDecimal = 9999999999.99;
+  const maxInteger = 2147483647;
 
-  // NUMBER LESS THAN 0 
-  if (isNumber && value < 0) {
-    return {
-      fieldName: fieldName,
-      errorMessage: 'cannotBeLessThanZero',
-      recordId: recordId,
-      recordType: recordType,
-    }
-    // EXAMPLE MESSAGE
-    // Project 6000000001: 売上高は 0未満にはできません。
+  // Helper function to create error message
+  const createError = (message) => ({
+    fieldName,
+    errorMessage: message,
+    recordId,
+    recordType,
+  });
+
+  // Number validations
+  if (isNumber) {
+    if (value < 0) return createError('cannotBeLessThanZero');
+    if (Number.isInteger(value) && value > maxInteger) return createError('valueTooLarge');
+    if (!Number.isInteger(value) && value > maxDecimal) return createError('valueTooLarge');
   }
 
-  // NUMBER TO LARGE
-  if (isNumber && Number.isInteger(value) && value > maxInteger) {
-    return {
-      fieldName: fieldName,
-      errorMessage: 'valueTooLarge',
-      recordId: recordId,
-      recordType: recordType,
-    }
-    // EXAMPLE MESSAGE
-    // Project 6000000001: 派遣人件費は 値が大きすぎます。
+  // Empty input validation
+  if (typeof value === 'string' && value.trim() === '') return createError('inputCannotBeEmpty');
+
+  // Specific field validations for salary and executiveRenumeration
+  if ((fieldName === 'salary' || fieldName === 'executiveRenumeration') && value === null) {
+    return createError('inputCannotBeEmpty');
   }
 
-  // NUMBER TO LARGE
-  if (isNumber && !Number.isInteger(value) && value > maxDecimal) {
-    return {
-      fieldName: fieldName,
-      errorMessage: 'valueTooLarge',
-      recordId: recordId,
-      recordType: recordType,
-    }
-    // EXAMPLE MESSAGE
-    // Project 6000000001: 派遣人件費は 値が大きすぎます。
+  // Username validation
+  if (isUsername && !/^[a-zA-Z]+_[a-zA-Z]+$/.test(value)) {
+    return createError('usersValidationText1');
   }
 
-  // EMPTY INPUT
-  if (typeof value === 'string' && value.trim() === '') {
-    console.log('test id',recordId)
-    return {
-      fieldName: fieldName,
-      errorMessage: 'inputCannotBeEmpty',
-      recordId: recordId,
-      recordType: recordType,
+  // Password validation
+  if (isPassword) {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    if (!passwordRegex.test(value)) {
+      return createError('invalidPasswordFormat');
     }
-    // EXAMPLE MESSAGE
-    // Project 6000000002: 売上高は 必須項目です。
+
+    // Check if password and confirm password match for user registration
+    if (recordType === 'user' && fieldName === 'password' && record['password'] !== record['confirm_password']) {
+      return createError('PasswordsDoNotMatch');
+    }
   }
 
-  return '' // No error
+  // Email validation
+  if (isEmail) {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(value)) {
+      return createError('invalidEmailFormat');
+    }
+
+    // Check if email and confirm email match for user registration
+    if (recordType === 'user' && fieldName === 'email' && record['email'] !== record['confirm_email']) {
+      return createError('EmailsDoNotMatch');
+    }
+  }
+
+  // No errors, return empty string
+  return '';
 };
 
+
+// ------------------------------
+// #3 CHECK FOR DUPLICATES IN FORMS 
+// ------------------------------
+    
+// # GENERAL CHECK FOR DUPLICATES
 export const checkForDuplicates = (records, uniqueFields, recordType, language, nestedRecords = '') => {
   const duplicates = []
 
@@ -167,7 +321,6 @@ export const checkForDuplicates = (records, uniqueFields, recordType, language, 
 
       // Check if the unique fields match, including the recordId dynamically
       const isDuplicate = uniqueFields.every((field) => record[field] === comparisonRecord[field])
-      console.log('is duplicate', isDuplicate)
       if (isDuplicate) {
         const fieldName = uniqueFields.join(', ')
 
@@ -184,7 +337,7 @@ export const checkForDuplicates = (records, uniqueFields, recordType, language, 
       }
     }
 
-    // USED IN EMPLOYEE EXPENSES REGISTRATION SCREEN
+    // EMPLOYEE EXPENSES VALIDATION (UNIQUE):REGISTRATION
 
     // Nested duplicate check using a map to store field combinations
     if (Array.isArray(record[nestedRecords])) {
@@ -223,50 +376,111 @@ export const checkForDuplicates = (records, uniqueFields, recordType, language, 
     }
   }
 
+  return duplicates
+}
+
+// # USERS DUPLICATE CHECK: UNIQUE
+export const checkForDuplicateUsers = (records, uniqueFields, recordType, language) => {
+  const duplicates = []
+
+  for (let i = 0; i < records.length; i++) {
+    const record = records[i]
+
+    for (let j = i + 1; j < records.length; j++) {
+      const comparisonRecord = records[j]
+
+      // Determine the ID field dynamically
+      const recordIdField = recordType === 'usersList' ? 'id' : `${recordType}_id`
+
+      // Iterate over each field in uniqueFields and check for duplicates
+      uniqueFields.forEach((field) => {
+        // Check if the field values match (case-insensitive comparison)
+        const isDuplicate = record[field]?.toLowerCase() === comparisonRecord[field]?.toLowerCase()
+
+        if (isDuplicate) {
+          // Generate an error message specific to the field
+          const errorMessage = `cannotBeIdentical`
+
+          // Get the record IDs for the duplicates
+          const recordIds = `${record[recordIdField] || `${i + 1}`} ${translate('and', language)} ${comparisonRecord[recordIdField] || `${j + 1}`}`
+          // Rename recordType from 'userList' to 'user' for display purposes.
+          recordType = 'users'
+          // Push the duplicate information to the duplicates array
+          duplicates.push({
+            fieldName: field,
+            errorMessage: errorMessage,
+            recordIds: recordIds,
+            recordType: recordType,
+          })
+        }
+      })
+    }
+  }
   return duplicates;
 };
-// HELPER FUNCTION FOR TRANSLATING AND FORMATTING ERROR MESSAGES
+
+
+// ------------------------------
+// #4 TRANSLATIONS AND FORMATTING
+// ------------------------------
+
+// # GENERAL HELPER FUNCTION FOR TRANSLATING AND FORMATTING ERROR MESSAGES
 export const translateAndFormatErrors = (errors, language, errorType) => {
+  
+  // Handle normal validation errors
   if (errorType === 'normalValidation') {
     return errors.map((error) => {
       const { fieldName, errorMessage, recordId, recordType } = error;
+
+      // Translate field names and messages
       const translatedField = translate(fieldName, language);
       const translatedMessage = translate(errorMessage, language);
       const translatedRecordId = translate(recordId, language);
       const translatedRecordType = translate(recordType, language);
 
-      return (
-        `${translatedRecordType} ${translatedRecordId}:
-         "${translatedField}" 
-         ${language === 'en' ? ' ' : 'は'}
-         ${translatedMessage}`
-      );
+      // If record type is 'userList', rename it to 'user' (if needed)
+      if (recordType === 'userList') {
+        const renamedUserListRecordType = 'user'; // This seems like a placeholder, maybe unused.
+      }
+
+      // Handle password and email error cases for 'user' record type
+      if (recordType === 'user') {
+        if (['EmailsDoNotMatch', 'PasswordsDoNotMatch'].includes(errorMessage)) {
+          return `${translatedMessage}`;
+        } else {
+          return `${translatedField} ${language === 'en' ? ' ' : 'は'} ${translatedMessage}`;
+        }
+      }
+
+      // Default formatting for other record types
+      return `${translatedRecordType} ${translatedRecordId}: "${translatedField}" ${language === 'en' ? ' ' : 'は'} ${translatedMessage}`;
     });
   }
 
+  // Handle duplicate validation errors (for Registration Edit Pages)
   if (errorType === 'duplicateValidation') {
     return errors.map((error) => {
-      const { fieldName, errorMessage, recordIds, recordType } = error
+      const { fieldName, errorMessage, recordIds, recordType } = error;
 
+      // Format the field names by splitting and converting to camelCase
       const formattedFieldNames = fieldName
         .split(', ')
-        .map((field) => field.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()))
+        .map((field) => field.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()));
 
-      const recordIdArray = recordIds.split(' and ').map((id) => id.trim())
-      const finalRecordIds = recordIdArray.join(` ${translate('and', language)} `)
+      // Format record IDs
+      const recordIdArray = recordIds.split(' and ').map((id) => id.trim());
+      const finalRecordIds = recordIdArray.join(` ${translate('and', language)} `);
 
-      const translatedFieldNames = formattedFieldNames.map((field) => translate(field, language))
-      const translatedFieldNamesFormatted = `${translatedFieldNames.join(', ')} ${language === 'en' ? ' ':'は'}`
+      // Translate the formatted field names and build the final message
+      const translatedFieldNames = formattedFieldNames.map((field) => translate(field, language));
+      const translatedFieldNamesFormatted = `${translatedFieldNames.join(', ')} ${language === 'en' ? ' ' : 'は'}`;
 
-      const translatedMessage = translate(errorMessage, language)
-      const translatedRecordType = translate(recordType, language)
+      // Translate message and record type
+      const translatedMessage = translate(errorMessage, language);
+      const translatedRecordType = translate(recordType, language);
 
-      // Example Message:
-      // 案件 [1 と 2]: [年, 月, 案件名, 受注事業部 , 顧客] 重複してはならない
-      return `${translatedRecordType} [${finalRecordIds}]: ${translatedFieldNamesFormatted}${translatedMessage}`
+      // Example formatted message: 案件 [1 と 2]: [年, 月, 案件名, 受注事業部 , 顧客] 重複してはならない
+      return `${translatedRecordType} [${finalRecordIds}]: ${translatedFieldNamesFormatted}${translatedMessage}`;
     });
   }
 };
-
-
-
