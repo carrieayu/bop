@@ -74,6 +74,7 @@
   "usersValidationText6": "すべての項目は必須です",
   "usersValidationText7": "ユーザー登録にエラーが発生しました。",
   "usersValidationText8": "メールアドレスが一致しません",
+  "usersValidationText9": "プロジェクトはすでに選択されています。別のプロジェクトを選択してください。",
   "confirmEmailAddress": "メールアドレス確認",
   "dateJoined": "入社日",
   "users": "ユーザー",

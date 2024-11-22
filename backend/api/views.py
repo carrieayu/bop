@@ -790,72 +790,40 @@ class ProjectSalesResultsCreate(generics.CreateAPIView):
 
     def post(self, request):
         data = JSONParser().parse(request)
+
+        # Validate input format
         if not isinstance(data, list):
             return JsonResponse({"detail": "Invalid input format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        existing_entries = []
-        for item in data:
-            project = item.get('project')
 
-            existing_entry = ProjectsSalesResults.objects.filter(
-                project_id=project,
-            ).first()
-            if existing_entry:
-                existing_entries.append({
-                    "project_id": project,
-                })
-
-        if existing_entries:
-            return JsonResponse(
-                {
-                    "detail": "Project Sales result data already exist.",
-                    "existingEntries": existing_entries
-                },
-                status=status.HTTP_409_CONFLICT
-            )
-
-        # Proceed with saving data if no duplicates
         responses = []
         for item in data:
             try:
-                serializer = ProjectSalesResultsCreateSerializer(data=item)
-                if serializer.is_valid():
-                    serializer.save()
-                    responses.append({"message": f"Created successfully."})
-                else:
-                    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                project_id = item.get("project")
+                if not project_id:
+                    return JsonResponse({"detail": "Project ID is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-            except Exception as e:
-                return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-        return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
-    
-    def put(self, request):
-        data = JSONParser().parse(request)
-        if not isinstance(data, list):
-            return JsonResponse({"detail": "Invalid input format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
-        responses = []
-        for item in data:
-
-            
-            try:
-                projectId = item.get('project_id')
-                # Check if an entry with the same details exists
-                existing_entry = ProjectsSalesResults.objects.filter(
-                    project_id = projectId
-                ).first()
+                # Check if the entry exists
+                existing_entry = ProjectsSalesResults.objects.filter(project_id=project_id).first()
 
                 if existing_entry:
                     # Update existing entry
                     serializer = ProjectSalesResultsCreateSerializer(existing_entry, data=item, partial=True)
                     if serializer.is_valid():
                         serializer.save()
-                        responses.append({"message": f"Updated successfully."})
+                        responses.append({"project_id": project_id, "message": "Updated successfully."})
+                    else:
+                        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    # Create new entry
+                    serializer = ProjectSalesResultsCreateSerializer(data=item)
+                    if serializer.is_valid():
+                        serializer.save()
+                        responses.append({"project_id": project_id, "message": "Created successfully."})
                     else:
                         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
             except Exception as e:
-                return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                responses.append({"project_id": project_id, "message": str(e)})
 
         return JsonResponse(responses, safe=False, status=status.HTTP_200_OK)
 

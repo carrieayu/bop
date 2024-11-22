@@ -74,6 +74,7 @@
   "usersValidationText6": "All fields are required.",
   "usersValidationText7": "There was an error with user registration.",
   "usersValidationText8": "Emails do not match..",
+  "usersValidationText9": "Project is already selected. Please select a different project.",
   "confirmEmailAddress": "Confirm Email Address",
   "dateJoined": "Date Joined",
   "users": "Users",

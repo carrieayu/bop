@@ -19,6 +19,33 @@ import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/Ge
 
 
 const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
+type Project = {
+  client: string
+  client_name: string
+  project_id: string
+  project_name: string
+  project_type: string
+  business_division: string
+}
+type Projects = {
+  projects: Project[]
+}
+type Clients = {
+  clients: Client[]
+}
+
+type Client = {
+  client_id: string
+  client_name: string
+}
+type Divisions = {
+  divisions: Division[]
+}
+
+type Division = {
+  business_division_id: string
+  business_division_name: string
+}
 
 const ProjectSalesResultsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -31,13 +58,14 @@ const ProjectSalesResultsRegistration = () => {
   const years = []
   const token = localStorage.getItem('accessToken')
   const [clients, setClients] = useState<any>([])
-  const [clientsFilter, setClientsFilter] = useState<any>([])
+  const [clientsFilter, setClientsFilter] = useState<Clients[]>([{ clients : []}])
   const [selectedClient, setSelectedClient] = useState([])
   const [businessSelection, setBusinessSelection] = useState<any>([])
-  const [businessDivisionFilter, setBusinessDivisionFilter] = useState<any>([])
+  const [businessDivisionFilter, setBusinessDivisionFilter] = useState<Divisions[]>([ { divisions: []}])
   const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [projectList, setProjectsList] = useState<any>([])
-  const [projectListSelection, setProjectsListSelection] = useState<any>([])
+  const [projectDataResult, setProjectDataResult] = useState<any>([])
+  const [projectList, setProjectsList] = useState<Projects[]>([{ projects : []}])
+  const [projectListSelection, setProjectsListSelection] = useState<Projects[]>([{ projects: [] }])
   const [enable , setEnabled] = useState(false)
   const dispatch = useDispatch()
   for (let year = 2021; year <= new Date().getFullYear(); year++) {
@@ -51,6 +79,7 @@ const ProjectSalesResultsRegistration = () => {
 
   const [formProjects, setProjects] = useState([
     {
+      id: 1,
       year: '',
       month: '',
       project_name: '',
@@ -72,27 +101,33 @@ const ProjectSalesResultsRegistration = () => {
 
   const handleAdd = () => {
     if (formProjects.length < 10) {
-      setProjects([
-        ...formProjects,
-        {
-          year: '',
-          month: '',
-          project_name: '',
-          project_type: '',
-          client: '',
-          business_division: '',
-          sales_revenue: '',
-          dispatch_labor_expense: '',
-          employee_expense: '',
-          indirect_employee_expense: '',
-          expense: '',
-          operating_income: '',
-          non_operating_income: '',
-          non_operating_expense: '',
-          ordinary_profit: '',
-          ordinary_profit_margin: '',
-        },
-      ])
+      const tempProject = formProjects
+      tempProject.push({
+        id: formProjects.length + 1,
+        year: '',
+        month: '',
+        project_name: '',
+        project_type: '',
+        client: '',
+        business_division: '',
+        sales_revenue: '',
+        dispatch_labor_expense: '',
+        employee_expense: '',
+        indirect_employee_expense: '',
+        expense: '',
+        operating_income: '',
+        non_operating_income: '',
+        non_operating_expense: '',
+        ordinary_profit: '',
+        ordinary_profit_margin: '',
+      })
+      setProjects(tempProject)
+      console.log("tempProject.length:", tempProject.length)
+      
+      setProjectsListSelection([...projectListSelection, { projects: [] }])
+      setClientsFilter([...clientsFilter, { clients: [] }])
+      setProjectsList([...projectList, { projects: [] }])
+      setBusinessDivisionFilter([...businessDivisionFilter, { divisions: [] }])
     } else {
       console.log('You can only add up to 10 forms.')
     }
@@ -130,6 +165,7 @@ const ProjectSalesResultsRegistration = () => {
   const handleRemoveInputData = () => {
     setProjects([
       {
+        id: 1,
         year: '',
         month: '',
         project_name: '',
@@ -179,26 +215,43 @@ const ProjectSalesResultsRegistration = () => {
 
   const handleChange = (index, event) => {
     const { name, value } = event.target
-    const updatedFormData = [...formProjects]
+    // const tempProject = formProjects
+    // tempProject[index] = {
+    //   ...tempProject[index],
+    //   [name]: value,
+    // }
+    // setProjects(tempProject)
+    setProjects((prevFormProjects) => {
+      return prevFormProjects.map((form, i) => {
+        
+        if (i === index) {
+          const resetFields = {
+            month: ['project_name', 'client', 'business_division'],
+            project_name: ['client', 'business_division'],
+          }
+          const fieldsToReset = resetFields[name] || []
+          const resetValues = fieldsToReset.reduce((acc, field) => {
+            acc[field] = ''
+            return acc
+          }, {})
 
-    updatedFormData[index] = {
-      ...updatedFormData[index],
-      [name]: value,
-      ...(name === 'month' && { project_name: '' }),
-      ...(name === 'month' && { client: '' }),
-      ...(name === 'month' && { business_division: '' }),
-      ...(name === 'project_name' && { client: '' }),
-      ...(name === 'project_name' && { business_division: '' }),
-    }
-    setProjects(updatedFormData)
+          return {
+            ...form,
+            [name]: value,
+            ...resetValues,
+          }
+        }
+        return form
+      })
+      }  
+    )
   }
 
   useEffect(() => {
-    formProjects.forEach((project) => {
+    formProjects.forEach((project, index) => {
       const month = project.month || null;
       const year = project.year || null;
       const projectId = project.project_name || null;
-
       if (month !== null || year !== null || projectId !== null ) {
         const filterParams = {
           ...(month !== null && { month }),
@@ -224,9 +277,37 @@ const ProjectSalesResultsRegistration = () => {
                   matchedBusinessDivision = [...matchedBusinessDivision, ...filteredBusinessDivision]
                 }
               })
-              setBusinessDivisionFilter(matchedBusinessDivision)
-              setClientsFilter(matchedClients)
-              setProjectsList(data)
+                setBusinessDivisionFilter((prev) => {
+                  return prev.map((row, projectIndex) => {
+                    if (index == projectIndex) {
+                      return {
+                        divisions: matchedBusinessDivision,
+                      }
+                    }
+                    return row
+                  })
+                })
+               setClientsFilter((prev) => {
+                 return prev.map((row, projectIndex) => {
+                   if (index == projectIndex) {
+                     return {
+                       clients: matchedClients,
+                     }
+                   }
+                   return row
+                 })
+               })
+               setProjectsList((prev) => {
+                 return prev.map((row, projectIndex) => {
+                   if (index == projectIndex) {
+                     return {
+                       projects: data,
+                     }
+                   }
+                   return row
+                 })
+               })
+               setProjectDataResult(data)
             })
             .catch((error) => {
               console.error('Error fetching project sales result list:', error)
@@ -235,7 +316,16 @@ const ProjectSalesResultsRegistration = () => {
           setEnabled(true)
           getFilteredProjectSalesResults(filterParams, token)
             .then((data) => {
-              setProjectsListSelection(data)
+              setProjectsListSelection((prev) => {
+                return prev.map((row, projectIndex) => {
+                  if (index == projectIndex) {
+                    return {
+                      projects: data,
+                    }
+                  }
+                  return row
+                })
+              })
             })
             .catch((error) => {
               console.error('Error fetching project sales result list:', error)
@@ -243,7 +333,6 @@ const ProjectSalesResultsRegistration = () => {
         } else {
           setEnabled(false)
         }
-
       }
     });
   }, [
@@ -292,13 +381,25 @@ const ProjectSalesResultsRegistration = () => {
     })
   }
 
+  const checkDuplicate = (projectsValidate) => {
+
+      return 
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const getProjectId = projectList.map((projects) => ({
-      project: projects.project_id,
-      client: projects.client,
-      business_division : projects.business_division
-    }))
+
+    const getProjectId = projectList.flatMap((projects) =>
+      projects.projects.map((project) => ({
+        project: project.project_id,
+        client: project.client,
+        business_division: project.business_division,
+      })),
+    )
+
+    const duplicates = getProjectId.filter(
+      (item, index, self) => self.findIndex((t) => t.project === item.project) !== index,
+    )
 
     const projectsData = formProjects.map((projects) => ({
       project_name: projects.project_name,
@@ -331,13 +432,21 @@ const ProjectSalesResultsRegistration = () => {
       setIsModalOpen(true)
       return // Stop the submission
     }
+    
 
+    if(duplicates.length > 0){
+      setModalMessage(translate('usersValidationText9', language))
+      setIsModalOpen(true)
+      return
+    }
+    
     createProjectSalesResults(combinedObject, token)
       .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
         setProjects([
           {
+            id: 1,
             year: '',
             month: '',
             project_name: '',
@@ -358,19 +467,7 @@ const ProjectSalesResultsRegistration = () => {
         ])
       })
       .catch((error) => {
-        const existingEntries = error.response.data.existingEntries
-        const existingDetails = existingEntries
-          .map(
-            (entry) =>
-              `'${entry.project_id}'`,
-          )
-          .join(', ')
-
-        let message = translate('projectOverwriteMessage', language).replace('${existingEntries}', existingDetails)
-        
-        setModalMessage(message)
-        setIsOverwriteModalOpen(true)
-        return
+        console.error('Error overwriting data:', error)
       })
   }
 
@@ -380,74 +477,8 @@ const ProjectSalesResultsRegistration = () => {
     setIsOverwriteConfirmed(true) // Set overwrite confirmed state
 
     // Call the submission method again after confirmation
-    await handleSubmitConfirmed()
+    // await handleSubmitConfirmed()
   }
-
-  const handleSubmitConfirmed = async () => {
-    const getProjectId = projectList.map((projects) => ({
-      project_id : projects.project_id,
-      project_name: projects.project_name,
-      client: projects.client,
-      business_division: projects.business_division,
-    }))
-
-    const projectsData = formProjects.map((projects) => ({
-      sales_revenue: parseFloat(projects.sales_revenue),
-      dispatch_labor_expense: parseFloat(projects.dispatch_labor_expense),
-      employee_expense: parseFloat(projects.employee_expense),
-      indirect_employee_expense: parseFloat(projects.indirect_employee_expense),
-      expense: parseFloat(projects.expense),
-      operating_income: parseFloat(projects.operating_income),
-      non_operating_income: parseFloat(projects.non_operating_income),
-      non_operating_expense: parseFloat(projects.non_operating_expense),
-      ordinary_profit: parseFloat(projects.ordinary_profit),
-      ordinary_profit_margin: parseFloat(projects.ordinary_profit_margin),
-    }))
-
-    const combinedObject = getProjectId.map((item, index) => ({
-      ...item,
-      ...projectsData[index],
-    }))
-
-    overwriteProjectSalesResult(combinedObject, token)
-      .then((data) => {
-        setModalMessage(translate('overWrite', language))
-        setIsModalOpen(true)
-        setProjects([
-          {
-            year: '',
-            month: '',
-            project_name: '',
-            project_type: '',
-            client: '',
-            business_division: '',
-            sales_revenue: '',
-            dispatch_labor_expense: '',
-            employee_expense: '',
-            indirect_employee_expense: '',
-            expense: '',
-            operating_income: '',
-            non_operating_income: '',
-            non_operating_expense: '',
-            ordinary_profit: '',
-            ordinary_profit_margin: '',
-          },
-        ])
-      })
-      .catch((overwriteError) => {
-        if (overwriteError.response.status === 400) {
-          // Display project name already exists alert
-          setModalMessage(translate('projectNameExist', language))
-          setIsModalOpen(true)
-        } else {
-          console.error('Error overwriting data:', overwriteError)
-        }
-      })
-      .finally(() => {
-        setIsOverwriteConfirmed(false) // Reset overwrite confirmation
-      })
-  }
-
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
   }, [language])
@@ -542,7 +573,7 @@ const ProjectSalesResultsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                             disabled
                           >
-                            {projectList.map((project, index) => (
+                            {projectList?.[index]?.projects?.map((project, index) => (
                               <option key={index} value={project.project_id}>
                                 {project.project_type}
                               </option>
@@ -629,7 +660,7 @@ const ProjectSalesResultsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                             disabled
                           >
-                            {clientsFilter.map((client, index) => (
+                            {clientsFilter?.[index]?.clients?.map((client, index) => (
                               <option key={index} value={client.client_id}>
                                 {client.client_name}
                               </option>
@@ -689,7 +720,7 @@ const ProjectSalesResultsRegistration = () => {
                               onChange={(e) => handleChange(index, e)}
                             >
                               <option value=''></option>
-                              {projectListSelection.map((project, index) => (
+                              {projectListSelection[index]?.projects?.map((project, index) => (
                                 <option key={index} value={project.project_id} title={project.client_name}>
                                   {project.project_name}
                                 </option>
@@ -704,7 +735,7 @@ const ProjectSalesResultsRegistration = () => {
                               disabled
                             >
                               <option value=''></option>
-                              {projectList.map((project, index) => (
+                              {projectList?.[index]?.projects?.map((project, index) => (
                                 <option key={index} value={project.project_id}>
                                   {project.project_name}
                                 </option>
@@ -725,7 +756,7 @@ const ProjectSalesResultsRegistration = () => {
                               onChange={(e) => handleChange(index, e)}
                               disabled
                             >
-                              {businessDivisionFilter.map((division, index) => (
+                              {businessDivisionFilter?.[index]?.divisions?.map((division, index) => (
                                 <option key={index} value={division.business_division_id}>
                                   {division.business_division_name}
                                 </option>
