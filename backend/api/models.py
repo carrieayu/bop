@@ -398,25 +398,25 @@ class ProjectsSalesResults(models.Model):
         max_length=10, primary_key=True , editable=False
     )
     project = models.ForeignKey(Projects, on_delete=models.CASCADE, null=True)
-    sales_revenue = models.IntegerField(max_digits=12, decimal_places=2, default=0.0)
+    sales_revenue = models.IntegerField(max_length=12)
     dispatch_labor_expense = models.IntegerField(
-        max_digits=12, decimal_places=2, default=0.0
+        max_length=12
     )
     employee_expense = models.IntegerField(
-        max_digits=12, decimal_places=2, default=0.0
+        max_length=12
     )
     indirect_employee_expense = models.IntegerField(
-        max_digits=12, decimal_places=2, default=0.0
+        max_length=12
     )
-    expense = models.IntegerField(max_digits=12, decimal_places=2, default=0.0)
-    operating_income = models.IntegerField(max_digits=12, decimal_places=2, default=0.0)
+    expense = models.IntegerField(max_length=12)
+    operating_income = models.IntegerField(max_length=12)
     non_operating_income = models.IntegerField(
-        max_digits=12, decimal_places=2, default=0.0
+        max_length=12
     )
     non_operating_expense = models.IntegerField(
-        max_digits=12, decimal_places=2, default=0.0
+        max_length=12
     )
-    ordinary_profit = models.IntegerField(max_digits=12, decimal_places=2, default=0.0)
+    ordinary_profit = models.IntegerField(max_length=12)
     ordinary_profit_margin = models.IntegerField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
