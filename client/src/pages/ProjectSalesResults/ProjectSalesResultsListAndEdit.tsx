@@ -259,7 +259,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
 
     deleteProjectSalesResults(deleteProjectsId, token)
       .then(() => {
-        setProjectSalesResults((prevList) => prevList.filter((pr) => pr.project_id !== deleteProjectsId))
+        setProjectSalesResults((prevList) => prevList.filter((pr) => pr.project_sales_result_id !== deleteProjectsId))
         setCrudMessage(translate('successfullyDeleted', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
@@ -300,7 +300,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
             <div className='projectSalesResultsList_mid_body_cont'>
               <ListButtons
                 activeTabOther={activeTabOther}
-                message={translate(isEditing ? 'projectsEdit' : 'projectsList', language)}
+                message={translate(isEditing ? 'projectsSalesResultsEdit' : 'projectsSalesResultsList', language)}
                 handleTabsClick={handleTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
@@ -320,7 +320,22 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                               <thead>
                                 <tr className='projectSalesResultsList_table_title '>
                                   <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
-                                    {translate('projectSalesResultsId', language)}
+                                    {translate('year', language)}
+                                  </th>
+                                  <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
+                                    {translate('month', language)}
+                                  </th>
+                                  <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
+                                    {translate('projectName', language)}
+                                  </th>
+                                  <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
+                                    {translate('projectType', language)}
+                                  </th>
+                                  <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
+                                    {translate('client', language)}
+                                  </th>
+                                  <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
+                                    {translate('businessDivision', language)}
                                   </th>
                                   <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                     {translate('saleRevenue', language)}
@@ -357,8 +372,36 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                               <tbody className='projectSalesResultsList_table_body'>
                                 {projectSalesResults.map((projectSalesResults, index) => (
                                   <tr key={index} className='projectSalesResultsList_table_body_content_horizontal'>
-                                    <td className='projectSalesResultsList_table_body_content_vertical'>
-                                      {projectSalesResults.project_sales_result_id}
+                                    <td className='projectsList_table_body_content_vertical'>
+                                      {projectSalesResults.projects?.year}
+                                    </td>
+                                    <td className='projectsList_table_body_content_vertical'>
+                                      {projectSalesResults.projects?.month}
+                                    </td>
+                                    <td className='projectsList_table_body_content_vertical'>
+                                      {projectSalesResults.projects?.project_name}
+                                    </td>
+                                    <td className='projectsList_table_body_content_vertical'>
+                                      {projectSalesResults.projects?.project_type}
+                                    </td>
+                                    <td className='projectsList_table_body_content_vertical'>
+                                      {clients.map(
+                                        (client) =>
+                                          client.client_id === projectSalesResults.projects?.client && (
+                                            <div key={client.client_id}>{client.client_name}</div>
+                                          ),
+                                      )}
+                                    </td>
+                                    <td className='projectsList_table_body_content_vertical'>
+                                      {businessSelection.map(
+                                        (business) =>
+                                          business.business_division_id ===
+                                            projectSalesResults.projects?.business_division && (
+                                            <div key={business.business_division_id}>
+                                              {business.business_division_name}
+                                            </div>
+                                          ),
+                                      )}
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
@@ -450,7 +493,22 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                             <thead>
                               <tr className='projectSalesResultsList_table_title '>
                                 <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
-                                  {translate('projectSalesResultsId', language)}
+                                  {translate('year', language)}
+                                </th>
+                                <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
+                                  {translate('month', language)}
+                                </th>
+                                <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
+                                  {translate('projectName', language)}
+                                </th>
+                                <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
+                                  {translate('projectType', language)}
+                                </th>
+                                <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
+                                  {translate('client', language)}
+                                </th>
+                                <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
+                                  {translate('businessDivision', language)}
                                 </th>
                                 <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                   {translate('saleRevenue', language)}
@@ -484,8 +542,33 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                             <tbody className='projectSalesResultsList_table_body'>
                               {projectSalesResults.map((project, index) => (
                                 <tr key={index} className='projectSalesResultsList_table_body_content_horizontal'>
-                                  <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {project.project_sales_result_id}
+                                  <td className='projectsList_table_body_content_vertical'>{project.projects?.year}</td>
+                                  <td className='projectsList_table_body_content_vertical'>
+                                    {project.projects?.month}
+                                  </td>
+                                  <td className='projectsList_table_body_content_vertical'>
+                                    {project.projects?.project_name}
+                                  </td>
+                                  <td className='projectsList_table_body_content_vertical'>
+                                    {project.projects?.project_type}
+                                  </td>
+                                  <td className='projectsList_table_body_content_vertical'>
+                                    {clients.map(
+                                      (client) =>
+                                        client.client_id === project.projects?.client && (
+                                          <div key={client.client_id}>{client.client_name}</div>
+                                        ),
+                                    )}
+                                  </td>
+                                  <td className='projectsList_table_body_content_vertical'>
+                                    {businessSelection.map(
+                                      (business) =>
+                                        business.business_division_id === project.projects?.business_division && (
+                                          <div key={business.business_division_id}>
+                                            {business.business_division_name}
+                                          </div>
+                                        ),
+                                    )}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
                                     {project.sales_revenue}

@@ -793,24 +793,42 @@ class ProjectSalesResultsCreate(generics.CreateAPIView):
 
     def post(self, request):
         data = JSONParser().parse(request)
+
+        # Validate input format
         if not isinstance(data, list):
             return JsonResponse({"detail": "Invalid input format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Proceed with saving data if no duplicates
         responses = []
         for item in data:
             try:
-                serializer = ProjectSalesResultsCreateSerializer(data=item)
-                if serializer.is_valid():
-                    serializer.save()
-                    responses.append({"message": f"Created successfully."})
+                project_id = item.get("project")
+                if not project_id:
+                    return JsonResponse({"detail": "Project ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+                # Check if the entry exists
+                existing_entry = ProjectsSalesResults.objects.filter(project_id=project_id).first()
+
+                if existing_entry:
+                    # Update existing entry
+                    serializer = ProjectSalesResultsCreateSerializer(existing_entry, data=item, partial=True)
+                    if serializer.is_valid():
+                        serializer.save()
+                        responses.append({"project_id": project_id, "message": "Updated successfully."})
+                    else:
+                        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 else:
-                    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    # Create new entry
+                    serializer = ProjectSalesResultsCreateSerializer(data=item)
+                    if serializer.is_valid():
+                        serializer.save()
+                        responses.append({"project_id": project_id, "message": "Created successfully."})
+                    else:
+                        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
             except Exception as e:
-                return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                responses.append({"project_id": project_id, "message": str(e)})
 
-        return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
+        return JsonResponse(responses, safe=False, status=status.HTTP_200_OK)
 
 
 class ProjectSalesResultsUpdate(generics.UpdateAPIView):

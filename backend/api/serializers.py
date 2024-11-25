@@ -162,7 +162,29 @@ class ProjectsListSerializer(serializers.ModelSerializer):
             "client", # client_id in TABLE
             "client_name"
             ]
-
+# For ProjectSalesResultsListSerializer Serializer
+class ProjectsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Projects
+        fields = [
+            "project_id",
+            "project_name",
+            "project_type",
+            "year",
+            "month",
+            "sales_revenue",
+            "dispatch_labor_expense",
+            "employee_expense",
+            "indirect_employee_expense",
+            "expense",
+            "operating_income",
+            "non_operating_income",
+            "non_operating_expense",
+            "ordinary_profit",
+            "ordinary_profit_margin",
+            "business_division",
+            "client", 
+            ]
 class ProjectsCreateSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(queryset=MasterClient.objects.all())
     class Meta:
@@ -194,9 +216,23 @@ class ProjectsUpdateSerializer(serializers.ModelSerializer):
 
 # Project Sales Results
 class ProjectSalesResultsListSerializer(serializers.ModelSerializer):
+    projects = ProjectsSerializer(source='project', read_only=True)
     class Meta:
         model = ProjectsSalesResults
-        fields = '__all__'
+        fields = [
+            "project_sales_result_id",
+            "sales_revenue",
+            "dispatch_labor_expense",
+            "employee_expense",
+            "indirect_employee_expense",
+            "expense",
+            "operating_income",
+            "non_operating_income",
+            "non_operating_expense",
+            "ordinary_profit",
+            "ordinary_profit_margin",
+            "projects"
+            ]
 
 class ProjectSalesResultsCreateSerializer(serializers.ModelSerializer):
     class Meta:

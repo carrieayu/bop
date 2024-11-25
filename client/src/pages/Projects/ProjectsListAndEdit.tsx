@@ -16,165 +16,168 @@ import AlertModal from "../../components/AlertModal/AlertModal";
 import CrudModal from "../../components/CrudModal/CrudModal";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss';
+import {validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
+import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 import { getProject } from "../../api/ProjectsEndpoint/GetProject";
 import { updateProject } from "../../api/ProjectsEndpoint/UpdateProject";
 import { deleteProject } from "../../api/ProjectsEndpoint/DeleteProject";
 
 const ProjectsListAndEdit: React.FC = () => {
-    const [activeTab, setActiveTab] = useState('/planning-list')
-    const navigate = useNavigate()
-    const location = useLocation()
-    const [activeTabOther, setActiveTabOther] = useState('project')
-    const [currentPage, setCurrentPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5)
-    const [paginatedData, setPaginatedData] = useState<any[]>([])
-    const select = [5, 10, 100]
-    const { language, setLanguage } = useLanguage()
-    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
-    const [isEditing, setIsEditing] = useState(false)
-    const [projects, setProjects] = useState([])
-    const [originalProjectsList, setOriginalProjectsList] = useState(projects)
-    const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
-    const years = []
-    const [initialLanguage, setInitialLanguage] = useState(language);
-    const dispatch = useDispatch()
-    const [clients, setClients] = useState<any>([])
-    const [businessSelection, setBusinessSelection] = useState<any>([])
-    const totalPages = Math.ceil(100 / 10);
-    const [modalIsOpen, setModalIsOpen] = useState(false)
-    const [selectedProject, setSelectedProject] = useState<any>(null)
-    const [deleteProjectsId, setDeleteProjectsId] = useState([])
-    const [clientMap, setClientMap] = useState({})
-    const [businessMap, setBusinessMap] = useState({})
-    const [formProjects, setFormProjects] = useState([
-      {
-        year: '',
-        month: '',
-        project_name: '',
-        project_type: '',
-        client: '',
-        business_division: '',
-        sales_revenue: '',
-        dispatch_labor_expense: '',
-        employee_expense: '',
-        indirect_employee_expense: '',
-        expense: '',
-        operating_income: '',
-        non_operating_income: '',
-        non_operating_expense: '',
-        ordinary_profit: '',
-        ordinary_profit_margin: '',
-      },
-    ])
+  const [activeTab, setActiveTab] = useState('/planning-list')
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [activeTabOther, setActiveTabOther] = useState('project')
+  const [currentPage, setCurrentPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
+  const [paginatedData, setPaginatedData] = useState<any[]>([])
+  const select = [5, 10, 100]
+  const { language, setLanguage } = useLanguage()
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
+  const [isEditing, setIsEditing] = useState(false)
+  const [projects, setProjects] = useState([])
+  const [originalProjectsList, setOriginalProjectsList] = useState(projects)
+  const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
+  const years = []
+  const [initialLanguage, setInitialLanguage] = useState(language)
+  const dispatch = useDispatch()
+  const [clients, setClients] = useState<any>([])
+  const [businessSelection, setBusinessSelection] = useState<any>([])
+  const totalPages = Math.ceil(100 / 10)
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [selectedProject, setSelectedProject] = useState<any>(null)
+  const [deleteProjectsId, setDeleteProjectsId] = useState([])
+  const [clientMap, setClientMap] = useState({})
+  const [businessMap, setBusinessMap] = useState({})
+  const [formProjects, setFormProjects] = useState([
+    {
+      year: '',
+      month: '',
+      project_name: '',
+      project_type: '',
+      client: '',
+      business_division: '',
+      sales_revenue: '',
+      dispatch_labor_expense: '',
+      employee_expense: '',
+      indirect_employee_expense: '',
+      expense: '',
+      operating_income: '',
+      non_operating_income: '',
+      non_operating_expense: '',
+      ordinary_profit: '',
+      ordinary_profit_margin: '',
+    },
+  ])
 
-    const [isCRUDOpen, setIsCRUDOpen] = useState(false);
-    const [crudMessage, setCrudMessage] = useState('');
-    const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
-    const token = localStorage.getItem('accessToken')
-    
-    for (let year = 2020; year <= new Date().getFullYear(); year++) {
-      years.push(year)
+  const [isCRUDOpen, setIsCRUDOpen] = useState(false)
+  const [crudMessage, setCrudMessage] = useState('')
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
+  const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
+  const token = localStorage.getItem('accessToken')
+
+  for (let year = 2020; year <= new Date().getFullYear(); year++) {
+    years.push(year)
+  }
+  const handleTabClick = (tab) => {
+    setActiveTab(tab)
+    navigate(tab)
+  }
+
+  const handleTabsClick = (tab) => {
+    setActiveTabOther(tab)
+    switch (tab) {
+      case 'project':
+        navigate('/projects-list')
+        break
+      case 'employeeExpenses':
+        navigate('/employee-expenses-list')
+        break
+      case 'expenses':
+        navigate('/expenses-list')
+        break
+      case 'costOfSales':
+        navigate('/cost-of-sales-list')
+        break
+      default:
+        break
     }
-    const handleTabClick = (tab) => {
-        setActiveTab(tab)
-        navigate(tab)
+  }
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  }
+
+  const handleRowsPerPageChange = (numRows: number) => {
+    setRowsPerPage(numRows)
+    setCurrentPage(0)
+  }
+
+  const handleClick = () => {
+    setIsEditing((prevState) => {
+      const newEditingState = !prevState
+      if (newEditingState) {
+        setLanguage(initialLanguage)
       }
-      
-      const handleTabsClick = (tab) => {
-        setActiveTabOther(tab)
-        switch (tab) {
-          case 'project':
-            navigate('/projects-list')
-            break
-          case 'employeeExpenses':
-            navigate('/employee-expenses-list')
-            break
-          case 'expenses':
-            navigate('/expenses-list')
-            break
-          case 'costOfSales':
-            navigate('/cost-of-sales-list')
-            break
-          default:
-            break
-        }
+
+      return newEditingState
+    })
+  }
+
+  const handleChange = (index, event) => {
+    const { name, value } = event.target
+    setProjects((prevState) => {
+      const updatedProjectsData = [...prevState]
+      updatedProjectsData[index] = {
+        ...updatedProjectsData[index],
+        [name]: value,
       }
-    
-    const handlePageChange = (page: number) => {
-      setCurrentPage(page);
-    };
+      setFormProjects(updatedProjectsData)
 
-    const handleRowsPerPageChange = (numRows: number) => {
-        setRowsPerPage(numRows)
-        setCurrentPage(0) 
-    }
+      return updatedProjectsData
+    })
+  }
 
-    const handleClick = () => {
-      setIsEditing((prevState) => {
-        const newEditingState = !prevState;
-        if (newEditingState) {
-          setLanguage(initialLanguage);
-        }
-    
-        return newEditingState;
-      });
-    }
-
-
-    const handleChange = (index, event) => {
-      const { name, value } = event.target
-      setProjects((prevState) => {
-        const updatedProjectsData = [...prevState]
-        updatedProjectsData[index] = {
-          ...updatedProjectsData[index],
-          [name]: value,
-        }
-        setFormProjects(updatedProjectsData)
-
-        return updatedProjectsData
-      })
-    }
-  
-    const validateProjects = (projectsValidate) => {
-      return projectsValidate.every((prj) => {
-        return (
-          prj.year.trim() !== '' &&
-          prj.month.trim() !== '' &&
-          prj.business_division.trim() !== '' &&
-          prj.client.trim() !== '' &&
-          !isNaN(prj.sales_revenue) &&
-          prj.sales_revenue > 0 &&
-          !isNaN(prj.sales_revenue) &&
-          prj.dispatch_labor_expense > 0 &&
-          !isNaN(prj.dispatch_labor_expense) &&
-          prj.employee_expense > 0 &&
-          !isNaN(prj.employee_expense) &&
-          prj.indirect_employee_expense > 0 &&
-          !isNaN(prj.indirect_employee_expense) &&
-          prj.expense > 0 &&
-          !isNaN(prj.expense) &&
-          prj.operating_income > 0 &&
-          !isNaN(prj.operating_income) &&
-          prj.non_operating_income > 0 &&
-          !isNaN(prj.non_operating_income) &&
-          prj.non_operating_expense > 0 &&
-          !isNaN(prj.non_operating_expense) &&
-          prj.ordinary_profit > 0 &&
-          !isNaN(prj.ordinary_profit) &&
-          prj.ordinary_profit_margin > 0 &&
-          !isNaN(prj.ordinary_profit_margin)
-        )
-      })
-    }
 
   const handleSubmit = async () => {
+    
+    // # Client Side Validation
 
-    if (!validateProjects(formProjects)) {
-      setCrudMessage(translate('usersValidationText6', language));
-      setIsCRUDOpen(true);
-      return // Stop the submission
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'projects'
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateProjects = (records) => validateRecords(records, fieldChecks, 'project')
+
+    // Step 2: Validate client-side input
+    const validationErrors = validateProjects(formProjects)
+
+    // Step 3: Check for duplicate entries on specific fields
+    const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client']
+    const duplicateErrors = checkForDuplicates(formProjects, uniqueFields, 'project', language)
+
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
+
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      setCrudMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
+      setIsCRUDOpen(true)
+      return
+    } else {
+      setCrudValidationErrors([])
     }
+    // Continue with submission if no errors
 
     const getModifiedFields = (original, updated) => {
       const modifiedFields = []
@@ -231,119 +234,117 @@ const ProjectsListAndEdit: React.FC = () => {
           }
         }
       })
-  }  
+  }
 
   const handleUpdateConfirm = async () => {
-    await handleSubmit(); // Call the submit function for update
-    setIsUpdateConfirmationOpen(false);
-};
+    await handleSubmit() // Call the submit function for update
+    setIsUpdateConfirmationOpen(false)
+  }
 
-    const fetchClient = async () => {
-      try {
-        const resMasterClients = await dispatch(fetchMasterClient() as unknown as UnknownAction)
-        setClients(resMasterClients.payload)
-      } catch (e) {
-        console.error(e)
-      }
+  const fetchClient = async () => {
+    try {
+      const resMasterClients = await dispatch(fetchMasterClient() as unknown as UnknownAction)
+      setClients(resMasterClients.payload)
+    } catch (e) {
+      console.error(e)
     }
+  }
 
-    const fetchDivision = async () => {
-      try {
-        const resBusinessDivisions = await dispatch(fetchBusinessDivisions() as unknown as UnknownAction)
-        setBusinessSelection(resBusinessDivisions.payload)
-      } catch (e) {
-        console.error(e)
-      }
+  const fetchDivision = async () => {
+    try {
+      const resBusinessDivisions = await dispatch(fetchBusinessDivisions() as unknown as UnknownAction)
+      setBusinessSelection(resBusinessDivisions.payload)
+    } catch (e) {
+      console.error(e)
     }
+  }
 
-
-    useEffect(() => {
-      const fetchProjects = async () => {
-        if (!token) {
-          window.location.href = '/login' // Redirect to login if no token found
-          return
-        }
-
-        getProject(token)
-          .then((data) => {
-            setProjects(data)
-            setOriginalProjectsList(data)
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 401) {
-              window.location.href = '/login' // Redirect to login if unauthorized
-            } else {
-              console.error('There was an error fetching the projects!', error)
-            }
-          })
-
+  useEffect(() => {
+    const fetchProjects = async () => {
+      if (!token) {
+        window.location.href = '/login' // Redirect to login if no token found
+        return
       }
-      fetchDivision()
-      fetchClient()
-      fetchProjects()
-    }, [])
 
-      useEffect(() => {
-        const startIndex = currentPage * rowsPerPage
-        setPaginatedData(projects.slice(startIndex, startIndex + rowsPerPage))
-      }, [currentPage, rowsPerPage, projects])
+      getProject(token)
+        .then((data) => {
+          setProjects(data)
+          setOriginalProjectsList(data)
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            window.location.href = '/login' // Redirect to login if unauthorized
+          } else {
+            console.error('There was an error fetching the projects!', error)
+          }
+        })
+    }
+    fetchDivision()
+    fetchClient()
+    fetchProjects()
+  }, [])
 
-      useEffect(() => {
-        const path = location.pathname;
-        if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
-          setActiveTab(path);
-        }
-      }, [location.pathname]);
+  useEffect(() => {
+    const startIndex = currentPage * rowsPerPage
+    setPaginatedData(projects.slice(startIndex, startIndex + rowsPerPage))
+  }, [currentPage, rowsPerPage, projects])
 
-      useEffect(() => {
-        setIsTranslateSwitchActive(language === 'en');
-      }, [language]);
+  useEffect(() => {
+    const path = location.pathname
+    if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
+      setActiveTab(path)
+    }
+  }, [location.pathname])
+
+  useEffect(() => {
+    setIsTranslateSwitchActive(language === 'en')
+  }, [language])
+
+  const handleTranslationSwitchToggle = () => {
+    if (!isEditing) {
+      const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
+      setInitialLanguage(language)
+      setLanguage(newLanguage)
+    }
+  }
+
+  const handleNewRegistrationClick = () => {
+    navigate('/projects-registration')
+  }
+
+  const openModal = (projects, id) => {
+    setSelectedProject(projects)
+    setModalIsOpen(true)
+    setDeleteProjectsId(id)
+  }
+
+  const closeModal = () => {
+    setSelectedProject(null)
+    setModalIsOpen(false)
+    setIsCRUDOpen(false)
+  }
+
+  const handleConfirm = async () => {
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
     
-      const handleTranslationSwitchToggle = () => {
-        if (!isEditing) {
-          const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
-          setInitialLanguage(language); 
-          setLanguage(newLanguage);
+    deleteProject(deleteProjectsId, token)
+      .then(() => {
+        setCrudMessage(translate('successfullyDeleted', language))
+        setIsCRUDOpen(true)
+        setIsEditing(false)
+        setProjects((prevList) => prevList.filter((pr) => pr.project_id !== deleteProjectsId))
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login'
+        } else {
+          console.error('Error deleting projects', error)
         }
-      };
-
-  const handleNewRegistrationClick = () => { 
-        navigate('/projects-registration');
-      };
-
-      const openModal = (projects, id) => {
-        setSelectedProject(projects)
-        setModalIsOpen(true)
-        setDeleteProjectsId(id)
-      }
-
-      const closeModal = () => {
-        setSelectedProject(null)
-        setModalIsOpen(false)
-        setIsCRUDOpen(false);
-      }
-
-      const handleConfirm = async () => {
-        if (!token) {
-          window.location.href = '/login' 
-          return
-        }
-
-        deleteProject(deleteProjectsId, token)
-          .then(() => {
-            setProjects((prevList) => prevList.filter((pr) => pr.project_id !== deleteProjectsId))
-            setCrudMessage(translate('successfullyDeleted', language))
-            setIsCRUDOpen(true)
-            setIsEditing(false)
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 401) {
-              window.location.href = '/login'
-            } else {
-              console.error('Error deleting projects', error)
-            }
-          })
-      }
+      })
+  }
 
   return (
     <div className='projectsList_wrapper'>
@@ -532,6 +533,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         name='sales_revenue'
                                         value={project.sales_revenue}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
@@ -540,6 +542,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         name='dispatch_labor_expense'
                                         value={project.dispatch_labor_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
@@ -548,6 +551,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         name='employee_expense'
                                         value={project.employee_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
@@ -556,6 +560,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         name='indirect_employee_expense'
                                         value={project.indirect_employee_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
@@ -564,6 +569,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         name='expense'
                                         value={project.expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
@@ -572,6 +578,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         name='operating_income'
                                         value={project.operating_income}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
@@ -580,6 +587,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         name='non_operating_income'
                                         value={project.non_operating_income}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
@@ -588,6 +596,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         name='non_operating_expense'
                                         value={project.non_operating_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
@@ -596,6 +605,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         name='ordinary_profit'
                                         value={project.ordinary_profit}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='EmployeesListAndEdit_table_body_content_vertical'>
@@ -746,7 +756,12 @@ const ProjectsListAndEdit: React.FC = () => {
         onCancel={closeModal}
         message={translate('deleteProjectMessage', language)}
       />
-      <CrudModal isCRUDOpen={isCRUDOpen} onClose={closeModal} message={crudMessage} />
+      <CrudModal
+        isCRUDOpen={isCRUDOpen}
+        onClose={closeModal}
+        message={crudMessage}
+        validationMessages={crudValidationErrors}
+      />
       <AlertModal
         isOpen={isUpdateConfirmationOpen}
         onConfirm={handleUpdateConfirm}

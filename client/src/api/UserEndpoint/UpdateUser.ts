@@ -18,14 +18,22 @@ export async function updateUser(userList: UserData[], token: string) {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-    });
-    return response.data;
+    })
+    return response.data
   } catch (error) {
-    if (error.response && error.response.status === 401) {
-      window.location.href = '/login'
+    if (error.response) {
+      const { status, errors } = error.response.data
+      if (status === 409) {
+        console.log('Conflict errors:', errors)
+      } else if (status === 400) {
+        console.log('Validation errors:', errors)
+      } else if (status === 401) {
+        console.log('Authorization errors:', errors)
+        window.location.href = '/login'
+      }
     } else {
-      console.error('There was an error updating the user data!', error)
+      console.error('No response from server or network error!', error)
     }
-    throw error;
+    throw error
   }
 }

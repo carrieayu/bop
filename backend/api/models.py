@@ -90,18 +90,18 @@ class Employees(models.Model):
     employee_id = models.CharField(max_length=10, primary_key=True, editable=False)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    type = models.IntegerField(max_length=12) # 0 = regular employee , 1 = executive employee
+    type = models.IntegerField() # 0 = regular employee , 1 = executive employee
     email = models.EmailField(unique=True)
-    salary = models.IntegerField(max_length=12, null=True) # null if employee_type = (1/executive)
-    executive_renumeration = models.IntegerField(max_length=12, null=True) # null if employee_type = (0/regular) 
+    salary = models.IntegerField(null=True) # null if employee_type = (1/executive)
+    executive_renumeration = models.IntegerField(null=True) # null if employee_type = (0/regular) 
     company = models.ForeignKey(MasterCompany, on_delete=models.CASCADE)
     business_division = models.ForeignKey(
         MasterBusinessDivision, on_delete=models.CASCADE
     )
-    statutory_welfare_expense = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    welfare_expense = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    insurance_premium = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    bonus_and_fuel_allowance = models.IntegerField(max_length=12)
+    statutory_welfare_expense = models.IntegerField()
+    welfare_expense = models.IntegerField()
+    insurance_premium = models.IntegerField()
+    bonus_and_fuel_allowance = models.IntegerField()
     auth_user =  models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -139,25 +139,15 @@ class Projects(models.Model):
     )
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
-    sales_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    dispatch_labor_expense = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0.0
-    )
-    employee_expense = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0.0
-    )
-    indirect_employee_expense = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0.0
-    )
-    expense = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    operating_income = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    non_operating_income = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0.0
-    )
-    non_operating_expense = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0.0
-    )
-    ordinary_profit = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
+    sales_revenue = models.IntegerField( default=0)
+    dispatch_labor_expense = models.IntegerField(default=0)
+    employee_expense = models.IntegerField(default=0)
+    indirect_employee_expense = models.IntegerField(default=0)
+    expense = models.IntegerField( default=0)
+    operating_income = models.IntegerField( default=0)
+    non_operating_income = models.IntegerField( default=0)
+    non_operating_expense = models.IntegerField( default=0)
+    ordinary_profit = models.IntegerField(default=0)
     ordinary_profit_margin = models.FloatField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -210,12 +200,12 @@ class Results(models.Model):
     executive_renumeration = models.IntegerField(max_length=12)
     salary = models.IntegerField(max_length=12)
     fuel_allowance = models.IntegerField(max_length=12)
-    statutory_welfare_expense =  models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    welfare_expense = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
+    statutory_welfare_expense =  models.IntegerField(default=0)
+    welfare_expense = models.IntegerField(default=0)
     expense = models.IntegerField(max_length=12)
     consumable_expense = models.IntegerField(max_length=12)
     rent_expense = models.IntegerField(max_length=12)
-    insurance_premium =  models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
+    insurance_premium =  models.IntegerField(default=0)
     tax_and_public_charge = models.IntegerField(max_length=12)
     depreciation_expense = models.IntegerField(max_length=12)
     travel_expense = models.IntegerField(max_length=12)
@@ -398,26 +388,26 @@ class ProjectsSalesResults(models.Model):
         max_length=10, primary_key=True , editable=False
     )
     project = models.ForeignKey(Projects, on_delete=models.CASCADE, null=True)
-    sales_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    dispatch_labor_expense = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0.0
+    sales_revenue = models.IntegerField(max_length=12)
+    dispatch_labor_expense = models.IntegerField(
+        max_length=12
     )
-    employee_expense = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0.0
+    employee_expense = models.IntegerField(
+        max_length=12
     )
-    indirect_employee_expense = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0.0
+    indirect_employee_expense = models.IntegerField(
+        max_length=12
     )
-    expense = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    operating_income = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    non_operating_income = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0.0
+    expense = models.IntegerField(max_length=12)
+    operating_income = models.IntegerField(max_length=12)
+    non_operating_income = models.IntegerField(
+        max_length=12
     )
-    non_operating_expense = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0.0
+    non_operating_expense = models.IntegerField(
+        max_length=12
     )
-    ordinary_profit = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    ordinary_profit_margin = models.FloatField(default=0.0)
+    ordinary_profit = models.IntegerField(max_length=12)
+    ordinary_profit_margin = models.IntegerField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :
