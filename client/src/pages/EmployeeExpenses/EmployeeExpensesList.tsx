@@ -229,7 +229,7 @@ const EmployeeExpensesList: React.FC = () => {
               <div className='employeeExpensesList_mid_body_cont'>
                 <ListButtons
                   activeTabOther={activeTabOther}
-                  message={translate('employeeExpensesList', language)}
+                  message={translate(isEditing ? 'employeeExpensesEdit' : 'employeeExpensesList', language)}
                   handleTabsClick={handleTabsClick}
                   handleNewRegistrationClick={handleNewRegistrationClick}
                   buttonConfig={[

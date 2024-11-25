@@ -1343,9 +1343,9 @@ const EditTablePlanning = () => {
     'salesRevenue',
     'costOfSales',
     'grossProfit',
-    'dispatchLaborExpenses',
     'employeeExpenses',
-    'sellingAndGeneralAdminExpenses',
+    'expenses',
+    'sellingAndGeneralAdminExpensesShort', // 'Short' is for English label as it was too long for UI.
     'operatingIncome',
     'ordinaryIncome',
     'cumulativeOrdinaryIncome',
@@ -1375,6 +1375,7 @@ const EditTablePlanning = () => {
   const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable']
   const [editableData, setEditableData] = useState(data)
   const isRowEditable = (label) => editableLabels.includes(label)
+  console.log('editable data', editableData)
 
   const handleInputChange = (rowIndex, valueIndex, e) => {
     const updatedData = [...data]
@@ -1465,7 +1466,7 @@ const EditTablePlanning = () => {
                   {translate(`${halfYear}`, language)}
                 </th>
               ))}
-              <th className='total-txt'>{translate('sales', language)}</th>
+              <th className='total-txt'>{translate('salesRatio', language)}</th>
             </tr>
             <tr className='scnd-row'>
               <th className='borderless'></th>
@@ -1473,9 +1474,9 @@ const EditTablePlanning = () => {
                 <th key={index}>{translate('planning', language)}</th>
               ))}
               {halfYears.map((_, index) => (
-                  <th key={index} className=''>
-                    {translate('planning', language)}
-                  </th>
+                <th key={index} className=''>
+                  {translate('planning', language)}
+                </th>
               ))}
               <th>{''}</th>
             </tr>
@@ -1488,7 +1489,12 @@ const EditTablePlanning = () => {
                 </td>
                 {item.values.map((value, valueIndex) => (
                   <td key={valueIndex}>
-                    {isRowEditable(item.label) && valueIndex < 12 ? (
+                    {/* if item.id === undefined then the record does not exist so Input should be editable */}
+                     {isRowEditable(item.label) && valueIndex < 12 && (
+                      Array.isArray(item.id)
+                        ? item.id[valueIndex] !== null && item.id[valueIndex] !== undefined // Check each id in the array
+                        : item.id !== null && item.id !== undefined // For single id
+                     ) ? (
                       <input
                         className='input_tag'
                         type='text'

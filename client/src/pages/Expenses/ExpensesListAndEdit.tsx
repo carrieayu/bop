@@ -10,8 +10,15 @@ import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { RiDeleteBin6Fill } from 'react-icons/ri'
 import CrudModal from '../../components/CrudModal/CrudModal'
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss'
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+
 
 import { deleteExpense } from '../../api/ExpenseEndpoint/DeleteExpense'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
@@ -37,6 +44,7 @@ const ExpensesList: React.FC = () => {
 
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
 
   const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
@@ -116,7 +124,51 @@ const ExpensesList: React.FC = () => {
     setExpensesList(updatedData)
   }
 
+
   const handleSubmit = async () => {
+    
+    // # Client Side Validation
+
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'expenses'
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateExpenses = (records) => validateRecords(records, fieldChecks, 'expense')
+
+    // Expenses has default 12 (for each month)
+    // Even if not all records have actually been created in DB: We need to filter out non-registered records.
+    const expensesListExistingRecords = expensesList.filter((exp) => exp.expense_id !== null)
+
+    // Step 2: Validate client-side input
+    const validationErrors = validateExpenses(expensesListExistingRecords) // Get the array of error messages
+
+    // Step 3: Check for duplicate entries on specific fields
+    const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client'] // Fields to check for duplicates
+    const duplicateErrors = checkForDuplicates(expensesListExistingRecords, uniqueFields, 'project', language)
+
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
+
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      setCrudMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
+      setIsCRUDOpen(true)
+      return
+    } else {
+      setCrudValidationErrors([])
+    }
+    // Continue with submission if no errors
+
     const getModifiedFields = (original, updated) => {
       const modifiedFields = []
 
@@ -439,6 +491,7 @@ const ExpensesList: React.FC = () => {
                                         name='consumable_expense'
                                         value={expense.consumable_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -448,6 +501,7 @@ const ExpensesList: React.FC = () => {
                                         name='rent_expense'
                                         value={expense.rent_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -457,6 +511,7 @@ const ExpensesList: React.FC = () => {
                                         name='tax_and_public_charge'
                                         value={expense.tax_and_public_charge}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -466,6 +521,7 @@ const ExpensesList: React.FC = () => {
                                         name='depreciation_expense'
                                         value={expense.depreciation_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -475,6 +531,7 @@ const ExpensesList: React.FC = () => {
                                         name='travel_expense'
                                         value={expense.travel_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -484,6 +541,7 @@ const ExpensesList: React.FC = () => {
                                         name='communication_expense'
                                         value={expense.communication_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -494,6 +552,7 @@ const ExpensesList: React.FC = () => {
                                         name='utilities_expense'
                                         value={expense.utilities_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -503,6 +562,7 @@ const ExpensesList: React.FC = () => {
                                         name='transaction_fee'
                                         value={expense.transaction_fee}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -512,6 +572,7 @@ const ExpensesList: React.FC = () => {
                                         name='advertising_expense'
                                         value={expense.advertising_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -521,6 +582,7 @@ const ExpensesList: React.FC = () => {
                                         name='entertainment_expense'
                                         value={expense.entertainment_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -530,6 +592,7 @@ const ExpensesList: React.FC = () => {
                                         name='professional_service_fee'
                                         value={expense.professional_service_fee}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -662,7 +725,12 @@ const ExpensesList: React.FC = () => {
         onCancel={closeModal}
         message={translate('deleteMessage', language)}
       />
-      <CrudModal isCRUDOpen={isCRUDOpen} onClose={closeModal} message={crudMessage} />
+      <CrudModal
+        isCRUDOpen={isCRUDOpen}
+        onClose={closeModal}
+        message={crudMessage}
+        validationMessages={crudValidationErrors}
+      />
       <AlertModal
         isOpen={isUpdateConfirmationOpen}
         onConfirm={handleUpdateConfirm}

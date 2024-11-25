@@ -2,21 +2,42 @@ import React, { useState } from "react";
 import dattLogo from  '../../assets/images/logo.png'
 import axios from "axios";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import CrudModal from '../../components/CrudModal/CrudModal'
+import { translate } from '../../utils/translationUtil'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
+  const { language, setLanguage } = useLanguage()
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
 
+  const openModal = () => {
+    setModalIsOpen(true)
+  }
+
+  const closeSuccessModal = () => {
+    setModalIsOpen(false)
+    window.location.href = '/login' // Redirect to login if mail sent was successful
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     try {
       const response = await axios.post(`${getReactActiveEndpoint()}/api/password-forgot/`, { email })
-      setSuccessMessage(response.data.message);
+      setIsModalOpen(true)
+      setModalMessage(translate('MailSentSuccess', language))
+      
+      setSuccessMessage(response.data.message)
     } catch (error) {
+      setIsModalOpen(true)
+      setModalMessage(translate('invalidInputOrEmailDoesNotExist', language))
       setError(error.response.data.message);
     }
     setLoading(false);
@@ -54,22 +75,36 @@ const ForgotPassword = () => {
                     />
                   </p>
                 </div>
-                {error && <p className="has-text-danger" style={{ color: "red",textAlign: "center" }}>{error}</p>}
-                {successMessage && <p className="has-text-success" style={{ color: "green",textAlign: "center" }}>{successMessage}</p>}
+                {/* {error && (
+                  <p className='has-text-danger' style={{ color: 'red', textAlign: 'center' }}>
+                    {error}
+                  </p>
+                )} */}
+                {/* {successMessage && (
+                  <p className='has-text-success' style={{ color: 'green', textAlign: 'center' }}>
+                    {successMessage}
+                  </p>
+                )} */}
                 <div className='field'>
-                <p className='control has-text-centered'>
+                  <p className='control has-text-centered'>
                     <button className='button' type='submit' disabled={loading}>
                       {loading ? 'Loading...' : 'Submit'}
                     </button>
-                </p>
+                  </p>
                 </div>
               </form>
             </div>
           </div>
         </div>
       </div>
+      <CrudModal
+        message={modalMessage}
+        onClose={closeSuccessModal}
+        isCRUDOpen={isModalOpen}
+        validationMessages={crudValidationErrors}
+      />
     </div>
-  );
+  )
 };
 
 export default ForgotPassword;
