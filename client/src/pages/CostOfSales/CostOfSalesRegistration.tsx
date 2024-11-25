@@ -166,7 +166,7 @@ const CostOfSalesRegistration = () => {
       amortization_expense: cos.amortization_expense,
     }))
 
-    // Validation
+    // Client Side Validation
 
     // Step 1: Preparartion for validation
     // Set record type for validation
