@@ -473,8 +473,8 @@ const EmployeesRegistration = () => {
                               value={
                                 (container.welfare_expense =
                                   container.type === '0'
-                                    ? (Number(container.salary) * 0.0048).toFixed(2).toString()
-                                    : (Number(container.executive_renumeration) * 0.0048).toFixed(2).toString())
+                                    ? Math.round(Number(container.salary) * 0.0048).toString()
+                                    : Math.round(Number(container.executive_renumeration) * 0.0048).toString())
                               }
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
                               onWheel={(e) => (e.target as HTMLInputElement).blur()}
