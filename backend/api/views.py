@@ -17,6 +17,11 @@ from .serializers import (
     ProjectsListSerializer,
     ProjectsCreateSerializer,
     ProjectsUpdateSerializer,
+    # Project Sales Results
+    ProjectsSalesResults,
+    ProjectSalesResultsCreateSerializer,
+    ProjectSalesResultsListSerializer,
+    ProjectSalesResultsUpdateSerializer,
     # Master Clients
     MasterClientListSerializer,
     MasterClientCreateSerializer,
@@ -749,6 +754,127 @@ class ProjectsDelete(generics.DestroyAPIView):
             )
         except:
             return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
+        
+
+# Project Sales Results
+class ProjectSalesResultsList(generics.ListCreateAPIView):
+    queryset = ProjectsSalesResults.objects.all()
+    serializer_class = ProjectSalesResultsListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return ProjectsSalesResults.objects.all()
+    
+class ProjectSalesResultsFilter(generics.ListCreateAPIView):
+    queryset = Projects.objects.all()
+    serializer_class = ProjectsListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        month = self.request.GET.get('month')
+        year = self.request.GET.get('year')
+        projectId = self.request.GET.get('projectId')
+        
+        queryset = self.queryset
+        if month:
+            queryset = queryset.filter(month=month)
+        if year:
+            queryset = queryset.filter(year=year)
+        if projectId:
+            queryset = queryset.filter(project_id=projectId)
+        return queryset
+
+class ProjectSalesResultsCreate(generics.CreateAPIView):
+    serializer_class = ProjectSalesResultsCreateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        data = JSONParser().parse(request)
+
+        # Validate input format
+        if not isinstance(data, list):
+            return JsonResponse({"detail": "Invalid input format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
+
+        responses = []
+        for item in data:
+            try:
+                project_id = item.get("project")
+                if not project_id:
+                    return JsonResponse({"detail": "Project ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+                # Check if the entry exists
+                existing_entry = ProjectsSalesResults.objects.filter(project_id=project_id).first()
+
+                if existing_entry:
+                    # Update existing entry
+                    serializer = ProjectSalesResultsCreateSerializer(existing_entry, data=item, partial=True)
+                    if serializer.is_valid():
+                        serializer.save()
+                        responses.append({"project_id": project_id, "message": "Updated successfully."})
+                    else:
+                        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    # Create new entry
+                    serializer = ProjectSalesResultsCreateSerializer(data=item)
+                    if serializer.is_valid():
+                        serializer.save()
+                        responses.append({"project_id": project_id, "message": "Created successfully."})
+                    else:
+                        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            except Exception as e:
+                responses.append({"project_id": project_id, "message": str(e)})
+
+        return JsonResponse(responses, safe=False, status=status.HTTP_200_OK)
+
+
+class ProjectSalesResultsUpdate(generics.UpdateAPIView):
+    serializer_class = ProjectSalesResultsUpdateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        id = self.kwargs.get("pk")
+        return ProjectsSalesResults.objects.filter(project_sales_result_id=id)
+
+    def update(self, request, *args, **kwargs):
+        project_sales_results_data = request.data
+        try :
+            for client in project_sales_results_data: 
+                project_sales_result_id = client.get('project_sales_result_id')
+                try:
+                    
+                    projectsSalesResults = ProjectsSalesResults.objects.get(project_sales_result_id=int(project_sales_result_id))
+                    for field, value in client.items():
+                        if field not in ['project_id', 'project_sales_result_id']:
+                            setattr(projectsSalesResults, field, value)
+                            
+                    projectsSalesResults.save()
+
+                except ProjectsSalesResults.DoesNotExist:
+                    return Response({"error": f"ProjectsSalesResults with ID {project_sales_result_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+            return Response({"success": "Projects updated successfully."}, status=status.HTTP_200_OK)
+        except IntegrityError as e:
+            return Response({'error': str(e)}, status=400)
+
+class ProjectSalesResultsDelete(generics.DestroyAPIView):
+    queryset = ProjectsSalesResults.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        id = self.kwargs.get("pk")
+        return ProjectsSalesResults.objects.filter(project_sales_result_id=id)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            instance.delete()
+            return Response(
+                {"message": "project sales results deleted successfully"}, status=status.HTTP_200_OK
+            )
+        except:
+            return Response({"message": "failed"}, status=status.HTTP_404_NOT_FOUND)
+
 
 # Expenses
 class ExpensesList(generics.ListAPIView):

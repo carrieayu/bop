@@ -2,8 +2,6 @@ import React, { Component, Suspense, lazy } from "react";
 import { Navigate, RouteObject } from "react-router-dom";
 import SuspenseLoader from "../components/SuspenseLoader/SuspenseLoader";
 import ProtectedRoutes from "./ProtectedRoutes";
-import ExpensesResultsRegistration from "../pages/ExpensesResults/ExpensesResultsRegistration";
-import ExpensesResultsList from "../pages/ExpensesResults/ExpensesResultsListAndEdit";
 
 const Loader = (Component: any) => (props: any) =>
   (
@@ -34,6 +32,10 @@ const NotFound = Loader(lazy(() => import("../pages/NotFound/NotFound")))
 const ProjectsListAndEdit = Loader(lazy(() => import("../pages/Projects/ProjectsListAndEdit")));
 const ProjectsRegistration = Loader(lazy(() => import("../pages/Projects/ProjectsRegistration")))
 
+// Project Sales Results Pages
+const ProjectSalesResultsListAndEdit = Loader(lazy(() => import("../pages/ProjectSalesResults/ProjectSalesResultsListAndEdit")));
+const ProjectSalesResultsRegistration = Loader(lazy(() => import("../pages/ProjectSalesResults/ProjectSalesResultsRegistration")))
+
 //Personnel Expenses Pages
 const EmployeeExpensesRegistration = Loader(lazy(() => import("../pages/EmployeeExpenses/EmployeeExpensesRegistration")))
 const EmployeeExpensesList = Loader(lazy(() => import("../pages/EmployeeExpenses/EmployeeExpensesList")))
@@ -48,6 +50,10 @@ const CostOfSalesListAndEdit = Loader(lazy(() => import("../pages/CostOfSales/Co
 //Expenses Pages
 const ExpensesRegistration = Loader(lazy(() => import("../pages/Expenses/ExpensesRegistration")))
 const ExpensesListAndEdit = Loader(lazy(() => import("../pages/Expenses/ExpensesListAndEdit")))
+
+//Expenses Results Pages
+const ExpensesResultsRegistration = Loader(lazy(() => import("../pages/ExpensesResults/ExpensesResultsRegistration")))
+const ExpensesResultsList = Loader(lazy(() => import('../pages/ExpensesResults/ExpensesResultsListAndEdit')))
 
 //Clients Pages
 const ClientsRegistration = Loader(lazy(() => import("../pages/Clients/ClientsRegistration")))
@@ -120,6 +126,22 @@ const routes: RouteObject[] = [
         element: (
           <ProtectedRoutes>
             <ProjectsRegistration />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: 'project-sales-results-list',
+        element: (
+          <ProtectedRoutes>
+            <ProjectSalesResultsListAndEdit />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: 'project-sales-results-registration',
+        element: (
+          <ProtectedRoutes>
+            <ProjectSalesResultsRegistration />
           </ProtectedRoutes>
         ),
       },

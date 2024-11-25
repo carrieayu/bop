@@ -382,3 +382,51 @@ class ExpensesResults(models.Model):
 
     def __str__(self):
         return self.expense_result_id
+    
+class ProjectsSalesResults(models.Model):
+    project_sales_result_id  = models.CharField(
+        max_length=10, primary_key=True , editable=False
+    )
+    project = models.ForeignKey(Projects, on_delete=models.CASCADE, null=True)
+    sales_revenue = models.IntegerField(max_length=12)
+    dispatch_labor_expense = models.IntegerField(
+        max_length=12
+    )
+    employee_expense = models.IntegerField(
+        max_length=12
+    )
+    indirect_employee_expense = models.IntegerField(
+        max_length=12
+    )
+    expense = models.IntegerField(max_length=12)
+    operating_income = models.IntegerField(max_length=12)
+    non_operating_income = models.IntegerField(
+        max_length=12
+    )
+    non_operating_expense = models.IntegerField(
+        max_length=12
+    )
+    ordinary_profit = models.IntegerField(max_length=12)
+    ordinary_profit_margin = models.IntegerField(default=0.0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta :
+        db_table = u'project_sales_results'
+
+    def __str__(self):
+        return self.project_sales_result_id
+
+    def generate_project_sales_result_id(self):
+        max_project_sales_result_id = (
+            ProjectsSalesResults.objects.aggregate(
+                max_project_sales_result_id=models.Max("project_sales_result_id")
+            )["max_project_sales_result_id"]
+            or "9000000000"
+        )
+        new_project_sales_result_id = str(int(max_project_sales_result_id) + 1).zfill(6)
+        return new_project_sales_result_id
+
+    def save(self, *args, **kwargs):
+        if not self.project_sales_result_id:
+            self.project_sales_result_id = self.generate_project_sales_result_id()
+        super().save(*args, **kwargs)

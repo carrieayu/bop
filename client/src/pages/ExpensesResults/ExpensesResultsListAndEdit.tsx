@@ -87,7 +87,9 @@ const ExpensesResultsList: React.FC = () => {
       case 'expensesResults':
         navigate('/expenses-results-list')
         break
-    
+      case 'projectSalesResults':
+        navigate('/project-sales-results-list')
+        break
       default:
         break
     }
@@ -371,10 +373,13 @@ const ExpensesResultsList: React.FC = () => {
             <div className='expensesResultsList_mid_body_cont'>
               <ListButtons
                 activeTabOther={activeTabOther}
-                message={translate(isEditing ? 'expensesEdit' : 'expensesResultsList', language)}
+                message={translate(isEditing ? 'expensesResultsEdit' : 'expensesResultsList', language)}
                 handleTabsClick={handleTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
-                buttonConfig={[{ labelKey: 'expensesResults', tabKey: 'expensesResults' }]}
+                buttonConfig={[
+                  { labelKey: 'expensesResults', tabKey: 'expensesResults' },
+                  { labelKey: 'projectSalesResults', tabKey: 'projectSalesResults' },
+                ]}
               />
               <div className={`expensesResultsList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                 <div className={`expensesResultsList_table_cont ${isEditing ? 'editScrollable' : ''}`}>
