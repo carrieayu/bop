@@ -18,6 +18,7 @@
   "costOfSale": "売上原価",
   "ordinaryIncomeProfitMargin": "経常利益率",
   "ordinaryIncome": "経常利益",
+  "ordinaryProfit": "経常利益",
   "cumulativeOrdinaryIncome": "累計経常利益 ",
   "businessDivision": "受注事業部 ",
   "depreciationExpenses": "減価償却費",
@@ -88,9 +89,9 @@
   "saleRevenue": "売上高",
   "indirectEmployeeExpense": "間接人件費",
   "ratio": "比率",
-  "firstHalftotal" : "上期計",
-  "secondHalftotal" : "下期計",
-  "totalTable" : "合計",
-  "sellingAndGeneralAdminExpensesShort":"販売及び一般管理費"
+  "firstHalftotal": "上期計",
+  "secondHalftotal": "下期計",
+  "totalTable": "合計",
+  "sellingAndGeneralAdminExpensesShort": "販売及び一般管理費"
 }
 

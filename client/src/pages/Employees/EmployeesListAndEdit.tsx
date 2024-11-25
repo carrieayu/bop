@@ -23,6 +23,14 @@ import { getSelectedBusinessDivisionCompany } from "../../api/BusinessDivisionEn
 import { deleteEmployee } from "../../api/EmployeeEndpoint/DeleteEmployee";
 import { editEmployee } from "../../api/EmployeeEndpoint/EditEmployee";
 import { getEmployee } from "../../api/EmployeeEndpoint/GetEmployee";
+import {
+  validateEmployeeRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+
 
 const EmployeesListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -52,6 +60,8 @@ const EmployeesListAndEdit: React.FC = () => {
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [selectedEmployeeType, setSelectedEmployeeType] = useState([])
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
+
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -146,9 +156,9 @@ const EmployeesListAndEdit: React.FC = () => {
       // Calculate non-editable fields based on type and salary or executive_renumeration
       if (name === 'salary' || name === 'executive_renumeration') {
         const baseValue = name === 'salary' ? Number(value) : Number(updatedEmployee.executive_renumeration)
-        updatedEmployee.statutory_welfare_expense = (baseValue * 0.1451).toFixed(2).toString()
-        updatedEmployee.welfare_expense = (baseValue * 0.0048).toFixed(2).toString()
-        updatedEmployee.insurance_premium = (baseValue * 0.0224).toFixed(2).toString()
+        updatedEmployee.statutory_welfare_expense = Math.round(baseValue * 0.1451).toString()
+        updatedEmployee.welfare_expense = Math.round(baseValue * 0.0048).toString()
+        updatedEmployee.insurance_premium = Math.round(baseValue * 0.0224).toString()
       }
 
       const changes = {}
@@ -212,62 +222,51 @@ const EmployeesListAndEdit: React.FC = () => {
     })
   }
 
-  const validateEmployees = (employeesList, originalEmployees) => {
-
-    return employeesList.every((item, index) => {
-      const employee = item.employee
-      const originalEmployee = originalEmployees[index]
-
-      // Ensure salary and executive_renumeration are numbers or null
-      const salary = employee.salary !== null ? parseInt(employee.salary, 10) : null
-      const executiveRenumeration = employee.executive_renumeration !== null ? parseInt(employee.executive_renumeration, 10) : null
-      // Validate name and email fields
-      if (
-        employee.last_name !== originalEmployee.employee.last_name ||
-        employee.first_name !== originalEmployee.employee.first_name ||
-        employee.email !== originalEmployee.employee.email
-      ) {
-        if (
-          employee.last_name.trim() === '' ||
-          employee.first_name.trim() === '' ||
-          !/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(employee.email)
-        ) {
-          return false // Invalid name or email
-        }
-      }
-      // Validate based on employee type
-      if (employee.type !== originalEmployee.employee.type) {
-        if (employee.type === 0) {
-          // Regular employee: salary should be valid, executive_renumeration should be null
-          if (salary === null || isNaN(salary) || salary <= 0 || executiveRenumeration !== null) {
-            return false // Invalid regular employee data
-          }
-        } else if (employee.type === 1) {
-          // Executive employee: executive_renumeration should be valid, salary should be null
-          if (
-            executiveRenumeration === null ||
-            isNaN(executiveRenumeration) ||
-            executiveRenumeration <= 0 ||
-            salary !== null
-          ) {
-            console.log('Invalid executive employee')
-            return false // Invalid executive employee data
-          }
-        }
-      }
-      // If all validations pass, return true
-      return true
-    })
-  }
-
   const handleSubmit = async () => {
     const emails = employeesList.map((em) => em.email)
 
-    console.log(employeesList)
-    if (!validateEmployees(employeesList, originalEmployeesList)) {
-      setCrudMessage(translate('allFieldsRequiredInputValidationMessage', language))
+    // # Client Side Validation
+
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'employees'
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    console.log('fieldChecks', fieldChecks)
+
+    // The format of the records from ListAndEditScreen is slightly different.
+    // This gets the employee object from each record and returns an Array of employees.
+    const employees = employeesList.map((record) => record.employee)
+    
+    // Validate records for the specified project fields
+    const validateEmployees = (records) => validateEmployeeRecords(records, fieldChecks, 'employee')
+
+    // Step 2: Validate client-side input
+    const validationErrors = validateEmployees(employees) // Only one User can be registered but function expects an Array.
+    console.log("Employees in List/Edit Screen: ", employees);
+    // Step 3: Check for duplicate entries on specific fields
+    const uniqueFields = ['email']
+    const duplicateErrors = checkForDuplicates(employees, uniqueFields, 'employee', language)
+
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
+
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      console.log(translatedErrors, 'trans errors')
+      setCrudMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
       setIsCRUDOpen(true)
       return
+    } else {
+      setCrudValidationErrors([])
     }
 
     const getModifiedFields = (original, updated) => {
@@ -672,6 +671,7 @@ const EmployeesListAndEdit: React.FC = () => {
                                         name='salary'
                                         value={employee.salary || ''}
                                         onChange={(e) => handleChange(employeeIndex, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={employee.type.toString() !== '0'}
                                       />
                                     </td>
@@ -682,6 +682,7 @@ const EmployeesListAndEdit: React.FC = () => {
                                         name='executive_renumeration'
                                         value={employee.executive_renumeration || ''}
                                         onChange={(e) => handleChange(employeeIndex, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={employee.type.toString() !== '1'}
                                       />
                                     </td>
@@ -722,6 +723,7 @@ const EmployeesListAndEdit: React.FC = () => {
                                         type='number'
                                         name='bonus_and_fuel_allowance'
                                         value={employee.bonus_and_fuel_allowance || ''}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         onChange={(e) => handleChange(employeeIndex, e)}
                                       />
                                     </td>
@@ -913,7 +915,12 @@ const EmployeesListAndEdit: React.FC = () => {
         onCancel={closeModal}
         message={translate('deleteEmployeeMessage', language)}
       />
-      <CrudModal isCRUDOpen={isCRUDOpen} onClose={closeModal} message={crudMessage} />
+      <CrudModal
+        isCRUDOpen={isCRUDOpen}
+        onClose={closeModal}
+        message={crudMessage}
+        validationMessages={crudValidationErrors}
+      />
       <AlertModal
         isOpen={isUpdateConfirmationOpen}
         onConfirm={handleUpdateConfirm}

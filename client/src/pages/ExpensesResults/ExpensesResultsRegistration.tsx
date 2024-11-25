@@ -9,6 +9,13 @@ import AlertModal from '../../components/AlertModal/AlertModal'
 import CrudModal from '../../components/CrudModal/CrudModal'
 import { createExpenseResults } from '../../api/ExpenseResultEndpoint/CreateExpenseResult'
 import { overwriteExpenseResults } from '../../api/ExpenseResultEndpoint/OverwriteExpenseResult'
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+import { handleDisableKeysOnNumberInputs } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 
@@ -46,6 +53,7 @@ const ExpensesResultsRegistration = () => {
   const [modalMessage, setModalMessage] = useState('')
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
 
   const handleTranslationSwitchToggle = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
@@ -105,6 +113,44 @@ const ExpensesResultsRegistration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
+    // # Client Side Validation
+
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'expenses'
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateExpenses = (records) => validateRecords(records, fieldChecks, 'expenses')
+
+    // Step 2: Validate client-side input
+    const validationErrors = validateExpenses(formData) // Get the array of error messages
+
+    // Step 3: Check for duplicate entries on specific fields
+    const uniqueFields = ['year', 'month'] // Fields to check for duplicates
+    const duplicateErrors = checkForDuplicates(formData, uniqueFields, 'expenses', language)
+
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
+
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      setModalMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
+      setIsModalOpen(true)
+      return
+    } else {
+      setCrudValidationErrors([])
+    }
+    // Continue with submission if no errors
+
     const expensesData = formData.map((ex) => ({
       year: ex.year,
       month: ex.month,
@@ -119,29 +165,6 @@ const ExpensesResultsRegistration = () => {
       travel_expense: ex.travel_expense,
       transaction_fee: ex.transaction_fee,
     }))
-
-    // Checks if any inputs are empty
-    const areFieldsEmpty = expensesData.some(
-      (entry) =>
-        !entry.year ||
-        !entry.month ||
-        !entry.consumable_expense ||
-        !entry.tax_and_public_charge ||
-        !entry.communication_expense ||
-        !entry.advertising_expense ||
-        !entry.depreciation_expense ||
-        !entry.utilities_expense ||
-        !entry.entertainment_expense ||
-        !entry.rent_expense ||
-        !entry.travel_expense ||
-        !entry.transaction_fee,
-    )
-
-    if (areFieldsEmpty) {
-      setModalMessage(translate('allFieldsRequiredInputValidationMessage', language))
-      setIsModalOpen(true)
-      return
-    }
 
     // Combine year and month for easier duplicate checking
     const expenses = formData.map((expense) => ({
@@ -365,9 +388,7 @@ const ExpensesResultsRegistration = () => {
               message={translate('expensesResultsRegistration', language)}
               handleTabsClick={handleTabsClick}
               handleListClick={handleListClick}
-              buttonConfig={[
-                { labelKey: 'expensesResults', tabKey: 'expensesResults' },
-              ]}
+              buttonConfig={[{ labelKey: 'expensesResults', tabKey: 'expensesResults' }]}
             />
           </div>
           <div className='expensesResultsRegistration_mid_body_cont'>
@@ -409,6 +430,7 @@ const ExpensesResultsRegistration = () => {
                             name='rent_expense'
                             value={form.rent_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -421,6 +443,7 @@ const ExpensesResultsRegistration = () => {
                             name='travel_expense'
                             value={form.travel_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -433,6 +456,7 @@ const ExpensesResultsRegistration = () => {
                             name='transaction_fee'
                             value={form.transaction_fee}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -445,6 +469,7 @@ const ExpensesResultsRegistration = () => {
                             name='professional_service_fee'
                             value={form.professional_service_fee}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -476,6 +501,7 @@ const ExpensesResultsRegistration = () => {
                             name='tax_and_public_charge'
                             value={form.tax_and_public_charge}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -488,6 +514,7 @@ const ExpensesResultsRegistration = () => {
                             name='communication_expense'
                             value={form.communication_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -500,6 +527,7 @@ const ExpensesResultsRegistration = () => {
                             name='advertising_expense'
                             value={form.advertising_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -514,6 +542,7 @@ const ExpensesResultsRegistration = () => {
                             name='consumable_expense'
                             value={form.consumable_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -526,6 +555,7 @@ const ExpensesResultsRegistration = () => {
                             name='depreciation_expense'
                             value={form.depreciation_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -538,6 +568,7 @@ const ExpensesResultsRegistration = () => {
                             name='utilities_expense'
                             value={form.utilities_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -550,6 +581,7 @@ const ExpensesResultsRegistration = () => {
                             name='entertainment_expense'
                             value={form.entertainment_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -589,7 +621,12 @@ const ExpensesResultsRegistration = () => {
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
       />
-      <CrudModal message={modalMessage} onClose={() => setIsModalOpen(false)} isCRUDOpen={isModalOpen} />
+      <CrudModal
+        message={modalMessage}
+        onClose={() => setIsModalOpen(false)}
+        isCRUDOpen={isModalOpen}
+        validationMessages={crudValidationErrors}
+      />
       <AlertModal
         isOpen={isOverwriteModalOpen}
         onCancel={() => setIsOverwriteModalOpen(false)}
