@@ -16,6 +16,14 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { deleteCostOfSale } from "../../api/CostOfSalesEndpoint/DeleteCostOfSale";
 import { getCostOfSale } from "../../api/CostOfSalesEndpoint/GetCostOfSale";
 import { updateCostOfSale } from "../../api/CostOfSalesEndpoint/UpdateCostOfSale";
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+
 
 const CostOfSalesList: React.FC = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -31,6 +39,7 @@ const CostOfSalesList: React.FC = () => {
     const [isEditing, setIsEditing] = useState(false)
     const [initialLanguage, setInitialLanguage] = useState(language);
     const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [crudValidationErrors, setCrudValidationErrors] = useState([])
     const [selectedCostOfSales, setSelectedCostOfSales] = useState<any>(null);
     const [deleteCostOfSalesId, setDeleteCostOfSalesId] = useState([])
     const [costOfSales, setCostOfSales] = useState([])
@@ -50,19 +59,19 @@ const CostOfSalesList: React.FC = () => {
         setActiveTabOther(tab)
         switch (tab) {
           case 'project':
-            navigate('/projects-list');
-            break;
+            navigate('/projects-list')
+            break
           case 'employeeExpenses':
-            navigate('/employee-expenses-list');
-            break;
+            navigate('/employee-expenses-list')
+            break
           case 'expenses':
-            navigate('/expenses-list');
-            break;
+            navigate('/expenses-list')
+            break
           case 'costOfSales':
-            navigate('/cost-of-sales-list');
-            break;
+            navigate('/cost-of-sales-list')
+            break
           default:
-            break;
+            break
         }
       }  
     
@@ -96,86 +105,124 @@ const CostOfSalesList: React.FC = () => {
       setCostOfSales(updatedData);
     };
 
-    const handleSubmit = async () => {
+  const handleSubmit = async () => {
+    // Validation
 
-      const getModifiedFields = (original, updated) => {
-        const modifiedFields = []
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'costOfSales'
 
-        updated.forEach((updatedCos) => {
-          const originalCoS = original.find((cos) => cos.cost_of_sale_id === updatedCos.cost_of_sale_id)
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateCostOfSales = (records) => validateRecords(records, fieldChecks, 'costOfSales')
 
-          if (originalCoS) {
-            const changes = { cost_of_sale_id: updatedCos.cost_of_sale_id }
+    // Step 2: Validate client-side input
+    const validationErrors = validateCostOfSales(costOfSales)
 
-            let hasChanges = false
-            for (const key in updatedCos) {
-              if (key === 'cost_of_sale_id ' || key === 'month') continue
-              if (updatedCos[key] !== originalCoS[key] && updatedCos[key] !== '') {
-                changes[key] = updatedCos[key]
-                hasChanges = true
-              }
-            }
+    // Step 3: Check for duplicate entries on specific fields
+    const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client']
+    const duplicateErrors = checkForDuplicates(costOfSales, uniqueFields, 'costOfSales', language)
 
-            if (hasChanges) {
-              modifiedFields.push(changes)
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
+
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      setCrudMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
+      setModalIsOpen(true)
+      return
+    } else {
+      setCrudValidationErrors([])
+    }
+    // Continue with submission if no errors
+
+    const getModifiedFields = (original, updated) => {
+      const modifiedFields = []
+
+      updated.forEach((updatedCos) => {
+        const originalCoS = original.find((cos) => cos.cost_of_sale_id === updatedCos.cost_of_sale_id)
+
+        if (originalCoS) {
+          const changes = { cost_of_sale_id: updatedCos.cost_of_sale_id }
+
+          let hasChanges = false
+          for (const key in updatedCos) {
+            if (key === 'cost_of_sale_id ' || key === 'month') continue
+            if (updatedCos[key] !== originalCoS[key] && updatedCos[key] !== '') {
+              changes[key] = updatedCos[key]
+              hasChanges = true
             }
           }
-        })
-        return modifiedFields
-      }
 
-      const modifiedFields = getModifiedFields(originalCostOfSales, validData)
-      if (modifiedFields.length === 0) {
-        return
-      }
-
-      // Checks if any fields are empty for entries that have a cost_of_sale_id
-      const areFieldsEmpty = costOfSales.some((entry) => {
-        // Only check entries that have a valid cost_of_sale_id
-        if (entry.cost_of_sale_id) {
-          return (
-            !entry.purchase ||
-            !entry.outsourcing_expense ||
-            !entry.product_purchase ||
-            !entry.dispatch_labor_expense ||
-            !entry.communication_expense ||
-            !entry.work_in_progress_expense ||
-            !entry.amortization_expense
-          )
+          if (hasChanges) {
+            modifiedFields.push(changes)
+          }
         }
-        return false // Skip entries without a cost_of_sale_id
       })
+      return modifiedFields
+    }
 
-      if (areFieldsEmpty) {
-        setCrudMessage(translate('allFieldsRequiredInputValidationMessage', language));
-        setIsCRUDOpen(true);
-        return
-      }
+    const modifiedFields = getModifiedFields(originalCostOfSales, validData)
+    if (modifiedFields.length === 0) {
+      return
+    }
 
-      if (!token) {
-        window.location.href = '/login'
-        return
+    // Checks if any fields are empty for entries that have a cost_of_sale_id
+    const areFieldsEmpty = costOfSales.some((entry) => {
+      // Only check entries that have a valid cost_of_sale_id
+      if (entry.cost_of_sale_id) {
+        return (
+          !entry.purchase ||
+          !entry.outsourcing_expense ||
+          !entry.product_purchase ||
+          !entry.dispatch_labor_expense ||
+          !entry.communication_expense ||
+          !entry.work_in_progress_expense ||
+          !entry.amortization_expense
+        )
       }
-      updateCostOfSale(modifiedFields, token)
-        .then(() => {
-          setOriginalCostOfSales(costOfSales)
-          setCrudMessage(translate('successfullyUpdated', language))
-          setIsCRUDOpen(true)
-          setIsEditing(false)
-        })
-        .catch((error) => {
-            if (error.response) {
-              console.error('Error response:', error.response.data)
-              if (error.response.status === 401) {
-                window.location.href = '/login'
-              } else {
-                console.error('There was an error updating the cost of sales data!', error.response.data)
-              }
-            } else {
-              console.error('Error', error.message)
-            }
-        })
-    };
+      return false // Skip entries without a cost_of_sale_id
+    })
+
+    if (areFieldsEmpty) {
+      setCrudMessage(translate('allFieldsRequiredInputValidationMessage', language))
+      setIsCRUDOpen(true)
+      return
+    }
+
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
+    updateCostOfSale(modifiedFields, token)
+      .then(() => {
+        setOriginalCostOfSales(costOfSales)
+        setCrudMessage(translate('successfullyUpdated', language))
+        setIsCRUDOpen(true)
+        setIsEditing(false)
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.error('Error response:', error.response.data)
+          if (error.response.status === 401) {
+            window.location.href = '/login'
+          } else {
+            console.error('There was an error updating the cost of sales data!', error.response.data)
+          }
+        } else {
+          console.error('Error', error.message)
+        }
+      })
+  };
 
     const handleUpdateConfirm = async () => {
       await handleSubmit(); // Call the submit function for update
@@ -413,6 +460,7 @@ const CostOfSalesList: React.FC = () => {
                                         name='purchase'
                                         value={costOfSale.purchase}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -422,6 +470,7 @@ const CostOfSalesList: React.FC = () => {
                                         name='outsourcing_expense'
                                         value={costOfSale.outsourcing_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -431,6 +480,7 @@ const CostOfSalesList: React.FC = () => {
                                         name='product_purchase'
                                         value={costOfSale.product_purchase}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -440,6 +490,7 @@ const CostOfSalesList: React.FC = () => {
                                         name='dispatch_labor_expense'
                                         value={costOfSale.dispatch_labor_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -449,6 +500,7 @@ const CostOfSalesList: React.FC = () => {
                                         name='communication_expense'
                                         value={costOfSale.communication_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -458,6 +510,7 @@ const CostOfSalesList: React.FC = () => {
                                         name='work_in_progress_expense'
                                         value={costOfSale.work_in_progress_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -467,6 +520,7 @@ const CostOfSalesList: React.FC = () => {
                                         name='amortization_expense'
                                         value={costOfSale.amortization_expense}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
@@ -607,7 +661,12 @@ const CostOfSalesList: React.FC = () => {
         onCancel={closeModal}
         message={translate('deleteMessage', language)}
       />
-      <CrudModal isCRUDOpen={isCRUDOpen} onClose={closeModal} message={crudMessage} />
+      <CrudModal
+        isCRUDOpen={isCRUDOpen}
+        onClose={closeModal}
+        message={crudMessage}
+        validationMessages={crudValidationErrors}
+      />
       <AlertModal
         isOpen={isUpdateConfirmationOpen}
         onConfirm={handleUpdateConfirm}

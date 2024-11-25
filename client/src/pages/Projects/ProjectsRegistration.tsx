@@ -13,6 +13,8 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { createProject } from '../../api/ProjectsEndpoint/CreateProject'
 import { overwriteProject } from '../../api/ProjectsEndpoint/OverwriteProject'
+import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
+import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -25,23 +27,24 @@ const ProjectsRegistration = () => {
   const [activeTabOther, setActiveTabOther] = useState('project')
   const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
-  const years = [];
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
+  const years = []
   const token = localStorage.getItem('accessToken')
   const [clients, setClients] = useState<any>([])
-  const [selectedClient, setSelectedClient] = useState([]);
+  const [selectedClient, setSelectedClient] = useState([])
   const [businessSelection, setBusinessSelection] = useState<any>([])
   const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
 
   const dispatch = useDispatch()
   for (let year = 2021; year <= new Date().getFullYear(); year++) {
-    years.push(year);
+    years.push(year)
   }
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
-  const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false); 
-  const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
+  const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
+  const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
 
   const [formProjects, setProjects] = useState([
     {
@@ -52,7 +55,6 @@ const ProjectsRegistration = () => {
       client: '',
       business_division: '',
       sales_revenue: '',
-      cost_of_sale: '',
       dispatch_labor_expense: '',
       employee_expense: '',
       indirect_employee_expense: '',
@@ -77,7 +79,6 @@ const ProjectsRegistration = () => {
           client: '',
           business_division: '',
           sales_revenue: '',
-          cost_of_sale: '',
           dispatch_labor_expense: '',
           employee_expense: '',
           indirect_employee_expense: '',
@@ -90,15 +91,15 @@ const ProjectsRegistration = () => {
         },
       ])
     } else {
-      console.log('You can only add up to 10 forms.');
+      console.log('You can only add up to 10 forms.')
     }
-  };
+  }
 
   const handleMinus = () => {
     if (formProjects.length > 1) {
       setProjects(formProjects.slice(0, -1))
     }
-  };
+  }
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -108,50 +109,49 @@ const ProjectsRegistration = () => {
     setActiveTabOther(tab)
     switch (tab) {
       case 'project':
-        navigate('/projects-registration');
-        break;
+        navigate('/projects-registration')
+        break
       case 'employeeExpenses':
-        navigate('/employee-expenses-registration');
-        break;
+        navigate('/employee-expenses-registration')
+        break
       case 'expenses':
-        navigate('/expenses-registration');
-        break;
+        navigate('/expenses-registration')
+        break
       case 'costOfSales':
-        navigate('/cost-of-sales-registration');
-        break;
+        navigate('/cost-of-sales-registration')
+        break
       default:
-        break;
+        break
     }
   }
 
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal();
+    openModal()
   }
 
   const handleRemoveInputData = () => {
-      setProjects([
-        {
-          year: '',
-          month: '',
-          project_name: '',
-          project_type: '',
-          client: '',
-          business_division: '',
-          sales_revenue: '',
-          cost_of_sale: '',
-          dispatch_labor_expense: '',
-          employee_expense: '',
-          indirect_employee_expense: '',
-          expense: '',
-          operating_income: '',
-          non_operating_income: '',
-          non_operating_expense: '',
-          ordinary_profit: '',
-          ordinary_profit_margin: '',
-        },
-      ])
-      closeModal()
+    setProjects([
+      {
+        year: '',
+        month: '',
+        project_name: '',
+        project_type: '',
+        client: '',
+        business_division: '',
+        sales_revenue: '',
+        dispatch_labor_expense: '',
+        employee_expense: '',
+        indirect_employee_expense: '',
+        expense: '',
+        operating_income: '',
+        non_operating_income: '',
+        non_operating_expense: '',
+        ordinary_profit: '',
+        ordinary_profit_margin: '',
+      },
+    ])
+    closeModal()
   }
 
   const openModal = () => {
@@ -159,7 +159,7 @@ const ProjectsRegistration = () => {
   }
 
   const closeModal = () => {
-      setModalIsOpen(false)
+    setModalIsOpen(false)
   }
 
   const fetchClients = async () => {
@@ -180,7 +180,6 @@ const ProjectsRegistration = () => {
     }
   }
 
-
   const handleChange = (index, event) => {
     const { name, value } = event.target
     const updatedFormData = [...formProjects]
@@ -189,57 +188,62 @@ const ProjectsRegistration = () => {
       [name]: value,
     }
     setProjects(updatedFormData)
-  } 
+  }
   useEffect(() => {}, [formProjects])
 
   const HandleClientChange = (e) => {
-    setSelectedClient(e.target.value);
-  };
-
-  useEffect(() => {
-    const path = location.pathname;
-    if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
-      setActiveTab(path);
-    }
-  }, [location.pathname]);
-
-  const validateProjects = (projectsValidate) => {
-    return projectsValidate.every((prj) => {
-      return (
-        prj.year.trim() !== '' &&
-        prj.month.trim() !== '' &&
-        prj.business_division.trim() !== '' &&
-        prj.client.trim() !== '' &&
-        !isNaN(prj.sales_revenue) &&
-        prj.sales_revenue > 0 &&
-        !isNaN(prj.sales_revenue) &&
-        prj.cost_of_sale > 0 &&
-        !isNaN(prj.cost_of_sale) &&
-        prj.dispatch_labor_expense > 0 &&
-        !isNaN(prj.dispatch_labor_expense) &&
-        prj.employee_expense > 0 &&
-        !isNaN(prj.employee_expense) &&
-        prj.indirect_employee_expense > 0 &&
-        !isNaN(prj.indirect_employee_expense) &&
-        prj.expense > 0 &&
-        !isNaN(prj.expense) &&
-        prj.operating_income > 0 &&
-        !isNaN(prj.operating_income) &&
-        prj.non_operating_income > 0 &&
-        !isNaN(prj.non_operating_income) &&
-        prj.non_operating_expense > 0 &&
-        !isNaN(prj.non_operating_expense) &&
-        prj.ordinary_profit > 0 &&
-        !isNaN(prj.ordinary_profit) &&
-        prj.ordinary_profit_margin > 0 &&
-        !isNaN(prj.ordinary_profit_margin)
-      )
-    })
+    setSelectedClient(e.target.value)
   }
 
+  useEffect(() => {
+    const path = location.pathname
+    if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
+      setActiveTab(path)
+    }
+  }, [location.pathname])
+
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-  
+    e.preventDefault()
+
+    // Client Side Validation
+
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'projects'
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateProjects = (records) => validateRecords(records, fieldChecks, 'project')
+
+    // Step 2: Validate client-side input
+    const validationErrors = validateProjects(formProjects)
+
+    // Step 3: Check for duplicate entries on specific fields
+    const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client']
+    const duplicateErrors = checkForDuplicates(formProjects, uniqueFields, 'project', language)
+
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
+
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      setModalMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
+      setIsModalOpen(true)
+      return
+    } else {
+      setCrudValidationErrors([])
+    }
+    // Continue with submission if no errors
+
     const projectsData = formProjects.map((projects) => ({
       year: projects.year,
       month: projects.month,
@@ -248,7 +252,6 @@ const ProjectsRegistration = () => {
       client: projects.client,
       business_division: projects.business_division,
       sales_revenue: parseFloat(projects.sales_revenue),
-      cost_of_sale: parseFloat(projects.cost_of_sale),
       dispatch_labor_expense: parseFloat(projects.dispatch_labor_expense),
       employee_expense: parseFloat(projects.employee_expense),
       indirect_employee_expense: parseFloat(projects.indirect_employee_expense),
@@ -258,45 +261,37 @@ const ProjectsRegistration = () => {
       non_operating_expense: parseFloat(projects.non_operating_expense),
       ordinary_profit: parseFloat(projects.ordinary_profit),
       ordinary_profit_margin: parseFloat(projects.ordinary_profit_margin),
-    }));
-  
-    
+    }))
+
     if (!token) {
-      window.location.href = '/login';
-      return;
-    }
-  
-    if (!validateProjects(formProjects)) {
-      setModalMessage(translate('usersValidationText6', language));
-      setIsModalOpen(true);
-      return; // Stop the submission
+      window.location.href = '/login'
+      return
     }
 
     createProject(projectsData, token)
       .then((data) => {
-          setModalMessage(translate('successfullySaved', language))
-          setIsModalOpen(true)
-          setProjects([
-            {
-              year: '',
-              month: '',
-              project_name: '',
-              project_type: '',
-              client: '',
-              business_division: '',
-              sales_revenue: '',
-              cost_of_sale: '',
-              dispatch_labor_expense: '',
-              employee_expense: '',
-              indirect_employee_expense: '',
-              expense: '',
-              operating_income: '',
-              non_operating_income: '',
-              non_operating_expense: '',
-              ordinary_profit: '',
-              ordinary_profit_margin: '',
-            },
-          ])
+        setModalMessage(translate('successfullySaved', language))
+        setIsModalOpen(true)
+        setProjects([
+          {
+            year: '',
+            month: '',
+            project_name: '',
+            project_type: '',
+            client: '',
+            business_division: '',
+            sales_revenue: '',
+            dispatch_labor_expense: '',
+            employee_expense: '',
+            indirect_employee_expense: '',
+            expense: '',
+            operating_income: '',
+            non_operating_income: '',
+            non_operating_expense: '',
+            ordinary_profit: '',
+            ordinary_profit_margin: '',
+          },
+        ])
       })
       .catch((error) => {
         if (error.response && error.response.status === 409) {
@@ -360,17 +355,16 @@ const ProjectsRegistration = () => {
           console.error('There was an error with expenses registration!', error)
         }
       })
-  };
-  
+  }
 
   // Handle overwrite confirmation
   const handleOverwriteConfirmation = async () => {
-    setIsOverwriteModalOpen(false); // Close the overwrite modal
-    setIsOverwriteConfirmed(true); // Set overwrite confirmed state
+    setIsOverwriteModalOpen(false) // Close the overwrite modal
+    setIsOverwriteConfirmed(true) // Set overwrite confirmed state
 
     // Call the submission method again after confirmation
-    await handleSubmitConfirmed();
-  };
+    await handleSubmitConfirmed()
+  }
 
   const handleSubmitConfirmed = async () => {
     const projectsData = formProjects.map((projects) => ({
@@ -381,7 +375,6 @@ const ProjectsRegistration = () => {
       client: projects.client,
       business_division: projects.business_division,
       sales_revenue: parseFloat(projects.sales_revenue),
-      cost_of_sale: parseFloat(projects.cost_of_sale),
       dispatch_labor_expense: parseFloat(projects.dispatch_labor_expense),
       employee_expense: parseFloat(projects.employee_expense),
       indirect_employee_expense: parseFloat(projects.indirect_employee_expense),
@@ -391,8 +384,8 @@ const ProjectsRegistration = () => {
       non_operating_expense: parseFloat(projects.non_operating_expense),
       ordinary_profit: parseFloat(projects.ordinary_profit),
       ordinary_profit_margin: parseFloat(projects.ordinary_profit_margin),
-    }));
-  
+    }))
+
     overwriteProject(projectsData, token)
       .then((data) => {
         setModalMessage(translate('overWrite', language))
@@ -406,7 +399,6 @@ const ProjectsRegistration = () => {
             client: '',
             business_division: '',
             sales_revenue: '',
-            cost_of_sale: '',
             dispatch_labor_expense: '',
             employee_expense: '',
             indirect_employee_expense: '',
@@ -427,42 +419,42 @@ const ProjectsRegistration = () => {
         } else {
           console.error('Error overwriting data:', overwriteError)
         }
-      }).finally(() => {
+      })
+      .finally(() => {
         setIsOverwriteConfirmed(false) // Reset overwrite confirmation
-      });
-  };
-  
+      })
+  }
 
   useEffect(() => {
-    setIsTranslateSwitchActive(language === 'en');
-  }, [language]);
+    setIsTranslateSwitchActive(language === 'en')
+  }, [language])
 
   const handleTranslationSwitchToggle = () => {
-    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
-    setLanguage(newLanguage);
-  };
+    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
+    setLanguage(newLanguage)
+  }
   useEffect(() => {
     fetchDivision()
     fetchClients()
-  }, [token]);
+  }, [token])
   const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: "January", jp: "1月" },
-    2: { en: "February", jp: "2月" },
-    3: { en: "March", jp: "3月" },
-    4: { en: "April", jp: "4月" },
-    5: { en: "May", jp: "5月" },
-    6: { en: "June", jp: "6月" },
-    7: { en: "July", jp: "7月" },
-    8: { en: "August", jp: "8月" },
-    9: { en: "September", jp: "9月" },
-    10: { en: "October", jp: "10月" },
-    11: { en: "November", jp: "11月" },
-    12: { en: "December", jp: "12月" },
-  };
+    1: { en: 'January', jp: '1月' },
+    2: { en: 'February', jp: '2月' },
+    3: { en: 'March', jp: '3月' },
+    4: { en: 'April', jp: '4月' },
+    5: { en: 'May', jp: '5月' },
+    6: { en: 'June', jp: '6月' },
+    7: { en: 'July', jp: '7月' },
+    8: { en: 'August', jp: '8月' },
+    9: { en: 'September', jp: '9月' },
+    10: { en: 'October', jp: '10月' },
+    11: { en: 'November', jp: '11月' },
+    12: { en: 'December', jp: '12月' },
+  }
 
-  const handleListClick = () => { 
-    navigate('/projects-list');
-  };
+  const handleListClick = () => {
+    navigate('/projects-list')
+  }
 
   return (
     <div className='projectsRegistration_wrapper'>
@@ -538,7 +530,8 @@ const ProjectsRegistration = () => {
                             name='sales_revenue'
                             value={form.sales_revenue}
                             onChange={(e) => handleChange(index, e)}
-                            onWheel={(e) => (e.target as HTMLInputElement).blur()} 
+                            onKeyDown={handleDisableKeysOnNumberInputs}
+                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                         <div className='projectsRegistration_employee-expenses-div'>
@@ -550,6 +543,7 @@ const ProjectsRegistration = () => {
                             name='employee_expense'
                             value={form.employee_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -562,6 +556,7 @@ const ProjectsRegistration = () => {
                             name='operating_income'
                             value={form.operating_income}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -574,6 +569,7 @@ const ProjectsRegistration = () => {
                             name='ordinary_profit'
                             value={form.ordinary_profit}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -612,18 +608,6 @@ const ProjectsRegistration = () => {
                             ))}
                           </select>
                         </div>
-                        <div className='projectsRegistration_cost-of-sale-div'>
-                          <label className='projectsRegistration_cost-of-sale'>
-                            {translate('costOfSale', language)}
-                          </label>
-                          <input
-                            type='number'
-                            name='cost_of_sale'
-                            value={form.cost_of_sale}
-                            onChange={(e) => handleChange(index, e)}
-                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
-                          />
-                        </div>
                         <div className='projectsRegistration_indirect-employee-expense-div'>
                           <label className='projectsRegistration_indirect-employee-expense'>
                             {translate('indirectEmployeeExpense', language)}
@@ -633,6 +617,7 @@ const ProjectsRegistration = () => {
                             name='indirect_employee_expense'
                             value={form.indirect_employee_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -645,6 +630,7 @@ const ProjectsRegistration = () => {
                             name='non_operating_income'
                             value={form.non_operating_income}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -657,6 +643,7 @@ const ProjectsRegistration = () => {
                             name='ordinary_profit_margin'
                             value={form.ordinary_profit_margin}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -672,6 +659,11 @@ const ProjectsRegistration = () => {
                             name='project_name'
                             value={form.project_name}
                             onChange={(e) => handleChange(index, e)}
+                            style={{
+                              overflowX: 'auto',
+                              whiteSpace: 'nowrap',
+                              textOverflow: 'ellipsis',
+                            }}
                           />
                         </div>
 
@@ -705,6 +697,7 @@ const ProjectsRegistration = () => {
                             name='dispatch_labor_expense'
                             value={form.dispatch_labor_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -716,6 +709,7 @@ const ProjectsRegistration = () => {
                             name='expense'
                             value={form.expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -729,6 +723,7 @@ const ProjectsRegistration = () => {
                             name='non_operating_expense'
                             value={form.non_operating_expense}
                             onChange={(e) => handleChange(index, e)}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
@@ -763,16 +758,17 @@ const ProjectsRegistration = () => {
           </div>
         </div>
       </div>
-       <AlertModal
+      <AlertModal
         isOpen={modalIsOpen}
         onConfirm={handleRemoveInputData}
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
-        />
+      />
       <CrudModal
         message={modalMessage}
         onClose={() => setIsModalOpen(false)}
         isCRUDOpen={isModalOpen}
+        validationMessages={crudValidationErrors}
       />
       <AlertModal
         isOpen={isOverwriteModalOpen}

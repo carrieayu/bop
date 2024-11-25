@@ -1,0 +1,368 @@
+.expensesResultsRegistration_wrapper{
+    display: flex;
+    flex-direction: column;
+    .expensesResultsRegistration_content_wrapper{
+        display: flex;
+        background-color: #EFEDEA;
+        width: 100%;
+        height: 100%;
+        @media only screen and (max-width: 1000px){
+            flex-direction: column;
+        }
+        .expensesResultsRegistration_data_content{
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin: 10px 30px 10px 30px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            background-color: #fff;
+            .expensesResultsRegistration_top_body_cont{
+                margin: 2rem 0 0 0;
+                background-color: #fff;
+            }
+            .expensesResultsRegistration_inputs_and_buttons{
+                display: flex;
+                height: 65vh;
+                justify-content: space-between;
+                flex-direction: column;
+            }
+            .expensesResultsRegistration_form_cont{
+            }
+            .expensesResultsRegistration_mid_body_cont{
+                background-color: #fff;
+                height: 90%;
+                @media only screen and (min-width: 1875px){
+                    height: 55vh;
+                }
+                .expensesResultsRegistration_mid{
+            
+                }
+                .expensesResultsRegistration_mid_form_cont{
+                    margin: 0px 40px;
+                    padding: 15px 20px;
+                    background-color: #EFEDEA;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    scrollbar-width: thin; 
+                    scrollbar-color: transparent transparent;
+                    border-radius: 5px;
+                    &:hover {
+                        scrollbar-color: #888 #EFEDEA; 
+                    }
+                    &::-webkit-scrollbar {
+                        width: 8px;
+                    }
+                    &::-webkit-scrollbar-track {
+                        background: transparent; 
+                    }
+                    &::-webkit-scrollbar-thumb {
+                        background-color: transparent; 
+                        border-radius: 10px;
+                    }
+                    &:hover::-webkit-scrollbar-thumb {
+                        background-color: #888;
+                    }
+                    &:hover::-webkit-scrollbar-thumb:hover {
+                        background-color: #555; 
+                    }    
+                    .expensesResultsRegistration_form-content.expensesResultsRegistration_form-content-special{
+                        // padding: 50px 0px 0px 20px;
+                    }
+                    .expensesResultsRegistration_form-content.expensesResultsRegistration_form-line{
+                        border-top: 4px solid rgb(183, 183, 183);
+                        opacity: 30%;
+                    }
+                    .expensesResultsRegistration_form-content{
+                        padding: -1px 0px 0px 0px;
+                        .expensesResultsRegistration_form-content-div{
+                            display: flex;
+                            .expensesResultsRegistration_calc{
+                                width: calc(100%/3);
+                            }
+                            .expensesResultsRegistration_left-form-div{
+                                .expensesResultsRegistration_year-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .expensesResultsRegistration_year{
+                                        margin-bottom: 5px;
+                                    }       
+                                    .expensesResultsRegistration_select-option{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                        option{
+                                            text-align: left;
+                                        }
+                                    }
+                                }
+                                .expensesResultsRegistration_rent_expenses-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .expensesResultsRegistration_rent_expenses{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                    input::-webkit-outer-spin-button,
+                                    input::-webkit-inner-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
+                                    }
+                                }
+                                .expensesResultsRegistration_travel_expenses-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .expensesResultsRegistration_travel_expenses{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                    input::-webkit-outer-spin-button,
+                                    input::-webkit-inner-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
+                                    }
+                                }
+                                .expensesResultsRegistration_transaction_fees-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .expensesResultsRegistration_transaction_fees{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                    input::-webkit-outer-spin-button,
+                                    input::-webkit-inner-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
+                                    }
+                                }
+                                .expensesResultsRegistration_professional_services_fees-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .expensesResultsRegistration_professional_services_fees{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                    input::-webkit-outer-spin-button,
+                                    input::-webkit-inner-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
+                                    }
+                                }
+                            }
+                            .expensesResultsRegistration_middle-form-div{
+                                .expensesResultsRegistration_month-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .expensesResultsRegistration_month{
+                                        margin-bottom: 5px;
+                                    }       
+                                    .expensesResultsRegistration_select-option{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                        option{
+                                            text-align: left;
+                                        }
+                                    }
+                                }
+                                .expensesResultsRegistration_taxes_and_public_charges-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .expensesResultsRegistration_taxes_and_public_charges{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                    input::-webkit-outer-spin-button,
+                                    input::-webkit-inner-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
+                                    }
+                                }
+                                .expensesResultsRegistration_communication_expenses-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .expensesResultsRegistration_communication_expenses{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                    input::-webkit-outer-spin-button,
+                                    input::-webkit-inner-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
+                                    }
+                                }
+                                .expensesResultsRegistration_advertising_expenses-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .expensesResultsRegistration_advertising_expenses{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                    input::-webkit-outer-spin-button,
+                                    input::-webkit-inner-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
+                                    }
+                                }
+                            }
+                            .expensesResultsRegistration_right-form-div{
+                                .expensesResultsRegistration_consumable_expenses-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .expensesResultsRegistration_consumable_expenses{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                    input::-webkit-outer-spin-button,
+                                    input::-webkit-inner-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
+                                    }
+                                }
+                                .expensesResultsRegistration_depreciation_expenses-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .expensesResultsRegistration_depreciation_expenses{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                    input::-webkit-outer-spin-button,
+                                    input::-webkit-inner-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
+                                    }
+                                }
+                                .expensesResultsRegistration_utilities_expenses-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .expensesResultsRegistration_utilities_expenses{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                    input::-webkit-outer-spin-button,
+                                    input::-webkit-inner-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
+                                    }
+                                }
+                                .expensesResultsRegistration_entertainment_expenses-div{
+                                    display: flex;
+                                    flex-direction: column;
+                                    margin-bottom: 10px;
+                                    .expensesResultsRegistration_entertainment_expenses{
+                                        margin-bottom: 5px;
+                                    }
+                                    input{
+                                        width: 80%;
+                                        height: 40px;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                    }
+                                    input::-webkit-outer-spin-button,
+                                    input::-webkit-inner-spin-button {
+                                    -webkit-appearance: none;
+                                    margin: 0;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                .expensesResultsRegistration_lower_form_cont{
+                    .expensesResultsRegistration_form-content{
+                        padding: 20px;
+                        .expensesResultsRegistration_plus-btn{
+                            padding: 20px 10px 20px 10px;
+                            gap: 1rem;
+                            display: flex;
+                            margin-left: 90%;
+                            .expensesResultsRegistration_inc,
+                            .expensesResultsRegistration_dec{
+                                background-color: #808080;
+                                color: whitesmoke;
+                                width: 30px;
+                                height: 40px;
+                                font-size: 25px;
+                                border-radius: 5px;
+                            }
+                        }
+                        .expensesResultsRegistration_options-btn{
+                            display: flex;
+                            gap: 1%;
+                            padding: 10px 10px 10px 10px;
+                            align-items: center;
+                            justify-content: center;
+                            button{
+                                width: 10%;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

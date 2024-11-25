@@ -90,18 +90,18 @@ class Employees(models.Model):
     employee_id = models.CharField(max_length=10, primary_key=True, editable=False)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    type = models.IntegerField(max_length=12) # 0 = regular employee , 1 = executive employee
+    type = models.IntegerField() # 0 = regular employee , 1 = executive employee
     email = models.EmailField(unique=True)
-    salary = models.IntegerField(max_length=12, null=True) # null if employee_type = (1/executive)
-    executive_renumeration = models.IntegerField(max_length=12, null=True) # null if employee_type = (0/regular) 
+    salary = models.IntegerField(null=True) # null if employee_type = (1/executive)
+    executive_renumeration = models.IntegerField(null=True) # null if employee_type = (0/regular) 
     company = models.ForeignKey(MasterCompany, on_delete=models.CASCADE)
     business_division = models.ForeignKey(
         MasterBusinessDivision, on_delete=models.CASCADE
     )
-    statutory_welfare_expense = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    welfare_expense = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    insurance_premium = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    bonus_and_fuel_allowance = models.IntegerField(max_length=12)
+    statutory_welfare_expense = models.IntegerField()
+    welfare_expense = models.IntegerField()
+    insurance_premium = models.IntegerField()
+    bonus_and_fuel_allowance = models.IntegerField()
     auth_user =  models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -139,28 +139,15 @@ class Projects(models.Model):
     )
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
-    sales_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    cost_of_sale = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0.0
-    )
-    dispatch_labor_expense = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0.0
-    )
-    employee_expense = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0.0
-    )
-    indirect_employee_expense = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0.0
-    )
-    expense = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    operating_income = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    non_operating_income = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0.0
-    )
-    non_operating_expense = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0.0
-    )
-    ordinary_profit = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
+    sales_revenue = models.IntegerField( default=0)
+    dispatch_labor_expense = models.IntegerField(default=0)
+    employee_expense = models.IntegerField(default=0)
+    indirect_employee_expense = models.IntegerField(default=0)
+    expense = models.IntegerField( default=0)
+    operating_income = models.IntegerField( default=0)
+    non_operating_income = models.IntegerField( default=0)
+    non_operating_expense = models.IntegerField( default=0)
+    ordinary_profit = models.IntegerField(default=0)
     ordinary_profit_margin = models.FloatField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -213,12 +200,12 @@ class Results(models.Model):
     executive_renumeration = models.IntegerField(max_length=12)
     salary = models.IntegerField(max_length=12)
     fuel_allowance = models.IntegerField(max_length=12)
-    statutory_welfare_expense =  models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
-    welfare_expense = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
+    statutory_welfare_expense =  models.IntegerField(default=0)
+    welfare_expense = models.IntegerField(default=0)
     expense = models.IntegerField(max_length=12)
     consumable_expense = models.IntegerField(max_length=12)
     rent_expense = models.IntegerField(max_length=12)
-    insurance_premium =  models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
+    insurance_premium =  models.IntegerField(default=0)
     tax_and_public_charge = models.IntegerField(max_length=12)
     depreciation_expense = models.IntegerField(max_length=12)
     travel_expense = models.IntegerField(max_length=12)
@@ -358,3 +345,88 @@ class Expenses(models.Model):
 
     def __str__(self):
         return self.expense_id
+    
+
+class ExpensesResults(models.Model):
+    expense_result_id  = models.CharField(max_length=10, primary_key=True)
+    expense = models.ForeignKey(Expenses, on_delete=models.CASCADE, null=True)
+    year = models.CharField(max_length=4, default="2001")
+    month = models.CharField(max_length=2, default="01")
+    consumable_expense = models.IntegerField(max_length=12)
+    rent_expense = models.IntegerField(max_length=12)
+    tax_and_public_charge = models.IntegerField(max_length=12)
+    depreciation_expense = models.IntegerField(max_length=12)
+    travel_expense = models.IntegerField(max_length=12)
+    communication_expense = models.IntegerField(max_length=12)
+    utilities_expense = models.IntegerField(max_length=12)
+    transaction_fee = models.IntegerField(max_length=12)
+    advertising_expense = models.IntegerField(max_length=12)
+    entertainment_expense = models.IntegerField(max_length=12)
+    professional_service_fee = models.IntegerField(max_length=12)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta :
+        db_table = u'expenses_results'
+
+    def save(self, *args, **kwargs):
+        if not self.expense_result_id:
+            # Get the maximum existing ID and increment it
+            max_expense_results_id = ExpensesResults.objects.aggregate(max_expense_results_id=Max("expense_result_id"))["max_expense_results_id"]
+            if max_expense_results_id:
+                numeric_part = int(max_expense_results_id[1:]) + 1  # Extract numeric part after 'B'
+            else:
+                numeric_part = 1  # Start with 1 if no records exist
+            self.expense_result_id = f'B{numeric_part:09d}'  # Format as 'B000000001'
+        
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.expense_result_id
+    
+class ProjectsSalesResults(models.Model):
+    project_sales_result_id  = models.CharField(
+        max_length=10, primary_key=True , editable=False
+    )
+    project = models.ForeignKey(Projects, on_delete=models.CASCADE, null=True)
+    sales_revenue = models.IntegerField(max_length=12)
+    dispatch_labor_expense = models.IntegerField(
+        max_length=12
+    )
+    employee_expense = models.IntegerField(
+        max_length=12
+    )
+    indirect_employee_expense = models.IntegerField(
+        max_length=12
+    )
+    expense = models.IntegerField(max_length=12)
+    operating_income = models.IntegerField(max_length=12)
+    non_operating_income = models.IntegerField(
+        max_length=12
+    )
+    non_operating_expense = models.IntegerField(
+        max_length=12
+    )
+    ordinary_profit = models.IntegerField(max_length=12)
+    ordinary_profit_margin = models.IntegerField(default=0.0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta :
+        db_table = u'project_sales_results'
+
+    def __str__(self):
+        return self.project_sales_result_id
+
+    def generate_project_sales_result_id(self):
+        max_project_sales_result_id = (
+            ProjectsSalesResults.objects.aggregate(
+                max_project_sales_result_id=models.Max("project_sales_result_id")
+            )["max_project_sales_result_id"]
+            or "9000000000"
+        )
+        new_project_sales_result_id = str(int(max_project_sales_result_id) + 1).zfill(6)
+        return new_project_sales_result_id
+
+    def save(self, *args, **kwargs):
+        if not self.project_sales_result_id:
+            self.project_sales_result_id = self.generate_project_sales_result_id()
+        super().save(*args, **kwargs)

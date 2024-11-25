@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import CostOfSales, Expenses, MasterBusinessDivision, MasterClient, MasterCompany, Projects, Results, Employees as Employees, EmployeeExpenses
+from .models import CostOfSales, Expenses, ExpensesResults, MasterBusinessDivision, MasterClient, MasterCompany, Projects, ProjectsSalesResults, Results, Employees as Employees, EmployeeExpenses
 
 
 # Employees
@@ -149,7 +149,6 @@ class ProjectsListSerializer(serializers.ModelSerializer):
             "year",
             "month",
             "sales_revenue",
-            "cost_of_sale",
             "dispatch_labor_expense",
             "employee_expense",
             "indirect_employee_expense",
@@ -163,7 +162,29 @@ class ProjectsListSerializer(serializers.ModelSerializer):
             "client", # client_id in TABLE
             "client_name"
             ]
-
+# For ProjectSalesResultsListSerializer Serializer
+class ProjectsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Projects
+        fields = [
+            "project_id",
+            "project_name",
+            "project_type",
+            "year",
+            "month",
+            "sales_revenue",
+            "dispatch_labor_expense",
+            "employee_expense",
+            "indirect_employee_expense",
+            "expense",
+            "operating_income",
+            "non_operating_income",
+            "non_operating_expense",
+            "ordinary_profit",
+            "ordinary_profit_margin",
+            "business_division",
+            "client", 
+            ]
 class ProjectsCreateSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(queryset=MasterClient.objects.all())
     class Meta:
@@ -180,7 +201,6 @@ class ProjectsUpdateSerializer(serializers.ModelSerializer):
             "year",
             "month",
             "sales_revenue",
-            "cost_of_sale",
             "dispatch_labor_expense",
             "employee_expense",
             "indirect_employee_expense",
@@ -194,6 +214,49 @@ class ProjectsUpdateSerializer(serializers.ModelSerializer):
             "business_division_id",
             ]
 
+# Project Sales Results
+class ProjectSalesResultsListSerializer(serializers.ModelSerializer):
+    projects = ProjectsSerializer(source='project', read_only=True)
+    class Meta:
+        model = ProjectsSalesResults
+        fields = [
+            "project_sales_result_id",
+            "sales_revenue",
+            "dispatch_labor_expense",
+            "employee_expense",
+            "indirect_employee_expense",
+            "expense",
+            "operating_income",
+            "non_operating_income",
+            "non_operating_expense",
+            "ordinary_profit",
+            "ordinary_profit_margin",
+            "projects"
+            ]
+
+class ProjectSalesResultsCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProjectsSalesResults
+        fields = '__all__'
+
+class ProjectSalesResultsUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProjectsSalesResults
+        fields = [
+            "sales_revenue",
+            "dispatch_labor_expense",
+            "employee_expense",
+            "indirect_employee_expense",
+            "expense",
+            "operating_income",
+            "non_operating_income",
+            "non_operating_expense",
+            "ordinary_profit",
+            "ordinary_profit_margin",
+            'created_at',
+            'updated_at',
+            ]
+        
 class GetBusinessDivisionMasterSerializer(serializers.ModelSerializer):
     company = MasterCompaniesListSerializer(source='company_id', read_only=True)
 
@@ -296,6 +359,61 @@ class ExpensesUpdateSerializer(serializers.ModelSerializer):
             'updated_at',
         ]
 
+# Expenses
+class ExpensesResultsListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ExpensesResults
+        fields = '__all__'
+
+class ExpensesResultsCreateSerializer(serializers.ModelSerializer):
+
+    expense_result_id = serializers.CharField(required=False)
+    class Meta:
+        model = ExpensesResults
+        fields = [
+            'expense_result_id',
+            'year',
+            'month',
+            'tax_and_public_charge',
+            'communication_expense',
+            'advertising_expense',
+            'consumable_expense',
+            'depreciation_expense',
+            'utilities_expense',
+            'entertainment_expense',
+            'rent_expense',
+            'travel_expense',
+            'transaction_fee',
+            'professional_service_fee',
+            'created_at',
+            'updated_at',
+        ]
+
+class ExpensesResultsUpdateSerializer(serializers.ModelSerializer):
+
+    expense_result_id = serializers.CharField(required=False)
+    class Meta:
+        model = ExpensesResults
+        fields = [
+            'expense_result_id',
+            'year',
+            'month',
+            'tax_and_public_charge',
+            'communication_expense',
+            'advertising_expense',
+            'consumable_expense',
+            'depreciation_expense',
+            'utilities_expense',
+            'entertainment_expense',
+            'rent_expense',
+            'travel_expense',
+            'transaction_fee',
+            'professional_service_fee',
+            'updated_at',
+        ]
+
+
 # Users
 
 class UserSerializer(serializers.ModelSerializer):
@@ -334,7 +452,6 @@ class PlanningDisplayByProjectstSerializer(serializers.ModelSerializer):
             "year",
             "month",
             "sales_revenue",
-            "cost_of_sale",
             "dispatch_labor_expense",
             "employee_expense",
             "indirect_employee_expense",

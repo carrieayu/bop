@@ -106,6 +106,15 @@
                                     border: 1px solid #000;
                                     border-radius: 10px;
                                 }
+                                .projectsRegistration_select-option{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                    option{
+                                        text-align: left;
+                                    }
+                                }
                             }
                             .projectsRegistration_sales-revenue-div{
                                 display: flex;
@@ -328,7 +337,6 @@
                                 -webkit-appearance: none;
                                 margin: 0;
                                 }
-                                
                                 .projectsRegistration_select-option{
                                     width: 80%;
                                     height: 40px;
@@ -342,6 +350,12 @@
                                 margin-bottom: 10px;
                                 .projectsRegistration_project_name{
                                     margin-bottom: 5px;
+                                }
+                                .projectsRegistration_select-option{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
                                 }
                                 input{
                                     width: 80%;

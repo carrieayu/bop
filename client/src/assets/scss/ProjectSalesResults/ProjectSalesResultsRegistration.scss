@@ -1,0 +1,503 @@
+.projectSalesResultsRegistration_wrapper{
+    display: flex;
+    flex-direction: column;
+    .projectSalesResultsRegistration_content_wrapper{
+        display: flex;
+        background-color: #EFEDEA;
+        width: 100%;
+        height: 100%;
+        @media only screen and (max-width: 1000px){
+            flex-direction: column;
+        }
+        .projectSalesResultsRegistration_data_content{
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin: 10px 30px 10px 30px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            background-color: #fff;
+            .projectSalesResultsRegistration_top_body_cont{
+                margin: 2rem 0 0 0;
+                background-color: #fff;
+            }
+            .projectSalesResultsRegistration_inputs_and_buttons{
+                display: flex;
+                height: 65vh;
+                justify-content: space-between;
+                flex-direction: column;
+            }
+            .projectSalesResultsRegistration_mid_body_cont{
+                background-color: #fff;
+                height: 90%;
+                @media only screen and (min-width: 1875px){
+                    height: 55vh;
+                }        
+                .projectSalesResultsRegistration_mid_form_cont{
+                    margin: 0px 40px;
+                    padding: 15px 20px;
+                    background-color: #EFEDEA;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    scrollbar-width: thin; 
+                    scrollbar-color: transparent transparent;
+                    border-radius: 5px;
+                    &:hover {
+                        scrollbar-color: #888 #EFEDEA; 
+                    }
+                    &::-webkit-scrollbar {
+                        width: 8px;
+                    }
+                    &::-webkit-scrollbar-track {
+                        background: transparent; 
+                    }
+                    &::-webkit-scrollbar-thumb {
+                        background-color: transparent; 
+                        border-radius: 10px;
+                    }
+                    &:hover::-webkit-scrollbar-thumb {
+                        background-color: #888;
+                    }
+                    &:hover::-webkit-scrollbar-thumb:hover {
+                        background-color: #555; 
+                    }    
+                }
+                // .projectSalesResultsRegistration_form-content.projectSalesResultsRegistration_form-content-special{
+                // }
+                .projectSalesResultsRegistration_form-content.projectSalesResultsRegistration_form-line {
+                    border-top: 4px solid rgb(183, 183, 183);
+                    margin: 20px 0px 20px 0px;
+                    opacity: 30%;
+                }
+                .projectSalesResultsRegistration_form-content{
+                    .projectSalesResultsRegistration_form-content-div{
+                        display: flex;
+                        .projectSalesResultsRegistration_calc{
+                            width: calc(100%/3);
+                        }
+                        .projectSalesResultsRegistration_left-form-div{
+                            .projectSalesResultsRegistration_year-div{
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectSalesResultsRegistration_year{
+                                    margin-bottom: 5px;
+                                }
+                                .projectSalesResultsRegistration_select-option{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                    option{
+                                        text-align: left;
+                                    }
+                                }
+                            }
+                            .projectSalesResultsRegistration_project-type-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectSalesResultsRegistration_project-type{
+                                    margin-bottom: 5px;
+                                }
+                                .inactiveLabel{
+                                    color: gray;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                .projectSalesResultsRegistration_select-option{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                    option{
+                                        text-align: left;
+                                    }
+                                }
+                                .inactiveInput{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid gray;
+                                    border-radius: 10px;
+                                }
+                            }
+                            .projectSalesResultsRegistration_sales-revenue-div{
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectSalesResultsRegistration_sales-revenue{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                            .projectSalesResultsRegistration_employee-expenses-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectSalesResultsRegistration_employee-expenses{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                            .projectSalesResultsRegistration_operating-income-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectSalesResultsRegistration_operating-income{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                            .projectSalesResultsRegistration_ordinary-income-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectSalesResultsRegistration_ordinary-income{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                        }
+                        .projectSalesResultsRegistration_middle-form-div{
+                            .projectSalesResultsRegistration_project_name-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectSalesResultsRegistration_project_name{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                            .projectSalesResultsRegistration_month-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectSalesResultsRegistration_month{
+                                    margin-bottom: 5px;
+                                }
+                                .projectSalesResultsRegistration_select-option{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                            }
+                            .projectSalesResultsRegistration_client-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectSalesResultsRegistration_client{
+                                    margin-bottom: 5px;
+                                }
+                                .inactiveLabel{
+                                    color: gray;
+                                }
+                                .projectSalesResultsRegistration_select-option{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                .inactiveInput{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid gray;
+                                    border-radius: 10px;
+                                }
+                            }
+                            .projectSalesResultsRegistration_cost-of-sale-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectSalesResultsRegistration_cost-of-sale{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                            .projectSalesResultsRegistration_indirect-employee-expense-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectSalesResultsRegistration_indirect-employee-expense{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                            .projectSalesResultsRegistration_non-operating-income-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectSalesResultsRegistration_non-operating-income{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                             .projectSalesResultsRegistration_ordinary-income-margin-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectSalesResultsRegistration_ordinary-income-margin{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                        }
+                        .projectSalesResultsRegistration_right-form-div{
+                            .projectSalesResultsRegistration_business_division_name-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectSalesResultsRegistration_business_division_name{
+                                    margin-bottom: 5px;
+                                }
+                                .inactiveLabel{
+                                    color: gray;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                                .projectSalesResultsRegistration_select-option{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                .inactiveInput{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid gray;
+                                    border-radius: 10px;
+                                }
+                            }
+                            .projectSalesResultsRegistration_project-name-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectSalesResultsRegistration_project_name{
+                                    margin-bottom: 5px;
+                                }
+                                .inactiveLabel{
+                                    color: gray;
+                                }
+                                .projectSalesResultsRegistration_select-option{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                .inactiveInput {
+                                    height: 40px;
+                                    border: 1px solid gray;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                            // ---------------
+                            .projectSalesResultsRegistration_dispatch-labor-expense-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectSalesResultsRegistration_dispatch-labor-expense{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                            // ------------------
+                            // ---------------
+                            .projectSalesResultsRegistration_expense-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectSalesResultsRegistration_expense{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                            // ------------------
+                            // ---------------
+                            .projectSalesResultsRegistration_non-operating-expense-div{ 
+                                display: flex;
+                                flex-direction: column;
+                                margin-bottom: 10px;
+                                .projectSalesResultsRegistration_non-operating-expense{
+                                    margin-bottom: 5px;
+                                }
+                                input{
+                                    width: 80%;
+                                    height: 40px;
+                                    border: 1px solid #000;
+                                    border-radius: 10px;
+                                }
+                                input::-webkit-outer-spin-button,
+                                input::-webkit-inner-spin-button {
+                                -webkit-appearance: none;
+                                margin: 0;
+                                }
+                            }
+                            // ------------------
+                        }
+                    }
+                }
+                .projectSalesResultsRegistration_lower_form_cont{
+                    padding: 20px;
+                    .projectSalesResultsRegistration_plus-btn{
+                        padding: 20px 10px 20px 10px;
+                        gap: 1rem;
+                        display: flex;
+                        margin-left: 90%;
+                        .projectSalesResultsRegistration_inc,.projectSalesResultsRegistration_dec{
+                            background-color: #808080;
+                            color: whitesmoke;
+                            width: 30px;
+                            height: 40px;
+                            font-size: 25px;
+                            border-radius: 5px;
+                        }
+                    }
+                    .projectSalesResultsRegistration_options-btn{
+                        display: flex;
+                        gap: 1%;
+                        padding: 10px 10px 10px 10px;
+                        align-items: center;
+                        justify-content: center;
+                        button{
+                            width: 10%;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

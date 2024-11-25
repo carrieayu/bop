@@ -1,0 +1,178 @@
+.projectSalesResultsList_wrapper{
+    width: 100%;
+    max-width: 2560px;
+    .projectSalesResultsList_cont_wrapper{
+        display: flex;
+        background-color: #EFEDEA;
+        @media only screen and (max-width: 1000px){
+            flex-direction: column;
+        }
+        .projectSalesResultsList_wrapper{
+            width: 84%; // i do not know wjy but it breaks if i set to 100%
+            padding: 10px 30px 10px 30px;
+            .projectSalesResultsList_top_content{
+                position: relative;
+                display: flex;
+                background-color: #fff;
+                flex-direction: column;
+                width: 100%;
+                height: 100%;
+                border: 1px solid #fff;
+                border-radius: 5px;
+                .projectSalesResultsList_top_body_cont{
+                    background-color: #fff;
+                    height: 0rem;
+                }
+                // .projectSalesResultsList_mode_switch {
+                //     position: absolute;
+                //     display: flex;
+                //     gap: 20px;
+                //     right: 40px;
+                //     top: 45px;
+                //     border: 1px solid #EFEDEA;
+                //     padding: 3px 21px;
+                //     border-radius: 5px;
+                //     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.153);
+                //     font-weight: 500;
+                //     background-color: #f3f3f38b;
+                //     @media only screen and (min-width: 1024px) and (max-width: 1280px) {
+                //         /* For small laptops */
+                //         top: 30px;
+                //     }
+                // }
+                .projectSalesResultsList_mode_switch_datalist{
+                    padding: 1rem;
+                }
+                .projectSalesResultsList_mid_body_cont{
+                    height: 100%;
+                    background-color: #fff;
+                    .ListButtons_btn{
+                    }
+                    .projectSalesResultsList_table_wrapper{
+                        width: 100%;
+                        height: 60vh;
+                        overflow-y: auto; 
+                        overflow-x: hidden;
+                        scrollbar-width: thin;
+                        scrollbar-color: #888 #e0e0e0;
+                        padding: 0 40px 0 40px;
+                        @media only screen and (min-width: 1920px){
+                            height: 60vh;
+                        }
+                        &::-webkit-scrollbar {
+                            width: 8px;
+                        }
+                        &::-webkit-scrollbar-track {
+                            background: #e0e0e0;
+                        }
+                        &::-webkit-scrollbar-thumb {
+                            background-color: #888;
+                            border-radius: 10px;
+                        }
+                        &::-webkit-scrollbar-thumb:hover {
+                            background-color: #555;
+                        }
+                        &:not(:hover) {
+                            &::-webkit-scrollbar {
+                                width: 0;
+                            }
+                            scrollbar-width: none; 
+                        }                         
+                        .projectSalesResultsList_table_cont.editScrollable {
+                            overflow-x: auto;
+                            padding: 0px 0px 0px 0px;
+                            
+                        }
+                        .projectSalesResultsList_table_cont{  
+                            overflow-x: auto;
+                            &::-webkit-scrollbar {
+                                width: 8px;
+                            }
+                            &::-webkit-scrollbar-track {
+                                background: #e0e0e0;
+                            }
+                            &::-webkit-scrollbar-thumb {
+                                background-color: #888;
+                                border-radius: 10px;
+                            }
+                            &::-webkit-scrollbar-thumb:hover {
+                                background-color: #555;
+                            }
+                            &:not(:hover) {
+                                &::-webkit-scrollbar {
+                                    width: 0;
+                                }
+                                scrollbar-width: none; 
+                            }                         
+                            .table{
+                                width: 130%;
+                                .projectSalesResultsList_table_title{
+                                    position: sticky;
+                                    top: 0;
+                                    z-index: 1;
+                                    text-align: center;
+                                    background-color: #808080;
+                                    border: 1px solid #808080;
+                                    .projectSalesResultsList_table_title_content_vertical{
+                                        color: #fff;
+                                        border: none;
+                                        font-size: 14px;
+                                    }
+                                }
+                                .projectSalesResultsList_table_body{
+                                    
+                                    .projectSalesResultsList_table_body_content_horizontal{
+                                        
+                                        border: none;
+                                        &:nth-child(odd){
+                                            background-color: #f9f9f9;
+                                        }
+                                        &:nth-child(even){
+                                            background-color: #e0e0e0;
+                                        }
+                                        .projectSalesResultsList_table_body_content_vertical{
+                                            border: 1px solid  #d0cdcd;
+                                            text-align: center;
+                                        }
+                                        .delete-icon{
+                                            color: red;
+                                            cursor: pointer;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .projectSalesResultsList_table_wrapper.editMode {
+                        height: 55vh;
+                    }
+                    .projectSalesResultsList_edit_submit_btn_cont{
+                        display: flex;
+                        justify-content: center;
+                        position: absolute;
+                        bottom: 2%;
+                        right:  2.5%;
+                        .projectSalesResultsList_edit_submit_btn{
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            gap: 1%;
+                            padding: 5px 20px 5px 20px;
+                            border-radius: 7px;
+                            margin-top: 6px;
+                            background: #66d1ff;
+                        }
+                    }
+                    .projectSalesResultsList_is_editing_wrapper{
+                        .projectSalesResultsList_is_editing_cont{         
+                        }
+                    }
+                    
+                }
+            }
+        }
+        .projectSalesResultsList_wrapper.editMode{
+            overflow-x: hidden;
+        }
+    }
+}

@@ -13,6 +13,13 @@ import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { createEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/CreateEmployeeExpense';
 import { getProject } from '../../api/ProjectsEndpoint/GetProject';
 import { getEmployee } from '../../api/EmployeeEndpoint/GetEmployee';
+import {
+  validateEmployeeExpensesRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -34,6 +41,8 @@ const EmployeeExpensesRegistration = () => {
   const [projects, setProjects] = useState([]); 
   const storedUserID = localStorage.getItem('userID')
   const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
+
   const [employeeContainers, setEmployeeContainers] = useState([
     {
       id: 1,
@@ -54,19 +63,19 @@ const EmployeeExpensesRegistration = () => {
     setActiveTabOther(tab);
     switch (tab) {
       case 'project':
-        navigate('/projects-registration');
-        break;
+        navigate('/projects-registration')
+        break
       case 'employeeExpenses':
-        navigate('/employee-expenses-registration');
-        break;
+        navigate('/employee-expenses-registration')
+        break
       case 'expenses':
-        navigate('/expenses-registration');
-        break;
+        navigate('/expenses-registration')
+        break
       case 'costOfSales':
-        navigate('/cost-of-sales-registration');
-        break;
+        navigate('/cost-of-sales-registration')
+        break
       default:
-        break;
+        break
     }
   };
 
@@ -234,82 +243,59 @@ const EmployeeExpensesRegistration = () => {
     setEmployeeContainers(newContainers) 
   }
 
-  const hasDuplicateProjects = () => {
-    for (const container of employeeContainers) {
-      const projectMap = new Map();
-      
-      for (const projectEntry of container.projectEntries) {
-        const projectId = projectEntry.projects;
-  
-        // Ensure the projectId is not empty before checking
-        if (projectId) {
-          // Check if the project is already present for the same employee
-          if (projectMap.has(projectId)) {
-            return true; // Duplicate project found for the same employee
-          }
-          projectMap.set(projectId, true);
-        }
-      }
-    }
-    
-    return false; // No duplicates found for any employee
-  };
-
-  const handleValidation = () => {
-    const projectField = translate('project', language);
-    const yearField = translate('year', language);
-    const monthField = translate('month', language);
-
-    const allFields = [projectField, yearField, monthField];
-  
-    for (const container of employeeContainers) {
-        if (!container.employee) {
-            setModalMessage(translate('employeeExpensesValidation1', language));
-            setIsModalOpen(true);
-            return false;
-        }
-  
-        for (const projectEntry of container.projectEntries) {
-            const missingFields = [];
-            if (!projectEntry.projects) {
-                missingFields.push(translate('project', language)); 
-            }
-            if (!projectEntry.year) {
-                missingFields.push(translate('year', language));
-            }
-            if (!projectEntry.month) {
-                missingFields.push(translate('month', language));
-            }
-
-            // If there are any missing fields, create a message
-            if (missingFields.length > 0) {
-                const fieldsMessage = missingFields.join(', ');
-                setModalMessage(translate('employeeExpensesValidation3', language).replace('${fieldsMessage}', fieldsMessage));
-                setIsModalOpen(true);
-                return false;
-            }
-        }
-    }
-  
-    return true;
-};
-
-
   const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log(employeeContainers)
+    
+    // # Client Side Validation
 
-    // Perform validation
-    if (!handleValidation()) {
-      return; // Prevent form submission if validation fails
-    }
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'employeeExpenses'
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateEmployeeExpenses = (records) =>
+      validateEmployeeExpensesRecords(
+        records,
+        fieldChecks,
+        'employeeExpenses',
+        'employeeExpensesProjectContainers',
+        language,
+      )
 
-    // Check for duplicate projects
-    if (hasDuplicateProjects()) {
-      setModalMessage(translate('employeeExpensesValidation2', language));
-      setIsModalOpen(true);
-      return; // Prevent form submission
+    // Step 2: Validate client-side input
+    const validationErrors = validateEmployeeExpenses(employeeContainers)
+
+    // Step 3: Check for duplicate entries on specific fields
+    const uniqueFields = ['year', 'month', 'employee', 'projects']
+    const duplicateErrors = checkForDuplicates(
+      employeeContainers,
+      uniqueFields,
+      'employeeExpenses',
+      language,
+      'projectEntries',
+    )
+
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
+
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      setModalMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
+      setIsModalOpen(true)
+      return
+    } else {
+      setCrudValidationErrors([])
     }
+    // Continue with submission if no errors
 
     createEmployeeExpense(employeeContainers, token)
       .then(() => {
@@ -540,6 +526,7 @@ const EmployeeExpensesRegistration = () => {
         message={modalMessage}
         onClose={() => setIsModalOpen(false)}
         isCRUDOpen={isModalOpen}
+        validationMessages={crudValidationErrors}
       />
     </div>
   )

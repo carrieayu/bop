@@ -18,6 +18,7 @@
   "costOfSale": "売上原価",
   "ordinaryIncomeProfitMargin": "経常利益率",
   "ordinaryIncome": "経常利益",
+  "ordinaryProfit": "経常利益",
   "cumulativeOrdinaryIncome": "累計経常利益 ",
   "businessDivision": "受注事業部 ",
   "depreciationExpenses": "減価償却費",
@@ -29,6 +30,7 @@
   "entertainmentExpense": "接待交際費",
   "expenses": "経費 ",
   "expense": "経費 ",
+  "expensesResults": "費用 実績",
   "bonusAndFuelAllowances": "賞与・燃料手当",
   "bonusAndFuelAllowance": "賞与・燃料手当",
   "grossProfitMargin": "売上総利益率",
@@ -54,6 +56,10 @@
   "profitAndLossPlaninng": "PL 計画",
   "purchases": "仕入高",
   "purchase": "仕入高",
+  "projectSalesResultsId": "アイド",
+  "projectSalesResultsList": "案件売上実績一覧",
+  "projectSalesResultsRegistration": "案件売上実績登録",
+  "projectSalesResults" : "案件売上実績",
   "rentExpenses": "賃借料",
   "rentExpense": "賃借料",
   "executiveRenumerations": "役員報酬",
@@ -87,9 +93,9 @@
   "saleRevenue": "売上高",
   "indirectEmployeeExpense": "間接人件費",
   "ratio": "比率",
-  "firstHalftotal" : "上期計",
-  "secondHalftotal" : "下期計",
-  "totalTable" : "合計",
-  "sellingAndGeneralAdminExpensesShort":"販売及び一般管理費"
+  "firstHalftotal": "上期計",
+  "secondHalftotal": "下期計",
+  "totalTable": "合計",
+  "sellingAndGeneralAdminExpensesShort": "販売及び一般管理費"
 }
 

@@ -10,6 +10,13 @@ import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import CrudModal from '../../components/CrudModal/CrudModal'
 import { createUser } from '../../api/UserEndpoint/CreateUser'
+import {
+  validateUserRecord,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+
 
 const UsersRegistration = () => {
     const [activeTab, setActiveTab] = useState('/planning-list')
@@ -38,8 +45,10 @@ const UsersRegistration = () => {
       },
     )
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalMessage, setModalMessage] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
+
 
     const handleTabClick = (tab) => {
         setActiveTab(tab)
@@ -73,17 +82,15 @@ const UsersRegistration = () => {
   }
 
   const handleRemoveInputData = () => {
-    setUserData(
-      {
-        username: '',
-        first_name: '',
-        last_name: '',
-        password: '',
-        email: '',
-        confirm_password: '',
-        confirm_email: '',
-      },
-    )
+    setUserData({
+      username: '',
+      first_name: '',
+      last_name: '',
+      password: '',
+      email: '',
+      confirm_password: '',
+      confirm_email: '',
+    })
     closeModal()
   }
 
@@ -115,104 +122,80 @@ const UsersRegistration = () => {
         }
       }, [location.pathname]);
 
-      const handleSubmit = async (e) => {
-        e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
+
+    // # Client Side Validation
+
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'users'
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateUser = (records) => validateUserRecord(records, fieldChecks, 'user')
+
+    // Step 2: Validate client-side input
+    const validationErrors = validateUser([userData]) // Only one User can be registered but function expects an Array.
         
-        const { username, first_name, last_name, password, confirm_password, email, confirm_email } = userData;
-    
-        if (!username || !email || !password || !confirm_password) {
-          setModalMessage(translate('usersValidationText6', language));
-          setIsModalOpen(true);
-          return;
-        }
-    
-        if (!first_name || !last_name) {
-          setModalMessage(translate('usersValidationText2', language));
-          setIsModalOpen(true);
-          return;
-        }
-    
-        const usernameRegex = /^[a-zA-Z]+_[a-zA-Z]+$/;
-        if (!usernameRegex.test(username)) {
-          setIsUsernameValid(usernameRegex.test(username));
-          setModalMessage(translate('usersValidationText1', language));
-          setIsModalOpen(true);
-          return;
-        } else {
-          setIsUsernameValid(true);
-        }
-    
-        if (password !== confirm_password) {
-          setIsPasswordMatch(false);
-          setModalMessage(translate('usersValidationText5', language));
-          setIsModalOpen(true);
-          return;
-        } else {
-          setIsPasswordMatch(true);
-        }
-    
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-        if (!passwordRegex.test(password)) {
-          setIsPasswordValid(passwordRegex.test(password));
-          setModalMessage(translate('usersValidationText3', language));
-          setIsModalOpen(true);
-          return;
-        } else {
-          setIsPasswordValid(true);
-        }
-    
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-          setIsEmailValid(false);
-          setModalMessage(translate('usersValidationText4', language));
-          setIsModalOpen(true);
-          return;
-        } else {
-          setIsEmailValid(true);
-        }
-    
-        if (email !== confirm_email) {
-          setIsEmailMatch(false);
-          setModalMessage(translate('usersValidationText8', language));
-          setIsModalOpen(true);
-          return;
-        } else {
-          setIsEmailMatch(true);
-        }
-    
-        if (!token) {
-          window.location.href = '/login';
-          return;
-        }
-        createUser(userData, token)
-          .then((data) => {
-            setModalMessage(translate('successfullySaved', language))
-            setIsModalOpen(true)
-            setUserData({
-              username: '',
-              first_name: '',
-              last_name: '',
-              password: '',
-              email: '',
-              confirm_password: '',
-              confirm_email: '',
-            })
-          })
-          .catch((error) => {
-            setModalMessage(translate('usersValidationText7', language))
-            setIsModalOpen(true)
-            console.error(error)
-          })
-      };
-    
+    // Step 3: Check for duplicate entries on specific fields
+    const uniqueFields = ['']
+    const duplicateErrors = checkForDuplicates([userData], uniqueFields, 'user', language)
 
-      useEffect(() => {
-        setIsTranslateSwitchActive(language === 'en');
-      }, [language]);
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
 
-      const handleListClick = () => { 
-        navigate('/users-list');
-      };
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      console.log(translatedErrors, 'trans errors')
+      setModalMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
+      setIsModalOpen(true)
+      return
+    } else {
+      setCrudValidationErrors([])
+    }
+        
+    createUser(userData, token)
+      .then((data) => {
+        setModalMessage(translate('successfullySaved', language))
+        setIsModalOpen(true)
+        setUserData({
+          username: '',
+          first_name: '',
+          last_name: '',
+          password: '',
+          email: '',
+          confirm_password: '',
+          confirm_email: '',
+        })
+      })
+      .catch((error) => {
+        setModalMessage(translate('usersValidationText7', language))
+        setIsModalOpen(true)
+        console.error(error)
+      })
+  }
+
+  useEffect(() => {
+    setIsTranslateSwitchActive(language === 'en');
+  }, [language]);
+
+  const handleListClick = () => { 
+    navigate('/users-list');
+  };
 
   return (
     <div className='UsersRegistration_wrapper'>
@@ -375,6 +358,7 @@ const UsersRegistration = () => {
         message={modalMessage}
         onClose={() => setIsModalOpen(false)}
         isCRUDOpen={isModalOpen}
+        validationMessages={crudValidationErrors}
       />
     </div>
   )

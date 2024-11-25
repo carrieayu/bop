@@ -1,11 +1,12 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import PasswordForgotView
+from api.views import ExpensesCreate, ExpensesDelete, ExpensesList,ExpensesUpdate, PasswordForgotView, ProjectSalesResultsFilter
+from api.views import ProjectSalesResultsCreate, ProjectSalesResultsDelete, ProjectSalesResultsList, ProjectSalesResultsUpdate
+from api.views import ExpensesResultsCreate, ExpensesResultsDelete, ExpensesResultsList, ExpensesResultsUpdate
 from api.views import PlanningList, PlanningUpdate, PlanningDisplayByProjects
 from api.views import MasterCompaniesList, MasterCompaniesCreate, MasterCompaniesUpdate, MasterCompaniesDelete
 from api.views import ProjectsList,  ProjectsCreate, ProjectsUpdate, ProjectsDelete 
 from api.views import EmployeeExpensesList, EmployeeExpensesCreate, EmployeeExpensesDelete #No Update Function on this Page.
-from api.views import ExpensesList, ExpensesCreate, ExpensesUpdate, ExpensesDelete
 from api.views import CostOfSalesList, CostOfSalesCreate, CostOfSalesUpdate, CostOfSalesDelete
 from api.views import EmployeesList, EmployeesCreate, EmployeesUpdate, EmployeesDelete, EmployeesEdit #Edit Mode Has Api call to filter EmployeeBusinessDivision
 from api.views import UsersList, UsersCreate, UsersUpdate, UsersDelete
@@ -49,6 +50,13 @@ urlpatterns = [
     path('api/projects/update/', ProjectsUpdate.as_view(), name="projects-update"),   
     path('api/projects/<int:pk>/delete/', ProjectsDelete.as_view(), name="projects-delete"), 
 
+    # Project Sales Results
+    path('api/project-sales-results/list/', ProjectSalesResultsList.as_view(), name="project-list"), 
+    path('api/project-sales-results/create/', ProjectSalesResultsCreate.as_view(), name="project-sales-results-create"), 
+    path('api/project-sales-results/update/', ProjectSalesResultsUpdate.as_view(), name="project-sales-results-update"),   
+    path('api/project-sales-results/<int:pk>/delete/', ProjectSalesResultsDelete.as_view(), name="project-sales-results-delete"),
+    path('api/project-sales-results/filter/', ProjectSalesResultsFilter.as_view(), name="project-sales-filtered-list"),
+
     # EmployeeExpenses
     path('api/employee-expenses/list/', EmployeeExpensesList.as_view(), name = 'employee-expenses-list'),
     path('api/employee-expenses/create/', EmployeeExpensesCreate.as_view(), name = 'employee-expenses-create'),
@@ -60,6 +68,12 @@ urlpatterns = [
     path('api/expenses/create/', ExpensesCreate.as_view(), name = 'expenses-create'),
     path('api/expenses/update/', ExpensesUpdate.as_view(), name = 'expenses-update'),
     path('api/expenses/<str:pk>/delete/', ExpensesDelete.as_view(), name='expenses-delete'),
+
+    # Expenses Results
+    path('api/expenses-results/list/', ExpensesResultsList.as_view(), name = 'expenses-results-list'),
+    path('api/expenses-results/create/', ExpensesResultsCreate.as_view(), name = 'expenses-results-create'),
+    path('api/expenses-results/update/', ExpensesResultsUpdate.as_view(), name = 'expenses-results-update'),
+    path('api/expenses-results/<str:pk>/delete/', ExpensesResultsDelete.as_view(), name='expenses-results-delete'),
 
     # Cost of Sales
     path('api/cost-of-sales/list/', CostOfSalesList.as_view(), name='cost-of-sales-list'),
@@ -75,7 +89,7 @@ urlpatterns = [
     # Filters the EmployeeBusinessDivision in Edit Mode on List Screen
     path('api/employees/edit/',  EmployeesEdit.as_view(), name = 'employees-edit'), # used for filtering business divisions when on edit mode
     
-     # Users
+    # Users
     path("api/users/list/", UsersList.as_view(), name="users-list"), #LIST
     path("api/users/create/", UsersCreate.as_view(), name="users-create"), #CREATE
     path('api/users/update/', UsersUpdate.as_view(), name= "users-update"), #UPDATE

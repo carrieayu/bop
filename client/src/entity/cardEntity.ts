@@ -5,7 +5,6 @@ export default class CardEntity {
     year: string | undefined
     month: string | undefined
     sales_revenue: number | undefined
-    cost_of_sale: number | undefined
     dispatch_labor_expense: number | undefined
     employee_expense: number | undefined
     indirect_employee_expense: number | undefined
@@ -25,7 +24,6 @@ export default class CardEntity {
         this.year = data.year
         this.month = data.month
         this.sales_revenue = data.sales_revenue
-        this.cost_of_sale = data.cost_of_sale
         this.dispatch_labor_expense = data.dispatch_labor_expense
         this.employee_expense = data.employee_expense
         this.indirect_employee_expense = data.indirect_employee_expense

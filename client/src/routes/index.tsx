@@ -32,6 +32,10 @@ const NotFound = Loader(lazy(() => import("../pages/NotFound/NotFound")))
 const ProjectsListAndEdit = Loader(lazy(() => import("../pages/Projects/ProjectsListAndEdit")));
 const ProjectsRegistration = Loader(lazy(() => import("../pages/Projects/ProjectsRegistration")))
 
+// Project Sales Results Pages
+const ProjectSalesResultsListAndEdit = Loader(lazy(() => import("../pages/ProjectSalesResults/ProjectSalesResultsListAndEdit")));
+const ProjectSalesResultsRegistration = Loader(lazy(() => import("../pages/ProjectSalesResults/ProjectSalesResultsRegistration")))
+
 //Personnel Expenses Pages
 const EmployeeExpensesRegistration = Loader(lazy(() => import("../pages/EmployeeExpenses/EmployeeExpensesRegistration")))
 const EmployeeExpensesList = Loader(lazy(() => import("../pages/EmployeeExpenses/EmployeeExpensesList")))
@@ -46,6 +50,10 @@ const CostOfSalesListAndEdit = Loader(lazy(() => import("../pages/CostOfSales/Co
 //Expenses Pages
 const ExpensesRegistration = Loader(lazy(() => import("../pages/Expenses/ExpensesRegistration")))
 const ExpensesListAndEdit = Loader(lazy(() => import("../pages/Expenses/ExpensesListAndEdit")))
+
+//Expenses Results Pages
+const ExpensesResultsRegistration = Loader(lazy(() => import("../pages/ExpensesResults/ExpensesResultsRegistration")))
+const ExpensesResultsList = Loader(lazy(() => import('../pages/ExpensesResults/ExpensesResultsListAndEdit')))
 
 //Clients Pages
 const ClientsRegistration = Loader(lazy(() => import("../pages/Clients/ClientsRegistration")))
@@ -98,11 +106,11 @@ const routes: RouteObject[] = [
         element: <ForgotPassword />,
       },
       {
-        path: "reset-password/:uid/:token",
+        path: 'reset-password/:uid/:token',
         element: <ResetPassword />,
       },
       {
-        path: "logout",
+        path: 'logout',
         element: <Logout />,
       },
       {
@@ -122,6 +130,22 @@ const routes: RouteObject[] = [
         ),
       },
       {
+        path: 'project-sales-results-list',
+        element: (
+          <ProtectedRoutes>
+            <ProjectSalesResultsListAndEdit />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: 'project-sales-results-registration',
+        element: (
+          <ProtectedRoutes>
+            <ProjectSalesResultsRegistration />
+          </ProtectedRoutes>
+        ),
+      },
+      {
         path: 'employee-expenses-list',
         element: (
           <ProtectedRoutes>
@@ -130,117 +154,133 @@ const routes: RouteObject[] = [
         ),
       },
       {
-        path: "employee-expenses-registration",
+        path: 'employee-expenses-registration',
         element: (
           <ProtectedRoutes>
             <EmployeeExpensesRegistration />
           </ProtectedRoutes>
-        )
+        ),
       },
       {
-        path: "planning-list",
+        path: 'planning-list',
         element: (
           <ProtectedRoutes>
             <PlanningListAndEdit />
           </ProtectedRoutes>
-        )
+        ),
       },
       {
-        path: "cost-of-sales-registration",
+        path: 'cost-of-sales-registration',
         element: (
           <ProtectedRoutes>
             <CostOfSalesRegistration />
           </ProtectedRoutes>
-        )
+        ),
       },
       {
-        path: "cost-of-sales-list",
+        path: 'cost-of-sales-list',
         element: (
           <ProtectedRoutes>
             <CostOfSalesListAndEdit />
           </ProtectedRoutes>
-        )
+        ),
       },
       {
-        path: "expenses-registration",
+        path: 'expenses-registration',
         element: (
           <ProtectedRoutes>
             <ExpensesRegistration />
           </ProtectedRoutes>
-        )
+        ),
       },
       {
-        path: "expenses-list",
+        path: 'expenses-results-list',
         element: (
           <ProtectedRoutes>
-            <ExpensesListAndEdit/>
+            <ExpensesResultsList />
           </ProtectedRoutes>
-        )
+        ),
       },
       {
-        path: "clients-registration",
+        path: 'expenses-results-registration',
+        element: (
+          <ProtectedRoutes>
+            <ExpensesResultsRegistration />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: 'expenses-list',
+        element: (
+          <ProtectedRoutes>
+            <ExpensesListAndEdit />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: 'clients-registration',
         element: (
           <ProtectedRoutes>
             <ClientsRegistration />
           </ProtectedRoutes>
-        )
+        ),
       },
       {
-        path: "clients-list",
+        path: 'clients-list',
         element: (
           <ProtectedRoutes>
             <ClientsListAndEdit />
           </ProtectedRoutes>
-        )
+        ),
       },
       {
-        path: "employees-registration",
+        path: 'employees-registration',
         element: (
           <ProtectedRoutes>
             <EmployeesRegistration />
           </ProtectedRoutes>
-        )
+        ),
       },
       {
-        path: "employees-list",
+        path: 'employees-list',
         element: (
           <ProtectedRoutes>
             <EmployeesListAndEdit />
           </ProtectedRoutes>
-        )
+        ),
       },
       {
-        path: "business-divisions-registration",
+        path: 'business-divisions-registration',
         element: (
           <ProtectedRoutes>
             <BusinessDivisionsRegistration />
           </ProtectedRoutes>
-        )
+        ),
       },
       {
-        path: "business-divisions-list",
+        path: 'business-divisions-list',
         element: (
           <ProtectedRoutes>
             <BusinessDivisionsListAndEdit />
           </ProtectedRoutes>
-        )
+        ),
       },
       {
-        path: "users-registration",
+        path: 'users-registration',
         element: (
           <ProtectedRoutes>
             <UsersRegistration />
           </ProtectedRoutes>
-        )
+        ),
       },
       {
-        path: "users-list",
+        path: 'users-list',
         element: (
           <ProtectedRoutes>
             <UsersListAndEdit />
           </ProtectedRoutes>
-         )
-       }
+        ),
+      },
     ],
   },
   {
