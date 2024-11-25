@@ -121,5 +121,8 @@
   "executiveEmployee": "役員",
   "regularEmployee": "一般",
   "selectEmployeeType": "従業員種別選択",
-  "noSelection": "← 最初に種別選択"
+  "noSelection": "← 最初に種別選択",
+  "selectYear": "年選択",
+  "selectMonth": "月選択",
+  "selectProject": "案件選択"
 }

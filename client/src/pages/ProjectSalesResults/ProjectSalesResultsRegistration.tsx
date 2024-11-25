@@ -215,12 +215,6 @@ const ProjectSalesResultsRegistration = () => {
 
   const handleChange = (index, event) => {
     const { name, value } = event.target
-    // const tempProject = formProjects
-    // tempProject[index] = {
-    //   ...tempProject[index],
-    //   [name]: value,
-    // }
-    // setProjects(tempProject)
     setProjects((prevFormProjects) => {
       return prevFormProjects.map((form, i) => {
         
@@ -259,6 +253,7 @@ const ProjectSalesResultsRegistration = () => {
           ...(projectId !== null && { projectId }),
         }
         if (filterParams.year && filterParams.month && filterParams.projectId) {
+          console.log("three")
           getFilteredProjectSalesResults(filterParams, token)
             .then((data) => {
               let matchedClients = []
@@ -326,10 +321,39 @@ const ProjectSalesResultsRegistration = () => {
                   return row
                 })
               })
+              setBusinessDivisionFilter((prev) => {
+                return prev.map((row, projectIndex) => {
+                  if (index == projectIndex) {
+                    return {
+                      divisions: [],
+                    }
+                  }
+                  return row
+                })
+              })
+              setClientsFilter((prev) => {
+                return prev.map((row, projectIndex) => {
+                  if (index == projectIndex) {
+                    return {
+                      clients: [],
+                    }
+                  }
+                  return row
+                })
+              })
+              setProjectsList((prev) => {
+                return prev.map((row, projectIndex) => {
+                  if (index == projectIndex) {
+                    return {
+                      projects: [],
+                    }
+                  }
+                  return row
+                })
+              })
+              setProjectDataResult(data)
             })
-            .catch((error) => {
-              console.error('Error fetching project sales result list:', error)
-            })
+          console.log(projectListSelection)
         } else {
           setEnabled(false)
         }
@@ -465,6 +489,10 @@ const ProjectSalesResultsRegistration = () => {
             ordinary_profit_margin: '',
           },
         ])
+        setProjectsListSelection([{ projects: [] }])
+        setClientsFilter([{ clients: [] }])
+        setProjectsList([{ projects: [] }])
+        setBusinessDivisionFilter([{ divisions: [] }])
       })
       .catch((error) => {
         console.error('Error overwriting data:', error)
@@ -554,7 +582,7 @@ const ProjectSalesResultsRegistration = () => {
                             value={form.year}
                             onChange={(e) => handleChange(index, e)}
                           >
-                            <option value=''></option>
+                            <option value=''>{translate('selectYear', language)}</option>
                             {years.map((year, idx) => (
                               <option key={idx} value={year}>
                                 {year}
@@ -641,7 +669,7 @@ const ProjectSalesResultsRegistration = () => {
                             value={form.month}
                             onChange={(e) => handleChange(index, e)}
                           >
-                            <option value=''></option>
+                            <option value=''>{translate('selectMonth', language)}</option>
                             {months.map((month, idx) => (
                               <option key={idx} value={month}>
                                 {language === 'en' ? monthNames[month].en : monthNames[month].jp}
@@ -719,7 +747,7 @@ const ProjectSalesResultsRegistration = () => {
                               value={form.project_name}
                               onChange={(e) => handleChange(index, e)}
                             >
-                              <option value=''></option>
+                              <option value=''>{translate('selectProject', language)}</option>
                               {projectListSelection[index]?.projects?.map((project, index) => (
                                 <option key={index} value={project.project_id} title={project.client_name}>
                                   {project.project_name}

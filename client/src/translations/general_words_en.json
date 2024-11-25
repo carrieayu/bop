@@ -121,5 +121,8 @@
   "executiveEmployee": "Executive",
   "regularEmployee": "Regular",
   "selectEmployeeType": "Select Employee Type",
-  "noSelection": "← Select Type First"
+  "noSelection": "← Select Type First",
+  "selectYear": "Select Year",
+  "selectMonth": "Select Month",
+  "selectProject": "Select Project"
 }

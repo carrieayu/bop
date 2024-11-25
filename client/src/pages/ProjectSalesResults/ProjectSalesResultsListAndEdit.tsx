@@ -256,7 +256,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
 
     deleteProjectSalesResults(deleteProjectsId, token)
       .then(() => {
-        setProjectSalesResults((prevList) => prevList.filter((pr) => pr.project_id !== deleteProjectsId))
+        setProjectSalesResults((prevList) => prevList.filter((pr) => pr.project_sales_result_id !== deleteProjectsId))
         setCrudMessage(translate('successfullyDeleted', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
