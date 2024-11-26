@@ -153,7 +153,7 @@ const ProjectSalesResultsRegistration = () => {
         navigate('/project-sales-results-list')
         break
       case 'employeeExpensesResults':
-        navigate('/mployee-expenses-results-list')
+        navigate('/employee-expenses-results-list')
         break
       default:
         break

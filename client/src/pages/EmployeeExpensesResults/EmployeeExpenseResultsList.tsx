@@ -16,6 +16,9 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/GetEmployeeExpense'
 import { deleteEmployeeExpenseX } from '../../api/EmployeeExpenseEndpoint/DeleteEmployeeExpenseX'
 import { deleteProjectAssociation } from '../../api/EmployeeExpenseEndpoint/DeleteProjectAssociation'
+import { getEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/GetEmployeeExpenseResult'
+import { deleteEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/DeleteEmployeeExpenseResult'
+import { deleteProjectAssociationResults } from '../../api/EmployeeExpensesResultEndpoint/DeleteProjectAssociationResults'
 
 const months: number[] = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3] // Store as numbers
 
@@ -33,10 +36,10 @@ const EmployeeExpensesResultsList: React.FC = () => {
   const [selectedEmployeeExpenses, setSelectedEmployeeExpenses] = useState<any>(null)
   const [deleteEmployeeExpensesId, setDeleteEmployeeExpensesId] = useState([])
   const [employeeProjectId, setEmployeeProjectId] = useState<{
-    employee_expense_id: string
+    employee_expense_result_id: string
     project_id: string
     mode: 'employee_expense' | 'project'
-  }>({} as { employee_expense_id: string; project_id: string; mode: 'employee_expense' })
+  }>({} as { employee_expense_result_id: string; project_id: string; mode: 'employee_expense' })
   const token = localStorage.getItem('accessToken')
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
@@ -67,7 +70,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
         navigate('/expenses-results-list')
         break
       case 'employeeExpensesResults':
-        navigate('/mployee-expenses-results-list')
+        navigate('/employee-expenses-results-list')
         break
       default:
     }
@@ -105,7 +108,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
   }
 
   const handleNewRegistrationClick = () => {
-    navigate('/employee-expenses-registration')
+    navigate('/employee-expenses-results-registration')
   }
 
   // Fetch employee expenses data
@@ -116,7 +119,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
         return
       }
 
-      getEmployeeExpense(token)
+      getEmployeeExpenseResults(token)
         .then((data) => {
           setEmployeeExpenses(data)
         })
@@ -153,10 +156,12 @@ const EmployeeExpensesResultsList: React.FC = () => {
   }
 
   const handleDeleteExpense = async () => {
-    deleteEmployeeExpenseX(employeeProjectId.employee_expense_id, token)
+    deleteEmployeeExpenseResults(employeeProjectId.employee_expense_result_id, token)
       .then(() => {
         setEmployeeExpenses((prevExpenses) =>
-          prevExpenses.filter((expense) => expense.employee_expense_id !== employeeProjectId.employee_expense_id),
+          prevExpenses.filter(
+            (expense) => expense.employee_expense_result_id !== employeeProjectId.employee_expense_result_id,
+          ),
         )
 
         setCrudMessage(translate('successfullyDeleted', language))
@@ -173,10 +178,11 @@ const EmployeeExpensesResultsList: React.FC = () => {
   }
 
   const handleRemoveProjectAssociation = async () => {
-    deleteProjectAssociation(employeeProjectId.employee_expense_id, employeeProjectId.project_id, token)
+    console.log(employeeProjectId)
+    deleteProjectAssociationResults(employeeProjectId.employee_expense_result_id, employeeProjectId.project_id, token)
       .then(() => {
         setEmployeeExpenses((prevExpenses) =>
-          prevExpenses.filter((expense) => expense.employee_expense_id !== employeeProjectId.employee_expense_id),
+          prevExpenses.filter((expense) => expense.employee_expense_result_id !== employeeProjectId.employee_expense_result_id),
         )
 
         setCrudMessage(translate('employeeExpensesRemoveProject', language))
@@ -193,19 +199,19 @@ const EmployeeExpensesResultsList: React.FC = () => {
   }
 
   return (
-    <div className='employeeExpensesList_wrapper'>
+    <div className='employeeExpensesResultsList_wrapper'>
       <HeaderButtons
         activeTab={activeTab}
         handleTabClick={handleTabClick}
         isTranslateSwitchActive={isTranslateSwitchActive}
         handleTranslationSwitchToggle={handleTranslationSwitchToggle}
       />
-      <div className='employeeExpensesList_cont_wrapper'>
+      <div className='employeeExpensesResultsList_cont_wrapper'>
         <Sidebar />
-        <div className={`employeeExpensesList_wrapper_div ${isEditing ? 'editMode' : ''}`}>
-          <div className='employeeExpensesList_top_content'>
-            <div className='employeeExpensesList_top_body_cont'>
-              <div className='employeeExpensesList_mode_switch_datalist'>
+        <div className={`employeeExpensesResultsList_wrapper_div ${isEditing ? 'editMode' : ''}`}>
+          <div className='employeeExpensesResultsList_top_content'>
+            <div className='employeeExpensesResultsList_top_body_cont'>
+              <div className='employeeExpensesResultsList_mode_switch_datalist'>
                 <div className='mode_switch_container'>
                   <p className='slider_mode_switch'>
                     {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
@@ -217,10 +223,10 @@ const EmployeeExpensesResultsList: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className='employeeExpensesList_mid_body_cont'>
+            <div className='employeeExpensesResultsList_mid_body_cont'>
               <ListButtons
                 activeTabOther={activeTabOther}
-                message={translate('employeeExpensesList', language)}
+                message={translate('employeeExpensesResultsList', language)}
                 handleTabsClick={handleTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
@@ -229,33 +235,33 @@ const EmployeeExpensesResultsList: React.FC = () => {
                   { labelKey: 'employeeExpensesResults', tabKey: 'employeeExpensesResults' },
                 ]}
               />
-              <div className={`employeeExpensesList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
-                <div className={`employeeExpensesList_table_cont ${isEditing ? 'editScrollable' : ''}`}>
+              <div className={`employeeExpensesResultsList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
+                <div className={`employeeExpensesResultsList_table_cont ${isEditing ? 'editScrollable' : ''}`}>
                   {/* <div className='columns is-mobile'> */}
                   {/* <div className='column'> */}
                   {isEditing ? (
                     <div className='editScroll'>
                       <table className='table is-bordered is-hoverable'>
                         <thead>
-                          <tr className='employeeExpensesList_table_title'>
-                            <th className='employeeExpensesList_table_title_content_vertical has-text-centered'>
+                          <tr className='employeeExpensesResultsList_table_title'>
+                            <th className='employeeExpensesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('employee', language)}
                             </th>
-                            <th className='employeeExpensesList_table_title_content_vertical has-text-centered'>
+                            <th className='employeeExpensesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('year', language)}
                             </th>
                             {months.map((month, index) => (
                               <th
                                 key={index}
-                                className='employeeExpensesList_table_title_content_vertical has-text-centered'
+                                className='employeeExpensesResultsList_table_title_content_vertical has-text-centered'
                               >
                                 {language === 'en' ? monthNames[month].en : monthNames[month].jp}
                               </th>
                             ))}
-                            <th className='employeeExpensesList_table_title_content_vertical has-text-centered'></th>
+                            <th className='employeeExpensesResultsList_table_title_content_vertical has-text-centered'></th>
                           </tr>
                         </thead>
-                        <tbody className='employeeExpensesList_table_body'>
+                        <tbody className='employeeExpensesResultsList_table_body'>
                           {employeeExpenses
                             .reduce((acc, expense) => {
                               const existingYearIndex = acc.findIndex((year) => year.year === expense.year)
@@ -297,12 +303,12 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                     project_name: expense.project_name,
                                     employee_salary: expense.employee_salary,
                                     project_id: expense.project_id,
-                                    employee_expense_id: expense.employee_expense_id,
+                                    employee_expense_result_id: expense.employee_expense_result_id,
                                   })
                                   monthlyExpenses[monthIndex].total_salary += expense.employee_salary
                                 }
                                 yearGroup.employees.push({
-                                  employee_expense_id: expense.employee_expense_id,
+                                  employee_expense_result_id: expense.employee_expense_result_id,
                                   project_id: expense.project_id,
                                   employee_last_name: expense.employee_last_name,
                                   employee_first_name: expense.employee_first_name,
@@ -316,7 +322,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                     project_name: expense.project_name,
                                     employee_salary: expense.employee_salary,
                                     project_id: expense.project_id,
-                                    employee_expense_id: expense.employee_expense_id,
+                                    employee_expense_result_id: expense.employee_expense_result_id,
                                   })
                                   existingMonthlyExpenses[monthIndex].total_salary += expense.employee_salary
                                 }
@@ -329,38 +335,36 @@ const EmployeeExpensesResultsList: React.FC = () => {
                               ...(yearIndex > 0
                                 ? [
                                     <tr key={`year-${yearGroup.year}`}>
-                                      <td colSpan={12} className='employeeExpensesList_year'>
+                                      <td colSpan={12} className='employeeExpensesResultsList_year'>
                                         <div className='horizontal-line' />
                                       </td>
                                     </tr>,
                                   ]
                                 : []),
-                              // Map through employees
                               ...yearGroup.employees.map((employee, employeeIndex) => {
                                 return (
-                                  <tr key={employeeIndex} className='employeeExpensesList_user_name'>
-                                    <td className='employeeExpensesList_td'>
-                                      <p className='employeeExpensesList_user_name_value'>{`${employee.employee_last_name} ${employee.employee_first_name}`}</p>
+                                  <tr key={employeeIndex} className='employeeExpensesResultsList_user_name'>
+                                    <td className='employeeExpensesResultsList_td'>
+                                      <p className='employeeExpensesResultsList_user_name_value'>{`${employee.employee_last_name} ${employee.employee_first_name}`}</p>
                                     </td>
                                     <td>
-                                      <div className='employeeExpensesList_year_value'>{yearGroup.year}</div>
+                                      <div className='employeeExpensesResultsList_year_value'>{yearGroup.year}</div>
                                     </td>
                                     {employee.monthlyExpenses.map((exp, monthIndex) => (
-                                      <td key={monthIndex} className='employeeExpensesList_td'>
+                                      <td key={monthIndex} className='employeeExpensesResultsList_td'>
                                         {exp && exp.projects.length > 0 ? (
-                                          <div className='employeeExpensesList_project_div'>
+                                          <div className='employeeExpensesResultsList_project_div'>
                                             {exp.projects.map((project, projIndex) => {
-                                              console.log('Project object:', project)
                                               return (
                                                 <div
                                                   key={projIndex}
                                                   className={projIndex % 2 === 0 ? 'project-even' : 'project-odd'}
                                                 >
-                                                  <div className='employeeExpensesList_txt0-container'>
-                                                    <div className='employeeExpensesList_txt0'>
+                                                  <div className='employeeExpensesResultsList_txt0-container'>
+                                                    <div className='employeeExpensesResultsList_txt0'>
                                                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                                         <div>{project.project_name}</div>
-                                                        <div className='employeeExpensesList_Delete-icon'>
+                                                        <div className='employeeExpensesResultsList_Delete-icon'>
                                                           <RiDeleteBin6Fill
                                                             className='delete-icon'
                                                             style={{
@@ -372,7 +376,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                                             onClick={() => {
                                                               console.log(
                                                                 'Deleting project with ID:',
-                                                                project.employee_expense_id,
+                                                                project.employee_expense_result_id,
                                                               )
                                                               console.log(
                                                                 'Deleting project with ID:',
@@ -380,7 +384,8 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                                               )
                                                               setModalIsOpen(true),
                                                                 setEmployeeProjectId({
-                                                                  employee_expense_id: project.employee_expense_id,
+                                                                  employee_expense_result_id:
+                                                                    project.employee_expense_result_id,
                                                                   project_id: project.project_id,
                                                                   mode: 'project',
                                                                 })
@@ -390,20 +395,20 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                                       </div>
                                                     </div>
                                                   </div>
-                                                  <div className='employeeExpensesList_txt1_txt2_flex'>
-                                                    <div className='employeeExpensesList_txt1'>
-                                                      <div className='employeeExpensesList_txt1_label1'>
+                                                  <div className='employeeExpensesResultsList_txt1_txt2_flex'>
+                                                    <div className='employeeExpensesResultsList_txt1'>
+                                                      <div className='employeeExpensesResultsList_txt1_label1'>
                                                         {translate('salary', language)}
                                                       </div>
-                                                      <div className='employeeExpensesList_txt1_label2'>
+                                                      <div className='employeeExpensesResultsList_txt1_label2'>
                                                         {project.employee_salary}
                                                       </div>
                                                     </div>
-                                                    <div className='employeeExpensesList_txt2'>
-                                                      <div className='employeeExpensesList_txt2_label1'>
+                                                    <div className='employeeExpensesResultsList_txt2'>
+                                                      <div className='employeeExpensesResultsList_txt2_label1'>
                                                         {translate('ratio', language)}
                                                       </div>
-                                                      <div className='employeeExpensesList_txt2_label2'>
+                                                      <div className='employeeExpensesResultsList_txt2_label2'>
                                                         {Math.round((1 / exp.projects.length) * 100) + '%'}
                                                       </div>
                                                     </div>
@@ -421,16 +426,11 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                       <RiDeleteBin6Fill
                                         className='delete-icon'
                                         style={{ color: 'red', cursor: 'pointer' }}
-                                        // {to delete entire row}
                                         onClick={() => {
-                                          console.log(
-                                            'Deleting employee expense with ID:',
-                                            employee.employee_expense_id,
-                                          )
                                           setModalIsOpen(true)
                                           setEmployeeProjectId({
                                             ...employeeProjectId,
-                                            employee_expense_id: employee.employee_expense_id,
+                                            employee_expense_result_id: employee.employee_expense_result_id,
                                             mode: 'employee_expense',
                                           })
                                         }}
@@ -446,24 +446,24 @@ const EmployeeExpensesResultsList: React.FC = () => {
                   ) : (
                     <table className='table is-bordered is-hoverable'>
                       <thead>
-                        <tr className='employeeExpensesList_table_title'>
-                          <th className='employeeExpensesList_table_title_content_vertical has-text-centered'>
+                        <tr className='employeeExpensesResultsList_table_title'>
+                          <th className='employeeExpensesResultsList_table_title_content_vertical has-text-centered'>
                             {translate('employee', language)}
                           </th>
-                          <th className='employeeExpensesList_table_title_content_vertical has-text-centered'>
+                          <th className='employeeExpensesResultsList_table_title_content_vertical has-text-centered'>
                             {translate('year', language)}
                           </th>
                           {months.map((month, index) => (
                             <th
                               key={index}
-                              className='employeeExpensesList_table_title_content_vertical has-text-centered'
+                              className='employeeExpensesResultsList_table_title_content_vertical has-text-centered'
                             >
                               {language === 'en' ? monthNames[month].en : monthNames[month].jp}
                             </th>
                           ))}
                         </tr>
                       </thead>
-                      <tbody className='employeeExpensesList_table_body'>
+                      <tbody className='employeeExpensesResultsList_table_body'>
                         {employeeExpenses
                           .reduce((acc, expense) => {
                             const existingYearIndex = acc.findIndex((year) => year.year === expense.year)
@@ -532,7 +532,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
                             ...(yearIndex > 0
                               ? [
                                   <tr key={`year-${yearGroup.year}`}>
-                                    <td colSpan={12} className='employeeExpensesList_year'>
+                                    <td colSpan={12} className='employeeExpensesResultsList_year'>
                                       <div className='horizontal-line' />
                                     </td>
                                   </tr>,
@@ -540,39 +540,39 @@ const EmployeeExpensesResultsList: React.FC = () => {
                               : []),
                             // Map through employees
                             ...yearGroup.employees.map((employee, employeeIndex) => (
-                              <tr key={employeeIndex} className='employeeExpensesList_user_name'>
-                                <td className='employeeExpensesList_td'>
-                                  <p className='employeeExpensesList_user_name_value'>{`${employee.employee_last_name} ${employee.employee_first_name}`}</p>
+                              <tr key={employeeIndex} className='employeeExpensesResultsList_user_name'>
+                                <td className='employeeExpensesResultsList_td'>
+                                  <p className='employeeExpensesResultsList_user_name_value'>{`${employee.employee_last_name} ${employee.employee_first_name}`}</p>
                                 </td>
-                                <td className='employeeExpensesList_td'>
-                                  <div className='employeeExpensesList_year_value'>{yearGroup.year}</div>
+                                <td className='employeeExpensesResultsList_td'>
+                                  <div className='employeeExpensesResultsList_year_value'>{yearGroup.year}</div>
                                 </td>
                                 {employee.monthlyExpenses.map((exp, monthIndex) => (
-                                  <td key={monthIndex} className='employeeExpensesList_td'>
+                                  <td key={monthIndex} className='employeeExpensesResultsList_td'>
                                     {exp && exp.projects.length > 0 ? (
-                                      <div className='employeeExpensesList_project_div'>
+                                      <div className='employeeExpensesResultsList_project_div'>
                                         {exp.projects.map((project, projIndex) => (
                                           <div
                                             key={projIndex}
                                             className={projIndex % 2 === 0 ? 'project-even' : 'project-odd'}
                                           >
-                                            <div className='employeeExpensesList_txt0-container'>
-                                              <div className='employeeExpensesList_txt0'>{project.project_name}</div>
+                                            <div className='employeeExpensesResultsList_txt0-container'>
+                                              <div className='employeeExpensesResultsList_txt0'>{project.project_name}</div>
                                             </div>
-                                            <div className='employeeExpensesList_txt1_txt2_flex'>
-                                              <div className='employeeExpensesList_txt1'>
-                                                <div className='employeeExpensesList_txt1_label1'>
+                                            <div className='employeeExpensesResultsList_txt1_txt2_flex'>
+                                              <div className='employeeExpensesResultsList_txt1'>
+                                                <div className='employeeExpensesResultsList_txt1_label1'>
                                                   {translate('salary', language)}
                                                 </div>
-                                                <div className='employeeExpensesList_txt1_label2'>
+                                                <div className='employeeExpensesResultsList_txt1_label2'>
                                                   {project.employee_salary}
                                                 </div>
                                               </div>
-                                              <div className='employeeExpensesList_txt2'>
-                                                <div className='employeeExpensesList_txt2_label1'>
+                                              <div className='employeeExpensesResultsList_txt2'>
+                                                <div className='employeeExpensesResultsList_txt2_label1'>
                                                   {translate('ratio', language)}
                                                 </div>
-                                                <div className='employeeExpensesList_txt2_label2'>
+                                                <div className='employeeExpensesResultsList_txt2_label2'>
                                                   {Math.round((1 / exp.projects.length) * 100) + '%'}
                                                 </div>
                                               </div>

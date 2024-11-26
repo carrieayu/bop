@@ -64,10 +64,9 @@ urlpatterns = [
     path('api/employee-expenses/<str:pk>/delete/', EmployeeExpensesDelete.as_view(), name='employee-expenses-delete'),
 
      # EmployeeExpenses Results
-    path('api/employee-expenses-results/list/', EmployeeExpensesResultsList.as_view(), name = 'employee-expenses-list'),
-    path('api/employee-expenses-results/create/', EmployeeExpensesResultsCreate.as_view(), name = 'employee-expenses-create'),
-    # Employee Expenses Currently Has No Update Function as the Edit Screen is only used for deleting.
-    path('api/employee-expenses-results/<str:pk>/delete/', EmployeeExpensesResultsDelete.as_view(), name='employee-expenses-delete'),
+    path('api/employee-expenses-results/list/', EmployeeExpensesResultsList.as_view(), name = 'employee-expenses-results-list'),
+    path('api/employee-expenses-results/create/', EmployeeExpensesResultsCreate.as_view(), name = 'employee-expenses-results-create'),
+    path('api/employee-expenses-results/<str:pk>/delete/', EmployeeExpensesResultsDelete.as_view(), name='employee-expenses-results-delete'),
     
     # Expenses
     path('api/expenses/list/', ExpensesList.as_view(), name = 'expenses-list'),

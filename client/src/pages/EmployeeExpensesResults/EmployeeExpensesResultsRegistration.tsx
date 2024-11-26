@@ -9,10 +9,9 @@ import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import axios from 'axios'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import CrudModal from '../../components/CrudModal/CrudModal'
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
-import { createEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/CreateEmployeeExpense'
 import { getProject } from '../../api/ProjectsEndpoint/GetProject'
 import { getEmployee } from '../../api/EmployeeEndpoint/GetEmployee'
+import { createEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/CreateEmployeeExpenseResult'
 
 const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 
@@ -58,7 +57,7 @@ const EmployeeExpensesResultsRegistration = () => {
         navigate('/expenses-results-list')
         break
       case 'employeeExpensesResults':
-        navigate('/mployee-expenses-results-list')
+        navigate('/employee-expenses-results-list')
         break
       default:
     }
@@ -302,7 +301,7 @@ const EmployeeExpensesResultsRegistration = () => {
       return // Prevent form submission
     }
 
-    createEmployeeExpense(employeeContainers, token)
+    createEmployeeExpenseResults(employeeContainers, token)
       .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
@@ -346,21 +345,21 @@ const EmployeeExpensesResultsRegistration = () => {
   }
 
   const handleListClick = () => {
-    navigate('/employee-expenses-list')
+    navigate('/employee-expenses-results-list')
   }
 
   return (
-    <div className='employeeExpensesRegistration_wrapper'>
+    <div className='employeeExpensesResultsRegistration_wrapper'>
       <HeaderButtons
         activeTab={activeTab}
         handleTabClick={handleTabClick}
         isTranslateSwitchActive={isTranslateSwitchActive}
         handleTranslationSwitchToggle={handleTranslationSwitchToggle}
       />
-      <div className='employeeExpensesRegistration_cont_wrapper'>
+      <div className='employeeExpensesResultsRegistration_cont_wrapper'>
         <Sidebar />
-        <div className='employeeExpensesRegistration_data_content'>
-          <div className='employeeExpensesRegistration_top_body_cont'>
+        <div className='employeeExpensesResultsRegistration_data_content'>
+          <div className='employeeExpensesResultsRegistration_top_body_cont'>
             {/* <div className='employeeExpensesRegistration_wrapper_div'> */}
             {/* <div className='employeeExpensesRegistration_top_content'>
         </div> */}
@@ -377,26 +376,26 @@ const EmployeeExpensesResultsRegistration = () => {
               ]}
             />
           </div>
-          <div className='employeeExpensesRegistration_mid_body_cont'>
+          <div className='employeeExpensesResultsRegistration_mid_body_cont'>
             {/* <form className='employeeExpensesRegistration_form_wrapper' onSubmit={handleSubmit}> */}
-            <form className='employeeExpensesRegistration_inputs_and_buttons' onSubmit={handleSubmit}>
+            <form className='employeeExpensesResultsRegistration_inputs_and_buttons' onSubmit={handleSubmit}>
               {/* <div className='employeeExpensesRegistration_table_wrapper'> */}
-              <div className='employeeExpensesRegistration_mid_form_cont'>
+              <div className='employeeExpensesResultsRegistration_mid_form_cont'>
                 {employeeContainers.map((container, containerIndex) => (
-                  <div className='employeeExpensesRegistration_container' key={container.id}>
+                  <div className='employeeExpensesResultsRegistration_container' key={container.id}>
                     <div
-                      className={`employeeExpensesRegistration_form-content ${containerIndex > 0 ? 'employeeExpensesRegistration_form-line' : ''}`}
+                      className={`employeeExpensesResultsRegistration_form-content ${containerIndex > 0 ? 'employeeExpensesResultsRegistration_form-line' : ''}`}
                     ></div>
-                    <div className='employeeExpensesRegistration_cont-body'>
-                      <div className='employeeExpensesRegistration_row'>
-                        <div className='employeeExpensesRegistration_label'>
+                    <div className='employeeExpensesResultsRegistration_cont-body'>
+                      <div className='employeeExpensesResultsRegistration_row'>
+                        <div className='employeeExpensesResultsRegistration_label'>
                           <p>{translate('employee', language)}</p>
                         </div>
-                        <div className='employeeExpensesRegistration_card-box'>
+                        <div className='employeeExpensesResultsRegistration_card-box'>
                           <select
                             name='employee'
                             value={container.employee}
-                            className='employeeExpensesRegistration_emp-select'
+                            className='employeeExpensesResultsRegistration_emp-select'
                             onChange={(e) => handleInputChange(containerIndex, null, e)}
                           >
                             <option value=''>{translate('selectEmployee', language)}</option>
@@ -408,14 +407,14 @@ const EmployeeExpensesResultsRegistration = () => {
                           </select>
                         </div>
                       </div>
-                      <div className='employeeExpensesRegistration_project-fields'>
+                      <div className='employeeExpensesResultsRegistration_project-fields'>
                         {container.projectEntries.map((projectEntry, projectIndex) => (
-                          <div className='employeeExpensesRegistration_project-group' key={projectEntry.id}>
-                            <div className='employeeExpensesRegistration_row'>
-                              <div className='employeeExpensesRegistration_label'>
+                          <div className='employeeExpensesResultsRegistration_project-group' key={projectEntry.id}>
+                            <div className='employeeExpensesResultsRegistration_row'>
+                              <div className='employeeExpensesResultsRegistration_label'>
                                 <p>{translate('project', language)}</p>
                               </div>
-                              <div className='employeeExpensesRegistration_card-box'>
+                              <div className='employeeExpensesResultsRegistration_card-box'>
                                 <select
                                   name='projects'
                                   value={projectEntry.projects}
@@ -430,11 +429,11 @@ const EmployeeExpensesResultsRegistration = () => {
                                 </select>
                               </div>
                             </div>
-                            <div className='employeeExpensesRegistration_row'>
-                              <div className='employeeExpensesRegistration_label'>
+                            <div className='employeeExpensesResultsRegistration_row'>
+                              <div className='employeeExpensesResultsRegistration_label'>
                                 <p>{translate('year', language)}</p>
                               </div>
-                              <div className='employeeExpensesRegistration_card-box'>
+                              <div className='employeeExpensesResultsRegistration_card-box'>
                                 <select
                                   name='year'
                                   value={projectEntry.year}
@@ -449,11 +448,11 @@ const EmployeeExpensesResultsRegistration = () => {
                                 </select>
                               </div>
                             </div>
-                            <div className='employeeExpensesRegistration_row'>
-                              <div className='employeeExpensesRegistration_label'>
+                            <div className='employeeExpensesResultsRegistration_row'>
+                              <div className='employeeExpensesResultsRegistration_label'>
                                 <p>{translate('month', language)}</p>
                               </div>
-                              <div className='employeeExpensesRegistration_card-box'>
+                              <div className='employeeExpensesResultsRegistration_card-box'>
                                 <select
                                   name='month'
                                   value={projectEntry.month}
@@ -470,16 +469,16 @@ const EmployeeExpensesResultsRegistration = () => {
                             </div>
                           </div>
                         ))}
-                        <div className='employeeExpensesRegistration_button-box'>
+                        <div className='employeeExpensesResultsRegistration_button-box'>
                           <Btn
                             label='+'
-                            className='employeeExpensesRegistration_button'
+                            className='employeeExpensesResultsRegistration_button'
                             type='button'
                             onClick={() => addProjectEntry(containerIndex)}
                           />
                           <Btn
                             label='-'
-                            className='employeeExpensesRegistration_button'
+                            className='employeeExpensesResultsRegistration_button'
                             type='button'
                             onClick={() => removeProjectEntry(containerIndex)}
                           />
@@ -489,24 +488,24 @@ const EmployeeExpensesResultsRegistration = () => {
                   </div>
                 ))}
               </div>
-              <div className='employeeExpensesRegistration_cont-footer'>
-                <div className='employeeExpensesRegistration_btn-plusminus'>
+              <div className='employeeExpensesResultsRegistration_cont-footer'>
+                <div className='employeeExpensesResultsRegistration_btn-plusminus'>
                   <button
-                    className='employeeExpensesRegistration_plus-btn'
+                    className='employeeExpensesResultsRegistration_plus-btn'
                     type='button'
                     onClick={addEmployeeContainer}
                   >
                     +
                   </button>
                   <button
-                    className='employeeExpensesRegistration_minus-btn'
+                    className='employeeExpensesResultsRegistration_minus-btn'
                     type='button'
                     onClick={removeEmployeeContainer}
                   >
                     -
                   </button>
                 </div>
-                <div className='employeeExpensesRegistration_btn-subcancel'>
+                <div className='employeeExpensesResultsRegistration_btn-subcancel'>
                   <button type='button' className='button is-light' onClick={handleCancel}>
                     {translate('cancel', language)}
                   </button>

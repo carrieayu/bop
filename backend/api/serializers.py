@@ -303,6 +303,7 @@ class EmployeeExpensesResultsListSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmployeeExpensesResults
         fields = '__all__'
+        
 
 class EmployeeExpensesResultsCreateSerializer(serializers.ModelSerializer):
     employee_expense_id = serializers.CharField(required=False)
