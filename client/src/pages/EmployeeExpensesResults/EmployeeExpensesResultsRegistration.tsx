@@ -366,7 +366,7 @@ const EmployeeExpensesResultsRegistration = () => {
             {/* <div className='employeeExpensesRegistration_top_btn_cont'></div> */}
             <RegistrationButtons
               activeTabOther={activeTabOther}
-              message={translate('employeeExpensesRegistration', language)}
+              message={translate('employeeExpensesResultsRegistration', language)}
               handleTabsClick={handleTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
