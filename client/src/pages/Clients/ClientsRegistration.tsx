@@ -280,11 +280,15 @@ const ClientsRegistration = () => {
               <div className='ClientsRegistration_lower_form_cont'>
                 <div className='ClientsRegistration_form-content'>
                   <div className='ClientsRegistration_plus-btn'>
+                    {clientData.length >= 2 ? (
+                      <button className='ClientsRegistration_dec' type='button' onClick={handleRemoveContainer}>
+                        -
+                      </button>
+                    ) : (
+                      <div className='ClientsRegistration_dec_empty'></div>
+                    )}
                     <button className='ClientsRegistration_inc' type='button' onClick={handleAddContainer}>
                       +
-                    </button>
-                    <button className='ClientsRegistration_dec' type='button' onClick={handleRemoveContainer}>
-                      -
                     </button>
                   </div>
                   <div className='ClientsRegistration_options-btn'>

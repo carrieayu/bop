@@ -347,11 +347,15 @@ const BusinessDivisionsRegistration = () => {
               {/* <div className='BusinessDivisionsRegistration_lower_form_cont'> */}
               <div className='BusinessDivisionsRegistration_form-btn-content'>
                 <div className='BusinessDivisionsRegistration_plus-btn'>
+                  {formData.length >= 2 ? (
+                    <button className='BusinessDivisionsRegistration_dec' type='button' onClick={handleMinus}>
+                      -
+                    </button>
+                  ) : (
+                    <div className='BusinessDivisionsRegistration_dec_empty'></div>
+                  )}
                   <button className='BusinessDivisionsRegistration_inc' type='button' onClick={handleAdd}>
                     +
-                  </button>
-                  <button className='BusinessDivisionsRegistration_dec' type='button' onClick={handleMinus}>
-                    -
                   </button>
                 </div>
                 <div className='BusinessDivisionsRegistration_options-btn'>

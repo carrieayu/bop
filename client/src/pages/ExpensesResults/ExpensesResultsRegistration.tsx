@@ -600,11 +600,15 @@ const ExpensesResultsRegistration = () => {
               <div className='expensesResultsRegistration_lower_form_cont'>
                 <div className='expensesResultsRegistration_form-content'>
                   <div className='expensesResultsRegistration_plus-btn'>
+                    {formData.length >= 2 ? (
+                      <button className='expensesResultsRegistration_dec' type='button' onClick={handleMinus}>
+                        -
+                      </button>
+                    ) : (
+                      <div className='expensesResultsRegistration_dec_empty'></div>
+                    )}
                     <button className='expensesResultsRegistration_inc' type='button' onClick={handleAdd}>
                       +
-                    </button>
-                    <button className='expensesResultsRegistration_dec' type='button' onClick={handleMinus}>
-                      -
                     </button>
                   </div>
                   <div className='expensesResultsRegistration_options-btn'>

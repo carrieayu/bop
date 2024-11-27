@@ -20,6 +20,7 @@ import {
   checkForDuplicates,
 } from '../../utils/validationUtil'
 import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import EmployeeExpensesList from '../EmployeeExpenses/EmployeeExpensesList'
 
 
 const EmployeesRegistration = () => {
@@ -548,8 +549,7 @@ const EmployeesRegistration = () => {
                                 (container.insurance_premium =
                                   container.type === '0'
                                     ? Math.round(Number(container.salary) * 0.0224).toString()
-                                    : Math.round(Number(container.executive_renumeration) * 0.0224).toString()
-                                )
+                                    : Math.round(Number(container.executive_renumeration) * 0.0224).toString())
                               }
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
                               readOnly
@@ -595,8 +595,7 @@ const EmployeesRegistration = () => {
                                 (container.statutory_welfare_expense =
                                   container.type === '0'
                                     ? Math.round(Number(container.salary) * 0.1451).toString()
-                                    : Math.round(Number(container.executive_renumeration) * 0.1451).toString()
-                                )
+                                    : Math.round(Number(container.executive_renumeration) * 0.1451).toString())
                               }
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
                               readOnly
@@ -610,11 +609,15 @@ const EmployeesRegistration = () => {
                 <div className='EmployeesRegistration_lower_form_cont'>
                   <div className='EmployeesRegistration_form-btn-content'>
                     <div className='EmployeesRegistration_plus-btn'>
+                      {employees.length >= 2 ? (
+                        <button className='EmployeesRegistration_dec' type='button' onClick={handleRemoveContainer}>
+                          -
+                        </button>
+                      ) : (
+                        <div className='EmployeesRegistration_dec_empty'></div>
+                      )}
                       <button className='EmployeesRegistration_inc' type='button' onClick={handleAddContainer}>
                         +
-                      </button>
-                      <button className='EmployeesRegistration_dec' type='button' onClick={handleRemoveContainer}>
-                        -
                       </button>
                     </div>
                     <div className='EmployeesRegistration_options-btn'>

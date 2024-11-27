@@ -599,11 +599,15 @@ const handleChange = (index, event) => {
               <div className='expensesRegistration_lower_form_cont'>
                 <div className='expensesRegistration_form-content'>
                   <div className='expensesRegistration_plus-btn'>
+                    {formData.length >= 2 ? (
+                      <button className='expensesRegistration_dec' type='button' onClick={handleMinus}>
+                        -
+                      </button>
+                    ) : (
+                      <div className='expensesRegistration_dec_empty'></div>
+                    )}
                     <button className='expensesRegistration_inc' type='button' onClick={handleAdd}>
                       +
-                    </button>
-                    <button className='expensesRegistration_dec' type='button' onClick={handleMinus}>
-                      -
                     </button>
                   </div>
                   <div className='expensesRegistration_options-btn'>

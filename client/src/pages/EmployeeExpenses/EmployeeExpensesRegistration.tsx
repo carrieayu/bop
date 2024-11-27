@@ -474,12 +474,15 @@ const EmployeeExpensesRegistration = () => {
                             type='button'
                             onClick={() => addProjectEntry(containerIndex)}
                           />
-                          <Btn
-                            label='-'
-                            className='employeeExpensesRegistration_button'
-                            type='button'
-                            onClick={() => removeProjectEntry(containerIndex)}
-                          />
+                          {employeeContainers[containerIndex].projectEntries.length >= 2 ?
+                            <Btn
+                              label='-'
+                              className='employeeExpensesRegistration_button'
+                              type='button'
+                              onClick={() => removeProjectEntry(containerIndex)}
+                            /> :
+                            <div className='employeeExpensesRegistration_button_empty'></div>
+                          }
                         </div>
                       </div>
                     </div>
@@ -488,19 +491,23 @@ const EmployeeExpensesRegistration = () => {
               </div>
               <div className='employeeExpensesRegistration_cont-footer'>
                 <div className='employeeExpensesRegistration_btn-plusminus'>
+                  {employeeContainers.length >= 2 ? (
+                    <button
+                      className='employeeExpensesRegistration_minus-btn'
+                      type='button'
+                      onClick={removeEmployeeContainer}
+                    >
+                      -
+                    </button>
+                  ) : (
+                    <div className='employeeExpensesRegistration_minus-btn-empty'></div>
+                  )}
                   <button
                     className='employeeExpensesRegistration_plus-btn'
                     type='button'
                     onClick={addEmployeeContainer}
                   >
                     +
-                  </button>
-                  <button
-                    className='employeeExpensesRegistration_minus-btn'
-                    type='button'
-                    onClick={removeEmployeeContainer}
-                  >
-                    -
                   </button>
                 </div>
                 <div className='employeeExpensesRegistration_btn-subcancel'>

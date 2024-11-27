@@ -142,6 +142,15 @@
                         font-weight: bold;
                         text-align: center;
                       }
+                      .employeeExpensesRegistration_button{
+                        color: white;
+                        padding: 10px 20px;
+                        border: none;
+                        border-radius: 5px !important;
+                        cursor: pointer;
+                        font-weight: bold;
+                        text-align: center;
+                      }
                     }
                   }
                 }
@@ -156,6 +165,13 @@
             .employeeExpensesRegistration_plus-btn,
             .employeeExpensesRegistration_minus-btn{
               background-color: #808080;
+              color: #fff;
+              width: 30px;
+              height: 40px;
+              border-radius: 5px !important;
+              font-size: 25px;
+            }
+            .employeeExpensesRegistration_minus-btn-empty{
               color: #fff;
               width: 30px;
               height: 40px;

@@ -841,11 +841,15 @@ const ProjectSalesResultsRegistration = () => {
               <div className='projectSalesResultsRegistration_lower_form_cont'>
                 <div className='projectSalesResultsRegistration_form-content'>
                   <div className='projectSalesResultsRegistration_plus-btn'>
+                    {formProjects.length >= 2 ? (
+                      <button className='projectSalesResultsRegistration_dec' type='button' onClick={handleMinus}>
+                        -
+                      </button>
+                    ) : (
+                      <div className='projectSalesResultsRegistration_dec_empty'></div>
+                    )}
                     <button className='projectSalesResultsRegistration_inc' type='button' onClick={handleAdd}>
                       +
-                    </button>
-                    <button className='projectSalesResultsRegistration_dec' type='button' onClick={handleMinus}>
-                      -
                     </button>
                   </div>
                   <div className='projectSalesResultsRegistration_options-btn'>
