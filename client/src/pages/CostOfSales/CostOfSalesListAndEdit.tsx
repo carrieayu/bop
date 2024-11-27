@@ -117,12 +117,16 @@ const CostOfSalesList: React.FC = () => {
     // Validate records for the specified project fields
     const validateCostOfSales = (records) => validateRecords(records, fieldChecks, 'costOfSales')
 
+    // Expenses has default 12 (for each month)
+    // Even if not all records have actually been created in DB: We need to filter out non-registered records.
+    const costOfSalesListExistingRecords = costOfSales.filter((cos) => cos.cost_of_sale_id !== null)
+
     // Step 2: Validate client-side input
-    const validationErrors = validateCostOfSales(costOfSales)
+    const validationErrors = validateCostOfSales(costOfSalesListExistingRecords)
 
     // Step 3: Check for duplicate entries on specific fields
     const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client']
-    const duplicateErrors = checkForDuplicates(costOfSales, uniqueFields, 'costOfSales', language)
+    const duplicateErrors = checkForDuplicates(costOfSalesListExistingRecords, uniqueFields, 'costOfSales', language)
 
     // Step 4: Map error types to data and translation keys for handling in the modal
     const errorMapping = [
@@ -138,7 +142,9 @@ const CostOfSalesList: React.FC = () => {
       const translatedErrors = translateAndFormatErrors(errors, language, errorType)
       setCrudMessage(translatedErrors)
       setCrudValidationErrors(translatedErrors)
-      setModalIsOpen(true)
+      // setModalIsOpen(true)
+      setIsCRUDOpen(true)
+
       return
     } else {
       setCrudValidationErrors([])
@@ -173,29 +179,6 @@ const CostOfSalesList: React.FC = () => {
 
     const modifiedFields = getModifiedFields(originalCostOfSales, validData)
     if (modifiedFields.length === 0) {
-      return
-    }
-
-    // Checks if any fields are empty for entries that have a cost_of_sale_id
-    const areFieldsEmpty = costOfSales.some((entry) => {
-      // Only check entries that have a valid cost_of_sale_id
-      if (entry.cost_of_sale_id) {
-        return (
-          !entry.purchase ||
-          !entry.outsourcing_expense ||
-          !entry.product_purchase ||
-          !entry.dispatch_labor_expense ||
-          !entry.communication_expense ||
-          !entry.work_in_progress_expense ||
-          !entry.amortization_expense
-        )
-      }
-      return false // Skip entries without a cost_of_sale_id
-    })
-
-    if (areFieldsEmpty) {
-      setCrudMessage(translate('allFieldsRequiredInputValidationMessage', language))
-      setIsCRUDOpen(true)
       return
     }
 
