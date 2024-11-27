@@ -191,14 +191,16 @@ const ClientsRegistration = () => {
   }
 
   const handleAddContainer = () => {
-    setClientData([
-      ...clientData,
-      {
-        client_name: '',
-        created_at: '',
-        auth_user: '',
-      },
-    ])
+    if (clientData.length < 10) {
+      setClientData([
+        ...clientData,
+        {
+          client_name: '',
+          created_at: '',
+          auth_user: '',
+        },
+      ])
+    }
   }
 
   const handleRemoveContainer = () => {
@@ -287,7 +289,7 @@ const ClientsRegistration = () => {
                     ) : (
                       <div className='ClientsRegistration_dec_empty'></div>
                     )}
-                    <button className='ClientsRegistration_inc' type='button' onClick={handleAddContainer}>
+                    <button className='ClientsRegistration_inc custom-disabled' type='button' onClick={handleAddContainer} disabled={clientData.length === 10}>
                       +
                     </button>
                   </div>

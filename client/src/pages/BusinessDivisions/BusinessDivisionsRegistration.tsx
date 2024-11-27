@@ -111,15 +111,19 @@ const BusinessDivisionsRegistration = () => {
       setFormData(updatedFormData)
     }
 
+    const maximumEntries = 10
+  
     const handleAdd = () => {
-      if (formData.length < 10){
-        setFormData([...formData, {
-          business_division_name: '',
-          company_id: '',
-          auth_user_id: authUserID
-        }]);
-      }
-      else {
+      if (formData.length < maximumEntries) {
+        setFormData([
+          ...formData,
+          {
+            business_division_name: '',
+            company_id: '',
+            auth_user_id: authUserID,
+          },
+        ])
+      } else {
       }
     }
   
@@ -354,7 +358,7 @@ const BusinessDivisionsRegistration = () => {
                   ) : (
                     <div className='BusinessDivisionsRegistration_dec_empty'></div>
                   )}
-                  <button className='BusinessDivisionsRegistration_inc' type='button' onClick={handleAdd}>
+                  <button className='BusinessDivisionsRegistration_inc custom-disabled' type='button' onClick={handleAdd} disabled={formData.length === maximumEntries}>
                     +
                   </button>
                 </div>

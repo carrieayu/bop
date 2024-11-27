@@ -67,8 +67,10 @@ const ProjectsRegistration = () => {
     },
   ])
 
+  const maximumEntries = 10
+
   const handleAdd = () => {
-    if (formProjects.length < 10) {
+    if (formProjects.length < maximumEntries) {
       setProjects([
         ...formProjects,
         {
@@ -744,7 +746,7 @@ const ProjectsRegistration = () => {
                     ) : (
                       <div className='projectsRegistration_dec_empty'></div>
                     )}
-                    <button className='projectsRegistration_inc' type='button' onClick={handleAdd}>
+                    <button className='projectsRegistration_inc custom-disabled' type='button' onClick={handleAdd} disabled={formProjects.length === maximumEntries}>
                       +
                     </button>
                   </div>

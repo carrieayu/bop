@@ -59,8 +59,10 @@ const CostOfSalesRegistration = () => {
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
   const token = localStorage.getItem('accessToken')
 
+  const maximumEntries = 10
+
   const handleAdd = () => {
-    if (formData.length < 10) {
+    if (formData.length < maximumEntries) {
       const newFormData = [...formData]
       newFormData.push({
         year: '',
@@ -521,7 +523,12 @@ const CostOfSalesRegistration = () => {
                     ) : (
                       <div className='costOfSalesRegistration_dec_empty'></div>
                     )}
-                    <button className='costOfSalesRegistration_inc' type='button' onClick={handleAdd}>
+                    <button
+                      className='costOfSalesRegistration_inc custom-disabled'
+                      type='button'
+                      onClick={handleAdd}
+                      disabled={formData.length === maximumEntries}
+                    >
                       +
                     </button>
                   </div>

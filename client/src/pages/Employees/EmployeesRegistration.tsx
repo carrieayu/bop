@@ -341,25 +341,27 @@ const EmployeesRegistration = () => {
   }
 
   const handleAddContainer = () => {
-    setEmployees([
-      ...employees,
-      {
-        last_name: '',
-        first_name: '',
-        type: '',
-        email: '',
-        salary: '',
-        executive_renumeration: '',
-        company_name: '',
-        business_division_name: '',
-        bonus_and_fuel_allowance: '',
-        statutory_welfare_expense: '',
-        welfare_expense: '',
-        insurance_premium: '',
-        auth_id: '',
-        created_at: '',
-      },
-    ])
+    if (employees.length < 10) {
+      setEmployees([
+        ...employees,
+        {
+          last_name: '',
+          first_name: '',
+          type: '',
+          email: '',
+          salary: '',
+          executive_renumeration: '',
+          company_name: '',
+          business_division_name: '',
+          bonus_and_fuel_allowance: '',
+          statutory_welfare_expense: '',
+          welfare_expense: '',
+          insurance_premium: '',
+          auth_id: '',
+          created_at: '',
+        },
+      ])
+    }
   }
 
   const handleRemoveContainer = () => {
@@ -616,7 +618,7 @@ const EmployeesRegistration = () => {
                       ) : (
                         <div className='EmployeesRegistration_dec_empty'></div>
                       )}
-                      <button className='EmployeesRegistration_inc' type='button' onClick={handleAddContainer}>
+                      <button className='EmployeesRegistration_inc custom-disabled' type='button' onClick={handleAddContainer} disabled={employees.length === 10}>
                         +
                       </button>
                     </div>

@@ -170,8 +170,10 @@ const EmployeeExpensesRegistration = () => {
     fetchData();
   }, [token]);
 
+  const maximumEntries = 5
+
   const addEmployeeContainer = () => {
-    if (employeeContainers.length < 5) {
+    if (employeeContainers.length < maximumEntries) {
       setEmployeeContainers([
         ...employeeContainers,
         {
@@ -503,9 +505,10 @@ const EmployeeExpensesRegistration = () => {
                     <div className='employeeExpensesRegistration_minus-btn-empty'></div>
                   )}
                   <button
-                    className='employeeExpensesRegistration_plus-btn'
+                    className='employeeExpensesRegistration_plus-btn custom-disabled'
                     type='button'
                     onClick={addEmployeeContainer}
+                    disabled={employeeContainers.length === maximumEntries}
                   >
                     +
                   </button>

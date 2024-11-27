@@ -75,8 +75,10 @@ const handleChange = (index, event) => {
   setFormData(newFormData)
 }
 
+  const maximumEntries = 10;
+
   const handleAdd = () => {
-    if (formData.length < 10) {
+    if (formData.length < maximumEntries) {
       const newFormData = [...formData]
       newFormData.push({
         year: '',
@@ -606,7 +608,7 @@ const handleChange = (index, event) => {
                     ) : (
                       <div className='expensesRegistration_dec_empty'></div>
                     )}
-                    <button className='expensesRegistration_inc' type='button' onClick={handleAdd}>
+                    <button className='expensesRegistration_inc custom-disabled' type='button' onClick={handleAdd} disabled={formData.length === maximumEntries}>
                       +
                     </button>
                   </div>

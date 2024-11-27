@@ -98,9 +98,11 @@ const ProjectSalesResultsRegistration = () => {
       ordinary_profit_margin: '',
     },
   ])
+  
+  const maximumEntries = 10
 
   const handleAdd = () => {
-    if (formProjects.length < 10) {
+    if (formProjects.length < maximumEntries) {
       const tempProject = formProjects
       tempProject.push({
         id: formProjects.length + 1,
@@ -122,8 +124,8 @@ const ProjectSalesResultsRegistration = () => {
         ordinary_profit_margin: '',
       })
       setProjects(tempProject)
-      console.log("tempProject.length:", tempProject.length)
-      
+      console.log('tempProject.length:', tempProject.length)
+
       setProjectsListSelection([...projectListSelection, { projects: [] }])
       setClientsFilter([...clientsFilter, { clients: [] }])
       setProjectsList([...projectList, { projects: [] }])
@@ -848,7 +850,7 @@ const ProjectSalesResultsRegistration = () => {
                     ) : (
                       <div className='projectSalesResultsRegistration_dec_empty'></div>
                     )}
-                    <button className='projectSalesResultsRegistration_inc' type='button' onClick={handleAdd}>
+                    <button className='projectSalesResultsRegistration_inc custom-disabled' type='button' onClick={handleAdd} disabled={formProjects.length === maximumEntries}>
                       +
                     </button>
                   </div>
