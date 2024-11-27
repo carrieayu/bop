@@ -26,7 +26,7 @@ export const getFieldChecks = (recordType: string) => {
 
 export const validateRecords = (records, fieldChecks, recordType) => {
   let validationErrors = [];
-  
+
   for (const record of records) {
     // Append '_id' to whatever the record type is.
     // EXAMPLE: 'project' → 'project_id'
@@ -240,6 +240,7 @@ export const validateField = (
   record = {}, // optional
   isRequired = false // optional
 ) => {
+
   const maxDecimal = 9999999999.99;
   const maxInteger = 2147483647;
 
@@ -309,21 +310,24 @@ export const validateField = (
 // # GENERAL CHECK FOR DUPLICATES
 export const checkForDuplicates = (records, uniqueFields, recordType, language, nestedRecords = '') => {
   const duplicates = []
-
+  
   for (let i = 0; i < records.length; i++) {
     const record = records[i]
-
+    
     for (let j = i + 1; j < records.length; j++) {
       const comparisonRecord = records[j]
-
+      
       // Dynamically create the id field based on the recordType
       const recordIdField = `${recordType}_id`
-
+      
       // Check if the unique fields match, including the recordId dynamically
-      const isDuplicate = uniqueFields.every((field) => record[field] === comparisonRecord[field])
+      // const isDuplicate = uniqueFields.every((field) => {record[field] === comparisonRecord[field]})
+      const isDuplicate = uniqueFields.every((field) => {
+        return record[field] === comparisonRecord[field]
+      })
+
       if (isDuplicate) {
         const fieldName = uniqueFields.join(', ')
-
         // Dynamically get the IDs using the appropriate record id field (e.g., project_id, expense_id)
         const recordIds = `${record[recordIdField] || `${i + 1}`} ${translate('and', language)} ${comparisonRecord[recordIdField] || `${j + 1}`}`
 
