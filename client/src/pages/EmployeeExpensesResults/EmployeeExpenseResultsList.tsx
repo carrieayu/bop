@@ -12,10 +12,6 @@ import { log } from 'console'
 import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss'
-
-import { getEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/GetEmployeeExpense'
-import { deleteEmployeeExpenseX } from '../../api/EmployeeExpenseEndpoint/DeleteEmployeeExpenseX'
-import { deleteProjectAssociation } from '../../api/EmployeeExpenseEndpoint/DeleteProjectAssociation'
 import { getEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/GetEmployeeExpenseResult'
 import { deleteEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/DeleteEmployeeExpenseResult'
 import { deleteProjectAssociationResults } from '../../api/EmployeeExpensesResultEndpoint/DeleteProjectAssociationResults'
@@ -35,11 +31,12 @@ const EmployeeExpensesResultsList: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [selectedEmployeeExpenses, setSelectedEmployeeExpenses] = useState<any>(null)
   const [deleteEmployeeExpensesId, setDeleteEmployeeExpensesId] = useState([])
+  const [deletedId, setDeletedId] = useState<any>(null)
   const [employeeProjectId, setEmployeeProjectId] = useState<{
-    employee_expense_result_id: string
+    employee_expense_result_id: string[]
     project_id: string
     mode: 'employee_expense' | 'project'
-  }>({} as { employee_expense_result_id: string; project_id: string; mode: 'employee_expense' })
+  }>({} as { employee_expense_result_id: []; project_id: string; mode: 'employee_expense' })
   const token = localStorage.getItem('accessToken')
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
@@ -108,7 +105,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
   }
 
   const handleNewRegistrationClick = () => {
-    navigate('/employee-expenses-results-registration')
+    navigate('/employee-expenses-registration')
   }
 
   // Fetch employee expenses data
@@ -122,6 +119,8 @@ const EmployeeExpensesResultsList: React.FC = () => {
       getEmployeeExpenseResults(token)
         .then((data) => {
           setEmployeeExpenses(data)
+          console.log(data);
+          
         })
         .catch((error) => {
           if (error.response && error.response.status === 401) {
@@ -156,33 +155,39 @@ const EmployeeExpensesResultsList: React.FC = () => {
   }
 
   const handleDeleteExpense = async () => {
-    deleteEmployeeExpenseResults(employeeProjectId.employee_expense_result_id, token)
-      .then(() => {
-        setEmployeeExpenses((prevExpenses) =>
-          prevExpenses.filter(
-            (expense) => expense.employee_expense_result_id !== employeeProjectId.employee_expense_result_id,
-          ),
-        )
-
-        setCrudMessage(translate('successfullyDeleted', language))
-        setIsCRUDOpen(true)
-        setIsEditing(false)
-      })
-      .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login' // Redirect to login if unauthorized
-        } else {
-          console.error('Error deleting employee expense:', error)
+    
+      deletedId.monthlyExpenses.forEach((monthExpense, index) => {
+        // Check if the 'projects' array has any data
+        if (monthExpense.projects && monthExpense.projects.length > 0) {
+          // Access employee_expense_result_id from the first project
+          const employeeExpenseResultId = monthExpense.projects[0].employee_expense_result_id
+          deleteEmployeeExpenseResults(employeeExpenseResultId, token)
+            .then(() => {
+              setEmployeeExpenses((prevExpenses) =>
+                prevExpenses.filter((expense) => expense.employee_expense_result_id !== employeeExpenseResultId),
+              )
+              setCrudMessage(translate('successfullyDeleted', language))
+              setIsCRUDOpen(true)
+              setIsEditing(false)
+            })
+            .catch((error) => {
+              if (error.response && error.response.status === 401) {
+                window.location.href = '/login' // Redirect to login if unauthorized
+              } else {
+                console.error('Error deleting employee expense:', error)
+              }
+            })
         }
       })
   }
 
   const handleRemoveProjectAssociation = async () => {
-    console.log(employeeProjectId)
     deleteProjectAssociationResults(employeeProjectId.employee_expense_result_id, employeeProjectId.project_id, token)
       .then(() => {
         setEmployeeExpenses((prevExpenses) =>
-          prevExpenses.filter((expense) => expense.employee_expense_result_id !== employeeProjectId.employee_expense_result_id),
+          prevExpenses.filter(
+            (expense) => expense.employee_expense_result_id !== employeeProjectId.employee_expense_result_id,
+          ),
         )
 
         setCrudMessage(translate('employeeExpensesRemoveProject', language))
@@ -302,13 +307,14 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                   monthlyExpenses[monthIndex].projects.push({
                                     project_name: expense.project_name,
                                     employee_salary: expense.employee_salary,
+                                    executive_renumeration: expense.executive_renumeration,
                                     project_id: expense.project_id,
                                     employee_expense_result_id: expense.employee_expense_result_id,
                                   })
                                   monthlyExpenses[monthIndex].total_salary += expense.employee_salary
                                 }
                                 yearGroup.employees.push({
-                                  employee_expense_result_id: expense.employee_expense_result_id,
+                                  employee_expense_result_id : expense.employee_expense_result_id ,
                                   project_id: expense.project_id,
                                   employee_last_name: expense.employee_last_name,
                                   employee_first_name: expense.employee_first_name,
@@ -321,13 +327,15 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                   existingMonthlyExpenses[monthIndex].projects.push({
                                     project_name: expense.project_name,
                                     employee_salary: expense.employee_salary,
+                                    executive_renumeration: expense.executive_renumeration,
                                     project_id: expense.project_id,
-                                    employee_expense_result_id: expense.employee_expense_result_id,
+                                    employee_expense_result_id : expense.employee_expense_result_id ,
                                   })
                                   existingMonthlyExpenses[monthIndex].total_salary += expense.employee_salary
                                 }
                               }
-
+                              console.log(acc);
+                              
                               return acc
                             }, [])
                             .flatMap((yearGroup, yearIndex) => [
@@ -341,6 +349,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                     </tr>,
                                   ]
                                 : []),
+                              // Map through employees
                               ...yearGroup.employees.map((employee, employeeIndex) => {
                                 return (
                                   <tr key={employeeIndex} className='employeeExpensesResultsList_user_name'>
@@ -398,10 +407,14 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                                   <div className='employeeExpensesResultsList_txt1_txt2_flex'>
                                                     <div className='employeeExpensesResultsList_txt1'>
                                                       <div className='employeeExpensesResultsList_txt1_label1'>
-                                                        {translate('salary', language)}
+                                                        {project.employee_salary
+                                                          ? translate('salary', language)
+                                                          : translate('executiveRenumeration', language)}
                                                       </div>
                                                       <div className='employeeExpensesResultsList_txt1_label2'>
-                                                        {project.employee_salary}
+                                                        {project.employee_salary
+                                                          ? project.employee_salary
+                                                          : project.executive_renumeration}
                                                       </div>
                                                     </div>
                                                     <div className='employeeExpensesResultsList_txt2'>
@@ -426,11 +439,13 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                       <RiDeleteBin6Fill
                                         className='delete-icon'
                                         style={{ color: 'red', cursor: 'pointer' }}
+                                        // {to delete entire row}
                                         onClick={() => {
                                           setModalIsOpen(true)
+                                          setDeletedId(employee)
                                           setEmployeeProjectId({
                                             ...employeeProjectId,
-                                            employee_expense_result_id: employee.employee_expense_result_id,
+                                            employee_expense_result_id: employee,
                                             mode: 'employee_expense',
                                           })
                                         }}
@@ -504,6 +519,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                 monthlyExpenses[monthIndex].projects.push({
                                   project_name: expense.project_name,
                                   employee_salary: expense.employee_salary,
+                                  executive_renumeration: expense.executive_renumeration,
                                 })
                                 monthlyExpenses[monthIndex].total_salary += expense.employee_salary
                               }
@@ -520,11 +536,11 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                 existingMonthlyExpenses[monthIndex].projects.push({
                                   project_name: expense.project_name,
                                   employee_salary: expense.employee_salary,
+                                  executive_renumeration: expense.executive_renumeration,
                                 })
                                 existingMonthlyExpenses[monthIndex].total_salary += expense.employee_salary
                               }
                             }
-
                             return acc
                           }, [])
                           .flatMap((yearGroup, yearIndex) => [
@@ -557,15 +573,21 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                             className={projIndex % 2 === 0 ? 'project-even' : 'project-odd'}
                                           >
                                             <div className='employeeExpensesResultsList_txt0-container'>
-                                              <div className='employeeExpensesResultsList_txt0'>{project.project_name}</div>
+                                              <div className='employeeExpensesResultsList_txt0'>
+                                                {project.project_name}
+                                              </div>
                                             </div>
                                             <div className='employeeExpensesResultsList_txt1_txt2_flex'>
                                               <div className='employeeExpensesResultsList_txt1'>
                                                 <div className='employeeExpensesResultsList_txt1_label1'>
-                                                  {translate('salary', language)}
+                                                  {project.employee_salary
+                                                    ? translate('salary', language)
+                                                    : translate('executiveRenumeration', language)}
                                                 </div>
                                                 <div className='employeeExpensesResultsList_txt1_label2'>
-                                                  {project.employee_salary}
+                                                  {project.employee_salary
+                                                    ? project.employee_salary
+                                                    : project.executive_renumeration}
                                                 </div>
                                               </div>
                                               <div className='employeeExpensesResultsList_txt2'>
@@ -601,7 +623,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
       </div>
       <AlertModal
         isOpen={modalIsOpen}
-        onConfirm={handleDelete}
+        onConfirm={handleDelete} 
         onCancel={closeModal}
         message={translate('deleteMessage', language)}
       />

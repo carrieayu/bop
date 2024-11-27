@@ -1382,8 +1382,8 @@ class EmployeeExpensesDelete(generics.DestroyAPIView):
                 return Response({"message": "Project not found in this expense."}, status=status.HTTP_404_NOT_FOUND)
         else:
             # If no project_id is provided, delete all employee expenses for the same employee_id
-            employee_id = instance.employee_id 
-            EmployeeExpenses.objects.filter(employee_id=employee_id).delete()
+            deleteSelectedId = instance.employee_expense_id
+            EmployeeExpenses.objects.filter(employee_expense_id=deleteSelectedId).delete()
             return Response({"message": "All employee expenses for this employee deleted successfully"}, status=status.HTTP_200_OK)
 
 # Employee Expenses Results
@@ -1543,7 +1543,6 @@ class EmployeeExpensesResultsDelete(generics.DestroyAPIView):
     def destroy(self, request, pk, *args, **kwargs):
         project_id = request.query_params.get('project_id')
         instance = self.get_object()
-
         if instance is None:
             return Response({"message": "Employee expense results not found."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -1557,8 +1556,8 @@ class EmployeeExpensesResultsDelete(generics.DestroyAPIView):
                 return Response({"message": "Project not found in this expense."}, status=status.HTTP_404_NOT_FOUND)
         else:
             # If no project_id is provided, delete all employee expenses for the same employee_id
-            employee_id = instance.employee_id 
-            EmployeeExpensesResults.objects.filter(employee_id=employee_id).delete()
+            deleteSelectedId = instance.employee_expense_result_id 
+            EmployeeExpensesResults.objects.filter(employee_expense_result_id=deleteSelectedId).delete()
             return Response({"message": "All employee expenses for this employee deleted successfully"}, status=status.HTTP_200_OK)
 
 # Cost Of Sales

@@ -12,6 +12,7 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import { getProject } from '../../api/ProjectsEndpoint/GetProject'
 import { getEmployee } from '../../api/EmployeeEndpoint/GetEmployee'
 import { createEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/CreateEmployeeExpenseResult'
+import { checkForDuplicates, getFieldChecks, translateAndFormatErrors, validateEmployeeExpensesRecords } from '../../utils/validationUtil'
 
 const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 
@@ -38,7 +39,7 @@ const EmployeeExpensesResultsRegistration = () => {
       projectEntries: [{ id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '' }],
     },
   ])
-
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
 
@@ -287,19 +288,57 @@ const EmployeeExpensesResultsRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log(employeeContainers)
 
-    // Perform validation
-    if (!handleValidation()) {
-      return // Prevent form submission if validation fails
-    }
+    // # Client Side Validation
 
-    // Check for duplicate projects
-    if (hasDuplicateProjects()) {
-      setModalMessage(translate('employeeExpensesValidation2', language))
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'employeeExpenses'
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateEmployeeExpenses = (records) =>
+      validateEmployeeExpensesRecords(
+        records,
+        fieldChecks,
+        'employeeExpenses',
+        'employeeExpensesProjectContainers',
+        language,
+      )
+
+    // Step 2: Validate client-side input
+    const validationErrors = validateEmployeeExpenses(employeeContainers)
+
+    // Step 3: Check for duplicate entries on specific fields
+    const uniqueFields = ['year', 'month', 'employee', 'projects']
+    const duplicateErrors = checkForDuplicates(
+      employeeContainers,
+      uniqueFields,
+      'employeeExpenses',
+      language,
+      'projectEntries',
+    )
+
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
+
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      setModalMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
       setIsModalOpen(true)
-      return // Prevent form submission
+      return
+    } else {
+      setCrudValidationErrors([])
     }
+    // Continue with submission if no errors
 
     createEmployeeExpenseResults(employeeContainers, token)
       .then(() => {
