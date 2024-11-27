@@ -190,6 +190,59 @@ export const validateEmployeeExpensesRecords = (records, fieldChecks, recordType
   return validationErrors; // Return collected validation errors
 };
 
+
+// # EMPLOYEES EXEPENSES VALIDATION (UNIQUE): REGISTRATION & LISTANDEDIT
+// # Employees Expenses
+
+export const validateEmployeeExpensesResultsRecords = (records, fieldChecks, recordType, secondaryRecordType, language) => {
+  let validationErrors = [];
+  for (const record of records) {
+    const recordId = record.employeeExpenses_id || `${records.indexOf(record) + 1}`;
+
+    // Check main fields based on fieldChecks
+    fieldChecks.forEach((check) => {
+      const { field, fieldName, isRequired, isNumber, isNested } = check;
+
+      if (!isNested) {
+        // Validate main fields (non-nested)
+        const fieldValue = record[field];
+        if (isRequired || fieldValue != null) {
+          const error = validateField(fieldValue, fieldName, isNumber, recordId, recordType);
+          if (error) validationErrors.push(error);
+        }
+      } else if (isNested && Array.isArray(record[field])) {
+        // Retrieve nested field checks for `projectEntries`
+        const nestedFieldChecks = getFieldChecks(secondaryRecordType)
+        
+        // Validate nested fields in projectEntries
+        record[field].forEach((entry, entryIndex) => {
+          const nestedRecordId = `${recordId} - ${translate('item',language)} ${entryIndex + 1}`
+
+          // Loop through each nested field to validate
+          nestedFieldChecks.forEach((nestedCheck) => {
+            const nestedFieldValue = entry[nestedCheck.field]
+            const error = validateField(
+              nestedFieldValue,
+              nestedCheck.fieldName,
+              nestedCheck.isNumber,
+              nestedRecordId,
+              recordType,
+              false, // isUsername
+              false, // isEmail
+              false, // isPassword
+              {}, // record
+              false // isRequired
+            )
+            if (error) validationErrors.push(error)
+          })
+        })
+      }
+    });
+  }
+
+  return validationErrors; // Return collected validation errors
+};
+
 // # USERS VALIDATION (UNIQUE): REGISTRATION & LISTANDEDIT
 // # Users
 

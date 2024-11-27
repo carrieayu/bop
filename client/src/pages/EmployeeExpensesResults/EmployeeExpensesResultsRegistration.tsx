@@ -12,7 +12,7 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import { getProject } from '../../api/ProjectsEndpoint/GetProject'
 import { getEmployee } from '../../api/EmployeeEndpoint/GetEmployee'
 import { createEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/CreateEmployeeExpenseResult'
-import { checkForDuplicates, getFieldChecks, translateAndFormatErrors, validateEmployeeExpensesRecords } from '../../utils/validationUtil'
+import { checkForDuplicates, getFieldChecks, translateAndFormatErrors, validateEmployeeExpensesResultsRecords } from '../../utils/validationUtil'
 
 const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 
@@ -293,28 +293,28 @@ const EmployeeExpensesResultsRegistration = () => {
 
     // Step 1: Preparartion for validation
     // Set record type for validation
-    const recordType = 'employeeExpenses'
+    const recordType = 'employeeExpensesResults'
     // Retrieve field validation checks based on the record type
     const fieldChecks = getFieldChecks(recordType)
     // Validate records for the specified project fields
-    const validateEmployeeExpenses = (records) =>
-      validateEmployeeExpensesRecords(
+    const validateEmployeeExpensesResults = (records) =>
+      validateEmployeeExpensesResultsRecords(
         records,
         fieldChecks,
-        'employeeExpenses',
+        'employeeExpensesResults',
         'employeeExpensesProjectContainers',
         language,
       )
 
     // Step 2: Validate client-side input
-    const validationErrors = validateEmployeeExpenses(employeeContainers)
+    const validationErrors = validateEmployeeExpensesResults(employeeContainers)
 
     // Step 3: Check for duplicate entries on specific fields
     const uniqueFields = ['year', 'month', 'employee', 'projects']
     const duplicateErrors = checkForDuplicates(
       employeeContainers,
       uniqueFields,
-      'employeeExpenses',
+      'employeeExpensesResults',
       language,
       'projectEntries',
     )
@@ -563,7 +563,12 @@ const EmployeeExpensesResultsRegistration = () => {
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
       />
-      <CrudModal message={modalMessage} onClose={() => setIsModalOpen(false)} isCRUDOpen={isModalOpen} />
+      <CrudModal
+        message={modalMessage}
+        onClose={() => setIsModalOpen(false)}
+        isCRUDOpen={isModalOpen}
+        validationMessages={crudValidationErrors}
+      />
     </div>
   )
 }
