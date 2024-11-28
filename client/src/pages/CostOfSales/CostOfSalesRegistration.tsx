@@ -18,6 +18,8 @@ import {
   checkForDuplicates,
 } from '../../utils/validationUtil'
 import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { isNumberObject } from 'util/types'
 
 
 const months = [
@@ -143,14 +145,45 @@ const CostOfSalesRegistration = () => {
     setModalIsOpen(false)
   }
 
+  // const handleChange = (index, event) => {
+    
+  //   const { name, value } = event.target
+  //   if (isNumberObject(value)) {
+  //     formatNumberWithCommas(value)
+  //   }
+  //   // Remove Comma [ Comma Was Used For Display Purposes]
+  //   const rawValue = value.replace(/,/g, '')
+
+  //   const newFormData = [...formData]
+  //   newFormData[index] = {
+  //     ...newFormData[index],
+  //     [name]: rawValue,
+  //   }
+  //   setFormData(newFormData)
+  // }
+
   const handleChange = (index, event) => {
     const { name, value } = event.target
+
+    // Check if the value is a valid number
+    const rawValue = value.replace(/,/g, '') // Remove commas from the input
+
+    // Check if rawValue is a valid number
+    const numberValue = !isNaN(rawValue) && rawValue !== '' ? parseFloat(rawValue) : ''
+
+    // Format the value with commas if it's a valid number, otherwise keep it as is
+    const formattedValue = numberValue !== '' ? formatNumberWithCommas(numberValue) : value
+
+    // Update the form data with the raw value (no commas) for internal state
     const newFormData = [...formData]
     newFormData[index] = {
       ...newFormData[index],
-      [name]: value,
+      [name]: rawValue, // Store raw value (without commas)
     }
     setFormData(newFormData)
+
+    // Update the input value (formatted value with commas)
+    event.target.value = formattedValue
   }
   
   const handleSubmit = async (e) => {

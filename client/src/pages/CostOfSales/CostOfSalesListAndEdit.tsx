@@ -23,6 +23,7 @@ import {
   checkForDuplicates,
 } from '../../utils/validationUtil'
 import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 
 const CostOfSalesList: React.FC = () => {
@@ -595,25 +596,25 @@ const CostOfSalesList: React.FC = () => {
                                   {costOfSale.month}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.purchase || 0}
+                                  {formatNumberWithCommas(costOfSale.purchase) || 0}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.outsourcing_expense || 0}
+                                  {formatNumberWithCommas(costOfSale.outsourcing_expense) || 0}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.product_purchase || 0}
+                                  {formatNumberWithCommas(costOfSale.product_purchase) || 0}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.dispatch_labor_expense || 0}
+                                  {formatNumberWithCommas(costOfSale.dispatch_labor_expense) || 0}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.communication_expense || 0}
+                                  {formatNumberWithCommas(costOfSale.communication_expense) || 0}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.work_in_progress_expense || 0}
+                                  {formatNumberWithCommas(costOfSale.work_in_progress_expense) || 0}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.amortization_expense || 0}
+                                  {formatNumberWithCommas(costOfSale.amortization_expense) || 0}
                                 </td>
                               </tr>
                               {isLastcostOfSaleOfYear && (

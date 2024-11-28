@@ -13,3 +13,8 @@ export const handleDisableKeysOnNumberInputs = (event) => {
   }
     
 }
+
+// Add Commas to Numbers
+export const formatNumberWithCommas = (number: number): string => {
+  return number.toLocaleString()
+}

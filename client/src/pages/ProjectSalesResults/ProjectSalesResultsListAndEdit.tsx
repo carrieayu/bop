@@ -16,6 +16,7 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
 import { updateProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/UpdateProjectSalesResults'
 import { deleteProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/DeleteProjectSalesResults'
+import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -567,31 +568,31 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     )}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {project.sales_revenue}
+                                    {formatNumberWithCommas(project.sales_revenue)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {project.dispatch_labor_expense}
+                                    {formatNumberWithCommas(project.dispatch_labor_expense)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {project.employee_expense}
+                                    {formatNumberWithCommas(project.employee_expense)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {project.indirect_employee_expense}
+                                    {formatNumberWithCommas(project.indirect_employee_expense)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {project.expense}
+                                    {formatNumberWithCommas(project.expense)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {project.operating_income}
+                                    {formatNumberWithCommas(project.operating_income)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {project.non_operating_income}
+                                    {formatNumberWithCommas(project.non_operating_income)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {project.non_operating_expense}
+                                    {formatNumberWithCommas(project.non_operating_expense)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {project.ordinary_profit}
+                                    {formatNumberWithCommas(project.ordinary_profit)}
                                   </td>
                                 </tr>
                               ))}

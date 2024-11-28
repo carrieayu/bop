@@ -17,12 +17,13 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-
+import { handleDisableKeysOnNumberInputs } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 import { deleteExpense } from '../../api/ExpenseEndpoint/DeleteExpense'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
 import { updateExpense } from '../../api/ExpenseEndpoint/UpdateExpense'
+import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+
 
 const ExpensesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -645,37 +646,37 @@ const ExpensesList: React.FC = () => {
                                   {expense.month}
                                 </td>
                                 <td className='expensesList_table_body_content_vertical'>
-                                  {expense.consumable_expense || 0}
+                                  {formatNumberWithCommas(expense.consumable_expense) || 0}
                                 </td>
                                 <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                  {expense.rent_expense || 0}
+                                  {formatNumberWithCommas(expense.rent_expense) || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.tax_and_public_charge || 0}
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {formatNumberWithCommas(expense.tax_and_public_charge) || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.depreciation_expense || 0}
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {formatNumberWithCommas(expense.depreciation_expense) || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.travel_expense || 0}
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {formatNumberWithCommas(expense.travel_expense) || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.communication_expense || 0}
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {formatNumberWithCommas(expense.communication_expense) || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.utilities_expense || 0}
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {formatNumberWithCommas(expense.utilities_expense) || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.transaction_fee || 0}
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {formatNumberWithCommas(expense.transaction_fee) || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.advertising_expense || 0}
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {formatNumberWithCommas(expense.advertising_expense) || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.entertainment_expense || 0}
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {formatNumberWithCommas(expense.entertainment_expense) || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.professional_service_fee || 0}
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {formatNumberWithCommas(expense.professional_service_fee) || 0}
                                 </td>
                               </tr>
                               {isLastExpenseOfYear && (

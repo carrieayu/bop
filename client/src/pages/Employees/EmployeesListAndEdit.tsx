@@ -29,7 +29,8 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 
 const EmployeesListAndEdit: React.FC = () => {
@@ -849,25 +850,28 @@ const EmployeesListAndEdit: React.FC = () => {
                                   {translate(employee.type === 0 ? 'regularEmployee' : 'executiveEmployee', language)}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>{employee.email}</td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'>{employee.salary}</td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {employee.executive_renumeration}
+                                  {/* {formatNumberWithCommas(employee.salary)} */}
+                                  {typeof employee.salary}
+                                </td>
+                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                  {/* {formatNumberWithCommas(employee.executive_renumeration)} */}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>{employee.company}</td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
                                   {employee.business_division}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {employee.bonus_and_fuel_allowance}
+                                  {/* {formatNumberWithCommas(employee.bonus_and_fuel_allowance)} */}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {employee.statutory_welfare_expense}
+                                  {/* {formatNumberWithCommas(employee.statutory_welfare_expense)} */}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {employee.welfare_expense}
+                                  {/* {formatNumberWithCommas(employee.welfare_expense)} */}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {employee.insurance_premium}
+                                  {/* {formatNumberWithCommas(employee.insurance_premium)} */}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
                                   {employee.auth_user}
