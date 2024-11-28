@@ -308,7 +308,7 @@ class EmployeeExpensesResultsListSerializer(serializers.ModelSerializer):
 class EmployeeExpensesResultsCreateSerializer(serializers.ModelSerializer):
     employee_expense_id = serializers.CharField(required=False)
     employee = EmployeesListSerializer()
-    project = ProjectsCreateSerializer()
+    project = ProjectSalesResultsCreateSerializer()
     class Meta:
         model = EmployeeExpensesResults
         fields = '__all__'

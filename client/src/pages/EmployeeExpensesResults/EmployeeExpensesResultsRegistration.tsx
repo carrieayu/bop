@@ -13,6 +13,7 @@ import { getProject } from '../../api/ProjectsEndpoint/GetProject'
 import { getEmployee } from '../../api/EmployeeEndpoint/GetEmployee'
 import { createEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/CreateEmployeeExpenseResult'
 import { checkForDuplicates, getFieldChecks, translateAndFormatErrors, validateEmployeeExpensesResultsRecords } from '../../utils/validationUtil'
+import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
 
 const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 
@@ -29,7 +30,7 @@ const EmployeeExpensesResultsRegistration = () => {
   const years = Array.from({ length: endYear - startYear + 1 }, (val, i) => startYear + i)
   const token = localStorage.getItem('accessToken')
   const [employees, setEmployees] = useState([])
-  const [projects, setProjects] = useState([])
+  const [projectsSalesResults, setProjectSalesResult] = useState([])
   const storedUserID = localStorage.getItem('userID')
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [employeeContainers, setEmployeeContainers] = useState([
@@ -134,9 +135,9 @@ const EmployeeExpensesResultsRegistration = () => {
             }
           })
 
-        getProject(token)
+        getProjectSalesResults(token)
           .then((data) => {
-            setProjects(data)
+            setProjectSalesResult(data)
           })
           .catch((error) => {
             if (error.response && error.response.status === 401) {
@@ -203,12 +204,12 @@ const EmployeeExpensesResultsRegistration = () => {
 
     if (projectIndex !== null) {
       if (name === 'projects') {
-        const selectedProject = projects.find((project) => project.project_id === value)
+        const selectedProject = projectsSalesResults.find((project) => project.projects.project_id === value)
 
         newContainers[containerIndex].projectEntries[projectIndex] = {
           ...newContainers[containerIndex].projectEntries[projectIndex],
           projects: value,
-          clients: selectedProject ? selectedProject.client : '',
+          clients: selectedProject ? selectedProject.projects.client : '',
         }
       } else {
         newContainers[containerIndex].projectEntries[projectIndex] = {
@@ -339,7 +340,6 @@ const EmployeeExpensesResultsRegistration = () => {
       setCrudValidationErrors([])
     }
     // Continue with submission if no errors
-
     createEmployeeExpenseResults(employeeContainers, token)
       .then(() => {
         setModalMessage(translate('successfullySaved', language))
@@ -460,9 +460,9 @@ const EmployeeExpensesResultsRegistration = () => {
                                   onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
                                 >
                                   <option value=''></option>
-                                  {projects.map((project) => (
-                                    <option key={project.project_id} value={project.project_id}>
-                                      {project.project_name}
+                                  {projectsSalesResults.map((project) => (
+                                    <option key={project.project_sales_result_id} value={project.projects.project_id}>
+                                      {project.projects.project_name}
                                     </option>
                                   ))}
                                 </select>

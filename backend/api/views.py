@@ -1398,7 +1398,7 @@ class EmployeeExpensesResultsList(generics.ListAPIView):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
 
-
+        
         employee_expenses_results_data = []
         for expense in serializer.data:
             if isinstance(expense, dict):
@@ -1443,6 +1443,7 @@ class EmployeeExpensesResultsCreate(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         employee_expenses_results_data = request.data
+
         if not isinstance(employee_expenses_results_data, list):
             return Response({'detail': 'Invalid data format. Expecting a list.'}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -1460,13 +1461,13 @@ class EmployeeExpensesResultsCreate(generics.CreateAPIView):
                 return Response({'detail': 'projectEntries must be a list.'}, status=status.HTTP_400_BAD_REQUEST)
 
             for entry in project_entries:
-                if not entry.get('projects') or not entry.get('clients'):
+                if not entry.get('projects') or not entry.get('clients'): # The ID being used in entry.get('projects') is project_id
                     return Response({'detail': 'Project ID and Client ID cannot be empty.'}, status=status.HTTP_400_BAD_REQUEST)
 
                 try:
                     # Check if employee, client, and project exist
                     client = MasterClient.objects.get(pk=entry['clients'])
-                    project = Projects.objects.get(pk=entry['projects'])
+                    project = ProjectsSalesResults.objects.get(project_id=entry['projects'])
                     employee = Employees.objects.get(pk=employee_id)
 
                     # Check for existing expense
@@ -1488,8 +1489,8 @@ class EmployeeExpensesResultsCreate(generics.CreateAPIView):
                 except MasterClient.DoesNotExist:
                     return Response({"error": f"Client with ID {entry['clients']} does not exist"},
                                     status=status.HTTP_404_NOT_FOUND)
-                except Projects.DoesNotExist:
-                    return Response({"error": f"Project with ID {entry['projects']} does not exist"},
+                except ProjectsSalesResults.DoesNotExist:
+                    return Response({"error": f"ProjectsSalesResults with ID {entry['projects']} does not exist"},
                                     status=status.HTTP_404_NOT_FOUND)
                 except Employees.DoesNotExist:
                     return Response({"error": f"Employee with ID {employee_id} does not exist"},
@@ -1506,7 +1507,7 @@ class EmployeeExpensesResultsCreate(generics.CreateAPIView):
 
             for entry in project_entries:
                 client = MasterClient.objects.get(pk=entry['clients'])
-                project = Projects.objects.get(pk=entry['projects'])
+                project = ProjectsSalesResults.objects.get(project_id=entry['projects'])
                 employee = Employees.objects.get(pk=employee_id)
                 auth_user = AuthUser.objects.get(pk=entry.get('auth_id')) if entry.get('auth_id') else None
 
@@ -1525,7 +1526,7 @@ class EmployeeExpensesResultsCreate(generics.CreateAPIView):
                 created_expenses.append(serializer.data)
 
         return Response({
-            "employeeExpenses": created_expenses
+            "employeeExpenses"
         }, status=status.HTTP_201_CREATED)
 
 
