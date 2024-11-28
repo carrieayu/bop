@@ -851,27 +851,26 @@ const EmployeesListAndEdit: React.FC = () => {
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>{employee.email}</td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {/* {formatNumberWithCommas(employee.salary)} */}
-                                  {typeof employee.salary}
+                                  {employee.type === 0 && formatNumberWithCommas(employee.salary)}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {/* {formatNumberWithCommas(employee.executive_renumeration)} */}
+                                  {employee.type === 1 && formatNumberWithCommas(employee.executive_renumeration)}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>{employee.company}</td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
                                   {employee.business_division}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {/* {formatNumberWithCommas(employee.bonus_and_fuel_allowance)} */}
+                                  {formatNumberWithCommas(employee.bonus_and_fuel_allowance)}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {/* {formatNumberWithCommas(employee.statutory_welfare_expense)} */}
+                                  {formatNumberWithCommas(employee.statutory_welfare_expense)}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {/* {formatNumberWithCommas(employee.welfare_expense)} */}
+                                  {formatNumberWithCommas(employee.welfare_expense)}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {/* {formatNumberWithCommas(employee.insurance_premium)} */}
+                                  {formatNumberWithCommas(employee.insurance_premium)}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
                                   {employee.auth_user}
