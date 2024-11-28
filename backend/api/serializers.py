@@ -299,7 +299,7 @@ class GetEmployeeExpensesSerializer(serializers.ModelSerializer):
 class EmployeeExpensesResultsListSerializer(serializers.ModelSerializer):
     employee_expense_id = serializers.CharField(required=False)
     employee = EmployeesListSerializer()
-    project = ProjectsCreateSerializer()
+    project = ProjectSalesResultsListSerializer()
     class Meta:
         model = EmployeeExpensesResults
         fields = '__all__'

@@ -1391,49 +1391,48 @@ class EmployeeExpensesResultsList(generics.ListAPIView):
     serializer_class = EmployeeExpensesResultsListSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self): 
-        return EmployeeExpensesResults.objects.select_related('employee', 'project').all()
+    def get_queryset(self):
+        return EmployeeExpensesResults.objects.select_related('employee','project__project').all() #project (ProjectsSalesResults) -> project (Projects)
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
 
-        
         employee_expenses_results_data = []
         for expense in serializer.data:
-            if isinstance(expense, dict):
-                employee = expense.get('employee')  
-                project = expense.get('project') 
+        # Access nested fields from serialized data
+            employee = expense.get('employee')  
+            project = expense.get('project', {}).get('projects', {})  # Access the nested project data
 
-                employee_last_name = employee['last_name'] if employee else ''
-                employee_first_name = employee['first_name'] if employee else ''
-                employee_type = employee['type'] if employee else ''
-                employee_salary = employee['salary'] if employee else 0  
-                employee_executive_renumeration = employee['executive_renumeration'] if employee else 0
-                employee_statutory_welfare_expense = employee['statutory_welfare_expense'] if employee else 0
-                employee_welfare_expense = employee['welfare_expense'] if employee else 0
-                employee_insurance_premium = employee['insurance_premium'] if employee else 0
-                employee_id = employee['employee_id'] if project else '' 
-                project_name = project['project_name'] if project else ''  
-                project_id = project['project_id'] if project else ''  
-                # print("project",project['project_id'])
+            employee_last_name = employee['last_name'] if employee else ''
+            employee_first_name = employee['first_name'] if employee else ''
+            employee_type = employee['type'] if employee else ''
+            employee_salary = employee['salary'] if employee else 0  
+            employee_executive_renumeration = employee['executive_renumeration'] if employee else 0
+            employee_statutory_welfare_expense = employee['statutory_welfare_expense'] if employee else 0
+            employee_welfare_expense = employee['welfare_expense'] if employee else 0
+            employee_insurance_premium = employee['insurance_premium'] if employee else 0
+            employee_id = employee['employee_id'] if project else '' 
+            project_name = project.get('project_name') if project else ''  
+            project_id = project['project_id'] if project else ''  
+            # print("project",project['project_id'])
 
-                employee_expenses_results_data.append({
-                    'employee_expense_result_id': expense.get('employee_expense_result_id', ''),
-                    'year': expense.get('year', ''),
-                    'month': expense.get('month', ''),
-                    'employee_last_name': employee_last_name,
-                    'employee_first_name': employee_first_name,
-                    'employee_type': employee_type,
-                    'employee_salary': employee_salary,
-                    'executive_renumeration': employee_executive_renumeration,
-                    'statutory_welfare_expense':employee_statutory_welfare_expense,
-                    'welfare_expense':employee_welfare_expense,
-                    'insurance_premium':employee_insurance_premium,
-                    'employee_id': employee_id,
-                    'project_name': project_name,
-                    'project_id': project_id
-                })
+            employee_expenses_results_data.append({
+                'employee_expense_result_id': expense.get('employee_expense_result_id', ''),
+                'year': expense.get('year', ''),
+                'month': expense.get('month', ''),
+                'employee_last_name': employee_last_name,
+                'employee_first_name': employee_first_name,
+                'employee_type': employee_type,
+                'employee_salary': employee_salary,
+                'executive_renumeration': employee_executive_renumeration,
+                'statutory_welfare_expense':employee_statutory_welfare_expense,
+                'welfare_expense':employee_welfare_expense,
+                'insurance_premium':employee_insurance_premium,
+                'employee_id': employee_id,
+                'project_name': project_name,
+                'project_id': project_id
+            })
 
         return Response(employee_expenses_results_data)
 
