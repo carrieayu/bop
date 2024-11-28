@@ -559,9 +559,9 @@ const ProjectSalesResultsRegistration = () => {
               handleTabsClick={handleTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
-                { labelKey: 'expensesResults', tabKey: 'expensesResults' },
-                { labelKey: 'projectSalesResults', tabKey: 'projectSalesResults' },
-                { labelKey: 'employeeExpensesResults', tabKey: 'employeeExpensesResults' },
+                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
+                { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
+                { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
               ]}
             />
           </div>

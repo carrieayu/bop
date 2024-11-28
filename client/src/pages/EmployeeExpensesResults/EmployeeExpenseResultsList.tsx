@@ -60,8 +60,8 @@ const EmployeeExpensesResultsList: React.FC = () => {
   const handleTabsClick = (tab) => {
     setActiveTabOther(tab)
     switch (tab) {
-      case 'project':
-        navigate('/projects-registration')
+      case 'projectSalesResults':
+        navigate('/project-sales-results-list')
         break
       case 'expensesResults':
         navigate('/expenses-results-list')
@@ -105,7 +105,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
   }
 
   const handleNewRegistrationClick = () => {
-    navigate('/employee-expenses-registration')
+    navigate('/employee-expenses-results-registration')
   }
 
   // Fetch employee expenses data
@@ -235,9 +235,9 @@ const EmployeeExpensesResultsList: React.FC = () => {
                 handleTabsClick={handleTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
-                  { labelKey: 'expensesResults', tabKey: 'expensesResults' },
-                  { labelKey: 'projectSalesResults', tabKey: 'projectSalesResults' },
-                  { labelKey: 'employeeExpensesResults', tabKey: 'employeeExpensesResults' },
+                  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
+                  { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
+                  { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
                 ]}
               />
               <div className={`employeeExpensesResultsList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
@@ -314,7 +314,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                   monthlyExpenses[monthIndex].total_salary += expense.employee_salary
                                 }
                                 yearGroup.employees.push({
-                                  employee_expense_result_id : expense.employee_expense_result_id ,
+                                  employee_expense_result_id: expense.employee_expense_result_id,
                                   project_id: expense.project_id,
                                   employee_last_name: expense.employee_last_name,
                                   employee_first_name: expense.employee_first_name,
@@ -329,13 +329,13 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                     employee_salary: expense.employee_salary,
                                     executive_renumeration: expense.executive_renumeration,
                                     project_id: expense.project_id,
-                                    employee_expense_result_id : expense.employee_expense_result_id ,
+                                    employee_expense_result_id: expense.employee_expense_result_id,
                                   })
                                   existingMonthlyExpenses[monthIndex].total_salary += expense.employee_salary
                                 }
                               }
-                              console.log(acc);
-                              
+                              console.log(acc)
+
                               return acc
                             }, [])
                             .flatMap((yearGroup, yearIndex) => [
@@ -623,7 +623,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
       </div>
       <AlertModal
         isOpen={modalIsOpen}
-        onConfirm={handleDelete} 
+        onConfirm={handleDelete}
         onCancel={closeModal}
         message={translate('deleteMessage', language)}
       />

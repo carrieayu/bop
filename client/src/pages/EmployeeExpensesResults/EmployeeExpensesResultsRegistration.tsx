@@ -51,8 +51,8 @@ const EmployeeExpensesResultsRegistration = () => {
   const handleTabsClick = (tab) => {
     setActiveTabOther(tab)
     switch (tab) {
-      case 'project':
-        navigate('/projects-registration')
+      case 'projectSalesResults':
+        navigate('/project-sales-results-list')
         break
       case 'expensesResults':
         navigate('/expenses-results-list')
@@ -409,9 +409,9 @@ const EmployeeExpensesResultsRegistration = () => {
               handleTabsClick={handleTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
-                { labelKey: 'expensesResults', tabKey: 'expensesResults' },
-                { labelKey: 'projectSalesResults', tabKey: 'projectSalesResults' },
-                { labelKey: 'employeeExpensesResults', tabKey: 'employeeExpensesResults' },
+                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
+                { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
+                { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
               ]}
             />
           </div>
