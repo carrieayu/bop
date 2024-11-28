@@ -50,6 +50,7 @@ const CostOfSalesList: React.FC = () => {
     const [crudMessage, setCrudMessage] = useState('');
     const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
 
+    console.log('test')
     const handleTabClick = (tab) => {
         setActiveTab(tab)
         navigate(tab)
