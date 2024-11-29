@@ -16,7 +16,7 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
 import { updateProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/UpdateProjectSalesResults'
 import { deleteProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/DeleteProjectSalesResults'
-import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -106,11 +106,16 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
 
   const handleChange = (index, event) => {
     const { name, value } = event.target
+
+    // Remove commas to get the raw number
+    // EG. 999,999 → 999999 in the DB
+    const rawValue = removeCommas(value)
+
     setProjectSalesResults((prevState) => {
       const updatedProjectsData = [...prevState]
       updatedProjectsData[index] = {
         ...updatedProjectsData[index],
-        [name]: value,
+        [name]: rawValue,
       }
 
       setFormProjects(updatedProjectsData)
@@ -402,74 +407,83 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                       type='text'
                                         name='sales_revenue'
-                                        value={projectSalesResults.sales_revenue}
+                                        value={formatNumberWithCommas(projectSalesResults.sales_revenue)}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                       type='text'
                                         name='dispatch_labor_expense'
-                                        value={projectSalesResults.dispatch_labor_expense}
+                                        value={formatNumberWithCommas(projectSalesResults.dispatch_labor_expense)}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                       type='text'
                                         name='employee_expense'
-                                        value={projectSalesResults.employee_expense}
+                                        value={formatNumberWithCommas(projectSalesResults.employee_expense)}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                       type='text'
                                         name='indirect_employee_expense'
-                                        value={projectSalesResults.indirect_employee_expense}
+                                        value={formatNumberWithCommas(projectSalesResults.indirect_employee_expense)}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                       type='text'
                                         name='expense'
-                                        value={projectSalesResults.expense}
+                                        value={formatNumberWithCommas(projectSalesResults.expense)}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                       type='text'
                                         name='operating_income'
-                                        value={projectSalesResults.operating_income}
+                                        value={formatNumberWithCommas(projectSalesResults.operating_income)}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                       type='text'
                                         name='non_operating_income'
-                                        value={projectSalesResults.non_operating_income}
+                                        value={formatNumberWithCommas(projectSalesResults.non_operating_income)}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                       type='text'
                                         name='non_operating_expense'
-                                        value={projectSalesResults.non_operating_expense}
+                                        value={formatNumberWithCommas(projectSalesResults.non_operating_expense)}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                       type='text'
                                         name='ordinary_profit'
-                                        value={projectSalesResults.ordinary_profit}
+                                        value={formatNumberWithCommas(projectSalesResults.ordinary_profit)}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='EmployeesListAndEdit_table_body_content_vertical'>

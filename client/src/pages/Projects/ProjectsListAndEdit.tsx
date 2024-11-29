@@ -17,11 +17,10 @@ import CrudModal from "../../components/CrudModal/CrudModal";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss';
 import {validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { getProject } from "../../api/ProjectsEndpoint/GetProject";
 import { updateProject } from "../../api/ProjectsEndpoint/UpdateProject";
 import { deleteProject } from "../../api/ProjectsEndpoint/DeleteProject";
-import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const ProjectsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -126,11 +125,16 @@ const ProjectsListAndEdit: React.FC = () => {
 
   const handleChange = (index, event) => {
     const { name, value } = event.target
+
+    // Remove commas to get the raw number
+    // EG. 999,999 → 999999 in the DB
+    const rawValue = removeCommas(value)
+
     setProjects((prevState) => {
       const updatedProjectsData = [...prevState]
       updatedProjectsData[index] = {
         ...updatedProjectsData[index],
-        [name]: value,
+        [name]: rawValue,
       }
       setFormProjects(updatedProjectsData)
 
@@ -529,43 +533,43 @@ const ProjectsListAndEdit: React.FC = () => {
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='sales_revenue'
-                                        value={project.sales_revenue}
+                                        value={formatNumberWithCommas(project.sales_revenue)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='dispatch_labor_expense'
-                                        value={project.dispatch_labor_expense}
+                                        value={formatNumberWithCommas(project.dispatch_labor_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='employee_expense'
-                                        value={project.employee_expense}
+                                        value={formatNumberWithCommas(project.employee_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='indirect_employee_expense'
-                                        value={project.indirect_employee_expense}
+                                        value={formatNumberWithCommas(project.indirect_employee_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='expense'
                                         value={project.expense}
                                         onChange={(e) => handleChange(index, e)}
@@ -574,36 +578,36 @@ const ProjectsListAndEdit: React.FC = () => {
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='operating_income'
-                                        value={project.operating_income}
+                                        value={formatNumberWithCommas(project.operating_income)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='non_operating_income'
-                                        value={project.non_operating_income}
+                                        value={formatNumberWithCommas(project.non_operating_income)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='non_operating_expense'
-                                        value={project.non_operating_expense}
+                                        value={formatNumberWithCommas(project.non_operating_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='ordinary_profit'
-                                        value={project.ordinary_profit}
+                                        value={formatNumberWithCommas(project.ordinary_profit)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
@@ -695,7 +699,9 @@ const ProjectsListAndEdit: React.FC = () => {
                                         ),
                                     )}
                                   </td>
-                                  <td className='projectsList_table_body_content_vertical'>{formatNumberWithCommas(project.sales_revenue)}</td>
+                                  <td className='projectsList_table_body_content_vertical'>
+                                    {formatNumberWithCommas(project.sales_revenue)}
+                                  </td>
                                   <td className='projectsList_table_body_content_vertical'>
                                     {formatNumberWithCommas(project.dispatch_labor_expense)}
                                   </td>
@@ -705,7 +711,9 @@ const ProjectsListAndEdit: React.FC = () => {
                                   <td className='projectsList_table_body_content_vertical'>
                                     {formatNumberWithCommas(project.indirect_employee_expense)}
                                   </td>
-                                  <td className='projectsList_table_body_content_vertical'>{formatNumberWithCommas(project.expense)}</td>
+                                  <td className='projectsList_table_body_content_vertical'>
+                                    {formatNumberWithCommas(project.expense)}
+                                  </td>
                                   <td className='projectsList_table_body_content_vertical'>
                                     {formatNumberWithCommas(project.operating_income)}
                                   </td>

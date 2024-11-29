@@ -1,20 +1,63 @@
 // GENERAL HELPER FUNCTIONS
 
 // # Helper to block non-numeric key presses for number inputs
-export const handleDisableKeysOnNumberInputs = (event) => {
 
-  console.log('run')
+export const handleDisableKeysOnNumberInputs = (event) => {
+  const allowedKeys = [
+    'Backspace',
+    'Delete',
+    'ArrowLeft',
+    'ArrowRight',
+    'Tab',
+    'Enter',
+    'Escape',
+    'Shift',
+    'Control',
+    'Meta', // Command key on Mac
+    'c',
+    'v',
+  ]
+
   const key = event.key
-  // Block the typing of 'e' , '-', '+', '.' characters for Number Inputs
-  if (key === 'e' || key === '-' || key === '+' || key === '.') {
-    // Prevent these keys from being typed
-      event.preventDefault()
-    // alert('Cant type these keys in this input')
+
+  // Allow functional keys
+  if (allowedKeys.includes(key)) {
+    return
   }
-    
+
+  // Allow Command+C and Command+V (or Control+C and Control+V on Windows)
+  if ((event.ctrlKey || event.metaKey) && (key === 'c' || key === 'v')) {
+    return
+  }
+
+  // Allow numbers 1-9 only
+  if (!/^[0-9]$/.test(key)) {
+    event.preventDefault()
+  }
 }
 
-// Add Commas to Numbers
-export const formatNumberWithCommas = (number: number): string => {
+
+// Add Commas to Financial Numbers for Display on List, Edit, Registration Screens
+
+export const formatNumberWithCommas = (value: number | string): string => {
+  // Trim the string and remove non-numeric characters, 
+  if (typeof value === 'string') {
+    value = value.replace(/[^0-9]/g, '') // Remove non-numeric characters
+  }
+
+  // Convert the sanitized string to a number
+  const number = typeof value === 'string' ? parseFloat(value) : value
+
+  // Handle invalid number cases
+  if (isNaN(number)) {
+    console.log('true')
+    return '' // Return empty string for invalid inputs
+  }
+
+  // Format the number
   return number.toLocaleString()
 }
+
+// Remove commas used when displaying numbers in List, Edit, Registration Screens
+// EG. "999,999" → "999999"
+export const removeCommas = (val) => val.replace(/,/g, '')

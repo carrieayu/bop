@@ -20,8 +20,7 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const ExpensesResultsList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -109,10 +108,15 @@ const ExpensesResultsList: React.FC = () => {
 
   const handleChange = (index, e) => {
     const { name, value } = e.target
+
+    // Remove commas to get the raw number
+    // EG. 999,999 → 999999 in the DB
+    const rawValue = removeCommas(value)
+
     const updatedData = [...combinedData]
     updatedData[index] = {
       ...updatedData[index],
-      [name]: value,
+      [name]: rawValue,
     }
     setExpensesResultsList(updatedData)
   }
@@ -454,9 +458,9 @@ const ExpensesResultsList: React.FC = () => {
                                     </td>
                                     <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='consumable_expense'
-                                        value={expenseResults.consumable_expense}
+                                        value={formatNumberWithCommas(expenseResults.consumable_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -464,9 +468,9 @@ const ExpensesResultsList: React.FC = () => {
                                     </td>
                                     <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='rent_expense'
-                                        value={expenseResults.rent_expense}
+                                        value={formatNumberWithCommas(expenseResults.rent_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -474,9 +478,9 @@ const ExpensesResultsList: React.FC = () => {
                                     </td>
                                     <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='tax_and_public_charge'
-                                        value={expenseResults.tax_and_public_charge}
+                                        value={formatNumberWithCommas(expenseResults.tax_and_public_charge)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -484,9 +488,9 @@ const ExpensesResultsList: React.FC = () => {
                                     </td>
                                     <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='depreciation_expense'
-                                        value={expenseResults.depreciation_expense}
+                                        value={formatNumberWithCommas(expenseResults.depreciation_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -494,9 +498,9 @@ const ExpensesResultsList: React.FC = () => {
                                     </td>
                                     <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='travel_expense'
-                                        value={expenseResults.travel_expense}
+                                        value={formatNumberWithCommas(expenseResults.travel_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -504,9 +508,9 @@ const ExpensesResultsList: React.FC = () => {
                                     </td>
                                     <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='communication_expense'
-                                        value={expenseResults.communication_expense}
+                                        value={formatNumberWithCommas(expenseResults.communication_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -515,9 +519,9 @@ const ExpensesResultsList: React.FC = () => {
 
                                     <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='utilities_expense'
-                                        value={expenseResults.utilities_expense}
+                                        value={formatNumberWithCommas(expenseResults.utilities_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -525,9 +529,9 @@ const ExpensesResultsList: React.FC = () => {
                                     </td>
                                     <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='transaction_fee'
-                                        value={expenseResults.transaction_fee}
+                                        value={formatNumberWithCommas(expenseResults.transaction_fee)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -535,9 +539,9 @@ const ExpensesResultsList: React.FC = () => {
                                     </td>
                                     <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='advertising_expense'
-                                        value={expenseResults.advertising_expense}
+                                        value={formatNumberWithCommas(expenseResults.advertising_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -545,9 +549,9 @@ const ExpensesResultsList: React.FC = () => {
                                     </td>
                                     <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='entertainment_expense'
-                                        value={expenseResults.entertainment_expense}
+                                        value={formatNumberWithCommas(expenseResults.entertainment_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -555,9 +559,9 @@ const ExpensesResultsList: React.FC = () => {
                                     </td>
                                     <td className='expensesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='professional_service_fee'
-                                        value={expenseResults.professional_service_fee}
+                                        value={formatNumberWithCommas(expenseResults.professional_service_fee)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
