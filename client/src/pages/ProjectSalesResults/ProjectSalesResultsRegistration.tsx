@@ -16,7 +16,8 @@ import { getFilteredProjectSalesResults } from '../../api/ProjectSalesResultsEnd
 import { createProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/CreateProjectSalesResults'
 import { overwriteProjectSalesResult } from '../../api/ProjectSalesResultsEndpoint/OverwriteProjectSalesResults'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
-
+import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
+import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 type Project = {
@@ -76,6 +77,8 @@ const ProjectSalesResultsRegistration = () => {
   const [modalMessage, setModalMessage] = useState('')
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
+
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
 
   const [formProjects, setProjects] = useState([
     {
@@ -377,97 +380,110 @@ const ProjectSalesResultsRegistration = () => {
     }
   }, [location.pathname])
 
-  const validateProjects = (projectsValidate) => {
-    return projectsValidate.every((prj) => {
-      return (
-        prj.year.trim() !== '' &&
-        prj.month.trim() !== '' &&
-        prj.project_name.trim() !== '' &&
-        !isNaN(prj.sales_revenue) &&
-        prj.sales_revenue > 0 &&
-        !isNaN(prj.sales_revenue) &&
-        prj.dispatch_labor_expense > 0 &&
-        !isNaN(prj.dispatch_labor_expense) &&
-        prj.employee_expense > 0 &&
-        !isNaN(prj.employee_expense) &&
-        prj.indirect_employee_expense > 0 &&
-        !isNaN(prj.indirect_employee_expense) &&
-        prj.expense > 0 &&
-        !isNaN(prj.expense) &&
-        prj.operating_income > 0 &&
-        !isNaN(prj.operating_income) &&
-        prj.non_operating_income > 0 &&
-        !isNaN(prj.non_operating_income) &&
-        prj.non_operating_expense > 0 &&
-        !isNaN(prj.non_operating_expense) &&
-        prj.ordinary_profit > 0 &&
-        !isNaN(prj.ordinary_profit) &&
-        prj.ordinary_profit_margin > 0 &&
-        !isNaN(prj.ordinary_profit_margin)
-      )
-    })
-  }
-
-  const checkDuplicate = (projectsValidate) => {
-
-      return 
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    const getProjectId = projectList.flatMap((projects) =>
+    const getRelatedProjectIDs = projectList.flatMap((projects) =>
       projects.projects.map((project) => ({
         project: project.project_id,
         client: project.client,
         business_division: project.business_division,
       })),
     )
-
-    const duplicates = getProjectId.filter(
-      (item, index, self) => self.findIndex((t) => t.project === item.project) !== index,
-    )
-
+    
     const projectsData = formProjects.map((projects) => ({
-      project_name: projects.project_name,
-      month: projects.month,
       year: projects.year,
-      sales_revenue: parseFloat(projects.sales_revenue),
-      dispatch_labor_expense: parseFloat(projects.dispatch_labor_expense),
-      employee_expense: parseFloat(projects.employee_expense),
-      indirect_employee_expense: parseFloat(projects.indirect_employee_expense),
-      expense: parseFloat(projects.expense),
-      operating_income: parseFloat(projects.operating_income),
-      non_operating_income: parseFloat(projects.non_operating_income),
-      non_operating_expense: parseFloat(projects.non_operating_expense),
-      ordinary_profit: parseFloat(projects.ordinary_profit),
-      ordinary_profit_margin: parseFloat(projects.ordinary_profit_margin),
+      month: projects.month,
+      project_name: projects.project_name,
+      sales_revenue: projects.sales_revenue,
+      dispatch_labor_expense: projects.dispatch_labor_expense,
+      employee_expense: projects.employee_expense,
+      indirect_employee_expense: projects.indirect_employee_expense,
+      expense: projects.expense,
+      operating_income: projects.operating_income,
+      non_operating_income: projects.non_operating_income,
+      non_operating_expense: projects.non_operating_expense,
+      ordinary_profit: projects.ordinary_profit,
+      ordinary_profit_margin: projects.ordinary_profit_margin,
     }))
 
-    const combinedObject = getProjectId.map((item, index) => ({
-      ...item,
-      ...projectsData[index],
+    // Defines Object for validation
+    let combinedObject = formProjects.map(() => ({
+      year: '',
+      month: '',
+      project_name:'',
+      // project: '',
+      type: '',
+      client: '',
+      business_division: '',
+      sales_revenue: '',
+      dispatch_labor_expense: '',
+      employee_expense: '',
+      indirect_employee_expense: '',
+      expense: '',
+      operating_income: '',
+      non_operating_income: '',
+      non_operating_expense: '',
+      ordinary_profit: '',
+      ordinary_profit_margin: '',
     }))
+       
+    // Combines the data from related "project", "client", "business division" and adds data to object
+    const updatedCombinedObject = combinedObject.map((item, index) => {
+      const relatedProject = getRelatedProjectIDs[index] || {} // Get the related project for this index
+      return {
+        ...item,
+        ...projectsData[index], // Merge form data
+        ...relatedProject, // Merge project details if available
+      }
+    })
+
+    // Client Side Validation
+
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'projectResults'
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateProjects = (records) => validateRecords(records, fieldChecks, 'projectResults')
+
+    // Step 2: Validate client-side input
+    const validationErrors = validateProjects(updatedCombinedObject)
+    // Step 3: Check for duplicate entries on specific fields
+    const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client']
+    const duplicateErrors = checkForDuplicates(updatedCombinedObject, uniqueFields, 'project', language)
+
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
+
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      setModalMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
+      setIsModalOpen(true)
+      // setModalIsOpen(true)
+
+      return
+    } else {
+      setCrudValidationErrors([])
+    }
+    // Continue with submission if no errors
 
     if (!token) {
       window.location.href = '/login'
       return
     }
 
-    if (!validateProjects(projectsData)) {
-      setModalMessage(translate('usersValidationText6', language))
-      setIsModalOpen(true)
-      return // Stop the submission
-    }
-    
-
-    if(duplicates.length > 0){
-      setModalMessage(translate('usersValidationText9', language))
-      setIsModalOpen(true)
-      return
-    }
-    
-    createProjectSalesResults(combinedObject, token)
+    createProjectSalesResults(updatedCombinedObject, token)
       .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
@@ -499,6 +515,8 @@ const ProjectSalesResultsRegistration = () => {
       })
       .catch((error) => {
         console.error('Error overwriting data:', error)
+        // MERLOU CAN YOU IMPLEMENT THE OVERWRITE LIKE Y0U DID FOR OTHER SCREENS.
+        // WHILST I MAY UPDATE IT WHEN I DO ALL BACKEND I WOULD LIKE TO HAVE THE BASIC IMPLEMENTATION HERE FIRST.
       })
   }
 
@@ -872,7 +890,12 @@ const ProjectSalesResultsRegistration = () => {
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
       />
-      <CrudModal message={modalMessage} onClose={() => setIsModalOpen(false)} isCRUDOpen={isModalOpen} />
+      <CrudModal
+        message={modalMessage}
+        onClose={() => setIsModalOpen(false)}
+        isCRUDOpen={isModalOpen}
+        validationMessages={crudValidationErrors}
+      />
       <AlertModal
         isOpen={isOverwriteModalOpen}
         onCancel={() => setIsOverwriteModalOpen(false)}

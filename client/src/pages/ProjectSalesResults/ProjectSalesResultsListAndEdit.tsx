@@ -16,6 +16,9 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
 import { updateProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/UpdateProjectSalesResults'
 import { deleteProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/DeleteProjectSalesResults'
+import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
+import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+
 
 const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -59,6 +62,8 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
+
   const token = localStorage.getItem('accessToken')
 
   for (let year = 2020; year <= new Date().getFullYear(); year++) {
@@ -114,13 +119,57 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
         ...updatedProjectsData[index],
         [name]: value,
       }
-
+      
       setFormProjects(updatedProjectsData)
+      console.log("inside handle change",updatedProjectsData,formProjects )
       return updatedProjectsData
     })
   }
+  
 
   const handleSubmit = async () => {
+    console.log('formProjects', formProjects)
+    setFormProjects(projectSalesResults)
+    console.log('test projectSalesResults', projectSalesResults)
+    // Client Side Validation
+
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'projectResults'
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateProjects = (records) => validateRecords(records, fieldChecks, 'projectResults')
+
+    // Step 2: Validate client-side input
+    const validationErrors = validateProjects(projectSalesResults)
+    console.log('formProjects #2', projectSalesResults, validationErrors)
+
+    // Step 3: Check for duplicate entries on specific fields
+    // In this screen Month / Year / Project_name/ Client / Business Division cannot be edited.
+    const uniqueFields = ['project_sales_result_id']
+    const duplicateErrors = checkForDuplicates(projectSalesResults, uniqueFields, 'project', language)
+
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
+
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      setCrudMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
+      setIsCRUDOpen(true)
+      return
+    } else {
+      setCrudValidationErrors([])
+    }
+    // Continue with submission if no errors
     const getModifiedFields = (original, updated) => {
       const modifiedFields = []
 
@@ -408,6 +457,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                         type='number'
                                         name='sales_revenue'
                                         value={projectSalesResults.sales_revenue}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         onChange={(e) => handleChange(index, e)}
                                       />
                                     </td>
@@ -416,6 +466,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                         type='number'
                                         name='dispatch_labor_expense'
                                         value={projectSalesResults.dispatch_labor_expense}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         onChange={(e) => handleChange(index, e)}
                                       />
                                     </td>
@@ -424,6 +475,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                         type='number'
                                         name='employee_expense'
                                         value={projectSalesResults.employee_expense}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         onChange={(e) => handleChange(index, e)}
                                       />
                                     </td>
@@ -432,6 +484,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                         type='number'
                                         name='indirect_employee_expense'
                                         value={projectSalesResults.indirect_employee_expense}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         onChange={(e) => handleChange(index, e)}
                                       />
                                     </td>
@@ -440,6 +493,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                         type='number'
                                         name='expense'
                                         value={projectSalesResults.expense}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         onChange={(e) => handleChange(index, e)}
                                       />
                                     </td>
@@ -448,6 +502,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                         type='number'
                                         name='operating_income'
                                         value={projectSalesResults.operating_income}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         onChange={(e) => handleChange(index, e)}
                                       />
                                     </td>
@@ -456,6 +511,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                         type='number'
                                         name='non_operating_income'
                                         value={projectSalesResults.non_operating_income}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         onChange={(e) => handleChange(index, e)}
                                       />
                                     </td>
@@ -464,6 +520,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                         type='number'
                                         name='non_operating_expense'
                                         value={projectSalesResults.non_operating_expense}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         onChange={(e) => handleChange(index, e)}
                                       />
                                     </td>
@@ -472,6 +529,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                         type='number'
                                         name='ordinary_profit'
                                         value={projectSalesResults.ordinary_profit}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                         onChange={(e) => handleChange(index, e)}
                                       />
                                     </td>
@@ -635,7 +693,12 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
         onCancel={closeModal}
         message={translate('deleteProjectMessage', language)}
       />
-      <CrudModal isCRUDOpen={isCRUDOpen} onClose={closeModal} message={crudMessage} />
+      <CrudModal
+        isCRUDOpen={isCRUDOpen}
+        onClose={closeModal}
+        message={crudMessage}
+        validationMessages={crudValidationErrors}
+      />
       <AlertModal
         isOpen={isUpdateConfirmationOpen}
         onConfirm={handleUpdateConfirm}

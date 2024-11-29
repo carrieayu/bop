@@ -21,6 +21,7 @@ export const inputFieldConfigurations = {
     { field: 'non_operating_income', fieldName: 'nonOperatingIncome', isNumber: true },
     { field: 'non_operating_expense', fieldName: 'nonOperatingExpense', isNumber: true },
     { field: 'ordinary_profit', fieldName: 'ordinaryProfit', isNumber: true },
+    { field: 'ordinary_profit_margin', fieldName: 'ordinaryProfitMargin', isNumber: true },
   ],
   // Expenses
   expenses: [
@@ -117,4 +118,38 @@ export const inputFieldConfigurations = {
     { field: 'username', fieldName: 'username', isRequired: true, isNumber: false },
     { field: 'password', fieldName: 'password', isRequired: true, isNumber: false },
   ],
+  // Project Results
+  projectResults: [
+    { field: 'year', fieldName: 'year', isNumber: true, duplicateCheck: true },
+    { field: 'month', fieldName: 'month', isNumber: true, duplicateCheck: true },
+    { field: 'project_name', fieldName: 'projectName', isNumber: false, duplicateCheck: true },
+    // { field: 'project', fieldName: 'project', isNumber: false, duplicateCheck: true },
+    { field: 'project_type', fieldName: 'projectType', isNumber: false, duplicateCheck: true }, // Currently Allowed to be NULL
+    { field: 'business_division', fieldName: 'businessDivision', isNumber: false, duplicateCheck: true }, // business_division_id
+    { field: 'client', fieldName: 'clientName', isNumber: false, duplicateCheck: true }, // client_id
+    { field: 'sales_revenue', fieldName: 'salesRevenue', isNumber: true },
+    { field: 'dispatch_labor_expense', fieldName: 'dispatchLaborExpense', isNumber: true },
+    { field: 'employee_expense', fieldName: 'employeeExpense', isNumber: true },
+    { field: 'indirect_employee_expense', fieldName: 'indirectEmployeeExpense', isNumber: true },
+    { field: 'expense', fieldName: 'expense', isNumber: true },
+    { field: 'operating_income', fieldName: 'operatingIncome', isNumber: true },
+    { field: 'non_operating_income', fieldName: 'nonOperatingIncome', isNumber: true },
+    { field: 'non_operating_expense', fieldName: 'nonOperatingExpense', isNumber: true },
+    { field: 'ordinary_profit', fieldName: 'ordinaryProfit', isNumber: true },
+  ],
 }
+//   {
+//     project: '6000000001',
+
+//     sales_revenue: null,
+//     dispatch_labor_expense: null,
+//     employee_expense: null,
+//     indirect_employee_expense: null,
+//     expense: null,
+//     operating_income: null,
+//     non_operating_income: null,
+//     non_operating_expense: null,
+//     ordinary_profit: null,
+//     ordinary_profit_margin: null,
+//   }
+// ]
