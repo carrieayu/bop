@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import CostOfSales, Expenses, ExpensesResults, MasterBusinessDivision, MasterClient, MasterCompany, Projects, ProjectsSalesResults, Results, Employees as Employees, EmployeeExpenses
+from .models import CostOfSales, EmployeeExpensesResults, Expenses, ExpensesResults, MasterBusinessDivision, MasterClient, MasterCompany, Projects, ProjectsSalesResults, Results, Employees as Employees, EmployeeExpenses
 
 
 # Employees
@@ -295,6 +295,37 @@ class GetEmployeeExpensesSerializer(serializers.ModelSerializer):
         model = EmployeeExpenses
         fields = ["planning_project_id","planning_assign_id", "client_id", "assignment_ratio", "assignment_unit_price","assignment_user_id", "year", "month", "registration_date", "registration_user", "planning_project"]
 
+# EmployeeExpenses Results
+class EmployeeExpensesResultsListSerializer(serializers.ModelSerializer):
+    employee_expense_id = serializers.CharField(required=False)
+    employee = EmployeesListSerializer()
+    project = ProjectSalesResultsListSerializer()
+    class Meta:
+        model = EmployeeExpensesResults
+        fields = '__all__'
+        
+
+class EmployeeExpensesResultsCreateSerializer(serializers.ModelSerializer):
+    employee_expense_id = serializers.CharField(required=False)
+    employee = EmployeesListSerializer()
+    project = ProjectSalesResultsCreateSerializer()
+    class Meta:
+        model = EmployeeExpensesResults
+        fields = '__all__'
+
+class EmployeeExpensesResultsDeleteSerializer(serializers.ModelSerializer):
+    employee_expense_id = serializers.CharField(required=False)
+    employee = EmployeesListSerializer()
+    project = ProjectsCreateSerializer()
+    class Meta:
+        model = EmployeeExpensesResults
+        fields = '__all__'
+
+class GetEmployeeExpensesResultsSerializer(serializers.ModelSerializer):
+    planning_project = ProjectsListSerializer(source='planning_project_id' , read_only=True, )
+    class Meta:
+        model = EmployeeExpensesResults
+        fields = '__all__'
 
 # Cost Of Sales
 class CostOfSalesSerializer(serializers.ModelSerializer):

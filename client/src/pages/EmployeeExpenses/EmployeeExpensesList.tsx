@@ -33,6 +33,7 @@ const EmployeeExpensesList: React.FC = () => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedEmployeeExpenses, setSelectedEmployeeExpenses] = useState<any>(null);
     const [deleteEmployeeExpensesId, setDeleteEmployeeExpensesId] = useState([])
+    const [deletedId, setDeletedId] = useState<any>(null)
     const [employeeProjectId, setEmployeeProjectId ] = useState<{employee_expense_id:string,project_id:string,mode:"employee_expense" | "project"}>({} as {employee_expense_id:string,project_id:string,mode:"employee_expense"})
     const token = localStorage.getItem('accessToken')
     const [isCRUDOpen, setIsCRUDOpen] = useState(false);
@@ -158,24 +159,31 @@ const EmployeeExpensesList: React.FC = () => {
   }
 
   const handleDeleteExpense = async () => {
+    
+    deletedId.monthlyExpenses.forEach((monthExpense, index) => {
+      if (monthExpense.projects && monthExpense.projects.length > 0) {
+        const employeeExpenseResultId = monthExpense.projects[0].employee_expense_id
+        deleteEmployeeExpenseX(employeeExpenseResultId, token)
+          .then(() => {
+            setEmployeeExpenses((prevExpenses) =>
+              prevExpenses.filter((expense) => expense.employee_expense_id !== employeeExpenseResultId),
+            )
 
-    deleteEmployeeExpenseX(employeeProjectId.employee_expense_id, token)
-      .then(() => {
-        setEmployeeExpenses((prevExpenses) =>
-          prevExpenses.filter((expense) => expense.employee_expense_id !== employeeProjectId.employee_expense_id),
-        )
+            setCrudMessage(translate('successfullyDeleted', language))
+            setIsCRUDOpen(true)
+            setIsEditing(false)
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 401) {
+              window.location.href = '/login' // Redirect to login if unauthorized
+            } else {
+              console.error('Error deleting employee expense:', error)
+            }
+          })
+      }
+    });
 
-        setCrudMessage(translate('successfullyDeleted', language))
-        setIsCRUDOpen(true)
-        setIsEditing(false)
-      })
-      .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login' // Redirect to login if unauthorized
-        } else {
-          console.error('Error deleting employee expense:', error)
-        }
-      })
+    
 
   };
 
@@ -306,6 +314,7 @@ const EmployeeExpensesList: React.FC = () => {
                                     monthlyExpenses[monthIndex].projects.push({
                                       project_name: expense.project_name,
                                       employee_salary: expense.employee_salary,
+                                      executive_renumeration: expense.executive_renumeration,
                                       project_id: expense.project_id,
                                       employee_expense_id: expense.employee_expense_id,
                                     })
@@ -325,6 +334,7 @@ const EmployeeExpensesList: React.FC = () => {
                                     existingMonthlyExpenses[monthIndex].projects.push({
                                       project_name: expense.project_name,
                                       employee_salary: expense.employee_salary,
+                                      executive_renumeration: expense.executive_renumeration,
                                       project_id: expense.project_id,
                                       employee_expense_id: expense.employee_expense_id,
                                     })
@@ -405,10 +415,14 @@ const EmployeeExpensesList: React.FC = () => {
                                                     <div className='employeeExpensesList_txt1_txt2_flex'>
                                                       <div className='employeeExpensesList_txt1'>
                                                         <div className='employeeExpensesList_txt1_label1'>
-                                                          {translate('salary', language)}
+                                                          {project.employee_salary
+                                                            ? translate('salary', language)
+                                                            : translate('executiveRenumeration', language)}
                                                         </div>
                                                         <div className='employeeExpensesList_txt1_label2'>
-                                                          {project.employee_salary}
+                                                          {project.employee_salary
+                                                            ? project.employee_salary
+                                                            : project.executive_renumeration}
                                                         </div>
                                                       </div>
                                                       <div className='employeeExpensesList_txt2'>
@@ -440,6 +454,7 @@ const EmployeeExpensesList: React.FC = () => {
                                               employee.employee_expense_id,
                                             )
                                             setModalIsOpen(true)
+                                            setDeletedId(employee)
                                             setEmployeeProjectId({
                                               ...employeeProjectId,
                                               employee_expense_id: employee.employee_expense_id,
@@ -516,6 +531,7 @@ const EmployeeExpensesList: React.FC = () => {
                                   monthlyExpenses[monthIndex].projects.push({
                                     project_name: expense.project_name,
                                     employee_salary: expense.employee_salary,
+                                    executive_renumeration: expense.executive_renumeration,
                                   })
                                   monthlyExpenses[monthIndex].total_salary += expense.employee_salary
                                 }
@@ -532,6 +548,7 @@ const EmployeeExpensesList: React.FC = () => {
                                   existingMonthlyExpenses[monthIndex].projects.push({
                                     project_name: expense.project_name,
                                     employee_salary: expense.employee_salary,
+                                    executive_renumeration: expense.executive_renumeration,
                                   })
                                   existingMonthlyExpenses[monthIndex].total_salary += expense.employee_salary
                                 }
@@ -574,10 +591,14 @@ const EmployeeExpensesList: React.FC = () => {
                                               <div className='employeeExpensesList_txt1_txt2_flex'>
                                                 <div className='employeeExpensesList_txt1'>
                                                   <div className='employeeExpensesList_txt1_label1'>
-                                                    {translate('salary', language)}
+                                                    {project.employee_salary
+                                                      ? translate('salary', language)
+                                                      : translate('executiveRenumeration', language)}
                                                   </div>
                                                   <div className='employeeExpensesList_txt1_label2'>
-                                                    {project.employee_salary}
+                                                    {project.employee_salary
+                                                      ? project.employee_salary
+                                                      : project.executive_renumeration}
                                                   </div>
                                                 </div>
                                                 <div className='employeeExpensesList_txt2'>

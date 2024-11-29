@@ -90,6 +90,9 @@ const ExpensesResultsList: React.FC = () => {
       case 'projectSalesResults':
         navigate('/project-sales-results-list')
         break
+      case 'employeeExpensesResults':
+        navigate('/employee-expenses-results-list')
+        break
       default:
         break
     }
@@ -377,8 +380,9 @@ const ExpensesResultsList: React.FC = () => {
                 handleTabsClick={handleTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
-                  { labelKey: 'expensesResults', tabKey: 'expensesResults' },
-                  { labelKey: 'projectSalesResults', tabKey: 'projectSalesResults' },
+                  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
+                  { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
+                  { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
                 ]}
               />
               <div className={`expensesResultsList_table_wrapper ${isEditing ? 'editMode' : ''}`}>

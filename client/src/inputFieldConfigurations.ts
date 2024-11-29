@@ -66,6 +66,20 @@ export const inputFieldConfigurations = {
     { field: 'month', fieldName: 'month', isRequired: true, isNumber: true },
   ],
 
+  // Employee Expenses
+  employeeExpensesResults: [
+    { field: 'employee', fieldName: 'employee', isRequired: true },
+    { field: 'projectEntries', fieldName: 'projectEntries', isRequired: true, isNested: true },
+    { field: 'employee_id', fieldName: 'employeeId', isNumber: true },
+  ],
+  // Employee Expenses: nested containers
+  // Field checks for the containers: `projectEntries` in employeeExpenses
+  employeeExpensesProjectResultsContainers: [
+    { field: 'projects', fieldName: 'projects', isRequired: true, isNumber: false },
+    { field: 'year', fieldName: 'year', isRequired: true, isNumber: true },
+    { field: 'month', fieldName: 'month', isRequired: true, isNumber: true },
+  ],
+
   users: [
     { field: 'username', fieldName: 'username', isRequired: true, isNumber: false, isUsername: true },
     { field: 'last_name', fieldName: 'lastName', isRequired: true, isNumber: false },

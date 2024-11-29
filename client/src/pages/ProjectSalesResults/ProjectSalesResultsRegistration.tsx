@@ -155,6 +155,9 @@ const ProjectSalesResultsRegistration = () => {
       case 'projectSalesResults':
         navigate('/project-sales-results-list')
         break
+      case 'employeeExpensesResults':
+        navigate('/employee-expenses-results-list')
+        break
       default:
         break
     }
@@ -574,8 +577,9 @@ const ProjectSalesResultsRegistration = () => {
               handleTabsClick={handleTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
-                { labelKey: 'expensesResults', tabKey: 'expensesResults' },
-                { labelKey: 'projectSalesResults', tabKey: 'projectSalesResults' },
+                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
+                { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
+                { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
               ]}
             />
           </div>
