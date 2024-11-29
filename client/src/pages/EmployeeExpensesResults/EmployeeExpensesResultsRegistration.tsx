@@ -303,13 +303,12 @@ const EmployeeExpensesResultsRegistration = () => {
         records,
         fieldChecks,
         'employeeExpensesResults',
-        'employeeExpensesProjectContainers',
+        'employeeExpensesProjectResultsContainers',
         language,
       )
 
     // Step 2: Validate client-side input
     const validationErrors = validateEmployeeExpensesResults(employeeContainers)
-
     // Step 3: Check for duplicate entries on specific fields
     const uniqueFields = ['year', 'month', 'employee', 'projects']
     const duplicateErrors = checkForDuplicates(
@@ -328,7 +327,7 @@ const EmployeeExpensesResultsRegistration = () => {
 
     // Step 5: Display the first set of errors found, if any
     const firstError = errorMapping.find(({ errors }) => errors.length > 0)
-
+    
     if (firstError) {
       const { errors, errorType } = firstError
       const translatedErrors = translateAndFormatErrors(errors, language, errorType)
