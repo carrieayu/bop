@@ -149,5 +149,6 @@
   "invalidNumber": "数字に含めることはできません：小数, e, +,  -",
   "invalidUsernameOrPassword": "無効なユーザー名またはパスワード",
   "invalidInputOrEmailDoesNotExist": "無効な入力またはメールが存在しない",
-  "MailSentSuccess": "メールの送信に成功"
+  "MailSentSuccess": "メールの送信に成功",
+  "projectResults": "案件実績"
 }
