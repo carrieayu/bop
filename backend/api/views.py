@@ -9,6 +9,9 @@ from django.db import IntegrityError
 from .serializers import (
     # Cost Of Sales
     CostOfSalesSerializer,
+    EmployeeExpensesResultsCreateSerializer,
+    EmployeeExpensesResultsDeleteSerializer,
+    EmployeeExpensesResultsListSerializer,
     ExpensesResultsCreateSerializer,
     ExpensesResultsListSerializer,
     ExpensesResultsUpdateSerializer,
@@ -75,6 +78,7 @@ from .serializers import CreateTableListSerializers, UserSerializer, Authenticat
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import (
     CostOfSales,
+    EmployeeExpensesResults,
     Expenses,
     ExpensesResults,
     MasterBusinessDivision,
@@ -1378,8 +1382,182 @@ class EmployeeExpensesDelete(generics.DestroyAPIView):
                 return Response({"message": "Project not found in this expense."}, status=status.HTTP_404_NOT_FOUND)
         else:
             # If no project_id is provided, delete all employee expenses for the same employee_id
-            employee_id = instance.employee_id 
-            EmployeeExpenses.objects.filter(employee_id=employee_id).delete()
+            deleteSelectedId = instance.employee_expense_id
+            EmployeeExpenses.objects.filter(employee_expense_id=deleteSelectedId).delete()
+            return Response({"message": "All employee expenses for this employee deleted successfully"}, status=status.HTTP_200_OK)
+
+# Employee Expenses Results
+class EmployeeExpensesResultsList(generics.ListAPIView):
+    serializer_class = EmployeeExpensesResultsListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return EmployeeExpensesResults.objects.select_related('employee','project__project').all() #project (ProjectsSalesResults) -> project (Projects)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        employee_expenses_results_data = []
+        for expense in serializer.data:
+        # Access nested fields from serialized data
+            employee = expense.get('employee')  
+            project = expense.get('project', {}).get('projects', {})  # Access the nested project data
+
+            employee_last_name = employee['last_name'] if employee else ''
+            employee_first_name = employee['first_name'] if employee else ''
+            employee_type = employee['type'] if employee else ''
+            employee_salary = employee['salary'] if employee else 0  
+            employee_executive_renumeration = employee['executive_renumeration'] if employee else 0
+            employee_statutory_welfare_expense = employee['statutory_welfare_expense'] if employee else 0
+            employee_welfare_expense = employee['welfare_expense'] if employee else 0
+            employee_insurance_premium = employee['insurance_premium'] if employee else 0
+            employee_id = employee['employee_id'] if project else '' 
+            project_name = project.get('project_name') if project else ''  
+            project_id = project['project_id'] if project else ''  
+            # print("project",project['project_id'])
+
+            employee_expenses_results_data.append({
+                'employee_expense_result_id': expense.get('employee_expense_result_id', ''),
+                'year': expense.get('year', ''),
+                'month': expense.get('month', ''),
+                'employee_last_name': employee_last_name,
+                'employee_first_name': employee_first_name,
+                'employee_type': employee_type,
+                'employee_salary': employee_salary,
+                'executive_renumeration': employee_executive_renumeration,
+                'statutory_welfare_expense':employee_statutory_welfare_expense,
+                'welfare_expense':employee_welfare_expense,
+                'insurance_premium':employee_insurance_premium,
+                'employee_id': employee_id,
+                'project_name': project_name,
+                'project_id': project_id
+            })
+
+        return Response(employee_expenses_results_data)
+
+class EmployeeExpensesResultsCreate(generics.CreateAPIView):
+    serializer_class = EmployeeExpensesResultsCreateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        employee_expenses_results_data = request.data
+
+        if not isinstance(employee_expenses_results_data, list):
+            return Response({'detail': 'Invalid data format. Expecting a list.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not employee_expenses_results_data:
+            return Response({'detail': 'No employee expenses data provided.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # First loop: Validate all data and check for duplicates
+        for expense_data in employee_expenses_results_data:
+            employee_id = expense_data.get('employee')
+            if not employee_id:
+                return Response({'detail': 'Employee ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            project_entries = expense_data.get('projectEntries', [])
+            if not isinstance(project_entries, list):
+                return Response({'detail': 'projectEntries must be a list.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            for entry in project_entries:
+                if not entry.get('projects') or not entry.get('clients'): # The ID being used in entry.get('projects') is project_id
+                    return Response({'detail': 'Project ID and Client ID cannot be empty.'}, status=status.HTTP_400_BAD_REQUEST)
+
+                try:
+                    # Check if employee, client, and project exist
+                    client = MasterClient.objects.get(pk=entry['clients'])
+                    project = ProjectsSalesResults.objects.get(project_id=entry['projects'])
+                    employee = Employees.objects.get(pk=employee_id)
+
+                    # Check for existing expense
+                    existing_expense = EmployeeExpensesResults.objects.filter(
+                        employee=employee,
+                        project=project,
+                        year=entry.get('year', '2001'),
+                        month=entry.get('month', '01')
+                    ).first()
+
+                    if existing_expense:
+                        employee_name = f"{employee.first_name} {employee.last_name}"
+                        year = entry.get('year', '2001')
+                        month = entry.get('month', '01')
+                        return Response({
+                            'detail': f'There is already an existing expense for {employee_name} for {month}/{year}.'
+                            }, status=status.HTTP_400_BAD_REQUEST)
+
+                except MasterClient.DoesNotExist:
+                    return Response({"error": f"Client with ID {entry['clients']} does not exist"},
+                                    status=status.HTTP_404_NOT_FOUND)
+                except ProjectsSalesResults.DoesNotExist:
+                    return Response({"error": f"ProjectsSalesResults with ID {entry['projects']} does not exist"},
+                                    status=status.HTTP_404_NOT_FOUND)
+                except Employees.DoesNotExist:
+                    return Response({"error": f"Employee with ID {employee_id} does not exist"},
+                                    status=status.HTTP_404_NOT_FOUND)
+                except AuthUser.DoesNotExist:
+                    return Response({"error": f"User with ID {entry.get('auth_id')} does not exist"},
+                                    status=status.HTTP_404_NOT_FOUND)
+
+        # Second loop: If no conflicts, save all data
+        created_expenses = []
+        for expense_data in employee_expenses_results_data:
+            employee_id = expense_data.get('employee')
+            project_entries = expense_data.get('projectEntries', [])
+
+            for entry in project_entries:
+                client = MasterClient.objects.get(pk=entry['clients'])
+                project = ProjectsSalesResults.objects.get(project_id=entry['projects'])
+                employee = Employees.objects.get(pk=employee_id)
+                auth_user = AuthUser.objects.get(pk=entry.get('auth_id')) if entry.get('auth_id') else None
+
+                # Create and save new expense
+                new__employee_expense_results = EmployeeExpensesResults(
+                    client=client,
+                    project=project,
+                    employee=employee,
+                    auth_user=auth_user,
+                    year=entry.get('year', '2001'),
+                    month=entry.get('month', '01')
+                )
+                new__employee_expense_results.save()
+
+                serializer = EmployeeExpensesResultsCreateSerializer(new__employee_expense_results)
+                created_expenses.append(serializer.data)
+
+        return Response({
+            "employeeExpenses"
+        }, status=status.HTTP_201_CREATED)
+
+
+class EmployeeExpensesResultsDelete(generics.DestroyAPIView):
+    serializer_class = EmployeeExpensesResultsDeleteSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        pk = self.kwargs.get('pk')
+        try:
+            return EmployeeExpensesResults.objects.get(employee_expense_result_id=pk)
+        except EmployeeExpensesResults.DoesNotExist:
+            return None
+
+    def destroy(self, request, pk, *args, **kwargs):
+        project_id = request.query_params.get('project_id')
+        instance = self.get_object()
+        if instance is None:
+            return Response({"message": "Employee expense results not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if project_id:
+            # If a project_id is provided, check if it matches the instance's project
+            if instance.project and str(instance.project.project_id) == project_id:
+                # Delete the employee expense instance entirely
+                instance.delete()  # This will delete the instance from the database
+                return Response({"message": "Employee expense and its project association removed successfully"}, status=status.HTTP_200_OK)
+            else:
+                return Response({"message": "Project not found in this expense."}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            # If no project_id is provided, delete all employee expenses for the same employee_id
+            deleteSelectedId = instance.employee_expense_result_id 
+            EmployeeExpensesResults.objects.filter(employee_expense_result_id=deleteSelectedId).delete()
             return Response({"message": "All employee expenses for this employee deleted successfully"}, status=status.HTTP_200_OK)
 
 # Cost Of Sales

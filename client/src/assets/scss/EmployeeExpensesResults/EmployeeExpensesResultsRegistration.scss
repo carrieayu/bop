@@ -1,0 +1,180 @@
+.employeeExpensesResultsRegistration_wrapper{
+  max-width: 2560px;
+  .employeeExpensesResultsRegistration_cont_wrapper{
+    display: flex;
+    background-color: #EFEDEA;
+    width: 100%;
+    height: 100%;
+    @media only screen and (max-width: 1000px){
+        flex-direction: column;
+    }
+    .employeeExpensesResultsRegistration_data_content{
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin: 10px 30px 10px 30px;
+      border: 1px solid #fff;
+      border-radius: 5px;
+      background-color: #fff;
+    .employeeExpensesResultsRegistration_top_body_cont{
+      margin: 2rem 0 0 0;
+      background-color: #fff;
+    }
+    .employeeExpensesResultsRegistration_inputs_and_buttons{
+      display: flex;
+      height: 65vh;
+      justify-content: space-between;
+      flex-direction: column;
+    }
+        .employeeExpensesResultsRegistration_mid_body_cont{
+          height: 90%;
+          @media only screen and (min-width: 1875px){
+              height: 55vh;
+          }
+              .employeeExpensesResultsRegistration_mid_form_cont{
+                margin: 0px 40px;
+                padding: 15px 20px;
+                background-color: #EFEDEA;
+                overflow-y: auto; 
+                overflow-x: hidden;
+                scrollbar-width: thin; 
+                scrollbar-color: transparent transparent;
+                border-radius: 5px;
+                &:hover {
+                    scrollbar-color: #888 #EFEDEA; 
+                }
+                &::-webkit-scrollbar {
+                    width: 8px;
+                }
+                &::-webkit-scrollbar-track {
+                    background: transparent; 
+                }
+                &::-webkit-scrollbar-thumb {
+                    background-color: transparent; 
+                    border-radius: 10px;
+                }
+                &:hover::-webkit-scrollbar-thumb {
+                    background-color: #888;
+                }
+                &:hover::-webkit-scrollbar-thumb:hover {
+                    background-color: #555; 
+                }
+                .employeeExpensesResultsRegistration_form-content.employeeExpensesResultsRegistration_form-line {
+                  border-top: 4px solid rgb(183, 183, 183);
+                  margin: 20px 0px 20px 0px;
+                  opacity: 30%;
+                }
+                .employeeExpensesResultsRegistration_cont-body{
+                  display: flex;
+                  flex-direction: column;
+                  gap: 20px;
+                  .employeeExpensesResultsRegistration_row{
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 10px;
+                    .employeeExpensesResultsRegistration_label{
+                      font-weight: bold;
+                      text-align: center;
+                      width: 100%;
+                    }
+                    .employeeExpensesResultsRegistration_card-box{
+                      width: 100%;
+                      display: flex;
+                      justify-content: center;
+                      select,
+                      input {
+                        width: 100%;
+                        padding: 10px;
+                        border-radius: 5px;
+                        border: 1px solid #ccc;
+                        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+                        font-size: 16px;
+                        color: #333;
+                      }
+                      input[type='number']::-webkit-inner-spin-button,
+                      input[type='number']::-webkit-outer-spin-button {
+                        -webkit-appearance: none;
+                        margin: 0;
+                      }
+            
+                      select {
+                        appearance: none;
+                        background-image: url('data:image/svg+xml;utf8,<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>'); /* Add custom arrow icon */
+                        background-repeat: no-repeat;
+                        background-position: right 10px center;
+                        background-size: 20px 20px;
+                        cursor: pointer;
+                      }
+                      .employeeExpensesResultsRegistration_emp-select{
+                        width: 20%;
+                      }
+                    }
+                  }
+                  .employeeExpensesResultsRegistration_project-fields{
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 20px;
+                    padding-bottom: 50px;
+                    .employeeExpensesResultsRegistration_project-group{
+                      display: flex;
+                      flex-direction: column;
+                      gap: 10px;
+                      border: 1px solid #ccc;
+                      padding: 10px;
+                      border-radius: 10px;
+                      background-color: #f9f9f9;
+                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                      width: calc(20% - 20px);
+                    }
+                    .employeeExpensesResultsRegistration_button-box{
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: space-evenly;
+                      padding: 10px;
+                      .employeeExpensesResultsRegistration_button{
+                        background-color: #808080;
+                        color: white;
+                        padding: 10px 20px;
+                        border: none;
+                        border-radius: 5px !important;
+                        cursor: pointer;
+                        font-weight: bold;
+                        text-align: center;
+                      }
+                    }
+                  }
+                }
+        }
+        .employeeExpensesResultsRegistration_cont-footer{
+          padding: 20px;
+          .employeeExpensesResultsRegistration_btn-plusminus{
+            padding: 20px 10px 20px 10px;
+            gap: 1rem;
+            display: flex;
+            margin-left: 90%;
+            .employeeExpensesResultsRegistration_plus-btn,
+            .employeeExpensesResultsRegistration_minus-btn{
+              background-color: #808080;
+              color: #fff;
+              width: 30px;
+              height: 40px;
+              border-radius: 5px !important;
+              font-size: 25px;
+            }
+          }
+          .employeeExpensesResultsRegistration_btn-subcancel{
+            display: flex;
+            gap: 1%;
+            padding: 10px 10px 10px 10px;
+            align-items: center;
+            justify-content: center;
+              button{
+                width: 10%;
+              }
+          }
+        }
+      }
+    }
+  }
+}

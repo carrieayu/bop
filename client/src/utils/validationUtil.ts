@@ -26,7 +26,7 @@ export const getFieldChecks = (recordType: string) => {
 
 export const validateRecords = (records, fieldChecks, recordType) => {
   let validationErrors = [];
-  
+
   for (const record of records) {
     // Append '_id' to whatever the record type is.
     // EXAMPLE: 'project' → 'project_id'
@@ -190,6 +190,59 @@ export const validateEmployeeExpensesRecords = (records, fieldChecks, recordType
   return validationErrors; // Return collected validation errors
 };
 
+
+// # EMPLOYEES EXEPENSES VALIDATION (UNIQUE): REGISTRATION & LISTANDEDIT
+// # Employees Expenses
+
+export const validateEmployeeExpensesResultsRecords = (records, fieldChecks, recordType, secondaryRecordType, language) => {
+  let validationErrors = [];
+  for (const record of records) {
+    const recordId = record.employeeExpenses_id || `${records.indexOf(record) + 1}`;
+
+    // Check main fields based on fieldChecks
+    fieldChecks.forEach((check) => {
+      const { field, fieldName, isRequired, isNumber, isNested } = check;
+
+      if (!isNested) {
+        // Validate main fields (non-nested)
+        const fieldValue = record[field];
+        if (isRequired || fieldValue != null) {
+          const error = validateField(fieldValue, fieldName, isNumber, recordId, recordType);
+          if (error) validationErrors.push(error);
+        }
+      } else if (isNested && Array.isArray(record[field])) {
+        // Retrieve nested field checks for `projectEntries`
+        const nestedFieldChecks = getFieldChecks(secondaryRecordType)
+        
+        // Validate nested fields in projectEntries
+        record[field].forEach((entry, entryIndex) => {
+          const nestedRecordId = `${recordId} - ${translate('item',language)} ${entryIndex + 1}`
+
+          // Loop through each nested field to validate
+          nestedFieldChecks.forEach((nestedCheck) => {
+            const nestedFieldValue = entry[nestedCheck.field]
+            const error = validateField(
+              nestedFieldValue,
+              nestedCheck.fieldName,
+              nestedCheck.isNumber,
+              nestedRecordId,
+              recordType,
+              false, // isUsername
+              false, // isEmail
+              false, // isPassword
+              {}, // record
+              false // isRequired
+            )
+            if (error) validationErrors.push(error)
+          })
+        })
+      }
+    });
+  }
+
+  return validationErrors; // Return collected validation errors
+};
+
 // # USERS VALIDATION (UNIQUE): REGISTRATION & LISTANDEDIT
 // # Users
 
@@ -240,6 +293,7 @@ export const validateField = (
   record = {}, // optional
   isRequired = false // optional
 ) => {
+
   const maxDecimal = 9999999999.99;
   const maxInteger = 2147483647;
 
@@ -309,21 +363,24 @@ export const validateField = (
 // # GENERAL CHECK FOR DUPLICATES
 export const checkForDuplicates = (records, uniqueFields, recordType, language, nestedRecords = '') => {
   const duplicates = []
-
+  
   for (let i = 0; i < records.length; i++) {
     const record = records[i]
-
+    
     for (let j = i + 1; j < records.length; j++) {
       const comparisonRecord = records[j]
-
+      
       // Dynamically create the id field based on the recordType
       const recordIdField = `${recordType}_id`
-
+      
       // Check if the unique fields match, including the recordId dynamically
-      const isDuplicate = uniqueFields.every((field) => record[field] === comparisonRecord[field])
+      // const isDuplicate = uniqueFields.every((field) => {record[field] === comparisonRecord[field]})
+      const isDuplicate = uniqueFields.every((field) => {
+        return record[field] === comparisonRecord[field]
+      })
+
       if (isDuplicate) {
         const fieldName = uniqueFields.join(', ')
-
         // Dynamically get the IDs using the appropriate record id field (e.g., project_id, expense_id)
         const recordIds = `${record[recordIdField] || `${i + 1}`} ${translate('and', language)} ${comparisonRecord[recordIdField] || `${j + 1}`}`
 
