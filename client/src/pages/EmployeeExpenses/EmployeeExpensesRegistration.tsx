@@ -195,7 +195,9 @@ const EmployeeExpensesRegistration = () => {
     const updatedContainers = [...employeeContainers]
     const projectEntries = updatedContainers[containerIndex].projectEntries
 
-    if (projectEntries.length < 3) {
+    const maximumEntries = 5
+
+    if (projectEntries.length < maximumEntries) {
       projectEntries.push({
         id: projectEntries.length + 1,
         clients: '',
