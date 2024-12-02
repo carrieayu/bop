@@ -29,8 +29,7 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs, formatDate, formatNumberWithCommas } from '../../utils/helperFunctionsUtil'
 
 
 const EmployeesListAndEdit: React.FC = () => {
@@ -464,14 +463,6 @@ const EmployeesListAndEdit: React.FC = () => {
           console.error('Error deleting project:', error)
         }
       })
-  }
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    const month = String(date.getMonth() + 1).padStart(2, '0') // Get month (0-indexed, so +1)
-    const day = String(date.getDate()).padStart(2, '0') // Get day
-    const year = date.getFullYear() // Get full year
-    return `${month}/${day}/${year}`
   }
 
   const handleNewRegistrationClick = () => {

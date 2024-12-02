@@ -139,7 +139,6 @@ const ExpensesResultsList: React.FC = () => {
     // Expenses has default 12 (for each month)
     // Even if not all records have actually been created in DB: We need to filter out non-registered records.
     const expensesListExistingRecords = expensesResultsList.filter((exp) => exp.expense_result_id !== null)
-    console.log('expensesListExistingRecords',expensesListExistingRecords)
     // Step 2: Validate client-side input
     const validationErrors = validateExpenses(expensesListExistingRecords) // Get the array of error messages
 

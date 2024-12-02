@@ -62,15 +62,12 @@ export const formatNumberWithCommas = (value: number | string): string => {
 // EG. "999,999" → "999999"
 export const removeCommas = (val) => val.replace(/,/g, '')
 
-// # Date Formatter (Year-Month-Day
-export const getCurrentDateFormatted = () => {
+// # Get Formatted Date // year-month-day
+export const formatDate = (dateString) => {
+  const date = new Date(dateString)
+  const month = String(date.getMonth() + 1).padStart(2, '0') // Get month (0-indexed, so +1)
+  const day = String(date.getDate()).padStart(2, '0') // Get day
+  const year = date.getFullYear() // Get full year
 
-  const currentDate = new Date()
-  const month = currentDate.getMonth()
-  const year = currentDate.getFullYear()
-  const day = currentDate.getDay()
-  
   return `${year}-${month}-${day}`
-
-
 }

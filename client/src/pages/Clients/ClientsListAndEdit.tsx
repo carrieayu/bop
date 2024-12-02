@@ -21,6 +21,8 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
+import { formatDate } from '../../utils/helperFunctionsUtil'
+
 
 
 const ClientsListAndEdit: React.FC = () => {
@@ -296,14 +298,6 @@ const ClientsListAndEdit: React.FC = () => {
     const handleNewRegistrationClick = () => {
       navigate('/clients-registration');
     };
-
-    const formatDate = (dateString) => {
-      const date = new Date(dateString)
-      const month = String(date.getMonth() + 1).padStart(2, '0') // Get month (0-indexed, so +1)
-      const day = String(date.getDate()).padStart(2, '0') // Get day
-      const year = date.getFullYear() // Get full year
-      return `${year}/${month}/${day}`
-    }
 
   return (
     <div className='ClientsListAndEdit_wrapper'>
