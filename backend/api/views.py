@@ -800,6 +800,60 @@ class ProjectSalesResultsCreate(generics.CreateAPIView):
             return JsonResponse({"detail": "Invalid input format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
 
         responses = []
+        conflicts = []  # List to accumulate conflicts
+
+        for item in data:
+            try:
+                project_id = item.get("project")
+                project_name = item.get("project_name")
+                if not project_id:
+                    return JsonResponse({"detail": "Project ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+                # Check if the entry exists
+                existing_entries = ProjectsSalesResults.objects.filter(project_id=project_id)
+                getProject= Projects.objects.filter(project_id=project_name)
+                if existing_entries.exists():
+                    existing_ids = [{"id": entry.project_sales_result_id} for entry in existing_entries]
+                    existing_projectName = [{"project_name": entry.project_name} for entry in getProject]
+                    conflicts.append({
+                        "project_name": existing_projectName,
+                        "existingEntries": existing_ids
+                    })
+                else:
+                    # Create new entry
+                    serializer = ProjectSalesResultsCreateSerializer(data=item)
+                    if serializer.is_valid():
+                        serializer.save()
+                        responses.append({"project_id": project_id, "message": "Created successfully."})
+                    else:
+                        responses.append({"project_id": project_id, "message": "Failed to create entry.", "errors": serializer.errors})
+
+            except Exception as e:
+                responses.append({"project_id": project_id, "message": str(e)})
+
+        # After the loop, if there are any conflicts, return them
+        if conflicts:
+            return JsonResponse(
+                {
+                    "detail": "Conflicts found for the following projects.",
+                    "conflicts": conflicts
+                },
+                status=status.HTTP_409_CONFLICT
+            )
+
+        # If no conflicts, return the responses for successfully created entries
+        return JsonResponse(responses, safe=False, status=status.HTTP_200_OK)
+
+
+    
+    def put(self, request):
+        data = JSONParser().parse(request)
+
+        # Validate input format
+        if not isinstance(data, list):
+            return JsonResponse({"detail": "Invalid input format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
+
+        responses = []
         for item in data:
             try:
                 project_id = item.get("project")
@@ -808,15 +862,15 @@ class ProjectSalesResultsCreate(generics.CreateAPIView):
 
                 # Check if the entry exists
                 existing_entry = ProjectsSalesResults.objects.filter(project_id=project_id).first()
-
                 if existing_entry:
+                    if existing_entry:
                     # Update existing entry
-                    serializer = ProjectSalesResultsCreateSerializer(existing_entry, data=item, partial=True)
-                    if serializer.is_valid():
-                        serializer.save()
-                        responses.append({"project_id": project_id, "message": "Updated successfully."})
-                    else:
-                        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                        serializer = ProjectSalesResultsCreateSerializer(existing_entry, data=item, partial=True)
+                        if serializer.is_valid():
+                            serializer.save()
+                            responses.append({"project_id": project_id, "message": "Updated successfully."})
+                        else:
+                            return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 else:
                     # Create new entry
                     serializer = ProjectSalesResultsCreateSerializer(data=item)
@@ -909,7 +963,7 @@ class ExpensesCreate(generics.CreateAPIView):
                 existing_entries.append((year, month))  # Store year and month as a tuple
 
         if existing_entries:
-            # Return all existing year and month pairs
+            # Return all existing year and month pairs sadfasdfasdf
             existing_months_years = [{"year": entry[0], "month": entry[1]} for entry in existing_entries]
 
             return JsonResponse(
@@ -1559,6 +1613,25 @@ class EmployeeExpensesResultsDelete(generics.DestroyAPIView):
             deleteSelectedId = instance.employee_expense_result_id 
             EmployeeExpensesResults.objects.filter(employee_expense_result_id=deleteSelectedId).delete()
             return Response({"message": "All employee expenses for this employee deleted successfully"}, status=status.HTTP_200_OK)
+        
+class EmployeeExpensesResultsFilter(generics.ListCreateAPIView):
+    queryset = ProjectsSalesResults.objects.all()
+    serializer_class = EmployeeExpensesResultsListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        month = self.request.GET.get('month')
+        year = self.request.GET.get('year')
+        # project_name = self.request.GET.get('project_name')
+        
+        queryset = self.queryset
+        if month:
+            queryset = queryset.filter(month=month)
+        if year:
+            queryset = queryset.filter(year=year)
+        # if project_name:
+        #     queryset = queryset.filter(project=project_name)
+        return queryset
 
 # Cost Of Sales
 class CostOfSalesList(generics.ListAPIView):

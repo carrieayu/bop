@@ -125,7 +125,6 @@ const ProjectSalesResultsRegistration = () => {
         ordinary_profit_margin: '',
       })
       setProjects(tempProject)
-      console.log("tempProject.length:", tempProject.length)
       
       setProjectsListSelection([...projectListSelection, { projects: [] }])
       setClientsFilter([...clientsFilter, { clients: [] }])
@@ -259,7 +258,6 @@ const ProjectSalesResultsRegistration = () => {
           ...(projectId !== null && { projectId }),
         }
         if (filterParams.year && filterParams.month && filterParams.projectId) {
-          console.log("three")
           getFilteredProjectSalesResults(filterParams, token)
             .then((data) => {
               let matchedClients = []
@@ -514,9 +512,24 @@ const ProjectSalesResultsRegistration = () => {
         setBusinessDivisionFilter([{ divisions: [] }])
       })
       .catch((error) => {
-        console.error('Error overwriting data:', error)
-        // MERLOU CAN YOU IMPLEMENT THE OVERWRITE LIKE Y0U DID FOR OTHER SCREENS.
-        // WHILST I MAY UPDATE IT WHEN I DO ALL BACKEND I WOULD LIKE TO HAVE THE BASIC IMPLEMENTATION HERE FIRST.
+        const existingEntries = error.response.data
+        let projectNamesArray = []
+
+        existingEntries.conflicts.forEach((conflict) => {
+          if (conflict.project_name && Array.isArray(conflict.project_name)) {
+            conflict.project_name.forEach((entry) => {
+              projectNamesArray.push(entry.project_name)
+            })
+          }
+        })
+
+        let message = translate('alertMessageAboveProjectSalesResult', language).replace(
+          '${existingEntries}',
+          projectNamesArray.join(', '),
+        )
+        setModalMessage(message)
+        setIsOverwriteModalOpen(true)
+        return // Exit the function to wait for user input
       })
   }
 
@@ -526,7 +539,100 @@ const ProjectSalesResultsRegistration = () => {
     setIsOverwriteConfirmed(true) // Set overwrite confirmed state
 
     // Call the submission method again after confirmation
-    // await handleSubmitConfirmed()
+    await handleSubmitConfirmed()
+  }
+
+  const handleSubmitConfirmed = async () => {
+    const getRelatedProjectIDs = projectList.flatMap((projects) =>
+      projects.projects.map((project) => ({
+        project: project.project_id,
+        client: project.client,
+        business_division: project.business_division,
+      })),
+    )
+
+    const projectsData = formProjects.map((projects) => ({
+      year: projects.year,
+      month: projects.month,
+      project_name: projects.project_name,
+      sales_revenue: projects.sales_revenue,
+      dispatch_labor_expense: projects.dispatch_labor_expense,
+      employee_expense: projects.employee_expense,
+      indirect_employee_expense: projects.indirect_employee_expense,
+      expense: projects.expense,
+      operating_income: projects.operating_income,
+      non_operating_income: projects.non_operating_income,
+      non_operating_expense: projects.non_operating_expense,
+      ordinary_profit: projects.ordinary_profit,
+      ordinary_profit_margin: projects.ordinary_profit_margin,
+    }))
+
+    // Defines Object for validation
+    let combinedObject = formProjects.map(() => ({
+      year: '',
+      month: '',
+      project_name: '',
+      // project: '',
+      type: '',
+      client: '',
+      business_division: '',
+      sales_revenue: '',
+      dispatch_labor_expense: '',
+      employee_expense: '',
+      indirect_employee_expense: '',
+      expense: '',
+      operating_income: '',
+      non_operating_income: '',
+      non_operating_expense: '',
+      ordinary_profit: '',
+      ordinary_profit_margin: '',
+    }))
+
+    // Combines the data from related "project", "client", "business division" and adds data to object
+    const updatedCombinedObject = combinedObject.map((item, index) => {
+      const relatedProject = getRelatedProjectIDs[index] || {} // Get the related project for this index
+      return {
+        ...item,
+        ...projectsData[index], // Merge form data
+        ...relatedProject, // Merge project details if available
+      }
+    })
+    overwriteProjectSalesResult(updatedCombinedObject, token)
+      .then(() => {
+        setModalMessage(translate('overWrite', language))
+        setIsModalOpen(true)
+        setProjects([
+          {
+            id: 1,
+            year: '',
+            month: '',
+            project_name: '',
+            project_type: '',
+            client: '',
+            business_division: '',
+            sales_revenue: '',
+            dispatch_labor_expense: '',
+            employee_expense: '',
+            indirect_employee_expense: '',
+            expense: '',
+            operating_income: '',
+            non_operating_income: '',
+            non_operating_expense: '',
+            ordinary_profit: '',
+            ordinary_profit_margin: '',
+          },
+        ])
+        setProjectsListSelection([{ projects: [] }])
+        setClientsFilter([{ clients: [] }])
+        setProjectsList([{ projects: [] }])
+        setBusinessDivisionFilter([{ divisions: [] }])
+      })
+      .catch((error) => {
+        console.error('Error overwriting data:', error)
+      })
+      .finally(() => {
+        setIsOverwriteConfirmed(false)
+      })
   }
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
