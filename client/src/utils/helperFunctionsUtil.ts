@@ -37,7 +37,7 @@ export const handleDisableKeysOnNumberInputs = (event) => {
 }
 
 
-// Add Commas to Financial Numbers for Display on List, Edit, Registration Screens
+// # Add Commas to Financial Numbers for Display on List, Edit, Registration Screens
 
 export const formatNumberWithCommas = (value: number | string): string => {
   // Trim the string and remove non-numeric characters, 
@@ -58,6 +58,19 @@ export const formatNumberWithCommas = (value: number | string): string => {
   return number.toLocaleString()
 }
 
-// Remove commas used when displaying numbers in List, Edit, Registration Screens
+// # Remove commas used when displaying numbers in List, Edit, Registration Screens
 // EG. "999,999" → "999999"
 export const removeCommas = (val) => val.replace(/,/g, '')
+
+// # Date Formatter (Year-Month-Day
+export const getCurrentDateFormatted = () => {
+
+  const currentDate = new Date()
+  const month = currentDate.getMonth()
+  const year = currentDate.getFullYear()
+  const day = currentDate.getDay()
+  
+  return `${year}-${month}-${day}`
+
+
+}

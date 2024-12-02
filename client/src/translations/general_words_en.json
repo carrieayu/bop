@@ -150,5 +150,7 @@
   "invalidUsernameOrPassword": "Username or Password are Invalid.",
   "invalidInputOrEmailDoesNotExist":"Invalid Input or Email Does Not Exist.",
   "MailSentSuccess":"Mail Sent Successfully.",
-  "projectResults": "Project Result"
+  "projectResults": "Project Result",
+  "yearMonth": "Year/Month",
+  "csvFileName": "CSV: Financial Summary"
 }
