@@ -107,6 +107,7 @@ const EmployeeExpensesList: React.FC = () => {
       11: { en: "November", jp: "11月" },
       12: { en: "December", jp: "12月" },
     };
+  
 
     const handleNewRegistrationClick = () => {
       navigate('/employee-expenses-registration');

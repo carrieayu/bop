@@ -563,10 +563,10 @@ const EmployeesListAndEdit: React.FC = () => {
                                   {translate('firstName', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('type', language)}
+                                  {translate('email', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('email', language)}
+                                  {translate('type', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
                                   {translate('salary', language)}
@@ -637,6 +637,15 @@ const EmployeesListAndEdit: React.FC = () => {
                                       />
                                     </td>
                                     <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
+                                      <input
+                                        className='edit_input email'
+                                        type='text'
+                                        name='email'
+                                        value={employee.email}
+                                        onChange={(e) => handleChange(employeeIndex, e)}
+                                      />
+                                    </td>
+                                    <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
                                       <select
                                         className='edit-select'
                                         name='type'
@@ -646,15 +655,6 @@ const EmployeesListAndEdit: React.FC = () => {
                                         <option value={0}>{translate('regularEmployee', language)}</option>
                                         <option value={1}>{translate('executiveEmployee', language)}</option>
                                       </select>
-                                    </td>
-                                    <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
-                                      <input
-                                        className='edit_input email'
-                                        type='text'
-                                        name='email'
-                                        value={employee.email}
-                                        onChange={(e) => handleChange(employeeIndex, e)}
-                                      />
                                     </td>
                                     <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
                                       <input
@@ -781,11 +781,11 @@ const EmployeesListAndEdit: React.FC = () => {
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
                                 {translate('firstName', language)}
                               </th>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered type'>
-                                {translate('type', language)}
-                              </th>
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
                                 {translate('email', language)}
+                              </th>
+                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered type'>
+                                {translate('type', language)}
                               </th>
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
                                 {translate('salary', language)}
@@ -837,10 +837,10 @@ const EmployeesListAndEdit: React.FC = () => {
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
                                   {employee.first_name}
                                 </td>
+                                <td className='EmployeesListAndEdit_table_body_content_vertical'>{employee.email}</td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical type'>
                                   {translate(employee.type === 0 ? 'regularEmployee' : 'executiveEmployee', language)}
                                 </td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'>{employee.email}</td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
                                   {employee.type === 0 && formatNumberWithCommas(employee.salary)}
                                 </td>

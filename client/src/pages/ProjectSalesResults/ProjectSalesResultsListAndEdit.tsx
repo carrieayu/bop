@@ -393,13 +393,13 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     {translate('saleRevenue', language)}
                                   </th>
                                   <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
+                                    {translate('indirectEmployeeExpense', language)}
+                                  </th>
+                                  <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                     {translate('dispatchLaborExpense', language)}
                                   </th>
                                   <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                     {translate('employeeExpense', language)}
-                                  </th>
-                                  <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
-                                    {translate('indirectEmployeeExpense', language)}
                                   </th>
                                   <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                     {translate('expense', language)}
@@ -415,6 +415,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                   </th>
                                   <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                     {translate('ordinaryIncome', language)}
+                                  </th>
+                                  <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
+                                    {translate('ordinaryProfitMargin', language)}
                                   </th>
                                   <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                     {translate('delete', language)}
@@ -457,7 +460,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                       type='text'
+                                        type='text'
                                         name='sales_revenue'
                                         value={formatNumberWithCommas(projectSalesResults.sales_revenue)}
                                         onChange={(e) => handleChange(index, e)}
@@ -466,7 +469,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                       type='text'
+                                        type='text'
                                         name='dispatch_labor_expense'
                                         value={formatNumberWithCommas(projectSalesResults.dispatch_labor_expense)}
                                         onChange={(e) => handleChange(index, e)}
@@ -475,7 +478,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                       type='text'
+                                        type='text'
                                         name='employee_expense'
                                         value={formatNumberWithCommas(projectSalesResults.employee_expense)}
                                         onChange={(e) => handleChange(index, e)}
@@ -484,7 +487,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                       type='text'
+                                        type='text'
                                         name='indirect_employee_expense'
                                         value={formatNumberWithCommas(projectSalesResults.indirect_employee_expense)}
                                         onChange={(e) => handleChange(index, e)}
@@ -493,7 +496,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                       type='text'
+                                        type='text'
                                         name='expense'
                                         value={formatNumberWithCommas(projectSalesResults.expense)}
                                         onChange={(e) => handleChange(index, e)}
@@ -502,7 +505,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                       type='text'
+                                        type='text'
                                         name='operating_income'
                                         value={formatNumberWithCommas(projectSalesResults.operating_income)}
                                         onChange={(e) => handleChange(index, e)}
@@ -511,7 +514,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                       type='text'
+                                        type='text'
                                         name='non_operating_income'
                                         value={formatNumberWithCommas(projectSalesResults.non_operating_income)}
                                         onChange={(e) => handleChange(index, e)}
@@ -520,7 +523,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                       type='text'
+                                        type='text'
                                         name='non_operating_expense'
                                         value={formatNumberWithCommas(projectSalesResults.non_operating_expense)}
                                         onChange={(e) => handleChange(index, e)}
@@ -529,9 +532,18 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                       type='text'
+                                        type='text'
                                         name='ordinary_profit'
                                         value={formatNumberWithCommas(projectSalesResults.ordinary_profit)}
+                                        onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
+                                      />
+                                    </td>
+                                    <td className='projectSalesResultsList_table_body_content_vertical'>
+                                      <input
+                                        type='text'
+                                        name='ordinary_profit_margin'
+                                        value={formatNumberWithCommas(projectSalesResults.ordinary_profit_margin)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
@@ -598,6 +610,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                 <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                   {translate('ordinaryIncome', language)}
                                 </th>
+                                <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
+                                  {translate('ordinaryProfitMargin', language)}
+                                </th>
                               </tr>
                             </thead>
                             <tbody className='projectSalesResultsList_table_body'>
@@ -657,6 +672,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
                                     {formatNumberWithCommas(project.ordinary_profit)}
+                                  </td>
+                                  <td className='projectSalesResultsList_table_body_content_vertical'>
+                                    {formatNumberWithCommas(project.ordinary_profit_margin)}
                                   </td>
                                 </tr>
                               ))}

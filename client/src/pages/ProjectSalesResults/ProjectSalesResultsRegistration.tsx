@@ -602,6 +602,7 @@ const ProjectSalesResultsRegistration = () => {
                     <div className='projectSalesResultsRegistration_form-content-div'>
                       <div className='projectSalesResultsRegistration_left-form-div projectSalesResultsRegistration_calc'>
                         <div className='projectSalesResultsRegistration_year-div'>
+                          {/* LEFT COLUMN */}
                           <label className='projectSalesResultsRegistration_year'>{translate('year', language)}</label>
                           <select
                             className='projectSalesResultsRegistration_select-option'
@@ -661,34 +662,34 @@ const ProjectSalesResultsRegistration = () => {
                             onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
-                        <div className='projectSalesResultsRegistration_operating-income-div'>
-                          <label className='projectSalesResultsRegistration_operating-income'>
-                            {translate('operatingIncome', language)}
+                        <div className='projectSalesResultsRegistration_non-operating-income-div'>
+                          <label className='projectSalesResultsRegistration_non-operating-income'>
+                            {translate('nonOperatingIncome', language)}
                           </label>
                           <input
                             type='text'
-                            name='operating_income'
-                            value={formatNumberWithCommas(form.operating_income)}
+                            name='non_operating_income'
+                            value={formatNumberWithCommas(form.non_operating_income)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
-                        <div className='projectSalesResultsRegistration_ordinary-income-div'>
-                          <label className='projectSalesResultsRegistration_ordinary-income'>
-                            {translate('ordinaryIncome', language)}
+                        <div className='projectSalesResultsRegistration_ordinary-income-margin-div'>
+                          <label className='projectSalesResultsRegistration_ordinary-income-margin'>
+                            {translate('ordinaryIncomeProfitMargin', language)}
                           </label>
                           <input
                             type='text'
-                            name='ordinary_profit'
-                            value={formatNumberWithCommas(form.ordinary_profit)}
+                            name='ordinary_profit_margin'
+                            value={formatNumberWithCommas(form.ordinary_profit_margin)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
                       </div>
-
+                      {/* MIDDLE COLUMN */}
                       <div className='projectSalesResultsRegistration_middle-form-div projectSalesResultsRegistration_calc'>
                         <div className='projectSalesResultsRegistration_month-div'>
                           <label className='projectSalesResultsRegistration_month'>
@@ -739,34 +740,34 @@ const ProjectSalesResultsRegistration = () => {
                             onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
-                        <div className='projectSalesResultsRegistration_non-operating-income-div'>
-                          <label className='projectSalesResultsRegistration_non-operating-income'>
-                            {translate('nonOperatingIncome', language)}
+                        <div className='projectSalesResultsRegistration_expense-div'>
+                          <label className='projectSalesResultsRegistration_expense'>
+                            {translate('expense', language)}
                           </label>
                           <input
                             type='text'
-                            name='non_operating_income'
-                            value={formatNumberWithCommas(form.non_operating_income)}
+                            name='expense'
+                            value={formatNumberWithCommas(form.expense)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
-                        <div className='projectSalesResultsRegistration_ordinary-income-margin-div'>
-                          <label className='projectSalesResultsRegistration_ordinary-income-margin'>
-                            {translate('ordinaryIncomeProfitMargin', language)}
+                        <div className='projectSalesResultsRegistration_non-operating-expense-div'>
+                          <label className='projectSalesResultsRegistration_non-operating-expense'>
+                            {translate('nonOperatingExpense', language)}
                           </label>
                           <input
                             type='text'
-                            name='ordinary_profit_margin'
-                            value={formatNumberWithCommas(form.ordinary_profit_margin)}
+                            name='non_operating_expense'
+                            value={formatNumberWithCommas(form.non_operating_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
                       </div>
-
+                      {/* RIGHT COLUMN */}
                       <div className='projectSalesResultsRegistration_right-form-div projectSalesResultsRegistration_calc'>
                         <div className='projectSalesResultsRegistration_project-name-div'>
                           <label
@@ -840,29 +841,27 @@ const ProjectSalesResultsRegistration = () => {
                             onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
-
-                        <div className='projectSalesResultsRegistration_expense-div'>
-                          <label className='projectSalesResultsRegistration_expense'>
-                            {translate('expenses', language)}
+                        <div className='projectSalesResultsRegistration_operating-income-div'>
+                          <label className='projectSalesResultsRegistration_operating-income'>
+                            {translate('operatingIncome', language)}
                           </label>
                           <input
                             type='text'
-                            name='expense'
-                            value={formatNumberWithCommas(form.expense)}
+                            name='operating_income'
+                            value={formatNumberWithCommas(form.operating_income)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
-
-                        <div className='projectSalesResultsRegistration_non-operating-expense-div'>
-                          <label className='projectSalesResultsRegistration_non-operating-expense'>
-                            {translate('nonOperatingExpense', language)}
+                        <div className='projectSalesResultsRegistration_ordinary-income-div'>
+                          <label className='projectSalesResultsRegistration_ordinary-income'>
+                            {translate('ordinaryIncome', language)}
                           </label>
                           <input
                             type='text'
-                            name='non_operating_expense'
-                            value={formatNumberWithCommas(form.non_operating_expense)}
+                            name='ordinary_profit'
+                            value={formatNumberWithCommas(form.ordinary_profit)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                             onKeyDown={handleDisableKeysOnNumberInputs}

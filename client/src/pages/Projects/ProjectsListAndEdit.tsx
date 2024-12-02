@@ -442,6 +442,9 @@ const ProjectsListAndEdit: React.FC = () => {
                                   <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('ordinaryIncome', language)}
                                   </th>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
+                                    {translate('ordinaryProfitMargin', language)}
+                                  </th>
                                   <th className='projectsList-table-title-content-vertical has-text-centered'></th>
                                 </tr>
                               </thead>
@@ -608,6 +611,15 @@ const ProjectsListAndEdit: React.FC = () => {
                                         type='text'
                                         name='ordinary_profit'
                                         value={formatNumberWithCommas(project.ordinary_profit)}
+                                        onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
+                                      />
+                                    </td>
+                                    <td className='projectsList-table-body-content-vertical'>
+                                      <input
+                                        type='text'
+                                        name='ordinary_profit_margin'
+                                        value={formatNumberWithCommas(project.ordinary_profit_margin)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
