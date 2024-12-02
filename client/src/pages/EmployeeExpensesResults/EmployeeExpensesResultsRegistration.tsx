@@ -14,6 +14,7 @@ import { getEmployee } from '../../api/EmployeeEndpoint/GetEmployee'
 import { createEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/CreateEmployeeExpenseResult'
 import { checkForDuplicates, getFieldChecks, translateAndFormatErrors, validateEmployeeExpensesResultsRecords } from '../../utils/validationUtil'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
+import { getFilteredProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/FilteredGetProjectSalesResults'
 
 const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 
@@ -386,6 +387,30 @@ const EmployeeExpensesResultsRegistration = () => {
     navigate('/employee-expenses-results-list')
   }
 
+  useEffect(() => {
+    
+    employeeContainers.forEach((employee, index) => {
+      const project_name = employee.projectEntries.flatMap((entry) => entry.projects)[0] 
+      const year = employee.projectEntries.flatMap((entry) => entry.year)[0] 
+      const month = employee.projectEntries.flatMap((entry) => entry.month)[0] 
+
+      const filterParams = {
+        ...(project_name && { project_name }), // Include only if `getProjectName` is truthy
+        ...(year && { year }),
+        ...(month && { month }),
+      }
+      getFilteredProjectSalesResults(filterParams, token)
+        .then((data) => {
+          console.log(data)
+        })
+        .catch((error) => {
+          console.error('Something is wrong with filter function :', error)
+        })
+    })
+    
+    
+  }, [employeeContainers]) 
+
   return (
     <div className='employeeExpensesResultsRegistration_wrapper'>
       <HeaderButtons
@@ -460,7 +485,7 @@ const EmployeeExpensesResultsRegistration = () => {
                                 >
                                   <option value=''></option>
                                   {projectsSalesResults.map((project) => (
-                                    <option key={project.project_sales_result_id} value={project.projects.project_id}>
+                                    <option key={project.project_sales_result_id} value={project.projects.project_name}>
                                       {project.projects.project_name}
                                     </option>
                                   ))}
