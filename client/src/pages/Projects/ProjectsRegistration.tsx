@@ -464,17 +464,17 @@ const ProjectsRegistration = () => {
   }
 
   return (
-    <div className='projectsRegistration_wrapper'>
+    <div className='projectsRegistration-wrapper'>
       <HeaderButtons
         activeTab={activeTab}
         handleTabClick={handleTabClick}
         isTranslateSwitchActive={isTranslateSwitchActive}
         handleTranslationSwitchToggle={handleTranslationSwitchToggle}
       />
-      <div className='projectsRegistration_content_wrapper'>
+      <div className='projectsRegistration-content-wrapper'>
         <Sidebar />
-        <div className='projectsRegistration_data_content'>
-          <div className='projectsRegistration_top_body_cont'>
+        <div className='projectsRegistration-data-content'>
+          <div className='projectsRegistration-top-body-cont'>
             <RegistrationButtons
               activeTabOther={activeTabOther}
               message={translate('projectsRegistration', language)}
@@ -488,23 +488,24 @@ const ProjectsRegistration = () => {
               ]}
             />
           </div>
-          <div className='projectsRegistration_mid_body_cont'>
-            <form className='projectsRegistration_inputs_and_buttons' onSubmit={handleSubmit}>
-              <div className='projectsRegistration_mid_form_cont'>
+          <div className='projectsRegistration-mid-body-cont'>
+            <form className='projectsRegistration-inputs-and-buttons' onSubmit={handleSubmit}>
+              <div className='projectsRegistration-mid-form-cont'>
                 {formProjects.map((form, index) => (
                   <div
                     key={index}
-                    className={`projectsRegistration_form-content ${index > 0 ? 'projectsRegistration_form-content-special' : ''}`}
+                    className={`projectsRegistration-form-content ${index > 0 ? 'projectsRegistration-form-content-special' : ''}`}
                   >
                     <div
-                      className={`projectsRegistration_form-content ${index > 0 ? 'projectsRegistration_form-line' : ''}`}
+                      className={`projectsRegistration-form-content ${index > 0 ? 'projectsRegistration-form-line' : ''}`}
                     ></div>
-                    <div className='projectsRegistration_form-content-div'>
-                      <div className='projectsRegistration_left-form-div projectsRegistration_calc'>
-                        <div className='projectsRegistration_year-div'>
-                          <label className='projectsRegistration_year'>{translate('year', language)}</label>
+                    <div className='projectsRegistration-form-content-div'>
+                      <div className='projectsRegistration-left-form-div projectsRegistration-calc'>
+                        {/* LEFT COLUMN */}
+                        <div className='projectsRegistration-year-div'>
+                          <label className='projectsRegistration-year'>{translate('year', language)}</label>
                           <select
-                            className='projectsRegistration_select-option'
+                            className='projectsRegistration-select-option'
                             name='year'
                             value={formatNumberWithCommas(form.year)}
                             onChange={(e) => handleChange(index, e)}
@@ -517,8 +518,8 @@ const ProjectsRegistration = () => {
                             ))}
                           </select>
                         </div>
-                        <div className='projectsRegistration_project-type-div'>
-                          <label className='projectsRegistration_project-type'>
+                        <div className='projectsRegistration-project-type-div'>
+                          <label className='projectsRegistration-project-type'>
                             {translate('projectType', language)}
                           </label>
                           <input
@@ -528,8 +529,8 @@ const ProjectsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           />
                         </div>
-                        <div className='projectsRegistration_sales-revenue-div'>
-                          <label className='projectsRegistration_sales-revenue'>
+                        <div className='projectsRegistration-sales-revenue-div'>
+                          <label className='projectsRegistration-sales-revenue'>
                             {translate('saleRevenue', language)}
                           </label>
                           <input
@@ -541,8 +542,8 @@ const ProjectsRegistration = () => {
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
-                        <div className='projectsRegistration_employee-expenses-div'>
-                          <label className='projectsRegistration_employee-expenses'>
+                        <div className='projectsRegistration-employee-expenses-div'>
+                          <label className='projectsRegistration-employee-expenses'>
                             {translate('employeeExpense', language)}
                           </label>
                           <input
@@ -554,39 +555,40 @@ const ProjectsRegistration = () => {
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
-                        <div className='projectsRegistration_operating-income-div'>
-                          <label className='projectsRegistration_operating-income'>
-                            {translate('operatingIncome', language)}
+                        <div className='projectsRegistration-non-operating-income-div'>
+                          <label className='projectsRegistration-non-operating-income'>
+                            {translate('nonOperatingIncome', language)}
                           </label>
                           <input
                             type='text'
-                            name='operating_income'
-                            value={formatNumberWithCommas(form.operating_income)}
+                            name='non_operating_income'
+                            value={formatNumberWithCommas(form.non_operating_income)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
-                        <div className='projectsRegistration_ordinary-income-div'>
-                          <label className='projectsRegistration_ordinary-income'>
-                            {translate('ordinaryIncome', language)}
+                        <div className='projectsRegistration-ordinary-income-margin-div'>
+                          <label className='projectsRegistration-ordinary-income-margin'>
+                            {translate('ordinaryIncomeProfitMargin', language)}
                           </label>
                           <input
                             type='text'
-                            name='ordinary_profit'
-                            value={formatNumberWithCommas(form.ordinary_profit)}
+                            name='ordinary_profit_margin'
+                            // 更新必要： This Probably Needs to be Calculated Automatically
+                            value={formatNumberWithCommas(form.ordinary_profit_margin)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                       </div>
-
-                      <div className='projectsRegistration_middle-form-div projectsRegistration_calc'>
-                        <div className='projectsRegistration_month-div'>
-                          <label className='projectsRegistration_month'>{translate('month', language)}</label>
+                      {/* CENTER COLUMN */}
+                      <div className='projectsRegistration-middle-form-div projectsRegistration-calc'>
+                        <div className='projectsRegistration-month-div'>
+                          <label className='projectsRegistration-month'>{translate('month', language)}</label>
                           <select
-                            className='projectsRegistration_select-option'
+                            className='projectsRegistration-select-option'
                             name='month'
                             value={form.month}
                             onChange={(e) => handleChange(index, e)}
@@ -599,10 +601,10 @@ const ProjectsRegistration = () => {
                             ))}
                           </select>
                         </div>
-                        <div className='projectsRegistration_client-div'>
-                          <label className='projectsRegistration_client'>{translate('client', language)}</label>
+                        <div className='projectsRegistration-client-div'>
+                          <label className='projectsRegistration-client'>{translate('client', language)}</label>
                           <select
-                            className='projectsRegistration_select-option'
+                            className='projectsRegistration-select-option'
                             name='client'
                             value={form.client}
                             onChange={(e) => handleChange(index, e)}
@@ -615,50 +617,48 @@ const ProjectsRegistration = () => {
                             ))}
                           </select>
                         </div>
-                        <div className='projectsRegistration_indirect-employee-expense-div'>
-                          <label className='projectsRegistration_indirect-employee-expense'>
+                        <div className='projectsRegistration-indirect-employee-expense-div'>
+                          <label className='projectsRegistration-indirect-employee-expense'>
                             {translate('indirectEmployeeExpense', language)}
                           </label>
                           <input
                             type='text'
-                            name='indirect_employee_expense'
+                            name='indirect-employee-expense'
                             value={formatNumberWithCommas(form.indirect_employee_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
-                        <div className='projectsRegistration_non-operating-income-div'>
-                          <label className='projectsRegistration_non-operating-income'>
-                            {translate('nonOperatingIncome', language)}
-                          </label>
+                        <div className='projectsRegistration-expense-div'>
+                          <label className='projectsRegistration-expense'>{translate('expense', language)}</label>
                           <input
                             type='text'
-                            name='non_operating_income'
-                            value={formatNumberWithCommas(form.non_operating_income)}
+                            name='expense'
+                            value={formatNumberWithCommas(form.expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
-                        <div className='projectsRegistration_ordinary-income-margin-div'>
-                          <label className='projectsRegistration_ordinary-income-margin'>
-                            {translate('ordinaryIncomeProfitMargin', language)}
+                        <div className='projectsRegistration-non-operating-expense-div'>
+                          <label className='projectsRegistration-non-operating-expense'>
+                            {translate('nonOperatingExpense', language)}
                           </label>
                           <input
                             type='text'
-                            name='ordinary_profit_margin'
-                            value={formatNumberWithCommas(form.ordinary_profit_margin)}
+                            name='non_operating_expense'
+                            value={formatNumberWithCommas(form.non_operating_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
                       </div>
-
-                      <div className='projectsRegistration_right-form-div projectsRegistration_calc'>
-                        <div className='projectsRegistration_project-name-div'>
-                          <label className='projectsRegistration_project_name'>
+                      {/* RIGHT COLUMN */}
+                      <div className='projectsRegistration-right-form-div projectsRegistration-calc'>
+                        <div className='projectsRegistration-project-name-div'>
+                          <label className='projectsRegistration-project-name'>
                             {translate('projectName', language)}
                           </label>
                           <input
@@ -674,13 +674,13 @@ const ProjectsRegistration = () => {
                           />
                         </div>
 
-                        <div className='projectsRegistration_right-form-div'>
-                          <div className='projectsRegistration_business_division_name-div'>
-                            <label className='projectsRegistration_business_division_name'>
+                        <div className='projectsRegistration-right-form-div'>
+                          <div className='projectsRegistration-business-division-name-div'>
+                            <label className='projectsRegistration-business-division-name'>
                               {translate('businessDivision', language)}
                             </label>
                             <select
-                              className='projectsRegistration_select-option'
+                              className='projectsRegistration-select-option'
                               name='business_division'
                               value={form.business_division}
                               onChange={(e) => handleChange(index, e)}
@@ -695,8 +695,8 @@ const ProjectsRegistration = () => {
                           </div>
                         </div>
 
-                        <div className='projectsRegistration_dispatch-labor-expense-div'>
-                          <label className='projectsRegistration_dispatch-labor-expense'>
+                        <div className='projectsRegistration-dispatch-labor-expense-div'>
+                          <label className='projectsRegistration-dispatch-labor-expense'>
                             {translate('dispatchLaborExpense', language)}
                           </label>
                           <input
@@ -708,27 +708,27 @@ const ProjectsRegistration = () => {
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
-
-                        <div className='projectsRegistration_expense-div'>
-                          <label className='projectsRegistration_expense'>{translate('expenses', language)}</label>
+                        <div className='projectsRegistration-operating-income-div'>
+                          <label className='projectsRegistration-operating-income'>
+                            {translate('operatingIncome', language)}
+                          </label>
                           <input
                             type='text'
-                            name='expense'
-                            value={formatNumberWithCommas(form.expense)}
+                            name='operating_income'
+                            value={formatNumberWithCommas(form.operating_income)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
-
-                        <div className='projectsRegistration_non-operating-expense-div'>
-                          <label className='projectsRegistration_non-operating-expense'>
-                            {translate('nonOperatingExpense', language)}
+                        <div className='projectsRegistration-ordinary-income-div'>
+                          <label className='projectsRegistration-ordinary-income'>
+                            {translate('ordinaryIncome', language)}
                           </label>
                           <input
                             type='text'
-                            name='non_operating_expense'
-                            value={formatNumberWithCommas(form.non_operating_expense)}
+                            name='ordinary_profit'
+                            value={formatNumberWithCommas(form.ordinary_profit)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -741,21 +741,26 @@ const ProjectsRegistration = () => {
                   </div>
                 ))}
               </div>
-              <div className='projectsRegistration_lower_form_cont'>
-                <div className='projectsRegistration_form-content'>
-                  <div className='projectsRegistration_plus-btn'>
+              <div className='projectsRegistration-lower-form-cont'>
+                <div className='projectsRegistration-form-content'>
+                  <div className='projectsRegistration-plus-btn'>
                     {formProjects.length >= 2 ? (
-                      <button className='projectsRegistration_dec' type='button' onClick={handleMinus}>
+                      <button className='projectsRegistration-dec' type='button' onClick={handleMinus}>
                         -
                       </button>
                     ) : (
-                      <div className='projectsRegistration_dec_empty'></div>
+                      <div className='projectsRegistration-dec-empty'></div>
                     )}
-                    <button className='projectsRegistration_inc custom-disabled' type='button' onClick={handleAdd} disabled={formProjects.length === maximumEntries}>
+                    <button
+                      className='projectsRegistration-inc custom-disabled'
+                      type='button'
+                      onClick={handleAdd}
+                      disabled={formProjects.length === maximumEntries}
+                    >
                       +
                     </button>
                   </div>
-                  <div className='projectsRegistration_options-btn'>
+                  <div className='projectsRegistration-options-btn'>
                     <button type='button' className='button is-light' onClick={handleCancel}>
                       {translate('cancel', language)}
                     </button>

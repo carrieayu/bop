@@ -224,11 +224,11 @@ const EmployeeExpensesList: React.FC = () => {
             <div className='employeeExpensesList_top_content'>
               <div className='employeeExpensesList_top_body_cont'>
                 <div className='employeeExpensesList_mode_switch_datalist'>
-                  <div className='mode_switch_container'>
-                    <p className='slider_mode_switch'>
+                  <div className='mode-switch-container'>
+                    <p className='slider-mode-switch'>
                       {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
                     </p>
-                    <label className='slider_switch'>
+                    <label className='slider-switch'>
                       <input type='checkbox' checked={isEditing} onChange={handleClick} />
                       <span className='slider'></span>
                     </label>
