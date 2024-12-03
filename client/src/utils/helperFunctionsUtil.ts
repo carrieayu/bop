@@ -40,6 +40,7 @@ export const handleDisableKeysOnNumberInputs = (event) => {
 // # Add Commas to Financial Numbers for Display on List, Edit, Registration Screens
 
 export const formatNumberWithCommas = (value: number | string): string => {
+  console.log('formatNumberWithCommas',value, typeof value, )
   // Trim the string and remove non-numeric characters, 
   if (typeof value === 'string') {
     value = value.replace(/[^0-9]/g, '') // Remove non-numeric characters
@@ -49,8 +50,8 @@ export const formatNumberWithCommas = (value: number | string): string => {
   const number = typeof value === 'string' ? parseFloat(value) : value
 
   // Handle invalid number cases
-  if (isNaN(number)) {
-    console.log('true')
+  if (isNaN(number) || number === null) {
+    console.log('is NaN === true', value)
     return '' // Return empty string for invalid inputs
   }
 
