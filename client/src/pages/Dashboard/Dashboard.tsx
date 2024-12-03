@@ -108,7 +108,7 @@ const Dashboard = () => {
   }
 
   const graphData = {
-    labels: month,
+    labels: month, // This displays the 'dates' in y axis in the csv.
     datasets: [
       {
         type: 'bar' as const,
@@ -311,7 +311,7 @@ const Dashboard = () => {
               &nbsp;&nbsp;&nbsp;
               <div className='dashboard_graph_cont'>
                 <div className='dashboard_graph_wrap'>
-                  <GraphDashboard data={graphData} />
+                  <GraphDashboard data={graphData} language={language} />
                 </div>
               </div>
             </div>

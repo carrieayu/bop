@@ -29,7 +29,7 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs, formatDate, formatNumberWithCommas, removeCommas} from '../../utils/helperFunctionsUtil'
 
 
 const EmployeesListAndEdit: React.FC = () => {
@@ -146,16 +146,21 @@ const EmployeesListAndEdit: React.FC = () => {
 
   const handleChange = (index, e) => {
     const { name, value } = e.target
-
+    
     setEmployeesList((prevState) => {
       const updatedEmployeeData = [...prevState]
+      
+      // Remove commas to get the raw number
+      // EG. 999,999 → 999999 in the DB
+      const rawValue = removeCommas(value)
 
       const previousEmployee = prevState[index].employee
-      const updatedEmployee = { ...previousEmployee, [name]: value }
-
+      const updatedEmployee = { ...previousEmployee, [name]: rawValue }
+      
       // Calculate non-editable fields based on type and salary or executive_renumeration
       if (name === 'salary' || name === 'executive_renumeration') {
-        const baseValue = name === 'salary' ? Number(value) : Number(updatedEmployee.executive_renumeration)
+        
+        const baseValue = name === 'salary' ? Number(rawValue) : Number(updatedEmployee.executive_renumeration)
         updatedEmployee.statutory_welfare_expense = Math.round(baseValue * 0.1451).toString()
         updatedEmployee.welfare_expense = Math.round(baseValue * 0.0048).toString()
         updatedEmployee.insurance_premium = Math.round(baseValue * 0.0224).toString()
@@ -215,7 +220,7 @@ const EmployeesListAndEdit: React.FC = () => {
       } else if (name === 'business_division') {
         updatedEmployeeData[index].employee.business_division_id = value
       } else {
-        updatedEmployeeData[index].employee[name] = value
+        updatedEmployeeData[index].employee[name] = rawValue
       }
 
       return updatedEmployeeData
@@ -465,55 +470,36 @@ const EmployeesListAndEdit: React.FC = () => {
       })
   }
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    const month = String(date.getMonth() + 1).padStart(2, '0') // Get month (0-indexed, so +1)
-    const day = String(date.getDate()).padStart(2, '0') // Get day
-    const year = date.getFullYear() // Get full year
-    return `${month}/${day}/${year}`
-  }
-
   const handleNewRegistrationClick = () => {
     navigate('/employees-registration')
   }
 
-  const handleEmployeeTypePulldown = (employeeIndex, e) => {
-    // Reset the values when switching employee type
-    if (e.target.value === '0') {
-      // Reset executive remuneration if switching to regular employee
-      handleChange(employeeIndex, e)
-      handleChange(employeeIndex, { target: { name: 'executive_renumeration', value: null } })
-    } else if (e.target.value === '1') {
-      // Reset salary if switching to executive employee
-      handleChange(employeeIndex, { target: { name: 'salary', value: null } })
-      handleChange(employeeIndex, e)
-    }
+  const handleEmployeeTypePulldown = (index, e) => {
+    const { name, value } = e.target // Assuming `name` is 'type' and `value` is 0 or 1
+    setEmployeesList((prevState) => {
+      const updatedEmployeeData = [...prevState]
+      const previousEmployee = prevState[index].employee
 
-    setSelectedEmployeeType((prevState) => [
-      ...prevState, // Spread the previous state (the existing array) to preserve the previous items
-      { employeeIndex, type: e.target.value }, // Add the new object to the array
-    ])
+      const updatedEmployee = {
+        ...previousEmployee,
+        [name]: value, // Update the type
+        salary: value === '0' ? previousEmployee.salary : null, // Clear if not regularEmployee
+        executive_renumeration: value === '1' ? previousEmployee.executive_renumeration : null, // Clear if not executiveEmployee
+      }
 
-    // Set the employee type to 0 (Regular) or 1 (Executive)
-  }
+      // Recalculate non-editable fields based on updated value
+      const baseValue = value === '0' ? Number(updatedEmployee.salary) : Number(updatedEmployee.executive_renumeration)
+      updatedEmployee.statutory_welfare_expense = Math.round(baseValue * 0.1451).toString() || ''
+      updatedEmployee.welfare_expense = Math.round(baseValue * 0.0048).toString() || ''
+      updatedEmployee.insurance_premium = Math.round(baseValue * 0.0224).toString() || ''
 
-  const handleStatutoryWelfare = (employeeIndex, e) => {
-    // Reset the values when switching employee type
-    if (e.target.value === '0') {
-      // Reset executive remuneration if switching to regular employee
-      handleChange(employeeIndex, e)
-      handleChange(employeeIndex, { target: { name: 'executive_renumeration', value: null } })
-    } else if (e.target.value === '1') {
-      // Reset salary if switching to executive employee
-      handleChange(employeeIndex, { target: { name: 'salary', value: null } })
-      handleChange(employeeIndex, e)
-    }
+      updatedEmployeeData[index] = {
+        ...updatedEmployeeData[index],
+        employee: updatedEmployee,
+      }
 
-    setSelectedEmployeeType((prevState) => [
-      ...prevState, // Spread the previous state (the existing array) to preserve the previous items
-      { employeeIndex, type: e.target.value }, // Add the new object to the array
-    ])
-    // Set the employee type to 0 (Regular) or 1 (Executive)
+      return updatedEmployeeData
+    })
   }
 
   return (
@@ -530,11 +516,11 @@ const EmployeesListAndEdit: React.FC = () => {
           <div className='EmployeesListAndEdit_top_content'>
             <div className='EmployeesListAndEdit_top_body_cont'>
               <div className='EmployeesListAndEdit_mode_switch_datalist'>
-                <div className='mode_switch_container'>
-                  <p className='slider_mode_switch'>
+                <div className='mode-switch-container'>
+                  <p className='slider-mode-switch'>
                     {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
                   </p>
-                  <label className='slider_switch'>
+                  <label className='slider-switch'>
                     <input type='checkbox' checked={isEditing} onChange={handleClick} />
                     <span className='slider'></span>
                   </label>
@@ -571,10 +557,10 @@ const EmployeesListAndEdit: React.FC = () => {
                                   {translate('firstName', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('type', language)}
+                                  {translate('email', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('email', language)}
+                                  {translate('type', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
                                   {translate('salary', language)}
@@ -645,6 +631,15 @@ const EmployeesListAndEdit: React.FC = () => {
                                       />
                                     </td>
                                     <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
+                                      <input
+                                        className='edit_input email'
+                                        type='text'
+                                        name='email'
+                                        value={employee.email}
+                                        onChange={(e) => handleChange(employeeIndex, e)}
+                                      />
+                                    </td>
+                                    <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
                                       <select
                                         className='edit-select'
                                         name='type'
@@ -657,19 +652,14 @@ const EmployeesListAndEdit: React.FC = () => {
                                     </td>
                                     <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
                                       <input
-                                        className='edit_input email'
-                                        type='text'
-                                        name='email'
-                                        value={employee.email}
-                                        onChange={(e) => handleChange(employeeIndex, e)}
-                                      />
-                                    </td>
-                                    <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
-                                      <input
                                         className='edit_input'
-                                        type='number'
+                                        type='text'
                                         name='salary'
-                                        value={employee.salary || ''}
+                                        value={
+                                          ((employee.type === 0 || employee.type === '0') &&
+                                            formatNumberWithCommas(employee.salary).toString() ||
+                                          ''
+                                )}
                                         onChange={(e) => handleChange(employeeIndex, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={employee.type.toString() !== '0'}
@@ -678,9 +668,13 @@ const EmployeesListAndEdit: React.FC = () => {
                                     <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
                                       <input
                                         className='edit_input'
-                                        type='number'
+                                        type='text'
                                         name='executive_renumeration'
-                                        value={employee.executive_renumeration || ''}
+                                        value={
+                                          ((employee.type === 1 || employee.type === '1') &&
+                                            formatNumberWithCommas(employee.executive_renumeration).toString() ||
+                                          ''
+                                )}
                                         onChange={(e) => handleChange(employeeIndex, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={employee.type.toString() !== '1'}
@@ -733,8 +727,7 @@ const EmployeesListAndEdit: React.FC = () => {
                                         className='not-editable'
                                         type='text'
                                         name='statutory_welfare_expense'
-                                        value={employee.statutory_welfare_expense || ''}
-                                        onChange={(e) => handleStatutoryWelfare(employeeIndex, e)}
+                                        value={formatNumberWithCommas(employee.statutory_welfare_expense) || ''}
                                         readOnly
                                       />
                                     </td>
@@ -743,17 +736,16 @@ const EmployeesListAndEdit: React.FC = () => {
                                         className='not-editable'
                                         type='text'
                                         name='welfare_expense'
-                                        value={employee.welfare_expense || ''}
-                                        onChange={(e) => handleStatutoryWelfare(employeeIndex, e)}
+                                        value={formatNumberWithCommas(employee.welfare_expense) || ''}
                                         readOnly
                                       />
                                     </td>
                                     <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
                                       <input
                                         className='not-editable'
-                                        type='number'
+                                        type='text'
                                         name='insurance_premium'
-                                        value={employee.insurance_premium || ''}
+                                        value={formatNumberWithCommas(employee.insurance_premium) || ''}
                                         onChange={(e) => handleChange(employeeIndex, e)}
                                       />
                                     </td>
@@ -789,11 +781,11 @@ const EmployeesListAndEdit: React.FC = () => {
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
                                 {translate('firstName', language)}
                               </th>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered type'>
-                                {translate('type', language)}
-                              </th>
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
                                 {translate('email', language)}
+                              </th>
+                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered type'>
+                                {translate('type', language)}
                               </th>
                               <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
                                 {translate('salary', language)}
@@ -845,29 +837,31 @@ const EmployeesListAndEdit: React.FC = () => {
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
                                   {employee.first_name}
                                 </td>
+                                <td className='EmployeesListAndEdit_table_body_content_vertical'>{employee.email}</td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical type'>
                                   {translate(employee.type === 0 ? 'regularEmployee' : 'executiveEmployee', language)}
                                 </td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'>{employee.email}</td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'>{employee.salary}</td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {employee.executive_renumeration}
+                                  {employee.type === 0 && formatNumberWithCommas(employee.salary)}
+                                </td>
+                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                  {employee.type === 1 && formatNumberWithCommas(employee.executive_renumeration)}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>{employee.company}</td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
                                   {employee.business_division}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {employee.bonus_and_fuel_allowance}
+                                  {formatNumberWithCommas(employee.bonus_and_fuel_allowance)}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {employee.statutory_welfare_expense}
+                                  {formatNumberWithCommas(employee.statutory_welfare_expense)}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {employee.welfare_expense}
+                                  {formatNumberWithCommas(employee.welfare_expense)}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {employee.insurance_premium}
+                                  {formatNumberWithCommas(employee.insurance_premium)}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
                                   {employee.auth_user}

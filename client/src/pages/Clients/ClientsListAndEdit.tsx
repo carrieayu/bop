@@ -21,6 +21,8 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
+import { formatDate } from '../../utils/helperFunctionsUtil'
+
 
 
 const ClientsListAndEdit: React.FC = () => {
@@ -297,14 +299,6 @@ const ClientsListAndEdit: React.FC = () => {
       navigate('/clients-registration');
     };
 
-    const formatDate = (dateString) => {
-      const date = new Date(dateString)
-      const month = String(date.getMonth() + 1).padStart(2, '0') // Get month (0-indexed, so +1)
-      const day = String(date.getDate()).padStart(2, '0') // Get day
-      const year = date.getFullYear() // Get full year
-      return `${year}/${month}/${day}`
-    }
-
   return (
     <div className='ClientsListAndEdit_wrapper'>
       <HeaderButtons
@@ -319,11 +313,11 @@ const ClientsListAndEdit: React.FC = () => {
           <div className='ClientsListAndEdit_top_content'>
             <div className='ClientsListAndEdit_top_body_cont'>
               <div className='ClientsListAndEdit_mode_switch_datalist'>
-                <div className='mode_switch_container'>
-                  <p className='slider_mode_switch'>
+                <div className='mode-switch-container'>
+                  <p className='slider-mode-switch'>
                     {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
                   </p>
-                  <label className='slider_switch'>
+                  <label className='slider-switch'>
                     <input type='checkbox' checked={isEditing} onChange={handleClick} />
                     <span className='slider'></span>
                   </label>

@@ -22,6 +22,7 @@ import {
   getFieldChecks,
   checkForDuplicateUsers,
 } from '../../utils/validationUtil'
+import { formatDate } from "../../utils/helperFunctionsUtil";
 
 const UsersListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -249,14 +250,14 @@ const UsersListAndEdit: React.FC = () => {
       setIsCRUDOpen(false);
   };
   
-  const formatDate = (dateString) => {
-    if (!dateString) return '' // Handle null or undefined dates
-    const date = new Date(dateString)
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0') // Month is 0-indexed
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}` // Format for HTML input type="date"
-  }
+  // const formatDate = (dateString) => {
+  //   if (!dateString) return '' // Handle null or undefined dates
+  //   const date = new Date(dateString)
+  //   const year = date.getFullYear()
+  //   const month = String(date.getMonth() + 1).padStart(2, '0') // Month is 0-indexed
+  //   const day = String(date.getDate()).padStart(2, '0')
+  //   return `${year}-${month}-${day}` // Format for HTML input type="date"
+  // }
 
   const handleConfirm = async () => {
     const token = localStorage.getItem('accessToken')
@@ -290,11 +291,11 @@ const UsersListAndEdit: React.FC = () => {
           <div className='UsersListAndEdit_top_content'>
             <div className='UsersListAndEdit_top_body_cont'>
               <div className='UsersListAndEdit_mode_switch_datalist'>
-                <div className='mode_switch_container'>
-                  <p className='slider_mode_switch'>
+                <div className='mode-switch-container'>
+                  <p className='slider-mode-switch'>
                     {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
                   </p>
-                  <label className='slider_switch'>
+                  <label className='slider-switch'>
                     <input type='checkbox' checked={isEditing} onChange={handleClick} />
                     <span className='slider'></span>
                   </label>
@@ -323,7 +324,7 @@ const UsersListAndEdit: React.FC = () => {
                           <table className='table is-bordered is-hoverable'>
                             <thead>
                               <tr className='UsersListAndEdit_table_title '>
-                                <th className='UsersListAndEdit_table_title_content_vertical has-text-left'>ID</th>
+                                <th className='UsersListAndEdit_table_title_content_vertical has-text-centered'>ID</th>
                                 <th className='UsersListAndEdit_table_title_content_vertical has-text-centered'>
                                   {translate('username', language)}
                                 </th>
@@ -345,10 +346,10 @@ const UsersListAndEdit: React.FC = () => {
                             <tbody className='UsersListAndEdit_table_body'>
                               {userList.map((users, index) => (
                                 <tr key={users.id} className='UsersListAndEdit_table_body_content_horizontal'>
-                                  <td className='UsersListAndEdit_table_body_content_vertical has-text-left'>
+                                  <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>
                                     {users.id}
                                   </td>
-                                  <td className='UsersListAndEdit_table_body_content_vertical'>
+                                  <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>
                                     <input
                                       type='text'
                                       name='username'
@@ -356,7 +357,7 @@ const UsersListAndEdit: React.FC = () => {
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
-                                  <td className='UsersListAndEdit_table_body_content_vertical'>
+                                  <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>
                                     <input
                                       type='text'
                                       name='last_name'
@@ -364,7 +365,7 @@ const UsersListAndEdit: React.FC = () => {
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
-                                  <td className='UsersListAndEdit_table_body_content_vertical'>
+                                  <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>
                                     <input
                                       type='text'
                                       name='first_name'
@@ -372,7 +373,7 @@ const UsersListAndEdit: React.FC = () => {
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
-                                  <td className='UsersListAndEdit_table_body_content_vertical'>
+                                  <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>
                                     <input
                                       type='text'
                                       name='email'
@@ -380,7 +381,7 @@ const UsersListAndEdit: React.FC = () => {
                                       onChange={(e) => handleChange(index, e)}
                                     />
                                   </td>
-                                  <td className='UsersListAndEdit_table_body_content_vertical'>
+                                  <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>
                                     <input
                                       type='date'
                                       name='date_joined'
@@ -404,7 +405,7 @@ const UsersListAndEdit: React.FC = () => {
                         <table className='table is-bordered is-hoverable'>
                           <thead>
                             <tr className='UsersListAndEdit_table_title '>
-                              <th className='UsersListAndEdit_table_title_content_vertical has-text-left'>ID</th>
+                              <th className='UsersListAndEdit_table_title_content_vertical has-text-centered'>ID</th>
                               <th className='UsersListAndEdit_table_title_content_vertical has-text-centered'>
                                 {translate('username', language)}
                               </th>
@@ -425,14 +426,14 @@ const UsersListAndEdit: React.FC = () => {
                           <tbody className='UsersListAndEdit_table_body'>
                             {userList.map((users) => (
                               <tr key={users.id} className='UsersListAndEdit_table_body_content_horizantal'>
-                                <td className='UsersListAndEdit_table_body_content_vertical has-text-left'>
+                                <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>
                                   {users.id}
                                 </td>
-                                <td className='UsersListAndEdit_table_body_content_vertical'>{users.username}</td>
-                                <td className='UsersListAndEdit_table_body_content_vertical'>{users.last_name}</td>
-                                <td className='UsersListAndEdit_table_body_content_vertical'>{users.first_name}</td>
-                                <td className='UsersListAndEdit_table_body_content_vertical'>{users.email}</td>
-                                <td className='UsersListAndEdit_table_body_content_vertical'>{users.date_joined}</td>
+                                <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>{users.username}</td>
+                                <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>{users.last_name}</td>
+                                <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>{users.first_name}</td>
+                                <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>{users.email}</td>
+                                <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>{users.date_joined}</td>
                               </tr>
                             ))}
                           </tbody>

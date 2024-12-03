@@ -18,7 +18,8 @@ import {
   checkForDuplicates,
 } from '../../utils/validationUtil'
 import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-
+import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const months = [
    '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -59,8 +60,10 @@ const CostOfSalesRegistration = () => {
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
   const token = localStorage.getItem('accessToken')
 
+  const maximumEntries = 10
+
   const handleAdd = () => {
-    if (formData.length < 10) {
+    if (formData.length < maximumEntries) {
       const newFormData = [...formData]
       newFormData.push({
         year: '',
@@ -141,16 +144,28 @@ const CostOfSalesRegistration = () => {
     setModalIsOpen(false)
   }
 
-  const handleChange = (index, event) => {
-    const { name, value } = event.target
-    const newFormData = [...formData]
-    newFormData[index] = {
-      ...newFormData[index],
-      [name]: value,
-    }
-    setFormData(newFormData)
+
+const handleChange = (index, event) => {
+  const { name, value } = event.target
+
+  // Remove commas to get the raw number
+  // EG. 999,999 → 999999 in the DB
+  const rawValue = removeCommas(value)
+
+  // Update the state with the raw value
+  const newFormData = [...formData]
+  newFormData[index] = {
+    ...newFormData[index],
+    [name]: rawValue, // Store unformatted value in the state
   }
+  setFormData(newFormData)
+}
+
   
+  useEffect(() => {
+  console.log('after formData', formData)
+
+  },[formData])
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -400,9 +415,9 @@ const CostOfSalesRegistration = () => {
                             {translate('outsourcingExpenses', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='outsourcing_expense'
-                            value={form.outsourcing_expense}
+                            value={formatNumberWithCommas(form.outsourcing_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -413,9 +428,9 @@ const CostOfSalesRegistration = () => {
                             {translate('communicationExpenses', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='communication_expense'
-                            value={form.communication_expense}
+                            value={formatNumberWithCommas(form.communication_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -445,9 +460,9 @@ const CostOfSalesRegistration = () => {
                             {translate('productPurchases', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='product_purchase'
-                            value={form.product_purchase}
+                            value={formatNumberWithCommas(form.product_purchase)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -458,9 +473,9 @@ const CostOfSalesRegistration = () => {
                             {translate('workInProgressExpenses', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='work_in_progress_expense'
-                            value={form.work_in_progress_expense}
+                            value={formatNumberWithCommas(form.work_in_progress_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -471,9 +486,9 @@ const CostOfSalesRegistration = () => {
                         <div className='costOfSalesRegistration_purchase-div'>
                           <label className='costOfSalesRegistration_purchase'>{translate('purchases', language)}</label>
                           <input
-                            type='number'
+                            type='text'
                             name='purchase'
-                            value={form.purchase}
+                            value={formatNumberWithCommas(form.purchase)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -484,9 +499,9 @@ const CostOfSalesRegistration = () => {
                             {translate('dispatchLaborExpenses', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='dispatch_labor_expense'
-                            value={form.dispatch_labor_expense}
+                            value={formatNumberWithCommas(form.dispatch_labor_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -497,9 +512,9 @@ const CostOfSalesRegistration = () => {
                             {translate('amortizationExpenses', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='amortization_expense'
-                            value={form.amortization_expense}
+                            value={formatNumberWithCommas(form.amortization_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -514,11 +529,20 @@ const CostOfSalesRegistration = () => {
               <div className='costOfSalesRegistration_lower_form_cont'>
                 <div className='costOfSalesRegistration_form-content'>
                   <div className='costOfSalesRegistration_plus-btn'>
-                    <button className='costOfSalesRegistration_inc' type='button' onClick={handleAdd}>
+                    {formData.length >= 2 ? (
+                      <button className='costOfSalesRegistration_dec' type='button' onClick={handleMinus}>
+                        -
+                      </button>
+                    ) : (
+                      <div className='costOfSalesRegistration_dec_empty'></div>
+                    )}
+                    <button
+                      className='costOfSalesRegistration_inc custom-disabled'
+                      type='button'
+                      onClick={handleAdd}
+                      disabled={formData.length === maximumEntries}
+                    >
                       +
-                    </button>
-                    <button className='costOfSalesRegistration_dec' type='button' onClick={handleMinus}>
-                      -
                     </button>
                   </div>
                   <div className='costOfSalesRegistration_options-btn'>

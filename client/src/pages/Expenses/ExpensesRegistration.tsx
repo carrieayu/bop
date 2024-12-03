@@ -13,8 +13,7 @@ import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { createExpense } from '../../api/ExpenseEndpoint/CreateExpense'
 import { overwriteExpense } from '../../api/ExpenseEndpoint/OverwriteExpense'
 import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-
+import { handleDisableKeysOnNumberInputs, removeCommas, formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -62,21 +61,26 @@ const ExpensesRegistration = () => {
   }
 
 const handleChange = (index, event) => {
-  
   const { name, value } = event.target
+
+  // Remove commas to get the raw number
+  // EG. 999,999 → 999999 in the DB
+  const rawValue = removeCommas(value)
 
   // Update form data
   const newFormData = [...formData]
   newFormData[index] = {
     ...newFormData[index],
-    [name]: value,
+    [name]: rawValue,
   }
 
   setFormData(newFormData)
 }
 
+  const maximumEntries = 10;
+
   const handleAdd = () => {
-    if (formData.length < 10) {
+    if (formData.length < maximumEntries) {
       const newFormData = [...formData]
       newFormData.push({
         year: '',
@@ -431,9 +435,9 @@ const handleChange = (index, event) => {
                             {translate('rentExpense', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='rent_expense'
-                            value={form.rent_expense}
+                            value={formatNumberWithCommas(form.rent_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -444,9 +448,9 @@ const handleChange = (index, event) => {
                             {translate('travelExpense', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='travel_expense'
-                            value={form.travel_expense}
+                            value={formatNumberWithCommas(form.travel_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -457,9 +461,9 @@ const handleChange = (index, event) => {
                             {translate('transactionFee', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='transaction_fee'
-                            value={form.transaction_fee}
+                            value={formatNumberWithCommas(form.transaction_fee)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -470,9 +474,9 @@ const handleChange = (index, event) => {
                             {translate('professionalServicesFee', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='professional_service_fee'
-                            value={form.professional_service_fee}
+                            value={formatNumberWithCommas(form.professional_service_fee)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -502,9 +506,9 @@ const handleChange = (index, event) => {
                             {translate('taxAndPublicCharge', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='tax_and_public_charge'
-                            value={form.tax_and_public_charge}
+                            value={formatNumberWithCommas(form.tax_and_public_charge)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -515,9 +519,9 @@ const handleChange = (index, event) => {
                             {translate('communicationExpense', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='communication_expense'
-                            value={form.communication_expense}
+                            value={formatNumberWithCommas(form.communication_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -528,9 +532,9 @@ const handleChange = (index, event) => {
                             {translate('advertisingExpense', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='advertising_expense'
-                            value={form.advertising_expense}
+                            value={formatNumberWithCommas(form.advertising_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -543,9 +547,9 @@ const handleChange = (index, event) => {
                             {translate('consumableExpense', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='consumable_expense'
-                            value={form.consumable_expense}
+                            value={formatNumberWithCommas(form.consumable_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -556,9 +560,9 @@ const handleChange = (index, event) => {
                             {translate('depreciationExpense', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='depreciation_expense'
-                            value={form.depreciation_expense}
+                            value={formatNumberWithCommas(form.depreciation_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -569,9 +573,9 @@ const handleChange = (index, event) => {
                             {translate('utilitiesExpense', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='utilities_expense'
-                            value={form.utilities_expense}
+                            value={formatNumberWithCommas(form.utilities_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -582,9 +586,9 @@ const handleChange = (index, event) => {
                             {translate('entertainmentExpense', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='entertainment_expense'
-                            value={form.entertainment_expense}
+                            value={formatNumberWithCommas(form.entertainment_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -599,11 +603,20 @@ const handleChange = (index, event) => {
               <div className='expensesRegistration_lower_form_cont'>
                 <div className='expensesRegistration_form-content'>
                   <div className='expensesRegistration_plus-btn'>
-                    <button className='expensesRegistration_inc' type='button' onClick={handleAdd}>
+                    {formData.length >= 2 ? (
+                      <button className='expensesRegistration_dec' type='button' onClick={handleMinus}>
+                        -
+                      </button>
+                    ) : (
+                      <div className='expensesRegistration_dec_empty'></div>
+                    )}
+                    <button
+                      className='expensesRegistration_inc custom-disabled'
+                      type='button'
+                      onClick={handleAdd}
+                      disabled={formData.length === maximumEntries}
+                    >
                       +
-                    </button>
-                    <button className='expensesRegistration_dec' type='button' onClick={handleMinus}>
-                      -
                     </button>
                   </div>
                   <div className='expensesRegistration_options-btn'>

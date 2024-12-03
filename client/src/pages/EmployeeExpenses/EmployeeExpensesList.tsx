@@ -16,6 +16,7 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/GetEmployeeExpense'
 import { deleteEmployeeExpenseX } from '../../api/EmployeeExpenseEndpoint/DeleteEmployeeExpenseX'
 import { deleteProjectAssociation } from '../../api/EmployeeExpenseEndpoint/DeleteProjectAssociation'
+import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const months: number[] = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]; // Store as numbers
 
@@ -106,6 +107,7 @@ const EmployeeExpensesList: React.FC = () => {
       11: { en: "November", jp: "11月" },
       12: { en: "December", jp: "12月" },
     };
+  
 
     const handleNewRegistrationClick = () => {
       navigate('/employee-expenses-registration');
@@ -223,11 +225,11 @@ const EmployeeExpensesList: React.FC = () => {
             <div className='employeeExpensesList_top_content'>
               <div className='employeeExpensesList_top_body_cont'>
                 <div className='employeeExpensesList_mode_switch_datalist'>
-                  <div className='mode_switch_container'>
-                    <p className='slider_mode_switch'>
+                  <div className='mode-switch-container'>
+                    <p className='slider-mode-switch'>
                       {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
                     </p>
-                    <label className='slider_switch'>
+                    <label className='slider-switch'>
                       <input type='checkbox' checked={isEditing} onChange={handleClick} />
                       <span className='slider'></span>
                     </label>
@@ -421,8 +423,8 @@ const EmployeeExpensesList: React.FC = () => {
                                                         </div>
                                                         <div className='employeeExpensesList_txt1_label2'>
                                                           {project.employee_salary
-                                                            ? project.employee_salary
-                                                            : project.executive_renumeration}
+                                                            ? formatNumberWithCommas(project.employee_salary)
+                                                            : formatNumberWithCommas(project.executive_renumeration)}
                                                         </div>
                                                       </div>
                                                       <div className='employeeExpensesList_txt2'>
@@ -597,8 +599,8 @@ const EmployeeExpensesList: React.FC = () => {
                                                   </div>
                                                   <div className='employeeExpensesList_txt1_label2'>
                                                     {project.employee_salary
-                                                      ? project.employee_salary
-                                                      : project.executive_renumeration}
+                                                      ? formatNumberWithCommas(project.employee_salary)
+                                                      : formatNumberWithCommas(project.executive_renumeration)}
                                                   </div>
                                                 </div>
                                                 <div className='employeeExpensesList_txt2'>
