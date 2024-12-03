@@ -94,6 +94,13 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         if (newEditingState) {
           setLanguage(initialLanguage);
         }
+        if (!newEditingState) {
+           console.log(newEditingState, 'business',business)
+           // Reset to original values when switching to list mode
+           setBusiness(originalBusiness)
+         }
+
+         return newEditingState
     
         return newEditingState;
       });

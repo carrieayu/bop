@@ -91,6 +91,11 @@ const CostOfSalesList: React.FC = () => {
         if (newEditingState) {
           setLanguage(initialLanguage);
         }
+
+        if (!newEditingState) {
+          // Reset to original values when switching to list mode
+          setCostOfSales(originalCostOfSales)
+        }
     
         return newEditingState;
       });
@@ -514,11 +519,13 @@ const CostOfSalesList: React.FC = () => {
                                       />
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical delete_icon'>
-                                      <RiDeleteBin6Fill
-                                        className='delete-icon'
-                                        onClick={() => openModal('costOfSales', costOfSale.cost_of_sale_id)}
-                                        style={{ color: 'red' }}
-                                      />
+                                      { costOfSale.cost_of_sale_id !== null && (
+                                        <RiDeleteBin6Fill
+                                          className='delete-icon'
+                                          onClick={() => openModal('costOfSales', costOfSale.cost_of_sale_id)}
+                                          style={{ color: 'red' }}
+                                        />
+                                      )}
                                     </td>
                                   </tr>
                                 ) : null}

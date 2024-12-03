@@ -90,11 +90,15 @@ const ClientsListAndEdit: React.FC = () => {
         if (newEditingState) {
           setLanguage(initialLanguage);
         }
-    
+
+        if (!newEditingState) {
+          // Reset to original values when switching to list mode
+          setUpdatedClients(originalClientsList)
+        }
+
         return newEditingState;
       });
     }
-
 
     const handleChange = (index, e) => {
       const { name, value } = e.target
@@ -115,7 +119,7 @@ const ClientsListAndEdit: React.FC = () => {
     }
 
     const handleSubmit = async () => {
- 
+
       // # Client Side Validation
 
       // Step 1: Preparartion for validation
