@@ -8,6 +8,7 @@ from rest_framework.parsers import JSONParser
 from django.db import IntegrityError
 from .serializers import (
     # Cost Of Sales
+    CostOfSalesResultsListSerializer,
     CostOfSalesSerializer,
     EmployeeExpensesResultsCreateSerializer,
     EmployeeExpensesResultsDeleteSerializer,
@@ -78,6 +79,7 @@ from .serializers import CreateTableListSerializers, UserSerializer, Authenticat
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import (
     CostOfSales,
+    CostOfSalesResults,
     EmployeeExpensesResults,
     Expenses,
     ExpensesResults,
@@ -1763,6 +1765,154 @@ class CostOfSalesDelete(generics.DestroyAPIView):
             return Response({"message": "Cost of sale not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"message": "failed", "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+# Cost Of Sales Results
+class CostOfSalesResultsList(generics.ListAPIView):
+    queryset = CostOfSales.objects.all()
+    serializer_class = CostOfSalesSerializer
+    permission_classes = [AllowAny]
+
+class CostOfSalesResultsCreate(generics.CreateAPIView):
+    serializer_class = CostOfSalesSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        data = JSONParser().parse(request)
+        if not isinstance(data, list):
+            return JsonResponse({"detail": "Invalid input format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check for duplicates before saving
+        existing_entries = []
+        for item in data:
+            year = item.get('year')
+            month = item.get('month')
+            existing_entry = CostOfSales.objects.filter(year=year, month=month).first()  # Get the actual entry
+            if existing_entry:
+                existing_entries.append((year, month))  # Store year and month as a tuple
+
+        if existing_entries:
+            # Return all existing year and month pairs
+            existing_months_years = [{"year": entry[0], "month": entry[1]} for entry in existing_entries]
+
+            return JsonResponse(
+                {
+                    "detail": "選択された月は既にデータが登録されています。",
+                    "existingEntries": existing_months_years  
+                },
+                status=status.HTTP_409_CONFLICT
+            )
+        # If no duplicates, proceed with saving data
+        responses = []
+        for item in data:
+            try:
+                serializer = CostOfSalesSerializer(data=item)
+                if serializer.is_valid():
+                    serializer.save()
+                    responses.append({"message": f"Created successfully for month {item['month']}, year {item['year']}."})
+                else:
+                    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            except Exception as e:
+                return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
+
+    def put(self, request):
+        data = JSONParser().parse(request)
+        if not isinstance(data, list):
+            return JsonResponse({"detail": "Invalid input format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
+
+        responses = []
+        for item in data:
+            try:
+                year = item.get('year')
+                month = item.get('month')
+
+                # Check if an entry with the same year and month exists
+                existing_entry = CostOfSales.objects.filter(year=year, month=month).first()
+
+                if existing_entry:
+                    # Update existing entry (except year and month)
+                    serializer = CostOfSalesSerializer(existing_entry, data=item, partial=True)
+                    if serializer.is_valid():
+                        serializer.save()
+                        responses.append({"message": f"Updated successfully for month {month}, year {year}."})
+                    else:
+                        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    # If no existing entry, create a new one
+                    serializer = CostOfSalesSerializer(data=item)
+                    if serializer.is_valid():
+                        serializer.save()
+                        responses.append({"message": f"Created successfully for month {month}, year {year}."})
+                    else:
+                        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            except Exception as e:
+                return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        return JsonResponse(responses, safe=False, status=status.HTTP_200_OK)
+
+class CostOfSalesResultsUpdate(generics.UpdateAPIView):  # Change to UpdateAPIView for update actions
+    serializer_class = CostOfSalesSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = CostOfSales.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        received_data = request.data  # This is expected to be a list of cost_of_sales data
+        for cost_data in received_data:
+            cost_of_sale_id = cost_data.get('cost_of_sale_id')  # Adjusted to match your model
+
+            try:
+                # Fetch the existing record based on cost_of_sale_id
+                cost_of_sale = CostOfSales.objects.get(cost_of_sale_id=cost_of_sale_id)
+                
+                # Update each field except for the primary key
+                for field, value in cost_data.items():
+                    if field not in ['cost_of_sale_id', 'month']:  # Skip primary key and month field
+                        setattr(cost_of_sale, field, value)
+                
+                cost_of_sale.save()  # Save the updated record
+
+            except CostOfSales.DoesNotExist:
+                return Response({"error": f"Cost of Sale with ID {cost_of_sale_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({"success": "Cost of Sales updated successfully."}, status=status.HTTP_200_OK)
+
+class CostOfSalesResultsDelete(generics.DestroyAPIView):
+    queryset = CostOfSales.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        pk = self.kwargs.get("pk")
+        return CostOfSales.objects.filter(cost_of_sale_id=pk)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            instance.delete()
+            return Response({"message": "deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        except CostOfSales.DoesNotExist:
+            return Response({"message": "Cost of sale not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"message": "failed", "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class CostOfSalesResultsFilter(generics.ListCreateAPIView):
+    queryset = CostOfSales.objects.all()
+    serializer_class = CostOfSalesSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        month = self.request.GET.get('month')
+        year = self.request.GET.get('year')
+        
+        queryset = self.queryset
+        if month:
+            queryset = queryset.filter(month=month)
+        if year:
+            queryset = queryset.filter(year=year)
+        return queryset
 
 # Planning
 class PlanningList(generics.ListAPIView):

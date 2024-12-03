@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import EmployeeExpensesResultsCreate, EmployeeExpensesResultsDelete, EmployeeExpensesResultsFilter, EmployeeExpensesResultsList, ExpensesCreate, ExpensesDelete, ExpensesList,ExpensesUpdate, PasswordForgotView, ProjectSalesResultsFilter
+from api.views import CostOfSalesResultsCreate, CostOfSalesResultsDelete, CostOfSalesResultsFilter, CostOfSalesResultsList, CostOfSalesResultsUpdate, EmployeeExpensesResultsCreate, EmployeeExpensesResultsDelete, EmployeeExpensesResultsFilter, EmployeeExpensesResultsList, ExpensesCreate, ExpensesDelete, ExpensesList,ExpensesUpdate, PasswordForgotView, ProjectSalesResultsFilter
 from api.views import ProjectSalesResultsCreate, ProjectSalesResultsDelete, ProjectSalesResultsList, ProjectSalesResultsUpdate
 from api.views import ExpensesResultsCreate, ExpensesResultsDelete, ExpensesResultsList, ExpensesResultsUpdate
 from api.views import PlanningList, PlanningUpdate, PlanningDisplayByProjects
@@ -86,6 +86,13 @@ urlpatterns = [
     path('api/cost-of-sales/create/', CostOfSalesCreate.as_view(), name='cost-of-sales-create'),
     path('api/cost-of-sales/update/', CostOfSalesUpdate.as_view(), name='cost-of-sales-update'),
     path('api/cost-of-sales/<str:pk>/delete/', CostOfSalesDelete.as_view(), name='cost-of-sales-delete'),
+
+    # Cost of Sales Results
+    path('api/cost-of-sales-results/list/', CostOfSalesResultsList.as_view(), name='cost-of-sales-results-list'),
+    path('api/cost-of-sales-results/create/', CostOfSalesResultsCreate.as_view(), name='cost-of-sales-results-create'),
+    path('api/cost-of-sales-results/update/', CostOfSalesResultsUpdate.as_view(), name='cost-of-sales-results-update'),
+    path('api/cost-of-sales-results/<str:pk>/delete/', CostOfSalesResultsDelete.as_view(), name='cost-of-sales-results-delete'),
+    path('api/cost-of-sales-results/filter/', CostOfSalesResultsFilter.as_view(), name="project-sales-filtered-list"),
 
     # Employees
     path('api/employees/list/', EmployeesList.as_view(), name = 'employees-list'),

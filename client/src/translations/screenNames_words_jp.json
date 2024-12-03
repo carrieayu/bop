@@ -24,6 +24,8 @@
   "costOfSalesRegistration": "売上原価登録",
   "costOfSalesList": "売上原価一覧",
   "costOfSalesEdit": "売上原価編集",
+  "costOfSalesResultsList": "売上原価実績一覧",
+  "costOfSalesResultsEdit": "売上原価実績登録",
   "clientsRegistration": "顧客登録",
   "clientsList": "顧客一覧",
   "clientsEdit": "顧客編集",
