@@ -137,9 +137,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   
 
   const handleSubmit = async () => {
-    console.log('formProjects', formProjects)
     setFormProjects(projectSalesResults)
-    console.log('test projectSalesResults', projectSalesResults)
     // Client Side Validation
 
     // Step 1: Preparartion for validation

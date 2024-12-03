@@ -149,6 +149,7 @@ const ProjectsListAndEdit: React.FC = () => {
 
 
   const handleSubmit = async () => {
+    setFormProjects(projects)
     
     // # Client Side Validation
 
@@ -161,11 +162,11 @@ const ProjectsListAndEdit: React.FC = () => {
     const validateProjects = (records) => validateRecords(records, fieldChecks, 'project')
 
     // Step 2: Validate client-side input
-    const validationErrors = validateProjects(formProjects)
+    const validationErrors = validateProjects(projects)
 
     // Step 3: Check for duplicate entries on specific fields
     const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client']
-    const duplicateErrors = checkForDuplicates(formProjects, uniqueFields, 'project', language)
+    const duplicateErrors = checkForDuplicates(projects, uniqueFields, 'project', language)
 
     // Step 4: Map error types to data and translation keys for handling in the modal
     const errorMapping = [
