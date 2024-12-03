@@ -507,7 +507,7 @@ const ProjectsRegistration = () => {
                           <select
                             className='projectsRegistration-select-option'
                             name='year'
-                            value={formatNumberWithCommas(form.year)}
+                            value={form.year}
                             onChange={(e) => handleChange(index, e)}
                           >
                             <option value=''></option>
@@ -623,7 +623,7 @@ const ProjectsRegistration = () => {
                           </label>
                           <input
                             type='text'
-                            name='indirect-employee-expense'
+                            name='indirect_employee_expense'
                             value={formatNumberWithCommas(form.indirect_employee_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
