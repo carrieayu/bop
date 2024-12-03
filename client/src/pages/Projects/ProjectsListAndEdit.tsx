@@ -17,11 +17,10 @@ import CrudModal from "../../components/CrudModal/CrudModal";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss';
 import {validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-
 import { getProject } from "../../api/ProjectsEndpoint/GetProject";
 import { updateProject } from "../../api/ProjectsEndpoint/UpdateProject";
 import { deleteProject } from "../../api/ProjectsEndpoint/DeleteProject";
+import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const ProjectsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -126,11 +125,16 @@ const ProjectsListAndEdit: React.FC = () => {
 
   const handleChange = (index, event) => {
     const { name, value } = event.target
+
+    // Remove commas to get the raw number
+    // EG. 999,999 → 999999 in the DB
+    const rawValue = removeCommas(value)
+
     setProjects((prevState) => {
       const updatedProjectsData = [...prevState]
       updatedProjectsData[index] = {
         ...updatedProjectsData[index],
-        [name]: value,
+        [name]: rawValue,
       }
       setFormProjects(updatedProjectsData)
 
@@ -347,30 +351,30 @@ const ProjectsListAndEdit: React.FC = () => {
   }
 
   return (
-    <div className='projectsList_wrapper'>
+    <div className='projectsList-wrapper'>
       <HeaderButtons
         activeTab={activeTab}
         handleTabClick={handleTabClick}
         isTranslateSwitchActive={isTranslateSwitchActive}
         handleTranslationSwitchToggle={handleTranslationSwitchToggle}
       />
-      <div className='projectsList_cont_wrapper'>
+      <div className='projectsList-cont-wrapper'>
         <Sidebar />
-        <div className={`projectsList_wrapper ${isEditing ? 'editMode' : ''}`}>
-          <div className='projectsList_top_content'>
-            <div className='projectsList_top_body_cont'></div>
-            <div className='projectsList_mode_switch_datalist'>
-              <div className='mode_switch_container'>
-                <p className='slider_mode_switch'>
+        <div className={`projectsList-wrapper ${isEditing ? 'editMode' : ''}`}>
+          <div className='projectsList-top-content'>
+            <div className='projectsList-top-body-cont'></div>
+            <div className='projectsList-mode-switch-datalist'>
+              <div className='mode-switch-container'>
+                <p className='slider-mode-switch'>
                   {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
                 </p>
-                <label className='slider_switch'>
+                <label className='slider-switch'>
                   <input type='checkbox' checked={isEditing} onChange={handleClick} />
                   <span className='slider'></span>
                 </label>
               </div>
             </div>
-            <div className='projectsList_mid_body_cont'>
+            <div className='projectsList-mid-body-cont'>
               <ListButtons
                 activeTabOther={activeTabOther}
                 message={translate(isEditing ? 'projectsEdit' : 'projectsList', language)}
@@ -383,8 +387,8 @@ const ProjectsListAndEdit: React.FC = () => {
                   { labelKey: 'costOfSales', tabKey: 'costOfSales' },
                 ]}
               />
-              <div className={`projectsList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
-                <div className={`projectsList_table_cont ${isEditing ? 'editScrollable' : ''}`}>
+              <div className={`projectsList-table-wrapper ${isEditing ? 'editMode' : ''}`}>
+                <div className={`projectsList-table-cont ${isEditing ? 'editScrollable' : ''}`}>
                   <div>
                     <div className='columns is-mobile'>
                       <div className='column'>
@@ -392,61 +396,64 @@ const ProjectsListAndEdit: React.FC = () => {
                           <div className='editScroll'>
                             <table className='table is-bordered is-hoverable'>
                               <thead>
-                                <tr className='projectsList_table_title '>
-                                  <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                <tr className='projectsList-table-title '>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('year', language)}
                                   </th>
-                                  <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('month', language)}
                                   </th>
-                                  <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('projectName', language)}
                                   </th>
-                                  <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('projectType', language)}
                                   </th>
-                                  <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('client', language)}
                                   </th>
-                                  <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('businessDivision', language)}
                                   </th>
-                                  <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('saleRevenue', language)}
                                   </th>
-                                  <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('dispatchLaborExpense', language)}
                                   </th>
-                                  <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('employeeExpense', language)}
                                   </th>
-                                  <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('indirectEmployeeExpense', language)}
                                   </th>
-                                  <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('expense', language)}
                                   </th>
-                                  <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('operatingIncome', language)}
                                   </th>
-                                  <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('nonOperatingIncome', language)}
                                   </th>
-                                  <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('nonOperatingExpense', language)}
                                   </th>
-                                  <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('ordinaryIncome', language)}
                                   </th>
-                                  <th className='projectsList_table_title_content_vertical has-text-centered'></th>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
+                                    {translate('ordinaryProfitMargin', language)}
+                                  </th>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'></th>
                                 </tr>
                               </thead>
-                              <tbody className='projectsList_table_body'>
+                              <tbody className='projectsList-table-body'>
                                 {projects.map((project, index) => (
-                                  <tr key={project.project_id} className='projectsList_table_body_content_horizontal'>
-                                    <td className='projectsList_table_body_content_vertical'>
+                                  <tr key={project.project_id} className='projectsList-table-body-content-horizontal'>
+                                    <td className='projectsList-table-body-content-vertical'>
                                       <select
-                                        className='projectsRegistration_select-option'
+                                        className='projectsRegistration-select-option'
                                         name='year'
                                         value={project.year}
                                         onChange={(e) => handleChange(index, e)}
@@ -458,7 +465,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         ))}
                                       </select>
                                     </td>
-                                    <td className='projectsList_table_body_content_vertical'>
+                                    <td className='projectsList-table-body-content-vertical'>
                                       <select
                                         className='select-option'
                                         name='month'
@@ -475,7 +482,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                       {}
                                     </td>
 
-                                    <td className='projectsList_table_body_content_vertical'>
+                                    <td className='projectsList-table-body-content-vertical'>
                                       <input
                                         type='text'
                                         name='project_name'
@@ -483,7 +490,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         onChange={(e) => handleChange(index, e)}
                                       />
                                     </td>
-                                    <td className='projectsList_table_body_content_vertical'>
+                                    <td className='projectsList-table-body-content-vertical'>
                                       <input
                                         type='text'
                                         name='project_type'
@@ -491,9 +498,9 @@ const ProjectsListAndEdit: React.FC = () => {
                                         onChange={(e) => handleChange(index, e)}
                                       />
                                     </td>
-                                    <td className='projectsList_table_body_content_vertical'>
+                                    <td className='projectsList-table-body-content-vertical'>
                                       <select
-                                        className='projectsRegistration_select-option'
+                                        className='projectsRegistration-select-option'
                                         name='client'
                                         value={project.client}
                                         onChange={(e) => handleChange(index, e)}
@@ -509,9 +516,9 @@ const ProjectsListAndEdit: React.FC = () => {
                                         ))}
                                       </select>
                                     </td>
-                                    <td className='projectsList_table_body_content_vertical'>
+                                    <td className='projectsList-table-body-content-vertical'>
                                       <select
-                                        className='projectsRegistration_select-option'
+                                        className='projectsRegistration-select-option'
                                         name='business_division'
                                         value={project.business_division}
                                         onChange={(e) => handleChange(index, e)}
@@ -527,88 +534,97 @@ const ProjectsListAndEdit: React.FC = () => {
                                         ))}
                                       </select>
                                     </td>
-                                    <td className='projectsList_table_body_content_vertical'>
+                                    <td className='projectsList-table-body-content-vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='sales_revenue'
-                                        value={project.sales_revenue}
+                                        value={formatNumberWithCommas(project.sales_revenue)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
-                                    <td className='projectsList_table_body_content_vertical'>
+                                    <td className='projectsList-table-body-content-vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='dispatch_labor_expense'
-                                        value={project.dispatch_labor_expense}
+                                        value={formatNumberWithCommas(project.dispatch_labor_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
-                                    <td className='projectsList_table_body_content_vertical'>
+                                    <td className='projectsList-table-body-content-vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='employee_expense'
-                                        value={project.employee_expense}
+                                        value={formatNumberWithCommas(project.employee_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
-                                    <td className='projectsList_table_body_content_vertical'>
+                                    <td className='projectsList-table-body-content-vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='indirect_employee_expense'
-                                        value={project.indirect_employee_expense}
+                                        value={formatNumberWithCommas(project.indirect_employee_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
-                                    <td className='projectsList_table_body_content_vertical'>
+                                    <td className='projectsList-table-body-content-vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='expense'
                                         value={project.expense}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
-                                    <td className='projectsList_table_body_content_vertical'>
+                                    <td className='projectsList-table-body-content-vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='operating_income'
-                                        value={project.operating_income}
+                                        value={formatNumberWithCommas(project.operating_income)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
-                                    <td className='projectsList_table_body_content_vertical'>
+                                    <td className='projectsList-table-body-content-vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='non_operating_income'
-                                        value={project.non_operating_income}
+                                        value={formatNumberWithCommas(project.non_operating_income)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
-                                    <td className='projectsList_table_body_content_vertical'>
+                                    <td className='projectsList-table-body-content-vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='non_operating_expense'
-                                        value={project.non_operating_expense}
+                                        value={formatNumberWithCommas(project.non_operating_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
-                                    <td className='projectsList_table_body_content_vertical'>
+                                    <td className='projectsList-table-body-content-vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='ordinary_profit'
-                                        value={project.ordinary_profit}
+                                        value={formatNumberWithCommas(project.ordinary_profit)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
-                                    <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                    <td className='projectsList-table-body-content-vertical'>
+                                      <input
+                                        type='text'
+                                        name='ordinary_profit_margin'
+                                        value={formatNumberWithCommas(project.ordinary_profit_margin)}
+                                        onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
+                                      />
+                                    </td>
+                                    <td className='EmployeesListAndEdit-table-body-content-vertical'>
                                       <RiDeleteBin6Fill
                                         className='delete-icon'
                                         onClick={() => openModal('project', project.project_id)}
@@ -622,62 +638,65 @@ const ProjectsListAndEdit: React.FC = () => {
                         ) : (
                           <table className='table is-bordered is-hoverable'>
                             <thead>
-                              <tr className='projectsList_table_title '>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                              <tr className='projectsList-table-title '>
+                                <th className='projectsList-table-title-content-vertical has-text-centered'>
                                   {translate('year', language)}
                                 </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                <th className='projectsList-table-title-content-vertical has-text-centered'>
                                   {translate('month', language)}
                                 </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                <th className='projectsList-table-title-content-vertical has-text-centered'>
                                   {translate('projectName', language)}
                                 </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                <th className='projectsList-table-title-content-vertical has-text-centered'>
                                   {translate('projectType', language)}
                                 </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                <th className='projectsList-table-title-content-vertical has-text-centered'>
                                   {translate('client', language)}
                                 </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                <th className='projectsList-table-title-content-vertical has-text-centered'>
                                   {translate('businessDivision', language)}
                                 </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                <th className='projectsList-table-title-content-vertical has-text-centered'>
                                   {translate('saleRevenue', language)}
                                 </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                  {translate('dispatchLaborExpense', language)}
-                                </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
-                                  {translate('employeeExpense', language)}
-                                </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                <th className='projectsList-table-title-content-vertical has-text-centered'>
                                   {translate('indirectEmployeeExpense', language)}
                                 </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                <th className='projectsList-table-title-content-vertical has-text-centered'>
+                                  {translate('dispatchLaborExpense', language)}
+                                </th>
+                                <th className='projectsList-table-title-content-vertical has-text-centered'>
+                                  {translate('employeeExpense', language)}
+                                </th>
+                                <th className='projectsList-table-title-content-vertical has-text-centered'>
                                   {translate('expense', language)}
                                 </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                <th className='projectsList-table-title-content-vertical has-text-centered'>
                                   {translate('operatingIncome', language)}
                                 </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                <th className='projectsList-table-title-content-vertical has-text-centered'>
                                   {translate('nonOperatingIncome', language)}
                                 </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                <th className='projectsList-table-title-content-vertical has-text-centered'>
                                   {translate('nonOperatingExpense', language)}
                                 </th>
-                                <th className='projectsList_table_title_content_vertical has-text-centered'>
+                                <th className='projectsList-table-title-content-vertical has-text-centered'>
                                   {translate('ordinaryIncome', language)}
+                                </th>
+                                <th className='projectsList-table-title-content-vertical has-text-centered'>
+                                  {translate('ordinaryProfitMargin', language)}
                                 </th>
                               </tr>
                             </thead>
-                            <tbody className='projectsList_table_body'>
+                            <tbody className='projectsList-table-body'>
                               {projects.map((project) => (
-                                <tr key={project.project_id} className='projectsList_table_body_content_horizontal'>
-                                  <td className='projectsList_table_body_content_vertical'>{project.year}</td>
-                                  <td className='projectsList_table_body_content_vertical'>{project.month}</td>
-                                  <td className='projectsList_table_body_content_vertical'>{project.project_name}</td>
-                                  <td className='projectsList_table_body_content_vertical'>{project.project_type}</td>
-                                  <td className='projectsList_table_body_content_vertical'>
+                                <tr key={project.project_id} className='projectsList-table-body-content-horizontal'>
+                                  <td className='projectsList-table-body-content-vertical'>{project.year}</td>
+                                  <td className='projectsList-table-body-content-vertical'>{project.month}</td>
+                                  <td className='projectsList-table-body-content-vertical'>{project.project_name}</td>
+                                  <td className='projectsList-table-body-content-vertical'>{project.project_type}</td>
+                                  <td className='projectsList-table-body-content-vertical'>
                                     {clients.map(
                                       (client) =>
                                         client.client_id === project.client && (
@@ -685,7 +704,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         ),
                                     )}
                                   </td>
-                                  <td className='projectsList_table_body_content_vertical'>
+                                  <td className='projectsList-table-body-content-vertical'>
                                     {businessSelection.map(
                                       (business) =>
                                         business.business_division_id === project.business_division && (
@@ -695,28 +714,35 @@ const ProjectsListAndEdit: React.FC = () => {
                                         ),
                                     )}
                                   </td>
-                                  <td className='projectsList_table_body_content_vertical'>{project.sales_revenue}</td>
-                                  <td className='projectsList_table_body_content_vertical'>
-                                    {project.dispatch_labor_expense}
+                                  <td className='projectsList-table-body-content-vertical'>
+                                    {formatNumberWithCommas(project.sales_revenue)}
                                   </td>
-                                  <td className='projectsList_table_body_content_vertical'>
-                                    {project.employee_expense}
+                                  <td className='projectsList-table-body-content-vertical'>
+                                    {formatNumberWithCommas(project.indirect_employee_expense)}
                                   </td>
-                                  <td className='projectsList_table_body_content_vertical'>
-                                    {project.indirect_employee_expense}
+                                  <td className='projectsList-table-body-content-vertical'>
+                                    {formatNumberWithCommas(project.dispatch_labor_expense)}
                                   </td>
-                                  <td className='projectsList_table_body_content_vertical'>{project.expense}</td>
-                                  <td className='projectsList_table_body_content_vertical'>
-                                    {project.operating_income}
+                                  <td className='projectsList-table-body-content-vertical'>
+                                    {formatNumberWithCommas(project.employee_expense)}
                                   </td>
-                                  <td className='projectsList_table_body_content_vertical'>
-                                    {project.non_operating_income}
+                                  <td className='projectsList-table-body-content-vertical'>
+                                    {formatNumberWithCommas(project.expense)}
                                   </td>
-                                  <td className='projectsList_table_body_content_vertical'>
-                                    {project.non_operating_expense}
+                                  <td className='projectsList-table-body-content-vertical'>
+                                    {formatNumberWithCommas(project.non_operating_income)}
                                   </td>
-                                  <td className='projectsList_table_body_content_vertical'>
-                                    {project.ordinary_profit}
+                                  <td className='projectsList-table-body-content-vertical'>
+                                    {formatNumberWithCommas(project.operating_income)}
+                                  </td>
+                                  <td className='projectsList-table-body-content-vertical'>
+                                    {formatNumberWithCommas(project.non_operating_expense)}
+                                  </td>
+                                  <td className='projectsList-table-body-content-vertical'>
+                                    {formatNumberWithCommas(project.ordinary_profit)}
+                                  </td>
+                                  <td className='projectsList-table-body-content-vertical'>
+                                    {formatNumberWithCommas(project.ordinary_profit_margin)}
                                   </td>
                                 </tr>
                               ))}
@@ -728,12 +754,12 @@ const ProjectsListAndEdit: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className='projectsList_is_editing_wrapper'>
-                <div className='projectsList_is_editing_cont'>
+              <div className='projectsList-is-editing-wrapper'>
+                <div className='projectsList-is-editing-cont'>
                   {isEditing ? (
-                    <div className='projectsList_edit_submit_btn_cont'>
+                    <div className='projectsList-edit-submit-btn-cont'>
                       <button
-                        className='projectsList_edit_submit_btn'
+                        className='projectsList-edit-submit-btn'
                         onClick={() => {
                           setIsUpdateConfirmationOpen(true)
                         }}

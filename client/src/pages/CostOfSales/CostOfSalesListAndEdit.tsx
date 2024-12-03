@@ -22,7 +22,8 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import {handleDisableKeysOnNumberInputs, removeCommas} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 
 const CostOfSalesList: React.FC = () => {
@@ -96,13 +97,18 @@ const CostOfSalesList: React.FC = () => {
     }
 
     const handleChange = (index, e) => {
-      const { name, value } = e.target;
-      const updatedData = [...combinedData];
+      const { name, value } = e.target
+
+      // Remove commas to get the raw number
+      // EG. 999,999 → 999999 in the DB
+      const rawValue = removeCommas(value)
+      
+      const updatedData = [...combinedData]
       updatedData[index] = {
         ...updatedData[index],
-        [name]: value,
-      };
-      setCostOfSales(updatedData);
+        [name]: rawValue,
+      }
+      setCostOfSales(updatedData)
     };
 
   const handleSubmit = async () => {
@@ -356,11 +362,11 @@ const CostOfSalesList: React.FC = () => {
           <div className='costOfSalesList_top_content'>
             <div className='costOfSalesList_top_body_cont'>
               <div className='costOfSalesList_mode_switch_datalist'>
-                <div className='mode_switch_container'>
-                  <p className='slider_mode_switch'>
+                <div className='mode-switch-container'>
+                  <p className='slider-mode-switch'>
                     {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
                   </p>
-                  <label className='slider_switch'>
+                  <label className='slider-switch'>
                     <input type='checkbox' checked={isEditing} onChange={handleClick} />
                     <span className='slider'></span>
                   </label>
@@ -439,9 +445,9 @@ const CostOfSalesList: React.FC = () => {
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='purchase'
-                                        value={costOfSale.purchase}
+                                        value={formatNumberWithCommas(costOfSale.purchase)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -449,9 +455,9 @@ const CostOfSalesList: React.FC = () => {
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='outsourcing_expense'
-                                        value={costOfSale.outsourcing_expense}
+                                        value={formatNumberWithCommas(costOfSale.outsourcing_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -459,9 +465,9 @@ const CostOfSalesList: React.FC = () => {
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='product_purchase'
-                                        value={costOfSale.product_purchase}
+                                        value={formatNumberWithCommas(costOfSale.product_purchase)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -469,9 +475,9 @@ const CostOfSalesList: React.FC = () => {
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='dispatch_labor_expense'
-                                        value={costOfSale.dispatch_labor_expense}
+                                        value={formatNumberWithCommas(costOfSale.dispatch_labor_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -479,9 +485,9 @@ const CostOfSalesList: React.FC = () => {
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='communication_expense'
-                                        value={costOfSale.communication_expense}
+                                        value={formatNumberWithCommas(costOfSale.communication_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -489,9 +495,9 @@ const CostOfSalesList: React.FC = () => {
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='work_in_progress_expense'
-                                        value={costOfSale.work_in_progress_expense}
+                                        value={formatNumberWithCommas(costOfSale.work_in_progress_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -499,9 +505,9 @@ const CostOfSalesList: React.FC = () => {
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='amortization_expense'
-                                        value={costOfSale.amortization_expense}
+                                        value={formatNumberWithCommas(costOfSale.amortization_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -578,25 +584,25 @@ const CostOfSalesList: React.FC = () => {
                                   {costOfSale.month}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.purchase || 0}
+                                  {formatNumberWithCommas(costOfSale.purchase) || 0}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.outsourcing_expense || 0}
+                                  {formatNumberWithCommas(costOfSale.outsourcing_expense) || 0}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.product_purchase || 0}
+                                  {formatNumberWithCommas(costOfSale.product_purchase) || 0}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.dispatch_labor_expense || 0}
+                                  {formatNumberWithCommas(costOfSale.dispatch_labor_expense) || 0}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.communication_expense || 0}
+                                  {formatNumberWithCommas(costOfSale.communication_expense) || 0}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.work_in_progress_expense || 0}
+                                  {formatNumberWithCommas(costOfSale.work_in_progress_expense) || 0}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.amortization_expense || 0}
+                                  {formatNumberWithCommas(costOfSale.amortization_expense) || 0}
                                 </td>
                               </tr>
                               {isLastcostOfSaleOfYear && (

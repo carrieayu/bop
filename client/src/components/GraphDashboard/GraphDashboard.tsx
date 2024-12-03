@@ -2,20 +2,34 @@ import React from 'react'
 import Card from '../Card/Card'
 import Chart from 'react-apexcharts'
 import { ApexOptions } from 'apexcharts'
+import { translate } from '../../utils/translationUtil'
+import { formatDate } from '../../utils/helperFunctionsUtil'
 
 interface CustomBarProps {
   className?: string
   style?: React.CSSProperties
   data: any
+  language
 }
 
-const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, data }) => {
+const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, data, language }) => {
   const categories = data.datasets[0].data.map((_: any, index: number) => `Category ${index + 1}`)
+  
+  const currentDate = new Date()
+  const currentDateFormatted = formatDate(currentDate) // returns `${year}-${month}-${day}`
 
   const options: ApexOptions = {
     chart: {
       type: 'bar',
       height: 350,
+      toolbar: {
+        export: {
+          csv: {
+            filename: `${translate('csvFileName', language)}:${currentDateFormatted}`, // Filename title on download CSV.
+            headerCategory: translate('yearMonth', language), // Manually override default 'category' header.
+          },
+        },
+      },
     },
     plotOptions: {
       bar: {
@@ -28,7 +42,7 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, data }) =>
     },
     stroke: {
       show: true,
-      width: [0, 2, 2, 2, 2, 2]
+      width: [0, 2, 2, 2, 2, 2],
     },
     xaxis: {
       categories: data.labels,

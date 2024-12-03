@@ -17,7 +17,7 @@ import { createProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint
 import { overwriteProjectSalesResult } from '../../api/ProjectSalesResultsEndpoint/OverwriteProjectSalesResults'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
 import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 type Project = {
@@ -101,9 +101,11 @@ const ProjectSalesResultsRegistration = () => {
       ordinary_profit_margin: '',
     },
   ])
+  
+  const maximumEntries = 10
 
   const handleAdd = () => {
-    if (formProjects.length < 10) {
+    if (formProjects.length < maximumEntries) {
       const tempProject = formProjects
       tempProject.push({
         id: formProjects.length + 1,
@@ -223,9 +225,13 @@ const ProjectSalesResultsRegistration = () => {
 
   const handleChange = (index, event) => {
     const { name, value } = event.target
+
+    // Remove commas to get the raw number
+    // EG. 999,999 → 999999 in the DB
+    const rawValue = removeCommas(value)
+
     setProjects((prevFormProjects) => {
       return prevFormProjects.map((form, i) => {
-        
         if (i === index) {
           const resetFields = {
             month: ['project_name', 'client', 'business_division'],
@@ -239,14 +245,13 @@ const ProjectSalesResultsRegistration = () => {
 
           return {
             ...form,
-            [name]: value,
+            [name]: rawValue,
             ...resetValues,
           }
         }
         return form
       })
-      }  
-    )
+    })
   }
 
   useEffect(() => {
@@ -707,6 +712,7 @@ const ProjectSalesResultsRegistration = () => {
                     <div className='projectSalesResultsRegistration_form-content-div'>
                       <div className='projectSalesResultsRegistration_left-form-div projectSalesResultsRegistration_calc'>
                         <div className='projectSalesResultsRegistration_year-div'>
+                          {/* LEFT COLUMN */}
                           <label className='projectSalesResultsRegistration_year'>{translate('year', language)}</label>
                           <select
                             className='projectSalesResultsRegistration_select-option'
@@ -745,11 +751,12 @@ const ProjectSalesResultsRegistration = () => {
                             {translate('saleRevenue', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='sales_revenue'
-                            value={form.sales_revenue}
+                            value={formatNumberWithCommas(form.sales_revenue)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
                         <div className='projectSalesResultsRegistration_employee-expenses-div'>
@@ -757,39 +764,42 @@ const ProjectSalesResultsRegistration = () => {
                             {translate('employeeExpense', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='employee_expense'
-                            value={form.employee_expense}
+                            value={formatNumberWithCommas(form.employee_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
-                        <div className='projectSalesResultsRegistration_operating-income-div'>
-                          <label className='projectSalesResultsRegistration_operating-income'>
-                            {translate('operatingIncome', language)}
+                        <div className='projectSalesResultsRegistration_non-operating-income-div'>
+                          <label className='projectSalesResultsRegistration_non-operating-income'>
+                            {translate('nonOperatingIncome', language)}
                           </label>
                           <input
-                            type='number'
-                            name='operating_income'
-                            value={form.operating_income}
+                            type='text'
+                            name='non_operating_income'
+                            value={formatNumberWithCommas(form.non_operating_income)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
-                        <div className='projectSalesResultsRegistration_ordinary-income-div'>
-                          <label className='projectSalesResultsRegistration_ordinary-income'>
-                            {translate('ordinaryIncome', language)}
+                        <div className='projectSalesResultsRegistration_ordinary-income-margin-div'>
+                          <label className='projectSalesResultsRegistration_ordinary-income-margin'>
+                            {translate('ordinaryIncomeProfitMargin', language)}
                           </label>
                           <input
-                            type='number'
-                            name='ordinary_profit'
-                            value={form.ordinary_profit}
+                            type='text'
+                            name='ordinary_profit_margin'
+                            value={formatNumberWithCommas(form.ordinary_profit_margin)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
                       </div>
-
+                      {/* MIDDLE COLUMN */}
                       <div className='projectSalesResultsRegistration_middle-form-div projectSalesResultsRegistration_calc'>
                         <div className='projectSalesResultsRegistration_month-div'>
                           <label className='projectSalesResultsRegistration_month'>
@@ -832,39 +842,42 @@ const ProjectSalesResultsRegistration = () => {
                             {translate('indirectEmployeeExpense', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='indirect_employee_expense'
-                            value={form.indirect_employee_expense}
+                            value={formatNumberWithCommas(form.indirect_employee_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
-                        <div className='projectSalesResultsRegistration_non-operating-income-div'>
-                          <label className='projectSalesResultsRegistration_non-operating-income'>
-                            {translate('nonOperatingIncome', language)}
+                        <div className='projectSalesResultsRegistration_expense-div'>
+                          <label className='projectSalesResultsRegistration_expense'>
+                            {translate('expense', language)}
                           </label>
                           <input
-                            type='number'
-                            name='non_operating_income'
-                            value={form.non_operating_income}
+                            type='text'
+                            name='expense'
+                            value={formatNumberWithCommas(form.expense)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
-                        <div className='projectSalesResultsRegistration_ordinary-income-margin-div'>
-                          <label className='projectSalesResultsRegistration_ordinary-income-margin'>
-                            {translate('ordinaryIncomeProfitMargin', language)}
+                        <div className='projectSalesResultsRegistration_non-operating-expense-div'>
+                          <label className='projectSalesResultsRegistration_non-operating-expense'>
+                            {translate('nonOperatingExpense', language)}
                           </label>
                           <input
-                            type='number'
-                            name='ordinary_profit_margin'
-                            value={form.ordinary_profit_margin}
+                            type='text'
+                            name='non_operating_expense'
+                            value={formatNumberWithCommas(form.non_operating_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
                       </div>
-
+                      {/* RIGHT COLUMN */}
                       <div className='projectSalesResultsRegistration_right-form-div projectSalesResultsRegistration_calc'>
                         <div className='projectSalesResultsRegistration_project-name-div'>
                           <label
@@ -890,7 +903,7 @@ const ProjectSalesResultsRegistration = () => {
                             <select
                               className='projectSalesResultsRegistration_select-option inactiveInput'
                               name='project_name'
-                              value={form.project_name}
+                              value={formatNumberWithCommas(form.project_name)}
                               onChange={(e) => handleChange(index, e)}
                               disabled
                             >
@@ -912,7 +925,7 @@ const ProjectSalesResultsRegistration = () => {
                             <select
                               className='projectSalesResultsRegistration_select-option inactiveInput'
                               name='business_division'
-                              value={form.business_division}
+                              value={formatNumberWithCommas(form.business_division)}
                               onChange={(e) => handleChange(index, e)}
                               disabled
                             >
@@ -930,37 +943,38 @@ const ProjectSalesResultsRegistration = () => {
                             {translate('dispatchLaborExpense', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='dispatch_labor_expense'
-                            value={form.dispatch_labor_expense}
+                            value={formatNumberWithCommas(form.dispatch_labor_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
-
-                        <div className='projectSalesResultsRegistration_expense-div'>
-                          <label className='projectSalesResultsRegistration_expense'>
-                            {translate('expenses', language)}
+                        <div className='projectSalesResultsRegistration_operating-income-div'>
+                          <label className='projectSalesResultsRegistration_operating-income'>
+                            {translate('operatingIncome', language)}
                           </label>
                           <input
-                            type='number'
-                            name='expense'
-                            value={form.expense}
+                            type='text'
+                            name='operating_income'
+                            value={formatNumberWithCommas(form.operating_income)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
-
-                        <div className='projectSalesResultsRegistration_non-operating-expense-div'>
-                          <label className='projectSalesResultsRegistration_non-operating-expense'>
-                            {translate('nonOperatingExpense', language)}
+                        <div className='projectSalesResultsRegistration_ordinary-income-div'>
+                          <label className='projectSalesResultsRegistration_ordinary-income'>
+                            {translate('ordinaryIncome', language)}
                           </label>
                           <input
-                            type='number'
-                            name='non_operating_expense'
-                            value={form.non_operating_expense}
+                            type='text'
+                            name='ordinary_profit'
+                            value={formatNumberWithCommas(form.ordinary_profit)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
                       </div>
@@ -973,11 +987,20 @@ const ProjectSalesResultsRegistration = () => {
               <div className='projectSalesResultsRegistration_lower_form_cont'>
                 <div className='projectSalesResultsRegistration_form-content'>
                   <div className='projectSalesResultsRegistration_plus-btn'>
-                    <button className='projectSalesResultsRegistration_inc' type='button' onClick={handleAdd}>
+                    {formProjects.length >= 2 ? (
+                      <button className='projectSalesResultsRegistration_dec' type='button' onClick={handleMinus}>
+                        -
+                      </button>
+                    ) : (
+                      <div className='projectSalesResultsRegistration_dec_empty'></div>
+                    )}
+                    <button
+                      className='projectSalesResultsRegistration_inc custom-disabled'
+                      type='button'
+                      onClick={handleAdd}
+                      disabled={formProjects.length === maximumEntries}
+                    >
                       +
-                    </button>
-                    <button className='projectSalesResultsRegistration_dec' type='button' onClick={handleMinus}>
-                      -
                     </button>
                   </div>
                   <div className='projectSalesResultsRegistration_options-btn'>

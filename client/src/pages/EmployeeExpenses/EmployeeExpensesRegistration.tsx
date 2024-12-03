@@ -170,8 +170,10 @@ const EmployeeExpensesRegistration = () => {
     fetchData();
   }, [token]);
 
+  const maximumEntries = 5
+
   const addEmployeeContainer = () => {
-    if (employeeContainers.length < 5) {
+    if (employeeContainers.length < maximumEntries) {
       setEmployeeContainers([
         ...employeeContainers,
         {
@@ -193,7 +195,9 @@ const EmployeeExpensesRegistration = () => {
     const updatedContainers = [...employeeContainers]
     const projectEntries = updatedContainers[containerIndex].projectEntries
 
-    if (projectEntries.length < 3) {
+    const maximumEntries = 5
+
+    if (projectEntries.length < maximumEntries) {
       projectEntries.push({
         id: projectEntries.length + 1,
         clients: '',
@@ -474,12 +478,15 @@ const EmployeeExpensesRegistration = () => {
                             type='button'
                             onClick={() => addProjectEntry(containerIndex)}
                           />
-                          <Btn
-                            label='-'
-                            className='employeeExpensesRegistration_button'
-                            type='button'
-                            onClick={() => removeProjectEntry(containerIndex)}
-                          />
+                          {employeeContainers[containerIndex].projectEntries.length >= 2 ?
+                            <Btn
+                              label='-'
+                              className='employeeExpensesRegistration_button'
+                              type='button'
+                              onClick={() => removeProjectEntry(containerIndex)}
+                            /> :
+                            <div className='employeeExpensesRegistration_button_empty'></div>
+                          }
                         </div>
                       </div>
                     </div>
@@ -488,19 +495,24 @@ const EmployeeExpensesRegistration = () => {
               </div>
               <div className='employeeExpensesRegistration_cont-footer'>
                 <div className='employeeExpensesRegistration_btn-plusminus'>
+                  {employeeContainers.length >= 2 ? (
+                    <button
+                      className='employeeExpensesRegistration_minus-btn'
+                      type='button'
+                      onClick={removeEmployeeContainer}
+                    >
+                      -
+                    </button>
+                  ) : (
+                    <div className='employeeExpensesRegistration_minus-btn-empty'></div>
+                  )}
                   <button
-                    className='employeeExpensesRegistration_plus-btn'
+                    className='employeeExpensesRegistration_plus-btn custom-disabled'
                     type='button'
                     onClick={addEmployeeContainer}
+                    disabled={employeeContainers.length === maximumEntries}
                   >
                     +
-                  </button>
-                  <button
-                    className='employeeExpensesRegistration_minus-btn'
-                    type='button'
-                    onClick={removeEmployeeContainer}
-                  >
-                    -
                   </button>
                 </div>
                 <div className='employeeExpensesRegistration_btn-subcancel'>
