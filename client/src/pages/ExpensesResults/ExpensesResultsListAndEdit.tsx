@@ -576,11 +576,13 @@ const ExpensesResultsList: React.FC = () => {
                                       />
                                     </td>
                                     <td className='expensesResultsList_table_body_content_vertical delete_icon'>
-                                      <RiDeleteBin6Fill
-                                        className='delete-icon'
-                                        onClick={() => openModal('expenses', expenseResults.expense_result_id)}
-                                        style={{ color: 'red' }}
-                                      />
+                                      {expenseResults.expense_result_id !== null &&
+                                        <RiDeleteBin6Fill
+                                          className='delete-icon'
+                                          onClick={() => openModal('expenses', expenseResults.expense_result_id)}
+                                          style={{ color: 'red' }}
+                                        />
+                                      }
                                     </td>
                                   </tr>
                                 ) : null}
