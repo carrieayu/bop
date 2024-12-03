@@ -21,8 +21,9 @@ import { filterCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/Fi
 
 const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 type CostOfSaleResults = {
-  month: Date
-  year: Date
+  month: string
+  year: string
+  cost_of_sale_id : string
 }
 type CostOfSaleResult = {
   cosr: CostOfSaleResults[]
@@ -40,7 +41,7 @@ const CostOfSalesResultsRegistration = () => {
   const endYear = currentYear + 2
   const years = Array.from({ length: endYear - startYear + 1 }, (val, i) => startYear + i)
   const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [costOfSaleResultsSelection, setCostOfSaleResultsSelection] = useState<CostOfSaleResult[]>([{ cosr: [] }])
+  const [costOfSaleResultsData, setCostOfSaleResultData] = useState<CostOfSaleResult[]>([{ cosr: [] }])
   const [filteredMonth, setFilteredMonth] = useState<any>([])
   const [formData, setFormData] = useState([
     {
@@ -80,6 +81,7 @@ const CostOfSalesResultsRegistration = () => {
         // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
       })
       setFormData(newFormData)
+      setCostOfSaleResultData([...costOfSaleResultsData, { cosr: [] }])
     } else {
       console.log('You can only add up to 10 forms.')
     }
@@ -174,7 +176,12 @@ const CostOfSalesResultsRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-
+    
+    const getId = costOfSaleResultsData.flatMap((cosr) =>{
+        return cosr.cosr.map((item) => item.cost_of_sale_id)
+    }
+    )
+    
     const costOfSalesData = formData.map((cos) => ({
       year: cos.year,
       month: cos.month,
@@ -187,6 +194,30 @@ const CostOfSalesResultsRegistration = () => {
       amortization_expense: cos.amortization_expense,
     }))
 
+
+    let combinedObject = formData.map(() => ({
+      year: '',
+      month: '',
+      purchase: '',
+      outsourcing_expense: '',
+      product_purchase: '',
+      dispatch_labor_expense: '',
+      communication_expense: '',
+      work_in_progress_expense: '',
+      amortization_expense: '',
+    }))
+
+    const updatedCombinedObject = combinedObject.map((item, index) => {
+      const relatedCoSR = getId[index] || {} 
+      return {
+        ...item,
+        ...costOfSalesData[index],
+        ...relatedCoSR,
+      }
+    })
+    
+    console.log(updatedCombinedObject)
+    
     // // Client Side Validation
 
     // // Step 1: Preparartion for validation
@@ -335,8 +366,7 @@ const CostOfSalesResultsRegistration = () => {
         }
         if (filterParams.year && filterParams.month) {
           filterCostOfSaleResults(filterParams, token).then((data) => {
-            console.log(data)
-            setCostOfSaleResultsSelection((prev) => {
+            setCostOfSaleResultData((prev) => {
               return prev.map((row, projectIndex) => {
                 if (index == projectIndex) {
                   return {
@@ -347,7 +377,6 @@ const CostOfSalesResultsRegistration = () => {
               })
             })
           })
-          console.log(costOfSaleResultsSelection)
         } else if (filterParams.year) {
           filterCostOfSaleResults(filterParams, token).then((data) => {
             setFilteredMonth(data)

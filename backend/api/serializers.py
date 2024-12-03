@@ -339,7 +339,6 @@ class CostOfSalesResultsListSerializer(serializers.ModelSerializer):
     class Meta:
         model = CostOfSalesResults
         fields = '__all__'
-        
 
 
 # Expenses
