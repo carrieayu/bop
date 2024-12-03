@@ -91,6 +91,11 @@ const CostOfSalesList: React.FC = () => {
         if (newEditingState) {
           setLanguage(initialLanguage);
         }
+
+        if (!newEditingState) {
+          // Reset to original values when switching to list mode
+          setCostOfSales(originalCostOfSales)
+        }
     
         return newEditingState;
       });

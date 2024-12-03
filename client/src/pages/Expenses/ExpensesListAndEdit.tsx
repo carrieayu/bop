@@ -110,6 +110,11 @@ const ExpensesList: React.FC = () => {
         setLanguage(initialLanguage)
       }
 
+        if (!newEditingState) {
+          // Reset to original values when switching to list mode
+          setExpensesList(originalExpenseList)
+        }
+
       return newEditingState
     })
   }
