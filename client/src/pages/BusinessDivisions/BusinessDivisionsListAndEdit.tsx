@@ -243,7 +243,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                 .then((data) => {
                   const users = data
                   const userMapping = users.reduce((map, user) => {
-                    map[user.user_id] = user.first_name
+                    map[user.user_id] = user.last_name + user.first_name
                     return map
                   }, {})
                   setUserMap(userMapping)
