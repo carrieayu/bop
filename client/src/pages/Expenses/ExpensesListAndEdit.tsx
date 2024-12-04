@@ -17,12 +17,12 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-
+import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 import { deleteExpense } from '../../api/ExpenseEndpoint/DeleteExpense'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
 import { updateExpense } from '../../api/ExpenseEndpoint/UpdateExpense'
+
 
 const ExpensesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -110,16 +110,26 @@ const ExpensesList: React.FC = () => {
         setLanguage(initialLanguage)
       }
 
+        if (!newEditingState) {
+          // Reset to original values when switching to list mode
+          setExpensesList(originalExpenseList)
+        }
+
       return newEditingState
     })
   }
 
   const handleChange = (index, e) => {
     const { name, value } = e.target
+
+    // Remove commas to get the raw number
+    // EG. 999,999 → 999999 in the DB
+    const rawValue = removeCommas(value)
+    
     const updatedData = [...combinedData]
     updatedData[index] = {
       ...updatedData[index],
-      [name]: value,
+      [name]: rawValue,
     }
     setExpensesList(updatedData)
   }
@@ -391,11 +401,11 @@ const ExpensesList: React.FC = () => {
           <div className='expensesList_top_content'>
             <div className='expensesList_top_body_cont'>
               <div className='expensesList_mode_switch_datalist'>
-                <div className='mode_switch_container'>
-                  <p className='slider_mode_switch'>
+                <div className='mode-switch-container'>
+                  <p className='slider-mode-switch'>
                     {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
                   </p>
-                  <label className='slider_switch'>
+                  <label className='slider-switch'>
                     <input type='checkbox' checked={isEditing} onChange={handleClick} />
                     <span className='slider'></span>
                   </label>
@@ -487,9 +497,9 @@ const ExpensesList: React.FC = () => {
                                     </td>
                                     <td className='expensesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='consumable_expense'
-                                        value={expense.consumable_expense}
+                                        value={formatNumberWithCommas(expense.consumable_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -497,9 +507,9 @@ const ExpensesList: React.FC = () => {
                                     </td>
                                     <td className='expensesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='rent_expense'
-                                        value={expense.rent_expense}
+                                        value={formatNumberWithCommas(expense.rent_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -507,9 +517,9 @@ const ExpensesList: React.FC = () => {
                                     </td>
                                     <td className='expensesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='tax_and_public_charge'
-                                        value={expense.tax_and_public_charge}
+                                        value={formatNumberWithCommas(expense.tax_and_public_charge)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -517,9 +527,9 @@ const ExpensesList: React.FC = () => {
                                     </td>
                                     <td className='expensesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='depreciation_expense'
-                                        value={expense.depreciation_expense}
+                                        value={formatNumberWithCommas(expense.depreciation_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -527,9 +537,9 @@ const ExpensesList: React.FC = () => {
                                     </td>
                                     <td className='expensesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='travel_expense'
-                                        value={expense.travel_expense}
+                                        value={formatNumberWithCommas(expense.travel_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -537,9 +547,9 @@ const ExpensesList: React.FC = () => {
                                     </td>
                                     <td className='expensesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='communication_expense'
-                                        value={expense.communication_expense}
+                                        value={formatNumberWithCommas(expense.communication_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -548,9 +558,9 @@ const ExpensesList: React.FC = () => {
 
                                     <td className='expensesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='utilities_expense'
-                                        value={expense.utilities_expense}
+                                        value={formatNumberWithCommas(expense.utilities_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -558,9 +568,9 @@ const ExpensesList: React.FC = () => {
                                     </td>
                                     <td className='expensesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='transaction_fee'
-                                        value={expense.transaction_fee}
+                                        value={formatNumberWithCommas(expense.transaction_fee)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -568,9 +578,9 @@ const ExpensesList: React.FC = () => {
                                     </td>
                                     <td className='expensesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='advertising_expense'
-                                        value={expense.advertising_expense}
+                                        value={formatNumberWithCommas(expense.advertising_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -578,9 +588,9 @@ const ExpensesList: React.FC = () => {
                                     </td>
                                     <td className='expensesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='entertainment_expense'
-                                        value={expense.entertainment_expense}
+                                        value={formatNumberWithCommas(expense.entertainment_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -588,20 +598,22 @@ const ExpensesList: React.FC = () => {
                                     </td>
                                     <td className='expensesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='professional_service_fee'
-                                        value={expense.professional_service_fee}
+                                        value={formatNumberWithCommas(expense.professional_service_fee)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
                                     <td className='expensesList_table_body_content_vertical delete_icon'>
-                                      <RiDeleteBin6Fill
-                                        className='delete-icon'
-                                        onClick={() => openModal('expenses', expense.expense_id)}
-                                        style={{ color: 'red' }}
-                                      />
+                                      {  expense.expense_id !== null &&
+                                        <RiDeleteBin6Fill
+                                          className='delete-icon'
+                                          onClick={() => openModal('expenses', expense.expense_id)}
+                                          style={{ color: 'red' }}
+                                        />
+                                      }
                                     </td>
                                   </tr>
                                 ) : null}
@@ -645,37 +657,37 @@ const ExpensesList: React.FC = () => {
                                   {expense.month}
                                 </td>
                                 <td className='expensesList_table_body_content_vertical'>
-                                  {expense.consumable_expense || 0}
+                                  {formatNumberWithCommas(expense.consumable_expense) || 0}
                                 </td>
                                 <td className='expensesList_table_body_content_vertical has-text-centered'>
-                                  {expense.rent_expense || 0}
+                                  {formatNumberWithCommas(expense.rent_expense) || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.tax_and_public_charge || 0}
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {formatNumberWithCommas(expense.tax_and_public_charge) || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.depreciation_expense || 0}
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {formatNumberWithCommas(expense.depreciation_expense) || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.travel_expense || 0}
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {formatNumberWithCommas(expense.travel_expense) || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.communication_expense || 0}
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {formatNumberWithCommas(expense.communication_expense) || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.utilities_expense || 0}
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {formatNumberWithCommas(expense.utilities_expense) || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.transaction_fee || 0}
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {formatNumberWithCommas(expense.transaction_fee) || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.advertising_expense || 0}
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {formatNumberWithCommas(expense.advertising_expense) || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.entertainment_expense || 0}
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {formatNumberWithCommas(expense.entertainment_expense) || 0}
                                 </td>
-                                <td className='expensesList_table_body_content_vertical has-text-right'>
-                                  {expense.professional_service_fee || 0}
+                                <td className='expensesList_table_body_content_vertical has-text-centered'>
+                                  {formatNumberWithCommas(expense.professional_service_fee) || 0}
                                 </td>
                               </tr>
                               {isLastExpenseOfYear && (

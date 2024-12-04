@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import ExpensesCreate, ExpensesDelete, ExpensesList,ExpensesUpdate, PasswordForgotView, ProjectSalesResultsFilter
+from api.views import EmployeeExpensesResultsCreate, EmployeeExpensesResultsDelete, EmployeeExpensesResultsFilter, EmployeeExpensesResultsList, ExpensesCreate, ExpensesDelete, ExpensesList,ExpensesUpdate, PasswordForgotView, ProjectSalesResultsFilter
 from api.views import ProjectSalesResultsCreate, ProjectSalesResultsDelete, ProjectSalesResultsList, ProjectSalesResultsUpdate
 from api.views import ExpensesResultsCreate, ExpensesResultsDelete, ExpensesResultsList, ExpensesResultsUpdate
 from api.views import PlanningList, PlanningUpdate, PlanningDisplayByProjects
@@ -62,6 +62,12 @@ urlpatterns = [
     path('api/employee-expenses/create/', EmployeeExpensesCreate.as_view(), name = 'employee-expenses-create'),
     # Employee Expenses Currently Has No Update Function as the Edit Screen is only used for deleting.
     path('api/employee-expenses/<str:pk>/delete/', EmployeeExpensesDelete.as_view(), name='employee-expenses-delete'),
+
+    # EmployeeExpenses Results
+    path('api/employee-expenses-results/list/', EmployeeExpensesResultsList.as_view(), name = 'employee-expenses-results-list'),
+    path('api/employee-expenses-results/create/', EmployeeExpensesResultsCreate.as_view(), name = 'employee-expenses-results-create'),
+    path('api/employee-expenses-results/<str:pk>/delete/', EmployeeExpensesResultsDelete.as_view(), name='employee-expenses-results-delete'),
+    path('api/employee-expenses-results/filter/', EmployeeExpensesResultsFilter.as_view(), name="employee-expenses-results-filter-list"),
     
     # Expenses
     path('api/expenses/list/', ExpensesList.as_view(), name = 'expenses-list'),

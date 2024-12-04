@@ -2,6 +2,8 @@ import React, { Component, Suspense, lazy } from "react";
 import { Navigate, RouteObject } from "react-router-dom";
 import SuspenseLoader from "../components/SuspenseLoader/SuspenseLoader";
 import ProtectedRoutes from "./ProtectedRoutes";
+import EmployeeExpensesResultsList from "../pages/EmployeeExpensesResults/EmployeeExpenseResultsList";
+import EmployeeExpensesResultsRegistration from "../pages/EmployeeExpensesResults/EmployeeExpensesResultsRegistration";
 
 const Loader = (Component: any) => (props: any) =>
   (
@@ -158,6 +160,22 @@ const routes: RouteObject[] = [
         element: (
           <ProtectedRoutes>
             <EmployeeExpensesRegistration />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: 'employee-expenses-results-list',
+        element: (
+          <ProtectedRoutes>
+            <EmployeeExpensesResultsList />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: 'employee-expenses-results-registration',
+        element: (
+          <ProtectedRoutes>
+            <EmployeeExpensesResultsRegistration />
           </ProtectedRoutes>
         ),
       },

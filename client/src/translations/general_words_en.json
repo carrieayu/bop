@@ -50,6 +50,7 @@
   "switchToDisplayMode": "Switch to Display Mode",
   "cannotSwitchLanguagesInEditMode": "Cannot switch languages in Edit Mode",
   "alertMessageAbove": "The selected year and month: '${existingEntries}' already has data registered. Do you want to overwrite it?",
+  "alertMessageAboveProjectSalesResult": "The selected project name(s): '${existingEntries}' already has data registered. Do you want to overwrite it?",
   "alertMessageNewEntries": " And save the new selected year and month: '${newEntries}'?",
   "createdBy": "Created By",
   "createdAt": "Created At",
@@ -149,5 +150,8 @@
   "invalidNumber": "Number Cannot Include: Decimal, 'e', '+' or '-'",
   "invalidUsernameOrPassword": "Username or Password are Invalid.",
   "invalidInputOrEmailDoesNotExist":"Invalid Input or Email Does Not Exist.",
-  "MailSentSuccess":"Mail Sent Successfully."
+  "MailSentSuccess":"Mail Sent Successfully.",
+  "projectResults": "Project Result",
+  "yearMonth": "Year/Month",
+  "csvFileName": "CSV: Financial Summary"
 }

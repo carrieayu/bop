@@ -1,48 +1,39 @@
-import React, { useEffect, useState } from 'react';
-import Btn from '../../components/Button/Button';
-import Sidebar from '../../components/Sidebar/Sidebar';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { translate } from '../../utils/translationUtil';
-import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons';
-import HeaderButtons from '../../components/HeaderButtons/HeaderButtons';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react'
+import Btn from '../../components/Button/Button'
+import Sidebar from '../../components/Sidebar/Sidebar'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { translate } from '../../utils/translationUtil'
+import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
+import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
+import axios from 'axios'
 import AlertModal from '../../components/AlertModal/AlertModal'
-import CrudModal from '../../components/CrudModal/CrudModal';
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
-import { createEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/CreateEmployeeExpense';
-import { getProject } from '../../api/ProjectsEndpoint/GetProject';
-import { getEmployee } from '../../api/EmployeeEndpoint/GetEmployee';
-import {
-  validateEmployeeExpensesRecords,
-  translateAndFormatErrors,
-  getFieldChecks,
-  checkForDuplicates,
-} from '../../utils/validationUtil'
+import CrudModal from '../../components/CrudModal/CrudModal'
+import { getProject } from '../../api/ProjectsEndpoint/GetProject'
+import { getEmployee } from '../../api/EmployeeEndpoint/GetEmployee'
+import { createEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/CreateEmployeeExpenseResult'
+import { checkForDuplicates, getFieldChecks, translateAndFormatErrors, validateEmployeeExpensesResultsRecords } from '../../utils/validationUtil'
+import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
+import { getFilteredProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/FilteredGetProjectSalesResults'
 
+const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 
-const months = [
-  '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
-];
-
-const EmployeeExpensesRegistration = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [activeTab, setActiveTab] = useState('/planning-list');
-  const [activeTabOther, setActiveTabOther] = useState('employeeExpenses');
-  const { language, setLanguage } = useLanguage();
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
-  const currentYear = new Date().getFullYear();
-  const startYear = currentYear - 1;
-  const endYear = currentYear + 2;
-  const years = Array.from({ length: endYear - startYear + 1 }, (val, i) => startYear + i);
+const EmployeeExpensesResultsRegistration = () => {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [activeTab, setActiveTab] = useState('/planning-list')
+  const [activeTabOther, setActiveTabOther] = useState('employeeExpensesResults')
+  const { language, setLanguage } = useLanguage()
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
+  const currentYear = new Date().getFullYear()
+  const startYear = currentYear - 1
+  const endYear = currentYear + 2
+  const years = Array.from({ length: endYear - startYear + 1 }, (val, i) => startYear + i)
   const token = localStorage.getItem('accessToken')
-  const [employees, setEmployees] = useState([]); 
-  const [projects, setProjects] = useState([]); 
+  const [employees, setEmployees] = useState([])
+  const [projectsSalesResults, setProjectSalesResult] = useState([])
   const storedUserID = localStorage.getItem('userID')
   const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [crudValidationErrors, setCrudValidationErrors] = useState([])
-
   const [employeeContainers, setEmployeeContainers] = useState([
     {
       id: 1,
@@ -50,9 +41,9 @@ const EmployeeExpensesRegistration = () => {
       projectEntries: [{ id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '' }],
     },
   ])
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -60,24 +51,20 @@ const EmployeeExpensesRegistration = () => {
   }
 
   const handleTabsClick = (tab) => {
-    setActiveTabOther(tab);
+    setActiveTabOther(tab)
     switch (tab) {
-      case 'project':
-        navigate('/projects-registration')
+      case 'projectSalesResults':
+        navigate('/project-sales-results-list')
         break
-      case 'employeeExpenses':
-        navigate('/employee-expenses-registration')
+      case 'expensesResults':
+        navigate('/expenses-results-list')
         break
-      case 'expenses':
-        navigate('/expenses-registration')
-        break
-      case 'costOfSales':
-        navigate('/cost-of-sales-registration')
+      case 'employeeExpensesResults':
+        navigate('/employee-expenses-results-list')
         break
       default:
-        break
     }
-  };
+  }
 
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
@@ -85,13 +72,13 @@ const EmployeeExpensesRegistration = () => {
   }
 
   const handleRemoveInputData = () => {
-    setEmployeeContainers([{
+    setEmployeeContainers([
+      {
         id: 1,
         employee: '',
-        projectEntries: [{ id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '' }]
-      }
-    ]
-    )
+        projectEntries: [{ id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '' }],
+      },
+    ])
     closeModal()
   }
 
@@ -104,40 +91,39 @@ const EmployeeExpensesRegistration = () => {
   }
 
   useEffect(() => {
-    const path = location.pathname;
+    const path = location.pathname
     if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
-      setActiveTab(path);
+      setActiveTab(path)
     }
-  }, [location.pathname]);
+  }, [location.pathname])
 
   useEffect(() => {
-    setIsTranslateSwitchActive(language === 'en');
-  }, [language]);
+    setIsTranslateSwitchActive(language === 'en')
+  }, [language])
 
   const handleTranslationSwitchToggle = () => {
-    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
-    setLanguage(newLanguage);
-  };
+    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
+    setLanguage(newLanguage)
+  }
 
   const monthNames = {
-    1: { en: "January", jp: "1月" },
-    2: { en: "February", jp: "2月" },
-    3: { en: "March", jp: "3月" },
-    4: { en: "April", jp: "4月" },
-    5: { en: "May", jp: "5月" },
-    6: { en: "June", jp: "6月" },
-    7: { en: "July", jp: "7月" },
-    8: { en: "August", jp: "8月" },
-    9: { en: "September", jp: "9月" },
-    10: { en: "October", jp: "10月" },
-    11: { en: "November", jp: "11月" },
-    12: { en: "December", jp: "12月" },
-  };
+    1: { en: 'January', jp: '1月' },
+    2: { en: 'February', jp: '2月' },
+    3: { en: 'March', jp: '3月' },
+    4: { en: 'April', jp: '4月' },
+    5: { en: 'May', jp: '5月' },
+    6: { en: 'June', jp: '6月' },
+    7: { en: 'July', jp: '7月' },
+    8: { en: 'August', jp: '8月' },
+    9: { en: 'September', jp: '9月' },
+    10: { en: 'October', jp: '10月' },
+    11: { en: 'November', jp: '11月' },
+    12: { en: 'December', jp: '12月' },
+  }
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        
         getEmployee(token)
           .then((data) => {
             setEmployees(data)
@@ -149,10 +135,10 @@ const EmployeeExpensesRegistration = () => {
               console.error('There was an error fetching the employee!', error)
             }
           })
-        
-        getProject(token)
+
+        getProjectSalesResults(token)
           .then((data) => {
-            setProjects(data)
+            setProjectSalesResult(data)
           })
           .catch((error) => {
             if (error.response && error.response.status === 401) {
@@ -161,19 +147,16 @@ const EmployeeExpensesRegistration = () => {
               console.error('There was an error fetching the projects!', error)
             }
           })
-
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching data:', error)
       }
-    };
+    }
 
-    fetchData();
-  }, [token]);
-
-  const maximumEntries = 5
+    fetchData()
+  }, [token])
 
   const addEmployeeContainer = () => {
-    if (employeeContainers.length < maximumEntries) {
+    if (employeeContainers.length < 5) {
       setEmployeeContainers([
         ...employeeContainers,
         {
@@ -187,17 +170,15 @@ const EmployeeExpensesRegistration = () => {
 
   const removeEmployeeContainer = () => {
     if (employeeContainers.length > 1) {
-      setEmployeeContainers(employeeContainers.slice(0, -1));
+      setEmployeeContainers(employeeContainers.slice(0, -1))
     }
-  };
+  }
 
   const addProjectEntry = (containerIndex) => {
     const updatedContainers = [...employeeContainers]
     const projectEntries = updatedContainers[containerIndex].projectEntries
 
-    const maximumEntries = 5
-
-    if (projectEntries.length < maximumEntries) {
+    if (projectEntries.length < 3) {
       projectEntries.push({
         id: projectEntries.length + 1,
         clients: '',
@@ -211,12 +192,12 @@ const EmployeeExpensesRegistration = () => {
   }
 
   const removeProjectEntry = (containerIndex) => {
-    const updatedContainers = [...employeeContainers];
+    const updatedContainers = [...employeeContainers]
     if (updatedContainers[containerIndex].projectEntries.length > 1) {
-      updatedContainers[containerIndex].projectEntries.pop();
-      setEmployeeContainers(updatedContainers);
+      updatedContainers[containerIndex].projectEntries.pop()
+      setEmployeeContainers(updatedContainers)
     }
-  };
+  }
 
   const handleInputChange = (containerIndex, projectIndex, event) => {
     const { name, value } = event.target
@@ -224,17 +205,17 @@ const EmployeeExpensesRegistration = () => {
 
     if (projectIndex !== null) {
       if (name === 'projects') {
-        const selectedProject = projects.find((project) => project.project_id === value)
+        const selectedProject = projectsSalesResults.find((project) => project.projects.project_id === value)
 
         newContainers[containerIndex].projectEntries[projectIndex] = {
           ...newContainers[containerIndex].projectEntries[projectIndex],
-          projects: value, 
-          clients: selectedProject ? selectedProject.client : '',
+          projects: value,
+          clients: selectedProject ? selectedProject.projects.client : '',
         }
       } else {
         newContainers[containerIndex].projectEntries[projectIndex] = {
           ...newContainers[containerIndex].projectEntries[projectIndex],
-          [name]: value, 
+          [name]: value,
         }
       }
     } else {
@@ -244,38 +225,97 @@ const EmployeeExpensesRegistration = () => {
       }
     }
 
-    setEmployeeContainers(newContainers) 
+    setEmployeeContainers(newContainers)
+  }
+
+  const hasDuplicateProjects = () => {
+    for (const container of employeeContainers) {
+      const projectMap = new Map()
+
+      for (const projectEntry of container.projectEntries) {
+        const projectId = projectEntry.projects
+
+        // Ensure the projectId is not empty before checking
+        if (projectId) {
+          // Check if the project is already present for the same employee
+          if (projectMap.has(projectId)) {
+            return true // Duplicate project found for the same employee
+          }
+          projectMap.set(projectId, true)
+        }
+      }
+    }
+
+    return false // No duplicates found for any employee
+  }
+
+  const handleValidation = () => {
+    const projectField = translate('project', language)
+    const yearField = translate('year', language)
+    const monthField = translate('month', language)
+
+    const allFields = [projectField, yearField, monthField]
+
+    for (const container of employeeContainers) {
+      if (!container.employee) {
+        setModalMessage(translate('employeeExpensesValidation1', language))
+        setIsModalOpen(true)
+        return false
+      }
+
+      for (const projectEntry of container.projectEntries) {
+        const missingFields = []
+        if (!projectEntry.projects) {
+          missingFields.push(translate('project', language))
+        }
+        if (!projectEntry.year) {
+          missingFields.push(translate('year', language))
+        }
+        if (!projectEntry.month) {
+          missingFields.push(translate('month', language))
+        }
+
+        // If there are any missing fields, create a message
+        if (missingFields.length > 0) {
+          const fieldsMessage = missingFields.join(', ')
+          setModalMessage(translate('employeeExpensesValidation3', language).replace('${fieldsMessage}', fieldsMessage))
+          setIsModalOpen(true)
+          return false
+        }
+      }
+    }
+
+    return true
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     // # Client Side Validation
 
     // Step 1: Preparartion for validation
     // Set record type for validation
-    const recordType = 'employeeExpenses'
+    const recordType = 'employeeExpensesResults'
     // Retrieve field validation checks based on the record type
     const fieldChecks = getFieldChecks(recordType)
     // Validate records for the specified project fields
-    const validateEmployeeExpenses = (records) =>
-      validateEmployeeExpensesRecords(
+    const validateEmployeeExpensesResults = (records) =>
+      validateEmployeeExpensesResultsRecords(
         records,
         fieldChecks,
-        'employeeExpenses',
-        'employeeExpensesProjectContainers',
+        'employeeExpensesResults',
+        'employeeExpensesProjectResultsContainers',
         language,
       )
 
     // Step 2: Validate client-side input
-    const validationErrors = validateEmployeeExpenses(employeeContainers)
-
+    const validationErrors = validateEmployeeExpensesResults(employeeContainers)
     // Step 3: Check for duplicate entries on specific fields
     const uniqueFields = ['year', 'month', 'employee', 'projects']
     const duplicateErrors = checkForDuplicates(
       employeeContainers,
       uniqueFields,
-      'employeeExpenses',
+      'employeeExpensesResults',
       language,
       'projectEntries',
     )
@@ -288,7 +328,7 @@ const EmployeeExpensesRegistration = () => {
 
     // Step 5: Display the first set of errors found, if any
     const firstError = errorMapping.find(({ errors }) => errors.length > 0)
-
+    
     if (firstError) {
       const { errors, errorType } = firstError
       const translatedErrors = translateAndFormatErrors(errors, language, errorType)
@@ -300,8 +340,7 @@ const EmployeeExpensesRegistration = () => {
       setCrudValidationErrors([])
     }
     // Continue with submission if no errors
-
-    createEmployeeExpense(employeeContainers, token)
+    createEmployeeExpenseResults(employeeContainers, token)
       .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
@@ -344,60 +383,82 @@ const EmployeeExpensesRegistration = () => {
       })
   }
 
-  const handleListClick = () => { 
-    navigate('/employee-expenses-list');
-  };
+  const handleListClick = () => {
+    navigate('/employee-expenses-results-list')
+  }
 
+  useEffect(() => {
+    
+    employeeContainers.forEach((employee, index) => {
+      const project_name = employee.projectEntries.flatMap((entry) => entry.projects)[0] 
+      const year = employee.projectEntries.flatMap((entry) => entry.year)[0] 
+      const month = employee.projectEntries.flatMap((entry) => entry.month)[0] 
+
+      const filterParams = {
+        ...(project_name && { project_name }), // Include only if `getProjectName` is truthy
+        ...(year && { year }),
+        ...(month && { month }),
+      }
+      getFilteredProjectSalesResults(filterParams, token)
+        .then((data) => {
+          console.log(data)
+        })
+        .catch((error) => {
+          console.error('Something is wrong with filter function :', error)
+        })
+    })
+    
+    
+  }, [employeeContainers]) 
 
   return (
-    <div className='employeeExpensesRegistration_wrapper'>
+    <div className='employeeExpensesResultsRegistration_wrapper'>
       <HeaderButtons
         activeTab={activeTab}
         handleTabClick={handleTabClick}
         isTranslateSwitchActive={isTranslateSwitchActive}
         handleTranslationSwitchToggle={handleTranslationSwitchToggle}
       />
-      <div className='employeeExpensesRegistration_cont_wrapper'>
+      <div className='employeeExpensesResultsRegistration_cont_wrapper'>
         <Sidebar />
-        <div className='employeeExpensesRegistration_data_content'>
-          <div className='employeeExpensesRegistration_top_body_cont'>
+        <div className='employeeExpensesResultsRegistration_data_content'>
+          <div className='employeeExpensesResultsRegistration_top_body_cont'>
             {/* <div className='employeeExpensesRegistration_wrapper_div'> */}
             {/* <div className='employeeExpensesRegistration_top_content'>
         </div> */}
             {/* <div className='employeeExpensesRegistration_top_btn_cont'></div> */}
             <RegistrationButtons
               activeTabOther={activeTabOther}
-              message={translate('employeeExpensesRegistration', language)}
+              message={translate('employeeExpensesResultsRegistration', language)}
               handleTabsClick={handleTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
-                { labelKey: 'project', tabKey: 'project' },
-                { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
-                { labelKey: 'expenses', tabKey: 'expenses' },
-                { labelKey: 'costOfSales', tabKey: 'costOfSales' },
+                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
+                { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
+                { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
               ]}
             />
           </div>
-          <div className='employeeExpensesRegistration_mid_body_cont'>
+          <div className='employeeExpensesResultsRegistration_mid_body_cont'>
             {/* <form className='employeeExpensesRegistration_form_wrapper' onSubmit={handleSubmit}> */}
-            <form className='employeeExpensesRegistration_inputs_and_buttons' onSubmit={handleSubmit}>
+            <form className='employeeExpensesResultsRegistration_inputs_and_buttons' onSubmit={handleSubmit}>
               {/* <div className='employeeExpensesRegistration_table_wrapper'> */}
-              <div className='employeeExpensesRegistration_mid_form_cont'>
+              <div className='employeeExpensesResultsRegistration_mid_form_cont'>
                 {employeeContainers.map((container, containerIndex) => (
-                  <div className='employeeExpensesRegistration_container' key={container.id}>
+                  <div className='employeeExpensesResultsRegistration_container' key={container.id}>
                     <div
-                      className={`employeeExpensesRegistration_form-content ${containerIndex > 0 ? 'employeeExpensesRegistration_form-line' : ''}`}
+                      className={`employeeExpensesResultsRegistration_form-content ${containerIndex > 0 ? 'employeeExpensesResultsRegistration_form-line' : ''}`}
                     ></div>
-                    <div className='employeeExpensesRegistration_cont-body'>
-                      <div className='employeeExpensesRegistration_row'>
-                        <div className='employeeExpensesRegistration_label'>
+                    <div className='employeeExpensesResultsRegistration_cont-body'>
+                      <div className='employeeExpensesResultsRegistration_row'>
+                        <div className='employeeExpensesResultsRegistration_label'>
                           <p>{translate('employee', language)}</p>
                         </div>
-                        <div className='employeeExpensesRegistration_card-box'>
+                        <div className='employeeExpensesResultsRegistration_card-box'>
                           <select
                             name='employee'
                             value={container.employee}
-                            className='employeeExpensesRegistration_emp-select'
+                            className='employeeExpensesResultsRegistration_emp-select'
                             onChange={(e) => handleInputChange(containerIndex, null, e)}
                           >
                             <option value=''>{translate('selectEmployee', language)}</option>
@@ -409,33 +470,33 @@ const EmployeeExpensesRegistration = () => {
                           </select>
                         </div>
                       </div>
-                      <div className='employeeExpensesRegistration_project-fields'>
+                      <div className='employeeExpensesResultsRegistration_project-fields'>
                         {container.projectEntries.map((projectEntry, projectIndex) => (
-                          <div className='employeeExpensesRegistration_project-group' key={projectEntry.id}>
-                            <div className='employeeExpensesRegistration_row'>
-                              <div className='employeeExpensesRegistration_label'>
+                          <div className='employeeExpensesResultsRegistration_project-group' key={projectEntry.id}>
+                            <div className='employeeExpensesResultsRegistration_row'>
+                              <div className='employeeExpensesResultsRegistration_label'>
                                 <p>{translate('project', language)}</p>
                               </div>
-                              <div className='employeeExpensesRegistration_card-box'>
+                              <div className='employeeExpensesResultsRegistration_card-box'>
                                 <select
                                   name='projects'
                                   value={projectEntry.projects}
                                   onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
                                 >
                                   <option value=''></option>
-                                  {projects.map((project) => (
-                                    <option key={project.project_id} value={project.project_id}>
-                                      {project.project_name}
+                                  {projectsSalesResults.map((project) => (
+                                    <option key={project.project_sales_result_id} value={project.projects.project_name}>
+                                      {project.projects.project_name}
                                     </option>
                                   ))}
                                 </select>
                               </div>
                             </div>
-                            <div className='employeeExpensesRegistration_row'>
-                              <div className='employeeExpensesRegistration_label'>
+                            <div className='employeeExpensesResultsRegistration_row'>
+                              <div className='employeeExpensesResultsRegistration_label'>
                                 <p>{translate('year', language)}</p>
                               </div>
-                              <div className='employeeExpensesRegistration_card-box'>
+                              <div className='employeeExpensesResultsRegistration_card-box'>
                                 <select
                                   name='year'
                                   value={projectEntry.year}
@@ -450,11 +511,11 @@ const EmployeeExpensesRegistration = () => {
                                 </select>
                               </div>
                             </div>
-                            <div className='employeeExpensesRegistration_row'>
-                              <div className='employeeExpensesRegistration_label'>
+                            <div className='employeeExpensesResultsRegistration_row'>
+                              <div className='employeeExpensesResultsRegistration_label'>
                                 <p>{translate('month', language)}</p>
                               </div>
-                              <div className='employeeExpensesRegistration_card-box'>
+                              <div className='employeeExpensesResultsRegistration_card-box'>
                                 <select
                                   name='month'
                                   value={projectEntry.month}
@@ -471,51 +532,43 @@ const EmployeeExpensesRegistration = () => {
                             </div>
                           </div>
                         ))}
-                        <div className='employeeExpensesRegistration_button-box'>
+                        <div className='employeeExpensesResultsRegistration_button-box'>
                           <Btn
                             label='+'
-                            className='employeeExpensesRegistration_button'
+                            className='employeeExpensesResultsRegistration_button'
                             type='button'
                             onClick={() => addProjectEntry(containerIndex)}
                           />
-                          {employeeContainers[containerIndex].projectEntries.length >= 2 ?
-                            <Btn
-                              label='-'
-                              className='employeeExpensesRegistration_button'
-                              type='button'
-                              onClick={() => removeProjectEntry(containerIndex)}
-                            /> :
-                            <div className='employeeExpensesRegistration_button_empty'></div>
-                          }
+                          <Btn
+                            label='-'
+                            className='employeeExpensesResultsRegistration_button'
+                            type='button'
+                            onClick={() => removeProjectEntry(containerIndex)}
+                          />
                         </div>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
-              <div className='employeeExpensesRegistration_cont-footer'>
-                <div className='employeeExpensesRegistration_btn-plusminus'>
-                  {employeeContainers.length >= 2 ? (
-                    <button
-                      className='employeeExpensesRegistration_minus-btn'
-                      type='button'
-                      onClick={removeEmployeeContainer}
-                    >
-                      -
-                    </button>
-                  ) : (
-                    <div className='employeeExpensesRegistration_minus-btn-empty'></div>
-                  )}
+              <div className='employeeExpensesResultsRegistration_cont-footer'>
+                <div className='employeeExpensesResultsRegistration_btn-plusminus'>
                   <button
-                    className='employeeExpensesRegistration_plus-btn custom-disabled'
+                    className='employeeExpensesResultsRegistration_plus-btn'
                     type='button'
                     onClick={addEmployeeContainer}
-                    disabled={employeeContainers.length === maximumEntries}
                   >
                     +
                   </button>
+                  <button
+                    className='employeeExpensesResultsRegistration_minus-btn'
+                    type='button'
+                    onClick={removeEmployeeContainer}
+                  >
+                    -
+                  </button>
                 </div>
-                <div className='employeeExpensesRegistration_btn-subcancel'>
+                <div className='employeeExpensesResultsRegistration_btn-subcancel'>
                   <button type='button' className='button is-light' onClick={handleCancel}>
                     {translate('cancel', language)}
                   </button>
@@ -542,6 +595,6 @@ const EmployeeExpensesRegistration = () => {
       />
     </div>
   )
-};
+}
 
-export default EmployeeExpensesRegistration;
+export default EmployeeExpensesResultsRegistration

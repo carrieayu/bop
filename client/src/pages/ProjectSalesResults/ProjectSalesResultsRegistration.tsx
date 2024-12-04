@@ -16,7 +16,8 @@ import { getFilteredProjectSalesResults } from '../../api/ProjectSalesResultsEnd
 import { createProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/CreateProjectSalesResults'
 import { overwriteProjectSalesResult } from '../../api/ProjectSalesResultsEndpoint/OverwriteProjectSalesResults'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
-
+import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
+import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 type Project = {
@@ -77,6 +78,8 @@ const ProjectSalesResultsRegistration = () => {
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
 
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
+
   const [formProjects, setProjects] = useState([
     {
       id: 1,
@@ -98,9 +101,11 @@ const ProjectSalesResultsRegistration = () => {
       ordinary_profit_margin: '',
     },
   ])
+  
+  const maximumEntries = 10
 
   const handleAdd = () => {
-    if (formProjects.length < 10) {
+    if (formProjects.length < maximumEntries) {
       const tempProject = formProjects
       tempProject.push({
         id: formProjects.length + 1,
@@ -122,7 +127,6 @@ const ProjectSalesResultsRegistration = () => {
         ordinary_profit_margin: '',
       })
       setProjects(tempProject)
-      console.log("tempProject.length:", tempProject.length)
       
       setProjectsListSelection([...projectListSelection, { projects: [] }])
       setClientsFilter([...clientsFilter, { clients: [] }])
@@ -151,6 +155,9 @@ const ProjectSalesResultsRegistration = () => {
         break
       case 'projectSalesResults':
         navigate('/project-sales-results-list')
+        break
+      case 'employeeExpensesResults':
+        navigate('/employee-expenses-results-list')
         break
       default:
         break
@@ -215,9 +222,13 @@ const ProjectSalesResultsRegistration = () => {
 
   const handleChange = (index, event) => {
     const { name, value } = event.target
+
+    // Remove commas to get the raw number
+    // EG. 999,999 → 999999 in the DB
+    const rawValue = removeCommas(value)
+
     setProjects((prevFormProjects) => {
       return prevFormProjects.map((form, i) => {
-        
         if (i === index) {
           const resetFields = {
             month: ['project_name', 'client', 'business_division'],
@@ -231,14 +242,13 @@ const ProjectSalesResultsRegistration = () => {
 
           return {
             ...form,
-            [name]: value,
+            [name]: rawValue,
             ...resetValues,
           }
         }
         return form
       })
-      }  
-    )
+    })
   }
 
   useEffect(() => {
@@ -253,7 +263,6 @@ const ProjectSalesResultsRegistration = () => {
           ...(projectId !== null && { projectId }),
         }
         if (filterParams.year && filterParams.month && filterParams.projectId) {
-          console.log("three")
           getFilteredProjectSalesResults(filterParams, token)
             .then((data) => {
               let matchedClients = []
@@ -374,97 +383,110 @@ const ProjectSalesResultsRegistration = () => {
     }
   }, [location.pathname])
 
-  const validateProjects = (projectsValidate) => {
-    return projectsValidate.every((prj) => {
-      return (
-        prj.year.trim() !== '' &&
-        prj.month.trim() !== '' &&
-        prj.project_name.trim() !== '' &&
-        !isNaN(prj.sales_revenue) &&
-        prj.sales_revenue > 0 &&
-        !isNaN(prj.sales_revenue) &&
-        prj.dispatch_labor_expense > 0 &&
-        !isNaN(prj.dispatch_labor_expense) &&
-        prj.employee_expense > 0 &&
-        !isNaN(prj.employee_expense) &&
-        prj.indirect_employee_expense > 0 &&
-        !isNaN(prj.indirect_employee_expense) &&
-        prj.expense > 0 &&
-        !isNaN(prj.expense) &&
-        prj.operating_income > 0 &&
-        !isNaN(prj.operating_income) &&
-        prj.non_operating_income > 0 &&
-        !isNaN(prj.non_operating_income) &&
-        prj.non_operating_expense > 0 &&
-        !isNaN(prj.non_operating_expense) &&
-        prj.ordinary_profit > 0 &&
-        !isNaN(prj.ordinary_profit) &&
-        prj.ordinary_profit_margin > 0 &&
-        !isNaN(prj.ordinary_profit_margin)
-      )
-    })
-  }
-
-  const checkDuplicate = (projectsValidate) => {
-
-      return 
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    const getProjectId = projectList.flatMap((projects) =>
+    const getRelatedProjectIDs = projectList.flatMap((projects) =>
       projects.projects.map((project) => ({
         project: project.project_id,
         client: project.client,
         business_division: project.business_division,
       })),
     )
-
-    const duplicates = getProjectId.filter(
-      (item, index, self) => self.findIndex((t) => t.project === item.project) !== index,
-    )
-
+    
     const projectsData = formProjects.map((projects) => ({
-      project_name: projects.project_name,
-      month: projects.month,
       year: projects.year,
-      sales_revenue: parseFloat(projects.sales_revenue),
-      dispatch_labor_expense: parseFloat(projects.dispatch_labor_expense),
-      employee_expense: parseFloat(projects.employee_expense),
-      indirect_employee_expense: parseFloat(projects.indirect_employee_expense),
-      expense: parseFloat(projects.expense),
-      operating_income: parseFloat(projects.operating_income),
-      non_operating_income: parseFloat(projects.non_operating_income),
-      non_operating_expense: parseFloat(projects.non_operating_expense),
-      ordinary_profit: parseFloat(projects.ordinary_profit),
-      ordinary_profit_margin: parseFloat(projects.ordinary_profit_margin),
+      month: projects.month,
+      project_name: projects.project_name,
+      sales_revenue: projects.sales_revenue,
+      dispatch_labor_expense: projects.dispatch_labor_expense,
+      employee_expense: projects.employee_expense,
+      indirect_employee_expense: projects.indirect_employee_expense,
+      expense: projects.expense,
+      operating_income: projects.operating_income,
+      non_operating_income: projects.non_operating_income,
+      non_operating_expense: projects.non_operating_expense,
+      ordinary_profit: projects.ordinary_profit,
+      ordinary_profit_margin: projects.ordinary_profit_margin,
     }))
 
-    const combinedObject = getProjectId.map((item, index) => ({
-      ...item,
-      ...projectsData[index],
+    // Defines Object for validation
+    let combinedObject = formProjects.map(() => ({
+      year: '',
+      month: '',
+      project_name:'',
+      // project: '',
+      type: '',
+      client: '',
+      business_division: '',
+      sales_revenue: '',
+      dispatch_labor_expense: '',
+      employee_expense: '',
+      indirect_employee_expense: '',
+      expense: '',
+      operating_income: '',
+      non_operating_income: '',
+      non_operating_expense: '',
+      ordinary_profit: '',
+      ordinary_profit_margin: '',
     }))
+       
+    // Combines the data from related "project", "client", "business division" and adds data to object
+    const updatedCombinedObject = combinedObject.map((item, index) => {
+      const relatedProject = getRelatedProjectIDs[index] || {} // Get the related project for this index
+      return {
+        ...item,
+        ...projectsData[index], // Merge form data
+        ...relatedProject, // Merge project details if available
+      }
+    })
+
+    // Client Side Validation
+
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'projectResults'
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateProjects = (records) => validateRecords(records, fieldChecks, 'projectResults')
+
+    // Step 2: Validate client-side input
+    const validationErrors = validateProjects(updatedCombinedObject)
+    // Step 3: Check for duplicate entries on specific fields
+    const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client']
+    const duplicateErrors = checkForDuplicates(updatedCombinedObject, uniqueFields, 'project', language)
+
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
+
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      setModalMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
+      setIsModalOpen(true)
+      // setModalIsOpen(true)
+
+      return
+    } else {
+      setCrudValidationErrors([])
+    }
+    // Continue with submission if no errors
 
     if (!token) {
       window.location.href = '/login'
       return
     }
 
-    if (!validateProjects(projectsData)) {
-      setModalMessage(translate('usersValidationText6', language))
-      setIsModalOpen(true)
-      return // Stop the submission
-    }
-    
-
-    if(duplicates.length > 0){
-      setModalMessage(translate('usersValidationText9', language))
-      setIsModalOpen(true)
-      return
-    }
-    
-    createProjectSalesResults(combinedObject, token)
+    createProjectSalesResults(updatedCombinedObject, token)
       .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
@@ -495,7 +517,24 @@ const ProjectSalesResultsRegistration = () => {
         setBusinessDivisionFilter([{ divisions: [] }])
       })
       .catch((error) => {
-        console.error('Error overwriting data:', error)
+        const existingEntries = error.response.data
+        let projectNamesArray = []
+
+        existingEntries.conflicts.forEach((conflict) => {
+          if (conflict.project_name && Array.isArray(conflict.project_name)) {
+            conflict.project_name.forEach((entry) => {
+              projectNamesArray.push(entry.project_name)
+            })
+          }
+        })
+
+        let message = translate('alertMessageAboveProjectSalesResult', language).replace(
+          '${existingEntries}',
+          projectNamesArray.join(', '),
+        )
+        setModalMessage(message)
+        setIsOverwriteModalOpen(true)
+        return // Exit the function to wait for user input
       })
   }
 
@@ -505,7 +544,100 @@ const ProjectSalesResultsRegistration = () => {
     setIsOverwriteConfirmed(true) // Set overwrite confirmed state
 
     // Call the submission method again after confirmation
-    // await handleSubmitConfirmed()
+    await handleSubmitConfirmed()
+  }
+
+  const handleSubmitConfirmed = async () => {
+    const getRelatedProjectIDs = projectList.flatMap((projects) =>
+      projects.projects.map((project) => ({
+        project: project.project_id,
+        client: project.client,
+        business_division: project.business_division,
+      })),
+    )
+
+    const projectsData = formProjects.map((projects) => ({
+      year: projects.year,
+      month: projects.month,
+      project_name: projects.project_name,
+      sales_revenue: projects.sales_revenue,
+      dispatch_labor_expense: projects.dispatch_labor_expense,
+      employee_expense: projects.employee_expense,
+      indirect_employee_expense: projects.indirect_employee_expense,
+      expense: projects.expense,
+      operating_income: projects.operating_income,
+      non_operating_income: projects.non_operating_income,
+      non_operating_expense: projects.non_operating_expense,
+      ordinary_profit: projects.ordinary_profit,
+      ordinary_profit_margin: projects.ordinary_profit_margin,
+    }))
+
+    // Defines Object for validation
+    let combinedObject = formProjects.map(() => ({
+      year: '',
+      month: '',
+      project_name: '',
+      // project: '',
+      type: '',
+      client: '',
+      business_division: '',
+      sales_revenue: '',
+      dispatch_labor_expense: '',
+      employee_expense: '',
+      indirect_employee_expense: '',
+      expense: '',
+      operating_income: '',
+      non_operating_income: '',
+      non_operating_expense: '',
+      ordinary_profit: '',
+      ordinary_profit_margin: '',
+    }))
+
+    // Combines the data from related "project", "client", "business division" and adds data to object
+    const updatedCombinedObject = combinedObject.map((item, index) => {
+      const relatedProject = getRelatedProjectIDs[index] || {} // Get the related project for this index
+      return {
+        ...item,
+        ...projectsData[index], // Merge form data
+        ...relatedProject, // Merge project details if available
+      }
+    })
+    overwriteProjectSalesResult(updatedCombinedObject, token)
+      .then(() => {
+        setModalMessage(translate('overWrite', language))
+        setIsModalOpen(true)
+        setProjects([
+          {
+            id: 1,
+            year: '',
+            month: '',
+            project_name: '',
+            project_type: '',
+            client: '',
+            business_division: '',
+            sales_revenue: '',
+            dispatch_labor_expense: '',
+            employee_expense: '',
+            indirect_employee_expense: '',
+            expense: '',
+            operating_income: '',
+            non_operating_income: '',
+            non_operating_expense: '',
+            ordinary_profit: '',
+            ordinary_profit_margin: '',
+          },
+        ])
+        setProjectsListSelection([{ projects: [] }])
+        setClientsFilter([{ clients: [] }])
+        setProjectsList([{ projects: [] }])
+        setBusinessDivisionFilter([{ divisions: [] }])
+      })
+      .catch((error) => {
+        console.error('Error overwriting data:', error)
+      })
+      .finally(() => {
+        setIsOverwriteConfirmed(false)
+      })
   }
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
@@ -556,8 +688,9 @@ const ProjectSalesResultsRegistration = () => {
               handleTabsClick={handleTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
-                { labelKey: 'expensesResults', tabKey: 'expensesResults' },
-                { labelKey: 'projectSalesResults', tabKey: 'projectSalesResults' },
+                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
+                { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
+                { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
               ]}
             />
           </div>
@@ -575,6 +708,7 @@ const ProjectSalesResultsRegistration = () => {
                     <div className='projectSalesResultsRegistration_form-content-div'>
                       <div className='projectSalesResultsRegistration_left-form-div projectSalesResultsRegistration_calc'>
                         <div className='projectSalesResultsRegistration_year-div'>
+                          {/* LEFT COLUMN */}
                           <label className='projectSalesResultsRegistration_year'>{translate('year', language)}</label>
                           <select
                             className='projectSalesResultsRegistration_select-option'
@@ -613,11 +747,12 @@ const ProjectSalesResultsRegistration = () => {
                             {translate('saleRevenue', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='sales_revenue'
-                            value={form.sales_revenue}
+                            value={formatNumberWithCommas(form.sales_revenue)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
                         <div className='projectSalesResultsRegistration_employee-expenses-div'>
@@ -625,39 +760,42 @@ const ProjectSalesResultsRegistration = () => {
                             {translate('employeeExpense', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='employee_expense'
-                            value={form.employee_expense}
+                            value={formatNumberWithCommas(form.employee_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
-                        <div className='projectSalesResultsRegistration_operating-income-div'>
-                          <label className='projectSalesResultsRegistration_operating-income'>
-                            {translate('operatingIncome', language)}
+                        <div className='projectSalesResultsRegistration_non-operating-income-div'>
+                          <label className='projectSalesResultsRegistration_non-operating-income'>
+                            {translate('nonOperatingIncome', language)}
                           </label>
                           <input
-                            type='number'
-                            name='operating_income'
-                            value={form.operating_income}
+                            type='text'
+                            name='non_operating_income'
+                            value={formatNumberWithCommas(form.non_operating_income)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
-                        <div className='projectSalesResultsRegistration_ordinary-income-div'>
-                          <label className='projectSalesResultsRegistration_ordinary-income'>
-                            {translate('ordinaryIncome', language)}
+                        <div className='projectSalesResultsRegistration_ordinary-income-margin-div'>
+                          <label className='projectSalesResultsRegistration_ordinary-income-margin'>
+                            {translate('ordinaryIncomeProfitMargin', language)}
                           </label>
                           <input
-                            type='number'
-                            name='ordinary_profit'
-                            value={form.ordinary_profit}
+                            type='text'
+                            name='ordinary_profit_margin'
+                            value={formatNumberWithCommas(form.ordinary_profit_margin)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
                       </div>
-
+                      {/* MIDDLE COLUMN */}
                       <div className='projectSalesResultsRegistration_middle-form-div projectSalesResultsRegistration_calc'>
                         <div className='projectSalesResultsRegistration_month-div'>
                           <label className='projectSalesResultsRegistration_month'>
@@ -700,39 +838,42 @@ const ProjectSalesResultsRegistration = () => {
                             {translate('indirectEmployeeExpense', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='indirect_employee_expense'
-                            value={form.indirect_employee_expense}
+                            value={formatNumberWithCommas(form.indirect_employee_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
-                        <div className='projectSalesResultsRegistration_non-operating-income-div'>
-                          <label className='projectSalesResultsRegistration_non-operating-income'>
-                            {translate('nonOperatingIncome', language)}
+                        <div className='projectSalesResultsRegistration_expense-div'>
+                          <label className='projectSalesResultsRegistration_expense'>
+                            {translate('expense', language)}
                           </label>
                           <input
-                            type='number'
-                            name='non_operating_income'
-                            value={form.non_operating_income}
+                            type='text'
+                            name='expense'
+                            value={formatNumberWithCommas(form.expense)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
-                        <div className='projectSalesResultsRegistration_ordinary-income-margin-div'>
-                          <label className='projectSalesResultsRegistration_ordinary-income-margin'>
-                            {translate('ordinaryIncomeProfitMargin', language)}
+                        <div className='projectSalesResultsRegistration_non-operating-expense-div'>
+                          <label className='projectSalesResultsRegistration_non-operating-expense'>
+                            {translate('nonOperatingExpense', language)}
                           </label>
                           <input
-                            type='number'
-                            name='ordinary_profit_margin'
-                            value={form.ordinary_profit_margin}
+                            type='text'
+                            name='non_operating_expense'
+                            value={formatNumberWithCommas(form.non_operating_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
                       </div>
-
+                      {/* RIGHT COLUMN */}
                       <div className='projectSalesResultsRegistration_right-form-div projectSalesResultsRegistration_calc'>
                         <div className='projectSalesResultsRegistration_project-name-div'>
                           <label
@@ -758,7 +899,7 @@ const ProjectSalesResultsRegistration = () => {
                             <select
                               className='projectSalesResultsRegistration_select-option inactiveInput'
                               name='project_name'
-                              value={form.project_name}
+                              value={formatNumberWithCommas(form.project_name)}
                               onChange={(e) => handleChange(index, e)}
                               disabled
                             >
@@ -780,7 +921,7 @@ const ProjectSalesResultsRegistration = () => {
                             <select
                               className='projectSalesResultsRegistration_select-option inactiveInput'
                               name='business_division'
-                              value={form.business_division}
+                              value={formatNumberWithCommas(form.business_division)}
                               onChange={(e) => handleChange(index, e)}
                               disabled
                             >
@@ -798,37 +939,38 @@ const ProjectSalesResultsRegistration = () => {
                             {translate('dispatchLaborExpense', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='dispatch_labor_expense'
-                            value={form.dispatch_labor_expense}
+                            value={formatNumberWithCommas(form.dispatch_labor_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
-
-                        <div className='projectSalesResultsRegistration_expense-div'>
-                          <label className='projectSalesResultsRegistration_expense'>
-                            {translate('expenses', language)}
+                        <div className='projectSalesResultsRegistration_operating-income-div'>
+                          <label className='projectSalesResultsRegistration_operating-income'>
+                            {translate('operatingIncome', language)}
                           </label>
                           <input
-                            type='number'
-                            name='expense'
-                            value={form.expense}
+                            type='text'
+                            name='operating_income'
+                            value={formatNumberWithCommas(form.operating_income)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
-
-                        <div className='projectSalesResultsRegistration_non-operating-expense-div'>
-                          <label className='projectSalesResultsRegistration_non-operating-expense'>
-                            {translate('nonOperatingExpense', language)}
+                        <div className='projectSalesResultsRegistration_ordinary-income-div'>
+                          <label className='projectSalesResultsRegistration_ordinary-income'>
+                            {translate('ordinaryIncome', language)}
                           </label>
                           <input
-                            type='number'
-                            name='non_operating_expense'
-                            value={form.non_operating_expense}
+                            type='text'
+                            name='ordinary_profit'
+                            value={formatNumberWithCommas(form.ordinary_profit)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                            onKeyDown={handleDisableKeysOnNumberInputs}
                           />
                         </div>
                       </div>
@@ -841,11 +983,20 @@ const ProjectSalesResultsRegistration = () => {
               <div className='projectSalesResultsRegistration_lower_form_cont'>
                 <div className='projectSalesResultsRegistration_form-content'>
                   <div className='projectSalesResultsRegistration_plus-btn'>
-                    <button className='projectSalesResultsRegistration_inc' type='button' onClick={handleAdd}>
+                    {formProjects.length >= 2 ? (
+                      <button className='projectSalesResultsRegistration_dec' type='button' onClick={handleMinus}>
+                        -
+                      </button>
+                    ) : (
+                      <div className='projectSalesResultsRegistration_dec_empty'></div>
+                    )}
+                    <button
+                      className='projectSalesResultsRegistration_inc custom-disabled'
+                      type='button'
+                      onClick={handleAdd}
+                      disabled={formProjects.length === maximumEntries}
+                    >
                       +
-                    </button>
-                    <button className='projectSalesResultsRegistration_dec' type='button' onClick={handleMinus}>
-                      -
                     </button>
                   </div>
                   <div className='projectSalesResultsRegistration_options-btn'>
@@ -868,7 +1019,12 @@ const ProjectSalesResultsRegistration = () => {
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
       />
-      <CrudModal message={modalMessage} onClose={() => setIsModalOpen(false)} isCRUDOpen={isModalOpen} />
+      <CrudModal
+        message={modalMessage}
+        onClose={() => setIsModalOpen(false)}
+        isCRUDOpen={isModalOpen}
+        validationMessages={crudValidationErrors}
+      />
       <AlertModal
         isOpen={isOverwriteModalOpen}
         onCancel={() => setIsOverwriteModalOpen(false)}

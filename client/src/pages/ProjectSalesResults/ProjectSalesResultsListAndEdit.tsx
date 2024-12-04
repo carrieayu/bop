@@ -16,7 +16,8 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
 import { updateProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/UpdateProjectSalesResults'
 import { deleteProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/DeleteProjectSalesResults'
-
+import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
+import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
@@ -59,6 +60,8 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
+
   const token = localStorage.getItem('accessToken')
 
   for (let year = 2020; year <= new Date().getFullYear(); year++) {
@@ -77,6 +80,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
         break
       case 'projectSalesResults':
         navigate('/project-sales-results-list')
+        break
+      case 'employeeExpensesResults':
+        navigate('/employee-expenses-results-list')
         break
       default:
         break
@@ -99,25 +105,78 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
         setLanguage(initialLanguage)
       }
 
+      if (!newEditingState) {
+        // Reset to original values when switching to list mode
+        setProjectSalesResults(originalProjectSalesResultsList)
+      }
+      
+
       return newEditingState
     })
   }
 
   const handleChange = (index, event) => {
     const { name, value } = event.target
+
+    // Remove commas to get the raw number
+    // EG. 999,999 → 999999 in the DB
+    const rawValue = removeCommas(value)
+
     setProjectSalesResults((prevState) => {
       const updatedProjectsData = [...prevState]
       updatedProjectsData[index] = {
         ...updatedProjectsData[index],
-        [name]: value,
+        [name]: rawValue,
       }
-
+      
       setFormProjects(updatedProjectsData)
+      console.log("inside handle change",updatedProjectsData,formProjects )
       return updatedProjectsData
     })
   }
+  
 
   const handleSubmit = async () => {
+    setFormProjects(projectSalesResults)
+    // Client Side Validation
+
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'projectResults'
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateProjects = (records) => validateRecords(records, fieldChecks, 'projectResults')
+
+    // Step 2: Validate client-side input
+    const validationErrors = validateProjects(projectSalesResults)
+    console.log('formProjects #2', projectSalesResults, validationErrors)
+
+    // Step 3: Check for duplicate entries on specific fields
+    // In this screen Month / Year / Project_name/ Client / Business Division cannot be edited.
+    const uniqueFields = ['project_sales_result_id']
+    const duplicateErrors = checkForDuplicates(projectSalesResults, uniqueFields, 'project', language)
+
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
+
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      setCrudMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
+      setIsCRUDOpen(true)
+      return
+    } else {
+      setCrudValidationErrors([])
+    }
+    // Continue with submission if no errors
     const getModifiedFields = (original, updated) => {
       const modifiedFields = []
 
@@ -284,11 +343,11 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
           <div className='projectSalesResultsList_top_content'>
             <div className='projectSalesResultsList_top_body_cont'></div>
             <div className='projectSalesResultsList_mode_switch_datalist'>
-              <div className='mode_switch_container'>
-                <p className='slider_mode_switch'>
+              <div className='mode-switch-container'>
+                <p className='slider-mode-switch'>
                   {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
                 </p>
-                <label className='slider_switch'>
+                <label className='slider-switch'>
                   <input type='checkbox' checked={isEditing} onChange={handleClick} />
                   <span className='slider'></span>
                 </label>
@@ -301,8 +360,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                 handleTabsClick={handleTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
-                  { labelKey: 'expensesResults', tabKey: 'expensesResults' },
-                  { labelKey: 'projectSalesResults', tabKey: 'projectSalesResults' },
+                  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
+                  { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
+                  { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
                 ]}
               />
               <div className={`projectSalesResultsList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
@@ -337,13 +397,13 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     {translate('saleRevenue', language)}
                                   </th>
                                   <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
+                                    {translate('indirectEmployeeExpense', language)}
+                                  </th>
+                                  <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                     {translate('dispatchLaborExpense', language)}
                                   </th>
                                   <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                     {translate('employeeExpense', language)}
-                                  </th>
-                                  <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
-                                    {translate('indirectEmployeeExpense', language)}
                                   </th>
                                   <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                     {translate('expense', language)}
@@ -359,6 +419,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                   </th>
                                   <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                     {translate('ordinaryIncome', language)}
+                                  </th>
+                                  <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
+                                    {translate('ordinaryProfitMargin', language)}
                                   </th>
                                   <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                     {translate('delete', language)}
@@ -401,74 +464,92 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='sales_revenue'
-                                        value={projectSalesResults.sales_revenue}
+                                        value={formatNumberWithCommas(projectSalesResults.sales_revenue)}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='dispatch_labor_expense'
-                                        value={projectSalesResults.dispatch_labor_expense}
+                                        value={formatNumberWithCommas(projectSalesResults.dispatch_labor_expense)}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='employee_expense'
-                                        value={projectSalesResults.employee_expense}
+                                        value={formatNumberWithCommas(projectSalesResults.employee_expense)}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='indirect_employee_expense'
-                                        value={projectSalesResults.indirect_employee_expense}
+                                        value={formatNumberWithCommas(projectSalesResults.indirect_employee_expense)}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='expense'
-                                        value={projectSalesResults.expense}
+                                        value={formatNumberWithCommas(projectSalesResults.expense)}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='operating_income'
-                                        value={projectSalesResults.operating_income}
+                                        value={formatNumberWithCommas(projectSalesResults.operating_income)}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='non_operating_income'
-                                        value={projectSalesResults.non_operating_income}
+                                        value={formatNumberWithCommas(projectSalesResults.non_operating_income)}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='non_operating_expense'
-                                        value={projectSalesResults.non_operating_expense}
+                                        value={formatNumberWithCommas(projectSalesResults.non_operating_expense)}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='ordinary_profit'
-                                        value={projectSalesResults.ordinary_profit}
+                                        value={formatNumberWithCommas(projectSalesResults.ordinary_profit)}
                                         onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
+                                      />
+                                    </td>
+                                    <td className='projectSalesResultsList_table_body_content_vertical'>
+                                      <input
+                                        type='text'
+                                        name='ordinary_profit_margin'
+                                        value={formatNumberWithCommas(projectSalesResults.ordinary_profit_margin)}
+                                        onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
                                     <td className='EmployeesListAndEdit_table_body_content_vertical'>
@@ -533,6 +614,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                 <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                   {translate('ordinaryIncome', language)}
                                 </th>
+                                <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
+                                  {translate('ordinaryProfitMargin', language)}
+                                </th>
                               </tr>
                             </thead>
                             <tbody className='projectSalesResultsList_table_body'>
@@ -567,31 +651,34 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     )}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {project.sales_revenue}
+                                    {formatNumberWithCommas(project.sales_revenue)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {project.dispatch_labor_expense}
+                                    {formatNumberWithCommas(project.dispatch_labor_expense)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {project.employee_expense}
+                                    {formatNumberWithCommas(project.employee_expense)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {project.indirect_employee_expense}
+                                    {formatNumberWithCommas(project.indirect_employee_expense)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {project.expense}
+                                    {formatNumberWithCommas(project.expense)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {project.operating_income}
+                                    {formatNumberWithCommas(project.operating_income)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {project.non_operating_income}
+                                    {formatNumberWithCommas(project.non_operating_income)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {project.non_operating_expense}
+                                    {formatNumberWithCommas(project.non_operating_expense)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {project.ordinary_profit}
+                                    {formatNumberWithCommas(project.ordinary_profit)}
+                                  </td>
+                                  <td className='projectSalesResultsList_table_body_content_vertical'>
+                                    {formatNumberWithCommas(project.ordinary_profit_margin)}
                                   </td>
                                 </tr>
                               ))}
@@ -631,7 +718,12 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
         onCancel={closeModal}
         message={translate('deleteProjectMessage', language)}
       />
-      <CrudModal isCRUDOpen={isCRUDOpen} onClose={closeModal} message={crudMessage} />
+      <CrudModal
+        isCRUDOpen={isCRUDOpen}
+        onClose={closeModal}
+        message={crudMessage}
+        validationMessages={crudValidationErrors}
+      />
       <AlertModal
         isOpen={isUpdateConfirmationOpen}
         onConfirm={handleUpdateConfirm}

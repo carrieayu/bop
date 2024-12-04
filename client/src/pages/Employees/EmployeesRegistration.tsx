@@ -19,7 +19,8 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import {handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import EmployeeExpensesList from '../EmployeeExpenses/EmployeeExpensesList'
 
 
 const EmployeesRegistration = () => {
@@ -99,6 +100,10 @@ const EmployeesRegistration = () => {
   const handleInputChange = (containerIndex, projectIndex, event) => {
     const { name, value } = event.target
 
+    // Remove commas to get the raw number
+    // EG. 999,999 → 999999 in the DB
+    const rawValue = removeCommas(value)
+
     if (name === 'company_name') {
       setSelectedCompanyId(value) // Update selected company ID
       const newContainers = [...employees]
@@ -109,7 +114,7 @@ const EmployeesRegistration = () => {
     const newContainers = [...employees]
     newContainers[containerIndex] = {
       ...newContainers[containerIndex],
-      [name]: value,
+      [name]: rawValue,
     }
     setEmployees(newContainers)
   }
@@ -340,25 +345,27 @@ const EmployeesRegistration = () => {
   }
 
   const handleAddContainer = () => {
-    setEmployees([
-      ...employees,
-      {
-        last_name: '',
-        first_name: '',
-        type: '',
-        email: '',
-        salary: '',
-        executive_renumeration: '',
-        company_name: '',
-        business_division_name: '',
-        bonus_and_fuel_allowance: '',
-        statutory_welfare_expense: '',
-        welfare_expense: '',
-        insurance_premium: '',
-        auth_id: '',
-        created_at: '',
-      },
-    ])
+    if (employees.length < 10) {
+      setEmployees([
+        ...employees,
+        {
+          last_name: '',
+          first_name: '',
+          type: '',
+          email: '',
+          salary: '',
+          executive_renumeration: '',
+          company_name: '',
+          business_division_name: '',
+          bonus_and_fuel_allowance: '',
+          statutory_welfare_expense: '',
+          welfare_expense: '',
+          insurance_premium: '',
+          auth_id: '',
+          created_at: '',
+        },
+      ])
+    }
   }
 
   const handleRemoveContainer = () => {
@@ -470,12 +477,12 @@ const EmployeesRegistration = () => {
                             <input
                               type='text'
                               name='welfare_expense'
-                              value={
+                              value={formatNumberWithCommas(
                                 (container.welfare_expense =
                                   container.type === '0'
                                     ? Math.round(Number(container.salary) * 0.0048).toString()
-                                    : Math.round(Number(container.executive_renumeration) * 0.0048).toString())
-                              }
+                                    : Math.round(Number(container.executive_renumeration) * 0.0048).toString()),
+                              )}
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
                               onWheel={(e) => (e.target as HTMLInputElement).blur()}
                             />
@@ -497,9 +504,9 @@ const EmployeesRegistration = () => {
                                 {translate('executiveRenumeration', language)}
                               </label>
                               <input
-                                type='number'
+                                type='text'
                                 name='executive_renumeration'
-                                value={container.executive_renumeration || ''} // Ensure empty string as fallback for controlled input
+                                value={formatNumberWithCommas(container.executive_renumeration) || ''} // Ensure empty string as fallback for controlled input
                                 onChange={(e) => handleInputChange(containerIndex, null, e)}
                                 onKeyDown={handleDisableKeysOnNumberInputs}
                                 disabled={container.type !== '1'} // Disabled when not an executive employee
@@ -510,9 +517,9 @@ const EmployeesRegistration = () => {
                             <div className='EmployeesRegistration_salary-div'>
                               <label className='salary'>{translate('salary', language)}</label>
                               <input
-                                type='number'
+                                type='text'
                                 name='salary'
-                                value={container.salary || ''} // Ensure empty string as fallback for controlled input
+                                value={formatNumberWithCommas(container.salary) || ''} // Ensure empty string as fallback for controlled input
                                 onChange={(e) => handleInputChange(containerIndex, null, e)}
                                 onKeyDown={handleDisableKeysOnNumberInputs}
                                 disabled={container.type !== '0'} // Disabled when not a regular employee
@@ -532,9 +539,9 @@ const EmployeesRegistration = () => {
                               {translate('bonusAndFuelAllowance', language)}
                             </label>
                             <input
-                              type='number'
+                              type='text'
                               name='bonus_and_fuel_allowance'
-                              value={container.bonus_and_fuel_allowance}
+                              value={formatNumberWithCommas(container.bonus_and_fuel_allowance)}
                               onKeyDown={handleDisableKeysOnNumberInputs}
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
                             />
@@ -542,16 +549,14 @@ const EmployeesRegistration = () => {
                           <div className='EmployeesRegistration_insurance_premium-div'>
                             <label className='insurance-premium'>{translate('insurancePremium', language)}</label>
                             <input
-                              type='number'
+                              type='text'
                               name='insurance_premium'
-                              value={
+                              value={formatNumberWithCommas(
                                 (container.insurance_premium =
                                   container.type === '0'
                                     ? Math.round(Number(container.salary) * 0.0224).toString()
-                                    : Math.round(Number(container.executive_renumeration) * 0.0224).toString()
-                                )
-                              }
-                              onChange={(e) => handleInputChange(containerIndex, null, e)}
+                                    : Math.round(Number(container.executive_renumeration) * 0.0224).toString()),
+                              )}
                               readOnly
                             />
                           </div>
@@ -591,14 +596,12 @@ const EmployeesRegistration = () => {
                             <input
                               type='text'
                               name='statutory_welfare_expense'
-                              value={
+                              value={formatNumberWithCommas(
                                 (container.statutory_welfare_expense =
                                   container.type === '0'
                                     ? Math.round(Number(container.salary) * 0.1451).toString()
-                                    : Math.round(Number(container.executive_renumeration) * 0.1451).toString()
-                                )
-                              }
-                              onChange={(e) => handleInputChange(containerIndex, null, e)}
+                                    : Math.round(Number(container.executive_renumeration) * 0.1451).toString()),
+                              )}
                               readOnly
                             />
                           </div>
@@ -610,11 +613,20 @@ const EmployeesRegistration = () => {
                 <div className='EmployeesRegistration_lower_form_cont'>
                   <div className='EmployeesRegistration_form-btn-content'>
                     <div className='EmployeesRegistration_plus-btn'>
-                      <button className='EmployeesRegistration_inc' type='button' onClick={handleAddContainer}>
+                      {employees.length >= 2 ? (
+                        <button className='EmployeesRegistration_dec' type='button' onClick={handleRemoveContainer}>
+                          -
+                        </button>
+                      ) : (
+                        <div className='EmployeesRegistration_dec_empty'></div>
+                      )}
+                      <button
+                        className='EmployeesRegistration_inc custom-disabled'
+                        type='button'
+                        onClick={handleAddContainer}
+                        disabled={employees.length === 10}
+                      >
                         +
-                      </button>
-                      <button className='EmployeesRegistration_dec' type='button' onClick={handleRemoveContainer}>
-                        -
                       </button>
                     </div>
                     <div className='EmployeesRegistration_options-btn'>

@@ -1,6 +1,6 @@
-.employeeExpensesRegistration_wrapper{
+.employeeExpensesResultsRegistration_wrapper{
   max-width: 2560px;
-  .employeeExpensesRegistration_cont_wrapper{
+  .employeeExpensesResultsRegistration_cont_wrapper{
     display: flex;
     background-color: #EFEDEA;
     width: 100%;
@@ -8,7 +8,7 @@
     @media only screen and (max-width: 1000px){
         flex-direction: column;
     }
-    .employeeExpensesRegistration_data_content{
+    .employeeExpensesResultsRegistration_data_content{
       display: flex;
       flex-direction: column;
       width: 100%;
@@ -16,22 +16,22 @@
       border: 1px solid #fff;
       border-radius: 5px;
       background-color: #fff;
-    .employeeExpensesRegistration_top_body_cont{
+    .employeeExpensesResultsRegistration_top_body_cont{
       margin: 2rem 0 0 0;
       background-color: #fff;
     }
-    .employeeExpensesRegistration_inputs_and_buttons{
+    .employeeExpensesResultsRegistration_inputs_and_buttons{
       display: flex;
       height: 65vh;
       justify-content: space-between;
       flex-direction: column;
     }
-        .employeeExpensesRegistration_mid_body_cont{
+        .employeeExpensesResultsRegistration_mid_body_cont{
           height: 90%;
           @media only screen and (min-width: 1875px){
               height: 55vh;
           }
-              .employeeExpensesRegistration_mid_form_cont{
+              .employeeExpensesResultsRegistration_mid_form_cont{
                 margin: 0px 40px;
                 padding: 15px 20px;
                 background-color: #EFEDEA;
@@ -59,26 +59,26 @@
                 &:hover::-webkit-scrollbar-thumb:hover {
                     background-color: #555; 
                 }
-                .employeeExpensesRegistration_form-content.employeeExpensesRegistration_form-line {
+                .employeeExpensesResultsRegistration_form-content.employeeExpensesResultsRegistration_form-line {
                   border-top: 4px solid rgb(183, 183, 183);
                   margin: 20px 0px 20px 0px;
                   opacity: 30%;
                 }
-                .employeeExpensesRegistration_cont-body{
+                .employeeExpensesResultsRegistration_cont-body{
                   display: flex;
                   flex-direction: column;
                   gap: 20px;
-                  .employeeExpensesRegistration_row{
+                  .employeeExpensesResultsRegistration_row{
                     display: flex;
                     flex-direction: column;
                     align-items: center;
                     gap: 10px;
-                    .employeeExpensesRegistration_label{
+                    .employeeExpensesResultsRegistration_label{
                       font-weight: bold;
                       text-align: center;
                       width: 100%;
                     }
-                    .employeeExpensesRegistration_card-box{
+                    .employeeExpensesResultsRegistration_card-box{
                       width: 100%;
                       display: flex;
                       justify-content: center;
@@ -106,17 +106,17 @@
                         background-size: 20px 20px;
                         cursor: pointer;
                       }
-                      .employeeExpensesRegistration_emp-select{
+                      .employeeExpensesResultsRegistration_emp-select{
                         width: 20%;
                       }
                     }
                   }
-                  .employeeExpensesRegistration_project-fields{
+                  .employeeExpensesResultsRegistration_project-fields{
                     display: flex;
                     flex-wrap: wrap;
-                    gap: 5px;
+                    gap: 20px;
                     padding-bottom: 50px;
-                    .employeeExpensesRegistration_project-group{
+                    .employeeExpensesResultsRegistration_project-group{
                       display: flex;
                       flex-direction: column;
                       gap: 10px;
@@ -127,22 +127,13 @@
                       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                       width: calc(20% - 20px);
                     }
-                    .employeeExpensesRegistration_button-box{
+                    .employeeExpensesResultsRegistration_button-box{
                       display: flex;
                       flex-direction: column;
                       justify-content: space-evenly;
                       padding: 10px;
-                      .employeeExpensesRegistration_button{
+                      .employeeExpensesResultsRegistration_button{
                         background-color: #808080;
-                        color: white;
-                        padding: 10px 20px;
-                        border: none;
-                        border-radius: 5px !important;
-                        cursor: pointer;
-                        font-weight: bold;
-                        text-align: center;
-                      }
-                      .employeeExpensesRegistration_button{
                         color: white;
                         padding: 10px 20px;
                         border: none;
@@ -155,15 +146,15 @@
                   }
                 }
         }
-        .employeeExpensesRegistration_cont-footer{
+        .employeeExpensesResultsRegistration_cont-footer{
           padding: 20px;
-          .employeeExpensesRegistration_btn-plusminus{
+          .employeeExpensesResultsRegistration_btn-plusminus{
             padding: 20px 10px 20px 10px;
             gap: 1rem;
             display: flex;
             margin-left: 90%;
-            .employeeExpensesRegistration_plus-btn,
-            .employeeExpensesRegistration_minus-btn{
+            .employeeExpensesResultsRegistration_plus-btn,
+            .employeeExpensesResultsRegistration_minus-btn{
               background-color: #808080;
               color: #fff;
               width: 30px;
@@ -171,15 +162,8 @@
               border-radius: 5px !important;
               font-size: 25px;
             }
-            .employeeExpensesRegistration_minus-btn-empty{
-              color: #fff;
-              width: 30px;
-              height: 40px;
-              border-radius: 5px !important;
-              font-size: 25px;
-            }
           }
-          .employeeExpensesRegistration_btn-subcancel{
+          .employeeExpensesResultsRegistration_btn-subcancel{
             display: flex;
             gap: 1%;
             padding: 10px 10px 10px 10px;

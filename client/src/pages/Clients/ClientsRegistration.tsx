@@ -191,14 +191,16 @@ const ClientsRegistration = () => {
   }
 
   const handleAddContainer = () => {
-    setClientData([
-      ...clientData,
-      {
-        client_name: '',
-        created_at: '',
-        auth_user: '',
-      },
-    ])
+    if (clientData.length < 10) {
+      setClientData([
+        ...clientData,
+        {
+          client_name: '',
+          created_at: '',
+          auth_user: '',
+        },
+      ])
+    }
   }
 
   const handleRemoveContainer = () => {
@@ -280,11 +282,15 @@ const ClientsRegistration = () => {
               <div className='ClientsRegistration_lower_form_cont'>
                 <div className='ClientsRegistration_form-content'>
                   <div className='ClientsRegistration_plus-btn'>
-                    <button className='ClientsRegistration_inc' type='button' onClick={handleAddContainer}>
+                    {clientData.length >= 2 ? (
+                      <button className='ClientsRegistration_dec' type='button' onClick={handleRemoveContainer}>
+                        -
+                      </button>
+                    ) : (
+                      <div className='ClientsRegistration_dec_empty'></div>
+                    )}
+                    <button className='ClientsRegistration_inc custom-disabled' type='button' onClick={handleAddContainer} disabled={clientData.length === 10}>
                       +
-                    </button>
-                    <button className='ClientsRegistration_dec' type='button' onClick={handleRemoveContainer}>
-                      -
                     </button>
                   </div>
                   <div className='ClientsRegistration_options-btn'>
