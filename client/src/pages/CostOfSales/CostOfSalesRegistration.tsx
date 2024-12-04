@@ -9,7 +9,6 @@ import RegistrationButtons from '../../components/RegistrationButtons/Registrati
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import CrudModal from '../../components/CrudModal/CrudModal'
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { createCostOfSale } from '../../api/CostOfSalesEndpoint/CreateCostOfSale'
 import {
   validateRecords,
@@ -20,6 +19,7 @@ import {
 import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { overwriteCostOfSale } from '../../api/CostOfSalesEndpoint/OverwriteCostOfSales'
 
 const months = [
    '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -288,29 +288,28 @@ const handleChange = (index, event) => {
     const token = localStorage.getItem('accessToken')
 
     try {
-      const overwriteResponse = await axios.put(`${getReactActiveEndpoint()}/api/cost-of-sales/create/`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      })
-
-      setModalMessage(translate('overWrite', language))
-      setIsModalOpen(true)
-      // Reset form data after successful overwrite
-      setFormData([
-        {
-          year: '',
-          month: '',
-          purchase: '',
-          outsourcing_expense: '',
-          product_purchase: '',
-          dispatch_labor_expense: '',
-          communication_expense: '',
-          work_in_progress_expense: '',
-          amortization_expense: '',
-        },
-      ])
+      overwriteCostOfSale(formData, token)
+        .then(() => {
+          setModalMessage(translate('overWrite', language))
+          setIsModalOpen(true)
+          // Reset form data after successful overwrite
+          setFormData([
+            {
+              year: '',
+              month: '',
+              purchase: '',
+              outsourcing_expense: '',
+              product_purchase: '',
+              dispatch_labor_expense: '',
+              communication_expense: '',
+              work_in_progress_expense: '',
+              amortization_expense: '',
+            },
+          ])
+        })
+        .catch((error) => {
+          console.error('Error overwriting data:', error)
+        })
     } catch (overwriteError) {
       console.error('Error overwriting data:', overwriteError)
     } finally {
