@@ -12,8 +12,6 @@ import AlertModal from '../../components/AlertModal/AlertModal'
 import { RiDeleteBin6Fill } from 'react-icons/ri'
 import CrudModal from '../../components/CrudModal/CrudModal'
 import '../../assets/scss/Components/SliderToggle.scss'
-import { getCostOfSale } from '../../api/CostOfSalesEndpoint/GetCostOfSale'
-import { updateCostOfSale } from '../../api/CostOfSalesEndpoint/UpdateCostOfSale'
 import {
   validateRecords,
   translateAndFormatErrors,
@@ -30,7 +28,7 @@ const CostOfSalesResultsList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('costOfSales')
+  const [activeTabOther, setActiveTabOther] = useState('costOfSalesResults')
   const [currentPage, setCurrentPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [paginatedData, setPaginatedData] = useState<any[]>([])
@@ -43,8 +41,8 @@ const CostOfSalesResultsList: React.FC = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [selectedCostOfSales, setSelectedCostOfSales] = useState<any>(null)
   const [deleteCostOfSalesId, setDeleteCostOfSalesId] = useState([])
-  const [costOfSales, setCostOfSales] = useState([])
-  const [originalCostOfSales, setOriginalCostOfSales] = useState(costOfSales)
+  const [costOfSalesResults, setCostOfSalesResults] = useState([])
+  const [originalCostOfSales, setOriginalCostOfSales] = useState(costOfSalesResults)
   const totalPages = Math.ceil(100 / 10)
   const token = localStorage.getItem('accessToken')
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
@@ -59,17 +57,17 @@ const CostOfSalesResultsList: React.FC = () => {
   const handleTabsClick = (tab) => {
     setActiveTabOther(tab)
     switch (tab) {
-      case 'project':
-        navigate('/projects-list')
+      case 'projectSalesResults':
+        navigate('/project-sales-results-list')
         break
-      case 'employeeExpenses':
-        navigate('/employee-expenses-list')
+      case 'expensesResults':
+        navigate('/expenses-results-list')
         break
-      case 'expenses':
-        navigate('/expenses-list')
+      case 'employeeExpensesResults':
+        navigate('/employee-expenses-results-list')
         break
-      case 'costOfSales':
-        navigate('/cost-of-sales-list')
+      case 'costOfSalesResults':
+        navigate('/cost-of-sales-results-list')
         break
       default:
         break
@@ -94,7 +92,7 @@ const CostOfSalesResultsList: React.FC = () => {
 
       if (!newEditingState) {
         // Reset to original values when switching to list mode
-        setCostOfSales(originalCostOfSales)
+        setCostOfSalesResults(originalCostOfSales)
       }
 
       return newEditingState
@@ -113,7 +111,7 @@ const CostOfSalesResultsList: React.FC = () => {
       ...updatedData[index],
       [name]: rawValue,
     }
-    setCostOfSales(updatedData)
+    setCostOfSalesResults(updatedData)
   }
 
   const handleSubmit = async () => {
@@ -121,23 +119,28 @@ const CostOfSalesResultsList: React.FC = () => {
 
     // Step 1: Preparartion for validation
     // Set record type for validation
-    const recordType = 'costOfSales'
+    const recordType = 'costOfSalesResults'
 
     // Retrieve field validation checks based on the record type
     const fieldChecks = getFieldChecks(recordType)
     // Validate records for the specified project fields
-    const validateCostOfSales = (records) => validateRecords(records, fieldChecks, 'costOfSales')
+    const validateCostOfSales = (records) => validateRecords(records, fieldChecks, 'costOfSalesResults')
 
     // Expenses has default 12 (for each month)
     // Even if not all records have actually been created in DB: We need to filter out non-registered records.
-    const costOfSalesListExistingRecords = costOfSales.filter((cos) => cos.cost_of_sale_result_id !== null)
+    const costOfSalesListExistingRecords = costOfSalesResults.filter((cos) => cos.cost_of_sale_result_id !== null)
 
     // Step 2: Validate client-side input
     const validationErrors = validateCostOfSales(costOfSalesListExistingRecords)
 
     // Step 3: Check for duplicate entries on specific fields
     const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client']
-    const duplicateErrors = checkForDuplicates(costOfSalesListExistingRecords, uniqueFields, 'costOfSales', language)
+    const duplicateErrors = checkForDuplicates(
+      costOfSalesListExistingRecords,
+      uniqueFields,
+      'costOfSalesResults',
+      language,
+    )
 
     // Step 4: Map error types to data and translation keys for handling in the modal
     const errorMapping = [
@@ -199,7 +202,7 @@ const CostOfSalesResultsList: React.FC = () => {
     }
     updateCostOfSaleResults(modifiedFields, token)
       .then(() => {
-        setOriginalCostOfSales(costOfSales)
+        setOriginalCostOfSales(costOfSalesResults)
         setCrudMessage(translate('successfullyUpdated', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
@@ -235,7 +238,7 @@ const CostOfSalesResultsList: React.FC = () => {
         getCostOfSaleResults(token).then((data) => {
           console.log(data);
           
-          setCostOfSales(data)
+          setCostOfSalesResults(data)
           setOriginalCostOfSales(data)
         })
       } catch (error) {
@@ -252,8 +255,8 @@ const CostOfSalesResultsList: React.FC = () => {
 
   useEffect(() => {
     const startIndex = currentPage * rowsPerPage
-    setPaginatedData(costOfSales.slice(startIndex, startIndex + rowsPerPage))
-  }, [currentPage, rowsPerPage, costOfSales])
+    setPaginatedData(costOfSalesResults.slice(startIndex, startIndex + rowsPerPage))
+  }, [currentPage, rowsPerPage, costOfSalesResults])
 
   useEffect(() => {
     const path = location.pathname
@@ -266,12 +269,12 @@ const CostOfSalesResultsList: React.FC = () => {
   const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
 
   // Extract unique years from the costOfSales data
-  const uniqueYears = Array.from(new Set(costOfSales.map((item) => item.year))).sort((a, b) => a - b)
+  const uniqueYears = Array.from(new Set(costOfSalesResults.map((item) => item.year))).sort((a, b) => a - b)
 
   // Combine static months with dynamic data
   const combinedData = uniqueYears.flatMap((year) => {
     return months.map((month) => {
-      const foundData = costOfSales.find((item) => parseInt(item.month, 10) === month && item.year === year)
+      const foundData = costOfSalesResults.find((item) => parseInt(item.month, 10) === month && item.year === year)
 
       return {
         cost_of_sale_result_id: foundData ? foundData.cost_of_sale_result_id : null,
@@ -334,7 +337,7 @@ const CostOfSalesResultsList: React.FC = () => {
         setIsCRUDOpen(true)
         getCostOfSaleResults(token)
           .then((data) => {
-            setCostOfSales(data)
+            setCostOfSalesResults(data)
             setIsEditing(false)
           })
           .catch(() => {})
@@ -349,23 +352,23 @@ const CostOfSalesResultsList: React.FC = () => {
   }
 
   const handleNewRegistrationClick = () => {
-    navigate('/cost-of-sales-registration')
+    navigate('/cost-of-sales-results-registration')
   }
 
   return (
-    <div className='costOfSalesList_wrapper'>
+    <div className='costOfSalesResultsList_wrapper'>
       <HeaderButtons
         activeTab={activeTab}
         handleTabClick={handleTabClick}
         isTranslateSwitchActive={isTranslateSwitchActive}
         handleTranslationSwitchToggle={handleTranslationSwitchToggle}
       />
-      <div className='costOfSalesList_cont_wrapper'>
+      <div className='costOfSalesResultsList_cont_wrapper'>
         <Sidebar />
-        <div className='costOfSalesList_btn_wrapper'>
-          <div className='costOfSalesList_top_content'>
-            <div className='costOfSalesList_top_body_cont'>
-              <div className='costOfSalesList_mode_switch_datalist'>
+        <div className='costOfSalesResultsList_btn_wrapper'>
+          <div className='costOfSalesResultsList_top_content'>
+            <div className='costOfSalesResultsList_top_body_cont'>
+              <div className='costOfSalesResultsList_mode_switch_datalist'>
                 <div className='mode-switch-container'>
                   <p className='slider-mode-switch'>
                     {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
@@ -377,59 +380,59 @@ const CostOfSalesResultsList: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className='costOfSalesList_mid_body_cont'>
+            <div className='costOfSalesResultsList_mid_body_cont'>
               <ListButtons
                 activeTabOther={activeTabOther}
-                message={translate(isEditing ? 'costOfSalesEdit' : 'costOfSalesList', language)}
+                message={translate(isEditing ? 'costOfSalesResultsEdit' : 'costOfSalesResultsList', language)}
                 handleTabsClick={handleTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
-                  { labelKey: 'project', tabKey: 'project' },
-                  { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
-                  { labelKey: 'expenses', tabKey: 'expenses' },
-                  { labelKey: 'costOfSales', tabKey: 'costOfSales' },
+                  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
+                  { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
+                  { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
+                  { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
                 ]}
               />
-              <div className={`costOfSalesList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
-                <div className='costOfSalesList_table_cont'>
+              <div className={`costOfSalesResultsList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
+                <div className='costOfSalesResultsList_table_cont'>
                   {/* <div className='columns is-mobile'> */}
                   {/* <div className='column'> */}
                   {isEditing ? (
                     <div>
                       <table className='table is-bordered is-hoverable'>
                         <thead>
-                          <tr className='costOfSalesList_table_title '>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                          <tr className='costOfSalesResultsList_table_title '>
+                            <th className='costOfSalesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('year', language)}
                             </th>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                            <th className='costOfSalesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('month', language)}
                             </th>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                            <th className='costOfSalesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('purchases', language)}
                             </th>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                            <th className='costOfSalesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('outsourcingExpenses', language)}
                             </th>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                            <th className='costOfSalesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('productPurchases', language)}
                             </th>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                            <th className='costOfSalesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('dispatchLaborExpenses', language)}
                             </th>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                            <th className='costOfSalesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('communicationExpenses', language)}
                             </th>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                            <th className='costOfSalesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('workInProgressExpenses', language)}
                             </th>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                            <th className='costOfSalesResultsList_table_title_content_vertical has-text-centered'>
                               {translate('amortizationExpenses', language)}
                             </th>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'></th>
+                            <th className='costOfSalesResultsList_table_title_content_vertical has-text-centered'></th>
                           </tr>
                         </thead>
-                        <tbody className='costOfSalesList_table_body'>
+                        <tbody className='costOfSalesResultsList_table_body'>
                           {combinedData.map((costOfSale, index) => {
                             const isNewYear = index === 0 || combinedData[index - 1].year !== costOfSale.year
                             const isLastcostOfSaleOfYear =
@@ -440,14 +443,14 @@ const CostOfSalesResultsList: React.FC = () => {
                             return (
                               <React.Fragment key={index}>
                                 {costOfSale ? (
-                                  <tr className='costOfSalesList_table_body_content_horizontal'>
-                                    <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                  <tr className='costOfSalesResultsList_table_body_content_horizontal'>
+                                    <td className='costOfSalesResultsList_table_body_content_vertical has-text-centered'>
                                       {costOfSale.year}
                                     </td>
-                                    <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                    <td className='costOfSalesResultsList_table_body_content_vertical has-text-centered'>
                                       {costOfSale.month}
                                     </td>
-                                    <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                    <td className='costOfSalesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
                                         type='text'
                                         name='purchase'
@@ -457,7 +460,7 @@ const CostOfSalesResultsList: React.FC = () => {
                                         disabled={!isEditable}
                                       />
                                     </td>
-                                    <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                    <td className='costOfSalesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
                                         type='text'
                                         name='outsourcing_expense'
@@ -467,7 +470,7 @@ const CostOfSalesResultsList: React.FC = () => {
                                         disabled={!isEditable}
                                       />
                                     </td>
-                                    <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                    <td className='costOfSalesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
                                         type='text'
                                         name='product_purchase'
@@ -477,7 +480,7 @@ const CostOfSalesResultsList: React.FC = () => {
                                         disabled={!isEditable}
                                       />
                                     </td>
-                                    <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                    <td className='costOfSalesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
                                         type='text'
                                         name='dispatch_labor_expense'
@@ -487,7 +490,7 @@ const CostOfSalesResultsList: React.FC = () => {
                                         disabled={!isEditable}
                                       />
                                     </td>
-                                    <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                    <td className='costOfSalesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
                                         type='text'
                                         name='communication_expense'
@@ -497,7 +500,7 @@ const CostOfSalesResultsList: React.FC = () => {
                                         disabled={!isEditable}
                                       />
                                     </td>
-                                    <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                    <td className='costOfSalesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
                                         type='text'
                                         name='work_in_progress_expense'
@@ -507,7 +510,7 @@ const CostOfSalesResultsList: React.FC = () => {
                                         disabled={!isEditable}
                                       />
                                     </td>
-                                    <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                    <td className='costOfSalesResultsList_table_body_content_vertical has-text-centered'>
                                       <input
                                         type='text'
                                         name='amortization_expense'
@@ -517,11 +520,13 @@ const CostOfSalesResultsList: React.FC = () => {
                                         disabled={!isEditable}
                                       />
                                     </td>
-                                    <td className='costOfSalesList_table_body_content_vertical delete_icon'>
+                                    <td className='costOfSalesResultsList_table_body_content_vertical delete_icon'>
                                       {costOfSale.cost_of_sale_result_id !== null && (
                                         <RiDeleteBin6Fill
                                           className='delete-icon'
-                                          onClick={() => openModal('costOfSalesResults', costOfSale.cost_of_sale_result_id)}
+                                          onClick={() =>
+                                            openModal('costOfSalesResultsResults', costOfSale.cost_of_sale_result_id)
+                                          }
                                           style={{ color: 'red' }}
                                         />
                                       )}
@@ -544,37 +549,37 @@ const CostOfSalesResultsList: React.FC = () => {
                   ) : (
                     <table className='table is-bordered is-hoverable'>
                       <thead>
-                        <tr className='costOfSalesList_table_title '>
-                          <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                        <tr className='costOfSalesResultsList_table_title '>
+                          <th className='costOfSalesResultsList_table_title_content_vertical has-text-centered'>
                             {translate('year', language)}
                           </th>
-                          <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                          <th className='costOfSalesResultsList_table_title_content_vertical has-text-centered'>
                             {translate('month', language)}
                           </th>
-                          <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                          <th className='costOfSalesResultsList_table_title_content_vertical has-text-centered'>
                             {translate('purchases', language)}
                           </th>
-                          <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                          <th className='costOfSalesResultsList_table_title_content_vertical has-text-centered'>
                             {translate('outsourcingExpenses', language)}
                           </th>
-                          <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                          <th className='costOfSalesResultsList_table_title_content_vertical has-text-centered'>
                             {translate('productPurchases', language)}
                           </th>
-                          <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                          <th className='costOfSalesResultsList_table_title_content_vertical has-text-centered'>
                             {translate('dispatchLaborExpenses', language)}
                           </th>
-                          <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                          <th className='costOfSalesResultsList_table_title_content_vertical has-text-centered'>
                             {translate('communicationExpenses', language)}
                           </th>
-                          <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                          <th className='costOfSalesResultsList_table_title_content_vertical has-text-centered'>
                             {translate('workInProgressExpenses', language)}
                           </th>
-                          <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                          <th className='costOfSalesResultsList_table_title_content_vertical has-text-centered'>
                             {translate('amortizationExpenses', language)}
                           </th>
                         </tr>
                       </thead>
-                      <tbody className='costOfSalesList_table_body'>
+                      <tbody className='costOfSalesResultsList_table_body'>
                         {combinedData.map((costOfSale, index) => {
                           const isNewYear = index === 0 || combinedData[index - 1].year !== costOfSale.year
                           const isLastcostOfSaleOfYear =
@@ -582,32 +587,32 @@ const CostOfSalesResultsList: React.FC = () => {
 
                           return (
                             <React.Fragment key={index}>
-                              <tr className='costOfSalesList_table_body_content_horizontal'>
-                                <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                              <tr className='costOfSalesResultsList_table_body_content_horizontal'>
+                                <td className='costOfSalesResultsList_table_body_content_vertical has-text-centered'>
                                   {costOfSale.year || 0}
                                 </td>
-                                <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                <td className='costOfSalesResultsList_table_body_content_vertical has-text-centered'>
                                   {costOfSale.month}
                                 </td>
-                                <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                <td className='costOfSalesResultsList_table_body_content_vertical has-text-centered'>
                                   {formatNumberWithCommas(costOfSale.purchase) || 0}
                                 </td>
-                                <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                <td className='costOfSalesResultsList_table_body_content_vertical has-text-centered'>
                                   {formatNumberWithCommas(costOfSale.outsourcing_expense) || 0}
                                 </td>
-                                <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                <td className='costOfSalesResultsList_table_body_content_vertical has-text-centered'>
                                   {formatNumberWithCommas(costOfSale.product_purchase) || 0}
                                 </td>
-                                <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                <td className='costOfSalesResultsList_table_body_content_vertical has-text-centered'>
                                   {formatNumberWithCommas(costOfSale.dispatch_labor_expense) || 0}
                                 </td>
-                                <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                <td className='costOfSalesResultsList_table_body_content_vertical has-text-centered'>
                                   {formatNumberWithCommas(costOfSale.communication_expense) || 0}
                                 </td>
-                                <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                <td className='costOfSalesResultsList_table_body_content_vertical has-text-centered'>
                                   {formatNumberWithCommas(costOfSale.work_in_progress_expense) || 0}
                                 </td>
-                                <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                <td className='costOfSalesResultsList_table_body_content_vertical has-text-centered'>
                                   {formatNumberWithCommas(costOfSale.amortization_expense) || 0}
                                 </td>
                               </tr>
@@ -628,12 +633,12 @@ const CostOfSalesResultsList: React.FC = () => {
                   {/* </div> */}
                 </div>
               </div>
-              <div className='costOfSalesList_is_editing_wrapper'>
-                <div className='costOfSalesList_is_editing_cont'>
+              <div className='costOfSalesResultsList_is_editing_wrapper'>
+                <div className='costOfSalesResultsList_is_editing_cont'>
                   {isEditing ? (
-                    <div className='costOfSalesList_edit_submit_btn_cont'>
+                    <div className='costOfSalesResultsList_edit_submit_btn_cont'>
                       <button
-                        className='costOfSalesList_edit_submit_btn'
+                        className='costOfSalesResultsList_edit_submit_btn'
                         onClick={() => {
                           setIsUpdateConfirmationOpen(true)
                         }}

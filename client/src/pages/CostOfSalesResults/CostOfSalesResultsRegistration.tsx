@@ -455,47 +455,47 @@ const CostOfSalesResultsRegistration = () => {
   }
 
   return (
-    <div className='costOfSalesRegistration_wrapper'>
+    <div className='costOfSalesResultsRegistration_wrapper'>
       <HeaderButtons
         activeTab={activeTab}
         handleTabClick={handleTabClick}
         isTranslateSwitchActive={isTranslateSwitchActive}
         handleTranslationSwitchToggle={handleTranslationSwitchToggle}
       />
-      <div className='costOfSalesRegistration_content_wrapper'>
+      <div className='costOfSalesResultsRegistration_content_wrapper'>
         <Sidebar />
-        <div className='costOfSalesRegistration_data_content'>
-          <div className='costOfSalesRegistration_top_body_cont'>
+        <div className='costOfSalesResultsRegistration_data_content'>
+          <div className='costOfSalesResultsRegistration_top_body_cont'>
             <RegistrationButtons
               activeTabOther={activeTabOther}
-              message={translate('costOfSalesRegistration', language)}
+              message={translate('costOfSalesResultsRegistration', language)}
               handleTabsClick={handleTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
-                { labelKey: 'project', tabKey: 'project' },
-                { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
-                { labelKey: 'expenses', tabKey: 'expenses' },
-                { labelKey: 'costOfSales', tabKey: 'costOfSales' },
+                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
+                { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
+                { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
+                { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
               ]}
             />
           </div>
-          <div className='costOfSalesRegistration_mid_body_cont'>
-            <form className='costOfSalesRegistration_inputs_and_buttons' onSubmit={handleSubmit}>
-              <div className='costOfSalesRegistration_mid_form_cont'>
+          <div className='costOfSalesResultsRegistration_mid_body_cont'>
+            <form className='costOfSalesResultsRegistration_inputs_and_buttons' onSubmit={handleSubmit}>
+              <div className='costOfSalesResultsRegistration_mid_form_cont'>
                 {formData.map((form, index) => (
                   <div
                     key={index}
-                    className={`costOfSalesRegistration_form-content ${index > 0 ? 'costOfSalesRegistration_form-content-special' : ''}`}
+                    className={`costOfSalesResultsRegistration_form-content ${index > 0 ? 'costOfSalesResultsRegistration_form-content-special' : ''}`}
                   >
                     <div
-                      className={`costOfSalesRegistration_form-content ${index > 0 ? 'costOfSalesRegistration_form-line' : ''}`}
+                      className={`costOfSalesResultsRegistration_form-content ${index > 0 ? 'costOfSalesResultsRegistration_form-line' : ''}`}
                     ></div>
-                    <div className='costOfSalesRegistration_form-content-div'>
-                      <div className='costOfSalesRegistration_left-form-div costOfSalesRegistration_calc'>
-                        <div className='costOfSalesRegistration_year-div'>
-                          <label className='costOfSalesRegistration_year'>{translate('year', language)}</label>
+                    <div className='costOfSalesResultsRegistration_form-content-div'>
+                      <div className='costOfSalesResultsRegistration_left-form-div costOfSalesResultsRegistration_calc'>
+                        <div className='costOfSalesResultsRegistration_year-div'>
+                          <label className='costOfSalesResultsRegistration_year'>{translate('year', language)}</label>
                           <select
-                            className='costOfSalesRegistration_select-option'
+                            className='costOfSalesResultsRegistration_select-option'
                             name='year'
                             value={form.year}
                             onChange={(e) => handleChange(index, e)}
@@ -509,8 +509,8 @@ const CostOfSalesResultsRegistration = () => {
                             ))}
                           </select>
                         </div>
-                        <div className='costOfSalesRegistration_outsourcing_expense-div'>
-                          <label className='costOfSalesRegistration_outsourcing_expense'>
+                        <div className='costOfSalesResultsRegistration_outsourcing_expense-div'>
+                          <label className='costOfSalesResultsRegistration_outsourcing_expense'>
                             {translate('outsourcingExpenses', language)}
                           </label>
                           <input
@@ -522,8 +522,8 @@ const CostOfSalesResultsRegistration = () => {
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
-                        <div className='costOfSalesRegistration_communication_expense-div'>
-                          <label className='costOfSalesRegistration_communication_expense'>
+                        <div className='costOfSalesResultsRegistration_communication_expense-div'>
+                          <label className='costOfSalesResultsRegistration_communication_expense'>
                             {translate('communicationExpenses', language)}
                           </label>
                           <input
@@ -536,11 +536,11 @@ const CostOfSalesResultsRegistration = () => {
                           />
                         </div>
                       </div>
-                      <div className='costOfSalesRegistration_middle-form-div costOfSalesRegistration_calc'>
-                        <div className='costOfSalesRegistration_month-div'>
-                          <label className='costOfSalesRegistration_month'>{translate('month', language)}</label>
+                      <div className='costOfSalesResultsRegistration_middle-form-div costOfSalesResultsRegistration_calc'>
+                        <div className='costOfSalesResultsRegistration_month-div'>
+                          <label className='costOfSalesResultsRegistration_month'>{translate('month', language)}</label>
                           <select
-                            className='costOfSalesRegistration_select-option'
+                            className='costOfSalesResultsRegistration_select-option'
                             name='month'
                             value={form.month}
                             onChange={(e) => handleChange(index, e)}
@@ -554,8 +554,8 @@ const CostOfSalesResultsRegistration = () => {
                             ))}
                           </select>
                         </div>
-                        <div className='costOfSalesRegistration_product_purchase-div'>
-                          <label className='costOfSalesRegistration_product_purchase'>
+                        <div className='costOfSalesResultsRegistration_product_purchase-div'>
+                          <label className='costOfSalesResultsRegistration_product_purchase'>
                             {translate('productPurchases', language)}
                           </label>
                           <input
@@ -567,8 +567,8 @@ const CostOfSalesResultsRegistration = () => {
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
-                        <div className='costOfSalesRegistration_work_in_progress_expense-div'>
-                          <label className='costOfSalesRegistration_work_in_progress_expense'>
+                        <div className='costOfSalesResultsRegistration_work_in_progress_expense-div'>
+                          <label className='costOfSalesResultsRegistration_work_in_progress_expense'>
                             {translate('workInProgressExpenses', language)}
                           </label>
                           <input
@@ -581,9 +581,9 @@ const CostOfSalesResultsRegistration = () => {
                           />
                         </div>
                       </div>
-                      <div className='costOfSalesRegistration_right-form-div costOfSalesRegistration_calc'>
-                        <div className='costOfSalesRegistration_purchase-div'>
-                          <label className='costOfSalesRegistration_purchase'>{translate('purchases', language)}</label>
+                      <div className='costOfSalesResultsRegistration_right-form-div costOfSalesResultsRegistration_calc'>
+                        <div className='costOfSalesResultsRegistration_purchase-div'>
+                          <label className='costOfSalesResultsRegistration_purchase'>{translate('purchases', language)}</label>
                           <input
                             type='text'
                             name='purchase'
@@ -593,8 +593,8 @@ const CostOfSalesResultsRegistration = () => {
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
-                        <div className='costOfSalesRegistration_dispatch_labor_expense-div'>
-                          <label className='costOfSalesRegistration_dispatch_labor_expense'>
+                        <div className='costOfSalesResultsRegistration_dispatch_labor_expense-div'>
+                          <label className='costOfSalesResultsRegistration_dispatch_labor_expense'>
                             {translate('dispatchLaborExpenses', language)}
                           </label>
                           <input
@@ -606,8 +606,8 @@ const CostOfSalesResultsRegistration = () => {
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           />
                         </div>
-                        <div className='costOfSalesRegistration_amortization_expense-div'>
-                          <label className='costOfSalesRegistration_amortization_expense'>
+                        <div className='costOfSalesResultsRegistration_amortization_expense-div'>
+                          <label className='costOfSalesResultsRegistration_amortization_expense'>
                             {translate('amortizationExpenses', language)}
                           </label>
                           <input
@@ -625,18 +625,18 @@ const CostOfSalesResultsRegistration = () => {
                   </div>
                 ))}
               </div>
-              <div className='costOfSalesRegistration_lower_form_cont'>
-                <div className='costOfSalesRegistration_form-content'>
-                  <div className='costOfSalesRegistration_plus-btn'>
+              <div className='costOfSalesResultsRegistration_lower_form_cont'>
+                <div className='costOfSalesResultsRegistration_form-content'>
+                  <div className='costOfSalesResultsRegistration_plus-btn'>
                     {formData.length >= 2 ? (
-                      <button className='costOfSalesRegistration_dec' type='button' onClick={handleMinus}>
+                      <button className='costOfSalesResultsRegistration_dec' type='button' onClick={handleMinus}>
                         -
                       </button>
                     ) : (
-                      <div className='costOfSalesRegistration_dec_empty'></div>
+                      <div className='costOfSalesResultsRegistration_dec_empty'></div>
                     )}
                     <button
-                      className='costOfSalesRegistration_inc custom-disabled'
+                      className='costOfSalesResultsRegistration_inc custom-disabled'
                       type='button'
                       onClick={handleAdd}
                       disabled={formData.length === maximumEntries}
@@ -644,7 +644,7 @@ const CostOfSalesResultsRegistration = () => {
                       +
                     </button>
                   </div>
-                  <div className='costOfSalesRegistration_options-btn'>
+                  <div className='costOfSalesResultsRegistration_options-btn'>
                     <button type='button' className='button is-light' onClick={handleCancel}>
                       {translate('cancel', language)}
                     </button>
