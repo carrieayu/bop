@@ -110,6 +110,11 @@ const ExpensesList: React.FC = () => {
         setLanguage(initialLanguage)
       }
 
+        if (!newEditingState) {
+          // Reset to original values when switching to list mode
+          setExpensesList(originalExpenseList)
+        }
+
       return newEditingState
     })
   }
@@ -602,11 +607,13 @@ const ExpensesList: React.FC = () => {
                                       />
                                     </td>
                                     <td className='expensesList_table_body_content_vertical delete_icon'>
-                                      <RiDeleteBin6Fill
-                                        className='delete-icon'
-                                        onClick={() => openModal('expenses', expense.expense_id)}
-                                        style={{ color: 'red' }}
-                                      />
+                                      {  expense.expense_id !== null &&
+                                        <RiDeleteBin6Fill
+                                          className='delete-icon'
+                                          onClick={() => openModal('expenses', expense.expense_id)}
+                                          style={{ color: 'red' }}
+                                        />
+                                      }
                                     </td>
                                   </tr>
                                 ) : null}

@@ -1,10 +1,10 @@
 import axios from 'axios'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
-export async function updateCostOfSaleResults(costOfSaleList, token: string) {
+export async function updateCostOfSaleResults(costOfSaleResultsList, token: string) {
   const endpoint = `${getReactActiveEndpoint()}/api/cost-of-sales-results/update/`
   try {
-    const response = await axios.put(endpoint, costOfSaleList, {
+    const response = await axios.put(endpoint, costOfSaleResultsList, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',

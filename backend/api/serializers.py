@@ -335,7 +335,17 @@ class CostOfSalesSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 # Cost Of Sales Results
+class CostOfSalesResultsCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CostOfSalesResults
+        fields = '__all__'
 class CostOfSalesResultsListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CostOfSalesResults
+        fields = '__all__'
+
+class CostOfSalesResultsSerializer(serializers.ModelSerializer):
+    cost_of_sale_result_id = serializers.CharField(required=False)
     class Meta:
         model = CostOfSalesResults
         fields = '__all__'

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react'
 import Btn from '../../components/Button/Button'
 import Pagination from '../../components/Pagination/Pagination'
@@ -12,9 +11,7 @@ import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { RiDeleteBin6Fill } from 'react-icons/ri'
 import CrudModal from '../../components/CrudModal/CrudModal'
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss'
-import { deleteCostOfSale } from '../../api/CostOfSalesEndpoint/DeleteCostOfSale'
 import { getCostOfSale } from '../../api/CostOfSalesEndpoint/GetCostOfSale'
 import { updateCostOfSale } from '../../api/CostOfSalesEndpoint/UpdateCostOfSale'
 import {
@@ -23,13 +20,17 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { getCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/GetCostOfSalesResults'
+import { deleteCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/DeleteCostOfSalesResults'
+import { updateCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/UpdateCostOfSalesResults'
 
 const CostOfSalesResultsList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('costOfSalesResults')
+  const [activeTabOther, setActiveTabOther] = useState('costOfSales')
   const [currentPage, setCurrentPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [paginatedData, setPaginatedData] = useState<any[]>([])
@@ -58,17 +59,17 @@ const CostOfSalesResultsList: React.FC = () => {
   const handleTabsClick = (tab) => {
     setActiveTabOther(tab)
     switch (tab) {
-      case 'projectSalesResults':
-        navigate('/project-sales-results-list')
+      case 'project':
+        navigate('/projects-list')
         break
-      case 'expensesResults':
-        navigate('/expenses-results-list')
+      case 'employeeExpenses':
+        navigate('/employee-expenses-list')
         break
-      case 'employeeExpensesResults':
-        navigate('/employee-expenses-results-list')
+      case 'expenses':
+        navigate('/expenses-list')
         break
-      case 'costOfSalesResults':
-        navigate('/cost-of-sales-results-list')
+      case 'costOfSales':
+        navigate('/cost-of-sales-list')
         break
       default:
         break
@@ -91,16 +92,26 @@ const CostOfSalesResultsList: React.FC = () => {
         setLanguage(initialLanguage)
       }
 
+      if (!newEditingState) {
+        // Reset to original values when switching to list mode
+        setCostOfSales(originalCostOfSales)
+      }
+
       return newEditingState
     })
   }
 
   const handleChange = (index, e) => {
     const { name, value } = e.target
+
+    // Remove commas to get the raw number
+    // EG. 999,999 → 999999 in the DB
+    const rawValue = removeCommas(value)
+
     const updatedData = [...combinedData]
     updatedData[index] = {
       ...updatedData[index],
-      [name]: value,
+      [name]: rawValue,
     }
     setCostOfSales(updatedData)
   }
@@ -119,7 +130,7 @@ const CostOfSalesResultsList: React.FC = () => {
 
     // Expenses has default 12 (for each month)
     // Even if not all records have actually been created in DB: We need to filter out non-registered records.
-    const costOfSalesListExistingRecords = costOfSales.filter((cos) => cos.cost_of_sale_id !== null)
+    const costOfSalesListExistingRecords = costOfSales.filter((cos) => cos.cost_of_sale_result_id !== null)
 
     // Step 2: Validate client-side input
     const validationErrors = validateCostOfSales(costOfSalesListExistingRecords)
@@ -155,14 +166,14 @@ const CostOfSalesResultsList: React.FC = () => {
       const modifiedFields = []
 
       updated.forEach((updatedCos) => {
-        const originalCoS = original.find((cos) => cos.cost_of_sale_id === updatedCos.cost_of_sale_id)
+        const originalCoS = original.find((cos) => cos.cost_of_sale_result_id === updatedCos.cost_of_sale_result_id)
 
         if (originalCoS) {
-          const changes = { cost_of_sale_id: updatedCos.cost_of_sale_id }
+          const changes = { cost_of_sale_result_id: updatedCos.cost_of_sale_result_id }
 
           let hasChanges = false
           for (const key in updatedCos) {
-            if (key === 'cost_of_sale_id ' || key === 'month') continue
+            if (key === 'cost_of_sale_result_id ' || key === 'month') continue
             if (updatedCos[key] !== originalCoS[key] && updatedCos[key] !== '') {
               changes[key] = updatedCos[key]
               hasChanges = true
@@ -186,7 +197,7 @@ const CostOfSalesResultsList: React.FC = () => {
       window.location.href = '/login'
       return
     }
-    updateCostOfSale(modifiedFields, token)
+    updateCostOfSaleResults(modifiedFields, token)
       .then(() => {
         setOriginalCostOfSales(costOfSales)
         setCrudMessage(translate('successfullyUpdated', language))
@@ -221,13 +232,12 @@ const CostOfSalesResultsList: React.FC = () => {
       }
 
       try {
-        const response = await axios.get(`${getReactActiveEndpoint()}/api/cost-of-sales/list/`, {
-          headers: {
-            Authorization: `Bearer ${token}`, // Add token to request headers
-          },
+        getCostOfSaleResults(token).then((data) => {
+          console.log(data);
+          
+          setCostOfSales(data)
+          setOriginalCostOfSales(data)
         })
-        setCostOfSales(response.data)
-        setOriginalCostOfSales(response.data)
       } catch (error) {
         if (error.response && error.response.status === 401) {
           window.location.href = '/login' // Redirect to login if unauthorized
@@ -264,7 +274,7 @@ const CostOfSalesResultsList: React.FC = () => {
       const foundData = costOfSales.find((item) => parseInt(item.month, 10) === month && item.year === year)
 
       return {
-        cost_of_sale_id: foundData ? foundData.cost_of_sale_id : null,
+        cost_of_sale_result_id: foundData ? foundData.cost_of_sale_result_id : null,
         month,
         year,
         purchase: foundData ? foundData.purchase : '',
@@ -277,8 +287,7 @@ const CostOfSalesResultsList: React.FC = () => {
       }
     })
   })
-
-  const validData = combinedData.filter((data) => data.cost_of_sale_id !== null)
+  const validData = combinedData.filter((data) => data.cost_of_sale_result_id !== null)
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
@@ -317,13 +326,14 @@ const CostOfSalesResultsList: React.FC = () => {
   }
 
   const handleConfirm = async () => {
-    deleteCostOfSale(deleteCostOfSalesId, token)
+    console.log(deleteCostOfSalesId)
+    
+    deleteCostOfSaleResults(deleteCostOfSalesId, token)
       .then(() => {
         setCrudMessage(translate('successfullyDeleted', language))
         setIsCRUDOpen(true)
-        getCostOfSale(token)
+        getCostOfSaleResults(token)
           .then((data) => {
-            console.log(data)
             setCostOfSales(data)
             setIsEditing(false)
           })
@@ -333,13 +343,13 @@ const CostOfSalesResultsList: React.FC = () => {
         if (error.response && error.response.status === 401) {
           window.location.href = '/login' // Redirect to login if unauthorized
         } else {
-          console.error('Error deleting cost of sale:', error)
+          console.error('Error deleting cost of sale result:', error)
         }
       })
   }
 
   const handleNewRegistrationClick = () => {
-    navigate('/cost-of-sales-results-registration')
+    navigate('/cost-of-sales-registration')
   }
 
   return (
@@ -356,11 +366,11 @@ const CostOfSalesResultsList: React.FC = () => {
           <div className='costOfSalesList_top_content'>
             <div className='costOfSalesList_top_body_cont'>
               <div className='costOfSalesList_mode_switch_datalist'>
-                <div className='mode_switch_container'>
-                  <p className='slider_mode_switch'>
+                <div className='mode-switch-container'>
+                  <p className='slider-mode-switch'>
                     {isEditing ? translate('switchToDisplayMode', language) : translate('switchToEditMode', language)}
                   </p>
-                  <label className='slider_switch'>
+                  <label className='slider-switch'>
                     <input type='checkbox' checked={isEditing} onChange={handleClick} />
                     <span className='slider'></span>
                   </label>
@@ -370,14 +380,14 @@ const CostOfSalesResultsList: React.FC = () => {
             <div className='costOfSalesList_mid_body_cont'>
               <ListButtons
                 activeTabOther={activeTabOther}
-                message={translate(isEditing ? 'costOfSalesResultsEdit' : 'costOfSalesResultsList', language)}
+                message={translate(isEditing ? 'costOfSalesEdit' : 'costOfSalesList', language)}
                 handleTabsClick={handleTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
-                  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
-                  { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
-                  { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
-                  { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
+                  { labelKey: 'project', tabKey: 'project' },
+                  { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
+                  { labelKey: 'expenses', tabKey: 'expenses' },
+                  { labelKey: 'costOfSales', tabKey: 'costOfSales' },
                 ]}
               />
               <div className={`costOfSalesList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
@@ -425,7 +435,7 @@ const CostOfSalesResultsList: React.FC = () => {
                             const isLastcostOfSaleOfYear =
                               index !== combinedData.length - 1 && combinedData[index + 1].year !== costOfSale.year
 
-                            const isEditable = costOfSale.cost_of_sale_id !== null
+                            const isEditable = costOfSale.cost_of_sale_result_id !== null
 
                             return (
                               <React.Fragment key={index}>
@@ -439,9 +449,9 @@ const CostOfSalesResultsList: React.FC = () => {
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='purchase'
-                                        value={costOfSale.purchase}
+                                        value={formatNumberWithCommas(costOfSale.purchase)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -449,9 +459,9 @@ const CostOfSalesResultsList: React.FC = () => {
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='outsourcing_expense'
-                                        value={costOfSale.outsourcing_expense}
+                                        value={formatNumberWithCommas(costOfSale.outsourcing_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -459,9 +469,9 @@ const CostOfSalesResultsList: React.FC = () => {
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='product_purchase'
-                                        value={costOfSale.product_purchase}
+                                        value={formatNumberWithCommas(costOfSale.product_purchase)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -469,9 +479,9 @@ const CostOfSalesResultsList: React.FC = () => {
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='dispatch_labor_expense'
-                                        value={costOfSale.dispatch_labor_expense}
+                                        value={formatNumberWithCommas(costOfSale.dispatch_labor_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -479,9 +489,9 @@ const CostOfSalesResultsList: React.FC = () => {
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='communication_expense'
-                                        value={costOfSale.communication_expense}
+                                        value={formatNumberWithCommas(costOfSale.communication_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -489,9 +499,9 @@ const CostOfSalesResultsList: React.FC = () => {
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='work_in_progress_expense'
-                                        value={costOfSale.work_in_progress_expense}
+                                        value={formatNumberWithCommas(costOfSale.work_in_progress_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
@@ -499,20 +509,22 @@ const CostOfSalesResultsList: React.FC = () => {
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
                                       <input
-                                        type='number'
+                                        type='text'
                                         name='amortization_expense'
-                                        value={costOfSale.amortization_expense}
+                                        value={formatNumberWithCommas(costOfSale.amortization_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={!isEditable}
                                       />
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical delete_icon'>
-                                      <RiDeleteBin6Fill
-                                        className='delete-icon'
-                                        onClick={() => openModal('costOfSales', costOfSale.cost_of_sale_id)}
-                                        style={{ color: 'red' }}
-                                      />
+                                      {costOfSale.cost_of_sale_result_id !== null && (
+                                        <RiDeleteBin6Fill
+                                          className='delete-icon'
+                                          onClick={() => openModal('costOfSalesResults', costOfSale.cost_of_sale_result_id)}
+                                          style={{ color: 'red' }}
+                                        />
+                                      )}
                                     </td>
                                   </tr>
                                 ) : null}
@@ -578,25 +590,25 @@ const CostOfSalesResultsList: React.FC = () => {
                                   {costOfSale.month}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.purchase || 0}
+                                  {formatNumberWithCommas(costOfSale.purchase) || 0}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.outsourcing_expense || 0}
+                                  {formatNumberWithCommas(costOfSale.outsourcing_expense) || 0}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.product_purchase || 0}
+                                  {formatNumberWithCommas(costOfSale.product_purchase) || 0}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.dispatch_labor_expense || 0}
+                                  {formatNumberWithCommas(costOfSale.dispatch_labor_expense) || 0}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.communication_expense || 0}
+                                  {formatNumberWithCommas(costOfSale.communication_expense) || 0}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.work_in_progress_expense || 0}
+                                  {formatNumberWithCommas(costOfSale.work_in_progress_expense) || 0}
                                 </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
-                                  {costOfSale.amortization_expense || 0}
+                                  {formatNumberWithCommas(costOfSale.amortization_expense) || 0}
                                 </td>
                               </tr>
                               {isLastcostOfSaleOfYear && (

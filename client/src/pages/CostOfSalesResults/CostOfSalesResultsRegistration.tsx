@@ -18,6 +18,10 @@ import {
 } from '../../utils/validationUtil'
 import { handleDisableKeysOnNumberInputs } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { filterCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/FilterCostOfSalesResults'
+import { createCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/CreateCostOfSalesResults'
+import { overwriteCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/OverwriteCostOfSalesResults'
+import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 type CostOfSaleResults = {
@@ -54,7 +58,6 @@ const CostOfSalesResultsRegistration = () => {
       communication_expense: '',
       work_in_progress_expense: '',
       amortization_expense: '',
-      // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
     },
   ])
 
@@ -64,9 +67,10 @@ const CostOfSalesResultsRegistration = () => {
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
   const token = localStorage.getItem('accessToken')
+  const maximumEntries = 10
 
   const handleAdd = () => {
-    if (formData.length < 10) {
+    if (formData.length < maximumEntries) {
       const newFormData = [...formData]
       newFormData.push({
         year: '',
@@ -150,6 +154,8 @@ const CostOfSalesResultsRegistration = () => {
 
   const handleChange = (index, event) => {
     const { name, value } = event.target
+    const rawValue = removeCommas(value)
+
     setFormData((prevFormData) => {
       return prevFormData.map((form, i) => {
         if (i === index) {
@@ -163,7 +169,7 @@ const CostOfSalesResultsRegistration = () => {
           }, {})
           return {
             ...form,
-            [name]: value,
+            [name]: rawValue,
             ...resetValues,
           }
         }
@@ -176,12 +182,11 @@ const CostOfSalesResultsRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
-    const getId = costOfSaleResultsData.flatMap((cosr) =>{
-        return cosr.cosr.map((item) => item.cost_of_sale_id)
-    }
-    )
-    
+
+    const getId = costOfSaleResultsData.flatMap((cosr) => {
+      return cosr.cosr.map((item) => item.cost_of_sale_id)
+    })
+
     const costOfSalesData = formData.map((cos) => ({
       year: cos.year,
       month: cos.month,
@@ -193,7 +198,6 @@ const CostOfSalesResultsRegistration = () => {
       work_in_progress_expense: cos.work_in_progress_expense,
       amortization_expense: cos.amortization_expense,
     }))
-
 
     let combinedObject = formData.map(() => ({
       year: '',
@@ -208,53 +212,51 @@ const CostOfSalesResultsRegistration = () => {
     }))
 
     const updatedCombinedObject = combinedObject.map((item, index) => {
-      const relatedCoSR = getId[index] || {} 
+      const relatedCoSRId = getId[index] || null
       return {
         ...item,
         ...costOfSalesData[index],
-        ...relatedCoSR,
+        cost_of_sale: relatedCoSRId, // Add the ID as a specific field
       }
     })
     
-    console.log(updatedCombinedObject)
-    
-    // // Client Side Validation
+    // Client Side Validation
 
-    // // Step 1: Preparartion for validation
-    // // Set record type for validation
-    // const recordType = 'costOfSales'
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'costOfSalesResults'
 
-    // // Retrieve field validation checks based on the record type
-    // const fieldChecks = getFieldChecks(recordType)
-    // // Validate records for the specified project fields
-    // const validateCostOfSales = (records) => validateRecords(records, fieldChecks, 'costOfSales')
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateCostOfSalesResults = (records) => validateRecords(records, fieldChecks, 'costOfSalesResults')
 
-    // // Step 2: Validate client-side input
-    // const validationErrors = validateCostOfSales(formData)
+    // Step 2: Validate client-side input
+    const validationErrors = validateCostOfSalesResults(formData)
 
-    // // Step 3: Check for duplicate entries on specific fields
-    // const uniqueFields = ['year', 'month']
-    // const duplicateErrors = checkForDuplicates(formData, uniqueFields, 'costOfSales', language)
+    // Step 3: Check for duplicate entries on specific fields
+    const uniqueFields = ['year', 'month']
+    const duplicateErrors = checkForDuplicates(formData, uniqueFields, 'costOfSalesResults', language)
 
-    // // Step 4: Map error types to data and translation keys for handling in the modal
-    // const errorMapping = [
-    //   { errors: validationErrors, errorType: 'normalValidation' },
-    //   { errors: duplicateErrors, errorType: 'duplicateValidation' },
-    // ]
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
 
-    // // Step 5: Display the first set of errors found, if any
-    // const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
 
-    // if (firstError) {
-    //   const { errors, errorType } = firstError
-    //   const translatedErrors = translateAndFormatErrors(errors, language, errorType)
-    //   setModalMessage(translatedErrors)
-    //   setCrudValidationErrors(translatedErrors)
-    //   setIsModalOpen(true)
-    //   return
-    // } else {
-    //   setCrudValidationErrors([])
-    // }
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      setModalMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
+      setIsModalOpen(true)
+      return
+    } else {
+      setCrudValidationErrors([])
+    }
     // Continue with submission if no errors
 
     if (!token) {
@@ -262,54 +264,54 @@ const CostOfSalesResultsRegistration = () => {
       return
     }
 
-    // createCostOfSale(formData, token)
-    //   .then((data) => {
-    //     setModalMessage(translate('successfullySaved', language))
-    //     setIsModalOpen(true)
-    //     setFormData([
-    //       {
-    //         year: '',
-    //         month: '',
-    //         purchase: '',
-    //         outsourcing_expense: '',
-    //         product_purchase: '',
-    //         dispatch_labor_expense: '',
-    //         communication_expense: '',
-    //         work_in_progress_expense: '',
-    //         amortization_expense: '',
-    //       },
-    //     ])
-    //   })
-    //   .catch((error) => {
-    //     if (error.response && error.response.status === 409) {
-    //       const existingEntries = error.response.data.existingEntries
+    createCostOfSaleResults(updatedCombinedObject, token)
+      .then((data) => {
+        setModalMessage(translate('successfullySaved', language))
+        setIsModalOpen(true)
+        setFormData([
+          {
+            year: '',
+            month: '',
+            purchase: '',
+            outsourcing_expense: '',
+            product_purchase: '',
+            dispatch_labor_expense: '',
+            communication_expense: '',
+            work_in_progress_expense: '',
+            amortization_expense: '',
+          },
+        ])
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 409) {
+          const existingEntries = error.response.data.existingEntries
 
-    //       // Map to create a string of existing entries
-    //       const existingYearsMonths = existingEntries.map((entry) => `'${entry.year}, ${entry.month}'`).join(', ')
+          // Map to create a string of existing entries
+          const existingYearsMonths = existingEntries.map((entry) => `'${entry.year}, ${entry.month}'`).join(', ')
 
-    //       // Filter out new entries that don't match the existing entries
-    //       const newEntries = costOfSalesData.filter((item) => {
-    //         return !existingEntries.some((existing) => existing.year === item.year && existing.month === item.month)
-    //       })
+          // Filter out new entries that don't match the existing entries
+          const newEntries = costOfSalesData.filter((item) => {
+            return !existingEntries.some((existing) => existing.year === item.year && existing.month === item.month)
+          })
 
-    //       // Create a string for only the new entries being submitted
-    //       const newYearsMonths = newEntries.map((entry) => `'${entry.year}, ${entry.month}'`).join(', ')
+          // Create a string for only the new entries being submitted
+          const newYearsMonths = newEntries.map((entry) => `'${entry.year}, ${entry.month}'`).join(', ')
 
-    //       // Construct the alert message
-    //       let message = translate('alertMessageAbove', language).replace('${existingEntries}', existingYearsMonths)
+          // Construct the alert message
+          let message = translate('alertMessageAbove', language).replace('${existingEntries}', existingYearsMonths)
 
-    //       // Only append the new entries part if there are new entries
-    //       if (newYearsMonths.length > 0) {
-    //         message += translate('alertMessageNewEntries', language).replace('${newEntries}', newYearsMonths)
-    //       }
+          // Only append the new entries part if there are new entries
+          if (newYearsMonths.length > 0) {
+            message += translate('alertMessageNewEntries', language).replace('${newEntries}', newYearsMonths)
+          }
 
-    //       setModalMessage(message)
-    //       setIsOverwriteModalOpen(true)
-    //       return
-    //     } else {
-    //       console.error('There was an error with expenses registration!', error)
-    //     }
-    //   })
+          setModalMessage(message)
+          setIsOverwriteModalOpen(true)
+          return
+        } else {
+          console.error('There was an error with expenses registration!', error)
+        }
+      })
   }
 
   // Handle overwrite confirmation
@@ -322,32 +324,62 @@ const CostOfSalesResultsRegistration = () => {
   }
 
   const handleSubmitConfirmed = async () => {
-    const token = localStorage.getItem('accessToken')
+    const getId = costOfSaleResultsData.flatMap((cosr) => {
+      return cosr.cosr.map((item) => item.cost_of_sale_id)
+    })
+
+    const costOfSalesData = formData.map((cos) => ({
+      year: cos.year,
+      month: cos.month,
+      purchase: cos.purchase,
+      outsourcing_expense: cos.outsourcing_expense,
+      product_purchase: cos.product_purchase,
+      dispatch_labor_expense: cos.dispatch_labor_expense,
+      communication_expense: cos.communication_expense,
+      work_in_progress_expense: cos.work_in_progress_expense,
+      amortization_expense: cos.amortization_expense,
+    }))
+
+    let combinedObject = formData.map(() => ({
+      year: '',
+      month: '',
+      purchase: '',
+      outsourcing_expense: '',
+      product_purchase: '',
+      dispatch_labor_expense: '',
+      communication_expense: '',
+      work_in_progress_expense: '',
+      amortization_expense: '',
+    }))
+
+    const updatedCombinedObject = combinedObject.map((item, index) => {
+      const relatedCoSRId = getId[index] || null
+      return {
+        ...item,
+        ...costOfSalesData[index],
+        cost_of_sale_id: relatedCoSRId, // Add the ID as a specific field
+      }
+    })
 
     try {
-      const overwriteResponse = await axios.put(`${getReactActiveEndpoint()}/api/cost-of-sales/create/`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+      overwriteCostOfSaleResults(updatedCombinedObject, token).then((data) => {
+        setModalMessage(translate('overWrite', language))
+        setIsModalOpen(true)
+        setFormData([
+          {
+            year: '',
+            month: '',
+            purchase: '',
+            outsourcing_expense: '',
+            product_purchase: '',
+            dispatch_labor_expense: '',
+            communication_expense: '',
+            work_in_progress_expense: '',
+            amortization_expense: '',
+          },
+        ])
       })
-
-      setModalMessage(translate('overWrite', language))
-      setIsModalOpen(true)
-      // Reset form data after successful overwrite
-      setFormData([
-        {
-          year: '',
-          month: '',
-          purchase: '',
-          outsourcing_expense: '',
-          product_purchase: '',
-          dispatch_labor_expense: '',
-          communication_expense: '',
-          work_in_progress_expense: '',
-          amortization_expense: '',
-        },
-      ])
+      
     } catch (overwriteError) {
       console.error('Error overwriting data:', overwriteError)
     } finally {
@@ -440,10 +472,10 @@ const CostOfSalesResultsRegistration = () => {
               handleTabsClick={handleTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
-                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
-                { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
-                { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
-                { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
+                { labelKey: 'project', tabKey: 'project' },
+                { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
+                { labelKey: 'expenses', tabKey: 'expenses' },
+                { labelKey: 'costOfSales', tabKey: 'costOfSales' },
               ]}
             />
           </div>
@@ -482,9 +514,9 @@ const CostOfSalesResultsRegistration = () => {
                             {translate('outsourcingExpenses', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='outsourcing_expense'
-                            value={form.outsourcing_expense}
+                            value={formatNumberWithCommas(form.outsourcing_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -495,9 +527,9 @@ const CostOfSalesResultsRegistration = () => {
                             {translate('communicationExpenses', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='communication_expense'
-                            value={form.communication_expense}
+                            value={formatNumberWithCommas(form.communication_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -527,9 +559,9 @@ const CostOfSalesResultsRegistration = () => {
                             {translate('productPurchases', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='product_purchase'
-                            value={form.product_purchase}
+                            value={formatNumberWithCommas(form.product_purchase)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -540,9 +572,9 @@ const CostOfSalesResultsRegistration = () => {
                             {translate('workInProgressExpenses', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='work_in_progress_expense'
-                            value={form.work_in_progress_expense}
+                            value={formatNumberWithCommas(form.work_in_progress_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -553,9 +585,9 @@ const CostOfSalesResultsRegistration = () => {
                         <div className='costOfSalesRegistration_purchase-div'>
                           <label className='costOfSalesRegistration_purchase'>{translate('purchases', language)}</label>
                           <input
-                            type='number'
+                            type='text'
                             name='purchase'
-                            value={form.purchase}
+                            value={formatNumberWithCommas(form.purchase)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -566,9 +598,9 @@ const CostOfSalesResultsRegistration = () => {
                             {translate('dispatchLaborExpenses', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='dispatch_labor_expense'
-                            value={form.dispatch_labor_expense}
+                            value={formatNumberWithCommas(form.dispatch_labor_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -579,9 +611,9 @@ const CostOfSalesResultsRegistration = () => {
                             {translate('amortizationExpenses', language)}
                           </label>
                           <input
-                            type='number'
+                            type='text'
                             name='amortization_expense'
-                            value={form.amortization_expense}
+                            value={formatNumberWithCommas(form.amortization_expense)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -596,11 +628,20 @@ const CostOfSalesResultsRegistration = () => {
               <div className='costOfSalesRegistration_lower_form_cont'>
                 <div className='costOfSalesRegistration_form-content'>
                   <div className='costOfSalesRegistration_plus-btn'>
-                    <button className='costOfSalesRegistration_inc' type='button' onClick={handleAdd}>
+                    {formData.length >= 2 ? (
+                      <button className='costOfSalesRegistration_dec' type='button' onClick={handleMinus}>
+                        -
+                      </button>
+                    ) : (
+                      <div className='costOfSalesRegistration_dec_empty'></div>
+                    )}
+                    <button
+                      className='costOfSalesRegistration_inc custom-disabled'
+                      type='button'
+                      onClick={handleAdd}
+                      disabled={formData.length === maximumEntries}
+                    >
                       +
-                    </button>
-                    <button className='costOfSalesRegistration_dec' type='button' onClick={handleMinus}>
-                      -
                     </button>
                   </div>
                   <div className='costOfSalesRegistration_options-btn'>

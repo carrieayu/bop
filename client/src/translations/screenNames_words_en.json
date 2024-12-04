@@ -33,5 +33,11 @@
     "usersRegistration": "Users Registration",
     "usersList": "Users List",
     "dashboard": "Dashboard",
-    "masterMaintenance": "Master Maintenance"
+    "masterMaintenance": "Master Maintenance",
+    "expensesEdit": "Expenses Edit",
+    "costOfSalesEdit": "Cost of Sales Edit",
+    "clientsEdit": "Clients Edit",
+    "employeesEdit": "Employees Edit",
+    "businessDivisionsEdit": "Business Divisions Edit",
+    "usersEdit": "Users Edit"
 }

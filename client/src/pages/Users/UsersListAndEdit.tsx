@@ -39,6 +39,7 @@ const UsersListAndEdit: React.FC = () => {
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
   const [isEditing, setIsEditing] = useState(false)
   const [userList, setUserList] = useState([])
+  const [originalUserList, setOriginalUserList] = useState([])
   const [initialLanguage, setInitialLanguage] = useState(language);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<any>(null);
@@ -101,9 +102,13 @@ const UsersListAndEdit: React.FC = () => {
       if (newEditingState) {
         setLanguage(initialLanguage);
       }
-    
-      return newEditingState;
-    });
+
+      if (!newEditingState) {
+        // Reset to original values when switching to list mode
+        setUserList(originalUserList)
+      }
+        return newEditingState;
+      });
   }
 
   const handleChange = (index, event) => {
@@ -195,13 +200,14 @@ const UsersListAndEdit: React.FC = () => {
       getUser(token)
         .then((data) => {
           // Update Date Format For Display: Formats the Date so it appears correctly in the Edit Page;
-          const updatedData = data.map((user) => {
+          const originalData = data.map((user) => {
             return {
               ...user, // Keep other properties intact
               date_joined: formatDate(user.date_joined), // Update the date format
             }
           })
-          setUserList(updatedData) // Update state with the modified array
+          setUserList(originalData) // Update state with the modified array. Will be updated on Front End (Edit Mode)
+          setOriginalUserList(originalData) // Current State in DB (List Mode)
         })
         .catch((error) => {
           if (error.response && error.response.status === 401) {
@@ -214,6 +220,11 @@ const UsersListAndEdit: React.FC = () => {
       fetchUsers()
     }, [])
 
+  
+  useEffect(() => {
+    console.log('originalUserList', originalUserList)
+  }, [originalUserList])
+  
     useEffect(() => {
       const startIndex = currentPage * rowsPerPage
       setPaginatedData(userList.slice(startIndex, startIndex + rowsPerPage))
