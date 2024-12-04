@@ -27,94 +27,95 @@ import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // help
 
 
 const CostOfSalesList: React.FC = () => {
-    const [activeTab, setActiveTab] = useState('/planning-list')
-    const navigate = useNavigate()
-    const location = useLocation()
-    const [activeTabOther, setActiveTabOther] = useState('costOfSales')
-    const [currentPage, setCurrentPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5)
-    const [paginatedData, setPaginatedData] = useState<any[]>([])
-    const { language, setLanguage } = useLanguage()
-    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
-    const select = [5, 10, 100]
-    const [isEditing, setIsEditing] = useState(false)
-    const [initialLanguage, setInitialLanguage] = useState(language);
-    const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [crudValidationErrors, setCrudValidationErrors] = useState([])
-    const [selectedCostOfSales, setSelectedCostOfSales] = useState<any>(null);
-    const [deleteCostOfSalesId, setDeleteCostOfSalesId] = useState([])
-    const [costOfSales, setCostOfSales] = useState([])
-    const [originalCostOfSales, setOriginalCostOfSales] = useState(costOfSales)
-    const totalPages = Math.ceil(100 / 10);
-    const token = localStorage.getItem('accessToken')
-    const [isCRUDOpen, setIsCRUDOpen] = useState(false);
-    const [crudMessage, setCrudMessage] = useState('');
-    const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('/planning-list')
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [activeTabOther, setActiveTabOther] = useState('costOfSales')
+  const [currentPage, setCurrentPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
+  const [paginatedData, setPaginatedData] = useState<any[]>([])
+  const { language, setLanguage } = useLanguage()
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
+  const select = [5, 10, 100]
+  const [isEditing, setIsEditing] = useState(false)
+  const [initialLanguage, setInitialLanguage] = useState(language)
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
+  const [selectedCostOfSales, setSelectedCostOfSales] = useState<any>(null)
+  const [deleteCostOfSalesId, setDeleteCostOfSalesId] = useState([])
+  const [costOfSales, setCostOfSales] = useState([])
+  const [originalCostOfSales, setOriginalCostOfSales] = useState(costOfSales)
+  const totalPages = Math.ceil(100 / 10)
+  const token = localStorage.getItem('accessToken')
+  const [isCRUDOpen, setIsCRUDOpen] = useState(false)
+  const [crudMessage, setCrudMessage] = useState('')
+  const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
+  const [deleteComplete, setDeleteComplete] = useState(false)
 
-    const handleTabClick = (tab) => {
-        setActiveTab(tab)
-        navigate(tab)
-      }
-      
-      const handleTabsClick = (tab) => {
-        setActiveTabOther(tab)
-        switch (tab) {
-          case 'project':
-            navigate('/projects-list')
-            break
-          case 'employeeExpenses':
-            navigate('/employee-expenses-list')
-            break
-          case 'expenses':
-            navigate('/expenses-list')
-            break
-          case 'costOfSales':
-            navigate('/cost-of-sales-list')
-            break
-          default:
-            break
-        }
-      }  
-    
-    const handlePageChange = (page: number) => {
-      setCurrentPage(page);
-    };
+  const handleTabClick = (tab) => {
+    setActiveTab(tab)
+    navigate(tab)
+  }
 
-    const handleRowsPerPageChange = (numRows: number) => {
-        setRowsPerPage(numRows)
-        setCurrentPage(0) 
+  const handleTabsClick = (tab) => {
+    setActiveTabOther(tab)
+    switch (tab) {
+      case 'project':
+        navigate('/projects-list')
+        break
+      case 'employeeExpenses':
+        navigate('/employee-expenses-list')
+        break
+      case 'expenses':
+        navigate('/expenses-list')
+        break
+      case 'costOfSales':
+        navigate('/cost-of-sales-list')
+        break
+      default:
+        break
     }
+  }
 
-    const handleClick = () => {
-      setIsEditing((prevState) => {
-        const newEditingState = !prevState;
-        if (newEditingState) {
-          setLanguage(initialLanguage);
-        }
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+  }
 
-        if (!newEditingState) {
-          // Reset to original values when switching to list mode
-          setCostOfSales(originalCostOfSales)
-        }
-    
-        return newEditingState;
-      });
-    }
+  const handleRowsPerPageChange = (numRows: number) => {
+    setRowsPerPage(numRows)
+    setCurrentPage(0)
+  }
 
-    const handleChange = (index, e) => {
-      const { name, value } = e.target
-
-      // Remove commas to get the raw number
-      // EG. 999,999 → 999999 in the DB
-      const rawValue = removeCommas(value)
-      
-      const updatedData = [...combinedData]
-      updatedData[index] = {
-        ...updatedData[index],
-        [name]: rawValue,
+  const handleClick = () => {
+    setIsEditing((prevState) => {
+      const newEditingState = !prevState
+      if (newEditingState) {
+        setLanguage(initialLanguage)
       }
-      setCostOfSales(updatedData)
-    };
+
+      if (!newEditingState) {
+        // Reset to original values when switching to list mode
+        setCostOfSales(originalCostOfSales)
+      }
+
+      return newEditingState
+    })
+  }
+
+  const handleChange = (index, e) => {
+    const { name, value } = e.target
+
+    // Remove commas to get the raw number
+    // EG. 999,999 → 999999 in the DB
+    const rawValue = removeCommas(value)
+
+    const updatedData = [...combinedData]
+    updatedData[index] = {
+      ...updatedData[index],
+      [name]: rawValue,
+    }
+    setCostOfSales(updatedData)
+  }
 
   const handleSubmit = async () => {
     // Validation
@@ -216,142 +217,162 @@ const CostOfSalesList: React.FC = () => {
           console.error('Error', error.message)
         }
       })
-  };
+  }
 
-    const handleUpdateConfirm = async () => {
-      await handleSubmit(); // Call the submit function for update
-      setIsUpdateConfirmationOpen(false);
-  };
-  
-    useEffect(() => {
-        const fetchCostOfSales = async () => {
-          const token = localStorage.getItem('accessToken');
-          if (!token) {
-            window.location.href = '/login';  // Redirect to login if no token found
-            return;
-          }
-    
-          try {
-            const response = await axios.get(`${getReactActiveEndpoint()}/api/cost-of-sales/list/`, {
-              headers: {
-                Authorization: `Bearer ${token}`, // Add token to request headers
-              },
-            })
-            setCostOfSales(response.data);
-            setOriginalCostOfSales(response.data)
-          } catch (error) {
-            if (error.response && error.response.status === 401) {
-              window.location.href = '/login';  // Redirect to login if unauthorized
-            } else {
-              console.error('There was an error fetching the cost of sales data!', error);
-            }
-          }
-        };
-    
-        fetchCostOfSales();
-      }, []);
+  const handleUpdateConfirm = async () => {
+    await handleSubmit() // Call the submit function for update
+    setIsUpdateConfirmationOpen(false)
+  }
 
-      useEffect(() => {
-        const startIndex = currentPage * rowsPerPage
-        setPaginatedData(costOfSales.slice(startIndex, startIndex + rowsPerPage))
-      }, [currentPage, rowsPerPage, costOfSales])
+  useEffect(() => {
+    const fetchCostOfSales = async () => {
+      const token = localStorage.getItem('accessToken')
+      if (!token) {
+        window.location.href = '/login' // Redirect to login if no token found
+        return
+      }
 
-      useEffect(() => {
-        const path = location.pathname;
-        if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
-          setActiveTab(path);
+      try {
+        const response = await axios.get(`${getReactActiveEndpoint()}/api/cost-of-sales/list/`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add token to request headers
+          },
+        })
+        setCostOfSales(response.data)
+        setOriginalCostOfSales(response.data)
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login' // Redirect to login if unauthorized
+        } else {
+          console.error('There was an error fetching the cost of sales data!', error)
         }
-      }, [location.pathname]);
+      }
+    }
 
-      // Fixed months array
-    const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3];
+    fetchCostOfSales()
+  }, [])
 
-    // Extract unique years from the costOfSales data
-    const uniqueYears = Array.from(new Set(costOfSales.map(item => item.year))).sort((a, b) => a - b);
+  useEffect(() => {
+    const startIndex = currentPage * rowsPerPage
+    setPaginatedData(costOfSales.slice(startIndex, startIndex + rowsPerPage))
+  }, [currentPage, rowsPerPage, costOfSales])
 
-    // Combine static months with dynamic data
-    const combinedData = uniqueYears.flatMap(year => {
-      return months.map((month) => {
-        const foundData = costOfSales.find(item => parseInt(item.month, 10) === month && item.year === year);
-        
-        return {
-          cost_of_sale_id: foundData ? foundData.cost_of_sale_id : null,
-          month,
-          year,
-          purchase: foundData ? foundData.purchase : '',
-          outsourcing_expense: foundData ? foundData.outsourcing_expense : '',
-          product_purchase: foundData ? foundData.product_purchase : '',
-          dispatch_labor_expense: foundData ? foundData.dispatch_labor_expense : '',
-          communication_expense: foundData ? foundData.communication_expense : '',
-          work_in_progress_expense: foundData ? foundData.work_in_progress_expense : '',
-          amortization_expense: foundData ? foundData.amortization_expense : ''
-        };
-      });
-    });
+  useEffect(() => {
+    const path = location.pathname
+    if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
+      setActiveTab(path)
+    }
+  }, [location.pathname])
 
-  const validData = combinedData.filter(data => data.cost_of_sale_id !== null);
+  // Fixed months array
+  const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
 
-    useEffect(() => {
-      setIsTranslateSwitchActive(language === 'en');
-    }, [language]);
-  
-    const handleTranslationSwitchToggle = () => {
-      const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
-      setLanguage(newLanguage);
-    };
+  // Extract unique years from the costOfSales data
+  const uniqueYears = Array.from(new Set(costOfSales.map((item) => item.year))).sort((a, b) => a - b)
 
-    const openModal = (users, id) => {
-      setSelectedCostOfSales(users)
-      setModalIsOpen(true);
-      setDeleteCostOfSalesId(id)
-  };
-  
+  // Combine static months with dynamic data
+  const combinedData = uniqueYears.flatMap((year) => {
+    return months.map((month) => {
+      const foundData = costOfSales.find((item) => parseInt(item.month, 10) === month && item.year === year)
+
+      return {
+        cost_of_sale_id: foundData ? foundData.cost_of_sale_id : null,
+        month,
+        year,
+        purchase: foundData ? foundData.purchase : '',
+        outsourcing_expense: foundData ? foundData.outsourcing_expense : '',
+        product_purchase: foundData ? foundData.product_purchase : '',
+        dispatch_labor_expense: foundData ? foundData.dispatch_labor_expense : '',
+        communication_expense: foundData ? foundData.communication_expense : '',
+        work_in_progress_expense: foundData ? foundData.work_in_progress_expense : '',
+        amortization_expense: foundData ? foundData.amortization_expense : '',
+      }
+    })
+  })
+
+  const validData = combinedData.filter((data) => data.cost_of_sale_id !== null)
+
+  useEffect(() => {
+    setIsTranslateSwitchActive(language === 'en')
+  }, [language])
+
+  const handleTranslationSwitchToggle = () => {
+    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
+    setLanguage(newLanguage)
+  }
+
+  const openModal = (users, id) => {
+    setSelectedCostOfSales(users)
+    setModalIsOpen(true)
+    setDeleteCostOfSalesId(id)
+  }
 
   const closeModal = () => {
-      setSelectedCostOfSales(null);
-      setModalIsOpen(false);
-      setIsCRUDOpen(false);
-  };
+    setSelectedCostOfSales(null)
+    setModalIsOpen(false)
+    setIsCRUDOpen(false)
+  }
 
-    const monthNames: { [key: number]: { en: string; jp: string } } = {
-      1: { en: "January", jp: "1月" },
-      2: { en: "February", jp: "2月" },
-      3: { en: "March", jp: "3月" },
-      4: { en: "April", jp: "4月" },
-      5: { en: "May", jp: "5月" },
-      6: { en: "June", jp: "6月" },
-      7: { en: "July", jp: "7月" },
-      8: { en: "August", jp: "8月" },
-      9: { en: "September", jp: "9月" },
-      10: { en: "October", jp: "10月" },
-      11: { en: "November", jp: "11月" },
-      12: { en: "December", jp: "12月" },
-    };
+  const monthNames: { [key: number]: { en: string; jp: string } } = {
+    1: { en: 'January', jp: '1月' },
+    2: { en: 'February', jp: '2月' },
+    3: { en: 'March', jp: '3月' },
+    4: { en: 'April', jp: '4月' },
+    5: { en: 'May', jp: '5月' },
+    6: { en: 'June', jp: '6月' },
+    7: { en: 'July', jp: '7月' },
+    8: { en: 'August', jp: '8月' },
+    9: { en: 'September', jp: '9月' },
+    10: { en: 'October', jp: '10月' },
+    11: { en: 'November', jp: '11月' },
+    12: { en: 'December', jp: '12月' },
+  }
 
-    const handleConfirm = async () => {
-      
-      deleteCostOfSale(deleteCostOfSalesId, token)
-        .then(() => {
-          setCrudMessage(translate('successfullyDeleted', language))
-          setIsCRUDOpen(true)
-          getCostOfSale(token).then((data) => {
-            console.log(data)
-            setCostOfSales(data)
-            setIsEditing(false)
-          }).catch(() => {});
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('Error deleting cost of sale:', error)
-          }
-        })
-    };
+  // # Handle DELETE on Edit Screen
 
-    const handleNewRegistrationClick = () => {
-      navigate('/cost-of-sales-registration');
-    };
+  // STEP # 1
+  const handleConfirm = async () => {
+    // Sets the Validation Errors if any to empty as they are not necessary for delete.
+    setCrudValidationErrors([])
+
+    deleteCostOfSale(deleteCostOfSalesId, token)
+      .then(() => {
+        updateCostOfSaleLists(deleteCostOfSalesId)
+        setCrudMessage(translate('successfullyDeleted', language))
+        setIsCRUDOpen(true)
+        setIsEditing(false)
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login' // Redirect to login if unauthorized
+        } else {
+          console.error('Error deleting cost of sale:', error)
+        }
+      })
+  }
+
+  // Set the Lists to match the DB after deletion.
+
+  // Step #2
+  const updateCostOfSaleLists = (deleteId) => {
+    // Deletes the record with deleteId from original list (This should always match DB)
+    setOriginalCostOfSales((prevList) => prevList.filter((cos) => cos.cost_of_sale_id !== deleteId))
+    setDeleteComplete(true)
+  }
+
+  // Step #3
+  useEffect(() => {
+    if (deleteComplete) {
+      // After Delete, Screen Automatically Reverts To List Screen NOT Edit Screen.
+      // original list has deleted the record with deleteID
+      // The updated list used on Edit screen goes back to matching orginal list.
+      setCostOfSales(originalCostOfSales)
+    }
+  }, [deleteComplete])
+
+  const handleNewRegistrationClick = () => {
+    navigate('/cost-of-sales-registration')
+  }
 
   return (
     <div className='costOfSalesList_wrapper'>
@@ -519,7 +540,7 @@ const CostOfSalesList: React.FC = () => {
                                       />
                                     </td>
                                     <td className='costOfSalesList_table_body_content_vertical delete_icon'>
-                                      { costOfSale.cost_of_sale_id !== null && (
+                                      {costOfSale.cost_of_sale_id !== null && (
                                         <RiDeleteBin6Fill
                                           className='delete-icon'
                                           onClick={() => openModal('costOfSales', costOfSale.cost_of_sale_id)}

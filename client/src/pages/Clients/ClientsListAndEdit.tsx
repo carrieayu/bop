@@ -284,6 +284,7 @@ const ClientsListAndEdit: React.FC = () => {
 
   // STEP # 1
   const handleConfirm = async () => {
+    // Sets the Validation Errors if any to empty as they are not necessary for delete.
     setCrudValidationErrors([])
 
     deleteClient(deleteId, token)
@@ -302,11 +303,11 @@ const ClientsListAndEdit: React.FC = () => {
       })
   }
 
-  // Set the Client Lists to match the DB after deletion.
+  // Set the Lists to match the DB after deletion.
 
   // Step #2
   const updateClientLists = (deleteId) => {
-    // Deletes the record with deleteId from originalClientsList (This should always match DB)
+    // Deletes the record with deleteId from original list (This should always match DB)
     setOriginalClientsList((prevList) => prevList.filter((client) => client.client_id !== deleteId))
     setDeleteComplete(true)
   }
@@ -314,9 +315,9 @@ const ClientsListAndEdit: React.FC = () => {
   // Step #3
   useEffect(() => {
     if (deleteComplete) {
-      // After Delete Screen Automatically Reverts To List.
-      // OrginalClients has deleted the record with deleteID
-      // The "updatedClients" used on Edit screen goes back to matching originalClients
+      // After Delete, Screen Automatically Reverts To List Screen NOT Edit Screen.
+      // original list has deleted the record with deleteID
+      // The updated list used on Edit screen goes back to matching orginal list.
       setUpdatedClients(originalClientsList)
     }
   }, [deleteComplete])
