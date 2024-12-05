@@ -84,6 +84,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
       case 'employeeExpensesResults':
         navigate('/employee-expenses-results-list')
         break
+      case 'costOfSalesResults':
+        navigate('/cost-of-sales-results-list')
+        break
       default:
         break
     }
@@ -363,6 +366,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                   { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
                   { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
                   { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
+                  { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
                 ]}
               />
               <div className={`projectSalesResultsList_table_wrapper ${isEditing ? 'editMode' : ''}`}>

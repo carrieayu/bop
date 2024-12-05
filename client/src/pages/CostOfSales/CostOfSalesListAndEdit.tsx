@@ -11,7 +11,6 @@ import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
 import AlertModal from "../../components/AlertModal/AlertModal";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import CrudModal from "../../components/CrudModal/CrudModal";
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss'
 import { deleteCostOfSale } from "../../api/CostOfSalesEndpoint/DeleteCostOfSale";
 import { getCostOfSale } from "../../api/CostOfSalesEndpoint/GetCostOfSale";
@@ -24,6 +23,7 @@ import {
 } from '../../utils/validationUtil'
 import {handleDisableKeysOnNumberInputs, removeCommas} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { createCostOfSale } from "../../api/CostOfSalesEndpoint/CreateCostOfSale";
 
 
 const CostOfSalesList: React.FC = () => {
@@ -232,13 +232,14 @@ const CostOfSalesList: React.FC = () => {
           }
     
           try {
-            const response = await axios.get(`${getReactActiveEndpoint()}/api/cost-of-sales/list/`, {
-              headers: {
-                Authorization: `Bearer ${token}`, // Add token to request headers
-              },
-            })
-            setCostOfSales(response.data);
-            setOriginalCostOfSales(response.data)
+              getCostOfSale(token)
+                .then((data) => {
+                  setCostOfSales(data)
+                  setOriginalCostOfSales(data)
+                })
+                .catch((error) => {
+                  console.error('Error creating data:', error)
+                })
           } catch (error) {
             if (error.response && error.response.status === 401) {
               window.location.href = '/login';  // Redirect to login if unauthorized

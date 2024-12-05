@@ -52,6 +52,19 @@ export const inputFieldConfigurations = {
     { field: 'transaction_fee', fieldName: 'transactionFee', isNumber: true },
     { field: 'amortization_expense', fieldName: 'amortizationExpense', isNumber: true },
   ],
+  // Cost Of SalesResults
+  costOfSalesResults: [
+    { field: 'year', fieldName: 'year', isNumber: true },
+    { field: 'month', fieldName: 'month', isNumber: true },
+    { field: 'purchase', fieldName: 'purchase', isNumber: true },
+    { field: 'outsourcing_expense', fieldName: 'outsourcingExpense', isNumber: true },
+    { field: 'product_purchase', fieldName: 'productPurchase', isNumber: true },
+    { field: 'dispatch_labor_expense', fieldName: 'dispatchLaborExpense', isNumber: true },
+    { field: 'communication_expense', fieldName: 'communicationExpense', isNumber: true },
+    { field: 'work_in_progress_expense', fieldName: 'workInProgressExpense', isNumber: true },
+    { field: 'transaction_fee', fieldName: 'transactionFee', isNumber: true },
+    { field: 'amortization_expense', fieldName: 'amortizationExpense', isNumber: true },
+  ],
   // Employee Expenses
   employeeExpenses: [
     { field: 'employee', fieldName: 'employee', isRequired: true },
