@@ -42,12 +42,13 @@ const CostOfSalesResultsList: React.FC = () => {
   const [selectedCostOfSales, setSelectedCostOfSales] = useState<any>(null)
   const [deleteCostOfSalesId, setDeleteCostOfSalesId] = useState([])
   const [costOfSalesResults, setCostOfSalesResults] = useState([])
-  const [originalCostOfSales, setOriginalCostOfSales] = useState(costOfSalesResults)
+  const [originalCostOfSalesResults, setOriginalCostOfSalesResults] = useState(costOfSalesResults)
   const totalPages = Math.ceil(100 / 10)
   const token = localStorage.getItem('accessToken')
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
+  const [deleteComplete, setDeleteComplete] = useState(false)
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -92,7 +93,7 @@ const CostOfSalesResultsList: React.FC = () => {
 
       if (!newEditingState) {
         // Reset to original values when switching to list mode
-        setCostOfSalesResults(originalCostOfSales)
+        setCostOfSalesResults(originalCostOfSalesResults)
       }
 
       return newEditingState
@@ -191,7 +192,7 @@ const CostOfSalesResultsList: React.FC = () => {
       return modifiedFields
     }
 
-    const modifiedFields = getModifiedFields(originalCostOfSales, validData)
+    const modifiedFields = getModifiedFields(originalCostOfSalesResults, validData)
     if (modifiedFields.length === 0) {
       return
     }
@@ -202,7 +203,7 @@ const CostOfSalesResultsList: React.FC = () => {
     }
     updateCostOfSaleResults(modifiedFields, token)
       .then(() => {
-        setOriginalCostOfSales(costOfSalesResults)
+        setOriginalCostOfSalesResults(costOfSalesResults)
         setCrudMessage(translate('successfullyUpdated', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
@@ -237,7 +238,7 @@ const CostOfSalesResultsList: React.FC = () => {
       try {
         getCostOfSaleResults(token).then((data) => {
           setCostOfSalesResults(data)
-          setOriginalCostOfSales(data)
+          setOriginalCostOfSalesResults(data)
         })
       } catch (error) {
         if (error.response && error.response.status === 401) {
@@ -326,19 +327,24 @@ const CostOfSalesResultsList: React.FC = () => {
     12: { en: 'December', jp: '12月' },
   }
 
+  // # Handle DELETE on Edit Screen
+
+  // STEP # 1
   const handleConfirm = async () => {
-    console.log(deleteCostOfSalesId)
-    
+    // Sets the Validation Errors if any to empty as they are not necessary for delete.
+    setCrudValidationErrors([])
+
     deleteCostOfSaleResults(deleteCostOfSalesId, token)
       .then(() => {
+        updateCostOfSaleResultLists(deleteCostOfSalesId)
         setCrudMessage(translate('successfullyDeleted', language))
         setIsCRUDOpen(true)
-        getCostOfSaleResults(token)
-          .then((data) => {
-            setCostOfSalesResults(data)
-            setIsEditing(false)
-          })
-          .catch(() => {})
+        // getCostOfSaleResults(token)
+        //   .then((data) => {
+        //     setCostOfSalesResults(data)
+        //     setIsEditing(false)
+        //   })
+        //   .catch(() => {})
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
@@ -348,6 +354,25 @@ const CostOfSalesResultsList: React.FC = () => {
         }
       })
   }
+
+  // Set the Lists to match the DB after deletion.
+
+  // Step #2
+  const updateCostOfSaleResultLists = (deleteId) => {
+    // Deletes the record with deleteId from original list (This should always match DB)
+    setOriginalCostOfSalesResults((prevList) => prevList.filter((cos) => cos.cost_of_sale_result_id !== deleteId))
+    setDeleteComplete(true)
+  }
+
+  // Step #3
+  useEffect(() => {
+    if (deleteComplete) {
+      // After Delete, Screen Automatically Reverts To List Screen NOT Edit Screen.
+      // original list has deleted the record with deleteID
+      // The updated list used on Edit screen goes back to matching orginal list.
+      setCostOfSalesResults(originalCostOfSalesResults)
+    }
+  }, [deleteComplete])
 
   const handleNewRegistrationClick = () => {
     navigate('/cost-of-sales-results-registration')
