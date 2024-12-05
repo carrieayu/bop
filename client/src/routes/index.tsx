@@ -4,6 +4,8 @@ import SuspenseLoader from "../components/SuspenseLoader/SuspenseLoader";
 import ProtectedRoutes from "./ProtectedRoutes";
 import EmployeeExpensesResultsList from "../pages/EmployeeExpensesResults/EmployeeExpenseResultsList";
 import EmployeeExpensesResultsRegistration from "../pages/EmployeeExpensesResults/EmployeeExpensesResultsRegistration";
+import CostOfSalesResultsList from "../pages/CostOfSalesResults/CostOfSalesResultsListAndEdit";
+import CostOfSalesResultsRegistration from "../pages/CostOfSalesResults/CostOfSalesResultsRegistration";
 
 const Loader = (Component: any) => (props: any) =>
   (
@@ -176,6 +178,22 @@ const routes: RouteObject[] = [
         element: (
           <ProtectedRoutes>
             <EmployeeExpensesResultsRegistration />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: 'cost-of-sales-results-list',
+        element: (
+          <ProtectedRoutes>
+            <CostOfSalesResultsList />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: 'cost-of-sales-results-registration',
+        element: (
+          <ProtectedRoutes>
+            <CostOfSalesResultsRegistration />
           </ProtectedRoutes>
         ),
       },

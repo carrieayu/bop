@@ -311,6 +311,38 @@ class CostOfSales(models.Model):
     def __str__(self):
         return self.cost_of_sale_id
     
+class CostOfSalesResults(models.Model):
+    cost_of_sale_result_id  = models.CharField(max_length=10, primary_key=True)
+    cost_of_sale =  models.ForeignKey(CostOfSales, on_delete=models.CASCADE, null=True)
+    year = models.CharField(max_length=4, default="2001")
+    month = models.CharField(max_length=2, default="01")
+    purchase = models.IntegerField(max_length=12)
+    outsourcing_expense = models.IntegerField(max_length=12)
+    product_purchase = models.IntegerField(max_length=12)
+    dispatch_labor_expense = models.IntegerField(max_length=12)
+    communication_expense = models.IntegerField(max_length=12)
+    work_in_progress_expense = models.IntegerField(max_length=12)
+    amortization_expense = models.IntegerField(max_length=12)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta :
+        db_table = u'cost_of_sales_results'
+
+    def save(self, *args, **kwargs):
+        if not self.cost_of_sale_result_id:
+            # Get the maximum existing ID and increment it
+            max_id = CostOfSalesResults.objects.aggregate(max_id=Max("cost_of_sale_result_id"))["max_id"]
+            if max_id:
+                numeric_part = int(max_id[1:]) + 1  # Extract numeric part after 'A'
+            else:
+                numeric_part = 1  # Start with 1 if no records exist
+            self.cost_of_sale_result_id = f'A{numeric_part:09d}'  # Format as 'A000000001'
+        
+        super().save(*args, **kwargs) 
+
+    def __str__(self):
+        return self.cost_of_sale_result_id
+    
 class Expenses(models.Model):
     expense_id = models.CharField(max_length=10, primary_key=True)
     year = models.CharField(max_length=4, default="2001")

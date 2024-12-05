@@ -1,0 +1,295 @@
+.costOfSalesResultsRegistration_wrapper{
+    display: flex;
+    flex-direction: column;
+    .costOfSalesResultsRegistration_content_wrapper{
+        display: flex;
+        background-color: #EFEDEA;
+        width: 100%;
+        height: 100%;
+        @media only screen and (max-width: 1000px){
+            flex-direction: column;
+        }
+        .costOfSalesResultsRegistration_data_content{
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin: 10px 30px 10px 30px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            background-color: #fff;
+            .costOfSalesResultsRegistration_top_body_cont{
+                margin: 2rem 0 0 0;
+                background-color: #fff;
+            }
+            .costOfSalesResultsRegistration_inputs_and_buttons{
+                display: flex;
+                height: 65vh;
+                justify-content: space-between;
+                flex-direction: column;
+            }
+            .costOfSalesResultsRegistration_mid_body_cont{
+                background-color: #fff;
+                height: 90%;
+                @media only screen and (min-width: 1875px){
+                    height: 55vh;
+                }
+                .costOfSalesResultsRegistration_mid_form_cont{
+                    margin: 0px 40px;
+                    padding: 15px 20px;
+                    background-color: #EFEDEA;
+                    overflow-y: auto; 
+                    overflow-x: hidden;
+                    scrollbar-width: thin; 
+                    scrollbar-color: transparent transparent;
+                    border-radius: 5px;
+                    &:hover {
+                        scrollbar-color: #888 #EFEDEA; 
+                    }
+                    &::-webkit-scrollbar {
+                        width: 8px;
+                    }
+                    &::-webkit-scrollbar-track {
+                        background: transparent; 
+                    }
+                    &::-webkit-scrollbar-thumb {
+                        background-color: transparent; 
+                        border-radius: 10px;
+                    }
+                    &:hover::-webkit-scrollbar-thumb {
+                        background-color: #888;
+                    }
+                    &:hover::-webkit-scrollbar-thumb:hover {
+                        background-color: #555; 
+                    }
+                    .costOfSalesResultsRegistration_form-content.costOfSalesResultsRegistration_form-content-special{
+                        //  padding: 20px 10px 0px 20px;
+                        }
+                        .costOfSalesResultsRegistration_form-content.costOfSalesResultsRegistration_form-line{
+                            border-top: 4px solid rgb(183, 183, 183);
+                            margin: 0px 20px 0px 0px;
+                            opacity: 30%;
+                        }
+                        .costOfSalesResultsRegistration_form-content{
+                            padding: -1px 0px 0px 0px;
+                            .costOfSalesResultsRegistration_form-content-div{
+                                display: flex;
+                                .costOfSalesResultsRegistration_calc{
+                                    width: calc(100%/3);
+                                }
+                                .costOfSalesResultsRegistration_left-form-div{
+                                    .costOfSalesResultsRegistration_year-div{
+                                        display: flex;
+                                        flex-direction: column;
+                                        margin-bottom: 10px;
+                                        .costOfSalesResultsRegistration_year{
+                                            margin-bottom: 5px;
+                                        }
+                                        .costOfSalesResultsRegistration_select-option{
+                                            width: 80%;
+                                            height: 40px;
+                                            border: 1px solid #000;
+                                            border-radius: 10px;
+                                            option{
+                                                text-align: left;
+                                            }
+                                        }
+                                    }
+                                    .costOfSalesResultsRegistration_outsourcing_expense-div{
+                                        display: flex;
+                                        flex-direction: column;
+                                        margin-bottom: 10px;
+                                        .costOfSalesResultsRegistration_outsourcing_expense{
+                                            margin-bottom: 5px;
+                                        }
+                                        input{
+                                            width: 80%;
+                                            height: 40px;
+                                            border: 1px solid #000;
+                                            border-radius: 10px;
+                                        }
+                                        input::-webkit-outer-spin-button,
+                                        input::-webkit-inner-spin-button {
+                                        -webkit-appearance: none;
+                                        margin: 0;
+                                        }
+                                    }
+                                    .costOfSalesResultsRegistration_communication_expense-div{
+                                        display: flex;
+                                        flex-direction: column;
+                                        margin-bottom: 10px;
+                                        .costOfSalesResultsRegistration_communication_expense{
+                                            margin-bottom: 5px;
+                                        }
+                                        input{
+                                            width: 80%;
+                                            height: 40px;
+                                            border: 1px solid #000;
+                                            border-radius: 10px;
+                                        }
+                                        input::-webkit-outer-spin-button,
+                                        input::-webkit-inner-spin-button {
+                                        -webkit-appearance: none;
+                                        margin: 0;
+                                        }
+                                    }
+                                }
+                                .costOfSalesResultsRegistration_middle-form-div{
+                                    .costOfSalesResultsRegistration_month-div{
+                                        display: flex;
+                                        flex-direction: column;
+                                        margin-bottom: 10px;
+                                        .costOfSalesResultsRegistration_month{
+                                            margin-bottom: 5px;
+                                        }
+                                        .costOfSalesResultsRegistration_select-option{
+                                            width: 80%;
+                                            height: 40px;
+                                            border: 1px solid #000;
+                                            border-radius: 10px;
+                                            option{
+                                                text-align: left;
+                                            }
+                                        }
+                                    }
+                                    .costOfSalesResultsRegistration_product_purchase-div{
+                                        display: flex;
+                                        flex-direction: column;
+                                        margin-bottom: 10px;
+                                        .costOfSalesResultsRegistration_product_purchase{
+                                            margin-bottom: 5px;
+                                        }
+                                        input{
+                                            width: 80%;
+                                            height: 40px;
+                                            border: 1px solid #000;
+                                            border-radius: 10px;
+                                        }
+                                        input::-webkit-outer-spin-button,
+                                        input::-webkit-inner-spin-button {
+                                        -webkit-appearance: none;
+                                        margin: 0;
+                                        }
+                                    }
+                                    .costOfSalesResultsRegistration_work_in_progress_expense-div{
+                                        display: flex;
+                                        flex-direction: column;
+                                        margin-bottom: 10px;
+                                        .costOfSalesResultsRegistration_work_in_progress_expense{
+                                            margin-bottom: 5px;
+                                        }
+                                        input{
+                                            width: 80%;
+                                            height: 40px;
+                                            border: 1px solid #000;
+                                            border-radius: 10px;
+                                        }
+                                        input::-webkit-outer-spin-button,
+                                        input::-webkit-inner-spin-button {
+                                        -webkit-appearance: none;
+                                        margin: 0;
+                                        }
+                                    }
+                                }
+                                .costOfSalesResultsRegistration_right-form-div{
+                                    .costOfSalesResultsRegistration_purchase-div{
+                                        display: flex;
+                                        flex-direction: column;
+                                        margin-bottom: 10px;
+                                        .costOfSalesResultsRegistration_purchase{
+                                            margin-bottom: 5px;
+                                        }
+                                        input{
+                                            width: 80%;
+                                            height: 40px;
+                                            border: 1px solid #000;
+                                            border-radius: 10px;
+                                        }
+                                        input::-webkit-outer-spin-button,
+                                        input::-webkit-inner-spin-button {
+                                        -webkit-appearance: none;
+                                        margin: 0;
+                                        }
+                                    }
+                                    .costOfSalesResultsRegistration_dispatch_labor_expense-div{
+                                        display: flex;
+                                        flex-direction: column;
+                                        margin-bottom: 10px;
+                                        .costOfSalesResultsRegistration_dispatch_labor_expense{
+                                            margin-bottom: 5px;
+                                        }
+                                        input{
+                                            width: 80%;
+                                            height: 40px;
+                                            border: 1px solid #000;
+                                            border-radius: 10px;
+                                        }
+                                        input::-webkit-outer-spin-button,
+                                        input::-webkit-inner-spin-button {
+                                        -webkit-appearance: none;
+                                        margin: 0;
+                                        }
+                                    }
+                                    .costOfSalesResultsRegistration_amortization_expense-div{
+                                        display: flex;
+                                        flex-direction: column;
+                                        margin-bottom: 10px;
+                                        .costOfSalesResultsRegistration_amortization_expense{
+                                            margin-bottom: 5px;
+                                        }
+                                        input{
+                                            width: 80%;
+                                            height: 40px;
+                                            border: 1px solid #000;
+                                            border-radius: 10px;
+                                        }
+                                        input::-webkit-outer-spin-button,
+                                        input::-webkit-inner-spin-button {
+                                        -webkit-appearance: none;
+                                        margin: 0;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                .costOfSalesResultsRegistration_lower_form_cont{
+                    padding: 20px;
+                .costOfSalesResultsRegistration_form-content{
+                    .costOfSalesResultsRegistration_plus-btn{
+                        padding: 20px 10px 20px 10px;
+                        gap: 1rem;
+                        display: flex;
+                        margin-left: 90%;
+                        .costOfSalesResultsRegistration_inc,
+                        .costOfSalesResultsRegistration_dec{
+                            background-color: #808080;
+                            color: whitesmoke;
+                            width: 30px;
+                            height: 40px;
+                            font-size: 25px;
+                            border-radius: 5px;
+                        }
+                        .costOfSalesResultsRegistration_dec_empty{
+                            color: whitesmoke;
+                            width: 30px;
+                            height: 40px;
+                            font-size: 25px;
+                            border-radius: 5px;
+                        }
+                    }
+                    .costOfSalesResultsRegistration_options-btn{
+                        display: flex;
+                        gap: 1%;
+                        padding: 10px 10px 10px 10px;
+                        align-items: center;
+                        justify-content: center;
+                        button{
+                            width: 10%;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
