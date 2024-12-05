@@ -29,7 +29,6 @@ const ExpensesResultsList: React.FC = () => {
   const [activeTabOther, setActiveTabOther] = useState('expensesResults')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  // added -ed
   const [isEditing, setIsEditing] = useState(false)
   const [initialLanguage, setInitialLanguage] = useState(language)
   const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -38,12 +37,12 @@ const ExpensesResultsList: React.FC = () => {
   const [expensesResultsList, setExpensesResultsList] = useState([])
   const [originalExpenseResultsList, setOriginalExpensesResultsList] = useState(expensesResultsList)
   const token = localStorage.getItem('accessToken')
-  const [changes, setChanges] = useState({}) //ians code maybe i do not need.
 
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
+  const [deleteComplete, setDeleteComplete] = useState(false)
 
   const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
   const monthNames: { [key: number]: { en: string; jp: string } } = {
@@ -133,7 +132,6 @@ const ExpensesResultsList: React.FC = () => {
   }
 
   const handleSubmit = async () => {
-    
     // # Client Side Validation
 
     // Step 1: Preparartion for validation
@@ -205,7 +203,7 @@ const ExpensesResultsList: React.FC = () => {
     if (modifiedFields.length === 0) {
       return
     }
-   
+
     const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login'
@@ -331,20 +329,19 @@ const ExpensesResultsList: React.FC = () => {
     setIsCRUDOpen(false)
   }
 
+  // # Handle DELETE on Edit Screen
+
+  // STEP # 1
   const handleConfirm = async () => {
-    console.log(deleteExpenseId)
+    // Sets the Validation Errors if any to empty as they are not necessary for delete.
+    setCrudValidationErrors([])
+
     deleteExpenseResults(deleteExpenseId, token)
       .then(() => {
+        updateExpensesList(deleteExpenseId)
         setCrudMessage(translate('successfullyDeleted', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
-        getExpenseResults(token)
-          .then((data) => {
-            setExpensesResultsList(data)
-          })
-          .catch((error) => {
-            console.error('Error fetching expense:', error)
-          })
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
@@ -354,6 +351,25 @@ const ExpensesResultsList: React.FC = () => {
         }
       })
   }
+
+  // Set the Lists to match the DB after deletion.
+
+  // Step #2
+  const updateExpensesList = (deleteId) => {
+    // Deletes the record with deleteId from original list (This should always match DB)
+    setOriginalExpensesResultsList((prevList) => prevList.filter((expense) => expense.expense_result_id !== deleteId))
+    setDeleteComplete(true)
+  }
+
+  // Step #3
+  useEffect(() => {
+    if (deleteComplete) {
+      // After Delete, Screen Automatically Reverts To List Screen NOT Edit Screen.
+      // original list has deleted the record with deleteID
+      // The updated list used on Edit screen goes back to matching orginal list.
+      setExpensesResultsList(originalExpenseResultsList)
+    }
+  }, [deleteComplete])
 
   const handleNewRegistrationClick = () => {
     navigate('/expenses-results-registration')
@@ -580,13 +596,13 @@ const ExpensesResultsList: React.FC = () => {
                                       />
                                     </td>
                                     <td className='expensesResultsList_table_body_content_vertical delete_icon'>
-                                      {expenseResults.expense_result_id !== null &&
+                                      {expenseResults.expense_result_id !== null && (
                                         <RiDeleteBin6Fill
                                           className='delete-icon'
                                           onClick={() => openModal('expenses', expenseResults.expense_result_id)}
                                           style={{ color: 'red' }}
                                         />
-                                      }
+                                      )}
                                     </td>
                                   </tr>
                                 ) : null}

@@ -61,7 +61,7 @@ const EmployeesListAndEdit: React.FC = () => {
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [selectedEmployeeType, setSelectedEmployeeType] = useState([])
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
-
+  const [deleteComplete, setDeleteComplete] = useState(false)
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -134,7 +134,6 @@ const EmployeesListAndEdit: React.FC = () => {
   }
 
   useEffect(() => {
-
     getMasterBusinessDivisionCompany(token)
       .then((data) => {
         setAllBusinessDivisions(data)
@@ -146,20 +145,19 @@ const EmployeesListAndEdit: React.FC = () => {
 
   const handleChange = (index, e) => {
     const { name, value } = e.target
-    
+
     setEmployeesList((prevState) => {
       const updatedEmployeeData = [...prevState]
-      
+
       // Remove commas to get the raw number
       // EG. 999,999 → 999999 in the DB
       const rawValue = removeCommas(value)
 
       const previousEmployee = prevState[index].employee
       const updatedEmployee = { ...previousEmployee, [name]: rawValue }
-      
+
       // Calculate non-editable fields based on type and salary or executive_renumeration
       if (name === 'salary' || name === 'executive_renumeration') {
-        
         const baseValue = name === 'salary' ? Number(rawValue) : Number(updatedEmployee.executive_renumeration)
         updatedEmployee.statutory_welfare_expense = Math.round(baseValue * 0.1451).toString()
         updatedEmployee.welfare_expense = Math.round(baseValue * 0.0048).toString()
@@ -242,13 +240,13 @@ const EmployeesListAndEdit: React.FC = () => {
     // The format of the records from ListAndEditScreen is slightly different.
     // This gets the employee object from each record and returns an Array of employees.
     const employees = employeesList.map((record) => record.employee)
-    
+
     // Validate records for the specified project fields
     const validateEmployees = (records) => validateEmployeeRecords(records, fieldChecks, 'employee')
 
     // Step 2: Validate client-side input
     const validationErrors = validateEmployees(employees) // Only one User can be registered but function expects an Array.
-    console.log("Employees in List/Edit Screen: ", employees);
+    console.log('Employees in List/Edit Screen: ', employees)
     // Step 3: Check for duplicate entries on specific fields
     const uniqueFields = ['email']
     const duplicateErrors = checkForDuplicates(employees, uniqueFields, 'employee', language)
@@ -382,12 +380,9 @@ const EmployeesListAndEdit: React.FC = () => {
       setOriginalEmployeesList(employeesListWithBusinessSelection)
       // Update business divisions for each employee
       employeesListWithBusinessSelection.forEach((employee, index) => {
-
         getSelectedBusinessDivisionCompany(employee.company_id, token)
           .then((data) => {
-            const employeeBusinessDivisions = data.filter(
-              (division) => division.employee_id === employee.employee_id,
-            )
+            const employeeBusinessDivisions = data.filter((division) => division.employee_id === employee.employee_id)
             const updatedEmployeesList = [...employeesListWithBusinessSelection]
             updatedEmployeesList[index].businessSelection = employeeBusinessDivisions
             setEmployeesList(updatedEmployeesList)
@@ -453,10 +448,17 @@ const EmployeesListAndEdit: React.FC = () => {
     setIsCRUDOpen(false)
   }
 
+  // # Handle DELETE on Edit Screen
+
+  // STEP # 1
   const handleConfirm = async () => {
+    // Sets the Validation Errors if any to empty as they are not necessary for delete.
+    setCrudValidationErrors([])
+
     deleteEmployee(deleteId, token)
       .then(() => {
-        setEmployeesList((prevList) => prevList.filter((employee) => employee.employee_id !== deleteId))
+        updateEmployeeLists(deleteId)
+        // setEmployeesList((prevList) => prevList.filter((employee) => employee.employee_id !== deleteId))
         setCrudMessage(translate('successfullyDeleted', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
@@ -469,6 +471,25 @@ const EmployeesListAndEdit: React.FC = () => {
         }
       })
   }
+
+  // Set the Lists to match the DB after deletion.
+
+  // Step #2
+  const updateEmployeeLists = (deleteId) => {
+    // Deletes the record with deleteId from original list (This should always match DB)
+    setOriginalEmployeesList((prevList) => prevList.filter((employee) => employee.employee_id !== deleteId))
+    setDeleteComplete(true)
+  }
+
+  // Step #3
+  useEffect(() => {
+    if (deleteComplete) {
+      // After Delete, Screen Automatically Reverts To List Screen NOT Edit Screen.
+      // original list has deleted the record with deleteID
+      // The updated list used on Edit screen goes back to matching orginal list.
+      setEmployeesList(originalEmployeesList)
+    }
+  }, [deleteComplete])
 
   const handleNewRegistrationClick = () => {
     navigate('/employees-registration')
@@ -657,9 +678,9 @@ const EmployeesListAndEdit: React.FC = () => {
                                         name='salary'
                                         value={
                                           ((employee.type === 0 || employee.type === '0') &&
-                                            formatNumberWithCommas(employee.salary).toString() ||
+                                            formatNumberWithCommas(employee.salary).toString()) ||
                                           ''
-                                )}
+                                        }
                                         onChange={(e) => handleChange(employeeIndex, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={employee.type.toString() !== '0'}
@@ -672,9 +693,9 @@ const EmployeesListAndEdit: React.FC = () => {
                                         name='executive_renumeration'
                                         value={
                                           ((employee.type === 1 || employee.type === '1') &&
-                                            formatNumberWithCommas(employee.executive_renumeration).toString() ||
+                                            formatNumberWithCommas(employee.executive_renumeration).toString()) ||
                                           ''
-                                )}
+                                        }
                                         onChange={(e) => handleChange(employeeIndex, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         disabled={employee.type.toString() !== '1'}

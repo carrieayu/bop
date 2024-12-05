@@ -74,6 +74,7 @@ const ProjectsListAndEdit: React.FC = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const token = localStorage.getItem('accessToken')
+  const [deleteComplete, setDeleteComplete] = useState(false)
 
   for (let year = 2020; year <= new Date().getFullYear(); year++) {
     years.push(year)
@@ -104,7 +105,7 @@ const ProjectsListAndEdit: React.FC = () => {
   }
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    setCurrentPage(page)
   }
 
   const handleRowsPerPageChange = (numRows: number) => {
@@ -123,7 +124,7 @@ const ProjectsListAndEdit: React.FC = () => {
         // Reset to original values when switching to list mode
         setProjects(originalProjectsList)
       }
-      
+
       return newEditingState
     })
   }
@@ -147,10 +148,9 @@ const ProjectsListAndEdit: React.FC = () => {
     })
   }
 
-
   const handleSubmit = async () => {
     setFormProjects(projects)
-    
+
     // # Client Side Validation
 
     // Step 1: Preparartion for validation
@@ -334,18 +334,24 @@ const ProjectsListAndEdit: React.FC = () => {
     setIsCRUDOpen(false)
   }
 
+  // # Handle DELETE on Edit Screen
+
+  // STEP # 1
   const handleConfirm = async () => {
+    // Sets the Validation Errors if any to empty as they are not necessary for delete.
+    setCrudValidationErrors([])
+
     if (!token) {
       window.location.href = '/login'
       return
     }
-    
+
     deleteProject(deleteProjectsId, token)
       .then(() => {
+        updateProjectLists(deleteProjectsId)
         setCrudMessage(translate('successfullyDeleted', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
-        setProjects((prevList) => prevList.filter((pr) => pr.project_id !== deleteProjectsId))
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
@@ -355,6 +361,25 @@ const ProjectsListAndEdit: React.FC = () => {
         }
       })
   }
+
+  // Set the Lists to match the DB after deletion.
+
+  // Step #2
+  const updateProjectLists = (deleteId) => {
+    // Deletes the record with deleteId from original list (This should always match DB)
+    setOriginalProjectsList((prevList) => prevList.filter((project) => project.project_id !== deleteId))
+    setDeleteComplete(true)
+  }
+
+  // Step #3
+  useEffect(() => {
+    if (deleteComplete) {
+      // After Delete, Screen Automatically Reverts To List Screen NOT Edit Screen.
+      // original list has deleted the record with deleteID
+      // The updated list used on Edit screen goes back to matching orginal list.
+      setProjects(originalProjectsList)
+    }
+  }, [deleteComplete])
 
   return (
     <div className='projectsList-wrapper'>
