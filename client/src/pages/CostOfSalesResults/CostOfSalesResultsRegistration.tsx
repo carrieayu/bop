@@ -9,7 +9,6 @@ import RegistrationButtons from '../../components/RegistrationButtons/Registrati
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import CrudModal from '../../components/CrudModal/CrudModal'
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import {
   validateRecords,
   translateAndFormatErrors,
@@ -22,6 +21,7 @@ import { createCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/Cr
 import { overwriteCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/OverwriteCostOfSalesResults'
 import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { getCostOfSale } from '../../api/CostOfSalesEndpoint/GetCostOfSale'
 
 const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 type CostOfSaleResults = {
@@ -31,6 +31,10 @@ type CostOfSaleResults = {
 }
 type CostOfSaleResult = {
   cosr: CostOfSaleResults[]
+}
+type FilterParams = {
+  month?: string
+  year?: string
 }
 const CostOfSalesResultsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -46,7 +50,8 @@ const CostOfSalesResultsRegistration = () => {
   const years = Array.from({ length: endYear - startYear + 1 }, (val, i) => startYear + i)
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [costOfSaleResultsData, setCostOfSaleResultData] = useState<CostOfSaleResult[]>([{ cosr: [] }])
-  const [filteredMonth, setFilteredMonth] = useState<any>([])
+  const [filteredMonth, setFilteredMonth] = useState<any>([{ month: []}])
+  const [costOfSaleYear, setCostOfSalesYear] = useState<any>([])
   const [formData, setFormData] = useState([
     {
       year: '',
@@ -58,6 +63,7 @@ const CostOfSalesResultsRegistration = () => {
       communication_expense: '',
       work_in_progress_expense: '',
       amortization_expense: '',
+      cost_of_sale: '',
     },
   ])
 
@@ -68,6 +74,13 @@ const CostOfSalesResultsRegistration = () => {
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
   const token = localStorage.getItem('accessToken')
   const maximumEntries = 10
+  
+  const uniqueYears = costOfSaleYear.reduce((acc, item) => {
+    if (!acc.includes(item.year)) {
+      acc.push(item.year)
+    }
+    return acc
+  }, [])
 
   const handleAdd = () => {
     if (formData.length < maximumEntries) {
@@ -82,10 +95,12 @@ const CostOfSalesResultsRegistration = () => {
         communication_expense: '',
         work_in_progress_expense: '',
         amortization_expense: '',
+        cost_of_sale: '',
         // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
       })
       setFormData(newFormData)
       setCostOfSaleResultData([...costOfSaleResultsData, { cosr: [] }])
+      setFilteredMonth([...filteredMonth, { month: []}])
     } else {
       console.log('You can only add up to 10 forms.')
     }
@@ -139,6 +154,7 @@ const CostOfSalesResultsRegistration = () => {
         communication_expense: '',
         work_in_progress_expense: '',
         amortization_expense: '',
+        cost_of_sale: '',
       },
     ])
     closeModal()
@@ -155,12 +171,23 @@ const CostOfSalesResultsRegistration = () => {
   const handleChange = (index, event) => {
     const { name, value } = event.target
     const rawValue = removeCommas(value)
-
     setFormData((prevFormData) => {
       return prevFormData.map((form, i) => {
         if (i === index) {
           const resetFields = {
             params : ["months"],
+          }
+          let month = form.month
+          if(name == 'year' && value == '') {
+              form.month = ''
+              setFilteredMonth(prev => {
+              return prev.map((eachMonth, monthIndex) => {
+                  if (index == monthIndex) {
+                    return [{}]
+                  }
+                  return eachMonth
+              })
+              })
           }
           const fieldsToReset = resetFields[name] || []
           const resetValues = fieldsToReset.reduce((acc, field) => {
@@ -170,7 +197,7 @@ const CostOfSalesResultsRegistration = () => {
           return {
             ...form,
             [name]: rawValue,
-            ...resetValues,
+            ...resetValues
           }
         }
         return form
@@ -183,43 +210,14 @@ const CostOfSalesResultsRegistration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    const getId = costOfSaleResultsData.flatMap((cosr) => {
-      return cosr.cosr.map((item) => item.cost_of_sale_id)
-    })
-
-    const costOfSalesData = formData.map((cos) => ({
-      year: cos.year,
-      month: cos.month,
-      purchase: cos.purchase,
-      outsourcing_expense: cos.outsourcing_expense,
-      product_purchase: cos.product_purchase,
-      dispatch_labor_expense: cos.dispatch_labor_expense,
-      communication_expense: cos.communication_expense,
-      work_in_progress_expense: cos.work_in_progress_expense,
-      amortization_expense: cos.amortization_expense,
-    }))
-
-    let combinedObject = formData.map(() => ({
-      year: '',
-      month: '',
-      purchase: '',
-      outsourcing_expense: '',
-      product_purchase: '',
-      dispatch_labor_expense: '',
-      communication_expense: '',
-      work_in_progress_expense: '',
-      amortization_expense: '',
-    }))
-
-    const updatedCombinedObject = combinedObject.map((item, index) => {
-      const relatedCoSRId = getId[index] || null
+    let combinedObject = formData.map((form, index) => {
+      const cost_of_sale = filteredMonth[index]?.month?.find((month) => month.month === form.month)?.cost_of_sale_id
       return {
-        ...item,
-        ...costOfSalesData[index],
-        cost_of_sale: relatedCoSRId, // Add the ID as a specific field
+        ...form,
+        cost_of_sale,
       }
     })
-    
+
     // Client Side Validation
 
     // Step 1: Preparartion for validation
@@ -232,11 +230,11 @@ const CostOfSalesResultsRegistration = () => {
     const validateCostOfSalesResults = (records) => validateRecords(records, fieldChecks, 'costOfSalesResults')
 
     // Step 2: Validate client-side input
-    const validationErrors = validateCostOfSalesResults(formData)
+    const validationErrors = validateCostOfSalesResults(combinedObject)
 
     // Step 3: Check for duplicate entries on specific fields
     const uniqueFields = ['year', 'month']
-    const duplicateErrors = checkForDuplicates(formData, uniqueFields, 'costOfSalesResults', language)
+    const duplicateErrors = checkForDuplicates(combinedObject, uniqueFields, 'costOfSalesResults', language)
 
     // Step 4: Map error types to data and translation keys for handling in the modal
     const errorMapping = [
@@ -264,7 +262,7 @@ const CostOfSalesResultsRegistration = () => {
       return
     }
 
-    createCostOfSaleResults(updatedCombinedObject, token)
+    createCostOfSaleResults(combinedObject, token)
       .then((data) => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
@@ -279,6 +277,7 @@ const CostOfSalesResultsRegistration = () => {
             communication_expense: '',
             work_in_progress_expense: '',
             amortization_expense: '',
+            cost_of_sale: '',
           },
         ])
       })
@@ -290,7 +289,7 @@ const CostOfSalesResultsRegistration = () => {
           const existingYearsMonths = existingEntries.map((entry) => `'${entry.year}, ${entry.month}'`).join(', ')
 
           // Filter out new entries that don't match the existing entries
-          const newEntries = costOfSalesData.filter((item) => {
+          const newEntries = combinedObject.filter((item) => {
             return !existingEntries.some((existing) => existing.year === item.year && existing.month === item.month)
           })
 
@@ -376,6 +375,7 @@ const CostOfSalesResultsRegistration = () => {
             communication_expense: '',
             work_in_progress_expense: '',
             amortization_expense: '',
+            cost_of_sale: '',
           },
         ])
       })
@@ -389,14 +389,12 @@ const CostOfSalesResultsRegistration = () => {
 
   useEffect(() => {
     formData.forEach((cosr, index) => {
-      const month = cosr.month || null
-      const year = cosr.year || null
-      if (month !== null || year !== null ) {
-        const filterParams = {
-          ...(month !== null && { month }),
+      let month = cosr.month || ""
+      const year = cosr.year || ""
+        let filterParams: FilterParams = {
           ...(year !== null && { year }),
         }
-        if (filterParams.year && filterParams.month) {
+        if (filterParams.year) {
           filterCostOfSaleResults(filterParams, token).then((data) => {
             setCostOfSaleResultData((prev) => {
               return prev.map((row, projectIndex) => {
@@ -408,16 +406,26 @@ const CostOfSalesResultsRegistration = () => {
                 return row
               })
             })
-          })
-        } else if (filterParams.year) {
-          filterCostOfSaleResults(filterParams, token).then((data) => {
-            setFilteredMonth(data)
+            setFilteredMonth((prev) => {
+              return prev.map((month, monthIndex) => {
+                if (index == monthIndex) {
+                  return { month: data }
+                }
+                return month
+              })
+            })
           })
         }
-      }
     })
-    
+    getCostOfSale(token)
+      .then((data) => {
+        setCostOfSalesYear(data)
+      })
+      .catch((error) => {
+        console.log(' error fetching cost of sales data: ' + error)
+      })
   }, [formData])
+  
 
   useEffect(() => {
     const path = location.pathname
@@ -502,7 +510,7 @@ const CostOfSalesResultsRegistration = () => {
                             style={{ textAlign: 'center', textAlignLast: 'center' }}
                           >
                             <option value=''></option>
-                            {years.map((year, i) => (
+                            {uniqueYears.map((year, i) => (
                               <option key={i} value={year}>
                                 {year}
                               </option>
@@ -539,6 +547,7 @@ const CostOfSalesResultsRegistration = () => {
                       <div className='costOfSalesResultsRegistration_middle-form-div costOfSalesResultsRegistration_calc'>
                         <div className='costOfSalesResultsRegistration_month-div'>
                           <label className='costOfSalesResultsRegistration_month'>{translate('month', language)}</label>
+
                           <select
                             className='costOfSalesResultsRegistration_select-option'
                             name='month'
@@ -547,7 +556,7 @@ const CostOfSalesResultsRegistration = () => {
                             style={{ textAlign: 'center', textAlignLast: 'center' }}
                           >
                             <option value=''></option>
-                            {filteredMonth.map((month, idx) => (
+                            {filteredMonth[index]?.month?.map((month, idx) => (
                               <option key={idx} value={month.month}>
                                 {language === 'en' ? monthNames[month.month].en : monthNames[month.month].jp}
                               </option>
@@ -583,7 +592,9 @@ const CostOfSalesResultsRegistration = () => {
                       </div>
                       <div className='costOfSalesResultsRegistration_right-form-div costOfSalesResultsRegistration_calc'>
                         <div className='costOfSalesResultsRegistration_purchase-div'>
-                          <label className='costOfSalesResultsRegistration_purchase'>{translate('purchases', language)}</label>
+                          <label className='costOfSalesResultsRegistration_purchase'>
+                            {translate('purchases', language)}
+                          </label>
                           <input
                             type='text'
                             name='purchase'

@@ -236,8 +236,6 @@ const CostOfSalesResultsList: React.FC = () => {
 
       try {
         getCostOfSaleResults(token).then((data) => {
-          console.log(data);
-          
           setCostOfSalesResults(data)
           setOriginalCostOfSales(data)
         })

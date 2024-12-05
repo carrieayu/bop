@@ -186,7 +186,7 @@ const Sidebar = () => {
                   <AiFillFileAdd />
                 </span>
                 <NavLink to='/cost-of-sales-results-registration'>
-                  {translate('costOfSalesResultsEdit', language)}
+                  {translate('costOfSalesResultsRegistration', language)}
                 </NavLink>
               </li>
             </>
