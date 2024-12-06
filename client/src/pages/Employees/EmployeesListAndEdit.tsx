@@ -31,8 +31,6 @@ import {
 } from '../../utils/validationUtil'
 import { handleDisableKeysOnNumberInputs, formatDate, formatNumberWithCommas, removeCommas} from '../../utils/helperFunctionsUtil'
 
-// Test Commit to Github
-
 const EmployeesListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
