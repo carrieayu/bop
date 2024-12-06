@@ -61,7 +61,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
-
+  const [deleteComplete, setDeleteComplete] = useState(false)
   const token = localStorage.getItem('accessToken')
 
   for (let year = 2020; year <= new Date().getFullYear(); year++) {
@@ -83,6 +83,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
         break
       case 'employeeExpensesResults':
         navigate('/employee-expenses-results-list')
+        break
+      case 'costOfSalesResults':
+        navigate('/cost-of-sales-results-list')
         break
       default:
         break
@@ -109,7 +112,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
         // Reset to original values when switching to list mode
         setProjectSalesResults(originalProjectSalesResultsList)
       }
-      
 
       return newEditingState
     })
@@ -128,13 +130,12 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
         ...updatedProjectsData[index],
         [name]: rawValue,
       }
-      
+
       setFormProjects(updatedProjectsData)
-      console.log("inside handle change",updatedProjectsData,formProjects )
+      console.log('inside handle change', updatedProjectsData, formProjects)
       return updatedProjectsData
     })
   }
-  
 
   const handleSubmit = async () => {
     setFormProjects(projectSalesResults)
@@ -307,7 +308,13 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
     setIsCRUDOpen(false)
   }
 
+  // # Handle DELETE on Edit Screen
+
+  // STEP # 1
   const handleConfirm = async () => {
+    // Sets the Validation Errors if any to empty as they are not necessary for delete.
+    setCrudValidationErrors([])
+
     if (!token) {
       window.location.href = '/login'
       return
@@ -315,7 +322,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
 
     deleteProjectSalesResults(deleteProjectsId, token)
       .then(() => {
-        setProjectSalesResults((prevList) => prevList.filter((pr) => pr.project_sales_result_id !== deleteProjectsId))
+        updateProjectSalesResultLists(deleteProjectsId)
         setCrudMessage(translate('successfullyDeleted', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
@@ -328,6 +335,25 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
         }
       })
   }
+
+  // Set the Lists to match the DB after deletion.
+
+  // Step #2
+  const updateProjectSalesResultLists = (deleteId) => {
+    // Deletes the record with deleteId from original list (This should always match DB)
+    setOriginalProjectSalesResultsList((prevList) => prevList.filter((pr) => pr.project_sales_result_id !== deleteProjectsId))
+    setDeleteComplete(true)
+  }
+
+  // Step #3
+  useEffect(() => {
+    if (deleteComplete) {
+      // After Delete, Screen Automatically Reverts To List Screen NOT Edit Screen.
+      // original list has deleted the record with deleteID
+      // The updated list used on Edit screen goes back to matching orginal list.
+      setProjectSalesResults(originalProjectSalesResultsList)
+    }
+  }, [deleteComplete])
 
   return (
     <div className='projectSalesResultsList_wrapper'>
@@ -363,6 +389,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                   { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
                   { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
                   { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
+                  { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
                 ]}
               />
               <div className={`projectSalesResultsList_table_wrapper ${isEditing ? 'editMode' : ''}`}>

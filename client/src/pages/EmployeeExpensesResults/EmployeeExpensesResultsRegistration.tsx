@@ -62,6 +62,9 @@ const EmployeeExpensesResultsRegistration = () => {
       case 'employeeExpensesResults':
         navigate('/employee-expenses-results-list')
         break
+      case 'costOfSalesResults':
+        navigate('/cost-of-sales-results-list')
+        break
       default:
     }
   }
@@ -436,6 +439,7 @@ const EmployeeExpensesResultsRegistration = () => {
                 { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
                 { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
                 { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
+                { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
               ]}
             />
           </div>

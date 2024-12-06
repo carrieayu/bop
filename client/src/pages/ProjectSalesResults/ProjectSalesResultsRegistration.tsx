@@ -159,6 +159,9 @@ const ProjectSalesResultsRegistration = () => {
       case 'employeeExpensesResults':
         navigate('/employee-expenses-results-list')
         break
+      case 'costOfSalesResults':
+        navigate('/cost-of-sales-results-list')
+        break
       default:
         break
     }
@@ -291,27 +294,27 @@ const ProjectSalesResultsRegistration = () => {
                     return row
                   })
                 })
-               setClientsFilter((prev) => {
-                 return prev.map((row, projectIndex) => {
-                   if (index == projectIndex) {
-                     return {
-                       clients: matchedClients,
-                     }
-                   }
-                   return row
-                 })
-               })
-               setProjectsList((prev) => {
-                 return prev.map((row, projectIndex) => {
-                   if (index == projectIndex) {
-                     return {
-                       projects: data,
-                     }
-                   }
-                   return row
-                 })
-               })
-               setProjectDataResult(data)
+                setClientsFilter((prev) => {
+                  return prev.map((row, projectIndex) => {
+                    if (index == projectIndex) {
+                      return {
+                        clients: matchedClients,
+                      }
+                    }
+                    return row
+                  })
+                })
+                setProjectsList((prev) => {
+                  return prev.map((row, projectIndex) => {
+                    if (index == projectIndex) {
+                      return {
+                        projects: data,
+                      }
+                    }
+                    return row
+                  })
+                })
+                setProjectDataResult(data)
             })
             .catch((error) => {
               console.error('Error fetching project sales result list:', error)
@@ -691,6 +694,7 @@ const ProjectSalesResultsRegistration = () => {
                 { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
                 { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
                 { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
+                { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
               ]}
             />
           </div>

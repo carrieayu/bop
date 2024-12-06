@@ -46,6 +46,7 @@ const ExpensesList: React.FC = () => {
   const [crudMessage, setCrudMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
+  const [deleteComplete, setDeleteComplete] = useState(false)
 
   const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
   const monthNames: { [key: number]: { en: string; jp: string } } = {
@@ -110,10 +111,10 @@ const ExpensesList: React.FC = () => {
         setLanguage(initialLanguage)
       }
 
-        if (!newEditingState) {
-          // Reset to original values when switching to list mode
-          setExpensesList(originalExpenseList)
-        }
+      if (!newEditingState) {
+        // Reset to original values when switching to list mode
+        setExpensesList(originalExpenseList)
+      }
 
       return newEditingState
     })
@@ -125,7 +126,7 @@ const ExpensesList: React.FC = () => {
     // Remove commas to get the raw number
     // EG. 999,999 → 999999 in the DB
     const rawValue = removeCommas(value)
-    
+
     const updatedData = [...combinedData]
     updatedData[index] = {
       ...updatedData[index],
@@ -134,9 +135,7 @@ const ExpensesList: React.FC = () => {
     setExpensesList(updatedData)
   }
 
-
   const handleSubmit = async () => {
-    
     // # Client Side Validation
 
     // Step 1: Preparartion for validation
@@ -281,18 +280,18 @@ const ExpensesList: React.FC = () => {
       window.location.href = '/login' // Redirect to login if no token found
       return
     }
-        getExpense(token)
-          .then((data) => {
-            setExpensesList(data)
-            setOriginalExpensesList(data)
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('There was an error fetching the expenses!', error)
-          }
-        })
+    getExpense(token)
+      .then((data) => {
+        setExpensesList(data)
+        setOriginalExpensesList(data)
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login' // Redirect to login if unauthorized
+        } else {
+          console.error('There was an error fetching the expenses!', error)
+        }
+      })
   }
 
   useEffect(() => {
@@ -359,19 +358,19 @@ const ExpensesList: React.FC = () => {
     setIsCRUDOpen(false)
   }
 
+  // # Handle DELETE on Edit Screen
+
+  // STEP # 1
   const handleConfirm = async () => {
+    // Sets the Validation Errors if any to empty as they are not necessary for delete.
+    setCrudValidationErrors([])
+
     deleteExpense(deleteExpenseId, token)
       .then(() => {
+        updateExpenseLists(deleteExpenseId)
         setCrudMessage(translate('successfullyDeleted', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
-        getExpense(token)
-          .then((data) => {
-            setExpensesList(data)
-          })
-          .catch((error) => {
-            console.error('Error fetching expense:', error)
-          })
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
@@ -381,6 +380,25 @@ const ExpensesList: React.FC = () => {
         }
       })
   }
+
+  // Set the Lists to match the DB after deletion.
+
+  // Step #2
+  const updateExpenseLists = (deleteId) => {
+    // Deletes the record with deleteId from original list (This should always match DB)
+    setOriginalExpensesList((prevList) => prevList.filter((exp) => exp.expense_id !== deleteId))
+    setDeleteComplete(true)
+  }
+
+  // Step #3
+  useEffect(() => {
+    if (deleteComplete) {
+      // After Delete, Screen Automatically Reverts To List Screen NOT Edit Screen.
+      // original list has deleted the record with deleteID
+      // The updated list used on Edit screen goes back to matching orginal list.
+      setExpensesList(originalExpenseList)
+    }
+  }, [deleteComplete])
 
   const handleNewRegistrationClick = () => {
     navigate('/expenses-registration')
@@ -607,13 +625,13 @@ const ExpensesList: React.FC = () => {
                                       />
                                     </td>
                                     <td className='expensesList_table_body_content_vertical delete_icon'>
-                                      {  expense.expense_id !== null &&
+                                      {expense.expense_id !== null && (
                                         <RiDeleteBin6Fill
                                           className='delete-icon'
                                           onClick={() => openModal('expenses', expense.expense_id)}
                                           style={{ color: 'red' }}
                                         />
-                                      }
+                                      )}
                                     </td>
                                   </tr>
                                 ) : null}
