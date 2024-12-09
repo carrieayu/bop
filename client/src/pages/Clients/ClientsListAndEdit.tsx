@@ -22,8 +22,7 @@ import {
   checkForDuplicates,
 } from '../../utils/validationUtil'
 import { formatDate } from '../../utils/helperFunctionsUtil'
-
-
+import { getUser } from "../../api/UserEndpoint/GetUser";
 
 const ClientsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -49,6 +48,7 @@ const ClientsListAndEdit: React.FC = () => {
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
+  const [userMap, setUserMap] = useState({})
   const [deleteComplete, setDeleteComplete] = useState(false)
 
   const handleTabClick = (tab) => {
@@ -240,6 +240,23 @@ const ClientsListAndEdit: React.FC = () => {
             console.error('There was an error fetching the projects!', error)
           }
         })
+      // Fetch users
+      getUser(token)
+        .then((data) => {
+          const users = data
+          const userMapping = users.reduce((map, user) => {
+            map[user.id] = user.last_name + ' ' + user.first_name
+            return map
+          }, {})
+          setUserMap(userMapping)
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            console.log(error)
+          } else {
+            console.error('There was an error fetching the projects!', error)
+          }
+        })
     }
     fetchProjects()
   }, [])
@@ -407,7 +424,7 @@ const ClientsListAndEdit: React.FC = () => {
                                     />
                                   </td>
                                   <td className='ClientsListAndEdit_table_body_content_vertical'>
-                                    {clients.auth_user}
+                                  {userMap[clients.auth_user] || 'Unknown User'}
                                   </td>
                                   <td className='ClientsListAndEdit_table_body_content_vertical'>
                                     {formatDate(clients.created_at)}
@@ -454,7 +471,9 @@ const ClientsListAndEdit: React.FC = () => {
                                 <td className='ClientsListAndEdit_table_body_content_vertical'>
                                   {clients.client_name}
                                 </td>
-                                <td className='ClientsListAndEdit_table_body_content_vertical'>{clients.auth_user}</td>
+                                <td className='ClientsListAndEdit_table_body_content_vertical'>
+                                  {userMap[clients.auth_user] || 'Unknown User'}
+                                </td>
                                 <td className='ClientsListAndEdit_table_body_content_vertical'>
                                   {formatDate(clients.created_at)}
                                 </td>
