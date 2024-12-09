@@ -176,7 +176,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
           }
         }
       })
-
+      
       return modifiedFields
     }
     const modifiedFields = getModifiedFields(originalBusiness, business)
@@ -240,7 +240,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         .then((data) => {
           const users = data
           const userMapping = users.reduce((map, user) => {
-            map[user.user_id] = user.first_name
+            map[user.id] = user.last_name + ' ' + user.first_name
             return map
           }, {})
           setUserMap(userMapping)
@@ -481,7 +481,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                                     </select>
                                   </td>
                                   <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
-                                    {userMap[business_data.auth_user_id] || 'Unknown User'}
+                                    {userMap[business_data.auth_user] || 'Unknown User'}
                                   </td>
                                   <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
                                     {formatDate(business_data.created_at)}
@@ -540,7 +540,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                                   {companyMap[business_data.company] || 'Unknown Company'}
                                 </td>
                                 <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
-                                  {userMap[business_data.auth_user_id] || 'Unknown User'}
+                                  {userMap[business_data.auth_user] || 'Unknown User'}
                                 </td>
                                 <td className='BusinessDivisionsListAndEdit_table_body_content_vertical'>
                                   {formatDate(business_data.created_at)}
