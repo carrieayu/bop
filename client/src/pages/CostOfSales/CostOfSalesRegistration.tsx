@@ -33,10 +33,7 @@ const CostOfSalesRegistration = () => {
   const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const currentYear = new Date().getFullYear()
-  const startYear = currentYear - 1
-  const endYear = currentYear + 2
-  const years = Array.from({ length: endYear - startYear + 1 }, (val, i) => startYear + i)
+  const years = [2024, 2025]
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [formData, setFormData] = useState([
     {
@@ -399,9 +396,8 @@ const handleChange = (index, event) => {
                             name='year'
                             value={form.year}
                             onChange={(e) => handleChange(index, e)}
-                            style={{ textAlign: 'center', textAlignLast: 'center' }}
                           >
-                            <option value=''></option>
+                            <option value=''>{translate('selectYear', language)}</option>
                             {years.map((year, i) => (
                               <option key={i} value={year}>
                                 {year}
@@ -444,9 +440,8 @@ const handleChange = (index, event) => {
                             name='month'
                             value={form.month}
                             onChange={(e) => handleChange(index, e)}
-                            style={{ textAlign: 'center', textAlignLast: 'center' }}
                           >
-                            <option value=''></option>
+                            <option value=''>{translate('selectMonth', language)}</option>
                             {months.map((month, idx) => (
                               <option key={idx} value={month}>
                                 {language === 'en' ? monthNames[month].en : monthNames[month].jp}

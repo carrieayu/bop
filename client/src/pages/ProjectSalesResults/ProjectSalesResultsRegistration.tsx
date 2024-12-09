@@ -56,7 +56,7 @@ const ProjectSalesResultsRegistration = () => {
   const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const years = []
+  const years = [2024, 2025];
   const token = localStorage.getItem('accessToken')
   const [clients, setClients] = useState<any>([])
   const [clientsFilter, setClientsFilter] = useState<Clients[]>([{ clients : []}])
@@ -69,10 +69,6 @@ const ProjectSalesResultsRegistration = () => {
   const [projectListSelection, setProjectsListSelection] = useState<Projects[]>([{ projects: [] }])
   const [enable , setEnabled] = useState(false)
   const dispatch = useDispatch()
-  for (let year = 2021; year <= new Date().getFullYear(); year++) {
-    years.push(year)
-  }
-
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
