@@ -29,20 +29,20 @@ const UsersListAndEdit: React.FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [activeTabOther, setActiveTabOther] = useState('users')
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [paginatedData, setPaginatedData] = useState<any[]>([])
   const select = [5, 10, 100]
   const { language, setLanguage } = useLanguage()
   const [isUsernameValid, setIsUsernameValid] = useState(true)
   const [isEmailValid, setIsEmailValid] = useState(true)
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const [isEditing, setIsEditing] = useState(false)
   const [userList, setUserList] = useState([])
   const [originalUserList, setOriginalUserList] = useState([])
-  const [initialLanguage, setInitialLanguage] = useState(language);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [initialLanguage, setInitialLanguage] = useState(language)
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [selectedProject, setSelectedProject] = useState<any>(null)
   const [deleteId, setDeleteUserId] = useState([])
   const [userData, setUserData] = useState({
     username: '',
@@ -54,42 +54,42 @@ const UsersListAndEdit: React.FC = () => {
     confirm_email: '',
   })
 
-  const totalPages = Math.ceil(100 / 10);
+  const totalPages = Math.ceil(100 / 10)
 
-  const [isCRUDOpen, setIsCRUDOpen] = useState(false);
-  const [crudMessage, setCrudMessage] = useState('');
-  const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false);
+  const [isCRUDOpen, setIsCRUDOpen] = useState(false)
+  const [crudMessage, setCrudMessage] = useState('')
+  const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
-
+  const [deleteComplete, setDeleteComplete] = useState(false)
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
   }
-      
+
   const handleTabsClick = (tab) => {
     setActiveTabOther(tab)
     switch (tab) {
       case 'client':
-        navigate('/clients-list');
-        break;
+        navigate('/clients-list')
+        break
       case 'employee':
-        navigate('/employees-list');
-        break;
+        navigate('/employees-list')
+        break
       case 'businessDivision':
-        navigate('/business-divisions-list');
-        break;
+        navigate('/business-divisions-list')
+        break
       case 'users':
-        navigate('/users-list');
-        break;
+        navigate('/users-list')
+        break
       default:
-        break;
+        break
     }
   }
-    
+
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+    setCurrentPage(page)
+  }
 
   const handleRowsPerPageChange = (numRows: number) => {
     setRowsPerPage(numRows)
@@ -98,17 +98,17 @@ const UsersListAndEdit: React.FC = () => {
 
   const handleClick = () => {
     setIsEditing((prevState) => {
-      const newEditingState = !prevState;
+      const newEditingState = !prevState
       if (newEditingState) {
-        setLanguage(initialLanguage);
+        setLanguage(initialLanguage)
       }
 
       if (!newEditingState) {
         // Reset to original values when switching to list mode
         setUserList(originalUserList)
       }
-        return newEditingState;
-      });
+      return newEditingState
+    })
   }
 
   const handleChange = (index, event) => {
@@ -122,9 +122,8 @@ const UsersListAndEdit: React.FC = () => {
       return updatedUserData
     })
   }
-  
-  const handleSubmit = async () => {
 
+  const handleSubmit = async () => {
     const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login'
@@ -185,9 +184,9 @@ const UsersListAndEdit: React.FC = () => {
   }
 
   const handleUpdateConfirm = async () => {
-    await handleSubmit(); // Call the submit function for update
-    setIsUpdateConfirmationOpen(false);
-  };
+    await handleSubmit() // Call the submit function for update
+    setIsUpdateConfirmationOpen(false)
+  }
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -216,77 +215,93 @@ const UsersListAndEdit: React.FC = () => {
             console.error('There was an error fetching the users!', error)
           }
         })
-      }
-      fetchUsers()
-    }, [])
+    }
+    fetchUsers()
+  }, [])
 
-  
   useEffect(() => {
     console.log('originalUserList', originalUserList)
   }, [originalUserList])
-  
-    useEffect(() => {
-      const startIndex = currentPage * rowsPerPage
-      setPaginatedData(userList.slice(startIndex, startIndex + rowsPerPage))
-    }, [currentPage, rowsPerPage, userList])
 
-    useEffect(() => {
-      const path = location.pathname;
-      if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
-        setActiveTab(path);
-      }
-    }, [location.pathname]);
+  useEffect(() => {
+    const startIndex = currentPage * rowsPerPage
+    setPaginatedData(userList.slice(startIndex, startIndex + rowsPerPage))
+  }, [currentPage, rowsPerPage, userList])
 
-    useEffect(() => {
-      setIsTranslateSwitchActive(language === 'en');
-    }, [language]);
-  
-    const handleTranslationSwitchToggle = () => {
-      if (!isEditing) {
-        const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
-        setInitialLanguage(language); 
-        setLanguage(newLanguage);
-      }
-    };
+  useEffect(() => {
+    const path = location.pathname
+    if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
+      setActiveTab(path)
+    }
+  }, [location.pathname])
 
-    const openModal = (users, id) => {
-      setSelectedProject(users)
-      setModalIsOpen(true);
-      setDeleteUserId(id)
-  };
+  useEffect(() => {
+    setIsTranslateSwitchActive(language === 'en')
+  }, [language])
+
+  const handleTranslationSwitchToggle = () => {
+    if (!isEditing) {
+      const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
+      setInitialLanguage(language)
+      setLanguage(newLanguage)
+    }
+  }
+
+  const openModal = (users, id) => {
+    setSelectedProject(users)
+    setModalIsOpen(true)
+    setDeleteUserId(id)
+  }
 
   const closeModal = () => {
-      setSelectedProject(null);
-      setModalIsOpen(false);
-      setIsCRUDOpen(false);
-  };
-  
-  // const formatDate = (dateString) => {
-  //   if (!dateString) return '' // Handle null or undefined dates
-  //   const date = new Date(dateString)
-  //   const year = date.getFullYear()
-  //   const month = String(date.getMonth() + 1).padStart(2, '0') // Month is 0-indexed
-  //   const day = String(date.getDate()).padStart(2, '0')
-  //   return `${year}-${month}-${day}` // Format for HTML input type="date"
-  // }
+    setSelectedProject(null)
+    setModalIsOpen(false)
+    setIsCRUDOpen(false)
+  }
 
+  // # Handle DELETE on Edit Screen
+
+  // STEP # 1
   const handleConfirm = async () => {
+    // Sets the Validation Errors if any to empty as they are not necessary for delete.
+    setCrudValidationErrors([])
     const token = localStorage.getItem('accessToken')
     deleteUser(deleteId, token)
       .then(() => {
-          setUserList((prevList) => prevList.filter((user) => user.id !== deleteId))
-          setCrudMessage(translate('successfullyDeleted', language))
-          setIsCRUDOpen(true)
-          setIsEditing(false)
+        updateUserLists(deleteId)
+        // setUserList((prevList) => prevList.filter((user) => user.id !== deleteId))
+        setCrudMessage(translate('successfullyDeleted', language))
+        setIsCRUDOpen(true)
+        setIsEditing(false)
       })
       .catch((error) => {
         console.error('Error deleting user:', error)
       })
-  };
+  }
+
+  // Set the Lists to match the DB after deletion.
+
+  // Step #2
+  const updateUserLists = (deleteId) => {
+    // Deletes the record with deleteId from original list (This should always match DB)
+    // setOriginalClientsList((prevList) => prevList.filter((client) => client.client_id !== deleteId))
+    setOriginalUserList((prevList) => prevList.filter((user) => user.id !== deleteId))
+    setDeleteComplete(true)
+  }
+
+  // Step #3
+  useEffect(() => {
+    if (deleteComplete) {
+      // After Delete, Screen Automatically Reverts To List Screen NOT Edit Screen.
+      // original list has deleted the record with deleteID
+      // The updated list used on Edit screen goes back to matching orginal list.
+      setUserList(originalUserList)
+    }
+  }, [deleteComplete])
 
   const handleNewRegistrationClick = () => {
-    navigate('/users-registration');
-  };
+    navigate('/users-registration')
+  }
 
   return (
     <div className='UsersListAndEdit_wrapper'>
@@ -440,11 +455,21 @@ const UsersListAndEdit: React.FC = () => {
                                 <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>
                                   {users.id}
                                 </td>
-                                <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>{users.username}</td>
-                                <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>{users.last_name}</td>
-                                <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>{users.first_name}</td>
-                                <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>{users.email}</td>
-                                <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>{users.date_joined}</td>
+                                <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>
+                                  {users.username}
+                                </td>
+                                <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>
+                                  {users.last_name}
+                                </td>
+                                <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>
+                                  {users.first_name}
+                                </td>
+                                <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>
+                                  {users.email}
+                                </td>
+                                <td className='UsersListAndEdit_table_body_content_vertical has-text-centered'>
+                                  {users.date_joined}
+                                </td>
                               </tr>
                             ))}
                           </tbody>
