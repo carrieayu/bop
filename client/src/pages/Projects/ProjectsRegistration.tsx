@@ -177,6 +177,8 @@ const ProjectsRegistration = () => {
     }
   }
 
+  const currentYear = new Date().getFullYear();
+  const [months, setMonths] = useState<number[]>([]);
   const handleChange = (index, event) => {
     const { name, value } = event.target
 
@@ -190,6 +192,18 @@ const ProjectsRegistration = () => {
       [name]: rawValue,
     }
     setProjects(updatedFormData)
+
+    if (name === 'year') {
+      const selectedYear = parseInt(rawValue, 10);
+      if (selectedYear === currentYear) {
+        setMonths([4, 5, 6, 7, 8, 9, 10, 11, 12]);
+      } else if (selectedYear === (currentYear + 1)) {
+        setMonths([1, 2, 3]);
+      } else {
+        setMonths([]);
+      }
+    }
+
   }
   useEffect(() => {}, [formProjects])
 
