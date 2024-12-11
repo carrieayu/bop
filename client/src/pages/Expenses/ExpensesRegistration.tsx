@@ -366,10 +366,7 @@ const handleChange = (index, event) => {
   }
 
   // Creates an Array of years for dropdown input. 5 years before AND after current year.
-  const currentYear = new Date().getFullYear()
-  const startYear = currentYear - 1
-  const endYear = currentYear + 2
-  const years = Array.from({ length: endYear - startYear + 1 }, (val, index) => startYear + index)
+  const years = [2024, 2025]
 
   const handleListClick = () => {
     navigate('/expenses-list')
@@ -420,9 +417,8 @@ const handleChange = (index, event) => {
                             name='year'
                             value={form.year}
                             onChange={(e) => handleChange(index, e)}
-                            style={{ textAlign: 'center', textAlignLast: 'center' }}
                           >
-                            <option value=''></option>
+                            <option value=''>{translate('selectYear', language)}</option>
                             {years.map((year, idx) => (
                               <option key={idx} value={year}>
                                 {year}
@@ -491,9 +487,8 @@ const handleChange = (index, event) => {
                             name='month'
                             value={form.month}
                             onChange={(e) => handleChange(index, e)}
-                            style={{ textAlign: 'center', textAlignLast: 'center' }}
                           >
-                            <option value=''></option>
+                            <option value=''>{translate('selectMonth', language)}</option>
                             {months.map((month, idx) => (
                               <option key={idx} value={month}>
                                 {language === 'en' ? monthNames[month].en : monthNames[month].jp}
