@@ -30,6 +30,12 @@ module.exports = {
         exclude: /node_modules/,
         use: [
           {
+            loader: 'thread-loader',
+            options: {
+              workers: 2,
+            },
+          },
+          {
             loader: "babel-loader",
             options: {
               presets: ["@babel/preset-env", "@babel/preset-react"],
