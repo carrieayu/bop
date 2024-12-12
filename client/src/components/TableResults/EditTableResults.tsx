@@ -114,12 +114,15 @@ const EditTableResults = () => {
           return acc
         }, {})
         const aggregatedProjectSalesResultsData = response.project_sales_results.reduce((acc, item) => {
-          const { month, ...values } = item
+          const { project, ...values } = item
+          const month = project?.month
+          if (!month) {
+            return acc
+          }
           if (!acc[month]) {
             acc[month] = { month }
           }
           Object.keys(values).forEach((key) => {
-            // Convert value to a float
             const value = parseFloat(values[key])
             if (!isNaN(value)) {
               acc[month][key] = (acc[month][key] || 0) + value
@@ -128,6 +131,9 @@ const EditTableResults = () => {
 
           return acc
         }, {})
+
+        console.log("edit mode: ", aggregatedProjectSalesResultsData)
+        
 
         const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
         // SALES REVENUE
@@ -438,7 +444,7 @@ const EditTableResults = () => {
         })
         //NoN Operating Income & Expense
         const nonOperatingIncomeValues = months.map(
-          (month) => aggregatedProjectSalesResultsData[month]?.non_operating_profit || 0,
+          (month) => aggregatedProjectSalesResultsData[month]?.non_operating_income || 0,
         )
         const nonOperatingExpensesValues = months.map(
           (month) => aggregatedProjectSalesResultsData[month]?.non_operating_expense || 0,

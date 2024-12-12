@@ -58,8 +58,7 @@ const ResultsListAndEdit = () => {
     setIsCSVModalOpen(!isCSVModalOpen)
   }
 
-  const downloadSVG = () => {
-    
+  const downloadCSV = () => {
       getResultsA(token)
         .then((response) => {
 
@@ -152,8 +151,13 @@ const ResultsListAndEdit = () => {
           }
           return acc
         }, {})
-        const aggregatedPlanningProjectData = response.project_sales_results.reduce((acc, item) => {
-          const { month, ...values } = item
+
+        const aggregatedProjectSalesResultsData = response.project_sales_results.reduce((acc, item) => {
+          const { project, ...values } = item
+          const month = project?.month
+          if (!month) {
+            return acc
+          }
           if (!acc[month]) {
             acc[month] = { month }
           }
@@ -168,7 +172,7 @@ const ResultsListAndEdit = () => {
         }, {})
 
         // SALES REVENUE
-        const salesValues = months.map((month) => aggregatedPlanningProjectData[month]?.sales_revenue || 0)
+        const salesValues = months.map((month) => aggregatedProjectSalesResultsData[month]?.sales_revenue || 0)
 
         //COST OF SALES
         const costOfSalesValues = months.map((month) => {
@@ -301,10 +305,10 @@ const ResultsListAndEdit = () => {
         })
         //NoN Operating Income & Expense
         const nonOperatingIncomeValues = months.map(
-          (month) => aggregatedPlanningProjectData[month]?.non_operating_income || 0,
+          (month) => aggregatedProjectSalesResultsData[month]?.non_operating_income || 0,
         )
         const nonOperatingExpensesValues = months.map(
-          (month) => aggregatedPlanningProjectData[month]?.non_operating_expense || 0,
+          (month) => aggregatedProjectSalesResultsData[month]?.non_operating_expense || 0,
         )
 
         const ordinaryProfitValues = months.map((month, index) => {
@@ -711,7 +715,7 @@ const ResultsListAndEdit = () => {
         const worksheet = XLSX.utils.aoa_to_sheet(excelRows)
         const workbook = XLSX.utils.book_new()
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
-        XLSX.writeFile(workbook, 'report.xlsx')
+        XLSX.writeFile(workbook, 'results-summary.xlsx')
 
         }).catch((error) => {
           console.log(error);
@@ -838,14 +842,38 @@ const ResultsListAndEdit = () => {
                           </div>
                         )}
                       </label>
+
+                      {isEditing ? (
+                        <p className='results_summary_pl-label_disabled'>{translate('thousandYen', language)}</p>
+                      ) : (
+                        <p className='results_summary_pl-label'>{translate('thousandYen', language)}</p>
+                      )}
+
+                      {isEditing ? (
+                        <label className='results_summary_switch'>
+                          <input
+                            type='checkbox'
+                            checked={isThousandYenChecked}
+                            onChange={handleThousandYenToggle}
+                            disabled
+                          />
+                          <span className='results_summary_slider'></span>
+                        </label>
+                      ) : (
+                        <label className='results_summary_switch'>
+                          <input type='checkbox' checked={isThousandYenChecked} onChange={handleThousandYenToggle} />
+                          <span className='results_summary_slider'></span>
+                        </label>
+                      )}
+
                       <label className='results_summary_burger'>
                         <RxHamburgerMenu onClick={toggleModal} />
                       </label>
                       {isCSVModalOpen && (
                         <div className='results-csv-modal' onClick={toggleModal}>
                           <div className='results-csv-modal-content' onClick={(e) => e.stopPropagation()}>
-                            <p className='results-csv-p' onClick={downloadSVG}>
-                              Download SVG.
+                            <p className='results-csv-p' onClick={downloadCSV}>
+                              Download CSV.
                             </p>
                           </div>
                         </div>

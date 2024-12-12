@@ -256,6 +256,12 @@ class ProjectSalesResultsUpdateSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
             ]
+# This serializer is used for ResultsSummaryList specifically for project_sales_results_data_serializer
+class ProjectSalesResultsSerializer(serializers.ModelSerializer):
+    project = ProjectsSerializer()
+    class Meta:
+        model = ProjectsSalesResults
+        fields = "__all__"
         
 class GetBusinessDivisionMasterSerializer(serializers.ModelSerializer):
     company = MasterCompaniesListSerializer(source='company_id', read_only=True)

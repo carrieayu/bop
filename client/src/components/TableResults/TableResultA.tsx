@@ -25,6 +25,9 @@ const TableResults: React.FC<TablePlanningAProps> = ({ isThousandYenChecked }) =
     // getPlanningA(token)
     getResultsA(token)
       .then((response) => {
+        
+        console.log('check data: ', response)
+        
         const aggregatedData = response.cost_of_sales_results.reduce((acc, item) => {
           const { month, ...values } = item
           if (!acc[month]) {
@@ -123,13 +126,17 @@ const TableResults: React.FC<TablePlanningAProps> = ({ isThousandYenChecked }) =
           }
           return acc
         }, {})
-        const aggregatedPlanningProjectData = response.project_sales_results.reduce((acc, item) => {
-          const { month, ...values } = item
+
+        const aggregatedProjectSalesResultsData = response.project_sales_results.reduce((acc, item) => {
+          const { project, ...values } = item
+          const month = project?.month 
+          if (!month) {
+            return acc
+          }
           if (!acc[month]) {
             acc[month] = { month }
           }
           Object.keys(values).forEach((key) => {
-            // Convert value to a float
             const value = parseFloat(values[key])
             if (!isNaN(value)) {
               acc[month][key] = (acc[month][key] || 0) + value
@@ -140,7 +147,7 @@ const TableResults: React.FC<TablePlanningAProps> = ({ isThousandYenChecked }) =
         }, {})
 
         // SALES REVENUE
-        const salesValues = months.map((month) => aggregatedPlanningProjectData[month]?.sales_revenue || 0)
+        const salesValues = months.map((month) => aggregatedProjectSalesResultsData[month]?.sales_revenue || 0)
 
         //COST OF SALES
         const costOfSalesValues = months.map((month) => {
@@ -273,10 +280,10 @@ const TableResults: React.FC<TablePlanningAProps> = ({ isThousandYenChecked }) =
         })
         //NoN Operating Income & Expense
         const nonOperatingIncomeValues = months.map(
-          (month) => aggregatedPlanningProjectData[month]?.non_operating_income || 0,
+          (month) => aggregatedProjectSalesResultsData[month]?.non_operating_income || 0,
         )
         const nonOperatingExpensesValues = months.map(
-          (month) => aggregatedPlanningProjectData[month]?.non_operating_expense || 0,
+          (month) => aggregatedProjectSalesResultsData[month]?.non_operating_expense || 0,
         )
 
         const ordinaryProfitValues = months.map((month, index) => {

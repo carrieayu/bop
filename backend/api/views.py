@@ -18,6 +18,7 @@ from .serializers import (
     ExpensesResultsCreateSerializer,
     ExpensesResultsListSerializer,
     ExpensesResultsUpdateSerializer,
+    ProjectSalesResultsSerializer,
     # CustomCostOfSalesSerializer, # NOT BEING USED
     # Projects
     ProjectsListSerializer,
@@ -2035,13 +2036,13 @@ class ResultsSummaryList(generics.ListAPIView):
         expenses_results = ExpensesResults.objects.all()
         cost_of_sales_results = CostOfSalesResults.objects.all()
         employee_expenses_results = EmployeeExpensesResults.objects.all()
-        project_sales_results = Projects.objects.all()
+        project_sales_results = ProjectsSalesResults.objects.all()
         employee = Employees.objects.all() 
         employee_results_serializer = EmployeesListSerializer(employee, many=True)
         expenses_serializer = ExpensesResultsListSerializer(expenses_results, many=True)
         cost_of_sales_results_serializer = CostOfSalesResultsListSerializer(cost_of_sales_results, many=True)
         employee_expenses_results_serializer = EmployeeExpensesResultsListSerializer(employee_expenses_results, many=True)
-        project_sales_results_data_serializer = ProjectSalesResultsListSerializer(project_sales_results, many=True)
+        project_sales_results_data_serializer = ProjectSalesResultsSerializer(project_sales_results, many=True)
     
         combined_data = {
             'expenses_results': expenses_serializer.data,
