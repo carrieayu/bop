@@ -58,11 +58,10 @@ const ResultsListAndEdit = () => {
     setIsXLSModalOpen(!isXLSModalOpen)
   }
 
-  const downloadCSV = () => {
-      getResultsA(token)
-        .then((response) => {
-
-          const aggregatedData = response.cost_of_sales_results.reduce((acc, item) => {
+  const downloadXLS = () => {
+    getResultsA(token)
+      .then((response) => {
+        const aggregatedData = response.cost_of_sales_results.reduce((acc, item) => {
           const { month, ...values } = item
           if (!acc[month]) {
             acc[month] = { ...values }
@@ -98,7 +97,7 @@ const ResultsListAndEdit = () => {
             totalAnnualExecutive += employee.executive_renumeration
             totalAnnualSalary += employee.salary
             totalBonusAndFuelAllowance += employee.bonus_and_fuel_allowance
-            totalWelfareExpense += parseFloat(employee.welfare_expense) 
+            totalWelfareExpense += parseFloat(employee.welfare_expense)
             totalStatutoryWelfareExpense += parseFloat(employee.statutory_welfare_expense)
             totalInsurancePremium += parseFloat(employee.insurance_premium)
           })
@@ -125,14 +124,14 @@ const ResultsListAndEdit = () => {
         }
 
         const aggregatedEmployeeExpensesResults = response.employee_expenses_results.reduce((acc, item) => {
-          const { month, employee, project, ...values } = item 
+          const { month, employee, project, ...values } = item
 
           if (!acc[month]) {
             acc[month] = {
               month,
-              employees: [employee], 
-              projects: [project], 
-              totalSalary: employee.salary || 0, 
+              employees: [employee],
+              projects: [project],
+              totalSalary: employee.salary || 0,
               ...values,
             }
           } else {
@@ -145,7 +144,7 @@ const ResultsListAndEdit = () => {
               if (typeof values[key] === 'number') {
                 acc[month][key] += values[key]
               } else if (typeof values[key] === 'string') {
-                acc[month][key] = values[key] 
+                acc[month][key] = values[key]
               }
             })
           }
@@ -203,9 +202,9 @@ const ResultsListAndEdit = () => {
 
         // GROSS PROFIT
         const grossProfitValues = months.map((month, index) => {
-          const totalSales = salesValues[index] 
-          const totalCostOfSales = costOfSalesValues[index] 
-          const grossProfit = totalSales - totalCostOfSales 
+          const totalSales = salesValues[index]
+          const totalCostOfSales = costOfSalesValues[index]
+          const grossProfit = totalSales - totalCostOfSales
           return grossProfit
         })
 
@@ -233,7 +232,7 @@ const ResultsListAndEdit = () => {
         const salaryValues = months.map((month) => result[month]?.salary || 0)
         const totalBonusAndFuelAllowance = result[12]?.bonus_and_fuel_allowance || 0
         const bonusAndFuelAllowanceValues = months.map((month) => {
-          return month === 12 ? totalBonusAndFuelAllowance : 0 
+          return month === 12 ? totalBonusAndFuelAllowance : 0
         })
         const statutoryWelfareExpenseValues = months.map((month) => result[month]?.statutory_welfare_expense || 0)
         const welfareExpenseValues = months.map((month) => result[month]?.welfare_expense || 0)
@@ -290,17 +289,17 @@ const ResultsListAndEdit = () => {
 
         // SELLING AND GENERAL ADMIN EXPENSES
         const sellingAndGeneralAdminExpenseValues = months.map((month, index) => {
-          const total_employee_expense = employeeExpensesValues[index] 
-          const total_expense = expenseValues[index] 
-          const sellingAndGeneralAdminExpense = total_employee_expense + total_expense 
+          const total_employee_expense = employeeExpensesValues[index]
+          const total_expense = expenseValues[index]
+          const sellingAndGeneralAdminExpense = total_employee_expense + total_expense
           return sellingAndGeneralAdminExpense
         })
 
         // OPERATING INCOME
         const operatingIncomeValues = months.map((month, index) => {
-          const gross_profit = grossProfitValues[index] 
-          const selling_and_general_admin = sellingAndGeneralAdminExpenseValues[index] 
-          const operating_income_value = gross_profit - selling_and_general_admin 
+          const gross_profit = grossProfitValues[index]
+          const selling_and_general_admin = sellingAndGeneralAdminExpenseValues[index]
+          const operating_income_value = gross_profit - selling_and_general_admin
           return operating_income_value
         })
         //NoN Operating Income & Expense
@@ -329,7 +328,6 @@ const ResultsListAndEdit = () => {
         const firstHalfTotal = (arr) => arr.slice(0, 6).reduce((acc, value) => acc + parseFloat(value), 0)
         const secondHalfTotal = (arr) => arr.slice(6).reduce((acc, value) => acc + parseFloat(value), 0)
         const total = (arr) => arr.reduce((acc, value) => acc + parseFloat(value), 0)
-
 
         const data = [
           {
@@ -540,13 +538,7 @@ const ResultsListAndEdit = () => {
           },
           {
             label: 'Rent Expenses',
-            values: [
-              ...rentValues,
-              firstHalfTotal(rentValues),
-              secondHalfTotal(rentValues),
-              total(rentValues),
-              '0',
-            ],
+            values: [...rentValues, firstHalfTotal(rentValues), secondHalfTotal(rentValues), total(rentValues), '0'],
           },
           {
             label: 'Taxes and Public Charges',
@@ -702,7 +694,7 @@ const ResultsListAndEdit = () => {
             ],
           },
         ]
-        
+
         const excelRows = [
           ['', ...monthsNames, ...additionalHeaders],
           ['', 'Planning', 'Planning', 'Planning', 'Planning', ...Array(11).fill('Planning')],
@@ -716,11 +708,10 @@ const ResultsListAndEdit = () => {
         const workbook = XLSX.utils.book_new()
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
         XLSX.writeFile(workbook, 'results-summary.xlsx')
-
-        }).catch((error) => {
-          console.log(error);
-          
-        })
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
   const handleThousandYenToggle = () => {
@@ -872,7 +863,7 @@ const ResultsListAndEdit = () => {
                       {isXLSModalOpen && (
                         <div className='results-csv-modal' onClick={toggleModal}>
                           <div className='results-csv-modal-content' onClick={(e) => e.stopPropagation()}>
-                            <p className='results-csv-p' onClick={downloadCSV}>
+                            <p className='results-csv-p' onClick={downloadXLS}>
                               Download XLS.
                             </p>
                           </div>
