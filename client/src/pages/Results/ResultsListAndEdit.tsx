@@ -37,7 +37,7 @@ const ResultsListAndEdit = () => {
   const token = localStorage.getItem('accessToken')
   const [isEditing, setIsEditing] = useState(false)
   const [initialLanguage, setInitialLanguage] = useState(language)
-  const [isCSVModalOpen, setIsCSVModalOpen] = useState(false)
+  const [isXLSModalOpen, setIsXLSModalOpen] = useState(false)
   const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
   const monthsNames = [
     'January',
@@ -55,7 +55,7 @@ const ResultsListAndEdit = () => {
   ]
   const additionalHeaders = ['H1', 'H2', 'Year Total', 'Sales%']
   const toggleModal = () => {
-    setIsCSVModalOpen(!isCSVModalOpen)
+    setIsXLSModalOpen(!isXLSModalOpen)
   }
 
   const downloadCSV = () => {
@@ -869,11 +869,11 @@ const ResultsListAndEdit = () => {
                       <label className='results_summary_burger'>
                         <RxHamburgerMenu onClick={toggleModal} />
                       </label>
-                      {isCSVModalOpen && (
+                      {isXLSModalOpen && (
                         <div className='results-csv-modal' onClick={toggleModal}>
                           <div className='results-csv-modal-content' onClick={(e) => e.stopPropagation()}>
                             <p className='results-csv-p' onClick={downloadCSV}>
-                              Download CSV.
+                              Download XLS.
                             </p>
                           </div>
                         </div>
