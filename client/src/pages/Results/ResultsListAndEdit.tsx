@@ -54,8 +54,22 @@ const ResultsListAndEdit = () => {
     'December',
   ]
   const additionalHeaders = ['H1', 'H2', 'Year Total', 'Sales%']
+
+  const closeModal = () => {
+    setIsXLSModalOpen(false)
+  }
+
   const toggleModal = () => {
-    setIsXLSModalOpen(!isXLSModalOpen)
+    setIsXLSModalOpen((prev) => !prev)
+  }
+
+  const handleClickOutside = (e: MouseEvent) => {
+    const modal = document.querySelector('.results-csv-modal')
+    const burgerIcon = document.querySelector('.results_summary_burger')
+
+    if (modal && !modal.contains(e.target as Node) && burgerIcon && !burgerIcon.contains(e.target as Node)) {
+      setIsXLSModalOpen(false)
+    }
   }
 
   const downloadXLS = () => {
@@ -744,6 +758,18 @@ const ResultsListAndEdit = () => {
   }
 
   useEffect(() => {
+    if (isXLSModalOpen) {
+      document.addEventListener('click', handleClickOutside)
+    } else {
+      document.removeEventListener('click', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside)
+    }
+  }, [isXLSModalOpen])
+
+  useEffect(() => {
     fetchData()
   }, [])
 
@@ -861,10 +887,10 @@ const ResultsListAndEdit = () => {
                         <RxHamburgerMenu onClick={toggleModal} />
                       </label>
                       {isXLSModalOpen && (
-                        <div className='results-csv-modal' onClick={toggleModal}>
+                        <div className='results-csv-modal' onClick={closeModal}>
                           <div className='results-csv-modal-content' onClick={(e) => e.stopPropagation()}>
                             <p className='results-csv-p' onClick={downloadXLS}>
-                              Download XLS.
+                              Download XLS
                             </p>
                           </div>
                         </div>

@@ -112,7 +112,7 @@
                   .results-csv-modal {
                         position: absolute;
                         display: flex;
-                        transform: translate(89px, 65px);
+                        transform: translate(96px, 44px);
                         align-items: flex-start;
                         background: white;
                         z-index: 1000;
@@ -125,11 +125,9 @@
 
                   .results-csv-modal-content {
                     background: white;
-                    padding: 20px;
+                    padding: 15px;
                     border-radius: 8px;
                     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    height: 102px;
-                    width: 132px;
                   }
                 }
               }
