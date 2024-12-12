@@ -52,8 +52,8 @@ const HeaderButtons: React.FC<HeaderButtonsProps> = ({ activeTab, handleTabClick
         />
         <Btn
           label={translate('results', language)}
-          onClick={() => handleTabClick('/*')}
-          className={activeTab === '/*' ? 'h-btn-active header-btn' : 'header-btn'}
+          onClick={() => handleTabClick('/results')}
+          className={activeTab === '/results' ? 'h-btn-active header-btn' : 'header-btn'}
         />
       </div>
       <div className='HeaderButtons_language-toggle'>

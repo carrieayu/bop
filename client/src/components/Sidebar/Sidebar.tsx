@@ -125,7 +125,7 @@ const Sidebar = () => {
             <span className='icons'>
               <MdDashboard />
             </span>
-            <span>{translate('results', language)}</span>
+            <NavLink to='/results'>{translate('results', language)}</NavLink>
             <span className='icon-right'>{isGroup2Visible ? <BiSolidUpArrow /> : <BiSolidDownArrow />}</span>
           </li>
           {isGroup2Visible && (
@@ -178,8 +178,7 @@ const Sidebar = () => {
                 <span className='icons'>
                   <FaTableList />
                 </span>
-                <NavLink to='/cost-of-sales-results-list'>
-                  {translate('costOfSalesResultsList', language)}</NavLink>
+                <NavLink to='/cost-of-sales-results-list'>{translate('costOfSalesResultsList', language)}</NavLink>
               </li>
               <li className='sub_menu'>
                 <span className='icons'>

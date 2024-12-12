@@ -527,6 +527,56 @@ class PlanningDisplayByProjectstSerializer(serializers.ModelSerializer):
 
     #     return salaries
 
+# Results Summary [Not the same as Results]
+# Created and used just for the ResultsSummaryDisplayByProjectstSerializer.
+class GetDisplayByProjectstSerializer(serializers.ModelSerializer):
+    client_name = serializers.CharField(source="client.client_name", read_only=True)
+    employee_salaries = serializers.SerializerMethodField()
+    class Meta:
+        model = Projects
+        fields = [
+            "project_name",
+            "project_type",
+            "year",
+            "month",
+            "sales_revenue",
+            "dispatch_labor_expense",
+            "employee_expense",
+            "indirect_employee_expense",
+            "expense",
+            "operating_income",
+            "non_operating_income",
+            "non_operating_expense",
+            "ordinary_profit",
+            "ordinary_profit_margin",
+            "business_division_id",
+            "client",
+            "client_name", # Client Name 
+            "employee_salaries",  # New field for salaries for employees in speicific projects
+        ]
+
+    def get_employee_salaries(self, obj):
+        return obj.get_employee_salaries()
+class ResultsSummaryDisplayByProjectstSerializer(serializers.ModelSerializer):
+    # employee_salaries = serializers.SerializerMethodField()
+    projects = GetDisplayByProjectstSerializer(source='project', read_only=True)
+    class Meta:
+        model = ProjectsSalesResults
+        fields = [
+            "sales_revenue",
+            "dispatch_labor_expense",
+            "employee_expense",
+            "indirect_employee_expense",
+            "expense",
+            "operating_income",
+            "non_operating_income",
+            "non_operating_expense",
+            "ordinary_profit",
+            "ordinary_profit_margin",
+            "projects", # FK [Data for Projects table]
+        ]
+
+
 # --------------------------------------------------------------
 # NOT BEING USED IN APPLICATION CURRENTLY
 # --------------------------------------------------------------
