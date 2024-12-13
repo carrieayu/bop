@@ -130,20 +130,7 @@ const Sidebar = () => {
           </li>
           {isGroup2Visible && (
             <>
-              <li className='sub_menu'>
-                <span className='icons'>
-                  <FaTableList />
-                </span>
-                <NavLink to='/expenses-results-list'>{translate('expensesResultsList', language)}</NavLink>
-              </li>
-              <li className='sub_menu'>
-                <span className='icons'>
-                  <AiFillFileAdd />
-                </span>
-                <NavLink to='/expenses-results-registration'>
-                  {translate('expensesResultsRegistration', language)}
-                </NavLink>
-              </li>
+              {/* Project Sales Results */}
               <li className='sub_menu'>
                 <span className='icons'>
                   <FaTableList />
@@ -158,6 +145,7 @@ const Sidebar = () => {
                   {translate('projectSalesResultsRegistration', language)}
                 </NavLink>
               </li>
+              {/*Employee Expense Results */}
               <li className='sub_menu'>
                 <span className='icons'>
                   <FaTableList />
@@ -174,6 +162,22 @@ const Sidebar = () => {
                   {translate('employeeExpensesResultsRegistration', language)}
                 </NavLink>
               </li>
+              {/* Expense Results */}
+              <li className='sub_menu'>
+                <span className='icons'>
+                  <FaTableList />
+                </span>
+                <NavLink to='/expenses-results-list'>{translate('expensesResultsList', language)}</NavLink>
+              </li>
+              <li className='sub_menu'>
+                <span className='icons'>
+                  <AiFillFileAdd />
+                </span>
+                <NavLink to='/expenses-results-registration'>
+                  {translate('expensesResultsRegistration', language)}
+                </NavLink>
+              </li>
+              {/* Cost of Sales Results */}
               <li className='sub_menu'>
                 <span className='icons'>
                   <FaTableList />

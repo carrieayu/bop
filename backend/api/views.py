@@ -2000,6 +2000,8 @@ class PlanningUpdate(generics.UpdateAPIView):
                                 expenses_instance.consumable_expense = values[idx] if idx < len(values) else 0
                             if label == "rentExpenses":
                                 expenses_instance.rent_expense = values[idx] if idx < len(values) else 0
+                            if label == "taxesAndPublicCharges":
+                                expenses_instance.tax_and_public_charge = values[idx] if idx < len(values) else 0
                             if label == "depreciationExpenses":
                                 expenses_instance.depreciation_expense = values[idx] if idx < len(values) else 0
                             if label == "communicationExpenses":
@@ -2118,6 +2120,8 @@ class ResultsSummaryUpdate(generics.UpdateAPIView):
                                 expenses_instance.consumable_expense = values[idx] if idx < len(values) else 0
                             if label == "rentExpenses":
                                 expenses_instance.rent_expense = values[idx] if idx < len(values) else 0
+                            if label == "taxesAndPublicCharges":
+                                expenses_instance.tax_and_public_charge = values[idx] if idx < len(values) else 0
                             if label == "depreciationExpenses":
                                 expenses_instance.depreciation_expense = values[idx] if idx < len(values) else 0
                             if label == "communicationExpenses":

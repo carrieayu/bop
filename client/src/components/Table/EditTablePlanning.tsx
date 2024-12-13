@@ -325,9 +325,16 @@ const EditTablePlanning = () => {
           }
           return { id: null, rent_expense: 0 }
         })
-        const taxesPublicChargesValues = months.map(
-          (month) => aggregatedExpensesData[month]?.tax_and_public_charge || 0,
-        )
+        const taxesPublicChargesValues = months.map((month) => {
+          const dataEntry = aggregatedExpensesData[month]
+          if (dataEntry) {
+            return {
+              id: dataEntry.expense_id,
+              tax_and_public_charge: dataEntry.tax_and_public_charge || 0,
+            }
+          }
+          return { id: null, tax_and_public_charge: 0 }
+        })
         // const depreciationExpensesValues = months.map(
         //   (month) => aggregatedExpensesData[month]?.depreciation_expense || 0,
         // )
@@ -719,12 +726,13 @@ const EditTablePlanning = () => {
             ],
           },
           {
+            id: taxesPublicChargesValues.map((taxes) => taxes.id),
             label: 'taxesAndPublicCharges',
             values: [
-              ...taxesPublicChargesValues,
-              firstHalfTotal(taxesPublicChargesValues),
-              secondHalfTotal(taxesPublicChargesValues),
-              total(taxesPublicChargesValues),
+              ...taxesPublicChargesValues.map((taxes) => taxes.tax_and_public_charge),
+              firstHalfTotal(taxesPublicChargesValues.map((taxes) => taxes.tax_and_public_charge)),
+              secondHalfTotal(taxesPublicChargesValues.map((taxes) => taxes.tax_and_public_charge)),
+              total(taxesPublicChargesValues.map((taxes) => taxes.tax_and_public_charge)),
               // `${(total(taxesPublicChargesValues) / total(expenseValues) * 100).toFixed(2)}%`,
               '0',
             ],
@@ -1148,12 +1156,13 @@ const EditTablePlanning = () => {
             ],
           },
           {
+            id: taxesPublicChargesValues.map((taxes) => taxes.id),
             label: 'taxesAndPublicCharges',
             values: [
-              ...taxesPublicChargesValues,
-              firstHalfTotal(taxesPublicChargesValues),
-              secondHalfTotal(taxesPublicChargesValues),
-              total(taxesPublicChargesValues),
+              ...taxesPublicChargesValues.map((taxes) => taxes.tax_and_public_charge),
+              firstHalfTotal(taxesPublicChargesValues.map((taxes) => taxes.tax_and_public_charge)),
+              secondHalfTotal(taxesPublicChargesValues.map((taxes) => taxes.tax_and_public_charge)),
+              total(taxesPublicChargesValues.map((taxes) => taxes.tax_and_public_charge)),
               // `${(total(taxesPublicChargesValues) / total(expenseValues) * 100).toFixed(2)}%`,
               '0',
             ],
@@ -1361,7 +1370,7 @@ const EditTablePlanning = () => {
     'amortizationExpenses',
     'consumableExpenses',
     'rentExpenses',
-    'taxesAndpublicCharges',
+    'taxesAndPublicCharges',
     'depreciationExpenses',
     'travelExpenses',
     'utilitiesExpenses',
