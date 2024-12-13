@@ -6,6 +6,7 @@ import EmployeeExpensesResultsList from "../pages/EmployeeExpensesResults/Employ
 import EmployeeExpensesResultsRegistration from "../pages/EmployeeExpensesResults/EmployeeExpensesResultsRegistration";
 import CostOfSalesResultsList from "../pages/CostOfSalesResults/CostOfSalesResultsListAndEdit";
 import CostOfSalesResultsRegistration from "../pages/CostOfSalesResults/CostOfSalesResultsRegistration";
+import ResultsListAndEdit from "../pages/Results/ResultsListAndEdit";
 
 const Loader = (Component: any) => (props: any) =>
   (
@@ -314,6 +315,14 @@ const routes: RouteObject[] = [
         element: (
           <ProtectedRoutes>
             <UsersListAndEdit />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: 'results',
+        element: (
+          <ProtectedRoutes>
+            <ResultsListAndEdit />
           </ProtectedRoutes>
         ),
       },

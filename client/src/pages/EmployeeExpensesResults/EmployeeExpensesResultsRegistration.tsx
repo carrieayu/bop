@@ -227,7 +227,6 @@ const EmployeeExpensesResultsRegistration = () => {
         [name]: value,
       }
     }
-
     setEmployeeContainers(newContainers)
   }
 
@@ -402,13 +401,16 @@ const EmployeeExpensesResultsRegistration = () => {
         ...(year && { year }),
         ...(month && { month }),
       }
-      getFilteredProjectSalesResults(filterParams, token)
-        .then((data) => {
-          console.log(data)
-        })
-        .catch((error) => {
-          console.error('Something is wrong with filter function :', error)
-        })
+
+      // [ Temporarily disabled filter function, this will be fixed in Ticket 163. ]
+      // getFilteredProjectSalesResults(filterParams, token)
+      //   .then((data) => {
+      //     console.log(data)
+      //   })
+      //   .catch((error) => {
+      //     console.error('Something is wrong with filter function :', error)
+      //   })
+      
     })
     
     
@@ -489,7 +491,7 @@ const EmployeeExpensesResultsRegistration = () => {
                                 >
                                   <option value=''></option>
                                   {projectsSalesResults.map((project) => (
-                                    <option key={project.project_sales_result_id} value={project.projects.project_name}>
+                                    <option key={project.project_sales_result_id} value={project.projects.project_id}>
                                       {project.projects.project_name}
                                     </option>
                                   ))}
