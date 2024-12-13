@@ -1,0 +1,217 @@
+
+table, th, td {
+  box-sizing: border-box;
+}
+.table-b-table_header {
+    width: 100%;
+    // background-color: #ddd;
+    // border: solid 1px #ddd;
+}
+.table-b-container {
+    // margin: 14px;
+}
+.table-b-results_summary-tr-header{
+    text-align: center;
+    border-top: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    background-color: #fff;
+    width: 100%;
+    padding: 2px 0px 2px 0px;
+    box-sizing: border-box;
+}
+.table-b-client-header{
+  width: 9% !important;
+  text-align: center !important;
+  justify-content: center;
+  border-left: solid 1px #ddd;
+  border-top: solid 1px #ddd;
+  background-color: #efedea;
+
+
+}
+.table-b-client-data{
+  width: 9% !important;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  border-left: solid 1px #ddd;
+  border-bottom: solid 1px #ddd;
+  border-right: solid 1px #ddd;
+  padding:10px;
+  box-sizing: border-box;
+  background-color: #e0e0e0;
+  
+}
+.table-b-categories-header{
+  width:  9% !important;
+  text-align: center !important;
+  border-left: solid 1px #ddd;
+  border-top: solid 1px #ddd;
+    background-color: #f9f9f9cf;
+
+
+}
+.table-b-categories-data{
+  box-sizing: border-box;
+  width: 9% !important;
+  text-align: center;
+  border-bottom: solid 1px #ddd;
+  text-align: center;
+  font-weight: bold;
+  padding: 1px 0px 1px 2px;
+  background-color: #f9f9f9;
+}
+.table-b-months-header{
+  width: 6% !important;
+  border: solid 1px #ddd;  
+  text-align: center !important;
+}
+.table-b-months-data{
+  width: 6% !important;
+  // text-align: center !important;
+  background-color: #fff;
+  border-left: solid 1px #ddd;
+  border-bottom: solid 1px #ddd;
+  border-right: solid 1px #ddd;
+}
+.table-b-total-header{
+  width: 6% !important;
+  text-align: center !important;
+  border-top: solid 1px #ddd;
+  border-right: solid 1px #ddd;
+
+}
+.table-b-total-data{
+  width: 6% !important;
+  border: solid 1px #ddd;
+  background-color: #fff;
+}
+
+.table-b-sum-of-totals{
+  border-left: solid 1px #ddd;  
+  display: flex;
+  justify-content: center;
+}
+.table-b-divider{
+  background-color: #fff;  
+}
+.orange-txt{
+    background-color: #fce5cd;
+  }
+.light-txt{
+  background-color: #c9daf8;
+}
+
+.sky-txt{
+  background-color: #e0ffff
+}
+
+.total-txt{
+  background-color: #daeef3;
+}
+
+.highlight{
+  background-color: #f9f9f9;
+}
+.salmon-txt{
+  background-color: #f7b9a0;
+}
+.light-salmon-txt{
+  background-color: #fbd6c8;
+}
+.green-txt{
+  background-color: #c9f8e7
+}
+.light-green-txt{
+  background-color: #dafdf0
+}
+.white{
+  background-color: #fff;
+}
+.grey{
+background-color: #e0e0e0;
+}
+.smaller-font{
+  font-size: small;
+}
+
+.table-b-scrollable_container {
+    height: 80vh;
+    overflow-y: auto;
+    overflow-x: hidden; 
+    scrollbar-width: none; 
+    transition: scrollbar-color 0.3s ease;
+    &::-webkit-scrollbar {
+        width: 0; 
+    }
+    &:hover {
+        scrollbar-width: thin; 
+        scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+        &::-webkit-scrollbar {
+            width: 8px; 
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px; 
+        }
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+    }
+}
+.table-b-td_no {
+    width: 100px;
+    text-align: 'center';
+}
+
+table-b-td.td_border {
+    // border-right: 1px solid black;
+}
+.table-b-wrapper{
+  max-width: 2560px;
+  .table-b-content-wrapper{
+    // display: flex;
+    // background-color: #EFEDEA;
+    @media only screen and (max-width: 1000px){
+        flex-direction: column;
+    }
+.table-b-container {
+    padding: 10px;
+    overflow-y: auto; 
+    overflow-x: auto;
+    scrollbar-width: none;
+    transition: scrollbar-color 0.3s ease;
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+    }
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    &:hover {
+        scrollbar-width: thin; 
+        scrollbar-color: rgba(0, 0, 0, 0.3) transparent; 
+        &::-webkit-scrollbar {
+            width: 8px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+    }
+    .table-b-grid{
+      width: 100%;
+    }
+      }
+    }
+  }
+
+  
+  
