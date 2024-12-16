@@ -260,8 +260,6 @@ const EmployeeExpensesResultsRegistration = () => {
                  setFilteredDates((prevDates: any[]) => {
                    return prevDates?.map((prevDate, index) => {
                      if (containerIndex == index) {
-                       console.log('index', index)
-                       console.log('containerIndex: ', containerIndex)
                        return {
                          form: prevDate?.form?.map((date, formIndex) => {
                            if (projectIndex == formIndex) {
@@ -444,8 +442,6 @@ const EmployeeExpensesResultsRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log('employeeContainers: ', employeeContainers)
-    
 
     // # Client Side Validation
 
