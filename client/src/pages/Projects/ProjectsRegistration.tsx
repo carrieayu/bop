@@ -618,7 +618,7 @@ const ProjectsRegistration = () => {
                             value={form.client}
                             onChange={(e) => handleChange(index, e)}
                           >
-                            <option value=''></option>
+                            <option value=''>{translate('selectClient', language)}</option>
                             {clients.map((client) => (
                               <option key={client.client_id} value={client.client_id}>
                                 {client.client_name}
@@ -694,7 +694,7 @@ const ProjectsRegistration = () => {
                               value={form.business_division}
                               onChange={(e) => handleChange(index, e)}
                             >
-                              <option value=''></option>
+                              <option value=''>{translate('selectBusinessDivision', language)}</option>
                               {businessSelection.map((division) => (
                                 <option key={division.business_division_id} value={division.business_division_id}>
                                   {division.business_division_name}

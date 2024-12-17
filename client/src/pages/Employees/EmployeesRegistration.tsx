@@ -464,7 +464,7 @@ const EmployeesRegistration = () => {
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
                               disabled={container.company_name === ''}
                             >
-                              <option value=''></option>
+                              <option value=''>{translate('selectBusinessDivision', language)}</option>
                               {businessDivisionSelection.map((division) => (
                                 <option key={division.business_division_id} value={division.business_division_id}>
                                   {division.business_division_name}
@@ -581,7 +581,7 @@ const EmployeesRegistration = () => {
                               value={container.company_name}
                               onChange={(e) => handleCompanyChange(containerIndex, e.target.value)}
                             >
-                              <option value=''></option>
+                              <option value=''>{translate('selectCompany', language)}</option>
                               {companySelection.map((company) => (
                                 <option key={company.company_id} value={company.company_id}>
                                   {company.company_name}

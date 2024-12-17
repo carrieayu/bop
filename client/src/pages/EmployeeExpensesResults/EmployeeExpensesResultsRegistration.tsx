@@ -484,7 +484,7 @@ const EmployeeExpensesResultsRegistration = () => {
                                   value={projectEntry.projects}
                                   onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
                                 >
-                                  <option value=''></option>
+                                  <option value=''>{translate('selectProject', language)}</option>
                                   {projectsSalesResults.map((project) => (
                                     <option key={project.project_sales_result_id} value={project.projects.project_name}>
                                       {project.projects.project_name}
