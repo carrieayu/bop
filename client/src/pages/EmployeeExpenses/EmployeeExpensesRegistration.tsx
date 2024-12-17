@@ -457,8 +457,8 @@ const EmployeeExpensesRegistration = () => {
                                   onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
                                 >
                                   <option value=''></option>{' '}
-                                  {years.map((year) => (
-                                    <option key={year} value={year}>
+                                  {[...new Set(projects.map((project) => project.year))].map((year, index) => (
+                                    <option key={index} value={year}>
                                       {year}
                                     </option>
                                   ))}
@@ -476,9 +476,9 @@ const EmployeeExpensesRegistration = () => {
                                   onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
                                 >
                                   <option value=''></option>{' '}
-                                  {projects.map((month, idx) => (
-                                    <option key={idx} value={month.month}>
-                                      {language === 'en' ? monthNames[month.month].en : monthNames[month.month].jp}{' '}
+                                  {[...new Set(projects.map((project) => project.month))].map((month, index) => (
+                                    <option key={index} value={month.month}>
+                                      {language === 'en' ? monthNames[month].en : monthNames[month].jp}{' '}
                                     </option>
                                   ))}
                                 </select>
