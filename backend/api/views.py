@@ -1323,7 +1323,6 @@ class EmployeeExpensesCreate(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         employee_expenses_data = request.data
-
         if not isinstance(employee_expenses_data, list):
             return Response({'detail': 'Invalid data format. Expecting a list.'}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -1343,13 +1342,11 @@ class EmployeeExpensesCreate(generics.CreateAPIView):
             for entry in project_entries:
                 if not entry.get('projects') or not entry.get('clients'):
                     return Response({'detail': 'Project ID and Client ID cannot be empty.'}, status=status.HTTP_400_BAD_REQUEST)
-
                 try:
                     # Check if employee, client, and project exist
                     client = MasterClient.objects.get(pk=entry['clients'])
-                    project = Projects.objects.get(pk=entry['projects'])
+                    project = Projects.objects.get(project_id=entry['project_id'])
                     employee = Employees.objects.get(pk=employee_id)
-
                     # Check for existing expense
                     existing_expense = EmployeeExpenses.objects.filter(
                         employee=employee,
@@ -1387,7 +1384,7 @@ class EmployeeExpensesCreate(generics.CreateAPIView):
 
             for entry in project_entries:
                 client = MasterClient.objects.get(pk=entry['clients'])
-                project = Projects.objects.get(pk=entry['projects'])
+                project = Projects.objects.get(project_id=entry['project_id'])
                 employee = Employees.objects.get(pk=employee_id)
                 auth_user = AuthUser.objects.get(pk=entry.get('auth_id')) if entry.get('auth_id') else None
 

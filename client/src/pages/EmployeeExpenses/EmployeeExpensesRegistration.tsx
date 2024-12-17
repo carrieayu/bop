@@ -405,7 +405,7 @@ const EmployeeExpensesRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-
+    
     // # Client Side Validation
 
     // Step 1: Preparartion for validation
@@ -456,7 +456,8 @@ const EmployeeExpensesRegistration = () => {
       setCrudValidationErrors([])
     }
     // Continue with submission if no errors
-
+    console.log('employeeContainers', employeeContainers)
+    
     createEmployeeExpense(employeeContainers, token)
       .then(() => {
         setModalMessage(translate('successfullySaved', language))
@@ -505,9 +506,6 @@ const EmployeeExpensesRegistration = () => {
   const handleListClick = () => {
     navigate('/employee-expenses-list')
   }
-
-  console.log(filteredDates)
-  
 
   return (
     <div className='employeeExpensesRegistration_wrapper'>
