@@ -783,15 +783,15 @@ class ProjectSalesResultsFilter(generics.ListCreateAPIView):
     def get_queryset(self):
         month = self.request.GET.get('month')
         year = self.request.GET.get('year')
-        projectName = self.request.GET.get('project_name')
+        projectId = self.request.GET.get('projectId')
         
         queryset = self.queryset
         if month:
             queryset = queryset.filter(month=month)
         if year:
             queryset = queryset.filter(year=year)
-        if projectName:
-            queryset = queryset.filter(project_name=projectName)
+        if projectId:
+            queryset = queryset.filter(project_id=projectId)
         return queryset
 
 class ProjectSalesResultsCreate(generics.CreateAPIView):
@@ -1618,21 +1618,21 @@ class EmployeeExpensesResultsDelete(generics.DestroyAPIView):
         
 class EmployeeExpensesResultsFilter(generics.ListCreateAPIView):
     queryset = ProjectsSalesResults.objects.all()
-    serializer_class = EmployeeExpensesResultsListSerializer
+    serializer_class = ProjectSalesResultsListSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         month = self.request.GET.get('month')
         year = self.request.GET.get('year')
-        # project_name = self.request.GET.get('project_name')
-        
+        project_name = self.request.GET.get('project_name')
+
         queryset = self.queryset
         if month:
-            queryset = queryset.filter(month=month)
+            queryset = queryset.filter(project__month=month)
         if year:
-            queryset = queryset.filter(year=year)
-        # if project_name:
-        #     queryset = queryset.filter(project=project_name)
+            queryset = queryset.filter(project__year=year)
+        if project_name:
+            queryset = queryset.filter(project__project_name=project_name)
         return queryset
 
 # Cost Of Sales

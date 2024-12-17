@@ -26,19 +26,19 @@ const months = [
 ];
 
 const EmployeeExpensesRegistration = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [activeTab, setActiveTab] = useState('/planning-list');
-  const [activeTabOther, setActiveTabOther] = useState('employeeExpenses');
-  const { language, setLanguage } = useLanguage();
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en'); 
-  const currentYear = new Date().getFullYear();
-  const startYear = currentYear - 1;
-  const endYear = currentYear + 2;
-  const years = Array.from({ length: endYear - startYear + 1 }, (val, i) => startYear + i);
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [activeTab, setActiveTab] = useState('/planning-list')
+  const [activeTabOther, setActiveTabOther] = useState('employeeExpenses')
+  const { language, setLanguage } = useLanguage()
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
+  const currentYear = new Date().getFullYear()
+  const startYear = currentYear - 1
+  const endYear = currentYear + 2
+  const years = Array.from({ length: endYear - startYear + 1 }, (val, i) => startYear + i)
   const token = localStorage.getItem('accessToken')
-  const [employees, setEmployees] = useState([]); 
-  const [projects, setProjects] = useState([]); 
+  const [employees, setEmployees] = useState([])
+  const [projects, setProjects] = useState([])
   const storedUserID = localStorage.getItem('userID')
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
@@ -51,8 +51,8 @@ const EmployeeExpensesRegistration = () => {
     },
   ])
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -60,7 +60,7 @@ const EmployeeExpensesRegistration = () => {
   }
 
   const handleTabsClick = (tab) => {
-    setActiveTabOther(tab);
+    setActiveTabOther(tab)
     switch (tab) {
       case 'project':
         navigate('/projects-registration')
@@ -77,7 +77,7 @@ const EmployeeExpensesRegistration = () => {
       default:
         break
     }
-  };
+  }
 
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
@@ -85,13 +85,13 @@ const EmployeeExpensesRegistration = () => {
   }
 
   const handleRemoveInputData = () => {
-    setEmployeeContainers([{
+    setEmployeeContainers([
+      {
         id: 1,
         employee: '',
-        projectEntries: [{ id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '' }]
-      }
-    ]
-    )
+        projectEntries: [{ id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '' }],
+      },
+    ])
     closeModal()
   }
 
@@ -104,40 +104,39 @@ const EmployeeExpensesRegistration = () => {
   }
 
   useEffect(() => {
-    const path = location.pathname;
+    const path = location.pathname
     if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
-      setActiveTab(path);
+      setActiveTab(path)
     }
-  }, [location.pathname]);
+  }, [location.pathname])
 
   useEffect(() => {
-    setIsTranslateSwitchActive(language === 'en');
-  }, [language]);
+    setIsTranslateSwitchActive(language === 'en')
+  }, [language])
 
   const handleTranslationSwitchToggle = () => {
-    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
-    setLanguage(newLanguage);
-  };
+    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
+    setLanguage(newLanguage)
+  }
 
   const monthNames = {
-    1: { en: "January", jp: "1月" },
-    2: { en: "February", jp: "2月" },
-    3: { en: "March", jp: "3月" },
-    4: { en: "April", jp: "4月" },
-    5: { en: "May", jp: "5月" },
-    6: { en: "June", jp: "6月" },
-    7: { en: "July", jp: "7月" },
-    8: { en: "August", jp: "8月" },
-    9: { en: "September", jp: "9月" },
-    10: { en: "October", jp: "10月" },
-    11: { en: "November", jp: "11月" },
-    12: { en: "December", jp: "12月" },
-  };
+    1: { en: 'January', jp: '1月' },
+    2: { en: 'February', jp: '2月' },
+    3: { en: 'March', jp: '3月' },
+    4: { en: 'April', jp: '4月' },
+    5: { en: 'May', jp: '5月' },
+    6: { en: 'June', jp: '6月' },
+    7: { en: 'July', jp: '7月' },
+    8: { en: 'August', jp: '8月' },
+    9: { en: 'September', jp: '9月' },
+    10: { en: 'October', jp: '10月' },
+    11: { en: 'November', jp: '11月' },
+    12: { en: 'December', jp: '12月' },
+  }
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        
         getEmployee(token)
           .then((data) => {
             setEmployees(data)
@@ -149,10 +148,11 @@ const EmployeeExpensesRegistration = () => {
               console.error('There was an error fetching the employee!', error)
             }
           })
-        
+
         getProject(token)
           .then((data) => {
-            setProjects(data)
+            const result = uniqueProjects(data)
+            setProjects(result)
           })
           .catch((error) => {
             if (error.response && error.response.status === 401) {
@@ -161,16 +161,28 @@ const EmployeeExpensesRegistration = () => {
               console.error('There was an error fetching the projects!', error)
             }
           })
-
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching data:', error)
       }
-    };
+    }
 
-    fetchData();
-  }, [token]);
+    fetchData()
+  }, [token])
 
   const maximumEntries = 5
+
+  //This function will make ProjectName unique base on project_name and business_division
+  const uniqueProjects = (projects) => {
+    const seen = new Set()
+    return projects.filter((project) => {
+      const identifier = `${project.project_name}-${project.business_division}`
+      if (seen.has(identifier)) {
+        return false
+      }
+      seen.add(identifier)
+      return true
+    })
+  }
 
   const addEmployeeContainer = () => {
     if (employeeContainers.length < maximumEntries) {
@@ -187,9 +199,9 @@ const EmployeeExpensesRegistration = () => {
 
   const removeEmployeeContainer = () => {
     if (employeeContainers.length > 1) {
-      setEmployeeContainers(employeeContainers.slice(0, -1));
+      setEmployeeContainers(employeeContainers.slice(0, -1))
     }
-  };
+  }
 
   const addProjectEntry = (containerIndex) => {
     const updatedContainers = [...employeeContainers]
@@ -211,12 +223,12 @@ const EmployeeExpensesRegistration = () => {
   }
 
   const removeProjectEntry = (containerIndex) => {
-    const updatedContainers = [...employeeContainers];
+    const updatedContainers = [...employeeContainers]
     if (updatedContainers[containerIndex].projectEntries.length > 1) {
-      updatedContainers[containerIndex].projectEntries.pop();
-      setEmployeeContainers(updatedContainers);
+      updatedContainers[containerIndex].projectEntries.pop()
+      setEmployeeContainers(updatedContainers)
     }
-  };
+  }
 
   const handleInputChange = (containerIndex, projectIndex, event) => {
     const { name, value } = event.target
@@ -228,13 +240,13 @@ const EmployeeExpensesRegistration = () => {
 
         newContainers[containerIndex].projectEntries[projectIndex] = {
           ...newContainers[containerIndex].projectEntries[projectIndex],
-          projects: value, 
+          projects: value,
           clients: selectedProject ? selectedProject.client : '',
         }
       } else {
         newContainers[containerIndex].projectEntries[projectIndex] = {
           ...newContainers[containerIndex].projectEntries[projectIndex],
-          [name]: value, 
+          [name]: value,
         }
       }
     } else {
@@ -244,12 +256,12 @@ const EmployeeExpensesRegistration = () => {
       }
     }
 
-    setEmployeeContainers(newContainers) 
+    setEmployeeContainers(newContainers)
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     // # Client Side Validation
 
     // Step 1: Preparartion for validation
@@ -344,10 +356,9 @@ const EmployeeExpensesRegistration = () => {
       })
   }
 
-  const handleListClick = () => { 
-    navigate('/employee-expenses-list');
-  };
-
+  const handleListClick = () => {
+    navigate('/employee-expenses-list')
+  }
 
   return (
     <div className='employeeExpensesRegistration_wrapper'>
@@ -424,7 +435,11 @@ const EmployeeExpensesRegistration = () => {
                                 >
                                   <option value=''></option>
                                   {projects.map((project) => (
-                                    <option key={project.project_id} value={project.project_id}>
+                                    <option
+                                      key={project.project_id}
+                                      value={project.project_id}
+                                      title={project.business_name}
+                                    >
                                       {project.project_name}
                                     </option>
                                   ))}
@@ -461,9 +476,9 @@ const EmployeeExpensesRegistration = () => {
                                   onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
                                 >
                                   <option value=''></option>{' '}
-                                  {months.map((month, idx) => (
-                                    <option key={idx} value={month}>
-                                      {language === 'en' ? monthNames[month].en : monthNames[month].jp}{' '}
+                                  {projects.map((month, idx) => (
+                                    <option key={idx} value={month.month}>
+                                      {language === 'en' ? monthNames[month.month].en : monthNames[month.month].jp}{' '}
                                     </option>
                                   ))}
                                 </select>
@@ -478,15 +493,16 @@ const EmployeeExpensesRegistration = () => {
                             type='button'
                             onClick={() => addProjectEntry(containerIndex)}
                           />
-                          {employeeContainers[containerIndex].projectEntries.length >= 2 ?
+                          {employeeContainers[containerIndex].projectEntries.length >= 2 ? (
                             <Btn
                               label='-'
                               className='employeeExpensesRegistration_button'
                               type='button'
                               onClick={() => removeProjectEntry(containerIndex)}
-                            /> :
+                            />
+                          ) : (
                             <div className='employeeExpensesRegistration_button_empty'></div>
-                          }
+                          )}
                         </div>
                       </div>
                     </div>

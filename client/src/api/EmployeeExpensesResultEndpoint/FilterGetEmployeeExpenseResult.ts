@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
-export async function getFilteredProjectSalesResults(getFilter, token: string) {
+export async function getFilteredEmployeeExpenseResults(getFilter, token: string) {
   const params = new URLSearchParams(getFilter)
   const endpoint = `${getReactActiveEndpoint()}/api/employee-expenses-results/filter/?${params.toString()}`
 

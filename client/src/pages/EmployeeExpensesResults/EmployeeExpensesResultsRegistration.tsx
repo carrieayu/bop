@@ -14,7 +14,7 @@ import { getEmployee } from '../../api/EmployeeEndpoint/GetEmployee'
 import { createEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/CreateEmployeeExpenseResult'
 import { checkForDuplicates, getFieldChecks, translateAndFormatErrors, validateEmployeeExpensesResultsRecords } from '../../utils/validationUtil'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
-import { getFilteredProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/FilteredGetProjectSalesResults'
+import { getFilteredEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/FilterGetEmployeeExpenseResult'
 
 
 type Date = {
@@ -255,34 +255,34 @@ const EmployeeExpensesResultsRegistration = () => {
             ...(project_name && { project_name }),
           }
           if(containerIndex === index) {
-             getFilteredProjectSalesResults(filterParams, token)
-               .then((data) => {
-                 setFilteredDates((prevDates: any[]) => {
-                   return prevDates?.map((prevDate, index) => {
-                     if (containerIndex == index) {
-                       return {
-                         form: prevDate?.form?.map((date, formIndex) => {
-                           if (projectIndex == formIndex) {
-                             return {
-                               date: data?.map((item) => {
-                                 return {
-                                   month: item.month,
-                                   year: item.year,
-                                 }
-                               }),
-                             }
-                           }
-                           return date
-                         }),
-                       }
-                     }
-                     return prevDate
-                   })
-                 })
-               })
-               .catch((error) => {
-                 console.error('Something is wrong with filter function:', error)
-               })
+              getFilteredEmployeeExpenseResults(filterParams, token)
+                .then((data) => {
+                  setFilteredDates((prevDates: any[]) => {
+                    return prevDates?.map((prevDate, index) => {
+                      if (containerIndex == index) {
+                        return {
+                          form: prevDate?.form?.map((date, formIndex) => {
+                            if (projectIndex == formIndex) {
+                              return {
+                                date: data?.map((item) => {
+                                  return {
+                                    month: item.projects.month,
+                                    year: item.projects.year,
+                                  }
+                                }),
+                              }
+                            }
+                            return date
+                          }),
+                        }
+                      }
+                      return prevDate
+                    })
+                  })
+                })
+                .catch((error) => {
+                  console.error('Something is wrong with filter function:', error)
+                })
           }
           return employee
         })
@@ -303,7 +303,7 @@ const EmployeeExpensesResultsRegistration = () => {
             year,
           }
           if(containerIndex === index){
-              getFilteredProjectSalesResults(filterParams, token)
+              getFilteredEmployeeExpenseResults(filterParams, token)
                 .then((data) => {
                   setFilteredDates((prevDates: any[]) => {
                     return prevDates?.map((prevDate, index) => {
@@ -314,8 +314,8 @@ const EmployeeExpensesResultsRegistration = () => {
                               return {
                                 date: data?.map((item) => {
                                   return {
-                                    month: item.month,
-                                    year: item.year,
+                                    month: item.projects.month,
+                                    year: item.projects.year,
                                   }
                                 }),
                               }
@@ -353,7 +353,7 @@ const EmployeeExpensesResultsRegistration = () => {
             ...(month && { month }),
           }
           if(containerIndex === index){
-            getFilteredProjectSalesResults(filterParams, token)
+            getFilteredEmployeeExpenseResults(filterParams, token)
               .then((data) => {
                 employee.projectEntries[projectIndex].project_id = data[0].project_id
                 employee.projectEntries[projectIndex].clients = data[0].client
@@ -538,9 +538,7 @@ const EmployeeExpensesResultsRegistration = () => {
   const handleListClick = () => {
     navigate('/employee-expenses-results-list')
   }
-
   
-
   return (
     <div className='employeeExpensesResultsRegistration_wrapper'>
       <HeaderButtons

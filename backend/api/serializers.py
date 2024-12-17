@@ -139,6 +139,7 @@ class MasterCompaniesUpdateSerializer(serializers.ModelSerializer):
 # Projects
 class ProjectsListSerializer(serializers.ModelSerializer):
     client_name = serializers.CharField(source="client.client_name", read_only=True)
+    business_name = serializers.CharField(source="business_division.business_division_name", read_only=True)
     class Meta:
         model = Projects
         # fields = '__all__'
@@ -160,7 +161,8 @@ class ProjectsListSerializer(serializers.ModelSerializer):
             "ordinary_profit_margin",
             "business_division", # business_division_id in TABLE
             "client", # client_id in TABLE
-            "client_name"
+            "client_name",
+            "business_name", # business_division_name in TABLE
             ]
 # For ProjectSalesResultsListSerializer Serializer
 class ProjectsSerializer(serializers.ModelSerializer):
@@ -310,7 +312,6 @@ class EmployeeExpensesResultsListSerializer(serializers.ModelSerializer):
         model = EmployeeExpensesResults
         fields = '__all__'
         
-
 class EmployeeExpensesResultsCreateSerializer(serializers.ModelSerializer):
     employee_expense_id = serializers.CharField(required=False)
     employee = EmployeesListSerializer()
