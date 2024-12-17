@@ -1634,6 +1634,25 @@ class EmployeeExpensesResultsFilter(generics.ListCreateAPIView):
         if project_name:
             queryset = queryset.filter(project__project_name=project_name)
         return queryset
+    
+class EmployeeExpensesFilter(generics.ListCreateAPIView):
+    queryset = Projects.objects.all()
+    serializer_class = ProjectsListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        month = self.request.GET.get('month')
+        year = self.request.GET.get('year')
+        project_name = self.request.GET.get('project_name')
+
+        queryset = self.queryset
+        if month:
+            queryset = queryset.filter(month=month)
+        if year:
+            queryset = queryset.filter(year=year)
+        if project_name:
+            queryset = queryset.filter(project_name=project_name)
+        return queryset
 
 # Cost Of Sales
 class CostOfSalesList(generics.ListAPIView):

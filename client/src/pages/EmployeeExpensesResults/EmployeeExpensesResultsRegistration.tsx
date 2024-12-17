@@ -248,7 +248,6 @@ const EmployeeExpensesResultsRegistration = () => {
           year : "",
           month : "",
         }
-
         employeeContainers.map((employee, index) => {
           const project_name = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
           const filterParams = {
