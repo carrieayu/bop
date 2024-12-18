@@ -405,7 +405,6 @@ const EmployeeExpensesRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
     // # Client Side Validation
 
     // Step 1: Preparartion for validation
@@ -456,7 +455,7 @@ const EmployeeExpensesRegistration = () => {
       setCrudValidationErrors([])
     }
     // Continue with submission if no errors
-    
+
     createEmployeeExpense(employeeContainers, token)
       .then(() => {
         setModalMessage(translate('successfullySaved', language))

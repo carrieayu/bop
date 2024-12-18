@@ -441,7 +441,6 @@ const EmployeeExpensesResultsRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-
     // # Client Side Validation
 
     // Step 1: Preparartion for validation
