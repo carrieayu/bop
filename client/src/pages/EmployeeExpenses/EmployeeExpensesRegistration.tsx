@@ -456,7 +456,6 @@ const EmployeeExpensesRegistration = () => {
       setCrudValidationErrors([])
     }
     // Continue with submission if no errors
-    console.log('employeeContainers', employeeContainers)
     
     createEmployeeExpense(employeeContainers, token)
       .then(() => {

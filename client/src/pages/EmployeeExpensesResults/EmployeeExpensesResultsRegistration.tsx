@@ -354,8 +354,8 @@ const EmployeeExpensesResultsRegistration = () => {
           if(containerIndex === index){
             getFilteredEmployeeExpenseResults(filterParams, token)
               .then((data) => {
-                employee.projectEntries[projectIndex].project_id = data[0].project_id
-                employee.projectEntries[projectIndex].clients = data[0].client
+                employee.projectEntries[projectIndex].project_id = data[0].projects.project_id
+                employee.projectEntries[projectIndex].clients = data[0].projects.client
               })
               .catch((error) => {
                 console.error('Something is wrong with filter function:', error)
