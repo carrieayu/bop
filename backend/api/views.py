@@ -1323,7 +1323,6 @@ class EmployeeExpensesCreate(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         employee_expenses_data = request.data
-
         if not isinstance(employee_expenses_data, list):
             return Response({'detail': 'Invalid data format. Expecting a list.'}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -1343,13 +1342,11 @@ class EmployeeExpensesCreate(generics.CreateAPIView):
             for entry in project_entries:
                 if not entry.get('projects') or not entry.get('clients'):
                     return Response({'detail': 'Project ID and Client ID cannot be empty.'}, status=status.HTTP_400_BAD_REQUEST)
-
                 try:
                     # Check if employee, client, and project exist
                     client = MasterClient.objects.get(pk=entry['clients'])
-                    project = Projects.objects.get(pk=entry['projects'])
+                    project = Projects.objects.get(project_id=entry['project_id'])
                     employee = Employees.objects.get(pk=employee_id)
-
                     # Check for existing expense
                     existing_expense = EmployeeExpenses.objects.filter(
                         employee=employee,
@@ -1387,7 +1384,7 @@ class EmployeeExpensesCreate(generics.CreateAPIView):
 
             for entry in project_entries:
                 client = MasterClient.objects.get(pk=entry['clients'])
-                project = Projects.objects.get(pk=entry['projects'])
+                project = Projects.objects.get(project_id=entry['project_id'])
                 employee = Employees.objects.get(pk=employee_id)
                 auth_user = AuthUser.objects.get(pk=entry.get('auth_id')) if entry.get('auth_id') else None
 
@@ -1502,7 +1499,6 @@ class EmployeeExpensesResultsCreate(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         employee_expenses_results_data = request.data
-
         if not isinstance(employee_expenses_results_data, list):
             return Response({'detail': 'Invalid data format. Expecting a list.'}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -1522,13 +1518,11 @@ class EmployeeExpensesResultsCreate(generics.CreateAPIView):
             for entry in project_entries:
                 if not entry.get('projects') or not entry.get('clients'): # The ID being used in entry.get('projects') is project_id
                     return Response({'detail': 'Project ID and Client ID cannot be empty.'}, status=status.HTTP_400_BAD_REQUEST)
-
                 try:
                     # Check if employee, client, and project exist
                     client = MasterClient.objects.get(pk=entry['clients'])
-                    project = ProjectsSalesResults.objects.get(project_id=entry['projects'])
+                    project = ProjectsSalesResults.objects.get(project_id=entry['project_id'])
                     employee = Employees.objects.get(pk=employee_id)
-
                     # Check for existing expense
                     existing_expense = EmployeeExpensesResults.objects.filter(
                         employee=employee,
@@ -1536,7 +1530,6 @@ class EmployeeExpensesResultsCreate(generics.CreateAPIView):
                         year=entry.get('year', '2001'),
                         month=entry.get('month', '01')
                     ).first()
-
                     if existing_expense:
                         employee_name = f"{employee.first_name} {employee.last_name}"
                         year = entry.get('year', '2001')
@@ -1566,7 +1559,7 @@ class EmployeeExpensesResultsCreate(generics.CreateAPIView):
 
             for entry in project_entries:
                 client = MasterClient.objects.get(pk=entry['clients'])
-                project = ProjectsSalesResults.objects.get(project_id=entry['projects'])
+                project = ProjectsSalesResults.objects.get(project_id=entry['project_id'])
                 employee = Employees.objects.get(pk=employee_id)
                 auth_user = AuthUser.objects.get(pk=entry.get('auth_id')) if entry.get('auth_id') else None
 
@@ -1622,21 +1615,40 @@ class EmployeeExpensesResultsDelete(generics.DestroyAPIView):
         
 class EmployeeExpensesResultsFilter(generics.ListCreateAPIView):
     queryset = ProjectsSalesResults.objects.all()
-    serializer_class = EmployeeExpensesResultsListSerializer
+    serializer_class = ProjectSalesResultsListSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         month = self.request.GET.get('month')
         year = self.request.GET.get('year')
-        # project_name = self.request.GET.get('project_name')
-        
+        project_name = self.request.GET.get('project_name')
+
+        queryset = self.queryset
+        if month:
+            queryset = queryset.filter(project__month=month)
+        if year:
+            queryset = queryset.filter(project__year=year)
+        if project_name:
+            queryset = queryset.filter(project__project_name=project_name)
+        return queryset
+    
+class EmployeeExpensesFilter(generics.ListCreateAPIView):
+    queryset = Projects.objects.all()
+    serializer_class = ProjectsListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        month = self.request.GET.get('month')
+        year = self.request.GET.get('year')
+        project_name = self.request.GET.get('project_name')
+
         queryset = self.queryset
         if month:
             queryset = queryset.filter(month=month)
         if year:
             queryset = queryset.filter(year=year)
-        # if project_name:
-        #     queryset = queryset.filter(project=project_name)
+        if project_name:
+            queryset = queryset.filter(project_name=project_name)
         return queryset
 
 # Cost Of Sales
