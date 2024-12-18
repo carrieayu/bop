@@ -25,10 +25,7 @@ const EmployeeExpensesResultsRegistration = () => {
   const [activeTabOther, setActiveTabOther] = useState('employeeExpensesResults')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const currentYear = new Date().getFullYear()
-  const startYear = currentYear - 1
-  const endYear = currentYear + 2
-  const years = Array.from({ length: endYear - startYear + 1 }, (val, i) => startYear + i)
+  const years = [2024, 2025]
   const token = localStorage.getItem('accessToken')
   const [employees, setEmployees] = useState([])
   const [projectsSalesResults, setProjectSalesResult] = useState([])
@@ -489,7 +486,7 @@ const EmployeeExpensesResultsRegistration = () => {
                                   value={projectEntry.projects}
                                   onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
                                 >
-                                  <option value=''></option>
+                                  <option value=''>{translate('selectProject', language)}</option>
                                   {projectsSalesResults.map((project) => (
                                     <option key={project.project_sales_result_id} value={project.projects.project_id}>
                                       {project.projects.project_name}
@@ -508,7 +505,7 @@ const EmployeeExpensesResultsRegistration = () => {
                                   value={projectEntry.year}
                                   onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
                                 >
-                                  <option value=''></option>{' '}
+                                  <option value=''>{translate('selectYear', language)}</option>
                                   {years.map((year) => (
                                     <option key={year} value={year}>
                                       {year}
@@ -527,7 +524,7 @@ const EmployeeExpensesResultsRegistration = () => {
                                   value={projectEntry.month}
                                   onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
                                 >
-                                  <option value=''></option>{' '}
+                                  <option value=''>{translate('selectMonth', language)}</option>
                                   {months.map((month, idx) => (
                                     <option key={idx} value={month}>
                                       {language === 'en' ? monthNames[month].en : monthNames[month].jp}{' '}

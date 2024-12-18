@@ -37,7 +37,7 @@ const ProjectsListAndEdit: React.FC = () => {
   const [projects, setProjects] = useState([])
   const [originalProjectsList, setOriginalProjectsList] = useState(projects)
   const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
-  const years = []
+  const years = [2024, 2025];
   const [initialLanguage, setInitialLanguage] = useState(language)
   const dispatch = useDispatch()
   const [clients, setClients] = useState<any>([])
@@ -75,10 +75,6 @@ const ProjectsListAndEdit: React.FC = () => {
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const token = localStorage.getItem('accessToken')
   const [deleteComplete, setDeleteComplete] = useState(false)
-
-  for (let year = 2020; year <= new Date().getFullYear(); year++) {
-    years.push(year)
-  }
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
@@ -490,7 +486,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         onChange={(e) => handleChange(index, e)}
                                       >
                                         {years.map((year, idx) => (
-                                          <option key={idx} value={year} selected={year.year === project.year}>
+                                          <option key={idx} value={year} selected={year === project.year}>
                                             {year}
                                           </option>
                                         ))}
