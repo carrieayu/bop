@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import CostOfSalesResultsCreate, CostOfSalesResultsDelete, CostOfSalesResultsFilter, CostOfSalesResultsList, CostOfSalesResultsUpdate, EmployeeExpensesResultsCreate, EmployeeExpensesResultsDelete, EmployeeExpensesResultsFilter, EmployeeExpensesResultsList, ExpensesCreate, ExpensesDelete, ExpensesList,ExpensesUpdate, PasswordForgotView, ProjectSalesResultsFilter
+from api.views import CostOfSalesResultsCreate, CostOfSalesResultsDelete, CostOfSalesResultsFilter, CostOfSalesResultsList, CostOfSalesResultsUpdate, EmployeeExpensesResultsCreate, EmployeeExpensesResultsDelete, EmployeeExpensesResultsFilter, EmployeeExpensesResultsList, ExpensesCreate, ExpensesDelete, ExpensesList,ExpensesUpdate, PasswordForgotView, ProjectSalesResultsFilter, ResultsSummaryDisplayByProjects, ResultsSummaryList, ResultsSummaryUpdate
 from api.views import ProjectSalesResultsCreate, ProjectSalesResultsDelete, ProjectSalesResultsList, ProjectSalesResultsUpdate
 from api.views import ExpensesResultsCreate, ExpensesResultsDelete, ExpensesResultsList, ExpensesResultsUpdate
 from api.views import PlanningList, PlanningUpdate, PlanningDisplayByProjects
@@ -107,6 +107,12 @@ urlpatterns = [
     path("api/users/create/", UsersCreate.as_view(), name="users-create"), #CREATE
     path('api/users/update/', UsersUpdate.as_view(), name= "users-update"), #UPDATE
     path('api/users/<int:pk>/delete/', UsersDelete.as_view(), name="users-delete"), #DESTROY
+
+    # Results Summary (Note: This is different from Results | Data used are [ Expenses Res, Employee Exp. Res, Projects Sales Res. , CostOfSales Res. ])
+    path('api/results-summary/list/', ResultsSummaryList.as_view(), name="results-summary-list"),
+    # Results Summary: Display By Projects
+    path('api/results-summary/display-by-projects/', ResultsSummaryDisplayByProjects.as_view(), name="results-display-by-projects"),
+    path('api/results-summary/update/', ResultsSummaryUpdate.as_view(), name="results-summary-update"),
 
     # NOT BEING USED CURRENTLY
 

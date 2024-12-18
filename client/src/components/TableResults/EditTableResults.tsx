@@ -3,25 +3,19 @@ import axios from 'axios'
 import { id } from '../../../jest.config'
 import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
-import { getPlanningA } from '../../api/PlanningEndpoint/GetPlanningA'
-import { updatePlanning } from '../../api/PlanningEndpoint/UpdatePlanning'
+import { getResultsA } from '../../api/ResultsEndpoint/GetResultsA'
+import { updateResults } from '../../api/ResultsEndpoint/UpdateResults'
 
-const EditTablePlanning = () => {
+const EditTableResults = () => {
   const [data, setData] = useState([])
   const [previousData, setPreviousData] = useState([])
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-
+  const token = localStorage.getItem('accessToken')
   useEffect(() => {
-    const token = localStorage.getItem('accessToken')
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
-    getPlanningA(token)
+    getResultsA(token)
       .then((response) => {
-        const aggregatedData = response.cost_of_sales.reduce((acc, item) => {
+        const aggregatedData = response.cost_of_sales_results.reduce((acc, item) => {
           const { month, ...values } = item
           if (!acc[month]) {
             acc[month] = { ...values }
@@ -32,8 +26,7 @@ const EditTablePlanning = () => {
           }
           return acc
         }, {})
-        const aggregatedExpensesData = response.expenses.reduce((acc, item) => {
-          
+        const aggregatedExpensesData = response.expenses_results.reduce((acc, item) => {
           const { month, ...values } = item
           if (!acc[month]) {
             acc[month] = { month, ...values } // Include month in the object
@@ -45,7 +38,7 @@ const EditTablePlanning = () => {
           return acc
         }, {})
 
-        const aggregateEmployeeData = (employees) => {
+        const aggregateEmployeeResultsData = (employeesResults) => {
           // Initialize an empty object to store aggregated monthly data
           const aggregatedData = {}
           // Calculate the total annual salary, bonus, and welfare once for all employees
@@ -56,7 +49,7 @@ const EditTablePlanning = () => {
           let totalStatutoryWelfareExpense = 0
           let totalInsurancePremium = 0
 
-          employees.forEach((employee) => {
+          employeesResults.forEach((employee) => {
             totalAnnualExecutive += employee.executive_renumeration
             totalAnnualSalary += employee.salary
             totalBonusAndFuelAllowance += employee.bonus_and_fuel_allowance
@@ -88,7 +81,7 @@ const EditTablePlanning = () => {
           return aggregatedData
         }
 
-        const aggregatedPlanningAssign = response.planning_assign_data.reduce((acc, item) => {
+        const aggregatedEmployeeExpensesResults = response.employee_expenses_results.reduce((acc, item) => {
           const { month, employee, project, ...values } = item // Destructure employee and project
 
           // Initialize month if not already present
@@ -120,13 +113,16 @@ const EditTablePlanning = () => {
           }
           return acc
         }, {})
-        const aggregatedPlanningProjectData = response.planning_project_data.reduce((acc, item) => {
-          const { month, ...values } = item
+        const aggregatedProjectSalesResultsData = response.project_sales_results.reduce((acc, item) => {
+          const { project, ...values } = item
+          const month = project?.month
+          if (!month) {
+            return acc
+          }
           if (!acc[month]) {
             acc[month] = { month }
           }
           Object.keys(values).forEach((key) => {
-            // Convert value to a float
             const value = parseFloat(values[key])
             if (!isNaN(value)) {
               acc[month][key] = (acc[month][key] || 0) + value
@@ -135,10 +131,10 @@ const EditTablePlanning = () => {
 
           return acc
         }, {})
-
+        
         const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
         // SALES REVENUE
-        const salesValues = months.map((month) => aggregatedPlanningProjectData[month]?.sales_revenue || 0)
+        const salesValues = months.map((month) => aggregatedProjectSalesResultsData[month]?.sales_revenue || 0)
 
         //COST OF SALES
         const costOfSalesValues = months.map((month) => {
@@ -163,18 +159,19 @@ const EditTablePlanning = () => {
           const dataEntry = aggregatedData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.cost_of_sale_id,
+              id: dataEntry.cost_of_sale_result_id,
               purchase: dataEntry.purchase || 0, // Ensure we have a purchase value or fallback to 0
             }
           }
           return { id: null, purchase: 0 } // Default case if dataEntry is missing
         })
+
         // const outsourcingExpenseValues = months.map((month) => aggregatedData[month]?.outsourcing_expense || 0)
         const outsourcingExpenseValues = months.map((month) => {
           const dataEntry = aggregatedData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.cost_of_sale_id,
+              id: dataEntry.cost_of_sale_result_id,
               outsourcing_expense: dataEntry.outsourcing_expense || 0,
             }
           }
@@ -185,7 +182,7 @@ const EditTablePlanning = () => {
           const dataEntry = aggregatedData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.cost_of_sale_id,
+              id: dataEntry.cost_of_sale_result_id,
               product_purchase: dataEntry.product_purchase || 0,
             }
           }
@@ -196,7 +193,7 @@ const EditTablePlanning = () => {
           const dataEntry = aggregatedData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.cost_of_sale_id,
+              id: dataEntry.cost_of_sale_result_id,
               dispatch_labor_expense: dataEntry.dispatch_labor_expense || 0,
             }
           }
@@ -207,7 +204,7 @@ const EditTablePlanning = () => {
           const dataEntry = aggregatedData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.cost_of_sale_id,
+              id: dataEntry.cost_of_sale_result_id,
               communication_expense: dataEntry.communication_expense || 0,
             }
           }
@@ -218,7 +215,7 @@ const EditTablePlanning = () => {
           const dataEntry = aggregatedData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.cost_of_sale_id,
+              id: dataEntry.cost_of_sale_result_id,
               work_in_progress_expense: dataEntry.work_in_progress_expense || 0,
             }
           }
@@ -229,7 +226,7 @@ const EditTablePlanning = () => {
           const dataEntry = aggregatedData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.cost_of_sale_id,
+              id: dataEntry.cost_of_sale_result_id,
               amortization_expense: dataEntry.amortization_expense || 0,
             }
           }
@@ -247,7 +244,7 @@ const EditTablePlanning = () => {
         // EMPLOYEE EXPENSE
         const employeeExpensesValues = months.map((month) => {
           const executiveRenumeration = aggregatedExpensesData[month]?.executive_renumeration || 0
-          const salary = aggregatedPlanningAssign[month]?.totalSalary || 0
+          const salary = aggregatedEmployeeExpensesResults[month]?.totalSalary || 0
           const fuel_allowance = aggregatedExpensesData[month]?.fuel_allowance || 0
           const statutory_welfare_expense = aggregatedExpensesData[month]?.statutory_welfare_expense || 0
           const welfare_expense = aggregatedExpensesData[month]?.welfare_expense || 0
@@ -264,7 +261,7 @@ const EditTablePlanning = () => {
         })
 
         // EMPLOYEES
-        const result = aggregateEmployeeData(response.employees)
+        const result = aggregateEmployeeResultsData(response.employees_results)
         const executiveRenumerationValues = months.map((month) => result[month]?.executive_renumeration || 0)
         const salaryValues = months.map((month) => result[month]?.salary || 0)
         const totalBonusAndFuelAllowance = result[12]?.bonus_and_fuel_allowance || 0
@@ -307,7 +304,7 @@ const EditTablePlanning = () => {
           const dataEntry = aggregatedExpensesData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.expense_id,
+              id: dataEntry.expense_result_id,
               consumable_expense: dataEntry.consumable_expense || 0,
             }
           }
@@ -319,17 +316,18 @@ const EditTablePlanning = () => {
           const dataEntry = aggregatedExpensesData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.expense_id,
+              id: dataEntry.expense_result_id,
               rent_expense: dataEntry.rent_expense || 0,
             }
           }
           return { id: null, rent_expense: 0 }
         })
+
         const taxesPublicChargesValues = months.map((month) => {
           const dataEntry = aggregatedExpensesData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.expense_id,
+              id: dataEntry.expense_result_id,
               tax_and_public_charge: dataEntry.tax_and_public_charge || 0,
             }
           }
@@ -342,7 +340,7 @@ const EditTablePlanning = () => {
           const dataEntry = aggregatedExpensesData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.expense_id,
+              id: dataEntry.expense_result_id,
               depreciation_expense: dataEntry.depreciation_expense || 0,
             }
           }
@@ -354,7 +352,7 @@ const EditTablePlanning = () => {
           const dataEntry = aggregatedExpensesData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.expense_id,
+              id: dataEntry.expense_result_id,
               travel_expense: dataEntry.travel_expense || 0,
             }
           }
@@ -367,7 +365,7 @@ const EditTablePlanning = () => {
           const dataEntry = aggregatedExpensesData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.expense_id,
+              id: dataEntry.expense_result_id,
               communication_expense: dataEntry.communication_expense || 0,
             }
           }
@@ -378,7 +376,7 @@ const EditTablePlanning = () => {
           const dataEntry = aggregatedExpensesData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.expense_id,
+              id: dataEntry.expense_result_id,
               utilities_expense: dataEntry.utilities_expense || 0,
             }
           }
@@ -389,7 +387,7 @@ const EditTablePlanning = () => {
           const dataEntry = aggregatedExpensesData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.expense_id,
+              id: dataEntry.expense_result_id,
               transaction_fee: dataEntry.transaction_fee || 0,
             }
           }
@@ -400,7 +398,7 @@ const EditTablePlanning = () => {
           const dataEntry = aggregatedExpensesData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.expense_id,
+              id: dataEntry.expense_result_id,
               advertising_expense: dataEntry.advertising_expense || 0,
             }
           }
@@ -413,7 +411,7 @@ const EditTablePlanning = () => {
           const dataEntry = aggregatedExpensesData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.expense_id,
+              id: dataEntry.expense_result_id,
               entertainment_expense: dataEntry.entertainment_expense || 0,
             }
           }
@@ -427,7 +425,7 @@ const EditTablePlanning = () => {
           const dataEntry = aggregatedExpensesData[month]
           if (dataEntry) {
             return {
-              id: dataEntry.expense_id,
+              id: dataEntry.expense_result_id,
               professional_service_fee: dataEntry.professional_service_fee || 0,
             }
           }
@@ -451,10 +449,10 @@ const EditTablePlanning = () => {
         })
         //NoN Operating Income & Expense
         const nonOperatingIncomeValues = months.map(
-          (month) => aggregatedPlanningProjectData[month]?.non_operating_income || 0,
+          (month) => aggregatedProjectSalesResultsData[month]?.non_operating_income || 0,
         )
         const nonOperatingExpensesValues = months.map(
-          (month) => aggregatedPlanningProjectData[month]?.non_operating_expense || 0,
+          (month) => aggregatedProjectSalesResultsData[month]?.non_operating_expense || 0,
         )
 
         const ordinaryProfitValues = months.map((month, index) => {
@@ -1384,7 +1382,6 @@ const EditTablePlanning = () => {
   const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable']
   const [editableData, setEditableData] = useState(data)
   const isRowEditable = (label) => editableLabels.includes(label)
-  console.log('editable data', editableData)
 
   const handleInputChange = (rowIndex, valueIndex, e) => {
     const updatedData = [...data]
@@ -1401,13 +1398,7 @@ const EditTablePlanning = () => {
   }
 
   const saveData = async (changedData) => {
-    const token = localStorage.getItem('accessToken')
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
-    updatePlanning(changedData, token)
+    updateResults(changedData, token)
       .then(() => {
         alert('Sucessfully updated')
       })
@@ -1415,7 +1406,7 @@ const EditTablePlanning = () => {
         if (error.response && error.response.status === 401) {
           window.location.href = '/login'
         } else {
-          console.error('There was an error updating the planning data!', error)
+          console.error('There was an error updating the results summary data!', error)
         }
       })
   }
@@ -1454,13 +1445,12 @@ const EditTablePlanning = () => {
         return null
       })
       .filter((row) => row !== null)
-
     saveData(updatedData)
   }
 
   return (
-    <div className='table-planning-container'>
-      <div className='table-planning'>
+    <div className='table-results_summary-container'>
+      <div className='table-results_summary'>
         <table>
           <thead>
             <tr>
@@ -1499,11 +1489,11 @@ const EditTablePlanning = () => {
                 {item.values.map((value, valueIndex) => (
                   <td key={valueIndex}>
                     {/* if item.id === undefined then the record does not exist so Input should be editable */}
-                     {isRowEditable(item.label) && valueIndex < 12 && (
-                      Array.isArray(item.id)
-                        ? item.id[valueIndex] !== null && item.id[valueIndex] !== undefined // Check each id in the array
-                        : item.id !== null && item.id !== undefined // For single id
-                     ) ? (
+                    {isRowEditable(item.label) &&
+                    valueIndex < 12 &&
+                    (Array.isArray(item.id)
+                      ? item.id[valueIndex] !== null && item.id[valueIndex] !== undefined // Check each id in the array
+                      : item.id !== null && item.id !== undefined) ? ( // For single id
                       <input
                         className='input_tag'
                         type='text'
@@ -1529,4 +1519,4 @@ const EditTablePlanning = () => {
   )
 }
 
-export default EditTablePlanning
+export default EditTableResults
