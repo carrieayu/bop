@@ -36,10 +36,7 @@ const EmployeeExpensesResultsRegistration = () => {
   const [activeTabOther, setActiveTabOther] = useState('employeeExpensesResults')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const currentYear = new Date().getFullYear()
-  const startYear = currentYear - 1
-  const endYear = currentYear + 2
-  const years = Array.from({ length: endYear - startYear + 1 }, (val, i) => startYear + i)
+  const years = [2024, 2025]
   const token = localStorage.getItem('accessToken')
   const [employees, setEmployees] = useState([])
   const [projectsSalesResults, setProjectSalesResult] = useState([])
@@ -154,6 +151,7 @@ const EmployeeExpensesResultsRegistration = () => {
         getProjectSalesResults(token)
           .then((data) => {
             setProjectSalesResult(data)
+            
           })
           .catch((error) => {
             if (error.response && error.response.status === 401) {
@@ -611,11 +609,13 @@ const EmployeeExpensesResultsRegistration = () => {
                                   onChange={(e) => handleInputChange(containerIndex, rowIndex, e)}
                                 >
                                   <option value=''></option>
-                                  {[
-                                    ...new Set(projectsSalesResults?.map((project) => project.projects.project_name)),
-                                  ].map((projectName) => (
-                                    <option key={projectName} value={projectName}>
-                                      {projectName}
+                                  {projectsSalesResults?.map((project) => (
+                                    <option
+                                      key={project.projects.project_id}
+                                      value={project.projects.project_name}
+                                      title={project.projects.business_name}
+                                    >
+                                      {project.projects.project_name}
                                     </option>
                                   ))}
                                 </select>
@@ -634,9 +634,7 @@ const EmployeeExpensesResultsRegistration = () => {
                                   <option value=''></option>
                                   {filteredDates?.[containerIndex]?.form?.map((form, formIndex) =>
                                     formIndex === rowIndex && form?.date
-                                      ? [
-                                          ...new Set(form.date.map((year) => year.year)),
-                                        ].map((year, idx) => {
+                                      ? [...new Set(form.date.map((year) => year.year))].map((year, idx) => {
                                           const uniqueKey = `${containerIndex}-${formIndex}-${idx}-${year}`
                                           return (
                                             <option key={uniqueKey} value={year}>
