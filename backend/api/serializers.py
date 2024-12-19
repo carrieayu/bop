@@ -139,6 +139,7 @@ class MasterCompaniesUpdateSerializer(serializers.ModelSerializer):
 # Projects
 class ProjectsListSerializer(serializers.ModelSerializer):
     client_name = serializers.CharField(source="client.client_name", read_only=True)
+    business_name = serializers.CharField(source="business_division.business_division_name", read_only=True)
     class Meta:
         model = Projects
         # fields = '__all__'
@@ -160,10 +161,12 @@ class ProjectsListSerializer(serializers.ModelSerializer):
             "ordinary_profit_margin",
             "business_division", # business_division_id in TABLE
             "client", # client_id in TABLE
-            "client_name"
+            "client_name",
+            "business_name", # business_division_name in TABLE
             ]
 # For ProjectSalesResultsListSerializer Serializer
 class ProjectsSerializer(serializers.ModelSerializer):
+    business_name = serializers.CharField(source="business_division.business_division_name", read_only=True)
     class Meta:
         model = Projects
         fields = [
@@ -183,6 +186,7 @@ class ProjectsSerializer(serializers.ModelSerializer):
             "ordinary_profit",
             "ordinary_profit_margin",
             "business_division",
+            "business_name",
             "client", 
             ]
 class ProjectsCreateSerializer(serializers.ModelSerializer):
@@ -256,6 +260,12 @@ class ProjectSalesResultsUpdateSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
             ]
+# This serializer is used for ResultsSummaryList specifically for project_sales_results_data_serializer
+class ProjectSalesResultsSerializer(serializers.ModelSerializer):
+    project = ProjectsSerializer()
+    class Meta:
+        model = ProjectsSalesResults
+        fields = "__all__"
         
 class GetBusinessDivisionMasterSerializer(serializers.ModelSerializer):
     company = MasterCompaniesListSerializer(source='company_id', read_only=True)
@@ -304,7 +314,6 @@ class EmployeeExpensesResultsListSerializer(serializers.ModelSerializer):
         model = EmployeeExpensesResults
         fields = '__all__'
         
-
 class EmployeeExpensesResultsCreateSerializer(serializers.ModelSerializer):
     employee_expense_id = serializers.CharField(required=False)
     employee = EmployeesListSerializer()
@@ -526,6 +535,56 @@ class PlanningDisplayByProjectstSerializer(serializers.ModelSerializer):
     #         salaries.append(employee_salary)
 
     #     return salaries
+
+# Results Summary [Not the same as Results]
+# Created and used just for the ResultsSummaryDisplayByProjectstSerializer.
+class GetDisplayByProjectstSerializer(serializers.ModelSerializer):
+    client_name = serializers.CharField(source="client.client_name", read_only=True)
+    employee_salaries = serializers.SerializerMethodField()
+    class Meta:
+        model = Projects
+        fields = [
+            "project_name",
+            "project_type",
+            "year",
+            "month",
+            "sales_revenue",
+            "dispatch_labor_expense",
+            "employee_expense",
+            "indirect_employee_expense",
+            "expense",
+            "operating_income",
+            "non_operating_income",
+            "non_operating_expense",
+            "ordinary_profit",
+            "ordinary_profit_margin",
+            "business_division_id",
+            "client",
+            "client_name", # Client Name 
+            "employee_salaries",  # New field for salaries for employees in speicific projects
+        ]
+
+    def get_employee_salaries(self, obj):
+        return obj.get_employee_salaries()
+class ResultsSummaryDisplayByProjectstSerializer(serializers.ModelSerializer):
+    # employee_salaries = serializers.SerializerMethodField()
+    projects = GetDisplayByProjectstSerializer(source='project', read_only=True)
+    class Meta:
+        model = ProjectsSalesResults
+        fields = [
+            "sales_revenue",
+            "dispatch_labor_expense",
+            "employee_expense",
+            "indirect_employee_expense",
+            "expense",
+            "operating_income",
+            "non_operating_income",
+            "non_operating_expense",
+            "ordinary_profit",
+            "ordinary_profit_margin",
+            "projects", # FK [Data for Projects table]
+        ]
+
 
 # --------------------------------------------------------------
 # NOT BEING USED IN APPLICATION CURRENTLY

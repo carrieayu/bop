@@ -18,6 +18,7 @@ from .serializers import (
     ExpensesResultsCreateSerializer,
     ExpensesResultsListSerializer,
     ExpensesResultsUpdateSerializer,
+    ProjectSalesResultsSerializer,
     # CustomCostOfSalesSerializer, # NOT BEING USED
     # Projects
     ProjectsListSerializer,
@@ -53,6 +54,7 @@ from .serializers import (
     MasterCompaniesUpdateSerializer,
     # Planning
     PlanningDisplayByProjectstSerializer,
+    ResultsSummaryDisplayByProjectstSerializer,
     UpdatePlanningSerializer,
     # Users
     UserSerializer,
@@ -1321,7 +1323,6 @@ class EmployeeExpensesCreate(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         employee_expenses_data = request.data
-
         if not isinstance(employee_expenses_data, list):
             return Response({'detail': 'Invalid data format. Expecting a list.'}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -1341,13 +1342,11 @@ class EmployeeExpensesCreate(generics.CreateAPIView):
             for entry in project_entries:
                 if not entry.get('projects') or not entry.get('clients'):
                     return Response({'detail': 'Project ID and Client ID cannot be empty.'}, status=status.HTTP_400_BAD_REQUEST)
-
                 try:
                     # Check if employee, client, and project exist
                     client = MasterClient.objects.get(pk=entry['clients'])
-                    project = Projects.objects.get(pk=entry['projects'])
+                    project = Projects.objects.get(project_id=entry['project_id'])
                     employee = Employees.objects.get(pk=employee_id)
-
                     # Check for existing expense
                     existing_expense = EmployeeExpenses.objects.filter(
                         employee=employee,
@@ -1385,7 +1384,7 @@ class EmployeeExpensesCreate(generics.CreateAPIView):
 
             for entry in project_entries:
                 client = MasterClient.objects.get(pk=entry['clients'])
-                project = Projects.objects.get(pk=entry['projects'])
+                project = Projects.objects.get(project_id=entry['project_id'])
                 employee = Employees.objects.get(pk=employee_id)
                 auth_user = AuthUser.objects.get(pk=entry.get('auth_id')) if entry.get('auth_id') else None
 
@@ -1500,7 +1499,6 @@ class EmployeeExpensesResultsCreate(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         employee_expenses_results_data = request.data
-
         if not isinstance(employee_expenses_results_data, list):
             return Response({'detail': 'Invalid data format. Expecting a list.'}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -1520,13 +1518,11 @@ class EmployeeExpensesResultsCreate(generics.CreateAPIView):
             for entry in project_entries:
                 if not entry.get('projects') or not entry.get('clients'): # The ID being used in entry.get('projects') is project_id
                     return Response({'detail': 'Project ID and Client ID cannot be empty.'}, status=status.HTTP_400_BAD_REQUEST)
-
                 try:
                     # Check if employee, client, and project exist
                     client = MasterClient.objects.get(pk=entry['clients'])
-                    project = ProjectsSalesResults.objects.get(project_id=entry['projects'])
+                    project = ProjectsSalesResults.objects.get(project_id=entry['project_id'])
                     employee = Employees.objects.get(pk=employee_id)
-
                     # Check for existing expense
                     existing_expense = EmployeeExpensesResults.objects.filter(
                         employee=employee,
@@ -1534,7 +1530,6 @@ class EmployeeExpensesResultsCreate(generics.CreateAPIView):
                         year=entry.get('year', '2001'),
                         month=entry.get('month', '01')
                     ).first()
-
                     if existing_expense:
                         employee_name = f"{employee.first_name} {employee.last_name}"
                         year = entry.get('year', '2001')
@@ -1564,7 +1559,7 @@ class EmployeeExpensesResultsCreate(generics.CreateAPIView):
 
             for entry in project_entries:
                 client = MasterClient.objects.get(pk=entry['clients'])
-                project = ProjectsSalesResults.objects.get(project_id=entry['projects'])
+                project = ProjectsSalesResults.objects.get(project_id=entry['project_id'])
                 employee = Employees.objects.get(pk=employee_id)
                 auth_user = AuthUser.objects.get(pk=entry.get('auth_id')) if entry.get('auth_id') else None
 
@@ -1620,21 +1615,40 @@ class EmployeeExpensesResultsDelete(generics.DestroyAPIView):
         
 class EmployeeExpensesResultsFilter(generics.ListCreateAPIView):
     queryset = ProjectsSalesResults.objects.all()
-    serializer_class = EmployeeExpensesResultsListSerializer
+    serializer_class = ProjectSalesResultsListSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         month = self.request.GET.get('month')
         year = self.request.GET.get('year')
-        # project_name = self.request.GET.get('project_name')
-        
+        project_name = self.request.GET.get('project_name')
+
+        queryset = self.queryset
+        if month:
+            queryset = queryset.filter(project__month=month)
+        if year:
+            queryset = queryset.filter(project__year=year)
+        if project_name:
+            queryset = queryset.filter(project__project_name=project_name)
+        return queryset
+    
+class EmployeeExpensesFilter(generics.ListCreateAPIView):
+    queryset = Projects.objects.all()
+    serializer_class = ProjectsListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        month = self.request.GET.get('month')
+        year = self.request.GET.get('year')
+        project_name = self.request.GET.get('project_name')
+
         queryset = self.queryset
         if month:
             queryset = queryset.filter(month=month)
         if year:
             queryset = queryset.filter(year=year)
-        # if project_name:
-        #     queryset = queryset.filter(project=project_name)
+        if project_name:
+            queryset = queryset.filter(project_name=project_name)
         return queryset
 
 # Cost Of Sales
@@ -1998,6 +2012,8 @@ class PlanningUpdate(generics.UpdateAPIView):
                                 expenses_instance.consumable_expense = values[idx] if idx < len(values) else 0
                             if label == "rentExpenses":
                                 expenses_instance.rent_expense = values[idx] if idx < len(values) else 0
+                            if label == "taxesAndPublicCharges":
+                                expenses_instance.tax_and_public_charge = values[idx] if idx < len(values) else 0
                             if label == "depreciationExpenses":
                                 expenses_instance.depreciation_expense = values[idx] if idx < len(values) else 0
                             if label == "communicationExpenses":
@@ -2025,6 +2041,118 @@ class PlanningDisplayByProjects(generics.ListAPIView):
 
     def get_queryset(self):
         return Projects.objects.all()
+    
+
+# Results Summary 
+class ResultsSummaryList(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        expenses_results = ExpensesResults.objects.all()
+        cost_of_sales_results = CostOfSalesResults.objects.all()
+        employee_expenses_results = EmployeeExpensesResults.objects.all()
+        project_sales_results = ProjectsSalesResults.objects.all()
+        employee = Employees.objects.all() 
+        employee_results_serializer = EmployeesListSerializer(employee, many=True)
+        expenses_serializer = ExpensesResultsListSerializer(expenses_results, many=True)
+        cost_of_sales_results_serializer = CostOfSalesResultsListSerializer(cost_of_sales_results, many=True)
+        employee_expenses_results_serializer = EmployeeExpensesResultsListSerializer(employee_expenses_results, many=True)
+        project_sales_results_data_serializer = ProjectSalesResultsSerializer(project_sales_results, many=True)
+    
+        combined_data = {
+            'expenses_results': expenses_serializer.data,
+            'employees_results': employee_results_serializer.data,
+            'cost_of_sales_results': cost_of_sales_results_serializer.data,
+            'employee_expenses_results': employee_expenses_results_serializer.data,
+            'project_sales_results': project_sales_results_data_serializer.data
+        }
+
+        return Response(combined_data)
+    
+class ResultsSummaryDisplayByProjects(generics.ListAPIView):
+    queryset = ProjectsSalesResults.objects.all()
+    serializer_class = ResultsSummaryDisplayByProjectstSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return ProjectsSalesResults.objects.all()
+    
+
+class ResultsSummaryUpdate(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        costofsales_data = request.data
+        expenses_data = request.data
+        for item in costofsales_data:
+            ids = item.get('id', [])
+            values = item.get('values', [])
+            label = item.get('label', '')
+            
+            if not ids or not values:
+                continue
+
+            for idx, record_id in enumerate(ids):
+                
+                if record_id:
+                    try:
+                        cost_of_sales_instance = CostOfSalesResults.objects.get(cost_of_sale_result_id=record_id)
+                        if label == "purchases":
+                            cost_of_sales_instance.purchase = values[idx] if idx < len(values) else 0
+                        if label == "outsourcingExpenses":
+                            cost_of_sales_instance.outsourcing_expense = values[idx] if idx < len(values) else 0
+                        if label == "productPurchases":
+                            cost_of_sales_instance.product_purchase = values[idx] if idx < len(values) else 0
+                        if label == "dispatchLaborExpenses":
+                            cost_of_sales_instance.dispatch_labor_expense = values[idx] if idx < len(values) else 0
+                        if label == "communicationExpenses":
+                            cost_of_sales_instance.communication_expense = values[idx] if idx < len(values) else 0
+                        if label == "workInProgressExpenses":
+                            cost_of_sales_instance.work_in_progress_expense = values[idx] if idx < len(values) else 0
+                        if label == "amortizationExpenses":
+                            cost_of_sales_instance.amortization_expense = values[idx] if idx < len(values) else 0
+                        cost_of_sales_instance.save()
+                    except CostOfSalesResults.DoesNotExist:
+                        continue
+            
+            for item in expenses_data:
+                ids = item.get('id', [])
+                values = item.get('values', [])
+                label = item.get('label', '')
+
+                if not ids or not values:
+                    continue
+
+                for idx, record_id in enumerate(ids):
+                    if record_id:
+                        try:
+                            expenses_instance = ExpensesResults.objects.get(expense_result_id=record_id)
+                            if label == "travelExpenses":
+                                expenses_instance.travel_expense = values[idx] if idx < len(values) else 0
+                            if label == "consumableExpenses":
+                                expenses_instance.consumable_expense = values[idx] if idx < len(values) else 0
+                            if label == "rentExpenses":
+                                expenses_instance.rent_expense = values[idx] if idx < len(values) else 0
+                            if label == "taxesAndPublicCharges":
+                                expenses_instance.tax_and_public_charge = values[idx] if idx < len(values) else 0
+                            if label == "depreciationExpenses":
+                                expenses_instance.depreciation_expense = values[idx] if idx < len(values) else 0
+                            if label == "communicationExpenses":
+                                expenses_instance.communication_expense = values[idx] if idx < len(values) else 0
+                            if label == "utilitiesExpenses": 
+                                expenses_instance.utilities_expense = values[idx] if idx < len(values) else 0
+                            if label == "transactionFees":
+                                expenses_instance.transaction_fee = values[idx] if idx < len(values) else 0
+                            if label == "advertisingExpenses":
+                                expenses_instance.advertising_expense = values[idx] if idx < len(values) else 0
+                            if label == "entertainmentExpenses":
+                                expenses_instance.entertainment_expense = values[idx] if idx < len(values) else 0
+                            if label == "professionalServicesFees":
+                                expenses_instance.professional_service_fee = values[idx] if idx < len(values) else 0
+                            expenses_instance.save()
+                        except ExpensesResults.DoesNotExist:
+                            continue
+
+        return Response({"message": "Data updated successfully"}, status=status.HTTP_200_OK)
 
 # -------------------------------------------------------------------------------------------------
 # -- NOT IN USE --

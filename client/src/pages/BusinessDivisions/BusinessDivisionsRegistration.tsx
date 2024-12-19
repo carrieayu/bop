@@ -334,7 +334,7 @@ const BusinessDivisionsRegistration = () => {
                             // onChange={handleCompanyChange}
                             onChange={(e) => handleChange(index, e)}
                           >
-                            <option value=''>Select a Company</option>
+                            <option value=''>{translate('selectCompany', language)}</option>
                             {companyList.map((company) => (
                               <option key={company.company_id} value={company.company_id}>
                                 {company.company_name}

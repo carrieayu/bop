@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import CostOfSalesResultsCreate, CostOfSalesResultsDelete, CostOfSalesResultsFilter, CostOfSalesResultsList, CostOfSalesResultsUpdate, EmployeeExpensesResultsCreate, EmployeeExpensesResultsDelete, EmployeeExpensesResultsFilter, EmployeeExpensesResultsList, ExpensesCreate, ExpensesDelete, ExpensesList,ExpensesUpdate, PasswordForgotView, ProjectSalesResultsFilter
+from api.views import CostOfSalesResultsCreate, CostOfSalesResultsDelete, CostOfSalesResultsFilter, CostOfSalesResultsList, CostOfSalesResultsUpdate, EmployeeExpensesFilter, EmployeeExpensesResultsCreate, EmployeeExpensesResultsDelete, EmployeeExpensesResultsFilter, EmployeeExpensesResultsList, ExpensesCreate, ExpensesDelete, ExpensesList,ExpensesUpdate, PasswordForgotView, ProjectSalesResultsFilter, ResultsSummaryDisplayByProjects, ResultsSummaryList, ResultsSummaryUpdate
 from api.views import ProjectSalesResultsCreate, ProjectSalesResultsDelete, ProjectSalesResultsList, ProjectSalesResultsUpdate
 from api.views import ExpensesResultsCreate, ExpensesResultsDelete, ExpensesResultsList, ExpensesResultsUpdate
 from api.views import PlanningList, PlanningUpdate, PlanningDisplayByProjects
@@ -62,6 +62,7 @@ urlpatterns = [
     path('api/employee-expenses/create/', EmployeeExpensesCreate.as_view(), name = 'employee-expenses-create'),
     # Employee Expenses Currently Has No Update Function as the Edit Screen is only used for deleting.
     path('api/employee-expenses/<str:pk>/delete/', EmployeeExpensesDelete.as_view(), name='employee-expenses-delete'),
+    path('api/employee-expenses/filter/', EmployeeExpensesFilter.as_view(), name="employee-expenses-results-filter-list"),
 
     # EmployeeExpenses Results
     path('api/employee-expenses-results/list/', EmployeeExpensesResultsList.as_view(), name = 'employee-expenses-results-list'),
@@ -107,6 +108,12 @@ urlpatterns = [
     path("api/users/create/", UsersCreate.as_view(), name="users-create"), #CREATE
     path('api/users/update/', UsersUpdate.as_view(), name= "users-update"), #UPDATE
     path('api/users/<int:pk>/delete/', UsersDelete.as_view(), name="users-delete"), #DESTROY
+
+    # Results Summary (Note: This is different from Results | Data used are [ Expenses Res, Employee Exp. Res, Projects Sales Res. , CostOfSales Res. ])
+    path('api/results-summary/list/', ResultsSummaryList.as_view(), name="results-summary-list"),
+    # Results Summary: Display By Projects
+    path('api/results-summary/display-by-projects/', ResultsSummaryDisplayByProjects.as_view(), name="results-display-by-projects"),
+    path('api/results-summary/update/', ResultsSummaryUpdate.as_view(), name="results-summary-update"),
 
     # NOT BEING USED CURRENTLY
 
