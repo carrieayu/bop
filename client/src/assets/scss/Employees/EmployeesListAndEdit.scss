@@ -1,5 +1,5 @@
 .EmployeesListAndEdit_wrapper{
-    width: 100%;
+    // width: 100%;
     max-width: 2560px;
     .EmployeesListAndEdit_cont_wrapper{
         display: flex;
@@ -8,7 +8,7 @@
             flex-direction: column;
         }
         .EmployeesListAndEdit_maincontent_wrapper{
-            width: 84%; 
+            // width: 84%; Temporarily commented out for testing purposes
             padding: 10px 30px 10px 30px;
             @media only screen and (min-width: 1024px) and (max-width: 1280px) {
                 /* For small laptops */
