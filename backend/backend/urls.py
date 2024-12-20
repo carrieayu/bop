@@ -7,7 +7,7 @@ from api.views import PlanningList, PlanningUpdate, PlanningDisplayByProjects
 from api.views import MasterCompaniesList, MasterCompaniesCreate, MasterCompaniesUpdate, MasterCompaniesDelete
 from api.views import ProjectsList,  ProjectsCreate, ProjectsUpdate, ProjectsDelete 
 from api.views import EmployeeExpensesList, EmployeeExpensesCreate, EmployeeExpensesDelete #No Update Function on this Page.
-from api.views import CostOfSalesList, CostOfSalesCreate, CostOfSalesUpdate, CostOfSalesDelete
+from api.views import CostOfSalesList, CostOfSalesCreate, CostOfSalesUpdate, CostOfSalesDelete, CostOfSalesOverwrite
 from api.views import EmployeesList, EmployeesCreate, EmployeesUpdate, EmployeesDelete, EmployeesEdit #Edit Mode Has Api call to filter EmployeeBusinessDivision
 from api.views import UsersList, UsersCreate, UsersUpdate, UsersDelete
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -87,6 +87,7 @@ urlpatterns = [
     path('api/cost-of-sales/create/', CostOfSalesCreate.as_view(), name='cost-of-sales-create'),
     path('api/cost-of-sales/update/', CostOfSalesUpdate.as_view(), name='cost-of-sales-update'),
     path('api/cost-of-sales/<str:pk>/delete/', CostOfSalesDelete.as_view(), name='cost-of-sales-delete'),
+    path('api/cost-of-sales/overwrite/', CostOfSalesOverwrite.as_view(), name='cost-of-sales-overwrite'),
 
     # Cost of Sales Results
     path('api/cost-of-sales-results/list/', CostOfSalesResultsList.as_view(), name='cost-of-sales-results-list'),

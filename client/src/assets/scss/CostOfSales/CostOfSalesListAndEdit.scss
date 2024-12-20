@@ -126,21 +126,31 @@
                                         }
                                     }
                                     
-                                    .costOfSalesList_table_body_content_horizontal{
+                                    .costOfSalesList_table_body_content_horizontal {
                                         border: none;
-                                        &:nth-child(odd){
-                                            background-color: #f9f9f9;
+                                        
+                                        /* Alternating row colors */
+                                        &:nth-child(odd) {
+                                            background-color: #f9f9f9; /* Light gray for odd rows */
                                         }
-                                        &:nth-child(even){
-                                            background-color: #e0e0e0;
+                                        
+                                        &:nth-child(even) {
+                                            background-color: #e0e0e0; /* Darker gray for even rows */
                                         }
+
+                                        /* Focus on the first column in each row */
+                                        td:first-child {
+                                            background-color: inherit; /* Inherit the row's background color */
+                                            filter: brightness(90%); /* Darken the first column slightly */
+                                        }
+                                    
                                         .costOfSalesList_table_body_content_vertical{
                                             border: 1px solid  #d0cdcd;
                                             text-align: center;
                                             input{
                                                 width: 70px;
                                             }
-                                        }
+                                        }                                      
                                     }
                                 }
                             }

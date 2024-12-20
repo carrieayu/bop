@@ -15,6 +15,8 @@ import {
   translateAndFormatErrors,
   getFieldChecks,
   checkForDuplicates,
+  handleBackendError,
+  handleSuccessMessages,
 } from '../../utils/validationUtil'
 import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
@@ -35,8 +37,9 @@ const CostOfSalesRegistration = () => {
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const years = [2024, 2025]
   const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [formData, setFormData] = useState([
-    {
+  const [messageOrigin, setMessageOrigin] = useState('')
+
+  const emptyFormData = {
       year: '',
       month: '',
       purchase: '',
@@ -46,10 +49,8 @@ const CostOfSalesRegistration = () => {
       communication_expense: '',
       work_in_progress_expense: '',
       amortization_expense: '',
-      // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
-    },
-  ])
-
+    }
+  const [formData, setFormData] = useState([emptyFormData])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
@@ -62,18 +63,7 @@ const CostOfSalesRegistration = () => {
   const handleAdd = () => {
     if (formData.length < maximumEntries) {
       const newFormData = [...formData]
-      newFormData.push({
-        year: '',
-        month: '',
-        purchase: '',
-        outsourcing_expense: '',
-        product_purchase: '',
-        dispatch_labor_expense: '',
-        communication_expense: '',
-        work_in_progress_expense: '',
-        amortization_expense: '',
-        // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
-      })
+      newFormData.push(emptyFormData)
       setFormData(newFormData)
     } else {
       console.log('You can only add up to 10 forms.')
@@ -117,19 +107,7 @@ const CostOfSalesRegistration = () => {
   }
 
   const handleRemoveInputData = () => {
-    setFormData([
-      {
-        year: '',
-        month: '',
-        purchase: '',
-        outsourcing_expense: '',
-        product_purchase: '',
-        dispatch_labor_expense: '',
-        communication_expense: '',
-        work_in_progress_expense: '',
-        amortization_expense: '',
-      },
-    ])
+    setFormData([emptyFormData])
     closeModal()
   }
 
@@ -142,41 +120,22 @@ const CostOfSalesRegistration = () => {
   }
 
 
-const handleChange = (index, event) => {
-  const { name, value } = event.target
-
-  // Remove commas to get the raw number
-  // EG. 999,999 → 999999 in the DB
-  const rawValue = removeCommas(value)
-
-  // Update the state with the raw value
-  const newFormData = [...formData]
-  newFormData[index] = {
-    ...newFormData[index],
-    [name]: rawValue, // Store unformatted value in the state
+  const handleChange = (index, event) => {
+    const { name, value } = event.target
+    // Remove commas to get the raw number
+    // EG. 999,999 → 999999 in the DB
+    const rawValue = removeCommas(value)
+    // Update the state with the raw value
+    const newFormData = [...formData]
+    newFormData[index] = {
+      ...newFormData[index],
+      [name]: rawValue, // Store unformatted value in the state
+    }
+    setFormData(newFormData)
   }
-  setFormData(newFormData)
-}
-
   
-  useEffect(() => {
-  console.log('after formData', formData)
-
-  },[formData])
   const handleSubmit = async (e) => {
     e.preventDefault()
-
-    const costOfSalesData = formData.map((cos) => ({
-      year: cos.year,
-      month: cos.month,
-      purchase: cos.purchase,
-      outsourcing_expense: cos.outsourcing_expense,
-      product_purchase: cos.product_purchase,
-      dispatch_labor_expense: cos.dispatch_labor_expense,
-      communication_expense: cos.communication_expense,
-      work_in_progress_expense: cos.work_in_progress_expense,
-      amortization_expense: cos.amortization_expense,
-    }))
 
     // Client Side Validation
 
@@ -210,6 +169,7 @@ const handleChange = (index, event) => {
       const translatedErrors = translateAndFormatErrors(errors, language, errorType)
       setModalMessage(translatedErrors)
       setCrudValidationErrors(translatedErrors)
+      console.log(translatedErrors)
       setIsModalOpen(true)
       return
     } else {
@@ -222,99 +182,59 @@ const handleChange = (index, event) => {
       return
     }
 
-    createCostOfSale(formData, token)
-      .then((data) => {
-        setModalMessage(translate('successfullySaved', language))
-        setIsModalOpen(true)
-        setFormData([
-          {
-            year: '',
-            month: '',
-            purchase: '',
-            outsourcing_expense: '',
-            product_purchase: '',
-            dispatch_labor_expense: '',
-            communication_expense: '',
-            work_in_progress_expense: '',
-            amortization_expense: '',
-          },
-        ])
-      })
-      .catch((error) => {
-        if (error.response && error.response.status === 409) {
-          const existingEntries = error.response.data.existingEntries
-
-          // Map to create a string of existing entries
-          const existingYearsMonths = existingEntries.map((entry) => `'${entry.year}, ${entry.month}'`).join(', ')
-
-          // Filter out new entries that don't match the existing entries
-          const newEntries = costOfSalesData.filter((item) => {
-            return !existingEntries.some((existing) => existing.year === item.year && existing.month === item.month)
-          })
-
-          // Create a string for only the new entries being submitted
-          const newYearsMonths = newEntries.map((entry) => `'${entry.year}, ${entry.month}'`).join(', ')
-
-          // Construct the alert message
-          let message = translate('alertMessageAbove', language).replace('${existingEntries}', existingYearsMonths)
-
-          // Only append the new entries part if there are new entries
-          if (newYearsMonths.length > 0) {
-            message += translate('alertMessageNewEntries', language).replace('${newEntries}', newYearsMonths)
-          }
-
-          setModalMessage(message)
-          setIsOverwriteModalOpen(true)
-          return
-        } else {
-          console.error('There was an error with expenses registration!', error)
-        }
-      })
+    try {
+      setCrudValidationErrors([]); // Clear validation errors first
+      await createCostOfSale(formData, token);
+      handleSuccessMessages('costOfSale', 'create', setCrudValidationErrors, setIsModalOpen, null, setMessageOrigin, language);
+      setFormData([emptyFormData]);
+    } catch (error) {
+      handleBackendError(
+        error,
+        language,
+        setModalMessage,
+        setIsModalOpen,
+        setCrudValidationErrors,
+        setIsOverwriteModalOpen,
+        setMessageOrigin, // message origin (defines color of error) Orange = Backend, Red = Client Side
+        { formData: formData },
+      );
+    }
   }
 
   // Handle overwrite confirmation
   const handleOverwriteConfirmation = async () => {
-    setIsOverwriteModalOpen(false) // Close the overwrite modal
-    setIsOverwriteConfirmed(true) // Set overwrite confirmed state
-
+    setIsOverwriteModalOpen(false)
+    setIsOverwriteConfirmed(true)
     // Call the submission method again after confirmation
-    await handleSubmitConfirmed()
+    await handleOverwrite()
   }
 
-  const handleSubmitConfirmed = async () => {
+  const handleOverwrite= async () => {
     const token = localStorage.getItem('accessToken')
-
+    console.log('this far')
     try {
-      overwriteCostOfSale(formData, token)
-        .then(() => {
-          setModalMessage(translate('overWrite', language))
-          setIsModalOpen(true)
-          // Reset form data after successful overwrite
-          setFormData([
-            {
-              year: '',
-              month: '',
-              purchase: '',
-              outsourcing_expense: '',
-              product_purchase: '',
-              dispatch_labor_expense: '',
-              communication_expense: '',
-              work_in_progress_expense: '',
-              amortization_expense: '',
-            },
-          ])
-        })
-        .catch((error) => {
-          console.error('Error overwriting data:', error)
-        })
-    } catch (overwriteError) {
-      console.error('Error overwriting data:', overwriteError)
+      await overwriteCostOfSale(formData, token)
+      handleSuccessMessages('costOfSale', 'overwrite', setCrudValidationErrors, setIsModalOpen, null, setMessageOrigin, language)
+      setFormData([emptyFormData])
+    } catch(error){
+        handleBackendError(
+          error,
+          language,
+          setModalMessage,
+          setIsModalOpen,
+          setCrudValidationErrors,
+          setIsOverwriteModalOpen,
+          setMessageOrigin,
+          { formData: formData },
+      )
     } finally {
       setIsOverwriteConfirmed(false) // Reset overwrite confirmation
     }
   }
 
-  useEffect(() => {}, [formData])
+  useEffect(() => {
+    console.log('messageOrigin:', messageOrigin)
+  }, [messageOrigin])
 
   useEffect(() => {
     const path = location.pathname
@@ -516,7 +436,6 @@ const handleChange = (index, event) => {
                         </div>
                       </div>
                     </div>
-                    {/* <input type='hidden' name='registered_user_id' value={form.registered_user_id} /> */}
                   </div>
                 ))}
               </div>
@@ -564,6 +483,7 @@ const handleChange = (index, event) => {
         onClose={() => setIsModalOpen(false)}
         isCRUDOpen={isModalOpen}
         validationMessages={crudValidationErrors}
+        messageOrigin={messageOrigin}
       />
       <AlertModal
         isOpen={isOverwriteModalOpen}

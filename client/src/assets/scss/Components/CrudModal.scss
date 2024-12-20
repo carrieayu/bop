@@ -39,13 +39,21 @@
         margin-bottom: 2%;
         border-radius: 5px;
         background-color: #fe9c9c;
-    
+  
         .crud-individual-message-container {
           width: 90%;      
           .Crud_alert-modal-message {
             text-align: left;
           }
         }
+      }
+      .crud_alert_backend_validation_error_list_container{
+        display: flex;
+        justify-content: center;
+        padding:1%;
+        margin-bottom: 2%;
+        border-radius: 5px;
+        background-color: #fedd9c;
       }
     }
     

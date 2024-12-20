@@ -113,8 +113,15 @@ DATABASES = {
         "PASSWORD": os.getenv("DB_PWD"),
         "HOST": os.getenv("DB_HOST"),
         "PORT": os.getenv("DB_PORT"),
+        'ATOMIC_REQUESTS': True,  # Enable atomic requests
     }
 }
+
+# Constants
+MAX_INTEGER_VALUE = 9999999999
+MIN_INTEGER_VALUE = 0
+MIN_MINUS_INTEGER_VALUE = -9999999999
+
 
 
 # Password validation

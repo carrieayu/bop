@@ -1,5 +1,8 @@
 import { translate } from '../utils/translationUtil'
 import { inputFieldConfigurations } from '../inputFieldConfigurations'
+import { stat } from 'fs'
+import { group } from 'console'
+import { func } from 'prop-types'
 
 
 // # CLIENT SIDE //
@@ -189,7 +192,6 @@ export const validateEmployeeExpensesRecords = (records, fieldChecks, recordType
 
   return validationErrors; // Return collected validation errors
 };
-
 
 // # EMPLOYEES EXEPENSES VALIDATION (UNIQUE): REGISTRATION & LISTANDEDIT
 // # Employees Expenses
@@ -540,4 +542,210 @@ export const translateAndFormatErrors = (errors, language, errorType) => {
       return `${translatedRecordType} [${finalRecordIds}]: ${translatedFieldNamesFormatted}${translatedMessage}`;
     });
   }
+};
+
+// BACKEND SERVER-SIDE
+
+  // # Prepares Text Format for Translation (To be read by JSON Translation Files)
+  const textFormatter = (text) => {
+    // PROCESS EXAMPLE
+    // example_field_name → exampleFieldName
+    // Example field name → exampleFieldName
+
+    if (typeof text !== 'string') {
+      console.warn('Expected a string, but got:', text)
+      return '' // Return empty string or handle accordingly
+    }
+
+   const normalizedField = text
+     .replace(/[_ ",]+/g, ' ') // Combine underscore, space, quotes, and commas into one replacement
+     .replace(/\.$/, '') // Remove full stop at the end of the string
+     .trim()
+
+
+    // Split the normalized field into words
+    const splitWords = normalizedField.split(' ')
+
+    // Convert to camelCase
+    const camelCaseWord = splitWords
+      .map(
+        (word, index) =>
+          index === 0
+            ? word.charAt(0).toLowerCase() + word.slice(1) // Lowercase the first word
+            : word.charAt(0).toUpperCase() + word.slice(1), // Capitalize subsequent words
+      )
+      .join('')
+
+    return camelCaseWord
+  }
+
+// Helper function to replace placeholders in the message
+const replacePlaceholders = (message, field, fieldValue) => {
+  return message.replace(`\${${field}}`, fieldValue);
+}
+
+// Helper function to process error messages for standard errors
+const processErrorMessages = (errors, language) => {
+  return errors.flatMap((errorGroup) =>
+    errorGroup.map((err) => {
+      const translatedField = translate(textFormatter(err.field) || 'Unknown field', language);
+      const translatedMessage = translate(textFormatter(err.message), language);
+      const finalizedMessage = replacePlaceholders(translatedMessage, err.field, err.fieldValue);
+      return `${err.group_index + 1}: ${translatedField}: ${finalizedMessage}`;
+    })
+  );
+}
+
+// Helper function to process duplicate error messages
+const processDuplicateErrorMessages = (error, language) => {
+  const translatedField = translate(textFormatter(error.field) || 'Unknown field', language);
+  let finalizedErrorMessage = translate(error?.message || 'Unknown error', language);
+
+  if (error?.existing_entries?.length > 0) {
+    const entry = error.existing_entries[0];
+    Object.keys(entry).forEach((key) => {
+      finalizedErrorMessage = finalizedErrorMessage.replace(`\${${key}}`, entry[key]);
+    });
+  }
+
+  return `${translatedField}: ${finalizedErrorMessage}`;
+}
+
+// Helper function to handle the 409 error status
+const handleConflictError = (data, formData, language, setModalMessage, setIsOverwriteModalOpen) => {
+  const existingEntries = data.existing_entries.map((entry) =>
+    `'${Object.values(entry).join(', ')}'`
+  ).join(', ');
+
+  const fieldKeys = Object.keys(data.existing_entries[0]);
+  const newEntries = formData.formData.filter((item) =>
+    !data.existing_entries.some((existing) =>
+      Object.keys(existing).every((key) => existing[key] === item[key])
+    )
+  );
+
+  const newEntriesString = newEntries
+    .map((entry) => fieldKeys.map((key) => `'${entry[key]}'`).join(', '))
+    .join('; ');
+
+  let message = translate('alertMessageAbove', language).replace('${existingEntries}', existingEntries);
+  if (newEntriesString) {
+    message += translate('alertMessageNewEntries', language).replace('${newEntries}', newEntriesString);
+  }
+
+  setModalMessage(message);
+  setIsOverwriteModalOpen(true);
+}
+
+// Main function to handle backend errors
+export const handleBackendError = (
+  error,
+  language,
+  setModalMessage,
+  setIsModalOpen,
+  setCrudValidationErrors,
+  setIsOverwriteModalOpen,
+  setMessageOrigin,
+  formData
+) => {
+  if (!error.response) {
+    setModalMessage('An unknown error occurred');
+    setIsModalOpen(true);
+    return;
+  }
+
+  const { status, data } = error.response;
+  let mappedErrors = [];
+
+  if (status !== 409) {
+    mappedErrors = data.errors.map((item) =>
+      Object.keys(item.errors).map((field) => ({
+        field,
+        message: item.errors[field][0],
+        group_index: item.group_index,
+      }))
+    );
+  }
+
+  switch (status) {
+    case 409:
+      handleConflictError(data, formData, language, setModalMessage, setIsOverwriteModalOpen);
+      return;
+
+    case 400:
+      const errors400 = processErrorMessages(mappedErrors, language);
+      setModalMessage(errors400 || 'An error occurred.');
+      setCrudValidationErrors(errors400);
+      break;
+
+    case 401:
+      console.error('Unauthorized error:', data);
+      window.location.href = '/login';
+      break;
+
+    case 500:
+      console.log('Server error:', data);
+      break;
+
+    default:
+      setModalMessage('There was an error processing your request.');
+      setCrudValidationErrors([error]);
+      break;
+  }
+
+  setIsModalOpen(true);
+  setMessageOrigin('backend');
+};
+
+
+const errorMessages = {
+  200: '200Success',
+  201: '201Success',
+  400: '400Error',
+  401: '401Error',
+  403: '403Error',
+  404: '404Error',
+  500: '500Error',
+  502: '502Error',
+  503: '503Error',
+  }
+
+// Helper to handle common logic for success/error messages
+const getMessage = (type, functionType, recordType, language, errorResponse = null) => {
+  const translatedRecordType = translate(recordType, language)
+  if (type === 'success') {
+    return translate(`${functionType}Successful`, language, { translatedRecordType }) || translate('Success', language)
+  }
+
+  // Get the error message translation based on status code
+  const errorKey = errorMessages[errorResponse?.status] || 'Error'
+  const errorMessage = translate(errorKey, language) // Translate the error message key
+
+  const errorArea =
+    translate(`${functionType}Failed`, language, { translatedRecordType }) || translate('Error', language)
+
+  return [errorArea, errorMessage]
+};
+
+// Success message handler
+export const handleSuccessMessages = (recordType, functionType, setCrudValidationErrors, setIsCRUDOpen, setIsEditing,setMessageOrigin, language) => {
+
+  const message = getMessage('success', functionType, recordType, language);
+
+  setCrudValidationErrors([message]);
+  setIsCRUDOpen(true);
+  setMessageOrigin('backend');  
+  // Only Used On Edit Screen
+  if (setIsEditing != null) {
+    setIsEditing(false);
+  }
+};
+
+// Error message handler
+export const handleGeneralErrorMessages = (error, language, setModalMessage, setIsCRUDOpen, setCrudValidationErrors?, recordType?, functionType?) => {
+  const errorArea = getMessage('error', functionType, recordType, language, error.response);
+  setCrudValidationErrors(errorArea);
+  setIsCRUDOpen(true);
+
+  if (error.response?.status === 401) window.location.href = '/login';  // Special case for 401
 };

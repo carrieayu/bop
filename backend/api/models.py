@@ -1,9 +1,18 @@
 from urllib import response
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User as AuthUser, AbstractBaseUser
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 from django.db.models import Max
 
+# GLOBAL VARIABLES 
+min_int = settings.MIN_INTEGER_VALUE
+max_int = settings.MAX_INTEGER_VALUE
+
+# Shared constants for the file
+YEAR_CHOICES = [(str(year), str(year)) for year in range(2000, 2101)]
+MONTH_CHOICES = [(i, i) for i in range(1, 13)]
 
 class MasterClient(models.Model):
     client_id = models.CharField(max_length=10, primary_key=True, editable=False)
@@ -185,42 +194,42 @@ class Projects(models.Model):
 # Performance Data -> Results
 class Results(models.Model):
     result_id = models.CharField(max_length=10, primary_key=True, editable=False)
-    sales_revenue = models.IntegerField(max_length=12)
-    sales = models.IntegerField(max_length=12)
-    cost_of_sale = models.IntegerField(max_length=12)
-    purchase = models.IntegerField(max_length=12)
-    outsourcing_expense = models.IntegerField(max_length=12)
-    product_purchase = models.IntegerField(max_length=12)
-    dispatch_labor_expense = models.IntegerField(max_length=12)
-    communication_expense = models.IntegerField(max_length=12)
-    work_in_progress_expense = models.IntegerField(max_length=12)
-    amortization_expense = models.IntegerField(max_length=12)
-    gross_profit = models.IntegerField(max_length=12)
-    employee_expense = models.IntegerField(max_length=12) # DELETE ?? MAY NOT BE NEEDED.
-    executive_renumeration = models.IntegerField(max_length=12)
-    salary = models.IntegerField(max_length=12)
-    fuel_allowance = models.IntegerField(max_length=12)
+    sales_revenue = models.IntegerField()
+    sales = models.IntegerField()
+    cost_of_sale = models.IntegerField()
+    purchase = models.IntegerField()
+    outsourcing_expense = models.IntegerField()
+    product_purchase = models.IntegerField()
+    dispatch_labor_expense = models.IntegerField()
+    communication_expense = models.IntegerField()
+    work_in_progress_expense = models.IntegerField()
+    amortization_expense = models.IntegerField()
+    gross_profit = models.IntegerField()
+    employee_expense = models.IntegerField() # DELETE ?? MAY NOT BE NEEDED.
+    executive_renumeration = models.IntegerField()
+    salary = models.IntegerField()
+    fuel_allowance = models.IntegerField()
     statutory_welfare_expense =  models.IntegerField(default=0)
     welfare_expense = models.IntegerField(default=0)
-    expense = models.IntegerField(max_length=12)
-    consumable_expense = models.IntegerField(max_length=12)
-    rent_expense = models.IntegerField(max_length=12)
+    expense = models.IntegerField()
+    consumable_expense = models.IntegerField()
+    rent_expense = models.IntegerField()
     insurance_premium =  models.IntegerField(default=0)
-    tax_and_public_charge = models.IntegerField(max_length=12)
-    depreciation_expense = models.IntegerField(max_length=12)
-    travel_expense = models.IntegerField(max_length=12)
-    communication_expense = models.IntegerField(max_length=12)
-    utilities_expense = models.IntegerField(max_length=12)
-    transaction_fee = models.IntegerField(max_length=12)
-    advertising_expense = models.IntegerField(max_length=12)
-    entertainment_expense = models.IntegerField(max_length=12)
-    professional_services_fee = models.IntegerField(max_length=12)
-    selling_and_general_admin_expense = models.IntegerField(max_length=12)
-    operating_income = models.IntegerField(max_length=12)
-    non_operating_income = models.IntegerField(max_length=12)
-    non_operating_expense = models.IntegerField(max_length=12)
-    ordinary_income = models.IntegerField(max_length=12)
-    cumulative_ordinary_income = models.IntegerField(max_length=12)
+    tax_and_public_charge = models.IntegerField()
+    depreciation_expense = models.IntegerField()
+    travel_expense = models.IntegerField()
+    communication_expense = models.IntegerField()
+    utilities_expense = models.IntegerField()
+    transaction_fee = models.IntegerField()
+    advertising_expense = models.IntegerField()
+    entertainment_expense = models.IntegerField()
+    professional_services_fee = models.IntegerField()
+    selling_and_general_admin_expense = models.IntegerField()
+    operating_income = models.IntegerField()
+    non_operating_income = models.IntegerField()
+    non_operating_expense = models.IntegerField()
+    ordinary_income = models.IntegerField()
+    cumulative_ordinary_income = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :
@@ -282,15 +291,15 @@ class EmployeeExpenses(models.Model):
     
 class CostOfSales(models.Model):
     cost_of_sale_id = models.CharField(max_length=10, primary_key=True)
-    year = models.CharField(max_length=4, default="2001")
-    month = models.CharField(max_length=2, default="01")
-    purchase = models.IntegerField(max_length=12)
-    outsourcing_expense = models.IntegerField(max_length=12)
-    product_purchase = models.IntegerField(max_length=12)
-    dispatch_labor_expense = models.IntegerField(max_length=12)
-    communication_expense = models.IntegerField(max_length=12)
-    work_in_progress_expense = models.IntegerField(max_length=12)
-    amortization_expense = models.IntegerField(max_length=12)
+    year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.
+    month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
+    purchase = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    outsourcing_expense = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    product_purchase = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    dispatch_labor_expense = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    communication_expense = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    work_in_progress_expense = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    amortization_expense = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :
@@ -316,13 +325,13 @@ class CostOfSalesResults(models.Model):
     cost_of_sale =  models.ForeignKey(CostOfSales, on_delete=models.CASCADE, null=True)
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
-    purchase = models.IntegerField(max_length=12)
-    outsourcing_expense = models.IntegerField(max_length=12)
-    product_purchase = models.IntegerField(max_length=12)
-    dispatch_labor_expense = models.IntegerField(max_length=12)
-    communication_expense = models.IntegerField(max_length=12)
-    work_in_progress_expense = models.IntegerField(max_length=12)
-    amortization_expense = models.IntegerField(max_length=12)
+    purchase = models.IntegerField()
+    outsourcing_expense = models.IntegerField()
+    product_purchase = models.IntegerField()
+    dispatch_labor_expense = models.IntegerField()
+    communication_expense = models.IntegerField()
+    work_in_progress_expense = models.IntegerField()
+    amortization_expense = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :
@@ -347,17 +356,17 @@ class Expenses(models.Model):
     expense_id = models.CharField(max_length=10, primary_key=True)
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
-    consumable_expense = models.IntegerField(max_length=12)
-    rent_expense = models.IntegerField(max_length=12)
-    tax_and_public_charge = models.IntegerField(max_length=12)
-    depreciation_expense = models.IntegerField(max_length=12)
-    travel_expense = models.IntegerField(max_length=12)
-    communication_expense = models.IntegerField(max_length=12)
-    utilities_expense = models.IntegerField(max_length=12)
-    transaction_fee = models.IntegerField(max_length=12)
-    advertising_expense = models.IntegerField(max_length=12)
-    entertainment_expense = models.IntegerField(max_length=12)
-    professional_service_fee = models.IntegerField(max_length=12)
+    consumable_expense = models.IntegerField()
+    rent_expense = models.IntegerField()
+    tax_and_public_charge = models.IntegerField()
+    depreciation_expense = models.IntegerField()
+    travel_expense = models.IntegerField()
+    communication_expense = models.IntegerField()
+    utilities_expense = models.IntegerField()
+    transaction_fee = models.IntegerField()
+    advertising_expense = models.IntegerField()
+    entertainment_expense = models.IntegerField()
+    professional_service_fee = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :
@@ -384,17 +393,17 @@ class ExpensesResults(models.Model):
     expense = models.ForeignKey(Expenses, on_delete=models.CASCADE, null=True)
     year = models.CharField(max_length=4, default="2001")
     month = models.CharField(max_length=2, default="01")
-    consumable_expense = models.IntegerField(max_length=12)
-    rent_expense = models.IntegerField(max_length=12)
-    tax_and_public_charge = models.IntegerField(max_length=12)
-    depreciation_expense = models.IntegerField(max_length=12)
-    travel_expense = models.IntegerField(max_length=12)
-    communication_expense = models.IntegerField(max_length=12)
-    utilities_expense = models.IntegerField(max_length=12)
-    transaction_fee = models.IntegerField(max_length=12)
-    advertising_expense = models.IntegerField(max_length=12)
-    entertainment_expense = models.IntegerField(max_length=12)
-    professional_service_fee = models.IntegerField(max_length=12)
+    consumable_expense = models.IntegerField()
+    rent_expense = models.IntegerField()
+    tax_and_public_charge = models.IntegerField()
+    depreciation_expense = models.IntegerField()
+    travel_expense = models.IntegerField()
+    communication_expense = models.IntegerField()
+    utilities_expense = models.IntegerField()
+    transaction_fee = models.IntegerField()
+    advertising_expense = models.IntegerField()
+    entertainment_expense = models.IntegerField()
+    professional_service_fee = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :
@@ -420,25 +429,15 @@ class ProjectsSalesResults(models.Model):
         max_length=10, primary_key=True , editable=False
     )
     project = models.ForeignKey(Projects, on_delete=models.CASCADE, null=True)
-    sales_revenue = models.IntegerField(max_length=12)
-    dispatch_labor_expense = models.IntegerField(
-        max_length=12
-    )
-    employee_expense = models.IntegerField(
-        max_length=12
-    )
-    indirect_employee_expense = models.IntegerField(
-        max_length=12
-    )
-    expense = models.IntegerField(max_length=12)
-    operating_income = models.IntegerField(max_length=12)
-    non_operating_income = models.IntegerField(
-        max_length=12
-    )
-    non_operating_expense = models.IntegerField(
-        max_length=12
-    )
-    ordinary_profit = models.IntegerField(max_length=12)
+    sales_revenue = models.IntegerField()
+    dispatch_labor_expense = models.IntegerField()
+    employee_expense = models.IntegerField()
+    indirect_employee_expense = models.IntegerField()
+    expense = models.IntegerField()
+    operating_income = models.IntegerField()
+    non_operating_income = models.IntegerField()
+    non_operating_expense = models.IntegerField()
+    ordinary_profit = models.IntegerField()
     ordinary_profit_margin = models.IntegerField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

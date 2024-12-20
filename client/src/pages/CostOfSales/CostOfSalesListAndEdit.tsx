@@ -11,19 +11,22 @@ import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
 import AlertModal from "../../components/AlertModal/AlertModal";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import CrudModal from "../../components/CrudModal/CrudModal";
-import '../../assets/scss/Components/SliderToggle.scss'
+import '../../assets/scss/Components/SliderToggle.scss';
 import { deleteCostOfSale } from "../../api/CostOfSalesEndpoint/DeleteCostOfSale";
 import { getCostOfSale } from "../../api/CostOfSalesEndpoint/GetCostOfSale";
 import { updateCostOfSale } from "../../api/CostOfSalesEndpoint/UpdateCostOfSale";
+import { createCostOfSale } from "../../api/CostOfSalesEndpoint/CreateCostOfSale";
 import {
   validateRecords,
   translateAndFormatErrors,
   getFieldChecks,
   checkForDuplicates,
+  handleBackendError,
+  handleGeneralErrorMessages,
+  handleSuccessMessages,
 } from '../../utils/validationUtil'
 import {handleDisableKeysOnNumberInputs, removeCommas} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-import { createCostOfSale } from "../../api/CostOfSalesEndpoint/CreateCostOfSale";
 
 
 const CostOfSalesList: React.FC = () => {
@@ -51,7 +54,8 @@ const CostOfSalesList: React.FC = () => {
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [deleteComplete, setDeleteComplete] = useState(false)
-
+  const [messageOrigin, setMessageOrigin] = useState('')
+  
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
@@ -122,45 +126,45 @@ const CostOfSalesList: React.FC = () => {
 
     // Step 1: Preparartion for validation
     // Set record type for validation
-    const recordType = 'costOfSales'
+    // const recordType = 'costOfSales'
 
-    // Retrieve field validation checks based on the record type
-    const fieldChecks = getFieldChecks(recordType)
-    // Validate records for the specified project fields
-    const validateCostOfSales = (records) => validateRecords(records, fieldChecks, 'costOfSales')
+    // // Retrieve field validation checks based on the record type
+    // const fieldChecks = getFieldChecks(recordType)
+    // // Validate records for the specified project fields
+    // const validateCostOfSales = (records) => validateRecords(records, fieldChecks, 'costOfSales')
 
-    // Expenses has default 12 (for each month)
-    // Even if not all records have actually been created in DB: We need to filter out non-registered records.
-    const costOfSalesListExistingRecords = costOfSales.filter((cos) => cos.cost_of_sale_id !== null)
+    // // Expenses has default 12 (for each month)
+    // // Even if not all records have actually been created in DB: We need to filter out non-registered records.
+    // const costOfSalesListExistingRecords = costOfSales.filter((cos) => cos.cost_of_sale_id !== null)
 
-    // Step 2: Validate client-side input
-    const validationErrors = validateCostOfSales(costOfSalesListExistingRecords)
+    // // Step 2: Validate client-side input
+    // const validationErrors = validateCostOfSales(costOfSalesListExistingRecords)
 
-    // Step 3: Check for duplicate entries on specific fields
-    const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client']
-    const duplicateErrors = checkForDuplicates(costOfSalesListExistingRecords, uniqueFields, 'costOfSales', language)
+    // // Step 3: Check for duplicate entries on specific fields
+    // const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client']
+    // const duplicateErrors = checkForDuplicates(costOfSalesListExistingRecords, uniqueFields, 'costOfSales', language)
 
-    // Step 4: Map error types to data and translation keys for handling in the modal
-    const errorMapping = [
-      { errors: validationErrors, errorType: 'normalValidation' },
-      { errors: duplicateErrors, errorType: 'duplicateValidation' },
-    ]
+    // // Step 4: Map error types to data and translation keys for handling in the modal
+    // const errorMapping = [
+    //   { errors: validationErrors, errorType: 'normalValidation' },
+    //   { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    // ]
 
-    // Step 5: Display the first set of errors found, if any
-    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+    // // Step 5: Display the first set of errors found, if any
+    // const firstError = errorMapping.find(({ errors }) => errors.length > 0)
 
-    if (firstError) {
-      const { errors, errorType } = firstError
-      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
-      setCrudMessage(translatedErrors)
-      setCrudValidationErrors(translatedErrors)
-      // setModalIsOpen(true)
-      setIsCRUDOpen(true)
+    // if (firstError) {
+    //   const { errors, errorType } = firstError
+    //   const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+    //   setCrudMessage(translatedErrors)
+    //   setCrudValidationErrors(translatedErrors)
+    //   // setModalIsOpen(true)
+    //   setIsCRUDOpen(true)
 
-      return
-    } else {
-      setCrudValidationErrors([])
-    }
+    //   return
+    // } else {
+    setCrudValidationErrors([])
+    // }
     // Continue with submission if no errors
 
     const getModifiedFields = (original, updated) => {
@@ -170,12 +174,12 @@ const CostOfSalesList: React.FC = () => {
         const originalCoS = original.find((cos) => cos.cost_of_sale_id === updatedCos.cost_of_sale_id)
 
         if (originalCoS) {
-          const changes = { cost_of_sale_id: updatedCos.cost_of_sale_id }
+          const changes = { cost_of_sale_id: updatedCos.cost_of_sale_id, year: updatedCos.year, month: updatedCos.month }
 
           let hasChanges = false
           for (const key in updatedCos) {
             if (key === 'cost_of_sale_id ' || key === 'month') continue
-            if (updatedCos[key] !== originalCoS[key] && updatedCos[key] !== '') {
+            if (updatedCos[key] !== originalCoS[key] || (updatedCos[key] === '' && updatedCos[key] !== '')) {
               changes[key] = updatedCos[key]
               hasChanges = true
             }
@@ -198,60 +202,46 @@ const CostOfSalesList: React.FC = () => {
       window.location.href = '/login'
       return
     }
-    updateCostOfSale(modifiedFields, token)
-      .then(() => {
-        setOriginalCostOfSales(costOfSales)
-        setCrudMessage(translate('successfullyUpdated', language))
-        setIsCRUDOpen(true)
-        setIsEditing(false)
-      })
-      .catch((error) => {
-        if (error.response) {
-          console.error('Error response:', error.response.data)
-          if (error.response.status === 401) {
-            window.location.href = '/login'
-          } else {
-            console.error('There was an error updating the cost of sales data!', error.response.data)
-          }
-        } else {
-          console.error('Error', error.message)
-        }
-      })
+    try {
+      await updateCostOfSale(modifiedFields, token)
+      setOriginalCostOfSales(costOfSales)
+      handleSuccessMessages('costOfSale', 'update', setCrudValidationErrors, setIsCRUDOpen, setIsEditing, setMessageOrigin, language)
+    } catch(error) {
+        handleBackendError(
+          error,
+          language,
+          setCrudMessage,
+          setIsCRUDOpen,
+          setCrudValidationErrors,
+          null, // overwrite modal ( for registration screens. Not necessary on list screens.)
+          setMessageOrigin, // message origin (defines color of error)
+          { formData : modifiedFields } // submitted form data 
+        )
+      }
   }
 
-    const handleUpdateConfirm = async () => {
-      await handleSubmit(); // Call the submit function for update
-      setIsUpdateConfirmationOpen(false);
+  const handleUpdateConfirm = async () => {
+    await handleSubmit(); // Call the submit function for update
+    setIsUpdateConfirmationOpen(false);
   };
-  
-    useEffect(() => {
-        const fetchCostOfSales = async () => {
-          const token = localStorage.getItem('accessToken');
-          if (!token) {
-            window.location.href = '/login';  // Redirect to login if no token found
-            return;
-          }
-    
-          try {
-              getCostOfSale(token)
-                .then((data) => {
-                  setCostOfSales(data)
-                  setOriginalCostOfSales(data)
-                })
-                .catch((error) => {
-                  console.error('Error creating data:', error)
-                })
-          } catch (error) {
-            if (error.response && error.response.status === 401) {
-              window.location.href = '/login';  // Redirect to login if unauthorized
-            } else {
-              console.error('There was an error fetching the cost of sales data!', error);
-            }
-          }
-        };
-    
-        fetchCostOfSales();
-      }, []);
+
+useEffect(() => {
+  const fetchCostOfSales = async () => {
+    const token = localStorage.getItem('accessToken')
+    if (!token) {
+      window.location.href = '/login' // Redirect to login if no token found
+      return
+    }
+    try {
+      const data = await getCostOfSale(token) // Await the promise
+      setCostOfSales(data)
+      setOriginalCostOfSales(data)
+    } catch (error) {
+      handleGeneralErrorMessages(error, language, setCrudMessage, setIsCRUDOpen, setCrudValidationErrors)
+    }
+  }
+  fetchCostOfSales()
+}, [])
 
   useEffect(() => {
     const startIndex = currentPage * rowsPerPage
@@ -314,21 +304,6 @@ const CostOfSalesList: React.FC = () => {
     setIsCRUDOpen(false)
   }
 
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
-  }
-
   // # Handle DELETE on Edit Screen
 
   // STEP # 1
@@ -336,24 +311,15 @@ const CostOfSalesList: React.FC = () => {
     // Sets the Validation Errors if any to empty as they are not necessary for delete.
     setCrudValidationErrors([])
 
-    deleteCostOfSale(deleteCostOfSalesId, token)
-      .then(() => {
-        updateCostOfSaleLists(deleteCostOfSalesId)
-        setCrudMessage(translate('successfullyDeleted', language))
-        setIsCRUDOpen(true)
-        setIsEditing(false)
-      })
-      .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login' // Redirect to login if unauthorized
-        } else {
-          console.error('Error deleting cost of sale:', error)
-        }
-      })
+    try {
+      await deleteCostOfSale(deleteCostOfSalesId, token)
+      updateCostOfSaleLists(deleteCostOfSalesId)
+      handleSuccessMessages('costOfSale', "delete", setCrudValidationErrors, setIsCRUDOpen, setIsEditing, setMessageOrigin, language)
+    } catch(error) {
+          handleGeneralErrorMessages(error,language, setCrudMessage,setIsCRUDOpen, setCrudValidationErrors,'costOfSale','delete') 
+    }
   }
-
   // Set the Lists to match the DB after deletion.
-
   // Step #2
   const updateCostOfSaleLists = (deleteId) => {
     // Deletes the record with deleteId from original list (This should always match DB)
@@ -365,8 +331,7 @@ const CostOfSalesList: React.FC = () => {
   useEffect(() => {
     if (deleteComplete) {
       // After Delete, Screen Automatically Reverts To List Screen NOT Edit Screen.
-      // original list has deleted the record with deleteID
-      // The updated list used on Edit screen goes back to matching orginal list.
+      // originalCostOfSales matches the current/most recent DB Table state.
       setCostOfSales(originalCostOfSales)
     }
   }, [deleteComplete])
@@ -423,6 +388,9 @@ const CostOfSalesList: React.FC = () => {
                         <thead>
                           <tr className='costOfSalesList_table_title '>
                             <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                              {translate('No.', language)}
+                            </th>
+                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
                               {translate('year', language)}
                             </th>
                             <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
@@ -464,6 +432,9 @@ const CostOfSalesList: React.FC = () => {
                               <React.Fragment key={index}>
                                 {costOfSale ? (
                                   <tr className='costOfSalesList_table_body_content_horizontal'>
+                                    <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                      {index + 1}.
+                                    </td>
                                     <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
                                       {costOfSale.year}
                                     </td>
@@ -569,6 +540,9 @@ const CostOfSalesList: React.FC = () => {
                       <thead>
                         <tr className='costOfSalesList_table_title '>
                           <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
+                            {translate('No.', language)}
+                          </th>
+                          <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
                             {translate('year', language)}
                           </th>
                           <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
@@ -606,6 +580,9 @@ const CostOfSalesList: React.FC = () => {
                           return (
                             <React.Fragment key={index}>
                               <tr className='costOfSalesList_table_body_content_horizontal'>
+                                <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
+                                  {index + 1}.
+                                </td>
                                 <td className='costOfSalesList_table_body_content_vertical has-text-centered'>
                                   {costOfSale.year || 0}
                                 </td>
@@ -684,6 +661,7 @@ const CostOfSalesList: React.FC = () => {
         onClose={closeModal}
         message={crudMessage}
         validationMessages={crudValidationErrors}
+        messageOrigin={messageOrigin}
       />
       <AlertModal
         isOpen={isUpdateConfirmationOpen}

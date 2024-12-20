@@ -63,7 +63,7 @@
   "firstName": "First Name",
   "lastName": "Last Name",
   "email": "Email",
-  "emailExistsMessage": "This email '${email}' already exist.",
+  "emailExistsMessage": "This email '${email}' already exists.",
   "companyName": "Company Name",
   "company": "Company",
   "companyID": "Company ID",
@@ -156,5 +156,7 @@
   "MailSentSuccess":"Mail Sent Successfully.",
   "projectResults": "Project Result",
   "yearMonth": "Year/Month",
-  "csvFileName": "CSV: Financial Summary"
+  "csvFileName": "CSV: Financial Summary",
+  "ensureThisFieldHasNoMoreThan100Characters.": "Ensure this field has no more than 100 characters.",
+  "No.": "No."
 }

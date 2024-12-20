@@ -125,7 +125,7 @@ export const inputFieldConfigurations = {
     { field: 'salary', fieldName: 'salary', isNumber: true },
     { field: 'executive_renumeration', fieldName: 'executiveRenumeration', isNumber: true },
     { field: 'business_division_name', fieldName: 'businessDivision', isNumber: false },
-    { field: 'bonus_and_fuel_allowance', fieldName: 'bonusAndFuelAllowance', isRequired: true, isNumber: false },
+    { field: 'bonus_and_fuel_allowance', fieldName: 'bonusAndFuelAllowance', isRequired: true, isNumber: true },
   ],
   login: [
     { field: 'username', fieldName: 'username', isRequired: true, isNumber: false },
