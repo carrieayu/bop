@@ -354,19 +354,19 @@ class CostOfSalesResults(models.Model):
     
 class Expenses(models.Model):
     expense_id = models.CharField(max_length=10, primary_key=True)
-    year = models.CharField(max_length=4, default="2001")
-    month = models.CharField(max_length=2, default="01")
-    consumable_expense = models.IntegerField()
-    rent_expense = models.IntegerField()
-    tax_and_public_charge = models.IntegerField()
-    depreciation_expense = models.IntegerField()
-    travel_expense = models.IntegerField()
-    communication_expense = models.IntegerField()
-    utilities_expense = models.IntegerField()
-    transaction_fee = models.IntegerField()
-    advertising_expense = models.IntegerField()
-    entertainment_expense = models.IntegerField()
-    professional_service_fee = models.IntegerField()
+    year = models.CharField(max_length=4, choices=YEAR_CHOICES) # Only (2000 - 2101) Range Accepted.
+    month = models.CharField(max_length=2, choices=MONTH_CHOICES) # Only (01 - 12) Range Accepted.
+    consumable_expense = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    rent_expense = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    tax_and_public_charge = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    depreciation_expense = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    travel_expense = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    communication_expense = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    utilities_expense = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    transaction_fee = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    advertising_expense = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    entertainment_expense = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    professional_service_fee = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :

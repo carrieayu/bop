@@ -17,11 +17,12 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-
+import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas, handlePLTabsClick } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { monthNames, months, years, maximumEntries, planningScreenTabs } from '../../constants'
 import { deleteExpense } from '../../api/ExpenseEndpoint/DeleteExpense'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
 import { updateExpense } from '../../api/ExpenseEndpoint/UpdateExpense'
+import { useTranslateSwitch } from '../../actions/hooks'
 
 
 const ExpensesList: React.FC = () => {
@@ -30,8 +31,7 @@ const ExpensesList: React.FC = () => {
   const location = useLocation()
   const [activeTabOther, setActiveTabOther] = useState('expenses')
   const { language, setLanguage } = useLanguage()
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  // added -ed
+  const { isTranslateSwitchActive, setIsTranslateSwitchActive } = useTranslateSwitch(language)
   const [isEditing, setIsEditing] = useState(false)
   const [initialLanguage, setInitialLanguage] = useState(language)
   const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -48,22 +48,7 @@ const ExpensesList: React.FC = () => {
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [deleteComplete, setDeleteComplete] = useState(false)
 
-  const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
-  }
-  const header: string[] = [
+  const headers: string[] = [
     'year',
     'month',
     'consumableExpenses',
@@ -84,25 +69,10 @@ const ExpensesList: React.FC = () => {
     navigate(tab)
   }
 
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'project':
-        navigate('/projects-list')
-        break
-      case 'employeeExpenses':
-        navigate('/employee-expenses-list')
-        break
-      case 'expenses':
-        navigate('/expenses-list')
-        break
-      case 'costOfSales':
-        navigate('/cost-of-sales-list')
-        break
-      default:
-        break
-    }
-  }
+  const onTabClick = (tab) => handlePLTabsClick(tab, navigate, setActiveTabOther)
+
+
+
 
   const handleClick = () => {
     setIsEditing((prevState) => {
@@ -394,8 +364,6 @@ const ExpensesList: React.FC = () => {
   useEffect(() => {
     if (deleteComplete) {
       // After Delete, Screen Automatically Reverts To List Screen NOT Edit Screen.
-      // original list has deleted the record with deleteID
-      // The updated list used on Edit screen goes back to matching orginal list.
       setExpensesList(originalExpenseList)
     }
   }, [deleteComplete])
@@ -434,14 +402,9 @@ const ExpensesList: React.FC = () => {
               <ListButtons
                 activeTabOther={activeTabOther}
                 message={translate(isEditing ? 'expensesEdit' : 'expensesList', language)}
-                handleTabsClick={handleTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
-                buttonConfig={[
-                  { labelKey: 'project', tabKey: 'project' },
-                  { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
-                  { labelKey: 'expenses', tabKey: 'expenses' },
-                  { labelKey: 'costOfSales', tabKey: 'costOfSales' },
-                ]}
+                buttonConfig={planningScreenTabs}
               />
               <div className={`expensesList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                 <div className={`expensesList_table_cont ${isEditing ? 'editScrollable' : ''}`}>
@@ -652,7 +615,7 @@ const ExpensesList: React.FC = () => {
                     <table className='table is-bordered is-hoverable'>
                       <thead>
                         <tr className='expensesList_table_title '>
-                          {header.map((head, index) => (
+                          {headers.map((head, index) => (
                             <th key={index} className='expensesList_table_title_content_vertical has-text-centered'>
                               {translate(head, language)}
                             </th>

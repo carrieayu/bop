@@ -25,8 +25,10 @@ import {
   handleGeneralErrorMessages,
   handleSuccessMessages,
 } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs, removeCommas} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { months, planningScreenTabs } from '../../constants'
+import {handleDisableKeysOnNumberInputs, handlePLTabsClick, removeCommas} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { useTranslateSwitch } from "../../actions/hooks";
 
 
 const CostOfSalesList: React.FC = () => {
@@ -38,7 +40,7 @@ const CostOfSalesList: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [paginatedData, setPaginatedData] = useState<any[]>([])
   const { language, setLanguage } = useLanguage()
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
+  const { isTranslateSwitchActive, setIsTranslateSwitchActive } = useTranslateSwitch(language)
   const select = [5, 10, 100]
   const [isEditing, setIsEditing] = useState(false)
   const [initialLanguage, setInitialLanguage] = useState(language)
@@ -56,30 +58,27 @@ const CostOfSalesList: React.FC = () => {
   const [deleteComplete, setDeleteComplete] = useState(false)
   const [messageOrigin, setMessageOrigin] = useState('')
   
+  const headers: string[] = [
+    'No.',
+    'year',
+    'month',
+    'purchases',
+    'outsourcingExpenses',
+    'productPurchases',
+    'dispatchLaborExpenses',
+    'communicationExpenses',
+    'workInProgressExpenses',
+    'amortizationExpenses',
+    '' // Empty: For Delete Header in Edit Mode
+  ]
+
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
   }
 
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'project':
-        navigate('/projects-list')
-        break
-      case 'employeeExpenses':
-        navigate('/employee-expenses-list')
-        break
-      case 'expenses':
-        navigate('/expenses-list')
-        break
-      case 'costOfSales':
-        navigate('/cost-of-sales-list')
-        break
-      default:
-        break
-    }
-  }
+
+  const onTabClick = (tab) => handlePLTabsClick(tab, navigate, setActiveTabOther)
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
@@ -126,45 +125,45 @@ const CostOfSalesList: React.FC = () => {
 
     // Step 1: Preparartion for validation
     // Set record type for validation
-    // const recordType = 'costOfSales'
+    const recordType = 'costOfSales'
 
-    // // Retrieve field validation checks based on the record type
-    // const fieldChecks = getFieldChecks(recordType)
-    // // Validate records for the specified project fields
-    // const validateCostOfSales = (records) => validateRecords(records, fieldChecks, 'costOfSales')
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateCostOfSales = (records) => validateRecords(records, fieldChecks, 'costOfSales')
 
-    // // Expenses has default 12 (for each month)
-    // // Even if not all records have actually been created in DB: We need to filter out non-registered records.
-    // const costOfSalesListExistingRecords = costOfSales.filter((cos) => cos.cost_of_sale_id !== null)
+    // Expenses has default 12 (for each month)
+    // Even if not all records have actually been created in DB: We need to filter out non-registered records.
+    const costOfSalesListExistingRecords = costOfSales.filter((cos) => cos.cost_of_sale_id !== null)
 
-    // // Step 2: Validate client-side input
-    // const validationErrors = validateCostOfSales(costOfSalesListExistingRecords)
+    // Step 2: Validate client-side input
+    const validationErrors = validateCostOfSales(costOfSalesListExistingRecords)
 
-    // // Step 3: Check for duplicate entries on specific fields
-    // const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client']
-    // const duplicateErrors = checkForDuplicates(costOfSalesListExistingRecords, uniqueFields, 'costOfSales', language)
+    // Step 3: Check for duplicate entries on specific fields
+    const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client']
+    const duplicateErrors = checkForDuplicates(costOfSalesListExistingRecords, uniqueFields, 'costOfSales', language)
 
-    // // Step 4: Map error types to data and translation keys for handling in the modal
-    // const errorMapping = [
-    //   { errors: validationErrors, errorType: 'normalValidation' },
-    //   { errors: duplicateErrors, errorType: 'duplicateValidation' },
-    // ]
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
 
-    // // Step 5: Display the first set of errors found, if any
-    // const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
 
-    // if (firstError) {
-    //   const { errors, errorType } = firstError
-    //   const translatedErrors = translateAndFormatErrors(errors, language, errorType)
-    //   setCrudMessage(translatedErrors)
-    //   setCrudValidationErrors(translatedErrors)
-    //   // setModalIsOpen(true)
-    //   setIsCRUDOpen(true)
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      setCrudMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
+      // setModalIsOpen(true)
+      setIsCRUDOpen(true)
 
-    //   return
-    // } else {
+      return
+    } else {
     setCrudValidationErrors([])
-    // }
+    }
     // Continue with submission if no errors
 
     const getModifiedFields = (original, updated) => {
@@ -255,9 +254,6 @@ useEffect(() => {
     }
   }, [location.pathname])
 
-  // Fixed months array
-  const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
-
   // Extract unique years from the costOfSales data
   const uniqueYears = Array.from(new Set(costOfSales.map((item) => item.year))).sort((a, b) => a - b)
 
@@ -331,7 +327,6 @@ useEffect(() => {
   useEffect(() => {
     if (deleteComplete) {
       // After Delete, Screen Automatically Reverts To List Screen NOT Edit Screen.
-      // originalCostOfSales matches the current/most recent DB Table state.
       setCostOfSales(originalCostOfSales)
     }
   }, [deleteComplete])
@@ -369,14 +364,9 @@ useEffect(() => {
               <ListButtons
                 activeTabOther={activeTabOther}
                 message={translate(isEditing ? 'costOfSalesEdit' : 'costOfSalesList', language)}
-                handleTabsClick={handleTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
-                buttonConfig={[
-                  { labelKey: 'project', tabKey: 'project' },
-                  { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
-                  { labelKey: 'expenses', tabKey: 'expenses' },
-                  { labelKey: 'costOfSales', tabKey: 'costOfSales' },
-                ]}
+                buttonConfig={planningScreenTabs}
               />
               <div className={`costOfSalesList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                 <div className='costOfSalesList_table_cont'>
@@ -386,38 +376,15 @@ useEffect(() => {
                     <div>
                       <table className='table is-bordered is-hoverable'>
                         <thead>
-                          <tr className='costOfSalesList_table_title '>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                              {translate('No.', language)}
-                            </th>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                              {translate('year', language)}
-                            </th>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                              {translate('month', language)}
-                            </th>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                              {translate('purchases', language)}
-                            </th>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                              {translate('outsourcingExpenses', language)}
-                            </th>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                              {translate('productPurchases', language)}
-                            </th>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                              {translate('dispatchLaborExpenses', language)}
-                            </th>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                              {translate('communicationExpenses', language)}
-                            </th>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                              {translate('workInProgressExpenses', language)}
-                            </th>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'>
-                              {translate('amortizationExpenses', language)}
-                            </th>
-                            <th className='costOfSalesList_table_title_content_vertical has-text-centered'></th>
+                          <tr className='expensesList_table_title '>
+                            {headers.map((head, index) => (
+                              <th
+                                key={index}
+                                className='costOfSalesList_table_title_content_vertical has-text-centered'
+                              >
+                                {translate(head, language)}
+                              </th>
+                            ))}
                           </tr>
                         </thead>
                         <tbody className='costOfSalesList_table_body'>

@@ -19,7 +19,7 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import EmployeeExpensesList from '../EmployeeExpenses/EmployeeExpensesList'
 
 
@@ -38,24 +38,23 @@ const EmployeesRegistration = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [selectedEmployeeType, setSelectedEmployeeType] = useState<any>([])
   const token = localStorage.getItem('accessToken')
-  const [employees, setEmployees] = useState([
-    {
-      last_name: '',
-      first_name: '',
-      type: '',
-      email: '',
-      salary: '',
-      executive_renumeration: '',
-      company_name: '',
-      business_division_name: '',
-      bonus_and_fuel_allowance: '',
-      statutory_welfare_expense: '',
-      welfare_expense: '',
-      insurance_premium: '',
-      auth_id: '',
-      created_at: '',
-    },
-  ])
+  const emptyFormData = {
+    last_name: '',
+    first_name: '',
+    type: '',
+    email: '',
+    salary: '',
+    executive_renumeration: '',
+    company_name: '',
+    business_division_name: '',
+    bonus_and_fuel_allowance: '',
+    statutory_welfare_expense: '',
+    welfare_expense: '',
+    insurance_premium: '',
+    auth_id: '',
+    created_at: '',
+  }
+  const [employees, setEmployees] = useState([emptyFormData])
   const [allBusinessDivisions, setAllBusinessDivisions] = useState([])
 
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -182,24 +181,7 @@ const EmployeesRegistration = () => {
   }
 
   const handleRemoveInputData = () => {
-    setEmployees([
-      {
-        last_name: '',
-        first_name: '',
-        type: '',
-        email: '',
-        salary: '',
-        executive_renumeration: '',
-        company_name: '',
-        business_division_name: '',
-        bonus_and_fuel_allowance: '',
-        statutory_welfare_expense: '',
-        welfare_expense: '',
-        insurance_premium: '',
-        auth_id: '',
-        created_at: '',
-      },
-    ])
+    setEmployees([emptyFormData])
     closeModal()
   }
 
@@ -302,24 +284,7 @@ const EmployeesRegistration = () => {
       .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
-        setEmployees([
-          {
-            last_name: '',
-            first_name: '',
-            type: '',
-            email: '',
-            salary: '',
-            executive_renumeration: '',
-            company_name: '',
-            business_division_name: '',
-            bonus_and_fuel_allowance: '',
-            statutory_welfare_expense: '',
-            welfare_expense: '',
-            insurance_premium: '',
-            auth_id: '',
-            created_at: '',
-          },
-        ])
+        setEmployees([emptyFormData])
       })
       .catch((error) => {
         if (error.response) {
@@ -348,22 +313,7 @@ const EmployeesRegistration = () => {
     if (employees.length < 10) {
       setEmployees([
         ...employees,
-        {
-          last_name: '',
-          first_name: '',
-          type: '',
-          email: '',
-          salary: '',
-          executive_renumeration: '',
-          company_name: '',
-          business_division_name: '',
-          bonus_and_fuel_allowance: '',
-          statutory_welfare_expense: '',
-          welfare_expense: '',
-          insurance_premium: '',
-          auth_id: '',
-          created_at: '',
-        },
+        emptyFormData,
       ])
     }
   }

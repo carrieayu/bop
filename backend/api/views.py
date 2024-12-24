@@ -952,86 +952,78 @@ class ExpensesList(generics.ListAPIView):
         return Expenses.objects.all()
 
 class ExpensesCreate(generics.CreateAPIView):
-    serializer_class =ExpensesCreateSerializer
     permission_classes = [IsAuthenticated]
+    serializer_class = ExpensesCreateSerializer
 
+    @transaction.atomic
     def post(self, request):
-        data = JSONParser().parse(request)
-        if not isinstance(data, list):
-            return JsonResponse({"detail": "Invalid input format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
+        data = request.data
+        check_data_is_list(data)
 
-        # Check for duplicates before saving
-        existing_entries = []
-        for item in data:
-            year = item.get('year')
-            month = item.get('month')
-            existing_entry = Expenses.objects.filter(year=year, month=month).first()  # Get the actual entry
-            if existing_entry:
-                existing_entries.append((year, month))  # Store year and month as a tuple
+        # Fields to check for duplicates
+        fields_to_check = ['year', 'month']
 
+        # Check for duplicates before processing
+        existing_entries = check_duplicates(self, data, Expenses, fields_to_check)
+        print(f'create:existing entries: {existing_entries}')
         if existing_entries:
-            # Return all existing year and month pairs sadfasdfasdf
-            existing_months_years = [{"year": entry[0], "month": entry[1]} for entry in existing_entries]
+            return generate_duplicate_response(fields_to_check, existing_entries)
 
+        # Initialize response containers
+        responses = []
+        error_responses = []
+
+        # Process each item
+        for group_index, item in enumerate(data):
+            result = process_item(item, group_index, fields_to_check, self.serializer_class)
+            if result["status"] == "success":
+                responses.append(result["response"])
+            else:
+                error_responses.append(result["response"])
+
+        # Return error response if any errors are found
+        if error_responses:
             return JsonResponse(
-                {
-                    "detail": "選択された月は既にデータが登録されています。",
-                    "existingEntries": existing_months_years  
-                },
-                status=status.HTTP_409_CONFLICT
+                {"errors": error_responses},
+                status=status.HTTP_400_BAD_REQUEST
             )
 
-        # If no duplicates, proceed with saving data
-        responses = []
-        for item in data:
-            try:
-                serializer =ExpensesCreateSerializer(data=item)
-                if serializer.is_valid():
-                    serializer.save()
-                    responses.append({"message": f"Created successfully for month {item['month']}, year {item['year']}."})
-                else:
-                    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-            except Exception as e:
-                return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
+        # Return success response if all are successful
         return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
 
+    @transaction.atomic
     def put(self, request):
-        data = JSONParser().parse(request)
-        if not isinstance(data, list):
-            return JsonResponse({"detail": "Invalid input format. Expected a list."}, status=status.HTTP_400_BAD_REQUEST)
-
+        data = request.data
+        check_data_is_list(data)
+        
+        # Initialize response containers
         responses = []
-        for item in data:
+        error_responses = []
+
+        for group_index, item in enumerate(data):
             try:
-                year = item.get('year')
-                month = item.get('month')
-
+                # Fields to check for duplicates
+                fields_to_check = ['year', 'month']     
                 # Check if an entry with the same year and month exists
-                existing_entry = Expenses.objects.filter(year=year, month=month).first()
-
-                if existing_entry:
-                    # Update existing entry (except year and month)
-                    serializer =ExpensesCreateSerializer(existing_entry, data=item, partial=True)
-                    if serializer.is_valid():
-                        serializer.save()
-                        responses.append({"message": f"Updated successfully for month {month}, year {year}."})
-                    else:
-                        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                existing_entry_id = get_existing_entry_id(self, item, Expenses, fields_to_check)
+                print(f'existing_entry_id{existing_entry_id}')
+                if existing_entry_id:
+                    serializer = ExpensesUpdateSerializer(existing_entry_id, data=item, partial=True)
+                    action_type = 'update'
                 else:
-                    # If no existing entry, create a new one
-                    serializer =ExpensesCreateSerializer(data=item)
-                    if serializer.is_valid():
-                        serializer.save()
-                        responses.append({"message": f"Created successfully for month {month}, year {year}."})
-                    else:
-                        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+                    serializer = ExpensesCreateSerializer(data=item)
+                    action_type = 'create'
+                # Handle serializer action (either update or create)
+                handle_serializer_action(serializer, item, group_index, action_type, fields_to_check, responses, error_responses)
+                            # return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             except Exception as e:
                 return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-        return JsonResponse(responses, safe=False, status=status.HTTP_200_OK)
+        if error_responses:
+            print(f'PUT: error responses:{error_responses}')
+            return JsonResponse({"errors": error_responses},status=status.HTTP_400_BAD_REQUEST)
+        if responses:
+            return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
 
 class ExpensesUpdate(generics.UpdateAPIView):
     serializer_class = ExpensesUpdateSerializer

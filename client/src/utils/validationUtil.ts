@@ -697,7 +697,6 @@ export const handleBackendError = (
   setMessageOrigin('backend');
 };
 
-
 const errorMessages = {
   200: '200Success',
   201: '201Success',

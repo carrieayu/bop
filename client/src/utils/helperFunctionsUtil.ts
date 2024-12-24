@@ -36,9 +36,7 @@ export const handleDisableKeysOnNumberInputs = (event) => {
   }
 }
 
-
 // # Add Commas to Financial Numbers for Display on List, Edit, Registration Screens
-
 export const formatNumberWithCommas = (value: number | string): string => {
   // console.log('formatNumberWithCommas',value, typeof value, )
   // Trim the string and remove non-numeric characters, 
@@ -72,3 +70,25 @@ export const formatDate = (dateString) => {
 
   return `${year}-${month}-${day}`
 }
+
+export const handlePLTabsClick = (tab, navigate, setActiveTabOther) => {
+  console.log('clicked')
+  setActiveTabOther(tab);
+  switch (tab) {
+    case 'project':
+      navigate('/projects-registration');
+      break;
+    case 'employeeExpenses':
+      navigate('/employee-expenses-registration');
+      break;
+    case 'expenses':
+      navigate('/expenses-registration');
+      break;
+    case 'costOfSales':
+      navigate('/cost-of-sales-registration');
+      break;
+    default:
+      break;
+  }
+};
+

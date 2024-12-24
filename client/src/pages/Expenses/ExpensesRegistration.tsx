@@ -12,12 +12,16 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { createExpense } from '../../api/ExpenseEndpoint/CreateExpense'
 import { overwriteExpense } from '../../api/ExpenseEndpoint/OverwriteExpense'
-import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs, removeCommas, formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates, handleBackendError, handleSuccessMessages } from '../../utils/validationUtil'
+import { monthNames, months, years, maximumEntries, planningScreenTabs } from "../../constants";
+import { useTranslateSwitch, addFormInput, removeFormInput } from '../../actions/hooks'
 
-const months = [
-  '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
-];
+import {
+  handleDisableKeysOnNumberInputs,
+  removeCommas,
+  formatNumberWithCommas,
+  handlePLTabsClick,
+} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const ExpensesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -26,30 +30,28 @@ const ExpensesRegistration = () => {
   const [activeTabOther, setActiveTabOther] = useState('expenses')
   const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
+  const { isTranslateSwitchActive, setIsTranslateSwitchActive } = useTranslateSwitch(language)
   const token = localStorage.getItem('accessToken')
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
-  const [formData, setFormData] = useState([
-    {
-      year: '',
-      month: '',
-      tax_and_public_charge: '',
-      communication_expense: '',
-      advertising_expense: '',
-      consumable_expense: '',
-      depreciation_expense: '',
-      utilities_expense: '',
-      entertainment_expense: '',
-      rent_expense: '',
-      travel_expense: '',
-      transaction_fee: '',
-      professional_service_fee: '',
-      registered_user_id: storedUserID,
-      updated_at: '',
-    },
-  ])
-
+  const [messageOrigin, setMessageOrigin] = useState('')
+  const emptyFormData = {
+    year: '',
+    month: '',
+    tax_and_public_charge: '',
+    communication_expense: '',
+    advertising_expense: '',
+    consumable_expense: '',
+    depreciation_expense: '',
+    utilities_expense: '',
+    entertainment_expense: '',
+    rent_expense: '',
+    travel_expense: '',
+    transaction_fee: '',
+    professional_service_fee: '',
+    updated_at: ''
+  }
+  const [formData, setFormData] = useState([emptyFormData])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
@@ -60,58 +62,32 @@ const ExpensesRegistration = () => {
     setLanguage(newLanguage)
   }
 
-const handleChange = (index, event) => {
-  const { name, value } = event.target
+  const [months, setMonths] = useState<number[]>([])
+  const handleChange = (index, event) => {
+    const { name, value } = event.target
 
-  // Remove commas to get the raw number
-  // EG. 999,999 → 999999 in the DB
-  const rawValue = removeCommas(value)
+    // Remove commas to get the raw number
+    // EG. 999,999 → 999999 in the DB
+    const rawValue = removeCommas(value)
 
-  // Update form data
-  const newFormData = [...formData]
-  newFormData[index] = {
-    ...newFormData[index],
-    [name]: rawValue,
+    // Update form data
+    const newFormData = [...formData]
+    newFormData[index] = {
+      ...newFormData[index],
+      [name]: rawValue,
+    }
+
+    setFormData(newFormData)
   }
-
-  setFormData(newFormData)
-}
-
-  const maximumEntries = 10;
 
   const handleAdd = () => {
-    if (formData.length < maximumEntries) {
-      const newFormData = [...formData]
-      newFormData.push({
-        year: '',
-        month: '',
-        tax_and_public_charge: '',
-        communication_expense: '',
-        advertising_expense: '',
-        consumable_expense: '',
-        depreciation_expense: '',
-        utilities_expense: '',
-        entertainment_expense: '',
-        rent_expense: '',
-        travel_expense: '',
-        transaction_fee: '',
-        professional_service_fee: '',
-        registered_user_id: storedUserID,
-        updated_at: '',
-      })
-      setFormData(newFormData)
-      console.log('add:' + formData)
-    } else {
-      console.log('You can only add up to 10 forms.')
-    }
+    addFormInput(formData, setFormData, maximumEntries, emptyFormData)
   }
 
-  const handleMinus = () => {
-    if (formData.length > 1) {
-      setFormData(formData.slice(0, -1))
-    }
+  const handleRemove = () => {
+    removeFormInput(formData, setFormData)
   }
-
+  
   useEffect(() => {
     const path = location.pathname
     if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
@@ -123,7 +99,7 @@ const handleChange = (index, event) => {
     setModalMessage('') // Reset Modal Message Content
 
     e.preventDefault()
-    
+
     // # Client Side Validation
 
     // Step 1: Preparartion for validation
@@ -182,131 +158,77 @@ const handleChange = (index, event) => {
       return
     }
 
-    createExpense(formData, token)
-      .then(() => {
-        console.log('in create function')
-        setModalMessage(translate('successfullySaved', language))
-        console.log('in create function:modal message', modalMessage)
-
-        setIsModalOpen(true)
-        setFormData([
-          {
-            year: '',
-            month: '',
-            tax_and_public_charge: '',
-            communication_expense: '',
-            advertising_expense: '',
-            consumable_expense: '',
-            depreciation_expense: '',
-            utilities_expense: '',
-            entertainment_expense: '',
-            rent_expense: '',
-            travel_expense: '',
-            transaction_fee: '',
-            professional_service_fee: '',
-            registered_user_id: localStorage.getItem('userID'),
-            updated_at: '',
-          },
-        ])
-      })
-      .catch((error) => {
-        if (error.response && error.response.status === 409) {
-          const existingEntries = error.response.data.existingEntries
-
-          // Map to create a string of existing entries
-          const existingYearsMonths = existingEntries.map((entry) => `'${entry.year}, ${entry.month}'`).join(', ')
-
-          // Filter out new entries that don't match the existing entries
-          const newEntries = expensesData.filter((item) => {
-            return !existingEntries.some((existing) => existing.year === item.year && existing.month === item.month)
-          })
-
-          // Create a string for only the new entries being submitted
-          const newYearsMonths = newEntries.map((entry) => `'${entry.year}, ${entry.month}'`).join(', ')
-
-          // Construct the alert message
-          let message = translate('alertMessageAbove', language).replace('${existingEntries}', existingYearsMonths)
-
-          // Only append the new entries part if there are new entries
-          if (newYearsMonths.length > 0) {
-            message += translate('alertMessageNewEntries', language).replace('${newEntries}', newYearsMonths)
-          }
-
-          setModalMessage(message)
-          setIsOverwriteModalOpen(true)
-          return // Exit the function to wait for user input
-        } else {
-          // Handle any other errors
-          console.error('There was an error with expenses registration!', error)
-        }
-      })
+    try {
+     await createExpense(formData, token)
+      handleSuccessMessages(
+        'expense',
+        'create',
+        setCrudValidationErrors,
+        setIsModalOpen,
+        null,
+        setMessageOrigin,
+        language,
+      )
+      setFormData([emptyFormData])
+    }
+      catch(error) {
+        handleBackendError(
+          error,
+          language,
+          setModalMessage,
+          setIsModalOpen,
+          setCrudValidationErrors,
+          setIsOverwriteModalOpen,
+          setMessageOrigin, // message origin (defines color of error) Orange = Backend, Red = Client Side
+          { formData: formData },
+        );
+      }
   }
 
   // Handle overwrite confirmation
   const handleOverwriteConfirmation = async () => {
     setIsOverwriteModalOpen(false) // Close the overwrite modal
     setIsOverwriteConfirmed(true) // Set overwrite confirmed state
-
-    // Call the submission method again after confirmation
-    await handleSubmitConfirmed()
+    // Call the overwrite after confirmation
+    await handleOverwrite()
   }
 
-  const handleSubmitConfirmed = async () => {
-    overwriteExpense(formData, token)
-      .then(() => {
-        setModalMessage(translate('overWrite', language))
-        setIsModalOpen(true)
-        setFormData([
-          {
-            year: '',
-            month: '',
-            tax_and_public_charge: '',
-            communication_expense: '',
-            advertising_expense: '',
-            consumable_expense: '',
-            depreciation_expense: '',
-            utilities_expense: '',
-            entertainment_expense: '',
-            rent_expense: '',
-            travel_expense: '',
-            transaction_fee: '',
-            professional_service_fee: '',
-            registered_user_id: localStorage.getItem('userID'),
-            updated_at: '',
-          },
-        ])
-      })
-      .catch((error) => {
-        console.error('Error overwriting data:', error)
-      })
-      .finally(() => {
-        setIsOverwriteConfirmed(false)
-      })
+  const handleOverwrite = async () => {
+    const token = localStorage.getItem('accessToken')
+    try {
+      await overwriteExpense(formData, token)
+      handleSuccessMessages(
+        'expense',
+        'overwrite',
+        setCrudValidationErrors,
+        setIsModalOpen,
+        null,
+        setMessageOrigin,
+        language,
+      )
+      setFormData([emptyFormData])
+    } catch (error) {
+      handleBackendError(
+        error,
+        language,
+        setModalMessage,
+        setIsModalOpen,
+        setCrudValidationErrors,
+        setIsOverwriteModalOpen,
+        setMessageOrigin,
+        { formData: formData },
+      )
+    } finally {
+      setIsOverwriteConfirmed(false) // Reset overwrite confirmation
+    }
   }
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
   }
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'project':
-        navigate('/projects-registration')
-        break
-      case 'employeeExpenses':
-        navigate('/employee-expenses-registration')
-        break
-      case 'expenses':
-        navigate('/expenses-registration')
-        break
-      case 'costOfSales':
-        navigate('/cost-of-sales-registration')
-        break
-      default:
-        break
-    }
-  }
+  
+  const onTabClick = (tab) => handlePLTabsClick(tab, navigate, setActiveTabOther)
 
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
@@ -314,25 +236,7 @@ const handleChange = (index, event) => {
   }
 
   const handleRemoveInputData = () => {
-    setFormData([
-      {
-        year: '',
-        month: '',
-        tax_and_public_charge: '',
-        communication_expense: '',
-        advertising_expense: '',
-        consumable_expense: '',
-        depreciation_expense: '',
-        utilities_expense: '',
-        entertainment_expense: '',
-        rent_expense: '',
-        travel_expense: '',
-        transaction_fee: '',
-        professional_service_fee: '',
-        registered_user_id: '',
-        updated_at: '',
-      },
-    ])
+    setFormData([emptyFormData])
     closeModal()
   }
 
@@ -343,30 +247,6 @@ const handleChange = (index, event) => {
   const closeModal = () => {
     setModalIsOpen(false)
   }
-
-  useEffect(() => {}, [formData])
-
-  useEffect(() => {
-    setIsTranslateSwitchActive(language === 'en')
-  }, [language])
-
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
-  }
-
-  // Creates an Array of years for dropdown input. 5 years before AND after current year.
-  const years = [2024, 2025]
 
   const handleListClick = () => {
     navigate('/expenses-list')
@@ -387,14 +267,9 @@ const handleChange = (index, event) => {
             <RegistrationButtons
               activeTabOther={activeTabOther}
               message={translate('expensesRegistration', language)}
-              handleTabsClick={handleTabsClick}
+              handleTabsClick={onTabClick}
               handleListClick={handleListClick}
-              buttonConfig={[
-                { labelKey: 'project', tabKey: 'project' },
-                { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
-                { labelKey: 'expenses', tabKey: 'expenses' },
-                { labelKey: 'costOfSales', tabKey: 'costOfSales' },
-              ]}
+              buttonConfig={planningScreenTabs}
             />
           </div>
           <div className='expensesRegistration_mid_body_cont'>
@@ -591,7 +466,6 @@ const handleChange = (index, event) => {
                         </div>
                       </div>
                     </div>
-                    <input type='hidden' name='registered_user_id' value={form.registered_user_id} />
                   </div>
                 ))}
               </div>
@@ -599,7 +473,7 @@ const handleChange = (index, event) => {
                 <div className='expensesRegistration_form-content'>
                   <div className='expensesRegistration_plus-btn'>
                     {formData.length >= 2 ? (
-                      <button className='expensesRegistration_dec' type='button' onClick={handleMinus}>
+                      <button className='expensesRegistration_dec' type='button' onClick={handleRemove}>
                         -
                       </button>
                     ) : (
@@ -639,6 +513,7 @@ const handleChange = (index, event) => {
         onClose={() => setIsModalOpen(false)}
         isCRUDOpen={isModalOpen}
         validationMessages={crudValidationErrors}
+        messageOrigin={messageOrigin}
       />
       <AlertModal
         isOpen={isOverwriteModalOpen}
