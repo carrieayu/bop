@@ -158,5 +158,6 @@
   "yearMonth": "Year/Month",
   "csvFileName": "CSV: Financial Summary",
   "ensureThisFieldHasNoMoreThan100Characters.": "Ensure this field has no more than 100 characters.",
-  "No.": "No."
+  "No.": "No.",
+  "costOfSaleId": "Cost of Sale ID"
 }

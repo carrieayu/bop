@@ -1,6 +1,49 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import CostOfSales, CostOfSalesResults, EmployeeExpensesResults, Expenses, ExpensesResults, MasterBusinessDivision, MasterClient, MasterCompany, Projects, ProjectsSalesResults, Results, Employees as Employees, EmployeeExpenses
+from .models import (
+    Employees as Employees, 
+    CostOfSales, 
+    CostOfSalesResults, 
+    EmployeeExpensesResults, 
+    Expenses, 
+    ExpensesResults, 
+    MasterBusinessDivision, 
+    MasterClient, 
+    MasterCompany, 
+    Projects, 
+    ProjectsSalesResults, 
+    Results, 
+    EmployeeExpenses
+    )
+
+# Generic Serializer: 
+# This includes various functions
+class GenericSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = None  # Set this dynamically in subclasses
+        fields = []
+
+    def get_fields(self):
+        """
+        Dynamically modify the fields based on whether it's a create or update.
+        """
+        fields = super().get_fields()  # Get the base fields from the Meta class
+        
+        # Iterate through the fields and exclude any '****_id' field for create operations
+        for field_name in list(fields.keys()):
+            if field_name.endswith("_id"):  # Check if the field is an ID field (e.g., user_id)
+                if not self.instance:  # If it's a create operation
+                    fields.pop(field_name, None)  # Exclude the field for creation
+
+        # Exclude 'created_at' in update operations
+        if field_name == "created_at" and self.instance:
+            fields.pop(field_name, None)  # Remove 'created_at' field for update
+
+        # Exclude 'updated_at' in create operations
+        if field_name == "updated_at" and not self.instance:
+            fields.pop(field_name, None)  # Remove 'updated_at' field for create
+        
+        return fields
 
 
 # Employees
@@ -337,16 +380,23 @@ class GetEmployeeExpensesResultsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 # Cost Of Sales
-class CostOfSalesSerializer(serializers.ModelSerializer):
-    cost_of_sale_id = serializers.CharField(required=False)
+class CostOfSalesSerializer(GenericSerializer):
     class Meta:
         model = CostOfSales
-        fields = '__all__'
-class CostOfSalesUpdateSerializer(serializers.ModelSerializer):
-    cost_of_sale_id = serializers.CharField(required=False)
-    class Meta:
-        model = CostOfSales
-        fields = '__all__'
+        fields = [
+            "cost_of_sale_id",
+            "year",
+            "month",
+            "purchase",
+            "outsourcing_expense",
+            "product_purchase",
+            "dispatch_labor_expense",
+            "communication_expense",
+            "work_in_progress_expense",
+            "amortization_expense",
+            "created_at",
+            "updated_at"
+            ]
 
 # Cost Of Sales Results
 class CostOfSalesResultsCreateSerializer(serializers.ModelSerializer):
@@ -366,8 +416,7 @@ class CostOfSalesResultsSerializer(serializers.ModelSerializer):
 
 
 # Expenses
-class ExpensesListSerializer(serializers.ModelSerializer):
-
+class ExpensesSerializer(GenericSerializer):
     class Meta:
         model = Expenses
         fields = [
@@ -386,54 +435,6 @@ class ExpensesListSerializer(serializers.ModelSerializer):
             'transaction_fee',
             'professional_service_fee',
             'created_at',
-            'updated_at',
-        ]
-
-class ExpensesCreateSerializer(serializers.ModelSerializer):
-
-    expense_id = serializers.CharField(required=False)
-    class Meta:
-        model = Expenses
-from rest_framework import serializers
-
-class ExpensesSerializer(serializers.ModelSerializer):
-    expense_id = serializers.CharField(required=False)
-
-    class Meta:
-        model = Expenses
-        fields = '__all__'  # Use all fields for the base serializer
-
-class ExpensesCreateSerializer(ExpensesSerializer):
-    class Meta(ExpensesSerializer.Meta):
-        # Create serializer has 'created_at' as well
-        fields = ExpensesSerializer.Meta.fields
-
-class ExpensesUpdateSerializer(ExpensesSerializer):
-    class Meta(ExpensesSerializer.Meta):
-        # Update serializer excludes 'created_at'
-        exclude = ['created_at']
-
-
-class ExpensesUpdateSerializer(serializers.ModelSerializer):
-
-    expense_id = serializers.CharField(required=False)
-    class Meta:
-        model = Expenses
-        fields = [
-            'expense_id',
-            'year',
-            'month',
-            'tax_and_public_charge',
-            'communication_expense',
-            'advertising_expense',
-            'consumable_expense',
-            'depreciation_expense',
-            'utilities_expense',
-            'entertainment_expense',
-            'rent_expense',
-            'travel_expense',
-            'transaction_fee',
-            'professional_service_fee',
             'updated_at',
         ]
 
@@ -676,32 +677,12 @@ class AuthenticationSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
+
 # -----------------------------------
 # #5
-# -----------------------------------
-
-# class CustomCostOfSalesSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = CostOfSales
-        fields = [
-            'year', 
-            'month',
-            'outsourcing_costs',
-            'communication_costs',
-            'cost_of_sales',
-            'product_purchases',
-            'work_in_progress',
-            'purchases',
-            'dispatch_labor_costs',
-            'amortization'
-        ]
-
-# -----------------------------------
-# #6
 # -----------------------------------
 class AllPlanningSerializer(serializers.Serializer):
     cost_of_sales = CostOfSalesSerializer()
     # planning_project_data = GetProjectsSerializers()
     planning_project_data = ProjectsListSerializer()
-    expenses = ExpensesListSerializer()
+    expenses = ExpensesSerializer()

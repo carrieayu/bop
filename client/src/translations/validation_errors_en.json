@@ -3,6 +3,7 @@
   "thisFieldMayNotBeBlank": "Field Cannot Be Empty.",
   "aValidIntegerIsRequired": "A Valid Integer is Required.",
   "thisFieldCannotBeEmpty": "Field Cannot Be Empty.",
+  "thisFieldIsRequired": "This Field is Required",
   "eitherSalaryOrExecutiveRenumerationMustBeProvided": "Salary Or Executive Renumeration Cannot Be Empty",
   "nonFieldErrors": "There was an error with your form",
   "isNotAValidChoice": "Field is not a valid Choice",

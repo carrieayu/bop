@@ -157,5 +157,6 @@
   "projectResults": "案件実績",
   "yearMonth": "年/月",
   "csvFileName": "CSV: 財務概要",
-  "No.": "番号"
+  "No.": "番号",
+  "costOfSaleId":"売上原価ID"
 }

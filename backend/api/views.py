@@ -12,15 +12,14 @@ from .serializers import (
     CostOfSalesResultsListSerializer,
     CostOfSalesResultsSerializer,
     CostOfSalesSerializer,
-    CostOfSalesUpdateSerializer,
     EmployeeExpensesResultsCreateSerializer,
     EmployeeExpensesResultsDeleteSerializer,
     EmployeeExpensesResultsListSerializer,
     ExpensesResultsCreateSerializer,
     ExpensesResultsListSerializer,
     ExpensesResultsUpdateSerializer,
+    ExpensesSerializer,
     ProjectSalesResultsSerializer,
-    # CustomCostOfSalesSerializer, # NOT BEING USED
     # Projects
     ProjectsListSerializer,
     ProjectsCreateSerializer,
@@ -36,9 +35,7 @@ from .serializers import (
     MasterClientUpdateSerializer,  
     MasterClientDeleteSerializer,
     # Expenses
-    ExpensesListSerializer,
-    ExpensesCreateSerializer,
-    ExpensesUpdateSerializer,
+    ExpensesSerializer,
     # Employees
     EmployeesListSerializer,
     EmployeesCreateSerializer,
@@ -958,12 +955,12 @@ class ProjectSalesResultsDelete(generics.DestroyAPIView):
 # Expenses
 class ExpensesList(generics.ListAPIView):
     queryset = Expenses.objects.all()
-    serializer_class = ExpensesListSerializer
+    serializer_class = ExpensesSerializer
     permission_classes = [AllowAny]
 
 class ExpensesCreate(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = ExpensesCreateSerializer
+    serializer_class = ExpensesSerializer
 
     @transaction.atomic
     def post(self, request):
@@ -1003,7 +1000,7 @@ class ExpensesCreate(generics.CreateAPIView):
 # Using UpdateAPIView may be misleading but I am not 100% sure hwo to improve. - Ed
 class ExpensesOverwrite(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = ExpensesCreateSerializer
+    serializer_class = ExpensesSerializer
 
     @transaction.atomic
     def put(self, request):
@@ -1042,7 +1039,7 @@ class ExpensesOverwrite(generics.UpdateAPIView):
         return generate_success_response(responses, action_types)
 
 class ExpensesUpdate(generics.UpdateAPIView):
-    serializer_class = ExpensesUpdateSerializer
+    serializer_class = ExpensesSerializer
     permission_classes = [IsAuthenticated]
     queryset = Expenses.objects.all()
 
@@ -1748,7 +1745,7 @@ class CostOfSalesOverwrite(generics.UpdateAPIView):
    
 
 class CostOfSalesUpdate(generics.UpdateAPIView):
-    serializer_class = CostOfSalesUpdateSerializer
+    serializer_class = CostOfSalesSerializer
     permission_classes = [IsAuthenticated]
     queryset = CostOfSales.objects.all()
 
@@ -1948,7 +1945,7 @@ class PlanningList(generics.ListAPIView):
         planning_project_data = Projects.objects.all()
         employee = Employees.objects.all()
         employee_serializer = EmployeesListSerializer(employee, many=True)
-        expenses_serializer = ExpensesListSerializer(expenses, many=True)
+        expenses_serializer = ExpensesSerializer(expenses, many=True)
         cost_of_sales_serializer = CostOfSalesSerializer(cost_of_sales, many=True)
         planning_assign_serializer = EmployeeExpensesListSerializer(planning_assign, many=True)
         planning_project_data_serializer = ProjectsListSerializer(planning_project_data, many=True)
