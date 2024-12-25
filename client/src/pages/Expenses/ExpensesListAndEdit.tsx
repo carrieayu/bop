@@ -114,42 +114,42 @@ const ExpensesList: React.FC = () => {
 
     // Step 1: Preparartion for validation
     // Set record type for validation
-    // const recordType = 'expenses'
-    // // Retrieve field validation checks based on the record type
-    // const fieldChecks = getFieldChecks(recordType)
-    // // Validate records for the specified project fields
-    // const validateExpenses = (records) => validateRecords(records, fieldChecks, 'expense')
+    const recordType = 'expenses'
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    // Validate records for the specified project fields
+    const validateExpenses = (records) => validateRecords(records, fieldChecks, 'expense')
 
-    // // Expenses has default 12 (for each month)
-    // // Even if not all records have actually been created in DB: We need to filter out non-registered records.
-    // const expensesListExistingRecords = expensesList.filter((exp) => exp.expense_id !== null)
+    // Expenses has default 12 (for each month)
+    // Even if not all records have actually been created in DB: We need to filter out non-registered records.
+    const expensesListExistingRecords = expensesList.filter((exp) => exp.expense_id !== null)
 
-    // // Step 2: Validate client-side input
-    // const validationErrors = validateExpenses(expensesListExistingRecords) // Get the array of error messages
+    // Step 2: Validate client-side input
+    const validationErrors = validateExpenses(expensesListExistingRecords) // Get the array of error messages
 
-    // // Step 3: Check for duplicate entries on specific fields
-    // const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client'] // Fields to check for duplicates
-    // const duplicateErrors = checkForDuplicates(expensesListExistingRecords, uniqueFields, 'project', language)
+    // Step 3: Check for duplicate entries on specific fields
+    const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client'] // Fields to check for duplicates
+    const duplicateErrors = checkForDuplicates(expensesListExistingRecords, uniqueFields, 'project', language)
 
-    // // Step 4: Map error types to data and translation keys for handling in the modal
-    // const errorMapping = [
-    //   { errors: validationErrors, errorType: 'normalValidation' },
-    //   { errors: duplicateErrors, errorType: 'duplicateValidation' },
-    // ]
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
 
-    // // Step 5: Display the first set of errors found, if any
-    // const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
 
-    // if (firstError) {
-    //   const { errors, errorType } = firstError
-    //   const translatedErrors = translateAndFormatErrors(errors, language, errorType)
-    //   setCrudMessage(translatedErrors)
-    //   setCrudValidationErrors(translatedErrors)
-    //   setIsCRUDOpen(true)
-    //   return
-    // } else {
-    //   setCrudValidationErrors([])
-    // }
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      setCrudMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
+      setIsCRUDOpen(true)
+      return
+    } else {
+      setCrudValidationErrors([])
+    }
     // Continue with submission if no errors
 
     const getModifiedFields = (original, updated) => {
