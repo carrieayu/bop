@@ -2,7 +2,7 @@ import axios from 'axios'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 export async function overwriteExpense(expenseData, token: string) {
-  const endpoint = `${getReactActiveEndpoint()}/api/expenses/create/`
+  const endpoint = `${getReactActiveEndpoint()}/api/expenses/overwrite/`
 
   try {
     const response = await axios.put(endpoint, expenseData, {

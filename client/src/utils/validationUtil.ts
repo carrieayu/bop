@@ -591,7 +591,7 @@ const processErrorMessages = (errors, language) => {
       const translatedField = translate(textFormatter(err.field) || 'Unknown field', language);
       const translatedMessage = translate(textFormatter(err.message), language);
       const finalizedMessage = replacePlaceholders(translatedMessage, err.field, err.fieldValue);
-      return `${err.group_index + 1}: ${translatedField}: ${finalizedMessage}`;
+      return `${Number.isInteger(err.group_index) ? err.group_index + 1 : err.group_index}: ${translatedField}: ${finalizedMessage}`
     })
   );
 }
@@ -653,7 +653,7 @@ export const handleBackendError = (
     setIsModalOpen(true);
     return;
   }
-
+  console.log('inside the handle backend error', error)
   const { status, data } = error.response;
   let mappedErrors = [];
 

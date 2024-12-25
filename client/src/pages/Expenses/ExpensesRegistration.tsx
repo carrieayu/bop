@@ -62,7 +62,6 @@ const ExpensesRegistration = () => {
     setLanguage(newLanguage)
   }
 
-  const [months, setMonths] = useState<number[]>([])
   const handleChange = (index, event) => {
     const { name, value } = event.target
 

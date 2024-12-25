@@ -224,40 +224,40 @@ const ProjectsRegistration = () => {
 
     // Client Side Validation
 
-    // Step 1: Preparartion for validation
-    // Set record type for validation
-    const recordType = 'projects'
-    // Retrieve field validation checks based on the record type
-    const fieldChecks = getFieldChecks(recordType)
-    // Validate records for the specified project fields
-    const validateProjects = (records) => validateRecords(records, fieldChecks, 'project')
+    // // Step 1: Preparartion for validation
+    // // Set record type for validation
+    // const recordType = 'projects'
+    // // Retrieve field validation checks based on the record type
+    // const fieldChecks = getFieldChecks(recordType)
+    // // Validate records for the specified project fields
+    // const validateProjects = (records) => validateRecords(records, fieldChecks, 'project')
 
-    // Step 2: Validate client-side input
-    const validationErrors = validateProjects(formProjects)
+    // // Step 2: Validate client-side input
+    // const validationErrors = validateProjects(formProjects)
 
-    // Step 3: Check for duplicate entries on specific fields
-    const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client']
-    const duplicateErrors = checkForDuplicates(formProjects, uniqueFields, 'project', language)
+    // // Step 3: Check for duplicate entries on specific fields
+    // const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client']
+    // const duplicateErrors = checkForDuplicates(formProjects, uniqueFields, 'project', language)
 
-    // Step 4: Map error types to data and translation keys for handling in the modal
-    const errorMapping = [
-      { errors: validationErrors, errorType: 'normalValidation' },
-      { errors: duplicateErrors, errorType: 'duplicateValidation' },
-    ]
+    // // Step 4: Map error types to data and translation keys for handling in the modal
+    // const errorMapping = [
+    //   { errors: validationErrors, errorType: 'normalValidation' },
+    //   { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    // ]
 
-    // Step 5: Display the first set of errors found, if any
-    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+    // // Step 5: Display the first set of errors found, if any
+    // const firstError = errorMapping.find(({ errors }) => errors.length > 0)
 
-    if (firstError) {
-      const { errors, errorType } = firstError
-      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
-      setModalMessage(translatedErrors)
-      setCrudValidationErrors(translatedErrors)
-      setIsModalOpen(true)
-      return
-    } else {
-      setCrudValidationErrors([])
-    }
+    // if (firstError) {
+    //   const { errors, errorType } = firstError
+    //   const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+    //   setModalMessage(translatedErrors)
+    //   setCrudValidationErrors(translatedErrors)
+    //   setIsModalOpen(true)
+    //   return
+    // } else {
+    //   setCrudValidationErrors([])
+    // }
     // Continue with submission if no errors
 
     const projectsData = formProjects.map((projects) => ({

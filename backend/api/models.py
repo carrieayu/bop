@@ -9,6 +9,7 @@ from django.db.models import Max
 # GLOBAL VARIABLES 
 min_int = settings.MIN_INTEGER_VALUE
 max_int = settings.MAX_INTEGER_VALUE
+max_percentage = settings.MAX_PERCENTAGE_VALUE
 
 # Shared constants for the file
 YEAR_CHOICES = [(str(year), str(year)) for year in range(2000, 2101)]
@@ -146,18 +147,19 @@ class Projects(models.Model):
     business_division = models.ForeignKey(
         "MasterBusinessDivision", on_delete=models.CASCADE, related_name="business_division"
     )
-    year = models.CharField(max_length=4, default="2001")
-    month = models.CharField(max_length=2, default="01")
-    sales_revenue = models.IntegerField( default=0)
-    dispatch_labor_expense = models.IntegerField(default=0)
-    employee_expense = models.IntegerField(default=0)
-    indirect_employee_expense = models.IntegerField(default=0)
-    expense = models.IntegerField( default=0)
-    operating_income = models.IntegerField( default=0)
-    non_operating_income = models.IntegerField( default=0)
-    non_operating_expense = models.IntegerField( default=0)
-    ordinary_profit = models.IntegerField(default=0)
+    year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.
+    month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
+    sales_revenue = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    dispatch_labor_expense = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    employee_expense = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    indirect_employee_expense = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    expense = models.IntegerField( validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    operating_income = models.IntegerField( validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    non_operating_income = models.IntegerField( validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    non_operating_expense = models.IntegerField( validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
+    ordinary_profit = models.IntegerField(validators=[MinValueValidator(min_int), MaxValueValidator(max_int)])
     ordinary_profit_margin = models.FloatField(default=0.0)
+    # ordinary_profit_margin = models.DecimalField(default=0.0, decimal_places=2, max_digits=5, validators=[MinValueValidator(min_int), MaxValueValidator(max_percentage)])  # 0 = 0% AND 1 = 100%
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :

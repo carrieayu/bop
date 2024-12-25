@@ -12,6 +12,7 @@ from .serializers import (
     CostOfSalesResultsListSerializer,
     CostOfSalesResultsSerializer,
     CostOfSalesSerializer,
+    CostOfSalesUpdateSerializer,
     EmployeeExpensesResultsCreateSerializer,
     EmployeeExpensesResultsDeleteSerializer,
     EmployeeExpensesResultsListSerializer,
@@ -104,7 +105,20 @@ from django.utils.translation import gettext as _
 from django.core.mail import send_mail
 from django.utils import timezone
 from django.db.models import Max
-from .utils.utils import check_data_is_list, check_duplicates, generate_duplicate_response, get_existing_entry_id, handle_serializer_action, process_item
+from .utils.utils import (
+validate_and_create_item, 
+validate_and_update_item, 
+validate_and_process_item, 
+check_data_is_list, 
+check_for_existing_entries,
+get_existing_entry_id, 
+generate_response_failed,
+generate_deletion_response_successful,
+generate_deletion_response_not_found, 
+generate_error_response, 
+generate_success_response, 
+generate_existing_entries_response, 
+)
 
 # Create your views here.
 
@@ -947,10 +961,6 @@ class ExpensesList(generics.ListAPIView):
     serializer_class = ExpensesListSerializer
     permission_classes = [AllowAny]
 
-
-    def get_queryset(self):
-        return Expenses.objects.all()
-
 class ExpensesCreate(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ExpensesCreateSerializer
@@ -962,12 +972,13 @@ class ExpensesCreate(generics.CreateAPIView):
 
         # Fields to check for duplicates
         fields_to_check = ['year', 'month']
-
         # Check for duplicates before processing
-        existing_entries = check_duplicates(self, data, Expenses, fields_to_check)
-        print(f'create:existing entries: {existing_entries}')
+        existing_entries = check_for_existing_entries(data, Expenses, fields_to_check)
+
         if existing_entries:
-            return generate_duplicate_response(fields_to_check, existing_entries)
+            existing_entries_dict = [{"year": entry.year, "month": entry.month} for entry in existing_entries]
+            # Checks for existing entries and Returns 409
+            return generate_existing_entries_response(fields_to_check, existing_entries_dict)
 
         # Initialize response containers
         responses = []
@@ -975,7 +986,7 @@ class ExpensesCreate(generics.CreateAPIView):
 
         # Process each item
         for group_index, item in enumerate(data):
-            result = process_item(item, group_index, fields_to_check, self.serializer_class)
+            result = validate_and_create_item(item, group_index, fields_to_check, self.serializer_class)
             if result["status"] == "success":
                 responses.append(result["response"])
             else:
@@ -983,13 +994,16 @@ class ExpensesCreate(generics.CreateAPIView):
 
         # Return error response if any errors are found
         if error_responses:
-            return JsonResponse(
-                {"errors": error_responses},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
+            generate_error_response(error_responses)
         # Return success response if all are successful
-        return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
+        return generate_success_response(responses, action_types=['create'])
+
+
+# Handles Overwrite (Updates Existing AND Creates New if batch contains new and existing records.
+# Using UpdateAPIView may be misleading but I am not 100% sure hwo to improve. - Ed
+class ExpensesOverwrite(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ExpensesCreateSerializer
 
     @transaction.atomic
     def put(self, request):
@@ -999,6 +1013,7 @@ class ExpensesCreate(generics.CreateAPIView):
         # Initialize response containers
         responses = []
         error_responses = []
+        action_types = set()
 
         for group_index, item in enumerate(data):
             try:
@@ -1006,67 +1021,70 @@ class ExpensesCreate(generics.CreateAPIView):
                 fields_to_check = ['year', 'month']     
                 # Check if an entry with the same year and month exists
                 existing_entry_id = get_existing_entry_id(self, item, Expenses, fields_to_check)
-                print(f'existing_entry_id{existing_entry_id}')
+
                 if existing_entry_id:
                     serializer = ExpensesUpdateSerializer(existing_entry_id, data=item, partial=True)
                     action_type = 'update'
                 else:
                     serializer = ExpensesCreateSerializer(data=item)
                     action_type = 'create'
+
+                action_types.add(action_type)
                 # Handle serializer action (either update or create)
-                handle_serializer_action(serializer, item, group_index, action_type, fields_to_check, responses, error_responses)
-                            # return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                validate_and_process_item(serializer, item, group_index, action_type, fields_to_check, responses, error_responses)
+
             except Exception as e:
-                return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                return generate_response_failed(e)
 
         if error_responses:
-            print(f'PUT: error responses:{error_responses}')
-            return JsonResponse({"errors": error_responses},status=status.HTTP_400_BAD_REQUEST)
-        if responses:
-            return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
+            return generate_error_response(error_responses)
+        # Return success response based on action type: UPDATE(overwrite) or CREATE
+        return generate_success_response(responses, action_types)
 
 class ExpensesUpdate(generics.UpdateAPIView):
     serializer_class = ExpensesUpdateSerializer
     permission_classes = [IsAuthenticated]
     queryset = Expenses.objects.all()
 
+    @transaction.atomic
     def update(self, request, *args, **kwargs):
-        received_data = request.data  # This is expected to be a list of expense data
+        data = request.data  # This is expected to be a list of expense data
+        fields_to_check = ['year', 'month']
 
-        for expense_data in received_data:
-            expense_id = expense_data.get('expense_id')  # Adjusted to match your model
-            try:
-                # Fetch the existing record based on expense_id
-                expense = Expenses.objects.get(expense_id=expense_id)
-                # Update each field except for the primary key
-                for field, value in expense_data.items():
-                    if field not in ['expense_data', 'month']:  # Skip primary key and month field
-                        setattr(expense, field, value)
-                
-                expense.save()  # Save the updated record
-            except Expenses.DoesNotExist:
-                return Response({"error": f"Expense with ID {expense_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
+        # Initialize response containers
+        responses = []
+        error_responses = []
 
-        return Response({"success": "Expenses updated successfully."}, status=status.HTTP_200_OK)
+        for expense_data in data:
+            # year_month: Used in 'error_responses' items in 'update_and_validate_item' to define which row has an error.
+            year_month = f"{expense_data.get('year')}/{expense_data.get('month')}"
+            print(f'expense data, `{expense_data} year {expense_data.get('year')}')
+            result = validate_and_update_item(expense_data, year_month, fields_to_check, 'expense_id', Expenses, self.serializer_class)
 
+            if result["status"] == "success":
+                responses.append(result["response"])
+            else:
+                error_responses.append(result["response"])
+
+        # Filter out months that do not exist in the received data
+        if error_responses:
+            return generate_error_response(error_responses)
+        # Return success response if all are successful
+        return generate_success_response(responses, action_types=['update'])
 
 class ExpensesDelete(generics.DestroyAPIView):
     queryset = Expenses.objects.all()
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        pk = self.kwargs.get("pk")
-        return Expenses.objects.filter(expense_id=pk)
-
     def destroy(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
             instance.delete()
-            return Response({"message": "deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+            return generate_deletion_response_successful()
         except Expenses.DoesNotExist:
-            return Response({"message": "Expense not found"}, status=status.HTTP_404_NOT_FOUND)
+            return generate_deletion_response_not_found('expense')
         except Exception as e:
-            return Response({"message": "failed", "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return generate_response_failed(e)
 
 # Expense Results
 
@@ -1661,20 +1679,20 @@ class CostOfSalesCreate(generics.CreateAPIView):
 
         # Fields to check for duplicates
         fields_to_check = ['year', 'month']
-
         # Check for duplicates before processing
-        existing_entries = check_duplicates(self, data, CostOfSales, fields_to_check)
-        print(f'create:existing entries: {existing_entries}')
+        existing_entries = check_for_existing_entries( data, CostOfSales, fields_to_check)
+
         if existing_entries:
-            return generate_duplicate_response(fields_to_check, existing_entries)
+            existing_entries_dict = [{"year": entry.year, "month": entry.month} for entry in existing_entries]
+            return generate_existing_entries_response(fields_to_check, existing_entries_dict)
 
         # Initialize response containers
         responses = []
         error_responses = []
-
+        
         # Process each item
         for group_index, item in enumerate(data):
-            result = process_item(item, group_index, fields_to_check, self.serializer_class)
+            result = validate_and_create_item(item, group_index, fields_to_check, self.serializer_class)
             if result["status"] == "success":
                 responses.append(result["response"])
             else:
@@ -1682,16 +1700,12 @@ class CostOfSalesCreate(generics.CreateAPIView):
 
         # Return error response if any errors are found
         if error_responses:
-            return JsonResponse(
-                {"errors": error_responses},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
+            return generate_error_response(error_responses)
         # Return success response if all are successful
-        return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
+        return generate_success_response(responses, action_types=['create'])
 
 # Handles Overwrite (Updates Existing AND Creates New if batch contains new and existing records.
-# Using UpdateAPIView may be misleafing. - Ed
+# Using UpdateAPIView may be misleading but I am not 100% sure hwo to improve. - Ed
 class CostOfSalesOverwrite(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = CostOfSalesSerializer
@@ -1704,6 +1718,7 @@ class CostOfSalesOverwrite(generics.UpdateAPIView):
         # Initialize response containers
         responses = []
         error_responses = []
+        action_types = set()
 
         for group_index, item in enumerate(data):
             try:
@@ -1711,94 +1726,70 @@ class CostOfSalesOverwrite(generics.UpdateAPIView):
                 fields_to_check = ['year', 'month']     
                 # Check if an entry with the same year and month exists
                 existing_entry_id = get_existing_entry_id(self, item, CostOfSales, fields_to_check)
-                print(f'existing_entry_id{existing_entry_id}')
+
                 if existing_entry_id:
                     serializer = CostOfSalesSerializer(existing_entry_id, data=item, partial=True)
                     action_type = 'update'
                 else:
                     serializer = CostOfSalesSerializer(data=item)
                     action_type = 'create'
+                    
+                action_types.add(action_type)
                 # Handle serializer action (either update or create)
-                handle_serializer_action(serializer, item, group_index, action_type, fields_to_check, responses, error_responses)
-                            # return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                validate_and_process_item(serializer, item, group_index, action_type, fields_to_check, responses, error_responses)
+
             except Exception as e:
-                return JsonResponse({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                return generate_response_failed(e)
 
         if error_responses:
-            print(f'PUT: error responses:{error_responses}')
-            return JsonResponse({"errors": error_responses},status=status.HTTP_400_BAD_REQUEST)
-        if responses:
-            return JsonResponse(responses, safe=False, status=status.HTTP_201_CREATED)
+            return generate_error_response(error_responses)
+        # Return success response based on action type: UPDATE(overwrite) or CREATE
+        return generate_success_response(responses, action_types)
+   
 
 class CostOfSalesUpdate(generics.UpdateAPIView):
-    serializer_class = CostOfSalesSerializer
+    serializer_class = CostOfSalesUpdateSerializer
     permission_classes = [IsAuthenticated]
     queryset = CostOfSales.objects.all()
 
     @transaction.atomic
     def update(self, request, *args, **kwargs):
         data = request.data  # This is expected to be a list of cost_of_sales data
-
+        fields_to_check = ['year', 'month']
+       
+        # Initialize response containers
         responses = []
         error_responses = []
 
         for cos_data in data:
-            cost_of_sale_id = cos_data.get('cost_of_sale_id')
-            year = cos_data.get('year')
-            month = cos_data.get('month')
-            year_month = f"{year}/{month}"
+            # year_month: Used in 'error_responses' items in 'update_and_validate_item' to define which row has an error.
+            year_month = f"{cos_data.get('year')}/{cos_data.get('month')}"
+            result = validate_and_update_item(cos_data, year_month, fields_to_check, 'cost_of_sale_id', CostOfSales, self.serializer_class)
 
-            try:
-                # Check if the row data exists in the database (using cost_of_sale_id)
-                cost_of_sale = CostOfSales.objects.get(cost_of_sale_id=cost_of_sale_id)
-                serializer = CostOfSalesSerializer(cost_of_sale, data=cos_data, partial=True)
-
-                if serializer.is_valid():
-                    # Update each field except for the primary key
-                    for field, value in cos_data.items():
-                        if field not in ['cost_of_sale_id', 'month']:  # Skip primary key and month field
-                            setattr(cost_of_sale, field, value)
-
-                    cost_of_sale.save()  # Save the updated record
-                    responses.append({"message": f"Updated successfully for year: {year}, month: {month}."})
-                else:
-                    # Only add error for months that are in the received data
-                    error_responses.append({
-                        "group_index": year_month ,
-                        "errors": serializer.errors
-                    })
-            except CostOfSales.DoesNotExist:
-                # For unregistered rows, skip them without adding to the error list
-                # But still continue for other months that may exist
-                continue
+            if result["status"] == "success":
+                responses.append(result["response"])
+            else:
+                error_responses.append(result["response"])
 
         # Filter out months that do not exist in the received data
         if error_responses:
-            return JsonResponse({
-                "errors": error_responses
-            },
-            status=status.HTTP_400_BAD_REQUEST
-            )
-
-        return JsonResponse(responses, safe=False, status=status.HTTP_200_OK)
+            return generate_error_response(error_responses)
+        # Return success response if all are successful
+        return generate_success_response(responses, action_types=['update'])
 
 class CostOfSalesDelete(generics.DestroyAPIView):
     queryset = CostOfSales.objects.all()
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        pk = self.kwargs.get("pk")
-        return CostOfSales.objects.filter(cost_of_sale_id=pk)
-
     def destroy(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
             instance.delete()
-            return Response({"message": "deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+            return generate_deletion_response_successful()
         except CostOfSales.DoesNotExist:
-            return Response({"message": "Cost of sale not found"}, status=status.HTTP_404_NOT_FOUND)
+            return generate_deletion_response_not_found('cost of sale')
         except Exception as e:
-            return Response({"message": "failed", "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return generate_response_failed(e)
 
 # Cost Of Sales Results
 class CostOfSalesResultsList(generics.ListAPIView):

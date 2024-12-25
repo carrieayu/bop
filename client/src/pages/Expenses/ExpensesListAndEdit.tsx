@@ -16,6 +16,9 @@ import {
   translateAndFormatErrors,
   getFieldChecks,
   checkForDuplicates,
+  handleBackendError,
+  handleSuccessMessages,
+  handleGeneralErrorMessages,
 } from '../../utils/validationUtil'
 import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas, handlePLTabsClick } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { monthNames, months, years, maximumEntries, planningScreenTabs } from '../../constants'
@@ -47,6 +50,7 @@ const ExpensesList: React.FC = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const [messageOrigin, setMessageOrigin] = useState('')
 
   const headers: string[] = [
     'year',
@@ -110,42 +114,42 @@ const ExpensesList: React.FC = () => {
 
     // Step 1: Preparartion for validation
     // Set record type for validation
-    const recordType = 'expenses'
-    // Retrieve field validation checks based on the record type
-    const fieldChecks = getFieldChecks(recordType)
-    // Validate records for the specified project fields
-    const validateExpenses = (records) => validateRecords(records, fieldChecks, 'expense')
+    // const recordType = 'expenses'
+    // // Retrieve field validation checks based on the record type
+    // const fieldChecks = getFieldChecks(recordType)
+    // // Validate records for the specified project fields
+    // const validateExpenses = (records) => validateRecords(records, fieldChecks, 'expense')
 
-    // Expenses has default 12 (for each month)
-    // Even if not all records have actually been created in DB: We need to filter out non-registered records.
-    const expensesListExistingRecords = expensesList.filter((exp) => exp.expense_id !== null)
+    // // Expenses has default 12 (for each month)
+    // // Even if not all records have actually been created in DB: We need to filter out non-registered records.
+    // const expensesListExistingRecords = expensesList.filter((exp) => exp.expense_id !== null)
 
-    // Step 2: Validate client-side input
-    const validationErrors = validateExpenses(expensesListExistingRecords) // Get the array of error messages
+    // // Step 2: Validate client-side input
+    // const validationErrors = validateExpenses(expensesListExistingRecords) // Get the array of error messages
 
-    // Step 3: Check for duplicate entries on specific fields
-    const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client'] // Fields to check for duplicates
-    const duplicateErrors = checkForDuplicates(expensesListExistingRecords, uniqueFields, 'project', language)
+    // // Step 3: Check for duplicate entries on specific fields
+    // const uniqueFields = ['year', 'month', 'project_name', 'business_division', 'client'] // Fields to check for duplicates
+    // const duplicateErrors = checkForDuplicates(expensesListExistingRecords, uniqueFields, 'project', language)
 
-    // Step 4: Map error types to data and translation keys for handling in the modal
-    const errorMapping = [
-      { errors: validationErrors, errorType: 'normalValidation' },
-      { errors: duplicateErrors, errorType: 'duplicateValidation' },
-    ]
+    // // Step 4: Map error types to data and translation keys for handling in the modal
+    // const errorMapping = [
+    //   { errors: validationErrors, errorType: 'normalValidation' },
+    //   { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    // ]
 
-    // Step 5: Display the first set of errors found, if any
-    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+    // // Step 5: Display the first set of errors found, if any
+    // const firstError = errorMapping.find(({ errors }) => errors.length > 0)
 
-    if (firstError) {
-      const { errors, errorType } = firstError
-      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
-      setCrudMessage(translatedErrors)
-      setCrudValidationErrors(translatedErrors)
-      setIsCRUDOpen(true)
-      return
-    } else {
-      setCrudValidationErrors([])
-    }
+    // if (firstError) {
+    //   const { errors, errorType } = firstError
+    //   const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+    //   setCrudMessage(translatedErrors)
+    //   setCrudValidationErrors(translatedErrors)
+    //   setIsCRUDOpen(true)
+    //   return
+    // } else {
+    //   setCrudValidationErrors([])
+    // }
     // Continue with submission if no errors
 
     const getModifiedFields = (original, updated) => {
@@ -155,7 +159,11 @@ const ExpensesList: React.FC = () => {
         const originalExpense = original.find((exp) => exp.expense_id === updatedExpense.expense_id)
 
         if (originalExpense) {
-          const changes = { expense_id: updatedExpense.expense_id }
+          const changes = {
+            expense_id: updatedExpense.expense_id,
+            year: updatedExpense.year,
+            month: updatedExpense.month,
+          }
 
           let hasChanges = false
           for (const key in updatedExpense) {
@@ -211,32 +219,30 @@ const ExpensesList: React.FC = () => {
       return
     }
 
-    updateExpense(modifiedFields, token)
-      .then(() => {
-        setOriginalExpensesList(expensesList)
-        setCrudMessage(translate('successfullyUpdated', language))
-        setIsCRUDOpen(true)
-        setIsEditing(false)
-        getExpense(token)
-          .then((data) => {
-            setExpensesList(data)
-          })
-          .catch((error) => {
-            console.error('Error fetching expense:', error)
-          })
-      })
-      .catch((error) => {
-        if (error.response) {
-          console.error('Error response:', error.response.data)
-          if (error.response.status === 401) {
-            window.location.href = '/login'
-          } else {
-            console.error('There was an error updating the expenses data!', error.response.data)
-          }
-        } else {
-          console.error('Error', error.message)
-        }
-      })
+    try {
+      await updateExpense(modifiedFields, token)
+      setOriginalExpensesList(expensesList)
+      handleSuccessMessages(
+        'expense',
+        'update',
+        setCrudValidationErrors,
+        setIsCRUDOpen,
+        setIsEditing,
+        setMessageOrigin,
+        language,
+      )
+    } catch (error) {
+      handleBackendError(
+        error,
+        language,
+        setCrudMessage,
+        setIsCRUDOpen,
+        setCrudValidationErrors,
+        null, // overwrite modal ( for registration screens. Not necessary on list screens.)
+        setMessageOrigin, // message origin (defines color of error)
+        { formData: modifiedFields }, // submitted form data
+      )
+    }
   }
 
   const handleUpdateConfirm = async () => {
@@ -335,29 +341,38 @@ const ExpensesList: React.FC = () => {
     // Sets the Validation Errors if any to empty as they are not necessary for delete.
     setCrudValidationErrors([])
 
-    deleteExpense(deleteExpenseId, token)
-      .then(() => {
-        updateExpenseLists(deleteExpenseId)
-        setCrudMessage(translate('successfullyDeleted', language))
-        setIsCRUDOpen(true)
-        setIsEditing(false)
-      })
-      .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login' // Redirect to login if unauthorized
-        } else {
-          console.error('Error deleting expenses:', error)
-        }
-      })
+    try {
+      await deleteExpense(deleteExpenseId, token)
+      updateExpenseLists(deleteExpenseId)
+            handleSuccessMessages(
+              'expense',
+              'delete',
+              setCrudValidationErrors,
+              setIsCRUDOpen,
+              setIsEditing,
+              setMessageOrigin,
+              language,
+            )
+    }
+    catch (error) {
+            handleGeneralErrorMessages(
+              error,
+              language,
+              setCrudMessage,
+              setIsCRUDOpen,
+              setCrudValidationErrors,
+              'costOfSale',
+              'delete',
+            ) 
+    }
   }
-
   // Set the Lists to match the DB after deletion.
 
   // Step #2
   const updateExpenseLists = (deleteId) => {
     // Deletes the record with deleteId from original list (This should always match DB)
-    setOriginalExpensesList((prevList) => prevList.filter((exp) => exp.expense_id !== deleteId))
     setDeleteComplete(true)
+    setOriginalExpensesList((prevList) => prevList.filter((exp) => exp.expense_id !== deleteId))
   }
 
   // Step #3
@@ -366,7 +381,7 @@ const ExpensesList: React.FC = () => {
       // After Delete, Screen Automatically Reverts To List Screen NOT Edit Screen.
       setExpensesList(originalExpenseList)
     }
-  }, [deleteComplete])
+  }, [deleteComplete, originalExpenseList])
 
   const handleNewRegistrationClick = () => {
     navigate('/expenses-registration')
@@ -723,6 +738,7 @@ const ExpensesList: React.FC = () => {
         onClose={closeModal}
         message={crudMessage}
         validationMessages={crudValidationErrors}
+        messageOrigin={messageOrigin}
       />
       <AlertModal
         isOpen={isUpdateConfirmationOpen}
