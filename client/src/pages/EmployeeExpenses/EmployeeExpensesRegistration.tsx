@@ -51,6 +51,7 @@ const EmployeeExpensesRegistration = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [filteredDates, setFilteredDates] = useState<DateForm[]>([ { form: [{ date: []}]} ])
+  const [selectionYear, setSelectionYear] = useState<DateForm[]>([{ form: [{ date: [] }] }])
   const [employeeContainers, setEmployeeContainers] = useState([
     {
       id: 1,
@@ -207,6 +208,9 @@ const EmployeeExpensesRegistration = () => {
       setFilteredDates((prevDates) => {
         return [...prevDates, { form: [{ date: [] }] }]
       })
+      setSelectionYear((prevDates) => {
+        return [...prevDates, { form: [{ date: [] }] }]
+      })
     }
   }
 
@@ -234,6 +238,16 @@ const EmployeeExpensesRegistration = () => {
       })
       setEmployeeContainers(updatedContainers)
       setFilteredDates((prevDates: DateForm[]) => {
+        return prevDates?.map((prevDate, index) => {
+          if (containerIndex == index) {
+            return {
+              form: [...prevDate.form, { date: [] }],
+            }
+          }
+          return prevDate
+        })
+      })
+      setSelectionYear((prevDates: DateForm[]) => {
         return prevDates?.map((prevDate, index) => {
           if (containerIndex == index) {
             return {
@@ -279,6 +293,28 @@ const EmployeeExpensesRegistration = () => {
                       getFilteredEmployeeExpense(filterParams, token)
                         .then((data) => {
                           setFilteredDates((prevDates: any[]) => {
+                            return prevDates?.map((prevDate, index) => {
+                              if (containerIndex == index) {
+                                return {
+                                  form: prevDate?.form?.map((date, formIndex) => {
+                                    if (projectIndex == formIndex) {
+                                      return {
+                                        date: data?.map((item) => {
+                                          return {
+                                            month: item.month,
+                                            year: item.year,
+                                          }
+                                        }),
+                                      }
+                                    }
+                                    return date
+                                  }),
+                                }
+                              }
+                              return prevDate
+                            })
+                          })
+                          setSelectionYear((prevDates: any[]) => {
                             return prevDates?.map((prevDate, index) => {
                               if (containerIndex == index) {
                                 return {
@@ -579,7 +615,9 @@ const EmployeeExpensesRegistration = () => {
                                   onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
                                 >
                                   <option value=''>{translate('selectProject', language)}</option>
-                                  {projects.map((project) => (
+                                  {[
+                                    ...new Map(projects.map((project) => [project.project_name, project])).values(),
+                                  ].map((project) => (
                                     <option
                                       key={project.project_id}
                                       value={project.project_name}
@@ -602,7 +640,7 @@ const EmployeeExpensesRegistration = () => {
                                   onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
                                 >
                                   <option value=''></option>{' '}
-                                  {filteredDates?.[containerIndex]?.form?.map((form, formIndex) =>
+                                  {selectionYear?.[containerIndex]?.form?.map((form, formIndex) =>
                                     formIndex === projectIndex && form?.date
                                       ? [...new Set(form.date.map((year) => year.year))].map((year, idx) => {
                                           const uniqueKey = `${containerIndex}-${formIndex}-${idx}-${year}`
@@ -631,16 +669,27 @@ const EmployeeExpensesRegistration = () => {
                                   {filteredDates?.[containerIndex]?.form?.map(
                                     (form, formIndex) =>
                                       formIndex === projectIndex &&
-                                      form?.date?.map((month, idx) => {
-                                        const uniqueKey = `${containerIndex}-${formIndex}-${idx}-${month.month}`
-                                        return (
-                                          <option key={uniqueKey} value={month.month}>
-                                            {language === 'en'
-                                              ? monthNames[month.month].en
-                                              : monthNames[month.month].jp}{' '}
-                                          </option>
-                                        )
-                                      }),
+                                      (() => {
+                                        const uniqueMonths = new Set()
+                                        return form?.date
+                                          ?.filter((month) => {
+                                            if (uniqueMonths.has(month.month)) {
+                                              return false
+                                            }
+                                            uniqueMonths.add(month.month)
+                                            return true
+                                          })
+                                          .map((month, idx) => {
+                                            const uniqueKey = `${containerIndex}-${formIndex}-${idx}-${month.month}`
+                                            return (
+                                              <option key={uniqueKey} value={month.month}>
+                                                {language === 'en'
+                                                  ? monthNames[month.month].en
+                                                  : monthNames[month.month].jp}{' '}
+                                              </option>
+                                            )
+                                          })
+                                      })(),
                                   )}
                                 </select>
                               </div>
