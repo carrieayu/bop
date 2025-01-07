@@ -155,8 +155,6 @@ const EmployeeExpensesResultsRegistration = () => {
 
         getProjectSalesResults(token)
           .then((data) => {
-            console.log(data);
-            
             const result = uniqueProjectsResults(data)
             setProjectSalesResult(result)
           })
