@@ -46,15 +46,17 @@ const EmployeeExpensesResultsRegistration = () => {
     {
       id: 1,
       employee: '',
-      projectEntries: [{ id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '', project_id: ''}],
+      projectEntries: [
+        { id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '', project_id: '' },
+      ],
     },
   ])
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
-  const [filteredDates, setFilteredDates] = useState<DateForm[]>([ { form: [{ date: []}]} ])
+  const [filteredDates, setFilteredDates] = useState<DateForm[]>([{ form: [{ date: [] }] }])
   const [selectionYearResults, setSelectionYearResults] = useState<DateForm[]>([{ form: [{ date: [] }] }])
-  
+
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
@@ -89,7 +91,9 @@ const EmployeeExpensesResultsRegistration = () => {
       {
         id: 1,
         employee: '',
-        projectEntries: [{ id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '', project_id: '' }],
+        projectEntries: [
+          { id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '', project_id: '' },
+        ],
       },
     ])
     closeModal()
@@ -151,8 +155,8 @@ const EmployeeExpensesResultsRegistration = () => {
 
         getProjectSalesResults(token)
           .then((data) => {
-            setProjectSalesResult(data)
-            
+            const result = uniqueProjectsResults(data)
+            setProjectSalesResult(result)
           })
           .catch((error) => {
             if (error.response && error.response.status === 401) {
@@ -169,6 +173,21 @@ const EmployeeExpensesResultsRegistration = () => {
     fetchData()
   }, [token])
 
+  //This function will make ProjectName unique base on project_name and business_division on Employee Expense Results 
+  const uniqueProjectsResults = (projects) => {
+    console.log(projects);
+    
+    const seen = new Set()
+    return projects.filter((project) => {
+      const identifier = `${project.projects.project_name}-${project.projects.business_division}-${project.projects.client}`
+      if (seen.has(identifier)) {
+        return false
+      }
+      seen.add(identifier)
+      return true
+    })
+  }
+
   const addEmployeeContainer = () => {
     if (employeeContainers.length < 5) {
       setEmployeeContainers([
@@ -176,7 +195,9 @@ const EmployeeExpensesResultsRegistration = () => {
         {
           id: employeeContainers.length + 1,
           employee: '',
-          projectEntries: [{ id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '', project_id: '' }],
+          projectEntries: [
+            { id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '', project_id: '' },
+          ],
         },
       ])
     }
@@ -206,14 +227,13 @@ const EmployeeExpensesResultsRegistration = () => {
         projects: '',
         year: '',
         month: '',
-        project_id: ''
+        project_id: '',
       }
 
       projectEntries.push(newEntry)
       setEmployeeContainers(updatedContainers)
       setFilteredDates((prevDates: DateForm[]) => {
-        
-        return prevDates?.map((prevDate, index) => { 
+        return prevDates?.map((prevDate, index) => {
           if (containerIndex == index) {
             return {
               form: [...prevDate.form, { date: [] }],
@@ -235,8 +255,6 @@ const EmployeeExpensesResultsRegistration = () => {
     }
   }
 
-
-
   const removeProjectEntry = (containerIndex) => {
     const updatedContainers = [...employeeContainers]
     if (updatedContainers[containerIndex].projectEntries.length > 1) {
@@ -257,65 +275,65 @@ const EmployeeExpensesResultsRegistration = () => {
           ...newContainers[containerIndex].projectEntries[projectIndex],
           projects: value,
           clients: selectedProject ? selectedProject.projects.client : '',
-          year : "",
-          month : "",
+          year: '',
+          month: '',
         }
         employeeContainers.map((employee, index) => {
           const project_name = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
           const filterParams = {
             ...(project_name && { project_name }),
           }
-          if(containerIndex === index) {
-              getFilteredEmployeeExpenseResults(filterParams, token)
-                .then((data) => {
-                  setFilteredDates((prevDates: any[]) => {
-                    return prevDates?.map((prevDate, index) => {
-                      if (containerIndex == index) {
-                        return {
-                          form: prevDate?.form?.map((date, formIndex) => {
-                            if (projectIndex == formIndex) {
-                              return {
-                                date: data?.map((item) => {
-                                  return {
-                                    month: item.projects.month,
-                                    year: item.projects.year,
-                                  }
-                                }),
-                              }
+          if (containerIndex === index) {
+            getFilteredEmployeeExpenseResults(filterParams, token)
+              .then((data) => {
+                setFilteredDates((prevDates: any[]) => {
+                  return prevDates?.map((prevDate, index) => {
+                    if (containerIndex == index) {
+                      return {
+                        form: prevDate?.form?.map((date, formIndex) => {
+                          if (projectIndex == formIndex) {
+                            return {
+                              date: data?.map((item) => {
+                                return {
+                                  month: item.projects.month,
+                                  year: item.projects.year,
+                                }
+                              }),
                             }
-                            return date
-                          }),
-                        }
+                          }
+                          return date
+                        }),
                       }
-                      return prevDate
-                    })
-                  })
-                  setSelectionYearResults((prevDates: any[]) => {
-                    return prevDates?.map((prevDate, index) => {
-                      if (containerIndex == index) {
-                        return {
-                          form: prevDate?.form?.map((date, formIndex) => {
-                            if (projectIndex == formIndex) {
-                              return {
-                                date: data?.map((item) => {
-                                  return {
-                                    month: item.projects.month,
-                                    year: item.projects.year,
-                                  }
-                                }),
-                              }
-                            }
-                            return date
-                          }),
-                        }
-                      }
-                      return prevDate
-                    })
+                    }
+                    return prevDate
                   })
                 })
-                .catch((error) => {
-                  console.error('Something is wrong with filter function:', error)
+                setSelectionYearResults((prevDates: any[]) => {
+                  return prevDates?.map((prevDate, index) => {
+                    if (containerIndex == index) {
+                      return {
+                        form: prevDate?.form?.map((date, formIndex) => {
+                          if (projectIndex == formIndex) {
+                            return {
+                              date: data?.map((item) => {
+                                return {
+                                  month: item.projects.month,
+                                  year: item.projects.year,
+                                }
+                              }),
+                            }
+                          }
+                          return date
+                        }),
+                      }
+                    }
+                    return prevDate
+                  })
                 })
+              })
+              .catch((error) => {
+                console.error('Something is wrong with filter function:', error)
+              })
           }
           return employee
         })
@@ -335,39 +353,39 @@ const EmployeeExpensesResultsRegistration = () => {
             project_name,
             year,
           }
-          if(containerIndex === index){
-              getFilteredEmployeeExpenseResults(filterParams, token)
-                .then((data) => {
-                  setFilteredDates((prevDates: any[]) => {
-                    return prevDates?.map((prevDate, index) => {
-                      if (containerIndex == index) {
-                        return {
-                          form: prevDate?.form?.map((date, formIndex) => {
-                            if (projectIndex == formIndex) {
-                              return {
-                                date: data?.map((item) => {
-                                  return {
-                                    month: item.projects.month,
-                                    year: item.projects.year,
-                                  }
-                                }),
-                              }
+          if (containerIndex === index) {
+            getFilteredEmployeeExpenseResults(filterParams, token)
+              .then((data) => {
+                setFilteredDates((prevDates: any[]) => {
+                  return prevDates?.map((prevDate, index) => {
+                    if (containerIndex == index) {
+                      return {
+                        form: prevDate?.form?.map((date, formIndex) => {
+                          if (projectIndex == formIndex) {
+                            return {
+                              date: data?.map((item) => {
+                                return {
+                                  month: item.projects.month,
+                                  year: item.projects.year,
+                                }
+                              }),
                             }
-                            return date
-                          }),
-                        }
+                          }
+                          return date
+                        }),
                       }
-                      return prevDate
-                    })
+                    }
+                    return prevDate
                   })
                 })
-                .catch((error) => {
-                  console.error('Something is wrong with filter function:', error)
-                })
+              })
+              .catch((error) => {
+                console.error('Something is wrong with filter function:', error)
+              })
           }
           return employee
         })
-      } else  if (name === 'month') {
+      } else if (name === 'month') {
         const selectedProject = projectsSalesResults.find((project) => project.projects.project_id === value)
 
         newContainers[containerIndex].projectEntries[projectIndex] = {
@@ -385,7 +403,7 @@ const EmployeeExpensesResultsRegistration = () => {
             ...(year && { year }),
             ...(month && { month }),
           }
-          if(containerIndex === index){
+          if (containerIndex === index) {
             getFilteredEmployeeExpenseResults(filterParams, token)
               .then((data) => {
                 employee.projectEntries[projectIndex].project_id = data[0].projects.project_id
@@ -397,14 +415,13 @@ const EmployeeExpensesResultsRegistration = () => {
           }
           return employee
         })
-      }else {
+      } else {
         newContainers[containerIndex].projectEntries[projectIndex] = {
           ...newContainers[containerIndex].projectEntries[projectIndex],
           [name]: value,
         }
       }
-    } 
-    else {
+    } else {
       newContainers[containerIndex] = {
         ...newContainers[containerIndex],
         [name]: value,
@@ -512,7 +529,7 @@ const EmployeeExpensesResultsRegistration = () => {
 
     // Step 5: Display the first set of errors found, if any
     const firstError = errorMapping.find(({ errors }) => errors.length > 0)
-    
+
     if (firstError) {
       const { errors, errorType } = firstError
       const translatedErrors = translateAndFormatErrors(errors, language, errorType)
@@ -532,7 +549,9 @@ const EmployeeExpensesResultsRegistration = () => {
           {
             id: 1,
             employee: '',
-            projectEntries: [{ id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '', project_id: '' }],
+            projectEntries: [
+              { id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '', project_id: '' },
+            ],
           },
         ])
       })
@@ -570,7 +589,7 @@ const EmployeeExpensesResultsRegistration = () => {
   const handleListClick = () => {
     navigate('/employee-expenses-results-list')
   }
-  
+
   return (
     <div className='employeeExpensesResultsRegistration_wrapper'>
       <HeaderButtons
@@ -645,11 +664,7 @@ const EmployeeExpensesResultsRegistration = () => {
                                   onChange={(e) => handleInputChange(containerIndex, rowIndex, e)}
                                 >
                                   <option value=''>{translate('selectProject', language)}</option>
-                                  {[
-                                    ...new Map(
-                                      projectsSalesResults.map((project) => [project.projects.project_name, project]),
-                                    ).values(),
-                                  ].map((project) => (
+                                  {projectsSalesResults.map((project) => (
                                     <option
                                       key={project.projects.project_id}
                                       value={project.projects.project_name}

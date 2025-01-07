@@ -162,6 +162,7 @@ const EmployeeExpensesRegistration = () => {
           .then((data) => {
             const result = uniqueProjects(data)
             setProjects(result)
+            
           })
           .catch((error) => {
             if (error.response && error.response.status === 401) {
@@ -184,7 +185,7 @@ const EmployeeExpensesRegistration = () => {
   const uniqueProjects = (projects) => {
     const seen = new Set()
     return projects.filter((project) => {
-      const identifier = `${project.project_name}-${project.business_division}`
+      const identifier = `${project.project_name}-${project.business_division}-${project.client}`
       if (seen.has(identifier)) {
         return false
       }
@@ -615,9 +616,7 @@ const EmployeeExpensesRegistration = () => {
                                   onChange={(e) => handleInputChange(containerIndex, projectIndex, e)}
                                 >
                                   <option value=''>{translate('selectProject', language)}</option>
-                                  {[
-                                    ...new Map(projects.map((project) => [project.project_name, project])).values(),
-                                  ].map((project) => (
+                                  {projects.map((project) => (
                                     <option
                                       key={project.project_id}
                                       value={project.project_name}
