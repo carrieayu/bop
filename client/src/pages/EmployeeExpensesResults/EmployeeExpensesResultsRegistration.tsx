@@ -173,7 +173,7 @@ const EmployeeExpensesResultsRegistration = () => {
     fetchData()
   }, [token])
 
-  //This function will make ProjectName unique base on project_name and business_division on Employee Expense Results 
+  //This function will make ProjectName unique base on project_name , client and business_division on Employee Expense Results 
   const uniqueProjectsResults = (projects) => {
     console.log(projects);
     

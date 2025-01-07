@@ -181,7 +181,7 @@ const EmployeeExpensesRegistration = () => {
 
   const maximumEntries = 5
 
-  //This function will make ProjectName unique base on project_name and business_division
+  //This function will make ProjectName unique base on project_name, client and business_division
   const uniqueProjects = (projects) => {
     const seen = new Set()
     return projects.filter((project) => {
