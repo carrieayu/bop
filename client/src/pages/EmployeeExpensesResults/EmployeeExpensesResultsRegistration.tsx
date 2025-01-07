@@ -155,6 +155,8 @@ const EmployeeExpensesResultsRegistration = () => {
 
         getProjectSalesResults(token)
           .then((data) => {
+            console.log(data);
+            
             const result = uniqueProjectsResults(data)
             setProjectSalesResult(result)
           })
@@ -175,8 +177,6 @@ const EmployeeExpensesResultsRegistration = () => {
 
   //This function will make ProjectName unique base on project_name , client and business_division on Employee Expense Results 
   const uniqueProjectsResults = (projects) => {
-    console.log(projects);
-    
     const seen = new Set()
     return projects.filter((project) => {
       const identifier = `${project.projects.project_name}-${project.projects.business_division}-${project.projects.client}`
@@ -668,7 +668,7 @@ const EmployeeExpensesResultsRegistration = () => {
                                     <option
                                       key={project.projects.project_id}
                                       value={project.projects.project_name}
-                                      title={project.projects.business_name}
+                                      title={project.projects.business_name + ':' + project.projects.client_name}
                                     >
                                       {project.projects.project_name}
                                     </option>

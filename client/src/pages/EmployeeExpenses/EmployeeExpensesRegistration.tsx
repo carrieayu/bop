@@ -620,7 +620,7 @@ const EmployeeExpensesRegistration = () => {
                                     <option
                                       key={project.project_id}
                                       value={project.project_name}
-                                      title={project.business_name}
+                                      title={project.business_name + ':' + project.client_name}
                                     >
                                       {project.project_name}
                                     </option>
