@@ -1629,6 +1629,8 @@ class EmployeeExpensesResultsFilter(generics.ListCreateAPIView):
         month = self.request.GET.get('month')
         year = self.request.GET.get('year')
         project_name = self.request.GET.get('project_name')
+        client = self.request.GET.get('client')
+        business_division = self.request.GET.get('business_division')
 
         queryset = self.queryset
         if month:
@@ -1637,6 +1639,11 @@ class EmployeeExpensesResultsFilter(generics.ListCreateAPIView):
             queryset = queryset.filter(project__year=year)
         if project_name:
             queryset = queryset.filter(project__project_name=project_name)
+        if client:
+            queryset = queryset.filter(project__client=client)
+        if business_division:
+            queryset = queryset.filter(project__business_division=business_division)
+
         return queryset
     
 class EmployeeExpensesFilter(generics.ListCreateAPIView):
@@ -1648,6 +1655,8 @@ class EmployeeExpensesFilter(generics.ListCreateAPIView):
         month = self.request.GET.get('month')
         year = self.request.GET.get('year')
         project_name = self.request.GET.get('project_name')
+        client = self.request.GET.get('client')
+        business_division = self.request.GET.get('business_division')
 
         queryset = self.queryset
         if month:
@@ -1656,6 +1665,11 @@ class EmployeeExpensesFilter(generics.ListCreateAPIView):
             queryset = queryset.filter(year=year)
         if project_name:
             queryset = queryset.filter(project_name=project_name)
+        if client:
+            queryset = queryset.filter(client=client)
+        if business_division:
+            queryset = queryset.filter(business_division=business_division)
+
         return queryset
 
 # Cost Of Sales

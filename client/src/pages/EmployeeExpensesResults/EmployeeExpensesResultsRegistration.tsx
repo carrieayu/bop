@@ -278,9 +278,12 @@ const EmployeeExpensesResultsRegistration = () => {
         }
         employeeContainers.map((employee, index) => {
           const getProjectResultsName = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
-          const project_name = getProjectResultsName?.split(':')[1] || getProjectResultsName
+          const [project_id = null, project_name = null, client = null, business_division = null] = getProjectResultsName?.split(':') || []
           const filterParams = {
+            ...(project_id && { project_id }),
             ...(project_name && { project_name }),
+            ...(client && { client }),
+            ...(business_division && { business_division }),
           }
           if (containerIndex === index) {
             getFilteredEmployeeExpenseResults(filterParams, token)
@@ -668,7 +671,7 @@ const EmployeeExpensesResultsRegistration = () => {
                                   {projectsSalesResults.map((project) => (
                                     <option
                                       key={project.projects.project_id}
-                                      value={`${project.projects.project_id}:${project.projects.project_name}`}
+                                      value={`${project.projects.project_id}:${project.projects.project_name}:${project.projects.client}:${project.projects.business_division}`}
                                       title={project.projects.business_name + ':' + project.projects.client_name}
                                     >
                                       {project.projects.project_name}

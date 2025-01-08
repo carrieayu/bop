@@ -162,7 +162,6 @@ const EmployeeExpensesRegistration = () => {
           .then((data) => {
             const result = uniqueProjects(data)
             setProjects(result)
-            
           })
           .catch((error) => {
             if (error.response && error.response.status === 401) {
@@ -276,7 +275,6 @@ const EmployeeExpensesRegistration = () => {
     if (projectIndex !== null) {
       if (name === 'projects') {
         const selectedProject = projects.find((project) => project.project_id === value)
-
         newContainers[containerIndex].projectEntries[projectIndex] = {
           ...newContainers[containerIndex].projectEntries[projectIndex],
           projects: value,
@@ -287,9 +285,12 @@ const EmployeeExpensesRegistration = () => {
 
         employeeContainers.map((employee, index) => {
           const getProjectName = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
-          const project_name = getProjectName?.split(':')[1] || getProjectName
+          const [project_id = null, project_name = null, client = null, business_division = null] = getProjectName?.split(':') || []
           const filterParams = {
+            ...(project_id && { project_id }),
             ...(project_name && { project_name }),
+            ...(client && { client }),
+            ...(business_division && { business_division }),
           }
           if (containerIndex === index) {
             getFilteredEmployeeExpense(filterParams, token)
@@ -622,7 +623,7 @@ const EmployeeExpensesRegistration = () => {
                                   {projects.map((project) => (
                                     <option
                                       key={project.project_id}
-                                      value={`${project.project_id}:${project.project_name}`}
+                                      value={`${project.project_id}:${project.project_name}:${project.client}:${project.business_division}`}
                                       title={project.business_name + ':' + project.client_name}
                                     >
                                       {project.project_name}
