@@ -1295,8 +1295,9 @@ class EmployeeExpensesList(generics.ListAPIView):
                 employee_insurance_premium = employee['insurance_premium'] if employee else 0
                 employee_id = employee['employee_id'] if project else '' 
                 project_name = project['project_name'] if project else ''  # Default to empty string if None
-                project_id = project['project_id'] if project else ''  
-                # print("project",project['project_id'])
+                project_id = project['project_id'] if project else ''
+                client_name = project['client_name'] if project else '' 
+                business_division = project['business_name'] if project else ''
 
                 employee_expenses_data.append({
                     'employee_expense_id': expense.get('employee_expense_id', ''),
@@ -1312,7 +1313,9 @@ class EmployeeExpensesList(generics.ListAPIView):
                     'insurance_premium':employee_insurance_premium,
                     'employee_id': employee_id,
                     'project_name': project_name,
-                    'project_id': project_id
+                    'project_id': project_id,
+                    'client_name': client_name,
+                    'business_division_name': business_division
                 })
 
         return Response(employee_expenses_data)
@@ -1472,6 +1475,8 @@ class EmployeeExpensesResultsList(generics.ListAPIView):
             employee_id = employee['employee_id'] if project else '' 
             project_name = project.get('project_name') if project else ''  
             project_id = project['project_id'] if project else ''  
+            client_name = project['client_name'] if project else '' 
+            business_division = project['business_name'] if project else ''
             # print("project",project['project_id'])
 
             employee_expenses_results_data.append({
@@ -1488,7 +1493,9 @@ class EmployeeExpensesResultsList(generics.ListAPIView):
                 'insurance_premium':employee_insurance_premium,
                 'employee_id': employee_id,
                 'project_name': project_name,
-                'project_id': project_id
+                'project_id': project_id,
+                'client_name': client_name,
+                'business_division_name': business_division
             })
 
         return Response(employee_expenses_results_data)

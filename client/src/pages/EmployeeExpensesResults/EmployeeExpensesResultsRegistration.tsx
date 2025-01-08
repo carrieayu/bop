@@ -217,7 +217,7 @@ const EmployeeExpensesResultsRegistration = () => {
     const updatedContainers = [...employeeContainers]
     const projectEntries = updatedContainers[containerIndex].projectEntries
 
-    if (projectEntries.length < 3) {
+    if (projectEntries.length < 5) {
       const newEntry = {
         id: projectEntries.length + 1, // Unique ID for each project entry
         clients: '',
