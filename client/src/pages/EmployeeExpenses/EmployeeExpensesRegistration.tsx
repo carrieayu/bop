@@ -286,64 +286,65 @@ const EmployeeExpensesRegistration = () => {
         }
 
         employeeContainers.map((employee, index) => {
-                  const project_name = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
-                  const filterParams = {
-                    ...(project_name && { project_name }),
-                  }
-                  if(containerIndex === index) {
-                      getFilteredEmployeeExpense(filterParams, token)
-                        .then((data) => {
-                          setFilteredDates((prevDates: any[]) => {
-                            return prevDates?.map((prevDate, index) => {
-                              if (containerIndex == index) {
+          const getProjectName = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
+          const project_name = getProjectName?.split(':')[1] || getProjectName
+          const filterParams = {
+            ...(project_name && { project_name }),
+          }
+          if (containerIndex === index) {
+            getFilteredEmployeeExpense(filterParams, token)
+              .then((data) => {
+                setFilteredDates((prevDates: any[]) => {
+                  return prevDates?.map((prevDate, index) => {
+                    if (containerIndex == index) {
+                      return {
+                        form: prevDate?.form?.map((date, formIndex) => {
+                          if (projectIndex == formIndex) {
+                            return {
+                              date: data?.map((item) => {
                                 return {
-                                  form: prevDate?.form?.map((date, formIndex) => {
-                                    if (projectIndex == formIndex) {
-                                      return {
-                                        date: data?.map((item) => {
-                                          return {
-                                            month: item.month,
-                                            year: item.year,
-                                          }
-                                        }),
-                                      }
-                                    }
-                                    return date
-                                  }),
+                                  month: item.month,
+                                  year: item.year,
                                 }
-                              }
-                              return prevDate
-                            })
-                          })
-                          setSelectionYear((prevDates: any[]) => {
-                            return prevDates?.map((prevDate, index) => {
-                              if (containerIndex == index) {
-                                return {
-                                  form: prevDate?.form?.map((date, formIndex) => {
-                                    if (projectIndex == formIndex) {
-                                      return {
-                                        date: data?.map((item) => {
-                                          return {
-                                            month: item.month,
-                                            year: item.year,
-                                          }
-                                        }),
-                                      }
-                                    }
-                                    return date
-                                  }),
-                                }
-                              }
-                              return prevDate
-                            })
-                          })
-                        })
-                        .catch((error) => {
-                          console.error('Something is wrong with filter function:', error)
-                        })
-                  }
-                  return employee
+                              }),
+                            }
+                          }
+                          return date
+                        }),
+                      }
+                    }
+                    return prevDate
+                  })
                 })
+                setSelectionYear((prevDates: any[]) => {
+                  return prevDates?.map((prevDate, index) => {
+                    if (containerIndex == index) {
+                      return {
+                        form: prevDate?.form?.map((date, formIndex) => {
+                          if (projectIndex == formIndex) {
+                            return {
+                              date: data?.map((item) => {
+                                return {
+                                  month: item.month,
+                                  year: item.year,
+                                }
+                              }),
+                            }
+                          }
+                          return date
+                        }),
+                      }
+                    }
+                    return prevDate
+                  })
+                })
+              })
+              .catch((error) => {
+                console.error('Something is wrong with filter function:', error)
+              })
+          }
+          return employee
+        })
       } else if(name === 'year'){
         const selectedProject = projects.find((project) => project.project_id === value)
 
@@ -354,7 +355,8 @@ const EmployeeExpensesRegistration = () => {
         }
 
         employeeContainers.map((employee, index) => {
-          const project_name = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
+          const getProjectName = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
+          const project_name = getProjectName?.split(':')[1] || getProjectName
           const year = employee.projectEntries.flatMap((entry) => entry.year)[projectIndex]
           const filterParams = {
             project_name,
@@ -403,7 +405,8 @@ const EmployeeExpensesRegistration = () => {
         }
 
         employeeContainers.map((employee, index) => {
-          const project_name = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
+          const getProjectName = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
+          const project_name = getProjectName?.split(':')[1] || getProjectName
           const year = employee.projectEntries.flatMap((entry) => entry.year)[projectIndex]
           const month = employee.projectEntries.flatMap((entry) => entry.month)[projectIndex]
           const filterParams = {
@@ -619,7 +622,7 @@ const EmployeeExpensesRegistration = () => {
                                   {projects.map((project) => (
                                     <option
                                       key={project.project_id}
-                                      value={project.project_name}
+                                      value={`${project.project_id}:${project.project_name}`}
                                       title={project.business_name + ':' + project.client_name}
                                     >
                                       {project.project_name}

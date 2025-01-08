@@ -277,7 +277,8 @@ const EmployeeExpensesResultsRegistration = () => {
           month: '',
         }
         employeeContainers.map((employee, index) => {
-          const project_name = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
+          const getProjectResultsName = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
+          const project_name = getProjectResultsName?.split(':')[1] || getProjectResultsName
           const filterParams = {
             ...(project_name && { project_name }),
           }
@@ -345,7 +346,8 @@ const EmployeeExpensesResultsRegistration = () => {
         }
 
         employeeContainers.map((employee, index) => {
-          const project_name = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
+          const getProjectResultsName = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
+          const project_name = getProjectResultsName?.split(':')[1] || getProjectResultsName
           const year = employee.projectEntries.flatMap((entry) => entry.year)[projectIndex]
           const filterParams = {
             project_name,
@@ -393,7 +395,8 @@ const EmployeeExpensesResultsRegistration = () => {
         }
 
         employeeContainers.map((employee, index) => {
-          const project_name = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
+          const getProjectResultsName = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
+          const project_name = getProjectResultsName?.split(':')[1] || getProjectResultsName
           const year = employee.projectEntries.flatMap((entry) => entry.year)[projectIndex]
           const month = employee.projectEntries.flatMap((entry) => entry.month)[projectIndex]
           const filterParams = {
@@ -665,7 +668,7 @@ const EmployeeExpensesResultsRegistration = () => {
                                   {projectsSalesResults.map((project) => (
                                     <option
                                       key={project.projects.project_id}
-                                      value={project.projects.project_name}
+                                      value={`${project.projects.project_id}:${project.projects.project_name}`}
                                       title={project.projects.business_name + ':' + project.projects.client_name}
                                     >
                                       {project.projects.project_name}
