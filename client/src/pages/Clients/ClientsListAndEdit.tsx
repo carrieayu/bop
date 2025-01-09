@@ -139,24 +139,24 @@ const ClientsListAndEdit: React.FC = () => {
 
     // Step 4: Map error types to data and translation keys for handling in the modal
     const errorMapping = [
-      { errors: validationErrors, errorType: 'normalValidation' },
-      { errors: duplicateErrors, errorType: 'duplicateValidation' },
-    ]
-
-    // Step 5: Display the first set of errors found, if any
-    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
-    console.log(firstError, 'first error', typeof firstError, firstError.errors.length)
-    if (firstError) {
-      const { errors, errorType } = firstError
-      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
-      console.log(translatedErrors, 'trans errors')
-      setCrudMessage(translatedErrors)
-      setCrudValidationErrors(translatedErrors)
-      setIsCRUDOpen(true)
-      return
-    } else {
-      setCrudValidationErrors([])
-    }
+          { errors: validationErrors, errorType: 'normalValidation' },
+          { errors: duplicateErrors, errorType: 'duplicateValidation' },
+        ]
+    
+        // Step 5: Display the first set of errors found, if any
+        const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+    
+        if (firstError) {
+          const { errors, errorType } = firstError
+          const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+          console.log(translatedErrors, 'trans errors')
+          setCrudMessage(translatedErrors)
+          setCrudValidationErrors(translatedErrors)
+          setIsCRUDOpen(true)
+          return
+        } else {
+          setCrudValidationErrors([])
+        }
 
     const getModifiedFields = (original, updated) => {
       const modifiedFields = []
@@ -191,6 +191,7 @@ const ClientsListAndEdit: React.FC = () => {
     updateMasterClient(modifiedFields, token)
       .then(() => {
         setCrudMessage(translate('successfullyUpdated', language))
+        setOriginalClientsList(updatedClients)
         setIsCRUDOpen(true)
         setIsEditing(false)
       })
