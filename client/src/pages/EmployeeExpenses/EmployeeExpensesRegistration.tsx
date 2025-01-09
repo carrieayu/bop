@@ -271,10 +271,10 @@ const EmployeeExpensesRegistration = () => {
   const handleInputChange = (containerIndex, projectIndex, event) => {
     const { name, value } = event.target
     const newContainers = [...employeeContainers]
-
+    const [project_id = null] = value?.split(':') || []
     if (projectIndex !== null) {
       if (name === 'projects') {
-        const selectedProject = projects.find((project) => project.project_id === value)
+        const selectedProject = projects.find((project) => project.project_id === project_id)
         newContainers[containerIndex].projectEntries[projectIndex] = {
           ...newContainers[containerIndex].projectEntries[projectIndex],
           projects: value,
@@ -347,8 +347,7 @@ const EmployeeExpensesRegistration = () => {
           return employee
         })
       } else if(name === 'year'){
-        const selectedProject = projects.find((project) => project.project_id === value)
-
+        const selectedProject = projects.find((project) => project.project_id === project_id)
         newContainers[containerIndex].projectEntries[projectIndex] = {
           ...newContainers[containerIndex].projectEntries[projectIndex],
           year: value,
@@ -397,7 +396,7 @@ const EmployeeExpensesRegistration = () => {
         })
 
       } else if (name === 'month') {
-        const selectedProject = projects.find((project) => project.project_id === value)
+        const selectedProject = projects.find((project) => project.project_id === project_id)
 
         newContainers[containerIndex].projectEntries[projectIndex] = {
           ...newContainers[containerIndex].projectEntries[projectIndex],
@@ -408,10 +407,15 @@ const EmployeeExpensesRegistration = () => {
         employeeContainers.map((employee, index) => {
           const getProjectName = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
           const project_name = getProjectName?.split(':')[1] || getProjectName
+          const client = getProjectName?.split(':')[2] || getProjectName
+          const business_division = getProjectName?.split(':')[3] || getProjectName
           const year = employee.projectEntries.flatMap((entry) => entry.year)[projectIndex]
           const month = employee.projectEntries.flatMap((entry) => entry.month)[projectIndex]
+
           const filterParams = {
             ...(project_name && { project_name }),
+            ...(client && { client }),
+            ...(business_division && { business_division }),
             ...(year && { year }),
             ...(month && { month }),
           }
@@ -496,7 +500,6 @@ const EmployeeExpensesRegistration = () => {
       setCrudValidationErrors([])
     }
     // Continue with submission if no errors
-
     createEmployeeExpense(employeeContainers, token)
       .then(() => {
         setModalMessage(translate('successfullySaved', language))
