@@ -264,11 +264,10 @@ const EmployeeExpensesResultsRegistration = () => {
   const handleInputChange = (containerIndex, projectIndex, event) => {
     const { name, value } = event.target
     const newContainers = [...employeeContainers]
-
+    const [project_id = null] = value?.split(':') || []
     if (projectIndex !== null) {
       if (name === 'projects') {
-        const selectedProject = projectsSalesResults.find((project) => project.projects.project_id === value)
-
+        const selectedProject = projectsSalesResults.find((project) => project.projects.project_id === project_id)
         newContainers[containerIndex].projectEntries[projectIndex] = {
           ...newContainers[containerIndex].projectEntries[projectIndex],
           projects: value,
@@ -340,20 +339,23 @@ const EmployeeExpensesResultsRegistration = () => {
           return employee
         })
       } else if (name === 'year') {
-        const selectedProject = projectsSalesResults.find((project) => project.projects.project_id === value)
-
+        const selectedProject = projectsSalesResults.find((project) => project.projects.project_id === project_id)
         newContainers[containerIndex].projectEntries[projectIndex] = {
           ...newContainers[containerIndex].projectEntries[projectIndex],
           year: value,
           clients: selectedProject ? selectedProject.projects.client : '',
         }
-
         employeeContainers.map((employee, index) => {
           const getProjectResultsName = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
           const project_name = getProjectResultsName?.split(':')[1] || getProjectResultsName
+          const client = getProjectResultsName?.split(':')[2] || getProjectResultsName
+          const business_division = getProjectResultsName?.split(':')[3] || getProjectResultsName
           const year = employee.projectEntries.flatMap((entry) => entry.year)[projectIndex]
           const filterParams = {
             project_name,
+            ...(project_name && { project_name }),
+            ...(client && { client }),
+            ...(business_division && { business_division }),
             year,
           }
           if (containerIndex === index) {
@@ -389,7 +391,7 @@ const EmployeeExpensesResultsRegistration = () => {
           return employee
         })
       } else if (name === 'month') {
-        const selectedProject = projectsSalesResults.find((project) => project.projects.project_id === value)
+        const selectedProject = projectsSalesResults.find((project) => project.projects.project_id === project_id)
 
         newContainers[containerIndex].projectEntries[projectIndex] = {
           ...newContainers[containerIndex].projectEntries[projectIndex],
@@ -400,16 +402,22 @@ const EmployeeExpensesResultsRegistration = () => {
         employeeContainers.map((employee, index) => {
           const getProjectResultsName = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
           const project_name = getProjectResultsName?.split(':')[1] || getProjectResultsName
+          const client = getProjectResultsName?.split(':')[2] || getProjectResultsName
+          const business_division = getProjectResultsName?.split(':')[3] || getProjectResultsName
           const year = employee.projectEntries.flatMap((entry) => entry.year)[projectIndex]
           const month = employee.projectEntries.flatMap((entry) => entry.month)[projectIndex]
+
           const filterParams = {
             ...(project_name && { project_name }),
+            ...(client && { client }),
+            ...(business_division && { business_division }),
             ...(year && { year }),
             ...(month && { month }),
           }
           if (containerIndex === index) {
             getFilteredEmployeeExpenseResults(filterParams, token)
               .then((data) => {
+                console.log(data);
                 employee.projectEntries[projectIndex].project_id = data[0].projects.project_id
                 employee.projectEntries[projectIndex].clients = data[0].projects.client
               })

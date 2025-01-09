@@ -357,9 +357,13 @@ const EmployeeExpensesRegistration = () => {
         employeeContainers.map((employee, index) => {
           const getProjectName = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
           const project_name = getProjectName?.split(':')[1] || getProjectName
+          const client = getProjectName?.split(':')[2] || getProjectName
+          const business_division = getProjectName?.split(':')[3] || getProjectName
           const year = employee.projectEntries.flatMap((entry) => entry.year)[projectIndex]
           const filterParams = {
             project_name,
+            ...(client && { client }),
+            ...(business_division && { business_division }),
             year,
           }
           if (containerIndex === index) {
