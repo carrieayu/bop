@@ -94,7 +94,7 @@ urlpatterns = [
     path('api/cost-of-sales-results/create/', CostOfSalesResultsCreate.as_view(), name='cost-of-sales-results-create'),
     path('api/cost-of-sales-results/update/', CostOfSalesResultsUpdate.as_view(), name='cost-of-sales-results-update'),
     path('api/cost-of-sales-results/<str:pk>/delete/', CostOfSalesResultsDelete.as_view(), name='cost-of-sales-results-delete'),
-    path('api/cost-of-sales-results/filter/', CostOfSalesResultsFilter.as_view(), name="project-sales-filtered-list"),
+    path('api/cost-of-sales-results/filter/', CostOfSalesResultsFilter.as_view(), name="cost-of-sales-filtered-list"),
 
     # Employees
     path('api/employees/list/', EmployeesList.as_view(), name = 'employees-list'),

@@ -15,7 +15,7 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs ,formatNumberWithCommas, removeCommas} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs ,formatNumberWithCommas, removeCommas, sortByFinancialYear} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { filterExpenseResults } from '../../api/ExpenseResultEndpoint/FilterExpenseResults'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
 
@@ -591,8 +591,8 @@ const ExpensesResultsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           >
                             <option value=''>{translate('selectMonth', language)}</option>
-                            {filteredMonth[index]?.month?.sort((a,b) => a.month - b.month).map((month, idx) => (
-                              <option key={idx} value={month}>
+                            {sortByFinancialYear(filteredMonth[index]?.month || []).map((month, idx) => (
+                              <option key={idx} value={month.month}>
                                 {language === 'en' ? monthNames[month.month].en : monthNames[month.month].jp}
                               </option>
                             ))}
