@@ -557,7 +557,6 @@ const EmployeeExpensesList: React.FC = () => {
                                   existingMonthlyExpenses[monthIndex].total_salary += expense.employee_salary
                                 }
                               }
-                              console.log(yearGroup)
                               return acc
                             }, [])
                             .flatMap((yearGroup, yearIndex) => [
