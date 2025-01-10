@@ -39,21 +39,26 @@ const ResultsListAndEdit = () => {
   const [initialLanguage, setInitialLanguage] = useState(language)
   const [isXLSModalOpen, setIsXLSModalOpen] = useState(false)
   const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
-  const monthsNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ]
-  const additionalHeaders = ['H1', 'H2', 'Year Total', 'Sales%']
+  const monthsNames = {
+    1: { en: 'January', jp: '1月' },
+    2: { en: 'February', jp: '2月' },
+    3: { en: 'March', jp: '3月' },
+    4: { en: 'April', jp: '4月' },
+    5: { en: 'May', jp: '5月' },
+    6: { en: 'June', jp: '6月' },
+    7: { en: 'July', jp: '7月' },
+    8: { en: 'August', jp: '8月' },
+    9: { en: 'September', jp: '9月' },
+    10: { en: 'October', jp: '10月' },
+    11: { en: 'November', jp: '11月' },
+    12: { en: 'December', jp: '12月' },
+  }
+  const additionalHeaders = {
+    1: { en: 'H1', jp: '上期計	' },
+    2: { en: 'H2', jp: '下期計	' },
+    3: { en: 'Year Total', jp: '合計' },
+    4: { en: 'Sales%', jp: '売上比' },
+  }
 
   const closeModal = () => {
     setIsXLSModalOpen(false)
@@ -342,10 +347,10 @@ const ResultsListAndEdit = () => {
         const firstHalfTotal = (arr) => arr.slice(0, 6).reduce((acc, value) => acc + parseFloat(value), 0)
         const secondHalfTotal = (arr) => arr.slice(6).reduce((acc, value) => acc + parseFloat(value), 0)
         const total = (arr) => arr.reduce((acc, value) => acc + parseFloat(value), 0)
-
+        const header = translate('results', language)
         const data = [
           {
-            label: 'Sales Revenue',
+            label: translate('salesRevenue', language),
             values: [
               ...salesValues,
 
@@ -356,7 +361,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Sales ',
+            label: translate('sales', language),
             values: [
               ...salesValues,
               firstHalfTotal(salesValues),
@@ -367,7 +372,7 @@ const ResultsListAndEdit = () => {
           },
           //start of cost of sales portion
           {
-            label: 'Cost Of Sales',
+            label: translate('costOfSales', language),
             values: [
               ...costOfSalesValues,
               firstHalfTotal(costOfSalesValues),
@@ -377,7 +382,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Purchases',
+            label: translate('purchases', language),
             values: [
               ...purchasesValues,
               firstHalfTotal(purchasesValues),
@@ -387,7 +392,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Outsourcing Expenses',
+            label: translate('outsourcingExpenses', language),
             values: [
               ...outsourcingExpenseValues,
               firstHalfTotal(outsourcingExpenseValues),
@@ -397,7 +402,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Product Purchases',
+            label: translate('productPurchases', language),
             values: [
               ...productPurchaseValues,
               firstHalfTotal(productPurchaseValues),
@@ -407,7 +412,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Dispatch Labor Expenses',
+            label: translate('dispatchLaborExpenses', language),
             values: [
               ...dispatchLaborExpenseValues,
               firstHalfTotal(dispatchLaborExpenseValues),
@@ -417,7 +422,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Communication Expenses',
+            label: translate('communicationExpenses', language),
             values: [
               ...communicationCostValues,
               firstHalfTotal(communicationCostValues),
@@ -427,7 +432,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Work in Progress Expenses',
+            label: translate('workInProgressExpenses', language),
             values: [
               ...workInProgressValues,
               firstHalfTotal(workInProgressValues),
@@ -437,7 +442,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Amortization Expenses',
+            label: translate('amortizationExpenses', language),
             values: [
               ...amortizationValues,
               firstHalfTotal(amortizationValues),
@@ -448,7 +453,7 @@ const ResultsListAndEdit = () => {
           },
           // end for cost of sales section
           {
-            label: 'Gross Profit',
+            label: translate('grossProfit', language),
             values: [
               ...grossProfitValues,
               firstHalfTotal(grossProfitValues),
@@ -459,7 +464,7 @@ const ResultsListAndEdit = () => {
           },
           // start for employee expense section
           {
-            label: 'Employee Expenses',
+            label: translate('employeeExpenses', language),
             values: [
               ...employeeExpensesValues,
               firstHalfTotal(employeeExpensesValues),
@@ -469,7 +474,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Executive Enumeration',
+            label: translate('executiveRenumerations', language),
             values: [
               ...executiveRenumerationValues,
               firstHalfTotal(executiveRenumerationValues),
@@ -479,7 +484,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Salary',
+            label: translate('salary', language),
             values: [
               ...salaryValues,
               firstHalfTotal(salaryValues),
@@ -489,7 +494,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Bonus and Fuel Allowance',
+            label: translate('bonusAndFuelAllowances', language),
             values: [
               ...bonusAndFuelAllowanceValues,
               firstHalfTotal(bonusAndFuelAllowanceValues),
@@ -499,7 +504,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Statutory Welfare Expenses',
+            label: translate('statutoryWelfareExpenses', language),
             values: [
               ...statutoryWelfareExpenseValues,
               firstHalfTotal(statutoryWelfareExpenseValues),
@@ -509,7 +514,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Welfare Expenses',
+            label: translate('welfareExpenses', language),
             values: [
               ...welfareExpenseValues,
               firstHalfTotal(welfareExpenseValues),
@@ -519,7 +524,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Insurance Premiums',
+            label: translate('insurancePremiums', language),
             values: [
               ...insurancePremiumsValues,
               firstHalfTotal(insurancePremiumsValues),
@@ -531,7 +536,7 @@ const ResultsListAndEdit = () => {
           //end for employee expense section
           //start for expenses section
           {
-            label: 'Expenses',
+            label: translate('expenses', language),
             values: [
               ...expenseValues,
               firstHalfTotal(expenseValues),
@@ -541,7 +546,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Consumable Expenses',
+            label: translate('consumableExpenses', language),
             values: [
               ...consumableValues,
               firstHalfTotal(consumableValues),
@@ -551,11 +556,11 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Rent Expenses',
+            label: translate('rentExpenses', language),
             values: [...rentValues, firstHalfTotal(rentValues), secondHalfTotal(rentValues), total(rentValues), '0'],
           },
           {
-            label: 'Taxes and Public Charges',
+            label: translate('taxesAndPublicCharges', language),
             values: [
               ...taxesPublicChargesValues,
               firstHalfTotal(taxesPublicChargesValues),
@@ -565,7 +570,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Depreciation Expenses',
+            label: translate('depreciationExpenses', language),
             values: [
               ...depreciationExpensesValues,
               firstHalfTotal(depreciationExpensesValues),
@@ -575,7 +580,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Travel Expenses',
+            label: translate('travelExpenses', language),
             values: [
               ...travelExpenseValues,
               firstHalfTotal(travelExpenseValues),
@@ -585,7 +590,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Communication Expenses',
+            label: translate('communicationExpenses', language),
             values: [
               ...communicationExpenseValues,
               firstHalfTotal(communicationExpenseValues),
@@ -595,7 +600,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Utilities Expenses',
+            label: translate('utilitiesExpenses', language),
             values: [
               ...utilitiesValues,
               firstHalfTotal(utilitiesValues),
@@ -605,7 +610,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Transaction Expenses',
+            label: translate('transactionFees', language),
             values: [
               ...transactionFeeValues,
               firstHalfTotal(transactionFeeValues),
@@ -615,7 +620,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Advertising Expenses',
+            label: translate('advertisingExpenses', language),
             values: [
               ...advertisingExpenseValues,
               firstHalfTotal(advertisingExpenseValues),
@@ -625,7 +630,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Entertainment Expenses',
+            label: translate('entertainmentExpenses', language),
             values: [
               ...entertainmentExpenseValues,
               firstHalfTotal(entertainmentExpenseValues),
@@ -635,7 +640,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Professional Services Fees',
+            label: translate('professionalServicesFees', language),
             values: [
               ...professionalServiceFeeValues,
               firstHalfTotal(professionalServiceFeeValues),
@@ -647,7 +652,7 @@ const ResultsListAndEdit = () => {
           // end for expense section
           {
             //add 人件費 + 経費 field
-            label: 'SG&A Expenses', // shortened version as it is too long in English Mode
+            label: translate('sellingAndGeneralAdminExpenses', language), // shortened version as it is too long in English Mode translate('sellingAndGeneralAdminExpenses', language)
             values: [
               ...sellingAndGeneralAdminExpenseValues,
               firstHalfTotal(sellingAndGeneralAdminExpenseValues),
@@ -658,7 +663,7 @@ const ResultsListAndEdit = () => {
           },
           //Operating income 営業利益 ①
           {
-            label: 'Operating Income',
+            label: translate('operatingIncome', language),
             values: [
               ...operatingIncomeValues,
               firstHalfTotal(operatingIncomeValues),
@@ -668,7 +673,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Non-Operating Income',
+            label: translate('nonOperatingIncome', language),
             values: [
               ...nonOperatingIncomeValues,
               firstHalfTotal(nonOperatingIncomeValues),
@@ -678,7 +683,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Non-Operating Expenses',
+            label: translate('nonOperatingExpenses', language),
             values: [
               ...nonOperatingExpensesValues,
               firstHalfTotal(nonOperatingExpensesValues),
@@ -688,7 +693,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Ordinary Income',
+            label: translate('ordinaryIncome', language),
             values: [
               ...ordinaryProfitValues,
               firstHalfTotal(ordinaryProfitValues),
@@ -698,7 +703,7 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: 'Cumulative Ordinary Income',
+            label: translate('cumulativeOrdinaryIncome', language),
             values: [
               ...cumulativeOrdinaryProfitValues,
               firstHalfTotal(cumulativeOrdinaryProfitValues),
@@ -708,11 +713,15 @@ const ResultsListAndEdit = () => {
             ],
           },
         ]
-        // Updated translation base on what language user has selected. 
+        // Updated translation base on what language user has selected.
+        const monthNamesTranslation = Object.values(monthsNames).map(month => month[language]);
+        const reorderedMonthNames = [...monthNamesTranslation.slice(3), ...monthNamesTranslation.slice(0, 3)] //Changed the order of months [Apr - Mar]
+        const additionalHeadersTranslation = Object.values(additionalHeaders).map((month) => month[language])
         const excelRows = [
-          ['', ...monthsNames, ...additionalHeaders],
-          ['', 'Planning', 'Planning', 'Planning', 'Planning', ...Array(11).fill('Planning')],
+          ['', ...reorderedMonthNames, ...additionalHeadersTranslation],
+          ['', header, header, header, header, ...Array(11).fill(header)],
         ]
+
 
         data.forEach((item) => {
           excelRows.push([item.label, ...item.values])
