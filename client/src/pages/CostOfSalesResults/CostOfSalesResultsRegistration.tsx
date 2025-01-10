@@ -551,7 +551,7 @@ const CostOfSalesResultsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           >
                             <option value=''>{translate('selectMonth', language)}</option>
-                            {filteredMonth[index]?.month?.map((month, idx) => (
+                            {filteredMonth[index]?.month?.sort((a,b) => a.month - b.month).map((month, idx) => (
                               <option key={idx} value={month.month}>
                                 {language === 'en' ? monthNames[month.month].en : monthNames[month.month].jp}
                               </option>

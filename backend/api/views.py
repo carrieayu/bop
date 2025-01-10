@@ -1211,6 +1211,22 @@ class ExpensesResultsDelete(generics.DestroyAPIView):
         except ExpensesResults as e:
             return Response({"message": "failed", "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+class ExpensesResultsFilter(generics.ListCreateAPIView):
+    queryset = Expenses.objects.all()
+    serializer_class = ExpensesListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        month = self.request.GET.get('month')
+        year = self.request.GET.get('year')
+        
+        queryset = self.queryset
+        if month:
+            queryset = queryset.filter(month=month)
+        if year:
+            queryset = queryset.filter(year=year)
+        return queryset
+
 # Password
 class PasswordForgotView(generics.CreateAPIView):
     permission_classes = [AllowAny]

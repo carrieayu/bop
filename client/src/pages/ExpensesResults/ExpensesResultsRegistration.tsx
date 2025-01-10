@@ -16,9 +16,22 @@ import {
   checkForDuplicates,
 } from '../../utils/validationUtil'
 import { handleDisableKeysOnNumberInputs ,formatNumberWithCommas, removeCommas} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { filterExpenseResults } from '../../api/ExpenseResultEndpoint/FilterExpenseResults'
+import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
 
 const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
-
+type ExpenseResults = {
+  month: string
+  year: string
+  cost_of_sale_id: string
+}
+type ExpenseResult = {
+  cosr: ExpenseResults[]
+}
+type FilterParams = {
+  month?: string
+  year?: string
+}
 const ExpensesResultsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
@@ -28,6 +41,9 @@ const ExpensesResultsRegistration = () => {
   const { language, setLanguage } = useLanguage()
   const token = localStorage.getItem('accessToken')
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
+  const [expenseResultsData, setExpenseResultData] = useState<ExpenseResult[]>([{ cosr: [] }])
+  const [filteredMonth, setFilteredMonth] = useState<any>([{ month: [] }])
+  const [expenseYear, setExpenseYear] = useState<any>([])
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [formData, setFormData] = useState([
     {
@@ -62,17 +78,45 @@ const ExpensesResultsRegistration = () => {
 
   const handleChange = (index, event) => {
     const { name, value } = event.target
-
-    // Remove commas to get the raw number
-    // EG. 999,999 → 999999 in the DB
     const rawValue = removeCommas(value)
-    
+
     const newFormData = [...formData]
     newFormData[index] = {
       ...newFormData[index],
       [name]: rawValue,
     }
-    setFormData(newFormData)
+    setFormData((prevFormData) => {
+      return prevFormData.map((form, i) => {
+        if (i === index) {
+          const resetFields = {
+            params: ['months'],
+          }
+          let month = form.month
+          if (name == 'year' && value == '') {
+            form.month = ''
+            setFilteredMonth((prev) => {
+              return prev.map((eachMonth, monthIndex) => {
+                if (index == monthIndex) {
+                  return [{}]
+                }
+                return eachMonth
+              })
+            })
+          }
+          const fieldsToReset = resetFields[name] || []
+          const resetValues = fieldsToReset.reduce((acc, field) => {
+            acc[field] = ''
+            return acc
+          }, {})
+          return {
+            ...form,
+            [name]: rawValue,
+            ...resetValues,
+          }
+        }
+        return form
+      })
+    })
   }
 
   const maximumEntries = 10
@@ -98,9 +142,8 @@ const ExpensesResultsRegistration = () => {
         updated_at: '',
       })
       setFormData(newFormData)
-      console.log('add:' + formData)
+      setFilteredMonth([...filteredMonth, { month: [] }])
     } else {
-      console.log('You can only add up to 10 forms.')
     }
   }
 
@@ -119,6 +162,14 @@ const ExpensesResultsRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    let combinedObject = formData.map((form, index) => {
+      const expense = filteredMonth[index]?.month?.find((month) => month.month === form.month)?.expense_id
+      return {
+        ...form,
+        expense,
+      }
+    })
 
     // # Client Side Validation
 
@@ -295,6 +346,45 @@ const ExpensesResultsRegistration = () => {
         setIsOverwriteConfirmed(false)
       })
   }
+
+    useEffect(() => {
+      formData.forEach((exp, index) => {
+        let month = exp.month || ''
+        const year = exp.year || ''
+        let filterParams: FilterParams = {
+          ...(year !== null && { year }),
+        }
+        if (filterParams.year) {
+          filterExpenseResults(filterParams, token).then((data) => {
+            setExpenseResultData((prev) => {
+              return prev.map((row, projectIndex) => {
+                if (index == projectIndex) {
+                  return {
+                    cosr: data,
+                  }
+                }
+                return row
+              })
+            })
+            setFilteredMonth((prev) => {
+              return prev.map((month, monthIndex) => {
+                if (index == monthIndex) {
+                  return { month: data }
+                }
+                return month
+              })
+            })
+          })
+        }
+      })
+      getExpense(token)
+        .then((data) => {
+          setExpenseYear(data)
+        })
+        .catch((error) => {
+          console.log(' error fetching cost of sales data: ' + error)
+        })
+    }, [formData])
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -501,9 +591,9 @@ const ExpensesResultsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           >
                             <option value=''>{translate('selectMonth', language)}</option>
-                            {months.map((month, idx) => (
+                            {filteredMonth[index]?.month?.sort((a,b) => a.month - b.month).map((month, idx) => (
                               <option key={idx} value={month}>
-                                {language === 'en' ? monthNames[month].en : monthNames[month].jp}
+                                {language === 'en' ? monthNames[month.month].en : monthNames[month.month].jp}
                               </option>
                             ))}
                           </select>
