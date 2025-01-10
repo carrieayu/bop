@@ -708,7 +708,7 @@ const ResultsListAndEdit = () => {
             ],
           },
         ]
-
+        // Updated translation base on what language user has selected. 
         const excelRows = [
           ['', ...monthsNames, ...additionalHeaders],
           ['', 'Planning', 'Planning', 'Planning', 'Planning', ...Array(11).fill('Planning')],
@@ -720,7 +720,7 @@ const ResultsListAndEdit = () => {
         // This part of the code will write the excel
         const worksheet = XLSX.utils.aoa_to_sheet(excelRows)
         const workbook = XLSX.utils.book_new()
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Results')
         XLSX.writeFile(workbook, 'results-summary.xlsx')
       })
       .catch((error) => {
@@ -826,7 +826,7 @@ const ResultsListAndEdit = () => {
               <div className='results_summary_btm'>
                 <div className='results_summary_header_text'>
                   <div className='results_summary_left-content'>
-                    <p>{translate('profitAndlossPlanning', language)}</p>
+                    <p>{translate('results', language)}</p>
                   </div>
                   <div className='results_summary_right-content'>
                     <div className='results_summary_paginate'>
