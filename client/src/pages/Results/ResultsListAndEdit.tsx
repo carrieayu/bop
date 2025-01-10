@@ -729,8 +729,9 @@ const ResultsListAndEdit = () => {
         // This part of the code will write the excel
         const worksheet = XLSX.utils.aoa_to_sheet(excelRows)
         const workbook = XLSX.utils.book_new()
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Results')
-        XLSX.writeFile(workbook, 'results-summary.xlsx')
+        const resultsSummary = translate('resultsSummary', language)
+        XLSX.utils.book_append_sheet(workbook, worksheet, translate('resultsSummary', language))
+        XLSX.writeFile(workbook, `${resultsSummary}.xlsx`)
       })
       .catch((error) => {
         console.log(error)
@@ -899,7 +900,7 @@ const ResultsListAndEdit = () => {
                         <div className='results-csv-modal' onClick={closeModal}>
                           <div className='results-csv-modal-content' onClick={(e) => e.stopPropagation()}>
                             <p className='results-csv-p' onClick={downloadXLS}>
-                              Download XLS
+                              {translate('download', language)}
                             </p>
                           </div>
                         </div>

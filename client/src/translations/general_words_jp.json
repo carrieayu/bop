@@ -156,5 +156,6 @@
   "MailSentSuccess": "メールの送信に成功",
   "projectResults": "案件実績",
   "yearMonth":"年/月",
-  "csvFileName": "CSV: 財務概要"
+  "csvFileName": "CSV: 財務概要",
+  "resultsSummary" : "実績-概要"
 }
