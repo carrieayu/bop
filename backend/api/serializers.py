@@ -166,6 +166,7 @@ class ProjectsListSerializer(serializers.ModelSerializer):
             ]
 # For ProjectSalesResultsListSerializer Serializer
 class ProjectsSerializer(serializers.ModelSerializer):
+    client_name = serializers.CharField(source="client.client_name", read_only=True)
     business_name = serializers.CharField(source="business_division.business_division_name", read_only=True)
     class Meta:
         model = Projects
@@ -188,12 +189,35 @@ class ProjectsSerializer(serializers.ModelSerializer):
             "business_division",
             "business_name",
             "client", 
+            "client_name",
             ]
 class ProjectsCreateSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(queryset=MasterClient.objects.all())
+    client_name = serializers.CharField(source="client.client_name", read_only=True)
+    business_name = serializers.CharField(source="business_division.business_division_name", read_only=True)
     class Meta:
         model = Projects
-        fields = '__all__'
+        fields = [
+            "project_id",
+            "project_name",
+            "project_type",
+            "year",
+            "month",
+            "sales_revenue",
+            "dispatch_labor_expense",
+            "employee_expense",
+            "indirect_employee_expense",
+            "expense",
+            "operating_income",
+            "non_operating_income",
+            "non_operating_expense",
+            "ordinary_profit",
+            "ordinary_profit_margin",
+            "business_division",
+            "business_name",
+            "client", 
+            "client_name",
+            ]
 
 class ProjectsUpdateSerializer(serializers.ModelSerializer):
     class Meta:

@@ -142,10 +142,10 @@ const ClientsListAndEdit: React.FC = () => {
       { errors: validationErrors, errorType: 'normalValidation' },
       { errors: duplicateErrors, errorType: 'duplicateValidation' },
     ]
-
+    
     // Step 5: Display the first set of errors found, if any
     const firstError = errorMapping.find(({ errors }) => errors.length > 0)
-    console.log(firstError, 'first error', typeof firstError, firstError.errors.length)
+  
     if (firstError) {
       const { errors, errorType } = firstError
       const translatedErrors = translateAndFormatErrors(errors, language, errorType)
@@ -191,6 +191,7 @@ const ClientsListAndEdit: React.FC = () => {
     updateMasterClient(modifiedFields, token)
       .then(() => {
         setCrudMessage(translate('successfullyUpdated', language))
+        setOriginalClientsList(updatedClients)
         setIsCRUDOpen(true)
         setIsEditing(false)
       })
