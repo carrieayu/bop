@@ -72,3 +72,8 @@ export const formatDate = (dateString) => {
 
   return `${year}-${month}-${day}`
 }
+
+export const sortByFinancialYear = (months) => {
+  const financialOrder = (month) => (month < 4 ? month + 12 : month)
+  return months.sort((a, b) => financialOrder(a.month) - financialOrder(b.month))
+}
