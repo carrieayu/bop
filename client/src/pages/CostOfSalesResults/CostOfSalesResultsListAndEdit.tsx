@@ -666,7 +666,7 @@ const CostOfSalesResultsList: React.FC = () => {
                           setIsUpdateConfirmationOpen(true)
                         }}
                       >
-                        更新
+                        {translate('update', language)}
                       </button>
                     </div>
                   ) : (
