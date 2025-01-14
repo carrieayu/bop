@@ -26,15 +26,17 @@ function getSum(data: number[]) {
   }, 0)
 }
 
-const calculateGrossProfit = (card, costOfSaleForYear) => {
-  return Number(card.sales_revenue) - costOfSaleForYear
+const calculateGrossProfit = (totalSales, costOfSaleForYear) => {
+  return totalSales - costOfSaleForYear
 }
+
 const calculateGrossProfitMargin = (grossProfit, salesRevenue) =>
   salesRevenue ? (grossProfit / salesRevenue) * 100 : 0
-const calculateCumulativeOrdinaryIncome = (card) =>
-  Number(card.operating_income) + Number(card.non_operating_income) - Number(card.non_operating_expense)
-const calculateOperatingProfitMargin = (operatingProfit, salesRevenue) =>
-  salesRevenue ? (operatingProfit / salesRevenue) * 100 : 0
+const calculateOperatingProfitMargin = (operatingIncome, salesRevenue) => {
+  if (!salesRevenue || salesRevenue === 0) return 0 // Avoid division by zero
+  return (operatingIncome / salesRevenue) * 100 // Return margin as a percentage
+}
+
 const calculateOperatingIncome = (card, totalCostOfSale) => {
   const salesRevenue = Number(card.sales_revenue) || 0
   const costOfSale = totalCostOfSale || 0
@@ -42,7 +44,7 @@ const calculateOperatingIncome = (card, totalCostOfSale) => {
   const employeeExpense = Number(card.employee_expense) || 0
   const indirectEmployeeExpense = Number(card.indirect_employee_expense) || 0
   const otherExpense = Number(card.expense) || 0
-
+  
   return salesRevenue - costOfSale - dispatchLaborExpense - employeeExpense - indirectEmployeeExpense - otherExpense
 }
 
@@ -95,22 +97,29 @@ function recalculateMetrics(state) {
   state.totalSales = getSum(cards.map((card) => Number(card.sales_revenue)))
 
   //Total Gross Profit
-  state.totalGrossProfit = getSum(cards.map((card) => calculateGrossProfit(card, totalCostOfSaleForYear)))
-
+  const totalSales = getSum(cards.map((card) => Number(card.sales_revenue)))
+  state.totalGrossProfit = calculateGrossProfit(totalSales, totalCostOfSaleForYear)
+  
   // Total Gross Profit Margin
-  state.totalGrossProfitMargin = getSum(
-    cards.map((card) => {
-      const grossProfit = calculateGrossProfit(card, totalCostOfSaleForYear)
-      return calculateGrossProfitMargin(grossProfit, card.sales_revenue)
-    }),
-  )
+  const totalCostOfSale = totalCostOfSaleForYear // Assuming it's already calculated
+  const grossProfit = totalSales - totalCostOfSale
+  state.totalGrossProfitMargin = calculateGrossProfitMargin(grossProfit, totalSales)
 
   //Total Operating Profit
-  state.totalOperatingProfit = getSum(cards.map((card) => calculateOperatingIncome(card, totalCostOfSaleForYear)))
+  state.totalOperatingProfit = getSum(
+  cards.map((card) => {
+    const costOfSaleForCard = state.costOfSaleList.find((cos) => cos.id === card.id)?.amount || 0; // Match cost of sale by card ID
+    return calculateOperatingIncome(card, costOfSaleForCard);
+  }),
+);
 
   // Total Operating Profit Margin
   state.totalOperatingProfitMargin = getSum(
-    cards.map((card) => calculateOperatingProfitMargin(Number(card.operating_income), card.sales_revenue)),
+    cards.map((card) => {
+      const costOfSaleForCard = state.costOfSaleList.find((cos) => cos.id === card.id)?.amount || 0 // Get individual cost of sale
+      const operatingIncome = calculateOperatingIncome(card, costOfSaleForCard) // Compute operating income dynamically
+      return calculateOperatingProfitMargin(operatingIncome, card.sales_revenue) // Calculate profit margin
+    }),
   )
 
   // Total Net Profit Period
@@ -125,7 +134,32 @@ function recalculateMetrics(state) {
   )
 
   //Total Cummulative Ordinary Income
-  state.totalCumulativeOrdinaryIncome = getSum(cards.map((card) => calculateCumulativeOrdinaryIncome(card)))
+  state.totalCumulativeOrdinaryIncome = getSum(
+    cards.map((card) => {
+      const {
+        sales_revenue = 0,
+        cost_of_sale = 0,
+        dispatch_labor_expense = 0,
+        employee_expense = 0,
+        indirect_employee_expense = 0,
+        expense = 0,
+        non_operating_income = 0,
+        non_operating_expense = 0,
+      } = card
+
+      const operatingIncome =
+        Number(sales_revenue) -
+        Number(cost_of_sale) -
+        Number(dispatch_labor_expense) -
+        Number(employee_expense) -
+        Number(indirect_employee_expense) -
+        Number(expense)
+
+      return operatingIncome + Number(non_operating_income) - Number(non_operating_expense)
+    }),
+  )
+
+
 }
 
 const cardSlice = createSlice({
