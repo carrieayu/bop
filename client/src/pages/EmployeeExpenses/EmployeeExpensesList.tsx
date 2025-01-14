@@ -50,7 +50,7 @@ const EmployeeExpensesList: React.FC = () => {
         setIsEditing((prevState) => {
           const newEditingState = !prevState;
           if (newEditingState) {
-            setLanguage(initialLanguage);
+            setLanguage('jp');
           }
       
           return newEditingState;
@@ -89,8 +89,10 @@ const EmployeeExpensesList: React.FC = () => {
     }, [language]);
   
     const handleTranslationSwitchToggle = () => {
-      const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
-      setLanguage(newLanguage);
+      if (!isEditing) {
+        const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
+        setLanguage(newLanguage);
+      }
     };
 
     const monthNames: { [key: number]: { en: string; jp: string } } = {
