@@ -35,9 +35,9 @@ const calculateCumulativeOrdinaryIncome = (card) =>
   Number(card.operating_income) + Number(card.non_operating_income) - Number(card.non_operating_expense)
 const calculateOperatingProfitMargin = (operatingProfit, salesRevenue) =>
   salesRevenue ? (operatingProfit / salesRevenue) * 100 : 0
-const calculateOperatingIncome = (card) => {
+const calculateOperatingIncome = (card, totalCostOfSale) => {
   const salesRevenue = Number(card.sales_revenue) || 0
-  const costOfSale = Number(card.cost_of_sale) || 0 // TODO Need to update
+  const costOfSale = totalCostOfSale || 0
   const dispatchLaborExpense = Number(card.dispatch_labor_expense) || 0
   const employeeExpense = Number(card.employee_expense) || 0
   const indirectEmployeeExpense = Number(card.indirect_employee_expense) || 0
@@ -106,7 +106,7 @@ function recalculateMetrics(state) {
   )
 
   //Total Operating Profit
-  state.totalOperatingProfit = getSum(cards.map((card) => calculateOperatingIncome(card)))
+  state.totalOperatingProfit = getSum(cards.map((card) => calculateOperatingIncome(card, totalCostOfSaleForYear)))
 
   // Total Operating Profit Margin
   state.totalOperatingProfitMargin = getSum(
