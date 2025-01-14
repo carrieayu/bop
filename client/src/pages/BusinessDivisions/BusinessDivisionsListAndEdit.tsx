@@ -92,7 +92,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
     setIsEditing((prevState) => {
       const newEditingState = !prevState
       if (newEditingState) {
-        setLanguage(initialLanguage)
+        setLanguage('jp')
       }
       if (!newEditingState) {
         console.log(newEditingState, 'business', business)

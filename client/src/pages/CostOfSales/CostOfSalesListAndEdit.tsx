@@ -89,8 +89,9 @@ const CostOfSalesList: React.FC = () => {
   const handleClick = () => {
     setIsEditing((prevState) => {
       const newEditingState = !prevState
+
       if (newEditingState) {
-        setLanguage(initialLanguage)
+        setLanguage('jp')
       }
 
       if (!newEditingState) {
@@ -298,8 +299,10 @@ const CostOfSalesList: React.FC = () => {
   }, [language])
 
   const handleTranslationSwitchToggle = () => {
-    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
-    setLanguage(newLanguage)
+    if (!isEditing) {
+      const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
+      setLanguage(newLanguage)
+    }
   }
 
   const openModal = (users, id) => {
