@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from api.views import CostOfSalesResultsCreate, CostOfSalesResultsDelete, CostOfSalesResultsFilter, CostOfSalesResultsList, CostOfSalesResultsUpdate, EmployeeExpensesFilter, EmployeeExpensesResultsCreate, EmployeeExpensesResultsDelete, EmployeeExpensesResultsFilter, EmployeeExpensesResultsList, ExpensesCreate, ExpensesDelete, ExpensesList,ExpensesUpdate, PasswordForgotView, ProjectSalesResultsFilter, ResultsSummaryDisplayByProjects, ResultsSummaryList, ResultsSummaryUpdate
 from api.views import ProjectSalesResultsCreate, ProjectSalesResultsDelete, ProjectSalesResultsList, ProjectSalesResultsUpdate
-from api.views import ExpensesResultsCreate, ExpensesResultsDelete, ExpensesResultsList, ExpensesResultsUpdate
+from api.views import ExpensesResultsCreate, ExpensesResultsDelete, ExpensesResultsList, ExpensesResultsUpdate, ExpensesResultsFilter
 from api.views import PlanningList, PlanningUpdate, PlanningDisplayByProjects
 from api.views import MasterCompaniesList, MasterCompaniesCreate, MasterCompaniesUpdate, MasterCompaniesDelete
 from api.views import ProjectsList,  ProjectsCreate, ProjectsUpdate, ProjectsDelete 
@@ -81,6 +81,7 @@ urlpatterns = [
     path('api/expenses-results/create/', ExpensesResultsCreate.as_view(), name = 'expenses-results-create'),
     path('api/expenses-results/update/', ExpensesResultsUpdate.as_view(), name = 'expenses-results-update'),
     path('api/expenses-results/<str:pk>/delete/', ExpensesResultsDelete.as_view(), name='expenses-results-delete'),
+    path('api/expenses-results/filter/', ExpensesResultsFilter.as_view(), name="expenses-results-filtered-list"),
 
     # Cost of Sales
     path('api/cost-of-sales/list/', CostOfSalesList.as_view(), name='cost-of-sales-list'),
@@ -93,7 +94,7 @@ urlpatterns = [
     path('api/cost-of-sales-results/create/', CostOfSalesResultsCreate.as_view(), name='cost-of-sales-results-create'),
     path('api/cost-of-sales-results/update/', CostOfSalesResultsUpdate.as_view(), name='cost-of-sales-results-update'),
     path('api/cost-of-sales-results/<str:pk>/delete/', CostOfSalesResultsDelete.as_view(), name='cost-of-sales-results-delete'),
-    path('api/cost-of-sales-results/filter/', CostOfSalesResultsFilter.as_view(), name="project-sales-filtered-list"),
+    path('api/cost-of-sales-results/filter/', CostOfSalesResultsFilter.as_view(), name="cost-of-sales-filtered-list"),
 
     # Employees
     path('api/employees/list/', EmployeesList.as_view(), name = 'employees-list'),

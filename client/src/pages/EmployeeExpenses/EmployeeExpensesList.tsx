@@ -123,7 +123,6 @@ const EmployeeExpensesList: React.FC = () => {
               window.location.href = '/login'; // Redirect to login if no token found
               return;
           }
-          
           getEmployeeExpense(token)
             .then((data) => {
               setEmployeeExpenses(data)
@@ -374,7 +373,6 @@ const EmployeeExpensesList: React.FC = () => {
                                           {exp && exp.projects.length > 0 ? (
                                             <div className='employeeExpensesList_project_div'>
                                               {exp.projects.map((project, projIndex) => {
-                                                console.log('Project object:', project)
                                                 return (
                                                   <div
                                                     key={projIndex}
@@ -534,6 +532,8 @@ const EmployeeExpensesList: React.FC = () => {
                                 if (monthIndex !== -1) {
                                   monthlyExpenses[monthIndex].projects.push({
                                     project_name: expense.project_name,
+                                    client_name: expense.client_name,
+                                    business_division_name: expense.business_division_name,
                                     employee_salary: expense.employee_salary,
                                     executive_renumeration: expense.executive_renumeration,
                                   })
@@ -551,13 +551,14 @@ const EmployeeExpensesList: React.FC = () => {
                                 if (monthIndex !== -1) {
                                   existingMonthlyExpenses[monthIndex].projects.push({
                                     project_name: expense.project_name,
+                                    client_name: expense.client_name,
+                                    business_division_name: expense.business_division_name,
                                     employee_salary: expense.employee_salary,
                                     executive_renumeration: expense.executive_renumeration,
                                   })
                                   existingMonthlyExpenses[monthIndex].total_salary += expense.employee_salary
                                 }
                               }
-
                               return acc
                             }, [])
                             .flatMap((yearGroup, yearIndex) => [
@@ -587,8 +588,24 @@ const EmployeeExpensesList: React.FC = () => {
                                           {exp.projects.map((project, projIndex) => (
                                             <div
                                               key={projIndex}
-                                              className={projIndex % 2 === 0 ? 'project-even' : 'project-odd'}
+                                              className={`${projIndex % 2 === 0 ? 'project-even' : 'project-odd'} employeeExpenseModal`}
                                             >
+                                              <div className='employeeExpenseModal-tooltip'>
+                                                <div>
+                                                  <div className='employeeExpenseHeader'>Project Name</div>
+                                                  <div>
+                                                    <span className='employeeExpenseSpan'>{project.project_name}</span>
+                                                  </div>
+                                                </div>
+                                                <div>
+                                                  <div className='employeeExpenseHeader'>Client Name</div>
+                                                  <span className='employeeExpenseSpan'>{project.client_name}</span>
+                                                </div>
+                                                <div>
+                                                  <div className='employeeExpenseHeader'>Business Division</div>
+                                                  <span className='employeeExpenseSpan'>{project.business_division_name}</span>
+                                                </div>
+                                              </div>
                                               <div className='employeeExpensesList_txt0-container'>
                                                 <div className='employeeExpensesList_txt0'>{project.project_name}</div>
                                               </div>

@@ -260,6 +260,44 @@
                                                         }
                                                     }
                                                 }
+                                                .employeeExpenseResultsModal{
+                                                    position: relative;
+                                                    display: inline-block;
+                                                    cursor: pointer;
+                                                }
+                                                .employeeExpenseResultsModal .employeeExpenseResultsModal-tooltip {
+                                                    visibility: hidden;
+                                                    width: 150px;
+                                                    background-color: #cfcfcf;
+                                                    color: #000;
+                                                    text-align: left;
+                                                    border-radius: 5px;
+                                                    padding: 5px;
+                                                    position: absolute;
+                                                    z-index: 1;
+                                                    left: 176%;
+                                                    transform: translateX(-50%);
+                                                    white-space: pre-line;
+                                                    font-size: 14px;
+                                                }
+                                                .employeeExpenseResultsModal:hover .employeeExpenseResultsModal-tooltip {
+                                                    visibility: visible;
+                                                }
+                                                .employeeExpenseResultsHeader {
+                                                    background-color: white;
+                                                    border-radius: 2px;
+                                                    display: block;
+                                                    width: 100%;
+                                                    text-align: center;
+                                                }
+                                                .employeeExpenseResultsSpan {
+                                                    display: block;
+                                                    width: 100%;
+                                                    text-align: center;
+                                                    border-radius: 5px;
+                                                    padding: 5px;
+                                                    font-weight: bold;
+                                                }
                                             }
                                         }
                                     }
