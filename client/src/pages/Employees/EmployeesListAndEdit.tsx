@@ -23,6 +23,7 @@ import { getSelectedBusinessDivisionCompany } from "../../api/BusinessDivisionEn
 import { deleteEmployee } from "../../api/EmployeeEndpoint/DeleteEmployee";
 import { editEmployee } from "../../api/EmployeeEndpoint/EditEmployee";
 import { getEmployee } from "../../api/EmployeeEndpoint/GetEmployee";
+import { getUser } from "../../api/UserEndpoint/GetUser";
 import {
   validateEmployeeRecords,
   translateAndFormatErrors,
@@ -61,6 +62,7 @@ const EmployeesListAndEdit: React.FC = () => {
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [selectedEmployeeType, setSelectedEmployeeType] = useState([])
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
+  const [userMap, setUserMap] = useState({})
   const [deleteComplete, setDeleteComplete] = useState(false)
 
   const handleTabClick = (tab) => {
@@ -126,7 +128,7 @@ const EmployeesListAndEdit: React.FC = () => {
     setIsEditing((prevState) => {
       const newEditingState = !prevState
       if (newEditingState) {
-        setLanguage(initialLanguage)
+        setLanguage('jp')
       }
 
       return newEditingState
@@ -369,6 +371,24 @@ const EmployeesListAndEdit: React.FC = () => {
       window.location.href = '/login' // Redirect to login if no token found
       return
     }
+
+    // Fetch users
+    getUser(token)
+    .then((data) => {
+      const users = data
+      const userMapping = users.reduce((map, user) => {
+        map[user.id] = user.last_name + ' ' + user.first_name
+        return map
+      }, {})
+      setUserMap(userMapping)
+    })
+    .catch((error) => {
+      if (error.response && error.response.status === 401) {
+        console.log(error)
+      } else {
+        console.error('There was an error fetching the projects!', error)
+      }
+    })
 
     try {
       const url = isEditing ? await editEmployee(token) : await getEmployee(token)
@@ -771,7 +791,7 @@ const EmployeesListAndEdit: React.FC = () => {
                                       />
                                     </td>
                                     <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                      {employee.auth_user_id}
+                                      {userMap[employee.auth_user_id]}
                                     </td>
                                     <td className='EmployeesListAndEdit_table_body_content_vertical'>
                                       {formatDate(employee.created_at)}
@@ -885,7 +905,7 @@ const EmployeesListAndEdit: React.FC = () => {
                                   {formatNumberWithCommas(employee.insurance_premium)}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {employee.auth_user}
+                                  {userMap[employee.auth_user_id]}
                                 </td>
                                 <td className='EmployeesListAndEdit_table_body_content_vertical'>
                                   {formatDate(employee.created_at)}
@@ -912,7 +932,7 @@ const EmployeesListAndEdit: React.FC = () => {
                           setIsUpdateConfirmationOpen(true)
                         }}
                       >
-                        更新
+                        {translate('update', language)}
                       </button>
                     </div>
                   ) : (

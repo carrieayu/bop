@@ -8,7 +8,7 @@
   "client": "Client",
   "clientName": "Client Name",
   "confirmPassword": "Confirm Password",
-  "download": "Download",
+  "download": "Download XLS",
   "emailAddress": "Email Address",
   "employee": "Employees",
   "enter": "Enter",
@@ -156,5 +156,6 @@
   "MailSentSuccess":"Mail Sent Successfully.",
   "projectResults": "Project Result",
   "yearMonth": "Year/Month",
-  "csvFileName": "CSV: Financial Summary"
+  "csvFileName": "CSV: Financial Summary",
+  "resultsSummary" : "Results-Summary"
 }

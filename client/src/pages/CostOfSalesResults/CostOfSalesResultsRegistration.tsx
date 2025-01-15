@@ -15,7 +15,7 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs, sortByFinancialYear } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { filterCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/FilterCostOfSalesResults'
 import { createCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/CreateCostOfSalesResults'
 import { overwriteCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/OverwriteCostOfSalesResults'
@@ -46,7 +46,7 @@ const CostOfSalesResultsRegistration = () => {
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const years = [2024, 2025]
   const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [costOfSaleResultsData, setCostOfSaleResultData] = useState<CostOfSaleResult[]>([{ cosr: [] }])
+  const [costOfSaleResultsData, setCostOfSaleResultsData] = useState<CostOfSaleResult[]>([{ cosr: [] }])
   const [filteredMonth, setFilteredMonth] = useState<any>([{ month: []}])
   const [costOfSaleYear, setCostOfSalesYear] = useState<any>([])
   const [formData, setFormData] = useState([
@@ -96,7 +96,7 @@ const CostOfSalesResultsRegistration = () => {
         // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
       })
       setFormData(newFormData)
-      setCostOfSaleResultData([...costOfSaleResultsData, { cosr: [] }])
+      setCostOfSaleResultsData([...costOfSaleResultsData, { cosr: [] }])
       setFilteredMonth([...filteredMonth, { month: []}])
     } else {
       console.log('You can only add up to 10 forms.')
@@ -393,7 +393,7 @@ const CostOfSalesResultsRegistration = () => {
         }
         if (filterParams.year) {
           filterCostOfSaleResults(filterParams, token).then((data) => {
-            setCostOfSaleResultData((prev) => {
+            setCostOfSaleResultsData((prev) => {
               return prev.map((row, projectIndex) => {
                 if (index == projectIndex) {
                   return {
@@ -551,7 +551,7 @@ const CostOfSalesResultsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           >
                             <option value=''>{translate('selectMonth', language)}</option>
-                            {filteredMonth[index]?.month?.map((month, idx) => (
+                            {sortByFinancialYear(filteredMonth[index]?.month || []).map((month, idx) => (
                               <option key={idx} value={month.month}>
                                 {language === 'en' ? monthNames[month.month].en : monthNames[month.month].jp}
                               </option>

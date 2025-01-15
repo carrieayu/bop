@@ -51,7 +51,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
     setIsEditing((prevState) => {
       const newEditingState = !prevState
       if (newEditingState) {
-        setLanguage(initialLanguage)
+        setLanguage('jp')
       }
 
       return newEditingState
@@ -89,8 +89,10 @@ const EmployeeExpensesResultsList: React.FC = () => {
   }, [language])
 
   const handleTranslationSwitchToggle = () => {
-    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
-    setLanguage(newLanguage)
+    if (!isEditing) {
+      const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
+      setLanguage(newLanguage)
+    }
   }
 
   const monthNames: { [key: number]: { en: string; jp: string } } = {
@@ -123,8 +125,6 @@ const EmployeeExpensesResultsList: React.FC = () => {
       getEmployeeExpenseResults(token)
         .then((data) => {
           setEmployeeExpenses(data)
-          console.log(data);
-          
         })
         .catch((error) => {
           if (error.response && error.response.status === 401) {
@@ -523,6 +523,8 @@ const EmployeeExpensesResultsList: React.FC = () => {
                               if (monthIndex !== -1) {
                                 monthlyExpenses[monthIndex].projects.push({
                                   project_name: expense.project_name,
+                                  client_name: expense.client_name,
+                                  business_division_name: expense.business_division_name,
                                   employee_salary: expense.employee_salary,
                                   executive_renumeration: expense.executive_renumeration,
                                 })
@@ -540,6 +542,8 @@ const EmployeeExpensesResultsList: React.FC = () => {
                               if (monthIndex !== -1) {
                                 existingMonthlyExpenses[monthIndex].projects.push({
                                   project_name: expense.project_name,
+                                  client_name: expense.client_name,
+                                  business_division_name: expense.business_division_name,
                                   employee_salary: expense.employee_salary,
                                   executive_renumeration: expense.executive_renumeration,
                                 })
@@ -575,8 +579,30 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                         {exp.projects.map((project, projIndex) => (
                                           <div
                                             key={projIndex}
-                                            className={projIndex % 2 === 0 ? 'project-even' : 'project-odd'}
+                                            className={`${projIndex % 2 === 0 ? 'project-even' : 'project-odd'} employeeExpenseResultsModal`}
                                           >
+                                            <div className='employeeExpenseResultsModal-tooltip'>
+                                              <div>
+                                                <div className='employeeExpenseResultsHeader'>Project Name</div>
+                                                <div>
+                                                  <span className='employeeExpenseResultsSpan'>
+                                                    {project.project_name}
+                                                  </span>
+                                                </div>
+                                              </div>
+                                              <div>
+                                                <div className='employeeExpenseResultsHeader'>Client Name</div>
+                                                <span className='employeeExpenseResultsSpan'>
+                                                  {project.client_name}
+                                                </span>
+                                              </div>
+                                              <div>
+                                                <div className='employeeExpenseResultsHeader'>Business Division</div>
+                                                <span className='employeeExpenseResultsSpan'>
+                                                  {project.business_division_name}
+                                                </span>
+                                              </div>
+                                            </div>
                                             <div className='employeeExpensesResultsList_txt0-container'>
                                               <div className='employeeExpensesResultsList_txt0'>
                                                 {project.project_name}

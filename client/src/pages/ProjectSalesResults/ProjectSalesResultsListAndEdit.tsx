@@ -105,7 +105,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
     setIsEditing((prevState) => {
       const newEditingState = !prevState
       if (newEditingState) {
-        setLanguage(initialLanguage)
+        setLanguage('jp')
       }
 
       if (!newEditingState) {
