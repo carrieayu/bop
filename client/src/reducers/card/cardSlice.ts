@@ -44,8 +44,12 @@ const calculateOperatingIncome = (card, totalCostOfSale) => {
   const employeeExpense = Number(card.employee_expense) || 0
   const indirectEmployeeExpense = Number(card.indirect_employee_expense) || 0
   const otherExpense = Number(card.expense) || 0
-  
+
   return salesRevenue - costOfSale - dispatchLaborExpense - employeeExpense - indirectEmployeeExpense - otherExpense
+}
+
+const calculateCumulativeOrdinaryIncome = (operatingIncome, nonOperatingIncome, nonOperatingExpense) => {
+  return operatingIncome + nonOperatingIncome - nonOperatingExpense
 }
 
 async function fetchWithPolling(retries = MAX_RETRIES): Promise<CardEntity[]> {
@@ -87,7 +91,7 @@ const getCostOfSaleForYear = (cards, year) => {
     }, 0)
 }
 
-function recalculateMetrics(state) {
+function cardCalculations(state) {
   const currentYear = new Date().getFullYear() // To be updated when toogle year is implemented.
   const cards = state.cardsList || []
   const costOfSaleList = state.costOfSaleList || []
@@ -107,20 +111,37 @@ function recalculateMetrics(state) {
 
   //Total Operating Profit
   state.totalOperatingProfit = getSum(
-  cards.map((card) => {
-    const costOfSaleForCard = state.costOfSaleList.find((cos) => cos.id === card.id)?.amount || 0; // Match cost of sale by card ID
-    return calculateOperatingIncome(card, costOfSaleForCard);
-  }),
-);
+    cards.map((card) => {
+      const totalCostOfSaleForCard = card.totalCostOfSaleForYear || 0
+      return calculateOperatingIncome(card, totalCostOfSaleForCard)
+    }),
+  )
+
 
   // Total Operating Profit Margin
   state.totalOperatingProfitMargin = getSum(
     cards.map((card) => {
-      const costOfSaleForCard = state.costOfSaleList.find((cos) => cos.id === card.id)?.amount || 0 // Get individual cost of sale
-      const operatingIncome = calculateOperatingIncome(card, costOfSaleForCard) // Compute operating income dynamically
-      return calculateOperatingProfitMargin(operatingIncome, card.sales_revenue) // Calculate profit margin
+      const {
+        sales_revenue = 0,
+        cost_of_sale = 0,
+        dispatch_labor_expense = 0,
+        employee_expense = 0,
+        indirect_employee_expense = 0,
+        expense = 0,
+      } = card
+
+      const operatingIncome =
+        Number(sales_revenue) -
+        Number(cost_of_sale) -
+        Number(dispatch_labor_expense) -
+        Number(employee_expense) -
+        Number(indirect_employee_expense) -
+        Number(expense)
+
+      return calculateOperatingProfitMargin(operatingIncome, sales_revenue)
     }),
   )
+
 
   // Total Net Profit Period
   state.totalNetProfitPeriod = getSum(
@@ -154,8 +175,8 @@ function recalculateMetrics(state) {
         Number(employee_expense) -
         Number(indirect_employee_expense) -
         Number(expense)
-
-      return operatingIncome + Number(non_operating_income) - Number(non_operating_expense)
+        
+      return calculateCumulativeOrdinaryIncome(operatingIncome, non_operating_income, non_operating_expense)
     }),
   )
 
@@ -172,7 +193,7 @@ const cardSlice = createSlice({
       .addCase(fetchAllCards.fulfilled, (state, action) => {
         state.cardsList = action.payload
         state.isLoading = false
-        recalculateMetrics(state)
+        cardCalculations(state)
       })
       .addCase(fetchAllCards.pending, (state) => {
         state.isLoading = true
@@ -183,7 +204,7 @@ const cardSlice = createSlice({
       .addCase(fetchCos.fulfilled, (state, action) => {
         state.costOfSaleList = action.payload
         state.isLoading = false
-        recalculateMetrics(state)
+        cardCalculations(state)
       })
       .addCase(fetchCos.pending, (state) => {
         state.isLoading = true
