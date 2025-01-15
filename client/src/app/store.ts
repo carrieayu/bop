@@ -10,6 +10,7 @@ import businessDivisionsSlice from '../reducers/businessDivisions/businessDivisi
 import masterCompanySlice from '../reducers/company/companySlice';
 import personnelPlanningSlice from "../reducers/personnel/personnelPlanningSlice";
 import clientMasterSlice from "../reducers/client/clientSlice";
+import costOfSaleSlice from "../reducers/costOfSale/costOfSaleSlice";
 
 export const store = configureStore({
   reducer: {
@@ -24,6 +25,7 @@ export const store = configureStore({
     businessDivisionsSlice: businessDivisionsSlice,
     masterCompanySlice: masterCompanySlice,
     clientMasterSlice: clientMasterSlice,
+    costOfSale: costOfSaleSlice,
   },
 })
 
