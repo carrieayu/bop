@@ -117,13 +117,12 @@ function cardCalculations(state) {
     }),
   )
 
-
   // Total Operating Profit Margin
   state.totalOperatingProfitMargin = getSum(
     cards.map((card) => {
       const {
         sales_revenue = 0,
-        cost_of_sale = 0,
+        cost_of_sale = totalCostOfSaleForYear,
         dispatch_labor_expense = 0,
         employee_expense = 0,
         indirect_employee_expense = 0,
@@ -142,7 +141,6 @@ function cardCalculations(state) {
     }),
   )
 
-
   // Total Net Profit Period
   state.totalNetProfitPeriod = getSum(
     cards.map(
@@ -157,30 +155,12 @@ function cardCalculations(state) {
   //Total Cummulative Ordinary Income
   state.totalCumulativeOrdinaryIncome = getSum(
     cards.map((card) => {
-      const {
-        sales_revenue = 0,
-        cost_of_sale = 0,
-        dispatch_labor_expense = 0,
-        employee_expense = 0,
-        indirect_employee_expense = 0,
-        expense = 0,
-        non_operating_income = 0,
-        non_operating_expense = 0,
-      } = card
-
-      const operatingIncome =
-        Number(sales_revenue) -
-        Number(cost_of_sale) -
-        Number(dispatch_labor_expense) -
-        Number(employee_expense) -
-        Number(indirect_employee_expense) -
-        Number(expense)
-        
-      return calculateCumulativeOrdinaryIncome(operatingIncome, non_operating_income, non_operating_expense)
+      const nonOperatingIncome = Number(card.non_operating_income) || 0
+      const nonOperatingExpense = Number(card.non_operating_expense) || 0
+      const operatingIncome = calculateOperatingIncome(card, totalCostOfSaleForYear || 0)
+      return calculateCumulativeOrdinaryIncome(operatingIncome, nonOperatingIncome, nonOperatingExpense)
     }),
   )
-
-
 }
 
 const cardSlice = createSlice({
