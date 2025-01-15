@@ -141,7 +141,7 @@ export const TableResultsB: React.FC<TableProps> = (props) => {
           <table className='table-b-table_header'>
             <thead>
               <tr className='table-b-results_summary-tr-header'>
-                <th colSpan={15}>{translate('planning', language)}</th>
+                <th colSpan={15}>{translate('results', language)}</th>
               </tr>
             </thead>
             <tbody>

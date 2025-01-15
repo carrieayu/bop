@@ -776,11 +776,11 @@ const TableResults: React.FC<TablePlanningAProps> = ({ isThousandYenChecked }) =
             <tr className='scnd-row'>
               <th className='borderless'>{''}</th>
               {months.map((month, index) => (
-                <th key={index}>{translate('planning', language)}</th>
+                <th key={index}>{translate('results', language)}</th>
               ))}
               {halfYears.map((_, index) => (
                 <th key={index} className=''>
-                  {translate('planning', language)}
+                  {translate('results', language)}
                 </th>
               ))}
               <th>{''}</th>
