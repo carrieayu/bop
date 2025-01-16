@@ -1,6 +1,4 @@
 .projectsList-wrapper{
-    width: 100%;
-    max-width: 2560px;
     .projectsList-cont-wrapper{
         display: flex;
         background-color: #EFEDEA;
@@ -8,8 +6,11 @@
             flex-direction: column;
         }
         .projectsList-wrapper{
-            // width: 84%; // i do not know wjy but it breaks if i set to 100%
             padding: 10px 30px 10px 30px;
+            width: 100%; 
+            max-width: 100%; 
+            overflow-x: hidden; 
+            box-sizing: border-box; 
             .projectsList-top-content{
                 position: relative;
                 display: flex;
@@ -23,23 +24,6 @@
                     background-color: #fff;
                     height: 0rem;
                 }
-                // .projectsList-mode-switch {
-                //     position: absolute;
-                //     display: flex;
-                //     gap: 20px;
-                //     right: 40px;
-                //     top: 45px;
-                //     border: 1px solid #EFEDEA;
-                //     padding: 3px 21px;
-                //     border-radius: 5px;
-                //     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.153);
-                //     font-weight: 500;
-                //     background-color: #f3f3f38b;
-                //     @media only screen and (min-width: 1024px) and (max-width: 1280px) {
-                //         /* For small laptops */
-                //         top: 30px;
-                //     }
-                // }
                 .projectsList-mode-switch-datalist{
                     padding: 1rem;
                 }

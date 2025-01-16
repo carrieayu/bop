@@ -32,7 +32,7 @@ type Dates = {
 const EmployeeExpensesResultsRegistration = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTab, setActiveTab] = useState('/planning-list')
+  const [activeTab, setActiveTab] = useState('/results')
   const [activeTabOther, setActiveTabOther] = useState('employeeExpensesResults')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')

@@ -1,5 +1,4 @@
 .employeeExpensesResultsList_wrapper{
-    max-width: 2560px;
     .employeeExpensesResultsList_cont_wrapper{
         display: flex;
         background-color: #EFEDEA;
@@ -8,7 +7,7 @@
             flex-direction: column;
         }
         .employeeExpensesResultsList_wrapper_div{
-                    width: 84%; // i do not know wjy but it breaks if i set to 100%
+                    width: 100%; // i do not know wjy but it breaks if i set to 100%
                     padding: 10px 30px 10px 30px;
                     .employeeExpensesResultsList_top_content{
                         
@@ -20,6 +19,9 @@
                         height: 100%;
                         border: 1px solid #fff;
                         border-radius: 5px;
+                        @media only screen and (min-width: 1024px) and (max-width: 1536px) {
+                        /* For small laptops */
+                        }
                         .employeeExpensesResultsList_top_body_cont{
                             background-color: #fff;
                             height: 2rem;
