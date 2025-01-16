@@ -42,18 +42,13 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, data, lang
     },
     stroke: {
       show: true,
+      curve: 'straight',
       width: [0, 2, 2, 2, 2, 2],
     },
     xaxis: {
       categories: data.labels,
     },
     yaxis: [
-      {
-        title: {
-          text: '',
-        },
-      },
-
       {
         opposite: true,
         title: {
