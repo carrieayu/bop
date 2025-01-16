@@ -1,3 +1,8 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box; /* Include padding and borders in width/height */
+}
 .expensesList_wrapper{
     .expensesList_cont_wrapper{
         display: flex;
@@ -6,8 +11,11 @@
             flex-direction: column;
         }
         .expensesList_wrapper{
+            max-width: 100%;
+            padding: 10px 30px; 
+            overflow-y :hidden;
+            box-sizing: border-box;
             width: 100%;
-            padding: 10px 30px 10px 30px;
             .expensesList_top_content{
                 position: relative;
                 display: flex;
@@ -45,13 +53,14 @@
                     .ListButtons_btn{
                     }
                     .expensesList_table_wrapper{
-                        width: 100%;
-                        height:60vh;
-                        overflow-y: auto; 
-                        overflow-x: hidden;
-                        scrollbar-width: thin;
-                        scrollbar-color: #888 #e0e0e0;
-                        padding: 0 40px 0 40px;
+                        width: 100%; /* Take up 100% of the parent container */
+                        height: 60vh; /* Set height relative to the viewport */
+                        overflow-y: auto; /* Enable vertical scrolling */
+                        overflow-x: hidden; /* Prevent horizontal scrolling */
+                        scrollbar-width: thin; /* Style the scrollbar */
+                        scrollbar-color: #888 #e0e0e0; /* Custom scrollbar colors */
+                        padding-inline: 40px;
+                        box-sizing: border-box;
                         @media only screen and (min-width: 1920px){
                             height: 60vh;
                         }
@@ -80,6 +89,11 @@
                             
                         }
                         .expensesList_table_cont{
+                            max-height: 100%;
+                            overflow-y: auto;
+                            overflow-x: auto;
+                            white-space: nowrap;
+                            scrollbar-width: thin;
                             table{
                                 width: 100%;
                                 .expensesList_table_title{
