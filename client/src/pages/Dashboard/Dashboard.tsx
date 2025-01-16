@@ -3,6 +3,7 @@ import Card from '../../components/Card/Card'
 import GraphDashboard from '../../components/GraphDashboard/GraphDashboard'
 import { useDispatch } from 'react-redux'
 import { fetchAllCards } from '../../reducers/card/cardSlice'
+import { fetchCos } from '../../reducers/costOfSale/costOfSaleSlice'
 import { UnknownAction } from '@reduxjs/toolkit'
 import { useAppSelector } from '../../actions/hooks'
 import { RootState } from '../../app/store'
@@ -78,6 +79,7 @@ const Dashboard = () => {
       setTableList(res.payload)
       await dispatch(fetchAllCards() as unknown as UnknownAction)
       await dispatch(fetchGraphData() as unknown as UnknownAction)
+      await dispatch(fetchCos() as unknown as UnknownAction)
     } catch (e) {
       console.error(e)
     }
