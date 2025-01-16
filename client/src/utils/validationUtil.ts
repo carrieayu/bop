@@ -1,5 +1,6 @@
 import { translate } from '../utils/translationUtil'
 import { inputFieldConfigurations } from '../inputFieldConfigurations'
+import { MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER, MAX_VALUE } from '../constants'
 
 
 // # CLIENT SIDE //
@@ -293,9 +294,9 @@ export const validateField = (
   record = {}, // optional
   isRequired = false // optional
 ) => {
-
-  const maxDecimal = 9999999999.99;
-  const maxInteger = 2147483647;
+  
+  const maxDecimal = Number.MAX_SAFE_INTEGER
+  // const maxInteger = Number.MAX_SAFE_INTEGER // 9007199254740991
 
   // Helper function to create error message
   const createError = (message) => ({
@@ -303,56 +304,70 @@ export const validateField = (
     errorMessage: message,
     recordId,
     recordType,
-  });
+  })
 
   // Number validations
+  // isNumber is a boolean field in "inputFieldConfgurations.ts"
   if (isNumber) {
-    if (value < 0) return createError('cannotBeLessThanZero');
-    if (Number.isInteger(value) && value > maxInteger) return createError('valueTooLarge');
-    if (!Number.isInteger(value) && value > maxDecimal) return createError('valueTooLarge');
+    let numValue = value
+    // Django converts DecimalField to String.
+    // So this checks if it's a string that represents only digits (numeric string).
+    if (typeof value === 'string' && /^\d+$/.test(value)) {
+      numValue = Number(value)
+    } else if (typeof value === 'number' && Number.isInteger(value)) {
+      numValue = value
+    } else {
+      return createError('notNumericStringOrInteger')
+    }
+    if (numValue < 0) {
+      return createError('cannotBeLessThanZero')
+    }
+    if (numValue > MAX_SAFE_INTEGER) {
+      return createError('valueTooLarge')
+    }
   }
 
   // Empty input validation
-  if (typeof value === 'string' && value.trim() === '') return createError('inputCannotBeEmpty');
+  if (typeof value === 'string' && value.trim() === '') return createError('inputCannotBeEmpty')
 
   // Specific field validations for salary and executiveRenumeration
   if ((fieldName === 'salary' || fieldName === 'executiveRenumeration') && value === null) {
-    return createError('inputCannotBeEmpty');
+    return createError('inputCannotBeEmpty')
   }
 
   // Username validation
   if (isUsername && !/^[a-zA-Z]+_[a-zA-Z]+$/.test(value)) {
-    return createError('usersValidationText1');
+    return createError('usersValidationText1')
   }
 
   // Password validation
   if (isPassword) {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/
     if (!passwordRegex.test(value)) {
-      return createError('invalidPasswordFormat');
+      return createError('invalidPasswordFormat')
     }
 
     // Check if password and confirm password match for user registration
     if (recordType === 'user' && fieldName === 'password' && record['password'] !== record['confirm_password']) {
-      return createError('PasswordsDoNotMatch');
+      return createError('PasswordsDoNotMatch')
     }
   }
 
   // Email validation
   if (isEmail) {
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     if (!emailRegex.test(value)) {
-      return createError('invalidEmailFormat');
+      return createError('invalidEmailFormat')
     }
 
     // Check if email and confirm email match for user registration
     if (recordType === 'user' && fieldName === 'email' && record['email'] !== record['confirm_email']) {
-      return createError('EmailsDoNotMatch');
+      return createError('EmailsDoNotMatch')
     }
   }
 
   // No errors, return empty string
-  return '';
+  return ''
 };
 
 

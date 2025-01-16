@@ -17,12 +17,11 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, handleInputChange} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 import { deleteExpense } from '../../api/ExpenseEndpoint/DeleteExpense'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
 import { updateExpense } from '../../api/ExpenseEndpoint/UpdateExpense'
-
 
 const ExpensesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -121,19 +120,8 @@ const ExpensesList: React.FC = () => {
   }
 
   const handleChange = (index, e) => {
-    const { name, value } = e.target
-
-    // Remove commas to get the raw number
-    // EG. 999,999 → 999999 in the DB
-    const rawValue = removeCommas(value)
-
-    const updatedData = [...combinedData]
-    updatedData[index] = {
-      ...updatedData[index],
-      [name]: rawValue,
-    }
-    setExpensesList(updatedData)
-  }
+  handleInputChange(index, e, setExpensesList, combinedData);
+};
 
   const handleSubmit = async () => {
     // # Client Side Validation

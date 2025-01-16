@@ -49,7 +49,6 @@ export const inputFieldConfigurations = {
     { field: 'dispatch_labor_expense', fieldName: 'dispatchLaborExpense', isNumber: true },
     { field: 'communication_expense', fieldName: 'communicationExpense', isNumber: true },
     { field: 'work_in_progress_expense', fieldName: 'workInProgressExpense', isNumber: true },
-    { field: 'transaction_fee', fieldName: 'transactionFee', isNumber: true },
     { field: 'amortization_expense', fieldName: 'amortizationExpense', isNumber: true },
   ],
   // Cost Of SalesResults
@@ -62,7 +61,6 @@ export const inputFieldConfigurations = {
     { field: 'dispatch_labor_expense', fieldName: 'dispatchLaborExpense', isNumber: true },
     { field: 'communication_expense', fieldName: 'communicationExpense', isNumber: true },
     { field: 'work_in_progress_expense', fieldName: 'workInProgressExpense', isNumber: true },
-    { field: 'transaction_fee', fieldName: 'transactionFee', isNumber: true },
     { field: 'amortization_expense', fieldName: 'amortizationExpense', isNumber: true },
   ],
   // Employee Expenses

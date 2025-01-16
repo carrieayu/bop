@@ -1,3 +1,5 @@
+import { MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER, MAX_VALUE } from "../constants"
+
 // GENERAL HELPER FUNCTIONS
 
 // # Helper to block non-numeric key presses for number inputs
@@ -35,7 +37,6 @@ export const handleDisableKeysOnNumberInputs = (event) => {
     event.preventDefault()
   }
 }
-
 
 // # Add Commas to Financial Numbers for Display on List, Edit, Registration Screens
 
@@ -77,3 +78,26 @@ export const sortByFinancialYear = (months) => {
   const financialOrder = (month) => (month < 4 ? month + 12 : month)
   return months.sort((a, b) => financialOrder(a.month) - financialOrder(b.month))
 }
+
+export const handleInputChange = (index, e, updateFunction, dataList) => {
+  const { name, value } = e.target
+
+  // Remove commas to get the raw number
+  // EG. 999,999 → 999999 in the DB
+  const rawValue = removeCommas(value)
+
+  // Prevent entry of more than 15 digits in Input
+  if (rawValue.length > MAX_NUMBER_LENGTH) {
+    return // Ignore input if the length exceeds 15 digits
+  }
+
+  // Limits Input so large numbers cannot be input (15 digits max)
+  if (rawValue.length <= MAX_NUMBER_LENGTH && rawValue <= MAX_SAFE_INTEGER) {
+    const updatedData = [...dataList]
+    updatedData[index] = {
+      ...updatedData[index],
+      [name]: rawValue,
+    }
+    updateFunction(updatedData)
+  }
+};

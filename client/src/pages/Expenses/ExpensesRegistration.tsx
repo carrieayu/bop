@@ -13,7 +13,7 @@ import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { createExpense } from '../../api/ExpenseEndpoint/CreateExpense'
 import { overwriteExpense } from '../../api/ExpenseEndpoint/OverwriteExpense'
 import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs, removeCommas, formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, handleInputChange } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -60,23 +60,10 @@ const ExpensesRegistration = () => {
     setLanguage(newLanguage)
   }
 
-const handleChange = (index, event) => {
-  const { name, value } = event.target
-
-  // Remove commas to get the raw number
-  // EG. 999,999 → 999999 in the DB
-  const rawValue = removeCommas(value)
-
-  // Update form data
-  const newFormData = [...formData]
-  newFormData[index] = {
-    ...newFormData[index],
-    [name]: rawValue,
+  const handleChange = (index, e) => {
+    handleInputChange(index, e, setFormData, formData)
   }
-
-  setFormData(newFormData)
-}
-
+    
   const maximumEntries = 10;
 
   const handleAdd = () => {

@@ -16,7 +16,7 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import {handleDisableKeysOnNumberInputs, handleInputChange} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { overwriteCostOfSale } from '../../api/CostOfSalesEndpoint/OverwriteCostOfSales'
@@ -141,28 +141,10 @@ const CostOfSalesRegistration = () => {
     setModalIsOpen(false)
   }
 
-
-const handleChange = (index, event) => {
-  const { name, value } = event.target
-
-  // Remove commas to get the raw number
-  // EG. 999,999 → 999999 in the DB
-  const rawValue = removeCommas(value)
-
-  // Update the state with the raw value
-  const newFormData = [...formData]
-  newFormData[index] = {
-    ...newFormData[index],
-    [name]: rawValue, // Store unformatted value in the state
+  const handleChange = (index, e) => {
+    handleInputChange(index, e, setFormData, formData)
   }
-  setFormData(newFormData)
-}
-
   
-  useEffect(() => {
-  console.log('after formData', formData)
-
-  },[formData])
   const handleSubmit = async (e) => {
     e.preventDefault()
 

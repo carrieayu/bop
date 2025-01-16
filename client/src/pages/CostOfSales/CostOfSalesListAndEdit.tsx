@@ -21,10 +21,9 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs, removeCommas} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import {handleDisableKeysOnNumberInputs, handleInputChange} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { createCostOfSale } from "../../api/CostOfSalesEndpoint/CreateCostOfSale";
-
 
 const CostOfSalesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -103,18 +102,7 @@ const CostOfSalesList: React.FC = () => {
   }
 
   const handleChange = (index, e) => {
-    const { name, value } = e.target
-
-    // Remove commas to get the raw number
-    // EG. 999,999 → 999999 in the DB
-    const rawValue = removeCommas(value)
-
-    const updatedData = [...combinedData]
-    updatedData[index] = {
-      ...updatedData[index],
-      [name]: rawValue,
-    }
-    setCostOfSales(updatedData)
+    handleInputChange(index, e, setCostOfSales, combinedData)
   }
 
   const handleSubmit = async () => {

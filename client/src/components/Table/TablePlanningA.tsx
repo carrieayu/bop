@@ -144,15 +144,16 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
 
       //COST OF SALES
       const costOfSalesValues = months.map(month => {
-        const purchases = aggregatedData[month]?.purchase || 0;
-        const outsourcing = aggregatedData[month]?.outsourcing_expense || 0;
-        const productPurchase = aggregatedData[month]?.product_purchase || 0;
-        const dispatchLabor = aggregatedData[month]?.dispatch_labor_expense || 0;
-        const communicationCost = aggregatedData[month]?.communication_expense || 0;
-        const workInProgress = aggregatedData[month]?.work_in_progress_expense || 0;
-        const amortization = aggregatedData[month]?.amortization_expense || 0;
-        return purchases + outsourcing + productPurchase + dispatchLabor + communicationCost + workInProgress + amortization;
+        const purchases = Number(aggregatedData[month]?.purchase) || 0;
+        const outsourcing = Number(aggregatedData[month]?.outsourcing_expense) || 0;
+        const productPurchase = Number(aggregatedData[month]?.product_purchase) || 0;
+        const dispatchLabor = Number(aggregatedData[month]?.dispatch_labor_expense) || 0;
+        const communicationCost = Number(aggregatedData[month]?.communication_expense) || 0;
+        const workInProgress = Number(aggregatedData[month]?.work_in_progress_expense) || 0;
+        const amortization = Number(aggregatedData[month]?.amortization_expense) || 0;
+        return purchases + outsourcing + productPurchase + dispatchLabor + communicationCost + workInProgress + amortization
       });
+        
       const purchasesValues = months.map(month => aggregatedData[month]?.purchase || 0);
       const outsourcingExpenseValues = months.map(month => aggregatedData[month]?.outsourcing_expense || 0);
       const productPurchaseValues = months.map(month => aggregatedData[month]?.product_purchase || 0);
@@ -194,17 +195,17 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
 
       // EXPENSES
       const expenseValues = months.map(month => {
-        const consumables = aggregatedExpensesData[month]?.consumable_expense || 0;
-        const rent = aggregatedExpensesData[month]?.rent_expense || 0;
-        const taxAndPublicCharge = aggregatedExpensesData[month]?.tax_and_public_charge || 0;
-        const depreciation = aggregatedExpensesData[month]?.depreciation_expense || 0;
-        const travel_expense = aggregatedExpensesData[month]?.travel_expense || 0;
-        const communication_expense = aggregatedExpensesData[month]?.communication_expense || 0;
-        const utilities_expense = aggregatedExpensesData[month]?.utilities_expense || 0;
-        const transaction_fee = aggregatedExpensesData[month]?.transaction_fee || 0;
-        const advertising_expense = aggregatedExpensesData[month]?.advertising_expense || 0;
-        const entertainment_expense = aggregatedExpensesData[month]?.entertainment_expense || 0;
-        const professional_service_fee = aggregatedExpensesData[month]?.professional_service_fee || 0;
+        const consumables = Number(aggregatedExpensesData[month]?.consumable_expense) || 0;
+        const rent = Number(aggregatedExpensesData[month]?.rent_expense) || 0;
+        const taxAndPublicCharge = Number(aggregatedExpensesData[month]?.tax_and_public_charge) || 0;
+        const depreciation = Number(aggregatedExpensesData[month]?.depreciation_expense) || 0;
+        const travel_expense = Number(aggregatedExpensesData[month]?.travel_expense) || 0;
+        const communication_expense = Number(aggregatedExpensesData[month]?.communication_expense) || 0;
+        const utilities_expense = Number(aggregatedExpensesData[month]?.utilities_expense) || 0;
+        const transaction_fee = Number(aggregatedExpensesData[month]?.transaction_fee) || 0;
+        const advertising_expense = Number(aggregatedExpensesData[month]?.advertising_expense) || 0;
+        const entertainment_expense = Number(aggregatedExpensesData[month]?.entertainment_expense) || 0;
+        const professional_service_fee = Number(aggregatedExpensesData[month]?.professional_service_fee) || 0;
         return consumables + rent + taxAndPublicCharge + depreciation + travel_expense + communication_expense
                 + utilities_expense + transaction_fee + advertising_expense + entertainment_expense + professional_service_fee;
       })
