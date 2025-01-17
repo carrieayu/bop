@@ -45,9 +45,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [formProjects, setFormProjects] = useState([
     {
       sales_revenue: '',
+      indirect_employee_expense: '',
       dispatch_labor_expense: '',
       employee_expense: '',
-      indirect_employee_expense: '',
       expense: '',
       operating_income: '',
       non_operating_income: '',
@@ -386,9 +386,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                 handleTabsClick={handleTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
-                  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
                   { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
                   { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
+                  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
                   { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
                 ]}
               />
@@ -501,6 +501,15 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
                                         type='text'
+                                        name='indirect_employee_expense'
+                                        value={formatNumberWithCommas(projectSalesResults.indirect_employee_expense)}
+                                        onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
+                                      />
+                                    </td>
+                                    <td className='projectSalesResultsList_table_body_content_vertical'>
+                                      <input
+                                        type='text'
                                         name='dispatch_labor_expense'
                                         value={formatNumberWithCommas(projectSalesResults.dispatch_labor_expense)}
                                         onChange={(e) => handleChange(index, e)}
@@ -512,15 +521,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                         type='text'
                                         name='employee_expense'
                                         value={formatNumberWithCommas(projectSalesResults.employee_expense)}
-                                        onChange={(e) => handleChange(index, e)}
-                                        onKeyDown={handleDisableKeysOnNumberInputs}
-                                      />
-                                    </td>
-                                    <td className='projectSalesResultsList_table_body_content_vertical'>
-                                      <input
-                                        type='text'
-                                        name='indirect_employee_expense'
-                                        value={formatNumberWithCommas(projectSalesResults.indirect_employee_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
@@ -618,13 +618,13 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                   {translate('saleRevenue', language)}
                                 </th>
                                 <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
+                                  {translate('indirectEmployeeExpense', language)}
+                                </th>
+                                <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                   {translate('dispatchLaborExpense', language)}
                                 </th>
                                 <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                   {translate('employeeExpense', language)}
-                                </th>
-                                <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
-                                  {translate('indirectEmployeeExpense', language)}
                                 </th>
                                 <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                   {translate('expense', language)}
@@ -681,13 +681,13 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     {formatNumberWithCommas(project.sales_revenue)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
+                                    {formatNumberWithCommas(project.indirect_employee_expense)}
+                                  </td>
+                                  <td className='projectSalesResultsList_table_body_content_vertical'>
                                     {formatNumberWithCommas(project.dispatch_labor_expense)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
                                     {formatNumberWithCommas(project.employee_expense)}
-                                  </td>
-                                  <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {formatNumberWithCommas(project.indirect_employee_expense)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
                                     {formatNumberWithCommas(project.expense)}
