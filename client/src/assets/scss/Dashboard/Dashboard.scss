@@ -17,8 +17,7 @@
         }
         .dashboard_content{
             width:100%;
-            // width: 84%;
-            padding: 5px;
+            padding: 20px;
             overflow-y: auto;
             scroll-behavior: smooth;
             scrollbar-width: thin;
@@ -39,14 +38,12 @@
               }
             .dashboard_body_cont{
                 display: flex;
-                margin-top: 10px;
                 @media only screen and (max-width: 1000px){
                     display: block;
                 }
                 .dashboard_card_cont{
                     width: 50%;
                     display: flex;
-                    padding: 5px;
                     @media only screen and (max-width: 1000px){
                         max-width: 1000px;
                         margin: 0 auto;
@@ -91,7 +88,6 @@
                 }
                 .dashboard_graph_cont{
                     width: 100%;
-                    padding: 5px;
                     @media only screen and (max-width: 1000px){
                         max-width: 1000px;
                         margin: 0 auto;
@@ -112,7 +108,7 @@
                 }
             }
             .dashboard_bottom_cont{
-                margin-top: 20px;
+                margin-top: 6px;
                 width: 100%;
                 // padding: 5px;
                 .dashboard_right-content{
