@@ -37,7 +37,7 @@ type FilterParams = {
   year?: string
 }
 const CostOfSalesResultsRegistration = () => {
-  const [activeTab, setActiveTab] = useState('/planning-list')
+  const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
   const location = useLocation()
   const [activeTabOther, setActiveTabOther] = useState('costOfSalesResults')

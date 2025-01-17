@@ -20,7 +20,7 @@ import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // help
 const months: number[] = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3] // Store as numbers
 
 const EmployeeExpensesResultsList: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('/planning-list')
+  const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
   const location = useLocation()
   const [activeTabOther, setActiveTabOther] = useState('employeeExpensesResults')

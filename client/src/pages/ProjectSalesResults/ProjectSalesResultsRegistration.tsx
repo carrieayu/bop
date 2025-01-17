@@ -49,7 +49,7 @@ type Division = {
 }
 
 const ProjectSalesResultsRegistration = () => {
-  const [activeTab, setActiveTab] = useState('/planning-list')
+  const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
   const location = useLocation()
   const [activeTabOther, setActiveTabOther] = useState('projectSalesResults')
