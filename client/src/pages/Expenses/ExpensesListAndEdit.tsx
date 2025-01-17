@@ -306,33 +306,35 @@ const ExpensesList: React.FC = () => {
   }, [location.pathname])
 
   // Extract unique years from the expenses data
-  const uniqueYears = Array.from(new Set(expensesList.map((item) => item.year))).sort((a, b) => a - b)
 
   // Combine static months with dynamic data
-  const combinedData = uniqueYears.flatMap((year) => {
-    return months.map((month) => {
-      const foundData = expensesList.find((item) => parseInt(item.month, 10) === month && item.year === year)
 
-      return {
-        expense_id: foundData ? foundData.expense_id : null,
-        month,
-        year,
-        consumable_expense: foundData ? foundData.consumable_expense : '',
-        rent_expense: foundData ? foundData.rent_expense : '',
-        tax_and_public_charge: foundData ? foundData.tax_and_public_charge : '',
-        depreciation_expense: foundData ? foundData.depreciation_expense : '',
-        travel_expense: foundData ? foundData.travel_expense : '',
-        communication_expense: foundData ? foundData.communication_expense : '',
-        utilities_expense: foundData ? foundData.utilities_expense : '',
-        transaction_fee: foundData ? foundData.transaction_fee : '',
-        advertising_expense: foundData ? foundData.advertising_expense : '',
-        entertainment_expense: foundData ? foundData.entertainment_expense : '',
-        professional_service_fee: foundData ? foundData.professional_service_fee : '',
-      }
-    })
-  })
+  const combinedData = expensesList.map((item) => {
+    return {
+      expense_id: item.expense_id,
+      month: parseInt(item.month, 10), // 数値に変換
+      year: item.year,
+      consumable_expense: item.consumable_expense || '',
+      rent_expense: item.rent_expense || '',
+      tax_and_public_charge: item.tax_and_public_charge || '',
+      depreciation_expense: item.depreciation_expense || '',
+      travel_expense: item.travel_expense || '',
+      communication_expense: item.communication_expense || '',
+      utilities_expense: item.utilities_expense || '',
+      transaction_fee: item.transaction_fee || '',
+      advertising_expense: item.advertising_expense || '',
+      entertainment_expense: item.entertainment_expense || '',
+      professional_service_fee: item.professional_service_fee || '',
+    };
+  });
 
-  const validData = combinedData.filter((data) => data.expense_id !== null)
+  // Sort data by year and month
+  const validData = combinedData.sort((a, b) => {
+    if (a.year === b.year) {
+      return a.month - b.month; // 月で昇順にソート
+    }
+    return a.year - b.year; // 年で昇順にソート
+  });
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
@@ -496,10 +498,10 @@ const ExpensesList: React.FC = () => {
                           </tr>
                         </thead>
                         <tbody className='expensesList_table_body'>
-                          {combinedData.map((expense, index) => {
-                            const isNewYear = index === 0 || combinedData[index - 1].year !== expense.year
+                        {validData.map((expense, index) => {
+                            const isNewYear = index === 0 || validData[index - 1].year !== expense.year;
                             const isLastExpenseOfYear =
-                              index !== combinedData.length - 1 && combinedData[index + 1].year !== expense.year
+                              index !== validData.length - 1 && validData[index + 1].year !== expense.year;
 
                             const isEditable = expense.expense_id !== null
 
