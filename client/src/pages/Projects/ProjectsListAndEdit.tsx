@@ -57,9 +57,9 @@ const ProjectsListAndEdit: React.FC = () => {
       client: '',
       business_division: '',
       sales_revenue: '',
+      indirect_employee_expense: '',
       dispatch_labor_expense: '',
       employee_expense: '',
-      indirect_employee_expense: '',
       expense: '',
       operating_income: '',
       non_operating_income: '',
@@ -446,13 +446,13 @@ const ProjectsListAndEdit: React.FC = () => {
                                     {translate('saleRevenue', language)}
                                   </th>
                                   <th className='projectsList-table-title-content-vertical has-text-centered'>
+                                    {translate('indirectEmployeeExpense', language)}
+                                  </th>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('dispatchLaborExpense', language)}
                                   </th>
                                   <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('employeeExpense', language)}
-                                  </th>
-                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
-                                    {translate('indirectEmployeeExpense', language)}
                                   </th>
                                   <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('expense', language)}
@@ -573,6 +573,15 @@ const ProjectsListAndEdit: React.FC = () => {
                                     <td className='projectsList-table-body-content-vertical'>
                                       <input
                                         type='text'
+                                        name='indirect_employee_expense'
+                                        value={formatNumberWithCommas(project.indirect_employee_expense)}
+                                        onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
+                                      />
+                                    </td>
+                                    <td className='projectsList-table-body-content-vertical'>
+                                      <input
+                                        type='text'
                                         name='dispatch_labor_expense'
                                         value={formatNumberWithCommas(project.dispatch_labor_expense)}
                                         onChange={(e) => handleChange(index, e)}
@@ -584,15 +593,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                         type='text'
                                         name='employee_expense'
                                         value={formatNumberWithCommas(project.employee_expense)}
-                                        onChange={(e) => handleChange(index, e)}
-                                        onKeyDown={handleDisableKeysOnNumberInputs}
-                                      />
-                                    </td>
-                                    <td className='projectsList-table-body-content-vertical'>
-                                      <input
-                                        type='text'
-                                        name='indirect_employee_expense'
-                                        value={formatNumberWithCommas(project.indirect_employee_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
