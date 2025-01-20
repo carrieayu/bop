@@ -305,36 +305,73 @@ const ExpensesList: React.FC = () => {
     }
   }, [location.pathname])
 
-  // Extract unique years from the expenses data
+  // Since it's necessary for determining the sorting order of the year and month, the types should be unified.
+  const normalizedExpensesList = expensesList.map((item) => ({
+    ...item,
+    month: parseInt(item.month, 10),
+    year:  parseInt(item.year,  10),
+  }));
 
-  // Combine static months with dynamic data
+  // Calculate the fiscal year based on the access date
+  const getFiscalYearRange = (accessDate) => {
+    const currentYear  = accessDate.getFullYear();
+    const currentMonth = accessDate.getMonth() + 1;
+    const startYear = currentMonth < 4 ? currentYear - 1 : currentYear;
+    const endYear   = startYear + 1;
 
-  const combinedData = expensesList.map((item) => {
     return {
-      expense_id: item.expense_id,
-      month: parseInt(item.month, 10), // 数値に変換
-      year: item.year,
-      consumable_expense: item.consumable_expense || '',
-      rent_expense: item.rent_expense || '',
-      tax_and_public_charge: item.tax_and_public_charge || '',
-      depreciation_expense: item.depreciation_expense || '',
-      travel_expense: item.travel_expense || '',
-      communication_expense: item.communication_expense || '',
-      utilities_expense: item.utilities_expense || '',
-      transaction_fee: item.transaction_fee || '',
-      advertising_expense: item.advertising_expense || '',
-      entertainment_expense: item.entertainment_expense || '',
-      professional_service_fee: item.professional_service_fee || '',
+      startYear,
+      endYear,
+      startMonth: 4,
+      endMonth: 3,
     };
-  });
+  };
+  
+  // Filter and combine data based on the fiscal year range
+  const getFiscalYearData = (normalizedExpensesList, months, fiscalYearRange) => {
+    const { startYear, endYear, startMonth, endMonth } = fiscalYearRange;
+    return months.flatMap((month) => {
+      const year =
+        month >= startMonth && month <= 12
+          ? startYear
+          : month <= endMonth
+          ? endYear
+          : null;
 
-  // Sort data by year and month
-  const validData = combinedData.sort((a, b) => {
-    if (a.year === b.year) {
-      return a.month - b.month; // 月で昇順にソート
-    }
-    return a.year - b.year; // 年で昇順にソート
-  });
+      if (!year) return [];
+
+      const foundData = normalizedExpensesList.find(
+        (item) => item.month === month && item.year === year
+      );
+
+      return {
+        expense_id: foundData ? foundData.expense_id : null,
+        month,
+        year,
+        consumable_expense: foundData ? foundData.consumable_expense : '',
+        rent_expense: foundData ? foundData.rent_expense : '',
+        tax_and_public_charge: foundData ? foundData.tax_and_public_charge : '',
+        depreciation_expense: foundData ? foundData.depreciation_expense : '',
+        travel_expense: foundData ? foundData.travel_expense : '',
+        communication_expense: foundData ? foundData.communication_expense : '',
+        utilities_expense: foundData ? foundData.utilities_expense : '',
+        transaction_fee: foundData ? foundData.transaction_fee : '',
+        advertising_expense: foundData ? foundData.advertising_expense : '',
+        entertainment_expense: foundData ? foundData.entertainment_expense : '',
+        professional_service_fee: foundData
+          ? foundData.professional_service_fee
+          : '',
+      };
+    });
+  };
+
+  // Determine the 'fiscal year' based on the system date at the time of access.
+  const accessDate      = new Date();
+  const fiscalYearRange = getFiscalYearRange(accessDate);
+  const combinedData    = getFiscalYearData(normalizedExpensesList, months, fiscalYearRange);
+
+  // Filter valid data (only rows with an expense_id)
+  const validData = combinedData.filter((data) => data.expense_id !== null);
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
