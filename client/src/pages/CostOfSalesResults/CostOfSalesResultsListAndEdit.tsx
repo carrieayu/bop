@@ -25,7 +25,7 @@ import { deleteCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/De
 import { updateCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/UpdateCostOfSalesResults'
 
 const CostOfSalesResultsList: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('/planning-list')
+  const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
   const location = useLocation()
   const [activeTabOther, setActiveTabOther] = useState('costOfSalesResults')
@@ -410,9 +410,9 @@ const CostOfSalesResultsList: React.FC = () => {
                 handleTabsClick={handleTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
-                  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
                   { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
                   { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
+                  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
                   { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
                 ]}
               />

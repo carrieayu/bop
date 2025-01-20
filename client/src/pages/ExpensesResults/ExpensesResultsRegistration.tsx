@@ -33,7 +33,7 @@ type FilterParams = {
   year?: string
 }
 const ExpensesResultsRegistration = () => {
-  const [activeTab, setActiveTab] = useState('/planning-list')
+  const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
   const location = useLocation()
   const [activeTabOther, setActiveTabOther] = useState('expensesResults')
@@ -492,9 +492,9 @@ const ExpensesResultsRegistration = () => {
               handleTabsClick={handleTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
-                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
                 { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
                 { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
+                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
                 { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
               ]}
             />

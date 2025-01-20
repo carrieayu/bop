@@ -812,111 +812,115 @@ const EmployeesListAndEdit: React.FC = () => {
                           </table>
                         </div>
                       ) : (
-                        <table className='table is-bordered is-hoverable'>
-                          <thead>
-                            <tr className='EmployeesListAndEdit_table_title '>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-left'>ID</th>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                {translate('lastName', language)}
-                              </th>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                {translate('firstName', language)}
-                              </th>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                {translate('email', language)}
-                              </th>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered type'>
-                                {translate('type', language)}
-                              </th>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                {translate('salary', language)}
-                              </th>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                {translate('executiveRenumeration', language)}
-                              </th>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                {translate('companyName', language)}
-                              </th>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                {translate('businessDivision', language)}
-                              </th>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                {translate('bonusAndFuelAllowance', language)}
-                              </th>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                {translate('statutoryWelfareExpense', language)}
-                              </th>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                {translate('welfareExpense', language)}
-                              </th>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                {translate('insurancePremium', language)}
-                              </th>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                {translate('createdBy', language)}
-                              </th>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                {translate('createdAt', language)}
-                              </th>
-                              <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                {translate('updatedAt', language)}
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className='EmployeesListAndEdit_table_body'>
-                            {employeesList.map((employee) => (
-                              <tr
-                                key={employee.employee_id}
-                                className='EmployeesListAndEdit_table_body_content_horizontal'
-                              >
-                                <td className='EmployeesListAndEdit_table_body_content_vertical has-text-left'>
-                                  {employee.employee_id}
-                                </td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {employee.last_name}
-                                </td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {employee.first_name}
-                                </td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'>{employee.email}</td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical type'>
-                                  {translate(employee.type === 0 ? 'regularEmployee' : 'executiveEmployee', language)}
-                                </td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {employee.type === 0 && formatNumberWithCommas(employee.salary)}
-                                </td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {employee.type === 1 && formatNumberWithCommas(employee.executive_renumeration)}
-                                </td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'>{employee.company}</td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {employee.business_division}
-                                </td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {formatNumberWithCommas(employee.bonus_and_fuel_allowance)}
-                                </td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {formatNumberWithCommas(employee.statutory_welfare_expense)}
-                                </td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {formatNumberWithCommas(employee.welfare_expense)}
-                                </td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {formatNumberWithCommas(employee.insurance_premium)}
-                                </td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {userMap[employee.auth_user_id]}
-                                </td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {formatDate(employee.created_at)}
-                                </td>
-                                <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                  {formatDate(employee.updated_at)}
-                                </td>
+                        <div className="EmployeesListAndEdit-table">
+                          <table className='table is-bordered is-hoverable'>
+                            <thead>
+                              <tr className='EmployeesListAndEdit_table_title '>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-left'>ID</th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('lastName', language)}
+                                </th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('firstName', language)}
+                                </th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('email', language)}
+                                </th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered type'>
+                                  {translate('type', language)}
+                                </th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('salary', language)}
+                                </th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('executiveRenumeration', language)}
+                                </th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('companyName', language)}
+                                </th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('businessDivision', language)}
+                                </th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('bonusAndFuelAllowance', language)}
+                                </th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('statutoryWelfareExpense', language)}
+                                </th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('welfareExpense', language)}
+                                </th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('insurancePremium', language)}
+                                </th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('createdBy', language)}
+                                </th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('createdAt', language)}
+                                </th>
+                                <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
+                                  {translate('updatedAt', language)}
+                                </th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                            </thead>
+                            <tbody className='EmployeesListAndEdit_table_body'>
+                              {employeesList.map((employee) => (
+                                <tr
+                                  key={employee.employee_id}
+                                  className='EmployeesListAndEdit_table_body_content_horizontal'
+                                >
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical has-text-left'>
+                                    {employee.employee_id}
+                                  </td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                    {employee.last_name}
+                                  </td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                    {employee.first_name}
+                                  </td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical'>{employee.email}</td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical type'>
+                                    {translate(employee.type === 0 ? 'regularEmployee' : 'executiveEmployee', language)}
+                                  </td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                    {employee.type === 0 && formatNumberWithCommas(employee.salary)}
+                                  </td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                    {employee.type === 1 && formatNumberWithCommas(employee.executive_renumeration)}
+                                  </td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                    {employee.company}
+                                  </td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                    {employee.business_division}
+                                  </td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                    {formatNumberWithCommas(employee.bonus_and_fuel_allowance)}
+                                  </td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                    {formatNumberWithCommas(employee.statutory_welfare_expense)}
+                                  </td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                    {formatNumberWithCommas(employee.welfare_expense)}
+                                  </td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                    {formatNumberWithCommas(employee.insurance_premium)}
+                                  </td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                    {userMap[employee.auth_user_id]}
+                                  </td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                    {formatDate(employee.created_at)}
+                                  </td>
+                                  <td className='EmployeesListAndEdit_table_body_content_vertical'>
+                                    {formatDate(employee.updated_at)}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
                       )}
                     </div>
                   </div>

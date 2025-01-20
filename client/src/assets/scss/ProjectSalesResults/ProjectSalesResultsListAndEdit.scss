@@ -1,6 +1,4 @@
 .projectSalesResultsList_wrapper{
-    width: 100%;
-    max-width: 2560px;
     .projectSalesResultsList_cont_wrapper{
         display: flex;
         background-color: #EFEDEA;
@@ -8,7 +6,10 @@
             flex-direction: column;
         }
         .projectSalesResultsList_wrapper{
-            width: 84%; // i do not know wjy but it breaks if i set to 100%
+            width: 100%; 
+            max-width: 100%; 
+            overflow-x: hidden; 
+            box-sizing: border-box; 
             padding: 10px 30px 10px 30px;
             .projectSalesResultsList_top_content{
                 position: relative;

@@ -32,7 +32,7 @@ type Dates = {
 const EmployeeExpensesResultsRegistration = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTab, setActiveTab] = useState('/planning-list')
+  const [activeTab, setActiveTab] = useState('/results')
   const [activeTabOther, setActiveTabOther] = useState('employeeExpensesResults')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
@@ -623,9 +623,9 @@ const EmployeeExpensesResultsRegistration = () => {
               handleTabsClick={handleTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
-                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
                 { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
                 { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
+                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
                 { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
               ]}
             />

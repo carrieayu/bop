@@ -20,7 +20,7 @@ import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // help
 const months: number[] = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3] // Store as numbers
 
 const EmployeeExpensesResultsList: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('/planning-list')
+  const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
   const location = useLocation()
   const [activeTabOther, setActiveTabOther] = useState('employeeExpensesResults')
@@ -239,9 +239,9 @@ const EmployeeExpensesResultsList: React.FC = () => {
                 handleTabsClick={handleTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
-                  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
                   { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
                   { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
+                  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
                   { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
                 ]}
               />

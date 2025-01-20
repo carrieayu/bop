@@ -23,7 +23,7 @@ import {
 import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const ExpensesResultsList: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('/planning-list')
+  const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
   const location = useLocation()
   const [activeTabOther, setActiveTabOther] = useState('expensesResults')
@@ -408,9 +408,9 @@ const ExpensesResultsList: React.FC = () => {
                 handleTabsClick={handleTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
-                  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
                   { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
                   { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
+                  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
                   { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
                 ]}
               />
