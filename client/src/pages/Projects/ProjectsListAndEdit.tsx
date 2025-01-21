@@ -1,25 +1,30 @@
-import React, { useEffect, useState } from "react";
-import Btn from "../../components/Button/Button";
-import axios from "axios";
-import Sidebar from "../../components/Sidebar/Sidebar";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useLanguage } from "../../contexts/LanguageContext";
-import { translate } from "../../utils/translationUtil";
-import ListButtons from "../../components/ListButtons/ListButtons";
-import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
+import React, { useEffect, useState } from 'react'
+import Btn from '../../components/Button/Button'
+import axios from 'axios'
+import Sidebar from '../../components/Sidebar/Sidebar'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { translate } from '../../utils/translationUtil'
+import ListButtons from '../../components/ListButtons/ListButtons'
+import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import { useDispatch } from 'react-redux'
 import { UnknownAction } from 'redux'
-import { fetchBusinessDivisions } from "../../reducers/businessDivisions/businessDivisionsSlice";
-import { fetchMasterClient } from "../../reducers/client/clientSlice";
-import { RiDeleteBin6Fill } from "react-icons/ri";
-import AlertModal from "../../components/AlertModal/AlertModal";
-import CrudModal from "../../components/CrudModal/CrudModal";
+import { fetchBusinessDivisions } from '../../reducers/businessDivisions/businessDivisionsSlice'
+import { fetchMasterClient } from '../../reducers/client/clientSlice'
+import { RiDeleteBin6Fill } from 'react-icons/ri'
+import AlertModal from '../../components/AlertModal/AlertModal'
+import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
-import '../../assets/scss/Components/SliderToggle.scss';
-import {validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
-import { getProject } from "../../api/ProjectsEndpoint/GetProject";
-import { updateProject } from "../../api/ProjectsEndpoint/UpdateProject";
-import { deleteProject } from "../../api/ProjectsEndpoint/DeleteProject";
+import '../../assets/scss/Components/SliderToggle.scss'
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+import { getProject } from '../../api/ProjectsEndpoint/GetProject'
+import { updateProject } from '../../api/ProjectsEndpoint/UpdateProject'
+import { deleteProject } from '../../api/ProjectsEndpoint/DeleteProject'
 import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const ProjectsListAndEdit: React.FC = () => {
@@ -37,7 +42,7 @@ const ProjectsListAndEdit: React.FC = () => {
   const [projects, setProjects] = useState([])
   const [originalProjectsList, setOriginalProjectsList] = useState(projects)
   const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
-  const years = [2024, 2025];
+  const years = [2024, 2025]
   const [initialLanguage, setInitialLanguage] = useState(language)
   const dispatch = useDispatch()
   const [clients, setClients] = useState<any>([])
@@ -108,20 +113,20 @@ const ProjectsListAndEdit: React.FC = () => {
     setRowsPerPage(numRows)
     setCurrentPage(0)
   }
-  
-  const handleClick = () => {
-      setIsEditing((prevState) => !prevState)
-    }
-    useEffect(() => {
-      if (isEditing) {
-        setLanguage('jp')
-      }
 
-      if (!isEditing) {
-        // Reset to original values when switching to list mode
-        setProjects(originalProjectsList)
-      }
-    }, [isEditing])
+  const handleClick = () => {
+    setIsEditing((prevState) => !prevState)
+  }
+  useEffect(() => {
+    if (isEditing) {
+      setLanguage('jp')
+    }
+
+    if (!isEditing) {
+      // Reset to original values when switching to list mode
+      setProjects(originalProjectsList)
+    }
+  }, [isEditing])
 
   const handleChange = (index, event) => {
     const { name, value } = event.target
@@ -816,6 +821,6 @@ const ProjectsListAndEdit: React.FC = () => {
       />
     </div>
   )
-};
+}
 
-export default ProjectsListAndEdit;
+export default ProjectsListAndEdit
