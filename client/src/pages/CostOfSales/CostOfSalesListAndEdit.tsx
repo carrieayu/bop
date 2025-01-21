@@ -328,8 +328,8 @@ const CostOfSalesList: React.FC = () => {
   const fiscalYearRange = getFiscalYearRange(accessDate);
   const combinedData    = getFiscalYearData(normalizedcostOfSales, months, fiscalYearRange);
 
-  // Filter valid data (only rows with an expense_id)
-  const validData = combinedData.filter((data) => data.expense_id !== null);
+  // Filter valid data (only rows with an cost_of_sale_id)
+  const validData = combinedData.filter((data) => data.cost_of_sale_id !== null);
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
@@ -494,12 +494,8 @@ const CostOfSalesList: React.FC = () => {
                         </thead>
                         <tbody className='costOfSalesList_table_body'>
                           {combinedData.map((costOfSale, index) => {
-                            const isNewYear = index === 0 || combinedData[index - 1].year !== costOfSale.year
-                            const isLastcostOfSaleOfYear =
-                              index !== combinedData.length - 1 && combinedData[index + 1].year !== costOfSale.year
-
+                            const isLastExpenseOfYear = costOfSale.month === 3;
                             const isEditable = costOfSale.cost_of_sale_id !== null
-
                             return (
                               <React.Fragment key={index}>
                                 {costOfSale ? (
@@ -591,7 +587,7 @@ const CostOfSalesList: React.FC = () => {
                                     </td>
                                   </tr>
                                 ) : null}
-                                {isLastcostOfSaleOfYear && (
+                                {isLastExpenseOfYear && (
                                   <tr className='year-separator'>
                                     <td className='horizontal-line-cell' colSpan={9}>
                                       <div className='horizontal-line' />
@@ -639,10 +635,7 @@ const CostOfSalesList: React.FC = () => {
                       </thead>
                       <tbody className='costOfSalesList_table_body'>
                         {combinedData.map((costOfSale, index) => {
-                          const isNewYear = index === 0 || combinedData[index - 1].year !== costOfSale.year
-                          const isLastcostOfSaleOfYear =
-                            index !== combinedData.length - 1 && combinedData[index + 1].year !== costOfSale.year
-
+                          const isLastExpenseOfYear = costOfSale.month === 3;
                           return (
                             <React.Fragment key={index}>
                               <tr className='costOfSalesList_table_body_content_horizontal'>
@@ -674,7 +667,7 @@ const CostOfSalesList: React.FC = () => {
                                   {formatNumberWithCommas(costOfSale.amortization_expense) || 0}
                                 </td>
                               </tr>
-                              {isLastcostOfSaleOfYear && (
+                              {isLastExpenseOfYear && (
                                 <tr className='year-separator'>
                                   <td className='horizontal-line-cell' colSpan={9}>
                                     <div className='horizontal-line' />

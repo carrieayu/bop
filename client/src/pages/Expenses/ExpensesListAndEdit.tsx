@@ -535,13 +535,9 @@ const ExpensesList: React.FC = () => {
                           </tr>
                         </thead>
                         <tbody className='expensesList_table_body'>
-                        {validData.map((expense, index) => {
-                            const isNewYear = index === 0 || validData[index - 1].year !== expense.year;
-                            const isLastExpenseOfYear =
-                              index !== validData.length - 1 && validData[index + 1].year !== expense.year;
-
+                        {combinedData.map((expense, index) => {
+                            const isLastExpenseOfYear = expense.month === 3;
                             const isEditable = expense.expense_id !== null
-
                             return (
                               <React.Fragment key={index}>
                                 {expense ? (
@@ -700,10 +696,7 @@ const ExpensesList: React.FC = () => {
                       </thead>
                       <tbody className='expensesList_table_body'>
                         {combinedData.map((expense, index) => {
-                          const isNewYear = index === 0 || combinedData[index - 1].year !== expense.year
-                          const isLastExpenseOfYear =
-                            index !== combinedData.length - 1 && combinedData[index + 1].year !== expense.year
-
+                          const isLastExpenseOfYear = expense.month === 3;
                           return (
                             <React.Fragment key={index}>
                               <tr className='expensesList_table_body_content_horizontal'>

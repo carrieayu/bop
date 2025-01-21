@@ -339,8 +339,8 @@ const ExpensesResultsList: React.FC = () => {
   const fiscalYearRange = getFiscalYearRange(accessDate);
   const combinedData    = getFiscalYearData(normalizedExpensesResultsList, months, fiscalYearRange);
 
-  // Filter valid data (only rows with an expense_id)
-  const validData = combinedData.filter((data) => data.expense_id !== null);
+  // Filter valid data (only rows with an expense_result_id)
+  const validData = combinedData.filter((data) => data.expense_result_id !== null);
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
@@ -504,13 +504,9 @@ const ExpensesResultsList: React.FC = () => {
                           </tr>
                         </thead>
                         <tbody className='expensesResultsList_table_body'>
-                          {validData.map((expenseResults, index) => {
-                            const isNewYear = index === 0 || combinedData[index - 1].year !== expenseResults.year
-                            const isLastExpenseOfYear =
-                              index !== combinedData.length - 1 && combinedData[index + 1].year !== expenseResults.year
-
+                          {combinedData.map((expenseResults, index) => {
+                            const isLastExpenseOfYear = expenseResults.month === 3;
                             const isEditable = expenseResults.expense_result_id !== null
-
                             return (
                               <React.Fragment key={index}>
                                 {expenseResults ? (
@@ -672,10 +668,7 @@ const ExpensesResultsList: React.FC = () => {
                       </thead>
                       <tbody className='expensesResultsList_table_body'>
                         {combinedData.map((expenseResults, index) => {
-                          const isNewYear = index === 0 || combinedData[index - 1].year !== expenseResults.year
-                          const isLastExpenseOfYear =
-                            index !== combinedData.length - 1 && combinedData[index + 1].year !== expenseResults.year
-
+                          const isLastExpenseOfYear = expenseResults.month === 3;
                           return (
                             <React.Fragment key={index}>
                               <tr className='expensesResultsList_table_body_content_horizontal'>
