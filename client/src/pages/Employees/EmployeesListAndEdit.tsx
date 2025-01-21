@@ -14,10 +14,7 @@ import { fetchMasterCompany } from "../../reducers/company/companySlice";
 import { useDispatch } from "react-redux";
 import { UnknownAction } from "redux";
 import CrudModal from "../../components/CrudModal/CrudModal";
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss'
-import { getBusinessDivision } from "../../api/BusinessDivisionEndpoint/GetBusinessDivision";
-import { getMasterBusinessDivisionCompany } from "../../api/BusinessDivisionEndpoint/GetMasterBusinessDivisionCompany";
 import { updateEmployee } from "../../api/EmployeeEndpoint/UpdateEmployee";
 import { getSelectedBusinessDivisionCompany } from "../../api/BusinessDivisionEndpoint/GetSelectedBusinessDivisionCompany";
 import { deleteEmployee } from "../../api/EmployeeEndpoint/DeleteEmployee";
@@ -134,16 +131,6 @@ const EmployeesListAndEdit: React.FC = () => {
       return newEditingState
     })
   }
-
-  useEffect(() => {
-    getMasterBusinessDivisionCompany(token)
-      .then((data) => {
-        setAllBusinessDivisions(data)
-      })
-      .catch((error) => {
-        console.error('Error fetching business divisions:', error)
-      })
-  }, [])
 
   const handleChange = (index, e) => {
     const { name, value } = e.target

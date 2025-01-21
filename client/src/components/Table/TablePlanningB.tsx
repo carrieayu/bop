@@ -175,15 +175,19 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
                 <div key={entityIndex}>
                   <table className='table-b-grid' style={{ border: '1px solid #ddd' }}>
                     <tbody className='table-b-client-table'>
-                      <td className='table-b-client-data grey' rowSpan={8}>
-                        {entityGrid.clientName}
-                      </td>
+                      <tr>
+                        <td className='table-b-client-data grey' rowSpan={8}>
+                          {entityGrid.clientName}
+                        </td>
+                      </tr>
                       {entityGrid.grid.map((row, rowIndex) => {
                         const rowTotal = row.reduce((acc, cell) => acc + (parseFloat(cell) || 0), 0)
                         totalSum += rowTotal // Accumulate the row total
                         return (
                           <tr key={rowIndex}>
-                            <td className={`table-b-categories-data ${isTranslateSwitchActive  ? 'smaller-font' : ''}`}>{translate(headerTitle[rowIndex], language)}</td>
+                            <td className={`table-b-categories-data ${isTranslateSwitchActive ? 'smaller-font' : ''}`}>
+                              {translate(headerTitle[rowIndex], language)}
+                            </td>
                             {row.map((cell, colIndex) => (
                               <td
                                 className='table-b-months-data'
