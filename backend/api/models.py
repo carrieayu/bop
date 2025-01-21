@@ -169,16 +169,16 @@ class Projects(models.Model):
     )
     year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
     month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
-    sales_revenue = models.IntegerField(default=0)
-    dispatch_labor_expense = models.IntegerField(default=0)
-    employee_expense = models.IntegerField(default=0)
-    indirect_employee_expense = models.IntegerField(default=0)
-    expense = models.IntegerField( default=0)
-    operating_income = models.IntegerField( default=0)
-    non_operating_income = models.IntegerField( default=0)
-    non_operating_expense = models.IntegerField( default=0)
-    ordinary_profit = models.IntegerField(default=0)
-    ordinary_profit_margin = models.FloatField(default=0.0)
+    sales_revenue = models.DecimalField(validators=min_max_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    dispatch_labor_expense =models.DecimalField(validators=min_max_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    employee_expense =models.DecimalField(validators=min_max_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    indirect_employee_expense =models.DecimalField(validators=min_max_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    expense = models.DecimalField(validators=min_max_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    operating_income = models.DecimalField(validators=min_max_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    non_operating_income = models.DecimalField(validators=min_max_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    non_operating_expense = models.DecimalField(validators=min_max_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    ordinary_profit =models.DecimalField(validators=min_max_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    ordinary_profit_margin =models.DecimalField(validators=min_max_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :
@@ -374,7 +374,7 @@ class CostOfSalesResults(models.Model):
         return self.cost_of_sale_result_id
     
 class Expenses(models.Model):
-    expense_id = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True)
+    expense_id = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True, editable=False)
     year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
     month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
     consumable_expense = models.DecimalField(validators=min_max_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)

@@ -14,7 +14,7 @@ import AlertModal from '../../components/AlertModal/AlertModal'
 import { createProject } from '../../api/ProjectsEndpoint/CreateProject'
 import { overwriteProject } from '../../api/ProjectsEndpoint/OverwriteProject'
 import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs, removeCommas, formatNumberWithCommas} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import {handleDisableKeysOnNumberInputs, removeCommas, formatNumberWithCommas, handleInputChange} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -179,19 +179,61 @@ const ProjectsRegistration = () => {
 
   const currentYear = new Date().getFullYear();
   const [months, setMonths] = useState<number[]>([]);
+  // OLD
+  // const handleChange = (index, event) => {
+  //   const { name, value } = event.target
+
+  //   // Remove commas to get the raw number
+  //   // EG. 999,999 → 999999 in the DB
+  //   const rawValue = removeCommas(value)
+
+  //   const updatedFormData = [...formProjects]
+  //   updatedFormData[index] = {
+  //     ...updatedFormData[index],
+  //     [name]: rawValue,
+  //   }
+  //   setProjects(updatedFormData)
+
+  //   if (name === 'year') {
+  //     const selectedYear = parseInt(rawValue, 10);
+  //     if (selectedYear === currentYear) {
+  //       setMonths([4, 5, 6, 7, 8, 9, 10, 11, 12]);
+  //     } else if (selectedYear === (currentYear + 1)) {
+  //       setMonths([1, 2, 3]);
+  //     } else {
+  //       setMonths([]);
+  //     }
+  //   }
+
+  // }
+
+  // NEW
+  
   const handleChange = (index, event) => {
+    // Fields where it is not necessary to remove commas, check numeric value.
+    const nonFinancialFieldsArray = [
+      'year',
+      'month',
+      'project_name',
+      'project_type',
+      'client',
+      'business_division'
+    ]
+
+    handleInputChange(index, event, setProjects, formProjects, nonFinancialFieldsArray)
+    
     const { name, value } = event.target
 
     // Remove commas to get the raw number
     // EG. 999,999 → 999999 in the DB
     const rawValue = removeCommas(value)
 
-    const updatedFormData = [...formProjects]
-    updatedFormData[index] = {
-      ...updatedFormData[index],
-      [name]: rawValue,
-    }
-    setProjects(updatedFormData)
+    // const updatedFormData = [...formProjects]
+    // updatedFormData[index] = {
+    //   ...updatedFormData[index],
+    //   [name]: rawValue,
+    // }
+    // setProjects(updatedFormData)
 
     if (name === 'year') {
       const selectedYear = parseInt(rawValue, 10);
@@ -205,8 +247,8 @@ const ProjectsRegistration = () => {
     }
 
   }
-  useEffect(() => {}, [formProjects])
 
+  
   const HandleClientChange = (e) => {
     setSelectedClient(e.target.value)
   }

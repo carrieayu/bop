@@ -20,7 +20,7 @@ import {validateRecords, translateAndFormatErrors, getFieldChecks, checkForDupli
 import { getProject } from "../../api/ProjectsEndpoint/GetProject";
 import { updateProject } from "../../api/ProjectsEndpoint/UpdateProject";
 import { deleteProject } from "../../api/ProjectsEndpoint/DeleteProject";
-import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas, handleInputChange} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const ProjectsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -126,22 +126,9 @@ const ProjectsListAndEdit: React.FC = () => {
   }
 
   const handleChange = (index, event) => {
-    const { name, value } = event.target
-
-    // Remove commas to get the raw number
-    // EG. 999,999 → 999999 in the DB
-    const rawValue = removeCommas(value)
-
-    setProjects((prevState) => {
-      const updatedProjectsData = [...prevState]
-      updatedProjectsData[index] = {
-        ...updatedProjectsData[index],
-        [name]: rawValue,
-      }
-      setFormProjects(updatedProjectsData)
-
-      return updatedProjectsData
-    })
+    // Fields where it is not necessary to remove commas and check numeric values.
+    const nonFinancialFieldsArray = ['year', 'month', 'project_name', 'project_type', 'client', 'business_division']
+    handleInputChange(index, event, setProjects, projects, nonFinancialFieldsArray)
   }
 
   const handleSubmit = async () => {
