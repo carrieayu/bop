@@ -108,22 +108,20 @@ const ProjectsListAndEdit: React.FC = () => {
     setRowsPerPage(numRows)
     setCurrentPage(0)
   }
-
+  
   const handleClick = () => {
-    setIsEditing((prevState) => {
-      const newEditingState = !prevState
-      if (newEditingState) {
+      setIsEditing((prevState) => !prevState)
+    }
+    useEffect(() => {
+      if (isEditing) {
         setLanguage('jp')
       }
 
-      if (!newEditingState) {
+      if (!isEditing) {
         // Reset to original values when switching to list mode
         setProjects(originalProjectsList)
       }
-
-      return newEditingState
-    })
-  }
+    }, [isEditing])
 
   const handleChange = (index, event) => {
     const { name, value } = event.target
@@ -486,7 +484,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         onChange={(e) => handleChange(index, e)}
                                       >
                                         {years.map((year, idx) => (
-                                          <option key={idx} value={year} selected={year === project.year}>
+                                          <option key={idx} value={year}>
                                             {year}
                                           </option>
                                         ))}
@@ -501,7 +499,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                       >
                                         <option value=''></option>
                                         {months.map((month, idx) => (
-                                          <option key={idx} value={month} selected={month === project.month}>
+                                          <option key={idx} value={month}>
                                             {month}月
                                           </option>
                                         ))}
@@ -533,11 +531,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         onChange={(e) => handleChange(index, e)}
                                       >
                                         {clients.map((client) => (
-                                          <option
-                                            key={client.client_id}
-                                            value={client.client_id}
-                                            selected={client.client_id === project.client_id}
-                                          >
+                                          <option key={client.client_id} value={client.client_id}>
                                             {client.client_name}
                                           </option>
                                         ))}
@@ -554,7 +548,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                           <option
                                             key={division.business_division_id}
                                             value={division.business_division_id}
-                                            selected={division.business_division_id === project.business_division_id}
                                           >
                                             {division.business_division_name}
                                           </option>
