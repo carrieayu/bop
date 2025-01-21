@@ -1,5 +1,4 @@
 .employeeExpensesList_wrapper{
-    max-width: 2560px;
     .employeeExpensesList_cont_wrapper{
         display: flex;
         background-color: #EFEDEA;
@@ -8,7 +7,7 @@
             flex-direction: column;
         }
         .employeeExpensesList_wrapper_div{
-                    width: 84%; // i do not know wjy but it breaks if i set to 100%
+                    width: 100%; // i do not know wjy but it breaks if i set to 100% // Updates : sets it to 100% and somehow works? 
                     padding: 10px 30px 10px 30px;
                     .employeeExpensesList_top_content{
                         

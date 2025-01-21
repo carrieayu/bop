@@ -92,7 +92,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
     setIsEditing((prevState) => {
       const newEditingState = !prevState
       if (newEditingState) {
-        setLanguage(initialLanguage)
+        setLanguage('jp')
       }
       if (!newEditingState) {
         console.log(newEditingState, 'business', business)
@@ -567,7 +567,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
                           setIsUpdateConfirmationOpen(true)
                         }}
                       >
-                        更新
+                        {translate('update', language)}
                       </button>
                     </div>
                   ) : (

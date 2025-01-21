@@ -49,7 +49,7 @@ type Division = {
 }
 
 const ProjectSalesResultsRegistration = () => {
-  const [activeTab, setActiveTab] = useState('/planning-list')
+  const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
   const location = useLocation()
   const [activeTabOther, setActiveTabOther] = useState('projectSalesResults')
@@ -687,9 +687,9 @@ const ProjectSalesResultsRegistration = () => {
               handleTabsClick={handleTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
-                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
                 { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
                 { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
+                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
                 { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
               ]}
             />

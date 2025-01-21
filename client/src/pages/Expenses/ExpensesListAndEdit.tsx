@@ -107,7 +107,7 @@ const ExpensesList: React.FC = () => {
     setIsEditing((prevState) => {
       const newEditingState = !prevState
       if (newEditingState) {
-        setLanguage(initialLanguage)
+        setLanguage('jp')
       }
 
       if (!newEditingState) {
@@ -725,7 +725,7 @@ const ExpensesList: React.FC = () => {
                         setIsUpdateConfirmationOpen(true)
                       }}
                     >
-                      更新
+                      {translate('update', language)}
                     </button>
                   </div>
                 ) : (
