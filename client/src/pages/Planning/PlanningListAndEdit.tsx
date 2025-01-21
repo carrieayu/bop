@@ -42,14 +42,13 @@ const PlanningListAndEdit = () => {
 
   const handleEditModeToggle = () => {
     setIsThousandYenChecked(false)
-    setIsEditing((prevState) => {
-      const newEditingState = !prevState
-      if (newEditingState) {
-        setLanguage(initialLanguage)
-      }
-      return newEditingState
-    })
+    setIsEditing((prevState) => !prevState)
   }
+        useEffect(() => {
+          if (isEditing) {
+            setLanguage(initialLanguage)
+          }
+        }, [isEditing])
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)

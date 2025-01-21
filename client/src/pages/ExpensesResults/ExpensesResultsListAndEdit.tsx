@@ -101,20 +101,18 @@ const ExpensesResultsList: React.FC = () => {
   }
 
   const handleClick = () => {
-    setIsEditing((prevState) => {
-      const newEditingState = !prevState
-      if (newEditingState) {
-        setLanguage('jp')
-      }
-
-      if (!newEditingState) {
-        // Reset to original values when switching to list mode
-        setExpensesResultsList(originalExpenseResultsList)
-      }
-
-      return newEditingState
-    })
-  }
+            setIsEditing((prevState) => !prevState)
+          }
+          useEffect(() => {
+            if (isEditing) {
+              setLanguage('jp')
+            }
+      
+            if (!isEditing) {
+              // Reset to original values when switching to list mode
+              setExpensesResultsList(originalExpenseResultsList)
+            }
+          }, [isEditing])
 
   const handleChange = (index, e) => {
     const { name, value } = e.target
@@ -209,7 +207,6 @@ const ExpensesResultsList: React.FC = () => {
       window.location.href = '/login'
       return
     }
-    console.log(modifiedFields)
     updateExpenseResults(modifiedFields, token)
       .then(() => {
         setOriginalExpensesResultsList(expensesResultsList)
@@ -252,7 +249,6 @@ const ExpensesResultsList: React.FC = () => {
 
     getExpenseResults(token)
       .then((data) => {
-        console.log(data)
         setExpensesResultsList(data)
         setOriginalExpensesResultsList(data)
       })

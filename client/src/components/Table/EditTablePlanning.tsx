@@ -1384,7 +1384,6 @@ const EditTablePlanning = () => {
   const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable']
   const [editableData, setEditableData] = useState(data)
   const isRowEditable = (label) => editableLabels.includes(label)
-  console.log('editable data', editableData)
 
   const handleInputChange = (rowIndex, valueIndex, e) => {
     const updatedData = [...data]

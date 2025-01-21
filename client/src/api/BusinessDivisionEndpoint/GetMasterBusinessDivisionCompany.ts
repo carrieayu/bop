@@ -1,8 +1,9 @@
 import axios from 'axios'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
+// Not sure if this API is used. 
 export async function getMasterBusinessDivisionCompany(token: string) {
-  const endpoint = `${getReactActiveEndpoint()}/api/master-master-business-divisions-companies/list/`
+  const endpoint = `${getReactActiveEndpoint()}/api/master-business-divisions-companies/list/`
 
   try {
     const response = await axios.get(endpoint, {

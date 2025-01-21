@@ -1,4 +1,5 @@
-import CardEntity from "./cardEntity"
+import { CardEntity } from "./cardEntity"
+
 
 export default class PlanningAssignEntity {
   planning_assign_id: string | undefined

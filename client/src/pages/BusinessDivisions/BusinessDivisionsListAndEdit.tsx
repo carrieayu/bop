@@ -89,22 +89,19 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
   }
 
   const handleClick = () => {
-    setIsEditing((prevState) => {
-      const newEditingState = !prevState
-      if (newEditingState) {
-        setLanguage('jp')
-      }
-      if (!newEditingState) {
-        console.log(newEditingState, 'business', business)
-        // Reset to original values when switching to list mode
-        setBusiness(originalBusiness)
-      }
+          setIsEditing((prevState) => !prevState)
+        }
+        useEffect(() => {
+          if (isEditing) {
+            setLanguage('jp')
+          }
+    
+          if (!isEditing) {
+            // Reset to original values when switching to list mode
+            setBusiness(originalBusiness)
+          }
+        }, [isEditing])
 
-      return newEditingState
-
-      return newEditingState
-    })
-  }
   const handleChange = (index, event) => {
     const { name, value } = event.target
     setBusiness((prevBusiness) => prevBusiness.map((item, i) => (i === index ? { ...item, [name]: value } : item)))

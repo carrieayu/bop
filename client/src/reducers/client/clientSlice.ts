@@ -1,11 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import api from '../../api/api'
-import MasterClientsEntity from '../../entity/clientEntity'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { MasterClientsEntity } from '../../entity/clientEntity'
 
 const initialState = {
   isLoading: false,
-  masterClientsList: [new MasterClientsEntity({})],
+  masterClientsList: [] as MasterClientsEntity[],
 }
 const POLLING_INTERVAL = 60000
 const MAX_RETRIES = 12
@@ -16,7 +16,7 @@ async function fetchWithPolling(retries = MAX_RETRIES): Promise<MasterClientsEnt
       const response = await api.get<MasterClientsEntity[]>(`${getReactActiveEndpoint()}/api/master-clients/list/`)
 
       if (response.data && response.data.length > 0) {
-        return response.data.map((data) => new MasterClientsEntity(data))
+        return response.data
       } else {
         console.log(`Attempt ${attempt}: Data is empty, retrying in 5 minutes...`)
       }

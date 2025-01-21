@@ -48,15 +48,13 @@ const EmployeeExpensesResultsList: React.FC = () => {
   }
 
   const handleClick = () => {
-    setIsEditing((prevState) => {
-      const newEditingState = !prevState
-      if (newEditingState) {
-        setLanguage('jp')
-      }
-
-      return newEditingState
-    })
-  }
+              setIsEditing((prevState) => !prevState)
+            }
+            useEffect(() => {
+              if (isEditing) {
+                setLanguage('jp')
+              }
+            }, [isEditing])
 
   const handleTabsClick = (tab) => {
     setActiveTabOther(tab)
@@ -339,7 +337,6 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                   existingMonthlyExpenses[monthIndex].total_salary += expense.employee_salary
                                 }
                               }
-                              console.log(acc)
 
                               return acc
                             }, [])
@@ -357,7 +354,10 @@ const EmployeeExpensesResultsList: React.FC = () => {
                               // Map through employees
                               ...yearGroup.employees.map((employee, employeeIndex) => {
                                 return (
-                                  <tr key={employeeIndex} className='employeeExpensesResultsList_user_name'>
+                                  <tr
+                                    key={employee.employee_expense_result_id + employeeIndex}
+                                    className='employeeExpensesResultsList_user_name'
+                                  >
                                     <td className='employeeExpensesResultsList_td'>
                                       <p className='employeeExpensesResultsList_user_name_value'>{`${employee.employee_last_name} ${employee.employee_first_name}`}</p>
                                     </td>
@@ -532,6 +532,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
                               }
 
                               yearGroup.employees.push({
+                                employee_expense_result_id: expense.employee_expense_result_id,
                                 employee_last_name: expense.employee_last_name,
                                 employee_first_name: expense.employee_first_name,
                                 monthlyExpenses,
@@ -565,7 +566,10 @@ const EmployeeExpensesResultsList: React.FC = () => {
                               : []),
                             // Map through employees
                             ...yearGroup.employees.map((employee, employeeIndex) => (
-                              <tr key={employeeIndex} className='employeeExpensesResultsList_user_name'>
+                              <tr
+                                key={employee.employee_expense_result_id + employeeIndex}
+                                className='employeeExpensesResultsList_user_name'
+                              >
                                 <td className='employeeExpensesResultsList_td'>
                                   <p className='employeeExpensesResultsList_user_name_value'>{`${employee.employee_last_name} ${employee.employee_first_name}`}</p>
                                 </td>
