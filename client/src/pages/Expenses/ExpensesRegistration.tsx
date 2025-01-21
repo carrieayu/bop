@@ -100,7 +100,6 @@ const handleChange = (index, event) => {
         updated_at: '',
       })
       setFormData(newFormData)
-      console.log('add:' + formData)
     } else {
       console.log('You can only add up to 10 forms.')
     }

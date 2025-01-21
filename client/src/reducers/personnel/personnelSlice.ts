@@ -8,7 +8,7 @@ interface PersonnelState {
     error: string | null;
   }
   const initialState: PersonnelState = {
-    personnel: [],
+    personnel: [] as PersonnelEntity[],
     status: 'idle',
     error: null,
   };

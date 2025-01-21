@@ -209,7 +209,6 @@ const ExpensesResultsList: React.FC = () => {
       window.location.href = '/login'
       return
     }
-    console.log(modifiedFields)
     updateExpenseResults(modifiedFields, token)
       .then(() => {
         setOriginalExpensesResultsList(expensesResultsList)

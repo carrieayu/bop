@@ -5,7 +5,7 @@ import { MasterCompanyEntity } from '../../entity/companyEntity'
 
 const initialState = {
   isLoading: false,
-  masterCompanyList: [],
+  masterCompanyList: [] as MasterCompanyEntity[],
 }
 const POLLING_INTERVAL = 60000
 const MAX_RETRIES = 12

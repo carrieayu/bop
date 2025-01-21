@@ -5,7 +5,7 @@ import { PersonnelEntity } from '../../entity/personnelEntity'
 
 const initialState = {
   isLoading: false,
-  personnelList: [],
+  personnelList: [] as PersonnelEntity[],
 }
 
 export const fetchPersonnel = createAsyncThunk('personnel/fetch', async () => {

@@ -4,6 +4,7 @@ import api from '../../api/api'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { fetchCos } from '../costOfSale/costOfSaleSlice'
 import { CardEntity } from '../../entity/cardEntity'
+import { CostOfSaleEntity } from '../../entity/cosEntity'
 
 const initialState = {
   isLoading: false,
@@ -15,7 +16,7 @@ const initialState = {
   totalGrossProfitMargin: 0,
   totalOperatingProfitMargin: 0,
   totalCumulativeOrdinaryIncome: 0,
-  costOfSaleList: [],
+  costOfSaleList: [] as CostOfSaleEntity[],
   totalCostOfSaleForYear: 0,
   status: 'idle',
   error: null,

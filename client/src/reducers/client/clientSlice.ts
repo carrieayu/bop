@@ -5,7 +5,7 @@ import { MasterClientsEntity } from '../../entity/clientEntity'
 
 const initialState = {
   isLoading: false,
-  masterClientsList: [],
+  masterClientsList: [] as MasterClientsEntity[],
 }
 const POLLING_INTERVAL = 60000
 const MAX_RETRIES = 12

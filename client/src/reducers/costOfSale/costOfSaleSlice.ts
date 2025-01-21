@@ -5,7 +5,7 @@ import { CostOfSaleEntity } from '../../entity/cosEntity'
 
 const initialState = {
   isLoading: false,
-  costOfSaleList: [],
+  costOfSaleList: [] as CostOfSaleEntity[],
 }
 const POLLING_INTERVAL = 60000
 const MAX_RETRIES = 12

@@ -8,7 +8,7 @@ const POLLING_INTERVAL = 60000
 const MAX_RETRIES = 12
 const initialState = {
   isLoading: false,
-  businessDivisionlList: [],
+  businessDivisionlList: [] as BusinessDivisionsEntity [],
 }
 
 async function fetchWithPolling(retries = MAX_RETRIES): Promise<BusinessDivisionsEntity[]> {

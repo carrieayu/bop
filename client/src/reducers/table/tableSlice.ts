@@ -10,7 +10,7 @@ interface TableState {
   error: string | null
 }
 const initialState: TableState = {
-  tableList: [],
+  tableList: [] as TableEntity[],
   status: 'idle',
   error: null,
 };

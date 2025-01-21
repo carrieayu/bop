@@ -25,9 +25,6 @@ const TableResults: React.FC<TablePlanningAProps> = ({ isThousandYenChecked }) =
     // getPlanningA(token)
     getResultsA(token)
       .then((response) => {
-        
-        console.log('check data: ', response)
-        
         const aggregatedData = response.cost_of_sales_results.reduce((acc, item) => {
           const { month, ...values } = item
           if (!acc[month]) {
