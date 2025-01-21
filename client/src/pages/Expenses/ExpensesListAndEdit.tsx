@@ -303,13 +303,44 @@ const ExpensesList: React.FC = () => {
     }
   }, [location.pathname])
 
-  // Extract unique years from the expenses data
-  const uniqueYears = Array.from(new Set(expensesList.map((item) => item.year))).sort((a, b) => a - b)
+  // Since it's necessary for determining the sorting order of the year and month, the types should be unified.
+  const normalizedExpensesList = expensesList.map((item) => ({
+    ...item,
+    month: parseInt(item.month, 10),
+    year:  parseInt(item.year,  10),
+  }));
 
-  // Combine static months with dynamic data
-  const combinedData = uniqueYears.flatMap((year) => {
-    return months.map((month) => {
-      const foundData = expensesList.find((item) => parseInt(item.month, 10) === month && item.year === year)
+  // Calculate the fiscal year based on the access date
+  const getFiscalYearRange = (accessDate) => {
+    const currentYear  = accessDate.getFullYear();
+    const currentMonth = accessDate.getMonth() + 1;
+    const startYear = currentMonth < 4 ? currentYear - 1 : currentYear;
+    const endYear   = startYear + 1;
+
+    return {
+      startYear,
+      endYear,
+      startMonth: 4,
+      endMonth: 3,
+    };
+  };
+  
+  // Filter and combine data based on the fiscal year range
+  const getFiscalYearData = (normalizedExpensesList, months, fiscalYearRange) => {
+    const { startYear, endYear, startMonth, endMonth } = fiscalYearRange;
+    return months.flatMap((month) => {
+      const year =
+        month >= startMonth && month <= 12
+          ? startYear
+          : month <= endMonth
+          ? endYear
+          : null;
+
+      if (!year) return [];
+
+      const foundData = normalizedExpensesList.find(
+        (item) => item.month === month && item.year === year
+      );
 
       return {
         expense_id: foundData ? foundData.expense_id : null,
@@ -325,12 +356,20 @@ const ExpensesList: React.FC = () => {
         transaction_fee: foundData ? foundData.transaction_fee : '',
         advertising_expense: foundData ? foundData.advertising_expense : '',
         entertainment_expense: foundData ? foundData.entertainment_expense : '',
-        professional_service_fee: foundData ? foundData.professional_service_fee : '',
-      }
-    })
-  })
+        professional_service_fee: foundData
+          ? foundData.professional_service_fee
+          : '',
+      };
+    });
+  };
 
-  const validData = combinedData.filter((data) => data.expense_id !== null)
+  // Determine the 'fiscal year' based on the system date at the time of access.
+  const accessDate      = new Date();
+  const fiscalYearRange = getFiscalYearRange(accessDate);
+  const combinedData    = getFiscalYearData(normalizedExpensesList, months, fiscalYearRange);
+
+  // Filter valid data (only rows with an expense_id)
+  const validData = combinedData.filter((data) => data.expense_id !== null);
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
@@ -494,13 +533,9 @@ const ExpensesList: React.FC = () => {
                           </tr>
                         </thead>
                         <tbody className='expensesList_table_body'>
-                          {combinedData.map((expense, index) => {
-                            const isNewYear = index === 0 || combinedData[index - 1].year !== expense.year
-                            const isLastExpenseOfYear =
-                              index !== combinedData.length - 1 && combinedData[index + 1].year !== expense.year
-
+                        {combinedData.map((expense, index) => {
+                            const isLastExpenseOfYear = expense.month === 3;
                             const isEditable = expense.expense_id !== null
-
                             return (
                               <React.Fragment key={index}>
                                 {expense ? (
@@ -659,10 +694,7 @@ const ExpensesList: React.FC = () => {
                       </thead>
                       <tbody className='expensesList_table_body'>
                         {combinedData.map((expense, index) => {
-                          const isNewYear = index === 0 || combinedData[index - 1].year !== expense.year
-                          const isLastExpenseOfYear =
-                            index !== combinedData.length - 1 && combinedData[index + 1].year !== expense.year
-
+                          const isLastExpenseOfYear = expense.month === 3;
                           return (
                             <React.Fragment key={index}>
                               <tr className='expensesList_table_body_content_horizontal'>

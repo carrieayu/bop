@@ -60,23 +60,6 @@ const ExpensesRegistration = () => {
     setLanguage(newLanguage)
   }
 
-const handleChange = (index, event) => {
-  const { name, value } = event.target
-
-  // Remove commas to get the raw number
-  // EG. 999,999 → 999999 in the DB
-  const rawValue = removeCommas(value)
-
-  // Update form data
-  const newFormData = [...formData]
-  newFormData[index] = {
-    ...newFormData[index],
-    [name]: rawValue,
-  }
-
-  setFormData(newFormData)
-}
-
   const maximumEntries = 10;
 
   const handleAdd = () => {
@@ -111,6 +94,36 @@ const handleChange = (index, event) => {
     }
   }
 
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear;
+  const [months, setMonths] = useState<number[]>([]);
+  const handleChange = (index, event) => {
+    const { name, value } = event.target
+
+    // Remove commas to get the raw number
+    // EG. 999,999 → 999999 in the DB
+    const rawValue = removeCommas(value)
+
+    const updatedFormData = [...formData]
+    updatedFormData[index] = {
+      ...updatedFormData[index],
+      [name]: rawValue,
+    }
+    setFormData(updatedFormData)
+
+    if (name === 'year') {
+      const selectedYear = parseInt(rawValue, 10);
+      if (selectedYear === currentFiscalYear) {
+        setMonths([4, 5, 6, 7, 8, 9, 10, 11, 12]);
+      } else if (selectedYear === (currentFiscalYear + 1)) {
+        setMonths([1, 2, 3]);
+      } else {
+        setMonths([]);
+      }
+    }
+  }
+  useEffect(() => {}, [formData])
   useEffect(() => {
     const path = location.pathname
     if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
