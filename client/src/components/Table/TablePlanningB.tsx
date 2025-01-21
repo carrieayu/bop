@@ -4,7 +4,7 @@ import { translate } from '../../utils/translationUtil'
 import axios from 'axios'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { getPlanningB } from '../../api/PlanningEndpoint/GetPlanningB'
-
+import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil'
 
 type TableProps = {
   header: string[]
@@ -196,11 +196,11 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
                                   textAlign: 'center', // for some reason this would not work in scss file so I left it here.
                                 }}
                               >
-                                {props.isThousandYenChecked ? thousandYenConversion(cell) : cell}
+                                {props.isThousandYenChecked ? formatNumberWithCommas(thousandYenConversion(cell)) : formatNumberWithCommas(cell)}
                               </td>
                             ))}
                             <td className='table-b-total-data' style={{ textAlign: 'center', fontWeight: 'light' }}>
-                              {props.isThousandYenChecked ? thousandYenConversion(rowTotal) : rowTotal}
+                              {props.isThousandYenChecked ? formatNumberWithCommas(thousandYenConversion(rowTotal)) : formatNumberWithCommas(rowTotal)}
                             </td>
                           </tr>
                         )
@@ -210,7 +210,7 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
                           {' '}
                         </td>
                         <td className='table-b-sum-of-totals sky-txt'>
-                          {props.isThousandYenChecked ? thousandYenConversion(totalSum) : totalSum}
+                          {props.isThousandYenChecked ? formatNumberWithCommas(thousandYenConversion(totalSum)) : formatNumberWithCommas(totalSum)}
                         </td>
                       </tr>
                     </tbody>
