@@ -252,7 +252,6 @@ const ExpensesResultsList: React.FC = () => {
 
     getExpenseResults(token)
       .then((data) => {
-        console.log(data)
         setExpensesResultsList(data)
         setOriginalExpensesResultsList(data)
       })

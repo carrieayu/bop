@@ -1,17 +1,17 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import api from '../../api/api'
-import PersonnelEntity from '../../entity/personnelEntity'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { PersonnelEntity } from '../../entity/personnelEntity'
 
 const initialState = {
   isLoading: false,
-  personnelList: [new PersonnelEntity({})],
+  personnelList: [],
 }
 
 export const fetchPersonnel = createAsyncThunk('personnel/fetch', async () => {
   try {
     const response = await api.get<PersonnelEntity[]>(`${getReactActiveEndpoint()}/api/personnelexpenses/get/`)
-    return response.data.map((data) => new PersonnelEntity(data))
+    return response.data
   } catch (error) {
     console.error('Error fetching personnel:', error)
     throw error

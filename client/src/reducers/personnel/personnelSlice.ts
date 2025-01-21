@@ -1,8 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import PersonnelEntity from '../../entity/personnelEntity';
-import { status } from 'nprogress';
-import { error } from 'console';
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { PersonnelEntity } from '../../entity/personnelEntity';
 
 interface PersonnelState {
     personnel: PersonnelEntity[];

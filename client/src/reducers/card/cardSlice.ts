@@ -1,14 +1,13 @@
 import { AsyncThunkAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import CardEntity from '../../entity/cardEntity'
+
 import api from '../../api/api'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { fetchCos } from '../costOfSale/costOfSaleSlice'
+import { CardEntity } from '../../entity/cardEntity'
 
-const POLLING_INTERVAL = 60000
-const MAX_RETRIES = 12
 const initialState = {
   isLoading: false,
-  cardsList: [new CardEntity({})],
+  cardsList: [] as CardEntity[],
   totalSales: 0,
   totalOperatingProfit: 0,
   totalGrossProfit: 0,
@@ -18,7 +17,11 @@ const initialState = {
   totalCumulativeOrdinaryIncome: 0,
   costOfSaleList: [],
   totalCostOfSaleForYear: 0,
+  status: 'idle',
+  error: null,
 }
+const POLLING_INTERVAL = 60000
+const MAX_RETRIES = 12
 
 function getSum(data: number[]) {
   return data?.reduce((accumulator: number, currentValue: number): number => {
@@ -58,7 +61,7 @@ async function fetchWithPolling(retries = MAX_RETRIES): Promise<CardEntity[]> {
       const response = await api.get<CardEntity[]>(`${getReactActiveEndpoint()}/api/projects/list/`)
 
       if (response.data && response.data.length > 0) {
-        return response.data.map((data) => new CardEntity(data))
+        return response.data;
       } else {
         console.log(`Attempt ${attempt}: Data is empty, retrying in 5 minutes...`)
       }
@@ -171,24 +174,28 @@ const cardSlice = createSlice({
     builder
       .addCase(fetchAllCards.fulfilled, (state, action) => {
         state.cardsList = action.payload
-        state.isLoading = false
+        state.status = 'succeeded'
         cardCalculations(state)
       })
       .addCase(fetchAllCards.pending, (state) => {
         state.isLoading = true
+        state.status = 'loading'
       })
       .addCase(fetchAllCards.rejected, (state) => {
+        state.status = 'failed'
         state.isLoading = false
       })
       .addCase(fetchCos.fulfilled, (state, action) => {
         state.costOfSaleList = action.payload
-        state.isLoading = false
+        state.status = 'succeeded'
         cardCalculations(state)
       })
       .addCase(fetchCos.pending, (state) => {
         state.isLoading = true
+        state.status = 'loading'
       })
       .addCase(fetchCos.rejected, (state) => {
+        state.status = 'failed';
         state.isLoading = false
       })
   },

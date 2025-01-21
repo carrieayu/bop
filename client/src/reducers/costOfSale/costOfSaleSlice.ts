@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import api from '../../api/api'
-import CostOfSaleEntity from '../../entity/cosEntity'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { CostOfSaleEntity } from '../../entity/cosEntity'
 
 const initialState = {
   isLoading: false,
@@ -16,7 +16,7 @@ async function fetchWithPolling(retries = MAX_RETRIES): Promise<CostOfSaleEntity
       const response = await api.get<CostOfSaleEntity[]>(`${getReactActiveEndpoint()}/api/cost-of-sales/list/`)
 
       if (response.data && response.data.length > 0) {
-        return response.data.map((data) => new CostOfSaleEntity(data))
+        return response.data
       } else {
         console.log(`Attempt ${attempt}: Data is empty, retrying in 5 minutes...`)
       }
