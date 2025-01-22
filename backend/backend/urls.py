@@ -5,6 +5,8 @@ from api.views import ProjectSalesResultsCreate, ProjectSalesResultsDelete, Proj
 from api.views import ExpensesResultsCreate, ExpensesResultsDelete, ExpensesResultsList, ExpensesResultsUpdate, ExpensesResultsFilter
 from api.views import PlanningList, PlanningUpdate, PlanningDisplayByProjects
 from api.views import MasterCompaniesList, MasterCompaniesCreate, MasterCompaniesUpdate, MasterCompaniesDelete
+from api.views import MasterBusinessDivisionsList, MasterBusinessDivisionsCreate, MasterBusinessDivisionsUpdate, MasterBusinessDivisionsDelete, BusinessDivisionsOfCompany
+from api.views import MasterClientsList, MasterClientsCreate, MasterClientsUpdate, MasterClientsDelete
 from api.views import ProjectsList,  ProjectsCreate, ProjectsUpdate, ProjectsDelete 
 from api.views import EmployeeExpensesList, EmployeeExpensesCreate, EmployeeExpensesDelete #No Update Function on this Page.
 from api.views import CostOfSalesList, CostOfSalesCreate, CostOfSalesUpdate, CostOfSalesDelete
@@ -31,9 +33,26 @@ urlpatterns = [
     # Master Companies
     path('api/master-companies/list/', MasterCompaniesList.as_view(), name="master-companies-list"), 
     path('api/master-companies/create/', MasterCompaniesCreate.as_view(), name="master-companies-create"),  
-    path('api/master-companies/<int:pk>/update/', MasterCompaniesUpdate.as_view(), name="master-companies-update"),  
-    path('api/master-companies/<int:pk>/delete/', MasterCompaniesDelete.as_view(), name="master-companies-delete"),  
+    path('api/master-companies/<str:pk>/update/', MasterCompaniesUpdate.as_view(), name="master-companies-update"),  
+    path('api/master-companies/<str:pk>/delete/', MasterCompaniesDelete.as_view(), name="master-companies-delete"),  
+
+    # Master Business Divisions
+    path("api/master-business-divisions/list/", MasterBusinessDivisionsList.as_view(), name="master-business-divisions-list"),
+    path("api/master-business-divisions/create/", MasterBusinessDivisionsCreate.as_view(), name="master-business-divisions-create"),
+    # NOT IN USE
+    path("api/master-business-divisions/update/", MasterBusinessDivisionsUpdate.as_view(), name="master-business-divisions-update"),
+    path("api/master-business-divisions/<str:pk>/delete/", MasterBusinessDivisionsDelete.as_view(), name="master-business-divisions-delete"),
+    # In "Employees List And Edit Screen" [Edit Mode]:
+    # Retrieve Business Divisions Connected to Company Selected in [会社名・Company_Name] Pulldown.
+    path("api/business-divisions-of-company/", BusinessDivisionsOfCompany.as_view(), name="companies-with-business-division"), #url for filtering the business division from the selected company
     
+    # Master Clients
+    path("api/master-clients/list/", MasterClientsList.as_view(), name="master-clients-list"),
+    path("api/master-clients/create/", MasterClientsCreate.as_view(), name="master-clients-create"),
+    # NOT IN USE
+    path("api/master-clients/update/", MasterClientsUpdate.as_view(), name="master-clients-update"),
+    path("api/master-clients/<str:pk>/delete/", MasterClientsDelete.as_view(), name="master-clients-delete"),
+
     # Password
     path('api/password-forgot/', PasswordForgotView.as_view(), name="password-forgot"),
     path('api/password-reset/<uidb64>/<token>/', PasswordForgotView.as_view(), name='password-reset'),
@@ -48,13 +67,13 @@ urlpatterns = [
     path('api/projects/list/', ProjectsList.as_view(), name="projects-list"), 
     path('api/projects/create/', ProjectsCreate.as_view(), name="projects-create"), 
     path('api/projects/update/', ProjectsUpdate.as_view(), name="projects-update"),   
-    path('api/projects/<int:pk>/delete/', ProjectsDelete.as_view(), name="projects-delete"), 
+    path('api/projects/<str:pk>/delete/', ProjectsDelete.as_view(), name="projects-delete"), 
 
     # Project Sales Results
     path('api/project-sales-results/list/', ProjectSalesResultsList.as_view(), name="project-list"), 
     path('api/project-sales-results/create/', ProjectSalesResultsCreate.as_view(), name="project-sales-results-create"), 
     path('api/project-sales-results/update/', ProjectSalesResultsUpdate.as_view(), name="project-sales-results-update"),   
-    path('api/project-sales-results/<int:pk>/delete/', ProjectSalesResultsDelete.as_view(), name="project-sales-results-delete"),
+    path('api/project-sales-results/<str:pk>/delete/', ProjectSalesResultsDelete.as_view(), name="project-sales-results-delete"),
     path('api/project-sales-results/filter/', ProjectSalesResultsFilter.as_view(), name="project-sales-filtered-list"),
 
     # EmployeeExpenses
@@ -100,7 +119,7 @@ urlpatterns = [
     path('api/employees/list/', EmployeesList.as_view(), name = 'employees-list'),
     path('api/employees/create/', EmployeesCreate.as_view(), name = 'employees-create'),
     path('api/employees/update/', EmployeesUpdate.as_view(), name = 'employees-update'),
-    path('api/employees/<int:pk>/delete/', EmployeesDelete.as_view(), name = 'employees-delete'),
+    path('api/employees/<str:pk>/delete/', EmployeesDelete.as_view(), name = 'employees-delete'),
     # Filters the EmployeeBusinessDivision in Edit Mode on List Screen
     path('api/employees/edit/',  EmployeesEdit.as_view(), name = 'employees-edit'), # used for filtering business divisions when on edit mode
     
@@ -122,8 +141,8 @@ urlpatterns = [
     # Previous Name: Performance Data ->  Current Name: Results
     path('api/results/list/', ResultsList.as_view(), name="results-list"),
     path('api/results/create/', ResultsCreate.as_view(), name="results-create"),   
-    path('api/results/<int:pk>/update/', ResultsUpdate.as_view(), name="results-update"),  
-    path('api/results/<int:pk>/delete/', ResultsDelete.as_view(), name="results-delete"), 
+    path('api/results/<str:pk>/update/', ResultsUpdate.as_view(), name="results-update"),  
+    path('api/results/<str:pk>/delete/', ResultsDelete.as_view(), name="results-delete"), 
     # END: NOT BEING USED CURRENTLY
 
 ]
