@@ -86,24 +86,21 @@ const CostOfSalesList: React.FC = () => {
   }
 
   const handleClick = () => {
-    setIsEditing((prevState) => {
-      const newEditingState = !prevState
-
-      if (newEditingState) {
-        setLanguage('jp')
-      }
-
-      if (!newEditingState) {
-        // Reset to original values when switching to list mode
-        setCostOfSales(originalCostOfSales)
-      }
-
-      return newEditingState
-    })
-  }
+          setIsEditing((prevState) => !prevState)
+        }
+        useEffect(() => {
+          if (isEditing) {
+            setLanguage('jp')
+          }
+    
+          if (!isEditing) {
+            // Reset to original values when switching to list mode
+            setCostOfSales(originalCostOfSales)
+          }
+        }, [isEditing])
 
   const handleChange = (index, e) => {
-    handleInputChange(index, e, setCostOfSales, combinedData)
+    handleInputChange({ index, e, updateFunction:setCostOfSales, dataList:combinedData })
   }
 
   const handleSubmit = async () => {
@@ -257,13 +254,44 @@ const CostOfSalesList: React.FC = () => {
   // Fixed months array
   const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
 
-  // Extract unique years from the costOfSales data
-  const uniqueYears = Array.from(new Set(costOfSales.map((item) => item.year))).sort((a, b) => a - b)
+  // Since it's necessary for determining the sorting order of the year and month, the types should be unified.
+  const normalizedcostOfSales = costOfSales.map((item) => ({
+    ...item,
+    month: parseInt(item.month, 10),
+    year:  parseInt(item.year,  10),
+  }));
 
-  // Combine static months with dynamic data
-  const combinedData = uniqueYears.flatMap((year) => {
-    return months.map((month) => {
-      const foundData = costOfSales.find((item) => parseInt(item.month, 10) === month && item.year === year)
+  // Calculate the fiscal year based on the access date
+  const getFiscalYearRange = (accessDate) => {
+    const currentYear  = accessDate.getFullYear();
+    const currentMonth = accessDate.getMonth() + 1;
+    const startYear = currentMonth < 4 ? currentYear - 1 : currentYear;
+    const endYear   = startYear + 1;
+
+    return {
+      startYear,
+      endYear,
+      startMonth: 4,
+      endMonth: 3,
+    };
+  };
+  
+  // Filter and combine data based on the fiscal year range
+  const getFiscalYearData = (normalizedcostOfSales, months, fiscalYearRange) => {
+    const { startYear, endYear, startMonth, endMonth } = fiscalYearRange;
+    return months.flatMap((month) => {
+      const year =
+        month >= startMonth && month <= 12
+          ? startYear
+          : month <= endMonth
+          ? endYear
+          : null;
+
+      if (!year) return [];
+
+      const foundData = normalizedcostOfSales.find(
+        (item) => item.month === month && item.year === year
+      );
 
       return {
         cost_of_sale_id: foundData ? foundData.cost_of_sale_id : null,
@@ -276,11 +304,17 @@ const CostOfSalesList: React.FC = () => {
         communication_expense: foundData ? foundData.communication_expense : '',
         work_in_progress_expense: foundData ? foundData.work_in_progress_expense : '',
         amortization_expense: foundData ? foundData.amortization_expense : '',
-      }
-    })
-  })
+      };
+    });
+  };
 
-  const validData = combinedData.filter((data) => data.cost_of_sale_id !== null)
+  // Determine the 'fiscal year' based on the system date at the time of access.
+  const accessDate      = new Date();
+  const fiscalYearRange = getFiscalYearRange(accessDate);
+  const combinedData    = getFiscalYearData(normalizedcostOfSales, months, fiscalYearRange);
+
+  // Filter valid data (only rows with an cost_of_sale_id)
+  const validData = combinedData.filter((data) => data.cost_of_sale_id !== null);
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
@@ -445,12 +479,8 @@ const CostOfSalesList: React.FC = () => {
                         </thead>
                         <tbody className='costOfSalesList_table_body'>
                           {combinedData.map((costOfSale, index) => {
-                            const isNewYear = index === 0 || combinedData[index - 1].year !== costOfSale.year
-                            const isLastcostOfSaleOfYear =
-                              index !== combinedData.length - 1 && combinedData[index + 1].year !== costOfSale.year
-
+                            const isLastCostOfSaleOfYear = costOfSale.month === 3;
                             const isEditable = costOfSale.cost_of_sale_id !== null
-
                             return (
                               <React.Fragment key={index}>
                                 {costOfSale ? (
@@ -542,7 +572,7 @@ const CostOfSalesList: React.FC = () => {
                                     </td>
                                   </tr>
                                 ) : null}
-                                {isLastcostOfSaleOfYear && (
+                                {isLastCostOfSaleOfYear && (
                                   <tr className='year-separator'>
                                     <td className='horizontal-line-cell' colSpan={9}>
                                       <div className='horizontal-line' />
@@ -590,10 +620,7 @@ const CostOfSalesList: React.FC = () => {
                       </thead>
                       <tbody className='costOfSalesList_table_body'>
                         {combinedData.map((costOfSale, index) => {
-                          const isNewYear = index === 0 || combinedData[index - 1].year !== costOfSale.year
-                          const isLastcostOfSaleOfYear =
-                            index !== combinedData.length - 1 && combinedData[index + 1].year !== costOfSale.year
-
+                          const isLastCostOfSaleOfYear = costOfSale.month === 3;
                           return (
                             <React.Fragment key={index}>
                               <tr className='costOfSalesList_table_body_content_horizontal'>
@@ -625,7 +652,7 @@ const CostOfSalesList: React.FC = () => {
                                   {formatNumberWithCommas(costOfSale.amortization_expense) || 0}
                                 </td>
                               </tr>
-                              {isLastcostOfSaleOfYear && (
+                              {isLastCostOfSaleOfYear && (
                                 <tr className='year-separator'>
                                   <td className='horizontal-line-cell' colSpan={9}>
                                     <div className='horizontal-line' />

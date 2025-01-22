@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import api from '../../api/api'
-import CardEntity from '../../entity/cardEntity'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { CardEntity } from '../../entity/cardEntity'
 
 interface GraphDataState {
   isLoading: boolean
@@ -52,7 +52,7 @@ export const fetchGraphData = createAsyncThunk('graphData/fetch', async () => {
       'Content-Type': 'application/json',
     },
   })
-  const cards = response.data.map((data) => new CardEntity(data))
+  const cards = response.data
   const aggregatedData: Partial<GraphDataState> = {
     totalSalesByDate: {},
     totalOperatingIncomeByDate: {},

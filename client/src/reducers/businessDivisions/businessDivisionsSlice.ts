@@ -1,14 +1,14 @@
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import api from '../../api/api'
-import BusinessDivisionsEntity from '../../entity/businessDivisionsEntity'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { BusinessDivisionsEntity } from '../../entity/businessDivisionsEntity'
 
 const POLLING_INTERVAL = 60000 
 const MAX_RETRIES = 12
 const initialState = {
   isLoading: false,
-  businessDivisionlList: [new BusinessDivisionsEntity({})],
+  businessDivisionlList: [] as BusinessDivisionsEntity [],
 }
 
 async function fetchWithPolling(retries = MAX_RETRIES): Promise<BusinessDivisionsEntity[]> {
@@ -16,7 +16,7 @@ async function fetchWithPolling(retries = MAX_RETRIES): Promise<BusinessDivision
     try {
       const response = await api.get<BusinessDivisionsEntity[]>(`${getReactActiveEndpoint()}/api/master-business-divisions/list/`)
       if (response.data && response.data.length > 0) {
-        return response.data.map((data) => new BusinessDivisionsEntity(data)) 
+        return response.data
       } else {
         console.log(`Attempt ${attempt}: Data is empty, retrying in 5 minutes...`)
       }

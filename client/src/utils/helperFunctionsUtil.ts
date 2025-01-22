@@ -79,16 +79,14 @@ export const sortByFinancialYear = (months) => {
   return months.sort((a, b) => financialOrder(a.month) - financialOrder(b.month))
 }
 
-export const handleInputChange = (
+export const handleInputChange = ({
   index,
   e,
   updateFunction,
   dataList,
   nonFinancialFieldsArray = null, // used in some screns
-) => {
+}) => {
   const { name, value } = e.target
-  // console.log('values:', index, e.target.value, updateFunction, dataList, nonFinancialFieldsArray)
-  console.log('name', name, 'value', value, 'dataList', dataList)
   // Check if the field is in the non-numeric fields array
   if (nonFinancialFieldsArray != null && nonFinancialFieldsArray.includes(name)) {
     // Directly update the data for non-numeric fields
@@ -110,12 +108,6 @@ export const handleInputChange = (
   }
 
   if (rawValue.length <= MAX_NUMBER_LENGTH && rawValue <= MAX_SAFE_INTEGER) {
-    console.log(
-      'inside rawValue.length <= MAX_NUMBER_LENGTH inside if',
-      rawValue.length <= MAX_NUMBER_LENGTH && rawValue <= MAX_SAFE_INTEGER,
-      rawValue.length,
-      MAX_NUMBER_LENGTH,
-    )
     const updatedData = [...dataList]
     updatedData[index] = {
       ...updatedData[index],

@@ -45,17 +45,15 @@ const EmployeeExpensesList: React.FC = () => {
         setActiveTab(tab)
         navigate(tab)
       }
-
-      const handleClick = () => {
-        setIsEditing((prevState) => {
-          const newEditingState = !prevState;
-          if (newEditingState) {
-            setLanguage('jp');
-          }
       
-          return newEditingState;
-        });
-      }
+      const handleClick = () => {
+            setIsEditing((prevState) => !prevState)
+          }
+          useEffect(() => {
+            if (isEditing) {
+              setLanguage('jp')
+            }
+          }, [isEditing])
 
       const handleTabsClick = (tab) => {
         setActiveTabOther(tab)

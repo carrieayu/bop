@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
-import Btn from "../../components/Button/Button";
-import axios from "axios";
-import Sidebar from "../../components/Sidebar/Sidebar";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useLanguage } from "../../contexts/LanguageContext";
-import { translate } from "../../utils/translationUtil";
-import ListButtons from "../../components/ListButtons/ListButtons";
-import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
+import React, { useEffect, useState } from 'react'
+import Btn from '../../components/Button/Button'
+import axios from 'axios'
+import Sidebar from '../../components/Sidebar/Sidebar'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { translate } from '../../utils/translationUtil'
+import ListButtons from '../../components/ListButtons/ListButtons'
+import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import { useDispatch } from 'react-redux'
 import { UnknownAction } from 'redux'
-import { fetchBusinessDivisions } from "../../reducers/businessDivisions/businessDivisionsSlice";
-import { fetchMasterClient } from "../../reducers/client/clientSlice";
-import { RiDeleteBin6Fill } from "react-icons/ri";
-import AlertModal from "../../components/AlertModal/AlertModal";
-import CrudModal from "../../components/CrudModal/CrudModal";
+import { fetchBusinessDivisions } from '../../reducers/businessDivisions/businessDivisionsSlice'
+import { fetchMasterClient } from '../../reducers/client/clientSlice'
+import { RiDeleteBin6Fill } from 'react-icons/ri'
+import AlertModal from '../../components/AlertModal/AlertModal'
+import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss';
 import {validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
@@ -37,7 +37,7 @@ const ProjectsListAndEdit: React.FC = () => {
   const [projects, setProjects] = useState([])
   const [originalProjectsList, setOriginalProjectsList] = useState(projects)
   const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
-  const years = [2024, 2025];
+  const years = [2024, 2025]
   const [initialLanguage, setInitialLanguage] = useState(language)
   const dispatch = useDispatch()
   const [clients, setClients] = useState<any>([])
@@ -110,27 +110,27 @@ const ProjectsListAndEdit: React.FC = () => {
   }
 
   const handleClick = () => {
-    setIsEditing((prevState) => {
-      const newEditingState = !prevState
-      if (newEditingState) {
-        setLanguage('jp')
-      }
-
-      if (!newEditingState) {
-        // Reset to original values when switching to list mode
-        setProjects(originalProjectsList)
-      }
-
-      return newEditingState
-    })
+    setIsEditing((prevState) => !prevState)
   }
+  useEffect(() => {
+    if (isEditing) {
+      setLanguage('jp')
+    }
+
+    if (!isEditing) {
+      // Reset to original values when switching to list mode
+      setProjects(originalProjectsList)
+    }
+  }, [isEditing])
 
   const handleChange = (index, event) => {
     // Fields where it is not necessary to remove commas and check numeric values.
     const nonFinancialFieldsArray = ['year', 'month', 'project_name', 'project_type', 'client', 'business_division']
-    handleInputChange(index, event, setProjects, projects, nonFinancialFieldsArray)
+    handleInputChange({ index, e:event, updateFunction:setProjects, dataList:projects, nonFinancialFieldsArray })
   }
 
+  useEffect(() => { }, [formProjects])
+  
   const handleSubmit = async () => {
     setFormProjects(projects)
 
@@ -473,7 +473,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         onChange={(e) => handleChange(index, e)}
                                       >
                                         {years.map((year, idx) => (
-                                          <option key={idx} value={year} selected={year === project.year}>
+                                          <option key={idx} value={year}>
                                             {year}
                                           </option>
                                         ))}
@@ -488,7 +488,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                       >
                                         <option value=''></option>
                                         {months.map((month, idx) => (
-                                          <option key={idx} value={month} selected={month === project.month}>
+                                          <option key={idx} value={month}>
                                             {month}月
                                           </option>
                                         ))}
@@ -520,11 +520,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         onChange={(e) => handleChange(index, e)}
                                       >
                                         {clients.map((client) => (
-                                          <option
-                                            key={client.client_id}
-                                            value={client.client_id}
-                                            selected={client.client_id === project.client_id}
-                                          >
+                                          <option key={client.client_id} value={client.client_id}>
                                             {client.client_name}
                                           </option>
                                         ))}
@@ -541,7 +537,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                           <option
                                             key={division.business_division_id}
                                             value={division.business_division_id}
-                                            selected={division.business_division_id === project.business_division_id}
                                           >
                                             {division.business_division_name}
                                           </option>
@@ -810,6 +805,6 @@ const ProjectsListAndEdit: React.FC = () => {
       />
     </div>
   )
-};
+}
 
-export default ProjectsListAndEdit;
+export default ProjectsListAndEdit

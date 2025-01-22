@@ -13,7 +13,12 @@ import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { createExpense } from '../../api/ExpenseEndpoint/CreateExpense'
 import { overwriteExpense } from '../../api/ExpenseEndpoint/OverwriteExpense'
 import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, handleInputChange } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import {
+  handleDisableKeysOnNumberInputs,
+  formatNumberWithCommas,
+  removeCommas,
+  handleInputChange,
+} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const months = [
   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
@@ -60,10 +65,7 @@ const ExpensesRegistration = () => {
     setLanguage(newLanguage)
   }
 
-  const handleChange = (index, e) => {
-    handleInputChange(index, e, setFormData, formData)
-  }
-    
+
   const maximumEntries = 10;
 
   const handleAdd = () => {
@@ -87,7 +89,6 @@ const ExpensesRegistration = () => {
         updated_at: '',
       })
       setFormData(newFormData)
-      console.log('add:' + formData)
     } else {
       console.log('You can only add up to 10 forms.')
     }
@@ -99,6 +100,39 @@ const ExpensesRegistration = () => {
     }
   }
 
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear;
+  const [months, setMonths] = useState<number[]>([]);
+  const handleChange = (index, event) => {
+    handleInputChange({ index, e: event, updateFunction: setFormData, dataList: formData })
+
+    const { name, value } = event.target
+
+    // Remove commas to get the raw number
+    // EG. 999,999 → 999999 in the DB
+    const rawValue = removeCommas(value)
+
+    // const updatedFormData = [...formData]
+    // updatedFormData[index] = {
+    //   ...updatedFormData[index],
+    //   [name]: rawValue,
+    // }
+    // setFormData(updatedFormData)
+
+    if (name === 'year') {
+      console.log('name:',name)
+      const selectedYear = parseInt(rawValue, 10);
+      if (selectedYear === currentFiscalYear) {
+        setMonths([4, 5, 6, 7, 8, 9, 10, 11, 12]);
+      } else if (selectedYear === (currentFiscalYear + 1)) {
+        setMonths([1, 2, 3]);
+      } else {
+        setMonths([]);
+      }
+    }
+  }
+  useEffect(() => {}, [formData])
   useEffect(() => {
     const path = location.pathname
     if (path === '/dashboard' || path === '/planning-list' || path === '/*') {

@@ -14,10 +14,7 @@ import { fetchMasterCompany } from "../../reducers/company/companySlice";
 import { useDispatch } from "react-redux";
 import { UnknownAction } from "redux";
 import CrudModal from "../../components/CrudModal/CrudModal";
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss'
-import { getBusinessDivision } from "../../api/BusinessDivisionEndpoint/GetBusinessDivision";
-import { getMasterBusinessDivisionCompany } from "../../api/BusinessDivisionEndpoint/GetMasterBusinessDivisionCompany";
 import { updateEmployee } from "../../api/EmployeeEndpoint/UpdateEmployee";
 import { getSelectedBusinessDivisionCompany } from "../../api/BusinessDivisionEndpoint/GetSelectedBusinessDivisionCompany";
 import { deleteEmployee } from "../../api/EmployeeEndpoint/DeleteEmployee";
@@ -123,27 +120,16 @@ const EmployeesListAndEdit: React.FC = () => {
     setRowsPerPage(numRows)
     setCurrentPage(0)
   }
-
+  
   const handleClick = () => {
-    setIsEditing((prevState) => {
-      const newEditingState = !prevState
-      if (newEditingState) {
-        setLanguage('jp')
-      }
-
-      return newEditingState
-    })
+    setIsEditing((prevState) => !prevState)
   }
 
   useEffect(() => {
-    getMasterBusinessDivisionCompany(token)
-      .then((data) => {
-        setAllBusinessDivisions(data)
-      })
-      .catch((error) => {
-        console.error('Error fetching business divisions:', error)
-      })
-  }, [])
+    if (isEditing) {
+      setLanguage('jp') 
+    }
+  }, [isEditing])
 
   const handleChange = (index, e) => {
     const { name, value } = e.target
@@ -812,7 +798,7 @@ const EmployeesListAndEdit: React.FC = () => {
                           </table>
                         </div>
                       ) : (
-                        <div className="EmployeesListAndEdit-table">
+                        <div className='EmployeesListAndEdit-table'>
                           <table className='table is-bordered is-hoverable'>
                             <thead>
                               <tr className='EmployeesListAndEdit_table_title '>
@@ -865,11 +851,8 @@ const EmployeesListAndEdit: React.FC = () => {
                               </tr>
                             </thead>
                             <tbody className='EmployeesListAndEdit_table_body'>
-                              {employeesList.map((employee) => (
-                                <tr
-                                  key={employee.employee_id}
-                                  className='EmployeesListAndEdit_table_body_content_horizontal'
-                                >
+                              {employeesList.map((employee, index) => (
+                                <tr key={index} className='EmployeesListAndEdit_table_body_content_horizontal'>
                                   <td className='EmployeesListAndEdit_table_body_content_vertical has-text-left'>
                                     {employee.employee_id}
                                   </td>

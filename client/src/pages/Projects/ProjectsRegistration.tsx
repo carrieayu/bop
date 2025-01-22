@@ -177,7 +177,9 @@ const ProjectsRegistration = () => {
     }
   }
 
-  const currentYear = new Date().getFullYear();
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear;
   const [months, setMonths] = useState<number[]>([]);
   // OLD
   // const handleChange = (index, event) => {
@@ -220,7 +222,7 @@ const ProjectsRegistration = () => {
       'business_division'
     ]
 
-    handleInputChange(index, event, setProjects, formProjects, nonFinancialFieldsArray)
+    handleInputChange({ index, e:event, updateFunction:setProjects, dataList:formProjects, nonFinancialFieldsArray })
     
     const { name, value } = event.target
 
@@ -237,9 +239,9 @@ const ProjectsRegistration = () => {
 
     if (name === 'year') {
       const selectedYear = parseInt(rawValue, 10);
-      if (selectedYear === currentYear) {
+      if (selectedYear === currentFiscalYear) {
         setMonths([4, 5, 6, 7, 8, 9, 10, 11, 12]);
-      } else if (selectedYear === (currentYear + 1)) {
+      } else if (selectedYear === (currentFiscalYear + 1)) {
         setMonths([1, 2, 3]);
       } else {
         setMonths([]);
@@ -248,7 +250,6 @@ const ProjectsRegistration = () => {
 
   }
 
-  
   const HandleClientChange = (e) => {
     setSelectedClient(e.target.value)
   }

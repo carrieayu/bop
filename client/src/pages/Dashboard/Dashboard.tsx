@@ -1,23 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import Card from '../../components/Card/Card'
 import GraphDashboard from '../../components/GraphDashboard/GraphDashboard'
-import { useDispatch } from 'react-redux'
 import { fetchAllCards } from '../../reducers/card/cardSlice'
 import { fetchCos } from '../../reducers/costOfSale/costOfSaleSlice'
-import { UnknownAction } from '@reduxjs/toolkit'
 import { useAppSelector } from '../../actions/hooks'
 import { RootState } from '../../app/store'
 import { TablePlanningB } from '../../components/Table/TablePlanningB'
 import { fetchAllClientData } from '../../reducers/table/tableSlice'
 import { fetchGraphData } from '../../reducers/graph/graphSlice'
 import Sidebar from '../../components/Sidebar/Sidebar'
-import Btn from '../../components/Button/Button'
 import { useLocation, useNavigate } from 'react-router-dom'
 import TablePlanningA from '../../components/Table/TablePlanningA'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
-
+import { useAppDispatch } from '../../app/hook';
 
 function formatNumberWithCommas(number: number): string {
   return number.toLocaleString()
@@ -36,7 +33,6 @@ const Dashboard = () => {
   const totalNetProfitPeriod = useAppSelector((state: RootState) => state.cards.totalNetProfitPeriod)
   const totalGrossProfitMargin = useAppSelector((state: RootState) => state.cards.totalGrossProfitMargin)
   const totalOperatingProfitMargin = useAppSelector((state: RootState) => state.cards.totalOperatingProfitMargin)
-  const dispatch = useDispatch()
   const [currentPage, setCurrentPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const totalPages = Math.ceil(tableList?.length / rowsPerPage)
@@ -60,6 +56,7 @@ const Dashboard = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [isThousandYenChecked, setIsThousandYenChecked] = useState(false)
+  const dispatch = useAppDispatch()
 
   const handleThousandYenToggle = () => {
     setIsThousandYenChecked((prevState) => !prevState)
@@ -73,20 +70,39 @@ const Dashboard = () => {
     setShowMenu(!showMenu)
   }
 
-  const fetchData = async () => {
-    try {
-      const res = await dispatch(fetchAllClientData() as unknown as UnknownAction)
-      setTableList(res.payload)
-      await dispatch(fetchAllCards() as unknown as UnknownAction)
-      await dispatch(fetchGraphData() as unknown as UnknownAction)
-      await dispatch(fetchCos() as unknown as UnknownAction)
-    } catch (e) {
-      console.error(e)
-    }
-  }
   useEffect(() => {
+    // Updated to catch errors when executing dispatch
+    const fetchData = async () => {
+      try {
+        const [clientData] = await Promise.all([
+          dispatch(fetchAllClientData()).catch((error) => {
+            console.error('Error fetching client data:', error)
+            return null
+          }),
+          dispatch(fetchAllCards()).catch((error) => {
+            console.error('Error fetching cards data:', error)
+            return null
+          }),
+          dispatch(fetchGraphData()).catch((error) => {
+            console.error('Error fetching graph data:', error)
+            return null
+          }),
+          dispatch(fetchCos()).catch((error) => {
+            console.error('Error fetching COS data:', error)
+            return null
+          }),
+        ])
+        if (clientData) {
+          setTableList(clientData.payload)
+        }
+      } catch (error) {
+        console.error('Unexpected error:', error)
+      }
+    }
+
     fetchData()
   }, [])
+
 
   useEffect(() => {
     const path = location.pathname
