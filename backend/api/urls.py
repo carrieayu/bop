@@ -21,10 +21,10 @@ urlpatterns = [
     path("api/master-business-divisions/create/", views.MasterBusinessDivisionsCreate.as_view(), name="master-business-divisions-create"),
     # NOT IN USE
     # path("master-business-divisions/<int:pk>", views.BusinessDivisionMasterRetrieve.as_view(), name="master-business-division-detail"),
-    path("api/master-business-divisions/bulk-update/", views.MasterBusinessDivisionsUpdate.as_view(), name="master-business-divisions-update"),
+    path("api/master-business-divisions/update/", views.MasterBusinessDivisionsUpdate.as_view(), name="master-business-divisions-update"),
     path("api/master-business-divisions/<str:pk>/delete/", views.MasterBusinessDivisionsDelete.as_view(), name="master-business-divisions-delete"),
     # In "Employees List And Edit Screen" [Edit Mode]:
-    # Retrieve Business Divisions Connected to Company Selected in [会社名・Company_Name] Pulldown.
+    # Retrieve Business Divisions   Connected to Company Selected in [会社名・Company_Name] Pulldown.
     path("api/business-divisions-of-company/", views.BusinessDivisionsOfCompany.as_view(), name="companies-with-business-division"), #url for filtering the business division from the selected company
     
     # Master Clients
@@ -123,14 +123,11 @@ urlpatterns = [
     path('api/results-summary/display-by-projects/', views.ResultsSummaryDisplayByProjects.as_view(), name="results-display-by-projects"),
     path('api/results-summary/update/', views.ResultsSummaryUpdate.as_view(), name="results-summary-update"),
 
-    # NOT BEING USED CURRENTLY
-
     # Results 
     # Previous Name: Performance Data ->  Current Name: Results
     path('api/results/list/', views.ResultsList.as_view(), name="results-list"),
     path('api/results/create/', views.ResultsCreate.as_view(), name="results-create"),   
     path('api/results/<int:pk>/update/', views.ResultsUpdate.as_view(), name="results-update"),  
     path('api/results/<int:pk>/delete/', views.ResultsDelete.as_view(), name="results-delete"), 
-    # END: NOT BEING USED CURRENTLY
 
 ]
