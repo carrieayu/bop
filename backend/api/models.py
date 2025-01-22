@@ -28,8 +28,7 @@ MONTH_CHOICES = [(i, i) for i in range(1, 13)]
 
 # Reusable DECIMAL Validator
 min_max_decimal_validator = [ MinValueValidator(Decimal(min_int)), MaxValueValidator(Decimal(max_int)) ] 
-# Reusable Integer Validator
-min_max_int_validator = [ MinValueValidator(min_int), MaxValueValidator(max_int) ] 
+
 class MasterClient(models.Model):
     client_id = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True, editable=False)
     client_name = models.CharField(unique=True,max_length=MAX_LENGTH_CHARFIELD)
