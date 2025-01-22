@@ -141,6 +141,10 @@ const CostOfSalesRegistration = () => {
     setModalIsOpen(false)
   }
 
+
+
+  useEffect(() => {
+  },[formData])
   const handleSubmit = async (e) => {
     e.preventDefault()
 

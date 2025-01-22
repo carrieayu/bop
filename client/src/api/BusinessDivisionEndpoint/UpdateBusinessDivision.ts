@@ -3,7 +3,7 @@ import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
 
 export async function updateBusinessDivision(businessList, token: string) {
-  const endpoint = `${getReactActiveEndpoint()}/api/master-business-divisions/bulk-update/`
+  const endpoint = `${getReactActiveEndpoint()}/api/master-business-divisions/update/`
   try {
     const response = await axios.put(endpoint, businessList, {
       headers: {
