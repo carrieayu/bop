@@ -146,8 +146,6 @@ const CostOfSalesRegistration = () => {
 
   
   useEffect(() => {
-  console.log('after formData', formData)
-
   },[formData])
   const handleSubmit = async (e) => {
     e.preventDefault()

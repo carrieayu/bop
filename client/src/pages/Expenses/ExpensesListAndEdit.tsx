@@ -103,22 +103,20 @@ const ExpensesList: React.FC = () => {
         break
     }
   }
-
+  
   const handleClick = () => {
-    setIsEditing((prevState) => {
-      const newEditingState = !prevState
-      if (newEditingState) {
-        setLanguage('jp')
+        setIsEditing((prevState) => !prevState)
       }
-
-      if (!newEditingState) {
-        // Reset to original values when switching to list mode
-        setExpensesList(originalExpenseList)
-      }
-
-      return newEditingState
-    })
-  }
+      useEffect(() => {
+        if (isEditing) {
+          setLanguage('jp')
+        }
+  
+        if (!isEditing) {
+          // Reset to original values when switching to list mode
+          setExpensesList(originalExpenseList)
+        }
+      }, [isEditing])
 
   const handleChange = (index, e) => {
     const { name, value } = e.target

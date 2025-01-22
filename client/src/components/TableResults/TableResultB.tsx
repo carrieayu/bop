@@ -173,9 +173,11 @@ export const TableResultsB: React.FC<TableProps> = (props) => {
                 <div key={entityIndex}>
                   <table className='table-b-grid' style={{ border: '1px solid #ddd' }}>
                     <tbody className='table-b-client-table'>
-                      <td className='table-b-client-data grey' rowSpan={8}>
-                        {entityGrid.clientName}
-                      </td>
+                      <tr>
+                        <td className='table-b-client-data grey' rowSpan={8}>
+                          {entityGrid.clientName}
+                        </td>
+                      </tr>
                       {entityGrid.grid.map((row, rowIndex) => {
                         const rowTotal = row.reduce((acc, cell) => acc + (parseFloat(cell) || 0), 0)
                         totalSum += rowTotal // Accumulate the row total

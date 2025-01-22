@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import PersonnelPlanningEntity from "../../entity/personnelplanningEntity";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
-// import personnelSlice from "./personnelSlice";
 
 const initialState = {
     personnelPlanning: [],

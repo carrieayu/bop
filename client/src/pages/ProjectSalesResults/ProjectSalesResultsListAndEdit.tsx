@@ -100,22 +100,20 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
     setRowsPerPage(numRows)
     setCurrentPage(0)
   }
-
+  
   const handleClick = () => {
-    setIsEditing((prevState) => {
-      const newEditingState = !prevState
-      if (newEditingState) {
-        setLanguage('jp')
-      }
-
-      if (!newEditingState) {
-        // Reset to original values when switching to list mode
-        setProjectSalesResults(originalProjectSalesResultsList)
-      }
-
-      return newEditingState
-    })
-  }
+              setIsEditing((prevState) => !prevState)
+            }
+            useEffect(() => {
+              if (isEditing) {
+                setLanguage('jp')
+              }
+        
+              if (!isEditing) {
+                // Reset to original values when switching to list mode
+                setProjectSalesResults(originalProjectSalesResultsList)
+              }
+            }, [isEditing])
 
   const handleChange = (index, event) => {
     const { name, value } = event.target
