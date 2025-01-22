@@ -296,22 +296,15 @@ const CostOfSalesRegistration = () => {
   const currentYear = currentDate.getFullYear();
   const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear;
   const [months, setMonths] = useState<number[]>([]);
+  
   const handleChange = (index, event) => {
     handleInputChange({ index, e:event, updateFunction: setFormData, dataList: formData })
   
-
     const { name, value } = event.target
 
     // // Remove commas to get the raw number
     // // EG. 999,999 → 999999 in the DB
     const rawValue = removeCommas(value)
-
-    // const updatedFormData = [...formData]
-    // updatedFormData[index] = {
-    //   ...updatedFormData[index],
-    //   [name]: rawValue,
-    // }
-    // setFormData(updatedFormData)
 
     if (name === 'year') {
       const selectedYear = parseInt(rawValue, 10);

@@ -113,13 +113,6 @@ const ExpensesRegistration = () => {
     // EG. 999,999 → 999999 in the DB
     const rawValue = removeCommas(value)
 
-    // const updatedFormData = [...formData]
-    // updatedFormData[index] = {
-    //   ...updatedFormData[index],
-    //   [name]: rawValue,
-    // }
-    // setFormData(updatedFormData)
-
     if (name === 'year') {
       console.log('name:',name)
       const selectedYear = parseInt(rawValue, 10);
@@ -132,6 +125,7 @@ const ExpensesRegistration = () => {
       }
     }
   }
+  
   useEffect(() => {}, [formData])
   useEffect(() => {
     const path = location.pathname
