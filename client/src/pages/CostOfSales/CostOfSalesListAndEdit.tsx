@@ -491,7 +491,7 @@ const CostOfSalesList: React.FC = () => {
                         </thead>
                         <tbody className='costOfSalesList_table_body'>
                           {combinedData.map((costOfSale, index) => {
-                            const isLastExpenseOfYear = costOfSale.month === 3;
+                            const isLastCostOfSaleOfYear = costOfSale.month === 3;
                             const isEditable = costOfSale.cost_of_sale_id !== null
                             return (
                               <React.Fragment key={index}>
@@ -584,7 +584,7 @@ const CostOfSalesList: React.FC = () => {
                                     </td>
                                   </tr>
                                 ) : null}
-                                {isLastExpenseOfYear && (
+                                {isLastCostOfSaleOfYear && (
                                   <tr className='year-separator'>
                                     <td className='horizontal-line-cell' colSpan={9}>
                                       <div className='horizontal-line' />
@@ -632,7 +632,7 @@ const CostOfSalesList: React.FC = () => {
                       </thead>
                       <tbody className='costOfSalesList_table_body'>
                         {combinedData.map((costOfSale, index) => {
-                          const isLastExpenseOfYear = costOfSale.month === 3;
+                          const isLastCostOfSaleOfYear = costOfSale.month === 3;
                           return (
                             <React.Fragment key={index}>
                               <tr className='costOfSalesList_table_body_content_horizontal'>
@@ -664,7 +664,7 @@ const CostOfSalesList: React.FC = () => {
                                   {formatNumberWithCommas(costOfSale.amortization_expense) || 0}
                                 </td>
                               </tr>
-                              {isLastExpenseOfYear && (
+                              {isLastCostOfSaleOfYear && (
                                 <tr className='year-separator'>
                                   <td className='horizontal-line-cell' colSpan={9}>
                                     <div className='horizontal-line' />
