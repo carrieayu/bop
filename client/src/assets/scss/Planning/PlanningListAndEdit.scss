@@ -105,6 +105,10 @@
               }
             }
             .planning_tbl_cont{
+              .editScrollable{
+                overflow-x: auto;
+                padding: 0px 0px 0px 0px;
+              }
               .table_content_planning{
                 .table-planning-container{
                   width: 100% !important;
