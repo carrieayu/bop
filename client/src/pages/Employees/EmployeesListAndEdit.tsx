@@ -153,9 +153,6 @@ const EmployeesListAndEdit: React.FC = () => {
 
     setEmployeesList((prevState) => {
       const updatedEmployeeData = [...prevState]
-
-      // const rawValue = removeCommas(value)
-
       const previousEmployee = prevState[index].employee
       const updatedEmployee = { ...previousEmployee, [name]: rawValue }
 
