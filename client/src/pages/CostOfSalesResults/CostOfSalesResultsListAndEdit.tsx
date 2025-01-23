@@ -18,17 +18,17 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs, handleResultsListTabsClick, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { getCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/GetCostOfSalesResults'
 import { deleteCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/DeleteCostOfSalesResults'
 import { updateCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/UpdateCostOfSalesResults'
+import { months, token } from '../../constants'
 
 const CostOfSalesResultsList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('costOfSalesResults')
   const [currentPage, setCurrentPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [paginatedData, setPaginatedData] = useState<any[]>([])
@@ -44,7 +44,6 @@ const CostOfSalesResultsList: React.FC = () => {
   const [costOfSalesResults, setCostOfSalesResults] = useState([])
   const [originalCostOfSalesResults, setOriginalCostOfSalesResults] = useState(costOfSalesResults)
   const totalPages = Math.ceil(100 / 10)
-  const token = localStorage.getItem('accessToken')
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
@@ -53,26 +52,6 @@ const CostOfSalesResultsList: React.FC = () => {
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
-  }
-
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'projectSalesResults':
-        navigate('/project-sales-results-list')
-        break
-      case 'expensesResults':
-        navigate('/expenses-results-list')
-        break
-      case 'employeeExpensesResults':
-        navigate('/employee-expenses-results-list')
-        break
-      case 'costOfSalesResults':
-        navigate('/cost-of-sales-results-list')
-        break
-      default:
-        break
-    }
   }
 
   const handlePageChange = (page: number) => {
@@ -85,18 +64,18 @@ const CostOfSalesResultsList: React.FC = () => {
   }
 
   const handleClick = () => {
-            setIsEditing((prevState) => !prevState)
-          }
-          useEffect(() => {
-            if (isEditing) {
-              setLanguage('jp')
-            }
-      
-            if (!isEditing) {
-              // Reset to original values when switching to list mode
-              setCostOfSalesResults(originalCostOfSalesResults)
-            }
-          }, [isEditing])
+    setIsEditing((prevState) => !prevState)
+  }
+  useEffect(() => {
+    if (isEditing) {
+      setLanguage('jp')
+    }
+
+    if (!isEditing) {
+      // Reset to original values when switching to list mode
+      setCostOfSalesResults(originalCostOfSalesResults)
+    }
+  }, [isEditing])
 
   const handleChange = (index, e) => {
     const { name, value } = e.target
@@ -227,7 +206,6 @@ const CostOfSalesResultsList: React.FC = () => {
 
   useEffect(() => {
     const fetchCostOfSales = async () => {
-      const token = localStorage.getItem('accessToken')
       if (!token) {
         window.location.href = '/login' // Redirect to login if no token found
         return
@@ -262,47 +240,37 @@ const CostOfSalesResultsList: React.FC = () => {
     }
   }, [location.pathname])
 
-  // Fixed months array
-  const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
-
   // Since it's necessary for determining the sorting order of the year and month, the types should be unified.
   const normalizedCostOfSalesResults = costOfSalesResults.map((item) => ({
     ...item,
     month: parseInt(item.month, 10),
-    year:  parseInt(item.year,  10),
-  }));
+    year: parseInt(item.year, 10),
+  }))
 
   // Calculate the fiscal year based on the access date
   const getFiscalYearRange = (accessDate) => {
-    const currentYear  = accessDate.getFullYear();
-    const currentMonth = accessDate.getMonth() + 1;
-    const startYear = currentMonth < 4 ? currentYear - 1 : currentYear;
-    const endYear   = startYear + 1;
+    const currentYear = accessDate.getFullYear()
+    const currentMonth = accessDate.getMonth() + 1
+    const startYear = currentMonth < 4 ? currentYear - 1 : currentYear
+    const endYear = startYear + 1
 
     return {
       startYear,
       endYear,
       startMonth: 4,
       endMonth: 3,
-    };
-  };
-  
+    }
+  }
+
   // Filter and combine data based on the fiscal year range
   const getFiscalYearData = (normalizedCostOfSalesResults, months, fiscalYearRange) => {
-    const { startYear, endYear, startMonth, endMonth } = fiscalYearRange;
+    const { startYear, endYear, startMonth, endMonth } = fiscalYearRange
     return months.flatMap((month) => {
-      const year =
-        month >= startMonth && month <= 12
-          ? startYear
-          : month <= endMonth
-          ? endYear
-          : null;
+      const year = month >= startMonth && month <= 12 ? startYear : month <= endMonth ? endYear : null
 
-      if (!year) return [];
+      if (!year) return []
 
-      const foundData = normalizedCostOfSalesResults.find(
-        (item) => item.month === month && item.year === year
-      );
+      const foundData = normalizedCostOfSalesResults.find((item) => item.month === month && item.year === year)
 
       return {
         cost_of_sale_result_id: foundData ? foundData.cost_of_sale_result_id : null,
@@ -315,17 +283,17 @@ const CostOfSalesResultsList: React.FC = () => {
         communication_expense: foundData ? foundData.communication_expense : '',
         work_in_progress_expense: foundData ? foundData.work_in_progress_expense : '',
         amortization_expense: foundData ? foundData.amortization_expense : '',
-      };
-    });
-  };
+      }
+    })
+  }
 
   // Determine the 'fiscal year' based on the system date at the time of access.
-  const accessDate      = new Date();
-  const fiscalYearRange = getFiscalYearRange(accessDate);
-  const combinedData    = getFiscalYearData(normalizedCostOfSalesResults, months, fiscalYearRange);
+  const accessDate = new Date()
+  const fiscalYearRange = getFiscalYearRange(accessDate)
+  const combinedData = getFiscalYearData(normalizedCostOfSalesResults, months, fiscalYearRange)
 
   // Filter valid data (only rows with an cost_of_sale_result_id)
-  const validData = combinedData.filter((data) => data.cost_of_sale_result_id !== null);
+  const validData = combinedData.filter((data) => data.cost_of_sale_result_id !== null)
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
@@ -346,21 +314,6 @@ const CostOfSalesResultsList: React.FC = () => {
     setSelectedCostOfSales(null)
     setModalIsOpen(false)
     setIsCRUDOpen(false)
-  }
-
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
   }
 
   // # Handle DELETE on Edit Screen
@@ -441,9 +394,9 @@ const CostOfSalesResultsList: React.FC = () => {
             </div>
             <div className='costOfSalesResultsList_mid_body_cont'>
               <ListButtons
-                activeTabOther={activeTabOther}
+                activeTabOther={'costOfSalesResults'}
                 message={translate(isEditing ? 'costOfSalesResultsEdit' : 'costOfSalesResultsList', language)}
-                handleTabsClick={handleTabsClick}
+                handleTabsClick={handleResultsListTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
                   { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
@@ -493,7 +446,7 @@ const CostOfSalesResultsList: React.FC = () => {
                         </thead>
                         <tbody className='costOfSalesResultsList_table_body'>
                           {combinedData.map((costOfSale, index) => {
-                            const isLastCostOfSaleOfYear = costOfSale.month === 3;
+                            const isLastCostOfSaleOfYear = costOfSale.month === 3
                             const isEditable = costOfSale.cost_of_sale_result_id !== null
 
                             return (
@@ -637,7 +590,7 @@ const CostOfSalesResultsList: React.FC = () => {
                       </thead>
                       <tbody className='costOfSalesResultsList_table_body'>
                         {combinedData.map((costOfSale, index) => {
-                          const isLastCostOfSaleOfYear = costOfSale.month === 3;
+                          const isLastCostOfSaleOfYear = costOfSale.month === 3
                           return (
                             <React.Fragment key={index}>
                               <tr className='costOfSalesResultsList_table_body_content_horizontal'>

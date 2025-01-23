@@ -5,6 +5,7 @@ import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { getPlanningA } from '../../api/PlanningEndpoint/GetPlanningA'
 import { updatePlanning } from '../../api/PlanningEndpoint/UpdatePlanning'
+import { token } from '../../constants'
 
 const EditTablePlanning = () => {
   const [data, setData] = useState([])
@@ -13,7 +14,6 @@ const EditTablePlanning = () => {
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login'
       return
@@ -1400,7 +1400,6 @@ const EditTablePlanning = () => {
   }
 
   const saveData = async (changedData) => {
-    const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login'
       return

@@ -17,6 +17,9 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
+import { handleMMRegTabsClick } from '../../utils/helperFunctionsUtil'
+import { maximumEntries, storedUserID, token } from '../../constants'
+import { closeModal, openModal } from '../../actions/hooks'
 
 
 const BusinessDivisionsRegistration = () => {
@@ -24,9 +27,7 @@ const BusinessDivisionsRegistration = () => {
     const navigate = useNavigate()
     const location = useLocation()
     const [activeTabOther, setActiveTabOther] = useState('businessDivision')
-    const storedUserID = localStorage.getItem('userID')
     const { language, setLanguage } = useLanguage()
-    const token = localStorage.getItem('accessToken')
     const [companyList, setCompanyList] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState('');
     const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
@@ -51,30 +52,10 @@ const BusinessDivisionsRegistration = () => {
         setActiveTab(tab)
         navigate(tab)
     }
-
-    const handleTabsClick = (tab) => {
-        setActiveTabOther(tab)
-        switch (tab) {
-          case 'client':
-            navigate('/clients-registration');
-            break;
-          case 'employee':
-            navigate('/employees-registration');
-            break;
-          case 'businessDivision':
-            navigate('/business-divisions-registration');
-            break;
-          case 'users':
-            navigate('/users-registration');
-            break;
-          default:
-            break;
-        }
-    }
   
     const handleCancel = () => {
       //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-      openModal()
+      openModal(setModalIsOpen)
     }
 
     const handleRemoveInputData = () => {
@@ -85,16 +66,10 @@ const BusinessDivisionsRegistration = () => {
           auth_user_id: authUserID,
         },
       ])
-      closeModal()
+      closeModal(setModalIsOpen)
     }
 
-    const openModal = () => {
-      setModalIsOpen(true)
-    }
-
-    const closeModal = () => {
-      setModalIsOpen(false)
-    }
+   
 
     const handleTranslationSwitchToggle = () => {
         const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
@@ -111,7 +86,6 @@ const BusinessDivisionsRegistration = () => {
       setFormData(updatedFormData)
     }
 
-    const maximumEntries = 10
   
     const handleAdd = () => {
       if (formData.length < maximumEntries) {
@@ -291,7 +265,7 @@ const BusinessDivisionsRegistration = () => {
             <RegistrationButtons
               activeTabOther={activeTabOther}
               message={translate('businessDivisionsRegistration', language)}
-              handleTabsClick={handleTabsClick}
+              handleTabsClick={handleMMRegTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'client', tabKey: 'client' },

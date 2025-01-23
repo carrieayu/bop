@@ -12,21 +12,27 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { createExpense } from '../../api/ExpenseEndpoint/CreateExpense'
 import { overwriteExpense } from '../../api/ExpenseEndpoint/OverwriteExpense'
-import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs, removeCommas, formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-
-const months = [
-  '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
-];
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+import {
+  handleDisableKeysOnNumberInputs,
+  removeCommas,
+  formatNumberWithCommas,
+  handlePLRegTabsClick,
+} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { maximumEntries, monthNames, storedUserID, token, years } from '../../constants'
+import { closeModal, openModal } from '../../actions/hooks'
 
 const ExpensesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('expenses')
-  const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
-  const token = localStorage.getItem('accessToken')
+  
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
@@ -60,7 +66,6 @@ const ExpensesRegistration = () => {
     setLanguage(newLanguage)
   }
 
-  const maximumEntries = 10;
 
   const handleAdd = () => {
     if (formData.length < maximumEntries) {
@@ -94,10 +99,10 @@ const ExpensesRegistration = () => {
     }
   }
 
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear;
-  const [months, setMonths] = useState<number[]>([]);
+  const currentDate = new Date()
+  const currentYear = currentDate.getFullYear()
+  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear
+  const [months, setMonths] = useState<number[]>([])
   const handleChange = (index, event) => {
     const { name, value } = event.target
 
@@ -113,13 +118,13 @@ const ExpensesRegistration = () => {
     setFormData(updatedFormData)
 
     if (name === 'year') {
-      const selectedYear = parseInt(rawValue, 10);
+      const selectedYear = parseInt(rawValue, 10)
       if (selectedYear === currentFiscalYear) {
-        setMonths([4, 5, 6, 7, 8, 9, 10, 11, 12]);
-      } else if (selectedYear === (currentFiscalYear + 1)) {
-        setMonths([1, 2, 3]);
+        setMonths([4, 5, 6, 7, 8, 9, 10, 11, 12])
+      } else if (selectedYear === currentFiscalYear + 1) {
+        setMonths([1, 2, 3])
       } else {
-        setMonths([]);
+        setMonths([])
       }
     }
   }
@@ -135,7 +140,7 @@ const ExpensesRegistration = () => {
     setModalMessage('') // Reset Modal Message Content
 
     e.preventDefault()
-    
+
     // # Client Side Validation
 
     // Step 1: Preparartion for validation
@@ -300,29 +305,10 @@ const ExpensesRegistration = () => {
     setActiveTab(tab)
     navigate(tab)
   }
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'project':
-        navigate('/projects-registration')
-        break
-      case 'employeeExpenses':
-        navigate('/employee-expenses-registration')
-        break
-      case 'expenses':
-        navigate('/expenses-registration')
-        break
-      case 'costOfSales':
-        navigate('/cost-of-sales-registration')
-        break
-      default:
-        break
-    }
-  }
 
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal()
+    openModal(setModalIsOpen)
   }
 
   const handleRemoveInputData = () => {
@@ -345,40 +331,16 @@ const ExpensesRegistration = () => {
         updated_at: '',
       },
     ])
-    closeModal()
+    closeModal(setModalIsOpen)
   }
 
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
 
-  const closeModal = () => {
-    setModalIsOpen(false)
-  }
 
   useEffect(() => {}, [formData])
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
   }, [language])
-
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
-  }
-
-  // Creates an Array of years for dropdown input. 5 years before AND after current year.
-  const years = [2024, 2025]
 
   const handleListClick = () => {
     navigate('/expenses-list')
@@ -397,9 +359,9 @@ const ExpensesRegistration = () => {
         <div className='expensesRegistration_data_content'>
           <div className='expensesRegistration_top_body_cont'>
             <RegistrationButtons
-              activeTabOther={activeTabOther}
+              activeTabOther={'expenses'}
               message={translate('expensesRegistration', language)}
-              handleTabsClick={handleTabsClick}
+              handleTabsClick={handlePLRegTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'project', tabKey: 'project' },

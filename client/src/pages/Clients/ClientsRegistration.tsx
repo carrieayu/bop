@@ -16,6 +16,9 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
+import { handleMMRegTabsClick } from '../../utils/helperFunctionsUtil'
+import { closeModal, openModal } from '../../actions/hooks'
+import { storedUserID, token } from '../../constants'
 
 
 const ClientsRegistration = () => {
@@ -23,7 +26,6 @@ const ClientsRegistration = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [activeTabOther, setActiveTabOther] = useState('client')
-  const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
   const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -45,29 +47,9 @@ const ClientsRegistration = () => {
       navigate(tab)
   }
 
-  const handleTabsClick = (tab) => {
-      setActiveTabOther(tab)
-      switch (tab) {
-        case 'client':
-          navigate('/clients-registration');
-          break;
-        case 'employee':
-          navigate('/employees-registration');
-          break;
-        case 'businessDivision':
-          navigate('/business-divisions-registration');
-          break;
-        case 'users':
-          navigate('/users-registration');
-          break;
-        default:
-          break;
-      }
-  }
-
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal()
+    openModal(setModalIsOpen)
   }
 
   const handleRemoveInputData = () => {
@@ -78,16 +60,10 @@ const ClientsRegistration = () => {
         auth_user: '',
       },
     ])
-    closeModal()
+    closeModal(setModalIsOpen)
   }
 
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalIsOpen(false)
-  }
+ 
 
   const handleTranslationSwitchToggle = () => {
       const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
@@ -109,7 +85,6 @@ const ClientsRegistration = () => {
       created_at: Date.now(),
     }))
 
-    const token = localStorage.getItem('accessToken')
 
     // # Client Side Validation
 
@@ -244,7 +219,7 @@ const ClientsRegistration = () => {
             <RegistrationButtons
               activeTabOther={activeTabOther}
               message={translate('clientsRegistration', language)}
-              handleTabsClick={handleTabsClick}
+              handleTabsClick={handleMMRegTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'client', tabKey: 'client' },
@@ -289,7 +264,12 @@ const ClientsRegistration = () => {
                     ) : (
                       <div className='ClientsRegistration_dec_empty'></div>
                     )}
-                    <button className='ClientsRegistration_inc custom-disabled' type='button' onClick={handleAddContainer} disabled={clientData.length === 10}>
+                    <button
+                      className='ClientsRegistration_inc custom-disabled'
+                      type='button'
+                      onClick={handleAddContainer}
+                      disabled={clientData.length === 10}
+                    >
                       +
                     </button>
                   </div>

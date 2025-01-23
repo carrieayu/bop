@@ -16,24 +16,19 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs, handlePLRegTabsClick } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { overwriteCostOfSale } from '../../api/CostOfSalesEndpoint/OverwriteCostOfSales'
-
-const months = [
-   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
-];
+import { maximumEntries, monthNames, token, years } from '../../constants'
+import { closeModal, openModal } from '../../actions/hooks'
 
 const CostOfSalesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('costOfSales')
-  const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const years = [2024, 2025]
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [formData, setFormData] = useState([
     {
@@ -55,9 +50,7 @@ const CostOfSalesRegistration = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
-  const token = localStorage.getItem('accessToken')
 
-  const maximumEntries = 10
 
   const handleAdd = () => {
     if (formData.length < maximumEntries) {
@@ -91,29 +84,10 @@ const CostOfSalesRegistration = () => {
     setActiveTab(tab)
     navigate(tab)
   }
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'project':
-        navigate('/projects-registration')
-        break
-      case 'employeeExpenses':
-        navigate('/employee-expenses-registration')
-        break
-      case 'expenses':
-        navigate('/expenses-registration')
-        break
-      case 'costOfSales':
-        navigate('/cost-of-sales-registration')
-        break
-      default:
-        break
-    }
-  }
 
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal()
+    openModal(setModalIsOpen)
   }
 
   const handleRemoveInputData = () => {
@@ -130,23 +104,11 @@ const CostOfSalesRegistration = () => {
         amortization_expense: '',
       },
     ])
-    closeModal()
-  }
-
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalIsOpen(false)
+    closeModal(setModalIsOpen)
   }
 
 
-
-
-  
-  useEffect(() => {
-  },[formData])
+  useEffect(() => {}, [formData])
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -266,7 +228,6 @@ const CostOfSalesRegistration = () => {
   }
 
   const handleSubmitConfirmed = async () => {
-    const token = localStorage.getItem('accessToken')
 
     try {
       overwriteCostOfSale(formData, token)
@@ -298,10 +259,10 @@ const CostOfSalesRegistration = () => {
     }
   }
 
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear;
-  const [months, setMonths] = useState<number[]>([]);
+  const currentDate = new Date()
+  const currentYear = currentDate.getFullYear()
+  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear
+  const [months, setMonths] = useState<number[]>([])
   const handleChange = (index, event) => {
     const { name, value } = event.target
 
@@ -317,13 +278,13 @@ const CostOfSalesRegistration = () => {
     setFormData(updatedFormData)
 
     if (name === 'year') {
-      const selectedYear = parseInt(rawValue, 10);
+      const selectedYear = parseInt(rawValue, 10)
       if (selectedYear === currentFiscalYear) {
-        setMonths([4, 5, 6, 7, 8, 9, 10, 11, 12]);
-      } else if (selectedYear === (currentFiscalYear + 1)) {
-        setMonths([1, 2, 3]);
+        setMonths([4, 5, 6, 7, 8, 9, 10, 11, 12])
+      } else if (selectedYear === currentFiscalYear + 1) {
+        setMonths([1, 2, 3])
       } else {
-        setMonths([]);
+        setMonths([])
       }
     }
   }
@@ -345,21 +306,6 @@ const CostOfSalesRegistration = () => {
     setLanguage(newLanguage)
   }
 
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
-  }
-
   const handleListClick = () => {
     navigate('/cost-of-sales-list')
   }
@@ -377,9 +323,9 @@ const CostOfSalesRegistration = () => {
         <div className='costOfSalesRegistration_data_content'>
           <div className='costOfSalesRegistration_top_body_cont'>
             <RegistrationButtons
-              activeTabOther={activeTabOther}
+              activeTabOther={'costOfSales'}
               message={translate('costOfSalesRegistration', language)}
-              handleTabsClick={handleTabsClick}
+              handleTabsClick={handlePLRegTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'project', tabKey: 'project' },

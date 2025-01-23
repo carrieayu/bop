@@ -15,11 +15,18 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs ,formatNumberWithCommas, removeCommas, sortByFinancialYear} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import {
+  handleDisableKeysOnNumberInputs,
+  formatNumberWithCommas,
+  removeCommas,
+  sortByFinancialYear,
+  handleResultsRegTabsClick,
+} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { filterExpenseResults } from '../../api/ExpenseResultEndpoint/FilterExpenseResults'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
+import { maximumEntries, monthNames, storedUserID, token, years } from '../../constants'
+import { closeModal, openModal } from '../../actions/hooks'
 
-const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 type ExpenseResults = {
   month: string
   year: string
@@ -36,10 +43,7 @@ const ExpensesResultsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('expensesResults')
-  const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
-  const token = localStorage.getItem('accessToken')
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const [expenseResultsData, setExpenseResultData] = useState<ExpenseResult[]>([{ cosr: [] }])
   const [filteredMonth, setFilteredMonth] = useState<any>([{ month: [] }])
@@ -119,7 +123,6 @@ const ExpensesResultsRegistration = () => {
     })
   }
 
-  const maximumEntries = 10
 
   const handleAdd = () => {
     if (formData.length < maximumEntries) {
@@ -347,72 +350,53 @@ const ExpensesResultsRegistration = () => {
       })
   }
 
-    useEffect(() => {
-      formData.forEach((exp, index) => {
-        let month = exp.month || ''
-        const year = exp.year || ''
-        let filterParams: FilterParams = {
-          ...(year !== null && { year }),
-        }
-        if (filterParams.year) {
-          filterExpenseResults(filterParams, token).then((data) => {
-            setExpenseResultData((prev) => {
-              return prev.map((row, projectIndex) => {
-                if (index == projectIndex) {
-                  return {
-                    cosr: data,
-                  }
+  useEffect(() => {
+    formData.forEach((exp, index) => {
+      let month = exp.month || ''
+      const year = exp.year || ''
+      let filterParams: FilterParams = {
+        ...(year !== null && { year }),
+      }
+      if (filterParams.year) {
+        filterExpenseResults(filterParams, token).then((data) => {
+          setExpenseResultData((prev) => {
+            return prev.map((row, projectIndex) => {
+              if (index == projectIndex) {
+                return {
+                  cosr: data,
                 }
-                return row
-              })
-            })
-            setFilteredMonth((prev) => {
-              return prev.map((month, monthIndex) => {
-                if (index == monthIndex) {
-                  return { month: data }
-                }
-                return month
-              })
+              }
+              return row
             })
           })
-        }
+          setFilteredMonth((prev) => {
+            return prev.map((month, monthIndex) => {
+              if (index == monthIndex) {
+                return { month: data }
+              }
+              return month
+            })
+          })
+        })
+      }
+    })
+    getExpense(token)
+      .then((data) => {
+        setExpenseYear(data)
       })
-      getExpense(token)
-        .then((data) => {
-          setExpenseYear(data)
-        })
-        .catch((error) => {
-          console.log(' error fetching cost of sales data: ' + error)
-        })
-    }, [formData])
+      .catch((error) => {
+        console.log(' error fetching cost of sales data: ' + error)
+      })
+  }, [formData])
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
   }
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'expensesResults':
-        navigate('/expenses-results-list')
-        break
-      case 'projectSalesResults':
-        navigate('/project-sales-results-list')
-        break
-      case 'employeeExpensesResults':
-        navigate('/employee-expenses-results-list')
-        break
-      case 'costOfSalesResults':
-        navigate('/cost-of-sales-results-list')
-        break
-      default:
-        break
-    }
-  }
 
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal()
+    openModal(setModalIsOpen)
   }
 
   const handleRemoveInputData = () => {
@@ -435,40 +419,15 @@ const ExpensesResultsRegistration = () => {
         updated_at: '',
       },
     ])
-    closeModal()
+    closeModal(setModalIsOpen)
   }
 
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalIsOpen(false)
-  }
 
   useEffect(() => {}, [formData])
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
   }, [language])
-
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
-  }
-
-  // Creates an Array of years for dropdown input. 5 years before AND after current year.
-  const years = [2024, 2025]
 
   const handleListClick = () => {
     navigate('/expenses-results-list')
@@ -487,9 +446,9 @@ const ExpensesResultsRegistration = () => {
         <div className='expensesResultsRegistration_data_content'>
           <div className='expensesResultsRegistration_top_body_cont'>
             <RegistrationButtons
-              activeTabOther={activeTabOther}
+              activeTabOther={'expensesResults'}
               message={translate('expensesResultsRegistration', language)}
-              handleTabsClick={handleTabsClick}
+              handleTabsClick={handleResultsRegTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },

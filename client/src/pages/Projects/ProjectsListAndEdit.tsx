@@ -25,13 +25,18 @@ import {
 import { getProject } from '../../api/ProjectsEndpoint/GetProject'
 import { updateProject } from '../../api/ProjectsEndpoint/UpdateProject'
 import { deleteProject } from '../../api/ProjectsEndpoint/DeleteProject'
-import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import {
+  handleDisableKeysOnNumberInputs,
+  formatNumberWithCommas,
+  removeCommas,
+  handlePLListTabsClick,
+} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { months, token, years } from '../../constants'
 
-const ProjectsListAndEdit: React.FC = () => {
+const ProjectsListAndEdit: React.FC = ({}) => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('project')
   const [currentPage, setCurrentPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [paginatedData, setPaginatedData] = useState<any[]>([])
@@ -41,8 +46,6 @@ const ProjectsListAndEdit: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [projects, setProjects] = useState([])
   const [originalProjectsList, setOriginalProjectsList] = useState(projects)
-  const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
-  const years = [2024, 2025]
   const [initialLanguage, setInitialLanguage] = useState(language)
   const dispatch = useDispatch()
   const [clients, setClients] = useState<any>([])
@@ -78,31 +81,10 @@ const ProjectsListAndEdit: React.FC = () => {
   const [crudMessage, setCrudMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
-  const token = localStorage.getItem('accessToken')
   const [deleteComplete, setDeleteComplete] = useState(false)
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
-  }
-
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'project':
-        navigate('/projects-list')
-        break
-      case 'employeeExpenses':
-        navigate('/employee-expenses-list')
-        break
-      case 'expenses':
-        navigate('/expenses-list')
-        break
-      case 'costOfSales':
-        navigate('/cost-of-sales-list')
-        break
-      default:
-        break
-    }
   }
 
   const handlePageChange = (page: number) => {
@@ -406,9 +388,9 @@ const ProjectsListAndEdit: React.FC = () => {
             </div>
             <div className='projectsList-mid-body-cont'>
               <ListButtons
-                activeTabOther={activeTabOther}
+                activeTabOther={'project'}
                 message={translate(isEditing ? 'projectsEdit' : 'projectsList', language)}
-                handleTabsClick={handleTabsClick}
+                handleTabsClick={handlePLListTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
                   { labelKey: 'project', tabKey: 'project' },

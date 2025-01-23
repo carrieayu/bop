@@ -36,12 +36,11 @@ export const handleDisableKeysOnNumberInputs = (event) => {
   }
 }
 
-
 // # Add Commas to Financial Numbers for Display on List, Edit, Registration Screens
 
 export const formatNumberWithCommas = (value: number | string): string => {
   // console.log('formatNumberWithCommas',value, typeof value, )
-  // Trim the string and remove non-numeric characters, 
+  // Trim the string and remove non-numeric characters,
   if (typeof value === 'string') {
     value = value.replace(/[^0-9]/g, '') // Remove non-numeric characters
   }
@@ -77,3 +76,125 @@ export const sortByFinancialYear = (months) => {
   const financialOrder = (month) => (month < 4 ? month + 12 : month)
   return months.sort((a, b) => financialOrder(a.month) - financialOrder(b.month))
 }
+
+
+export const handlePLRegTabsClick = (tab, navigate, setActiveTabOther) => {
+  setActiveTabOther(tab)
+  switch (tab) {
+    case 'project':
+      navigate('/projects-registration')
+      break
+    case 'employeeExpenses':
+      navigate('/employee-expenses-registration')
+      break
+    case 'expenses':
+      navigate('/expenses-registration')
+      break
+    case 'costOfSales':
+      navigate('/cost-of-sales-registration')
+      break
+    default:
+      break
+  }
+}
+
+export const handlePLListTabsClick = (tab, navigate, setActiveTabOther) => {
+  setActiveTabOther(tab)
+  switch (tab) {
+    case 'project':
+      navigate('/projects-list')
+      break
+    case 'employeeExpenses':
+      navigate('/employee-expenses-list')
+      break
+    case 'expenses':
+      navigate('/expenses-list')
+      break
+    case 'costOfSales':
+      navigate('/cost-of-sales-list')
+      break
+    default:
+      break
+  }
+}
+
+export const handleResultsListTabsClick = (tab, navigate, setActiveTabOther) => {
+  setActiveTabOther(tab)
+  switch (tab) {
+    case 'projectSalesResults':
+      navigate('/project-sales-results-list')
+      break
+    case 'expensesResults':
+      navigate('/expenses-results-list')
+      break
+    case 'employeeExpensesResults':
+      navigate('/employee-expenses-results-list')
+      break
+    case 'costOfSalesResults':
+      navigate('/cost-of-sales-results-list')
+      break
+    default:
+      break
+  }
+}
+
+export const handleResultsRegTabsClick = (tab, navigate, setActiveTabOther) => {
+  setActiveTabOther(tab)
+  switch (tab) {
+    case 'projectSalesResults':
+      navigate('/project-sales-results-registration')
+      break
+    case 'expensesResults':
+      navigate('/expenses-results-registration')
+      break
+    case 'employeeExpensesResults':
+      navigate('/employee-expenses-results-registration')
+      break
+    case 'costOfSalesResults':
+      navigate('/cost-of-sales-results-registration')
+      break
+    default:
+      break
+  }
+}
+
+export const handleMMListTabsClick = (tab, navigate, setActiveTabOther) => {
+  setActiveTabOther(tab)
+  switch (tab) {
+    case 'client':
+      navigate('/clients-list')
+      break
+    case 'employee':
+      navigate('/employees-list')
+      break
+    case 'businessDivision':
+      navigate('/business-divisions-list')
+      break
+    case 'users':
+      navigate('/users-list')
+      break
+    default:
+      break
+  }
+}
+
+export const handleMMRegTabsClick = (tab, navigate, setActiveTabOther) => {
+  setActiveTabOther(tab)
+  switch (tab) {
+    case 'client':
+          navigate('/clients-registration');
+          break;
+        case 'employee':
+          navigate('/employees-registration');
+          break;
+        case 'businessDivision':
+          navigate('/business-divisions-registration');
+          break;
+        case 'users':
+          navigate('/users-registration');
+          break;
+    default:
+      break
+  }
+}
+

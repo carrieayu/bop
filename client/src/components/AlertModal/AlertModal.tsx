@@ -4,10 +4,10 @@ import { translate } from '../../utils/translationUtil';
 import Btn from '../Button/Button';
 
 interface AlertModalProps {
-    message: string;
-    onConfirm: () => void;
-    onCancel: () => void;
-    isOpen: boolean;
+  message: string
+  onConfirm: () => void
+  onCancel: (setModalisOpen: React.Dispatch<React.SetStateAction<boolean>>) => void // Updated here
+  isOpen: boolean
 }
 
 const AlertModal: React.FC<AlertModalProps> = ({ message, onConfirm, onCancel, isOpen }) => {

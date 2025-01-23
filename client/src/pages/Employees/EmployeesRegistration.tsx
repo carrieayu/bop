@@ -19,16 +19,20 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import {
+  handleDisableKeysOnNumberInputs,
+  formatNumberWithCommas,
+  removeCommas,
+  handleMMRegTabsClick,
+} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import EmployeeExpensesList from '../EmployeeExpenses/EmployeeExpensesList'
-
+import { closeModal, openModal } from '../../actions/hooks'
+import { token } from '../../constants'
 
 const EmployeesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('employee')
-  const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const dispatch = useDispatch()
@@ -37,7 +41,6 @@ const EmployeesRegistration = () => {
   const [companySelection, setCompanySelection] = useState<any>([])
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [selectedEmployeeType, setSelectedEmployeeType] = useState<any>([])
-  const token = localStorage.getItem('accessToken')
   const [employees, setEmployees] = useState([
     {
       last_name: '',
@@ -62,7 +65,6 @@ const EmployeesRegistration = () => {
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
 
-
   const fetchData = async () => {
     try {
       const resMasterCompany = await dispatch(fetchMasterCompany() as unknown as UnknownAction)
@@ -78,7 +80,6 @@ const EmployeesRegistration = () => {
 
   // This could possible be combined into handleInputChange (refactoring)
   const handleEmployeeTypePulldown = (e, containerIndex) => {
-
     const newType = e.target.value
     const newContainers = [...employees]
 
@@ -89,7 +90,7 @@ const EmployeesRegistration = () => {
     } else if (newType === '1') {
       // Reset salary if switching to executive employee
       newContainers[containerIndex].salary = '' // Set to an empty string directly
-    } else (newType === '')
+    } else newType === ''
     {
       newContainers[containerIndex].executive_renumeration = '' // Set to an empty string directly
       newContainers[containerIndex].salary = '' // Set to an empty string directly
@@ -156,29 +157,9 @@ const EmployeesRegistration = () => {
     navigate(tab)
   }
 
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'client':
-        navigate('/clients-registration')
-        break
-      case 'employee':
-        navigate('/employees-registration')
-        break
-      case 'businessDivision':
-        navigate('/business-divisions-registration')
-        break
-      case 'users':
-        navigate('/users-registration')
-        break
-      default:
-        break
-    }
-  }
-
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal()
+    openModal(setModalIsOpen)
   }
 
   const handleRemoveInputData = () => {
@@ -200,16 +181,10 @@ const EmployeesRegistration = () => {
         created_at: '',
       },
     ])
-    closeModal()
+    closeModal(setModalIsOpen)
   }
 
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalIsOpen(false)
-  }
+  
 
   const handleTranslationSwitchToggle = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
@@ -376,7 +351,6 @@ const EmployeesRegistration = () => {
     }
   }
 
-
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
     fetchData()
@@ -400,9 +374,9 @@ const EmployeesRegistration = () => {
           <div className='EmployeesRegistration_mid_body_cont'>
             <div className='EmployeesRegistration_top_body_cont'>
               <RegistrationButtons
-                activeTabOther={activeTabOther}
+                activeTabOther={'employee'}
                 message={translate('employeesRegistration', language)}
-                handleTabsClick={handleTabsClick}
+                handleTabsClick={handleMMRegTabsClick}
                 handleListClick={handleListClick}
                 buttonConfig={[
                   { labelKey: 'client', tabKey: 'client' },

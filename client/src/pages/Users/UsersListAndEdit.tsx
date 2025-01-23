@@ -22,7 +22,8 @@ import {
   getFieldChecks,
   checkForDuplicateUsers,
 } from '../../utils/validationUtil'
-import { formatDate } from "../../utils/helperFunctionsUtil";
+import { formatDate, handleMMListTabsClick } from "../../utils/helperFunctionsUtil";
+import { token } from "../../constants";
 
 const UsersListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -67,26 +68,6 @@ const UsersListAndEdit: React.FC = () => {
     navigate(tab)
   }
 
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'client':
-        navigate('/clients-list')
-        break
-      case 'employee':
-        navigate('/employees-list')
-        break
-      case 'businessDivision':
-        navigate('/business-divisions-list')
-        break
-      case 'users':
-        navigate('/users-list')
-        break
-      default:
-        break
-    }
-  }
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
   }
@@ -123,7 +104,6 @@ const UsersListAndEdit: React.FC = () => {
   }
 
   const handleSubmit = async () => {
-    const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login'
       return
@@ -189,7 +169,6 @@ const UsersListAndEdit: React.FC = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const token = localStorage.getItem('accessToken')
       if (!token) {
         window.location.href = '/login' // Redirect to login if no token found
         return
@@ -263,7 +242,6 @@ const UsersListAndEdit: React.FC = () => {
   const handleConfirm = async () => {
     // Sets the Validation Errors if any to empty as they are not necessary for delete.
     setCrudValidationErrors([])
-    const token = localStorage.getItem('accessToken')
     deleteUser(deleteId, token)
       .then(() => {
         updateUserLists(deleteId)
@@ -330,7 +308,7 @@ const UsersListAndEdit: React.FC = () => {
               <ListButtons
                 activeTabOther={activeTabOther}
                 message={translate(isEditing ? 'usersEdit' : 'usersList', language)}
-                handleTabsClick={handleTabsClick}
+                handleTabsClick={handleMMListTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
                   { labelKey: 'client', tabKey: 'client' },

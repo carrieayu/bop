@@ -15,19 +15,24 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs, sortByFinancialYear } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import {
+  handleDisableKeysOnNumberInputs,
+  handleResultsRegTabsClick,
+  sortByFinancialYear,
+} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { filterCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/FilterCostOfSalesResults'
 import { createCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/CreateCostOfSalesResults'
 import { overwriteCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/OverwriteCostOfSalesResults'
 import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { getCostOfSale } from '../../api/CostOfSalesEndpoint/GetCostOfSale'
+import { maximumEntries, monthNames, token } from '../../constants'
+import { closeModal, openModal } from '../../actions/hooks'
 
-const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 type CostOfSaleResults = {
   month: string
   year: string
-  cost_of_sale_id : string
+  cost_of_sale_id: string
 }
 type CostOfSaleResult = {
   cosr: CostOfSaleResults[]
@@ -40,14 +45,11 @@ const CostOfSalesResultsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('costOfSalesResults')
-  const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const years = [2024, 2025]
-  const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [modalIsOpen, setModalIsOpen] = useState()
   const [costOfSaleResultsData, setCostOfSaleResultsData] = useState<CostOfSaleResult[]>([{ cosr: [] }])
-  const [filteredMonth, setFilteredMonth] = useState<any>([{ month: []}])
+  const [filteredMonth, setFilteredMonth] = useState<any>([{ month: [] }])
   const [costOfSaleYear, setCostOfSalesYear] = useState<any>([])
   const [formData, setFormData] = useState([
     {
@@ -69,9 +71,7 @@ const CostOfSalesResultsRegistration = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
-  const token = localStorage.getItem('accessToken')
-  const maximumEntries = 10
-  
+
   const uniqueYears = costOfSaleYear.reduce((acc, item) => {
     if (!acc.includes(item.year)) {
       acc.push(item.year)
@@ -97,7 +97,7 @@ const CostOfSalesResultsRegistration = () => {
       })
       setFormData(newFormData)
       setCostOfSaleResultsData([...costOfSaleResultsData, { cosr: [] }])
-      setFilteredMonth([...filteredMonth, { month: []}])
+      setFilteredMonth([...filteredMonth, { month: [] }])
     } else {
       console.log('You can only add up to 10 forms.')
     }
@@ -114,29 +114,10 @@ const CostOfSalesResultsRegistration = () => {
     setActiveTab(tab)
     navigate(tab)
   }
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'projectSalesResults':
-        navigate('/project-sales-results-list')
-        break
-      case 'expensesResults':
-        navigate('/expenses-results-list')
-        break
-      case 'employeeExpensesResults':
-        navigate('/employee-expenses-results-list')
-        break
-      case 'costOfSalesResults':
-        navigate('/cost-of-sales-results-list')
-        break
-      default:
-        break
-    }
-  }
 
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal()
+    openModal(setModalIsOpen)
   }
 
   const handleRemoveInputData = () => {
@@ -154,16 +135,10 @@ const CostOfSalesResultsRegistration = () => {
         cost_of_sale: '',
       },
     ])
-    closeModal()
+    closeModal(setModalIsOpen)
   }
 
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalIsOpen(false)
-  }
+  
 
   const handleChange = (index, event) => {
     const { name, value } = event.target
@@ -172,19 +147,19 @@ const CostOfSalesResultsRegistration = () => {
       return prevFormData.map((form, i) => {
         if (i === index) {
           const resetFields = {
-            params : ["months"],
+            params: ['months'],
           }
           let month = form.month
-          if(name == 'year' && value == '') {
-              form.month = ''
-              setFilteredMonth(prev => {
+          if (name == 'year' && value == '') {
+            form.month = ''
+            setFilteredMonth((prev) => {
               return prev.map((eachMonth, monthIndex) => {
-                  if (index == monthIndex) {
-                    return [{}]
-                  }
-                  return eachMonth
+                if (index == monthIndex) {
+                  return [{}]
+                }
+                return eachMonth
               })
-              })
+            })
           }
           const fieldsToReset = resetFields[name] || []
           const resetValues = fieldsToReset.reduce((acc, field) => {
@@ -194,15 +169,13 @@ const CostOfSalesResultsRegistration = () => {
           return {
             ...form,
             [name]: rawValue,
-            ...resetValues
+            ...resetValues,
           }
         }
         return form
       })
     })
   }
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -376,7 +349,6 @@ const CostOfSalesResultsRegistration = () => {
           },
         ])
       })
-      
     } catch (overwriteError) {
       console.error('Error overwriting data:', overwriteError)
     } finally {
@@ -386,33 +358,33 @@ const CostOfSalesResultsRegistration = () => {
 
   useEffect(() => {
     formData.forEach((cosr, index) => {
-      let month = cosr.month || ""
-      const year = cosr.year || ""
-        let filterParams: FilterParams = {
-          ...(year !== null && { year }),
-        }
-        if (filterParams.year) {
-          filterCostOfSaleResults(filterParams, token).then((data) => {
-            setCostOfSaleResultsData((prev) => {
-              return prev.map((row, projectIndex) => {
-                if (index == projectIndex) {
-                  return {
-                    cosr: data,
-                  }
+      let month = cosr.month || ''
+      const year = cosr.year || ''
+      let filterParams: FilterParams = {
+        ...(year !== null && { year }),
+      }
+      if (filterParams.year) {
+        filterCostOfSaleResults(filterParams, token).then((data) => {
+          setCostOfSaleResultsData((prev) => {
+            return prev.map((row, projectIndex) => {
+              if (index == projectIndex) {
+                return {
+                  cosr: data,
                 }
-                return row
-              })
-            })
-            setFilteredMonth((prev) => {
-              return prev.map((month, monthIndex) => {
-                if (index == monthIndex) {
-                  return { month: data }
-                }
-                return month
-              })
+              }
+              return row
             })
           })
-        }
+          setFilteredMonth((prev) => {
+            return prev.map((month, monthIndex) => {
+              if (index == monthIndex) {
+                return { month: data }
+              }
+              return month
+            })
+          })
+        })
+      }
     })
     getCostOfSale(token)
       .then((data) => {
@@ -422,7 +394,6 @@ const CostOfSalesResultsRegistration = () => {
         console.log(' error fetching cost of sales data: ' + error)
       })
   }, [formData])
-  
 
   useEffect(() => {
     const path = location.pathname
@@ -438,21 +409,6 @@ const CostOfSalesResultsRegistration = () => {
   const handleTranslationSwitchToggle = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
     setLanguage(newLanguage)
-  }
-
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
   }
 
   const handleListClick = () => {
@@ -472,9 +428,9 @@ const CostOfSalesResultsRegistration = () => {
         <div className='costOfSalesResultsRegistration_data_content'>
           <div className='costOfSalesResultsRegistration_top_body_cont'>
             <RegistrationButtons
-              activeTabOther={activeTabOther}
+              activeTabOther={'costOfSalesResults'}
               message={translate('costOfSalesResultsRegistration', language)}
-              handleTabsClick={handleTabsClick}
+              handleTabsClick={handleResultsRegTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },

@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import api from '../../api/api'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { CardEntity } from '../../entity/cardEntity'
+import { token } from '../../constants'
 
 interface GraphDataState {
   isLoading: boolean
@@ -44,7 +45,6 @@ const calculateOperatingIncome = (card) => {
   return salesRevenue - costOfSale - dispatchLaborExpense - employeeExpense - indirectEmployeeExpense - otherExpense
 }
 
-const token = localStorage.getItem('accessToken')
 export const fetchGraphData = createAsyncThunk('graphData/fetch', async () => {
   const response = await api.get<CardEntity[]>(`${getReactActiveEndpoint()}/api/projects/list/`, {
     headers: {

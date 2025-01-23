@@ -5,13 +5,13 @@ import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { getResultsA } from '../../api/ResultsEndpoint/GetResultsA'
 import { updateResults } from '../../api/ResultsEndpoint/UpdateResults'
+import { token } from '../../constants'
 
 const EditTableResults = () => {
   const [data, setData] = useState([])
   const [previousData, setPreviousData] = useState([])
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const token = localStorage.getItem('accessToken')
   useEffect(() => {
     getResultsA(token)
       .then((response) => {

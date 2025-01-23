@@ -1,25 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import Btn from '../../components/Button/Button';
-import Sidebar from '../../components/Sidebar/Sidebar';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { translate } from '../../utils/translationUtil';
-import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons';
-import HeaderButtons from '../../components/HeaderButtons/HeaderButtons';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react'
+import Btn from '../../components/Button/Button'
+import Sidebar from '../../components/Sidebar/Sidebar'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { translate } from '../../utils/translationUtil'
+import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
+import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
+import axios from 'axios'
 import AlertModal from '../../components/AlertModal/AlertModal'
-import CrudModal from '../../components/CrudModal/CrudModal';
+import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
-import { createEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/CreateEmployeeExpense';
-import { getProject } from '../../api/ProjectsEndpoint/GetProject';
-import { getEmployee } from '../../api/EmployeeEndpoint/GetEmployee';
+import { createEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/CreateEmployeeExpense'
+import { getProject } from '../../api/ProjectsEndpoint/GetProject'
+import { getEmployee } from '../../api/EmployeeEndpoint/GetEmployee'
 import {
   validateEmployeeExpensesRecords,
   translateAndFormatErrors,
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { getFilteredEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/FilterGetEmployeeExpense';
+import { getFilteredEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/FilterGetEmployeeExpense'
+import { currentYear, maximumEntriesEE, monthNames, storedUserID, token } from '../../constants'
+import { handlePLRegTabsClick } from '../../utils/helperFunctionsUtil'
+import { closeModal, openModal } from '../../actions/hooks'
 
 type Date = {
   year: string
@@ -37,26 +40,24 @@ const EmployeeExpensesRegistration = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [activeTab, setActiveTab] = useState('/planning-list')
-  const [activeTabOther, setActiveTabOther] = useState('employeeExpenses')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const currentYear = new Date().getFullYear()
   const startYear = currentYear - 1
   const endYear = currentYear + 2
   const years = Array.from({ length: endYear - startYear + 1 }, (val, i) => startYear + i)
-  const token = localStorage.getItem('accessToken')
   const [employees, setEmployees] = useState([])
   const [projects, setProjects] = useState([])
-  const storedUserID = localStorage.getItem('userID')
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
-  const [filteredDates, setFilteredDates] = useState<DateForm[]>([ { form: [{ date: []}]} ])
+  const [filteredDates, setFilteredDates] = useState<DateForm[]>([{ form: [{ date: [] }] }])
   const [selectionYear, setSelectionYear] = useState<DateForm[]>([{ form: [{ date: [] }] }])
   const [employeeContainers, setEmployeeContainers] = useState([
     {
       id: 1,
       employee: '',
-      projectEntries: [{ id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '', project_id: ''}],
+      projectEntries: [
+        { id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '', project_id: '' },
+      ],
     },
   ])
 
@@ -68,29 +69,9 @@ const EmployeeExpensesRegistration = () => {
     navigate(tab)
   }
 
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'project':
-        navigate('/projects-registration')
-        break
-      case 'employeeExpenses':
-        navigate('/employee-expenses-registration')
-        break
-      case 'expenses':
-        navigate('/expenses-registration')
-        break
-      case 'costOfSales':
-        navigate('/cost-of-sales-registration')
-        break
-      default:
-        break
-    }
-  }
-
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal()
+    openModal(setModalIsOpen)
   }
 
   const handleRemoveInputData = () => {
@@ -98,19 +79,17 @@ const EmployeeExpensesRegistration = () => {
       {
         id: 1,
         employee: '',
-        projectEntries: [{ id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '', project_id: ''}],
+        projectEntries: [
+          { id: 1, projects: '', clients: '', auth_id: storedUserID, year: '', month: '', project_id: '' },
+        ],
       },
     ])
-    closeModal()
+    closeModal(setModalIsOpen)
   }
 
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
+  
 
-  const closeModal = () => {
-    setModalIsOpen(false)
-  }
+  
 
   useEffect(() => {
     const path = location.pathname
@@ -126,21 +105,6 @@ const EmployeeExpensesRegistration = () => {
   const handleTranslationSwitchToggle = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
     setLanguage(newLanguage)
-  }
-
-  const monthNames = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
   }
 
   useEffect(() => {
@@ -178,7 +142,6 @@ const EmployeeExpensesRegistration = () => {
     fetchData()
   }, [token])
 
-  const maximumEntries = 5
 
   //This function will make ProjectName unique base on project_name, client and business_division
   const uniqueProjects = (projects) => {
@@ -194,7 +157,7 @@ const EmployeeExpensesRegistration = () => {
   }
 
   const addEmployeeContainer = () => {
-    if (employeeContainers.length < maximumEntries) {
+    if (employeeContainers.length < maximumEntriesEE) {
       setEmployeeContainers([
         ...employeeContainers,
         {
@@ -224,9 +187,7 @@ const EmployeeExpensesRegistration = () => {
     const updatedContainers = [...employeeContainers]
     const projectEntries = updatedContainers[containerIndex].projectEntries
 
-    const maximumEntries = 5
-
-    if (projectEntries.length < maximumEntries) {
+    if (projectEntries.length < maximumEntriesEE) {
       projectEntries.push({
         id: projectEntries.length + 1,
         clients: '',
@@ -234,7 +195,7 @@ const EmployeeExpensesRegistration = () => {
         projects: '',
         year: '',
         month: '',
-        project_id: ''
+        project_id: '',
       })
       setEmployeeContainers(updatedContainers)
       setFilteredDates((prevDates: DateForm[]) => {
@@ -285,7 +246,8 @@ const EmployeeExpensesRegistration = () => {
 
         employeeContainers.map((employee, index) => {
           const getProjectName = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
-          const [project_id = null, project_name = null, client = null, business_division = null] = getProjectName?.split(':') || []
+          const [project_id = null, project_name = null, client = null, business_division = null] =
+            getProjectName?.split(':') || []
           const filterParams = {
             ...(project_id && { project_id }),
             ...(project_name && { project_name }),
@@ -346,7 +308,7 @@ const EmployeeExpensesRegistration = () => {
           }
           return employee
         })
-      } else if(name === 'year'){
+      } else if (name === 'year') {
         const selectedProject = projects.find((project) => project.project_id === project_id)
         newContainers[containerIndex].projectEntries[projectIndex] = {
           ...newContainers[containerIndex].projectEntries[projectIndex],
@@ -398,7 +360,6 @@ const EmployeeExpensesRegistration = () => {
           }
           return employee
         })
-
       } else if (name === 'month') {
         const selectedProject = projects.find((project) => project.project_id === project_id)
 
@@ -435,7 +396,6 @@ const EmployeeExpensesRegistration = () => {
           }
           return employee
         })
-
       } else {
         newContainers[containerIndex].projectEntries[projectIndex] = {
           ...newContainers[containerIndex].projectEntries[projectIndex],
@@ -570,9 +530,9 @@ const EmployeeExpensesRegistration = () => {
         </div> */}
             {/* <div className='employeeExpensesRegistration_top_btn_cont'></div> */}
             <RegistrationButtons
-              activeTabOther={activeTabOther}
+              activeTabOther={'employeeExpenses'}
               message={translate('employeeExpensesRegistration', language)}
-              handleTabsClick={handleTabsClick}
+              handleTabsClick={handlePLRegTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'project', tabKey: 'project' },
@@ -746,7 +706,7 @@ const EmployeeExpensesRegistration = () => {
                     className='employeeExpensesRegistration_plus-btn custom-disabled'
                     type='button'
                     onClick={addEmployeeContainer}
-                    disabled={employeeContainers.length === maximumEntries}
+                    disabled={employeeContainers.length === maximumEntriesEE}
                   >
                     +
                   </button>
@@ -778,6 +738,6 @@ const EmployeeExpensesRegistration = () => {
       />
     </div>
   )
-};
+}
 
-export default EmployeeExpensesRegistration;
+export default EmployeeExpensesRegistration

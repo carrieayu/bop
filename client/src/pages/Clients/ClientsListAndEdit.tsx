@@ -21,8 +21,9 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { formatDate } from '../../utils/helperFunctionsUtil'
+import { formatDate, handleMMListTabsClick } from '../../utils/helperFunctionsUtil'
 import { getUser } from "../../api/UserEndpoint/GetUser";
+import { token } from "../../constants";
 
 const ClientsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -42,7 +43,6 @@ const ClientsListAndEdit: React.FC = () => {
   const [initialLanguage, setInitialLanguage] = useState(language)
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [selectedClient, setSelectedClient] = useState<any>(null)
-  const token = localStorage.getItem('accessToken')
   const totalPages = Math.ceil(100 / 10)
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
@@ -54,26 +54,6 @@ const ClientsListAndEdit: React.FC = () => {
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
-  }
-
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'client':
-        navigate('/clients-list')
-        break
-      case 'employee':
-        navigate('/employees-list')
-        break
-      case 'businessDivision':
-        navigate('/business-divisions-list')
-        break
-      case 'users':
-        navigate('/users-list')
-        break
-      default:
-        break
-    }
   }
 
   const handlePageChange = (page: number) => {
@@ -180,7 +160,6 @@ const ClientsListAndEdit: React.FC = () => {
       return modifiedFields
     }
     const modifiedFields = getModifiedFields(originalClientsList, updatedClients)
-    const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login'
       return
@@ -222,7 +201,6 @@ const ClientsListAndEdit: React.FC = () => {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      const token = localStorage.getItem('accessToken')
       if (!token) {
         window.location.href = '/login' // Redirect to login if no token found
         return
@@ -371,7 +349,7 @@ const ClientsListAndEdit: React.FC = () => {
               <ListButtons
                 activeTabOther={activeTabOther}
                 message={translate(isEditing ? 'clientsEdit' : 'clientsList', language)}
-                handleTabsClick={handleTabsClick}
+                handleTabsClick={handleMMListTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
                   { labelKey: 'client', tabKey: 'client' },
@@ -423,7 +401,7 @@ const ClientsListAndEdit: React.FC = () => {
                                     />
                                   </td>
                                   <td className='ClientsListAndEdit_table_body_content_vertical'>
-                                  {userMap[clients.auth_user] || 'Unknown User'}
+                                    {userMap[clients.auth_user] || 'Unknown User'}
                                   </td>
                                   <td className='ClientsListAndEdit_table_body_content_vertical'>
                                     {formatDate(clients.created_at)}

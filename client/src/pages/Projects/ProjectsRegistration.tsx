@@ -13,23 +13,27 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { createProject } from '../../api/ProjectsEndpoint/CreateProject'
 import { overwriteProject } from '../../api/ProjectsEndpoint/OverwriteProject'
-import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs, removeCommas, formatNumberWithCommas} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-
-const months = [
-  '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
-];
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+import {
+  handleDisableKeysOnNumberInputs,
+  removeCommas,
+  formatNumberWithCommas,
+  handlePLRegTabsClick,
+} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { maximumEntries, monthNames, token, years } from '../../constants'
+import { closeModal, openModal } from '../../actions/hooks'
 
 const ProjectsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('project')
-  const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const years = [2024, 2025];
-  const token = localStorage.getItem('accessToken')
   const [clients, setClients] = useState<any>([])
   const [selectedClient, setSelectedClient] = useState([])
   const [businessSelection, setBusinessSelection] = useState<any>([])
@@ -62,7 +66,6 @@ const ProjectsRegistration = () => {
     },
   ])
 
-  const maximumEntries = 10
 
   const handleAdd = () => {
     if (formProjects.length < maximumEntries) {
@@ -102,29 +105,10 @@ const ProjectsRegistration = () => {
     setActiveTab(tab)
     navigate(tab)
   }
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'project':
-        navigate('/projects-registration')
-        break
-      case 'employeeExpenses':
-        navigate('/employee-expenses-registration')
-        break
-      case 'expenses':
-        navigate('/expenses-registration')
-        break
-      case 'costOfSales':
-        navigate('/cost-of-sales-registration')
-        break
-      default:
-        break
-    }
-  }
 
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal()
+    openModal(setModalIsOpen)
   }
 
   const handleRemoveInputData = () => {
@@ -148,16 +132,9 @@ const ProjectsRegistration = () => {
         ordinary_profit_margin: '',
       },
     ])
-    closeModal()
+    closeModal(setModalIsOpen)
   }
 
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalIsOpen(false)
-  }
 
   const fetchClients = async () => {
     try {
@@ -177,10 +154,10 @@ const ProjectsRegistration = () => {
     }
   }
 
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear;
-  const [months, setMonths] = useState<number[]>([]);
+  const currentDate = new Date()
+  const currentYear = currentDate.getFullYear()
+  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear
+  const [months, setMonths] = useState<number[]>([])
   const handleChange = (index, event) => {
     const { name, value } = event.target
 
@@ -196,16 +173,15 @@ const ProjectsRegistration = () => {
     setProjects(updatedFormData)
 
     if (name === 'year') {
-      const selectedYear = parseInt(rawValue, 10);
+      const selectedYear = parseInt(rawValue, 10)
       if (selectedYear === currentFiscalYear) {
-        setMonths([4, 5, 6, 7, 8, 9, 10, 11, 12]);
-      } else if (selectedYear === (currentFiscalYear + 1)) {
-        setMonths([1, 2, 3]);
+        setMonths([4, 5, 6, 7, 8, 9, 10, 11, 12])
+      } else if (selectedYear === currentFiscalYear + 1) {
+        setMonths([1, 2, 3])
       } else {
-        setMonths([]);
+        setMonths([])
       }
     }
-
   }
   useEffect(() => {}, [formProjects])
 
@@ -219,7 +195,6 @@ const ProjectsRegistration = () => {
       setActiveTab(path)
     }
   }, [location.pathname])
-
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -455,20 +430,6 @@ const ProjectsRegistration = () => {
     fetchDivision()
     fetchClients()
   }, [token])
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
-  }
 
   const handleListClick = () => {
     navigate('/projects-list')
@@ -487,9 +448,9 @@ const ProjectsRegistration = () => {
         <div className='projectsRegistration-data-content'>
           <div className='projectsRegistration-top-body-cont'>
             <RegistrationButtons
-              activeTabOther={activeTabOther}
+              activeTabOther={'project'}
               message={translate('projectsRegistration', language)}
-              handleTabsClick={handleTabsClick}
+              handleTabsClick={handlePLRegTabsClick}
               handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'project', tabKey: 'project' },
@@ -808,4 +769,3 @@ const ProjectsRegistration = () => {
 }
 
 export default ProjectsRegistration
-

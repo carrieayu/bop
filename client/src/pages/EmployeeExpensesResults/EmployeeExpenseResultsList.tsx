@@ -15,7 +15,8 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/GetEmployeeExpenseResult'
 import { deleteEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/DeleteEmployeeExpenseResult'
 import { deleteProjectAssociationResults } from '../../api/EmployeeExpensesResultEndpoint/DeleteProjectAssociationResults'
-import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { formatNumberWithCommas, handleResultsListTabsClick } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { monthNames, token } from '../../constants'
 
 const months: number[] = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3] // Store as numbers
 
@@ -23,7 +24,6 @@ const EmployeeExpensesResultsList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('employeeExpensesResults')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const [employeeExpenses, setEmployeeExpenses] = useState([])
@@ -38,7 +38,6 @@ const EmployeeExpensesResultsList: React.FC = () => {
     project_id: string
     mode: 'employee_expense' | 'project'
   }>({} as { employee_expense_result_id: []; project_id: string; mode: 'employee_expense' })
-  const token = localStorage.getItem('accessToken')
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
 
@@ -48,32 +47,13 @@ const EmployeeExpensesResultsList: React.FC = () => {
   }
 
   const handleClick = () => {
-              setIsEditing((prevState) => !prevState)
-            }
-            useEffect(() => {
-              if (isEditing) {
-                setLanguage('jp')
-              }
-            }, [isEditing])
-
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'projectSalesResults':
-        navigate('/project-sales-results-list')
-        break
-      case 'expensesResults':
-        navigate('/expenses-results-list')
-        break
-      case 'employeeExpensesResults':
-        navigate('/employee-expenses-results-list')
-        break
-      case 'costOfSalesResults':
-        navigate('/cost-of-sales-results-list')
-        break
-      default:
-    }
+    setIsEditing((prevState) => !prevState)
   }
+  useEffect(() => {
+    if (isEditing) {
+      setLanguage('jp')
+    }
+  }, [isEditing])
 
   useEffect(() => {
     const path = location.pathname
@@ -91,21 +71,6 @@ const EmployeeExpensesResultsList: React.FC = () => {
       const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
       setLanguage(newLanguage)
     }
-  }
-
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
   }
 
   const handleNewRegistrationClick = () => {
@@ -157,30 +122,29 @@ const EmployeeExpensesResultsList: React.FC = () => {
   }
 
   const handleDeleteExpense = async () => {
-    
-      deletedId.monthlyExpenses.forEach((monthExpense, index) => {
-        // Check if the 'projects' array has any data
-        if (monthExpense.projects && monthExpense.projects.length > 0) {
-          // Access employee_expense_result_id from the first project
-          const employeeExpenseResultId = monthExpense.projects[0].employee_expense_result_id
-          deleteEmployeeExpenseResults(employeeExpenseResultId, token)
-            .then(() => {
-              setEmployeeExpenses((prevExpenses) =>
-                prevExpenses.filter((expense) => expense.employee_expense_result_id !== employeeExpenseResultId),
-              )
-              setCrudMessage(translate('successfullyDeleted', language))
-              setIsCRUDOpen(true)
-              setIsEditing(false)
-            })
-            .catch((error) => {
-              if (error.response && error.response.status === 401) {
-                window.location.href = '/login' // Redirect to login if unauthorized
-              } else {
-                console.error('Error deleting employee expense:', error)
-              }
-            })
-        }
-      })
+    deletedId.monthlyExpenses.forEach((monthExpense, index) => {
+      // Check if the 'projects' array has any data
+      if (monthExpense.projects && monthExpense.projects.length > 0) {
+        // Access employee_expense_result_id from the first project
+        const employeeExpenseResultId = monthExpense.projects[0].employee_expense_result_id
+        deleteEmployeeExpenseResults(employeeExpenseResultId, token)
+          .then(() => {
+            setEmployeeExpenses((prevExpenses) =>
+              prevExpenses.filter((expense) => expense.employee_expense_result_id !== employeeExpenseResultId),
+            )
+            setCrudMessage(translate('successfullyDeleted', language))
+            setIsCRUDOpen(true)
+            setIsEditing(false)
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 401) {
+              window.location.href = '/login' // Redirect to login if unauthorized
+            } else {
+              console.error('Error deleting employee expense:', error)
+            }
+          })
+      }
+    })
   }
 
   const handleRemoveProjectAssociation = async () => {
@@ -232,9 +196,9 @@ const EmployeeExpensesResultsList: React.FC = () => {
             </div>
             <div className='employeeExpensesResultsList_mid_body_cont'>
               <ListButtons
-                activeTabOther={activeTabOther}
+                activeTabOther={'employeeExpensesResults'}
                 message={translate(isEditing ? 'employeeExpensesResultsEdit' : 'employeeExpensesResultsList', language)}
-                handleTabsClick={handleTabsClick}
+                handleTabsClick={handleResultsListTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
                   { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },

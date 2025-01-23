@@ -1,40 +1,45 @@
-import React, { useEffect, useState } from "react";
-import Btn from "../../components/Button/Button";
-import axios from "axios";
-import Sidebar from "../../components/Sidebar/Sidebar";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useLanguage } from "../../contexts/LanguageContext";
-import { translate } from "../../utils/translationUtil";
-import AlertModal from "../../components/AlertModal/AlertModal";
-import { RiDeleteBin6Fill } from "react-icons/ri";
-import ListButtons from "../../components/ListButtons/ListButtons";
-import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
-import { fetchBusinessDivisions } from "../../reducers/businessDivisions/businessDivisionsSlice";
-import { fetchMasterCompany } from "../../reducers/company/companySlice";
-import { useDispatch } from "react-redux";
-import { UnknownAction } from "redux";
-import CrudModal from "../../components/CrudModal/CrudModal";
+import React, { useEffect, useState } from 'react'
+import Btn from '../../components/Button/Button'
+import axios from 'axios'
+import Sidebar from '../../components/Sidebar/Sidebar'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { translate } from '../../utils/translationUtil'
+import AlertModal from '../../components/AlertModal/AlertModal'
+import { RiDeleteBin6Fill } from 'react-icons/ri'
+import ListButtons from '../../components/ListButtons/ListButtons'
+import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
+import { fetchBusinessDivisions } from '../../reducers/businessDivisions/businessDivisionsSlice'
+import { fetchMasterCompany } from '../../reducers/company/companySlice'
+import { useDispatch } from 'react-redux'
+import { UnknownAction } from 'redux'
+import CrudModal from '../../components/CrudModal/CrudModal'
 import '../../assets/scss/Components/SliderToggle.scss'
-import { updateEmployee } from "../../api/EmployeeEndpoint/UpdateEmployee";
-import { getSelectedBusinessDivisionCompany } from "../../api/BusinessDivisionEndpoint/GetSelectedBusinessDivisionCompany";
-import { deleteEmployee } from "../../api/EmployeeEndpoint/DeleteEmployee";
-import { editEmployee } from "../../api/EmployeeEndpoint/EditEmployee";
-import { getEmployee } from "../../api/EmployeeEndpoint/GetEmployee";
-import { getUser } from "../../api/UserEndpoint/GetUser";
+import { updateEmployee } from '../../api/EmployeeEndpoint/UpdateEmployee'
+import { getSelectedBusinessDivisionCompany } from '../../api/BusinessDivisionEndpoint/GetSelectedBusinessDivisionCompany'
+import { deleteEmployee } from '../../api/EmployeeEndpoint/DeleteEmployee'
+import { editEmployee } from '../../api/EmployeeEndpoint/EditEmployee'
+import { getEmployee } from '../../api/EmployeeEndpoint/GetEmployee'
+import { getUser } from '../../api/UserEndpoint/GetUser'
 import {
   validateEmployeeRecords,
   translateAndFormatErrors,
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs, formatDate, formatNumberWithCommas, removeCommas} from '../../utils/helperFunctionsUtil'
-
+import {
+  handleDisableKeysOnNumberInputs,
+  formatDate,
+  formatNumberWithCommas,
+  removeCommas,
+  handleMMListTabsClick,
+} from '../../utils/helperFunctionsUtil'
+import { token } from '../../constants'
 
 const EmployeesListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('employee')
   const [currentPage, setCurrentPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [paginatedData, setPaginatedData] = useState<any[]>([])
@@ -53,7 +58,6 @@ const EmployeesListAndEdit: React.FC = () => {
   const dispatch = useDispatch()
   const totalPages = Math.ceil(100 / 10)
   const [allBusinessDivisions, setAllBusinessDivisions] = useState([])
-  const token = localStorage.getItem('accessToken')
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
@@ -65,26 +69,6 @@ const EmployeesListAndEdit: React.FC = () => {
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
-  }
-
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'client':
-        navigate('/clients-list')
-        break
-      case 'employee':
-        navigate('/employees-list')
-        break
-      case 'businessDivision':
-        navigate('/business-divisions-list')
-        break
-      case 'users':
-        navigate('/users-list')
-        break
-      default:
-        break
-    }
   }
 
   const fetchData = async () => {
@@ -120,14 +104,14 @@ const EmployeesListAndEdit: React.FC = () => {
     setRowsPerPage(numRows)
     setCurrentPage(0)
   }
-  
+
   const handleClick = () => {
     setIsEditing((prevState) => !prevState)
   }
 
   useEffect(() => {
     if (isEditing) {
-      setLanguage('jp') 
+      setLanguage('jp')
     }
   }, [isEditing])
 
@@ -311,7 +295,6 @@ const EmployeesListAndEdit: React.FC = () => {
 
     const modifiedFields = getModifiedFields(originalEmployeesList, employeesList)
     console.log(modifiedFields)
-    const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login'
       return
@@ -352,7 +335,6 @@ const EmployeesListAndEdit: React.FC = () => {
   }
 
   const fetchEmployees = async () => {
-    const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login' // Redirect to login if no token found
       return
@@ -360,21 +342,21 @@ const EmployeesListAndEdit: React.FC = () => {
 
     // Fetch users
     getUser(token)
-    .then((data) => {
-      const users = data
-      const userMapping = users.reduce((map, user) => {
-        map[user.id] = user.last_name + ' ' + user.first_name
-        return map
-      }, {})
-      setUserMap(userMapping)
-    })
-    .catch((error) => {
-      if (error.response && error.response.status === 401) {
-        console.log(error)
-      } else {
-        console.error('There was an error fetching the projects!', error)
-      }
-    })
+      .then((data) => {
+        const users = data
+        const userMapping = users.reduce((map, user) => {
+          map[user.id] = user.last_name + ' ' + user.first_name
+          return map
+        }, {})
+        setUserMap(userMapping)
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          console.log(error)
+        } else {
+          console.error('There was an error fetching the projects!', error)
+        }
+      })
 
     try {
       const url = isEditing ? await editEmployee(token) : await getEmployee(token)
@@ -556,9 +538,9 @@ const EmployeesListAndEdit: React.FC = () => {
             </div>
             <div className='EmployeesListAndEdit_mid_body_cont'>
               <ListButtons
-                activeTabOther={activeTabOther}
+                activeTabOther={'employee'}
                 message={translate(isEditing ? 'employeesEdit' : 'employeesList', language)}
-                handleTabsClick={handleTabsClick}
+                handleTabsClick={handleMMListTabsClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
                   { labelKey: 'client', tabKey: 'client' },
@@ -951,6 +933,6 @@ const EmployeesListAndEdit: React.FC = () => {
       />
     </div>
   )
-};
+}
 
-export default EmployeesListAndEdit;
+export default EmployeesListAndEdit

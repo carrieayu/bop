@@ -17,9 +17,6 @@ const ForgotPassword = () => {
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
 
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
 
   const closeSuccessModal = () => {
     setModalIsOpen(false)
