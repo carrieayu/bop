@@ -451,7 +451,7 @@ const CostOfSalesList: React.FC = () => {
                 ]}
               />
               <div className={`costOfSalesList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
-                <div className='costOfSalesList_table_cont'>
+                <div className={`costOfSalesList_table_cont ${isEditing ? 'editScrollable' : ''}`}>
                   {/* <div className='columns is-mobile'> */}
                   {/* <div className='column'> */}
                   {isEditing ? (
