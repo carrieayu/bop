@@ -706,7 +706,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
   const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable'];
 
   return (
-    <div className='table-planning-container'>
+    <div className='table-planning-container editScrollable'>
       <div className='table-planning'>
         <table>
           <thead>

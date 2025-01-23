@@ -173,6 +173,11 @@
                         }
                     }
                 }
+                
+                .editScrollable{
+                    overflow-x: auto;
+                    padding: 0px 0px 0px 0px;
+                }
                 .dashboard_tbl_cont{
                     // background-color: #fff;
                     margin-bottom: 10px;
@@ -196,12 +201,21 @@
                       }
                       .dashboard_table_content_props{
                         height: 82vh;
+                        .table-planning-container{
+                            // background-color: #2196F3;
+                            width: 100% !important;
+                            height: 100vh !important;
+                            @media only screen and (min-width: 1920px){
+                          
+                        }
+
                         .planning_scrollable{
                           max-height: 79vh;
                           margin-top: 15px;
                           background-color: #fff;
                         }
                       }
+                    }
                 }
             }
         }
