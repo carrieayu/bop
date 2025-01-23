@@ -28,6 +28,7 @@ import {
   checkForDuplicates,
 } from '../../utils/validationUtil'
 import { handleDisableKeysOnNumberInputs, formatDate, formatNumberWithCommas, removeCommas} from '../../utils/helperFunctionsUtil'
+import { MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER } from "../../constants";
 
 
 const EmployeesListAndEdit: React.FC = () => {
@@ -132,15 +133,26 @@ const EmployeesListAndEdit: React.FC = () => {
   }, [isEditing])
 
   const handleChange = (index, e) => {
+    
     const { name, value } = e.target
+    // Remove commas to get the raw number
+    // EG. 999,999 → 999999 in the DB
+    const rawValue = removeCommas(value)
+
+    if (name === 'salary' || name === 'executive_renumeration' || name === 'bonus_and_fuel_allowance') {
+      console.log('name',name, 'value:', rawValue, 'length', rawValue.length)
+
+      if (rawValue.length > MAX_NUMBER_LENGTH) {
+        console.log('rawValue.length > MAX_NUMBER_LENGTH:', rawValue.length > MAX_NUMBER_LENGTH, rawValue.length)
+        return
+      }
+
+      if (rawValue.length <= MAX_NUMBER_LENGTH && rawValue <= MAX_SAFE_INTEGER) {
+      }
+    }
 
     setEmployeesList((prevState) => {
       const updatedEmployeeData = [...prevState]
-
-      // Remove commas to get the raw number
-      // EG. 999,999 → 999999 in the DB
-      const rawValue = removeCommas(value)
-
       const previousEmployee = prevState[index].employee
       const updatedEmployee = { ...previousEmployee, [name]: rawValue }
 
@@ -741,9 +753,9 @@ const EmployeesListAndEdit: React.FC = () => {
                                     <td className='EmployeesListAndEdit_table_body_content_vertical edit_td_input'>
                                       <input
                                         className='edit_input'
-                                        type='number'
+                                        type='text'
                                         name='bonus_and_fuel_allowance'
-                                        value={employee.bonus_and_fuel_allowance || ''}
+                                        value={formatNumberWithCommas(employee.bonus_and_fuel_allowance) || ''}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                         onChange={(e) => handleChange(employeeIndex, e)}
                                       />

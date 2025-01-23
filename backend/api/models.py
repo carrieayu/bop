@@ -123,16 +123,14 @@ class Employees(models.Model):
     last_name = models.CharField(max_length=MAX_LENGTH_CHARFIELD)
     type = models.IntegerField(choices=EMPLOYEE_TYPES) # 0 = regular employee , 1 = executive employee
     email = models.EmailField(unique=True)
-    salary = models.IntegerField(null=True) # null if employee_type = (1/executive)
-    executive_renumeration = models.IntegerField(null=True) # null if employee_type = (0/regular) 
+    salary = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES, null=True)
+    executive_renumeration = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES, null=True)
     company = models.ForeignKey(MasterCompany, on_delete=models.CASCADE)
-    business_division = models.ForeignKey(
-        MasterBusinessDivision, on_delete=models.CASCADE
-    )
-    statutory_welfare_expense = models.IntegerField()
-    welfare_expense = models.IntegerField()
-    insurance_premium = models.IntegerField()
-    bonus_and_fuel_allowance = models.IntegerField()
+    business_division = models.ForeignKey(MasterBusinessDivision, on_delete=models.CASCADE)
+    statutory_welfare_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    welfare_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    insurance_premium = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    bonus_and_fuel_allowance = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
     auth_user =  models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

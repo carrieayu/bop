@@ -21,7 +21,7 @@ import {
 } from '../../utils/validationUtil'
 import {handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import EmployeeExpensesList from '../EmployeeExpenses/EmployeeExpensesList'
-
+import { MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER } from '../../constants'
 
 const EmployeesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -104,6 +104,15 @@ const EmployeesRegistration = () => {
     // EG. 999,999 → 999999 in the DB
     const rawValue = removeCommas(value)
 
+    if (name === 'salary' || name === 'executive_renumeration' || name === 'bonus_and_fuel_allowance') {
+      if (rawValue.length > MAX_NUMBER_LENGTH) {
+        return // Ignore input if the length exceeds 15 digits
+      }
+
+      if (rawValue.length <= MAX_NUMBER_LENGTH && rawValue <= MAX_SAFE_INTEGER) {
+      }
+    }
+    
     if (name === 'company_name') {
       setSelectedCompanyId(value) // Update selected company ID
       const newContainers = [...employees]
