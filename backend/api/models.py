@@ -1,13 +1,36 @@
+from decimal import Decimal
+from numbers import Number
 from urllib import response
 from django.db import models
 from django.contrib.auth.models import User as AuthUser, AbstractBaseUser
 from django.utils import timezone
 from django.db.models import Max
+from django.conf import settings
+from django.core.validators import MinValueValidator, MaxValueValidator
 
+# Constants
 
+# INT
+max_int = 9007199254740991 #16 digits Javascript Max Value
+min_int = 0
+
+# CHAR
+MAX_LENGTH_ID = 10
+MAX_LENGTH_CHARFIELD = 100
+
+# DECIMALS
+MAX_DIGITS = 15
+DECIMAL_PLACES = 0
+
+# RANGE (CHOICES)
+YEAR_CHOICES = [(str(year), str(year)) for year in range(2000, 2101)]
+MONTH_CHOICES = [(i, i) for i in range(1, 13)]
+
+# Reusable Decimal Validator
+min_max_decimal_validator = [ MinValueValidator(Decimal(min_int)), MaxValueValidator(Decimal(max_int)) ] 
 class MasterClient(models.Model):
-    client_id = models.CharField(max_length=10, primary_key=True, editable=False)
-    client_name = models.CharField(unique=True,max_length=100)
+    client_id = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True, editable=False)
+    client_name = models.CharField(unique=True,max_length=MAX_LENGTH_CHARFIELD)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -36,8 +59,8 @@ class MasterClient(models.Model):
 
 
 class MasterCompany(models.Model):
-    company_id = models.CharField(max_length=10, primary_key=True, editable=False)
-    company_name = models.CharField(max_length=100)
+    company_id = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True, editable=False)
+    company_name = models.CharField(max_length=MAX_LENGTH_CHARFIELD)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -61,8 +84,8 @@ class MasterCompany(models.Model):
 
 
 class MasterBusinessDivision(models.Model):
-    business_division_id = models.CharField(max_length=10, primary_key=True, editable=False)
-    business_division_name = models.CharField(max_length=100)
+    business_division_id = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True, editable=False)
+    business_division_name = models.CharField(max_length=MAX_LENGTH_CHARFIELD)
     company = models.ForeignKey(MasterCompany, on_delete=models.CASCADE)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -87,10 +110,18 @@ class MasterBusinessDivision(models.Model):
 
 
 class Employees(models.Model):
-    employee_id = models.CharField(max_length=10, primary_key=True, editable=False)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    type = models.IntegerField() # 0 = regular employee , 1 = executive employee
+    REGULAR = 0
+    EXECUTIVE = 1
+
+    EMPLOYEE_TYPES = [
+        (REGULAR, 'Regular Employee'),  # Tuple: (Stored Value, Display Label)
+        (EXECUTIVE, 'Executive Employee'),
+    ]
+
+    employee_id = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True, editable=False)
+    first_name = models.CharField(max_length=MAX_LENGTH_CHARFIELD)
+    last_name = models.CharField(max_length=MAX_LENGTH_CHARFIELD)
+    type = models.IntegerField(choices=EMPLOYEE_TYPES) # 0 = regular employee , 1 = executive employee
     email = models.EmailField(unique=True)
     salary = models.IntegerField(null=True) # null if employee_type = (1/executive)
     executive_renumeration = models.IntegerField(null=True) # null if employee_type = (0/regular) 
@@ -127,28 +158,28 @@ class Employees(models.Model):
 
 class Projects(models.Model):
     project_id = models.CharField(
-        max_length=10, primary_key=True, editable=False
+        max_length=MAX_LENGTH_ID, primary_key=True, editable=False
     )
-    project_name = models.CharField(max_length=100)
-    project_type = models.CharField(max_length=50, null=True)
+    project_name = models.CharField(max_length=MAX_LENGTH_CHARFIELD)
+    project_type = models.CharField(max_length=MAX_LENGTH_CHARFIELD, null=True)
     client = models.ForeignKey(
         "MasterClient", on_delete=models.CASCADE, related_name="mst_client"
     )
     business_division = models.ForeignKey(
         "MasterBusinessDivision", on_delete=models.CASCADE, related_name="business_division"
     )
-    year = models.CharField(max_length=4, default="2001")
-    month = models.CharField(max_length=2, default="01")
-    sales_revenue = models.IntegerField( default=0)
-    dispatch_labor_expense = models.IntegerField(default=0)
-    employee_expense = models.IntegerField(default=0)
-    indirect_employee_expense = models.IntegerField(default=0)
-    expense = models.IntegerField( default=0)
-    operating_income = models.IntegerField( default=0)
-    non_operating_income = models.IntegerField( default=0)
-    non_operating_expense = models.IntegerField( default=0)
-    ordinary_profit = models.IntegerField(default=0)
-    ordinary_profit_margin = models.FloatField(default=0.0)
+    year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
+    month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
+    sales_revenue = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    dispatch_labor_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    employee_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    indirect_employee_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    operating_income = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    non_operating_income = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    non_operating_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    ordinary_profit = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    ordinary_profit_margin = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :
@@ -184,43 +215,43 @@ class Projects(models.Model):
 
 # Performance Data -> Results
 class Results(models.Model):
-    result_id = models.CharField(max_length=10, primary_key=True, editable=False)
-    sales_revenue = models.IntegerField(max_length=12)
-    sales = models.IntegerField(max_length=12)
-    cost_of_sale = models.IntegerField(max_length=12)
-    purchase = models.IntegerField(max_length=12)
-    outsourcing_expense = models.IntegerField(max_length=12)
-    product_purchase = models.IntegerField(max_length=12)
-    dispatch_labor_expense = models.IntegerField(max_length=12)
-    communication_expense = models.IntegerField(max_length=12)
-    work_in_progress_expense = models.IntegerField(max_length=12)
-    amortization_expense = models.IntegerField(max_length=12)
-    gross_profit = models.IntegerField(max_length=12)
-    employee_expense = models.IntegerField(max_length=12) # DELETE ?? MAY NOT BE NEEDED.
-    executive_renumeration = models.IntegerField(max_length=12)
-    salary = models.IntegerField(max_length=12)
-    fuel_allowance = models.IntegerField(max_length=12)
+    result_id = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True, editable=False)
+    sales_revenue = models.IntegerField()
+    sales = models.IntegerField()
+    cost_of_sale = models.IntegerField()
+    purchase = models.IntegerField()
+    outsourcing_expense = models.IntegerField()
+    product_purchase = models.IntegerField()
+    dispatch_labor_expense = models.IntegerField()
+    communication_expense = models.IntegerField()
+    work_in_progress_expense = models.IntegerField()
+    amortization_expense = models.IntegerField()
+    gross_profit = models.IntegerField()
+    employee_expense = models.IntegerField() # DELETE ?? MAY NOT BE NEEDED.
+    executive_renumeration = models.IntegerField()
+    salary = models.IntegerField()
+    fuel_allowance = models.IntegerField()
     statutory_welfare_expense =  models.IntegerField(default=0)
     welfare_expense = models.IntegerField(default=0)
-    expense = models.IntegerField(max_length=12)
-    consumable_expense = models.IntegerField(max_length=12)
-    rent_expense = models.IntegerField(max_length=12)
+    expense = models.IntegerField()
+    consumable_expense = models.IntegerField()
+    rent_expense = models.IntegerField()
     insurance_premium =  models.IntegerField(default=0)
-    tax_and_public_charge = models.IntegerField(max_length=12)
-    depreciation_expense = models.IntegerField(max_length=12)
-    travel_expense = models.IntegerField(max_length=12)
-    communication_expense = models.IntegerField(max_length=12)
-    utilities_expense = models.IntegerField(max_length=12)
-    transaction_fee = models.IntegerField(max_length=12)
-    advertising_expense = models.IntegerField(max_length=12)
-    entertainment_expense = models.IntegerField(max_length=12)
-    professional_services_fee = models.IntegerField(max_length=12)
-    selling_and_general_admin_expense = models.IntegerField(max_length=12)
-    operating_income = models.IntegerField(max_length=12)
-    non_operating_income = models.IntegerField(max_length=12)
-    non_operating_expense = models.IntegerField(max_length=12)
-    ordinary_income = models.IntegerField(max_length=12)
-    cumulative_ordinary_income = models.IntegerField(max_length=12)
+    tax_and_public_charge = models.IntegerField()
+    depreciation_expense = models.IntegerField()
+    travel_expense = models.IntegerField()
+    communication_expense = models.IntegerField()
+    utilities_expense = models.IntegerField()
+    transaction_fee = models.IntegerField()
+    advertising_expense = models.IntegerField()
+    entertainment_expense = models.IntegerField()
+    professional_services_fee = models.IntegerField()
+    selling_and_general_admin_expense = models.IntegerField()
+    operating_income = models.IntegerField()
+    non_operating_income = models.IntegerField()
+    non_operating_expense = models.IntegerField()
+    ordinary_income = models.IntegerField()
+    cumulative_ordinary_income = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :
@@ -244,10 +275,10 @@ class Results(models.Model):
 
     
 class EmployeeExpenses(models.Model):
-    employee_expense_id = models.CharField(max_length=10, primary_key=True, editable=False)  # Change to CharField for formatted ID
+    employee_expense_id = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True, editable=False)  # Change to CharField for formatted ID
     client = models.ForeignKey(MasterClient, on_delete=models.CASCADE)
-    year = models.CharField(max_length=4, default="2001")
-    month = models.CharField(max_length=2, default="01")
+    year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
+    month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
     project = models.ForeignKey(Projects, on_delete=models.CASCADE, null=True)
     employee = models.ForeignKey(Employees, on_delete=models.CASCADE, null=True)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
@@ -281,16 +312,16 @@ class EmployeeExpenses(models.Model):
         return self.employee_expense_id
     
 class CostOfSales(models.Model):
-    cost_of_sale_id = models.CharField(max_length=10, primary_key=True)
-    year = models.CharField(max_length=4, default="2001")
-    month = models.CharField(max_length=2, default="01")
-    purchase = models.IntegerField(max_length=12)
-    outsourcing_expense = models.IntegerField(max_length=12)
-    product_purchase = models.IntegerField(max_length=12)
-    dispatch_labor_expense = models.IntegerField(max_length=12)
-    communication_expense = models.IntegerField(max_length=12)
-    work_in_progress_expense = models.IntegerField(max_length=12)
-    amortization_expense = models.IntegerField(max_length=12)
+    cost_of_sale_id = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True)
+    year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
+    month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
+    purchase = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    outsourcing_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    product_purchase = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    dispatch_labor_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    communication_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    work_in_progress_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    amortization_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :
@@ -312,17 +343,17 @@ class CostOfSales(models.Model):
         return self.cost_of_sale_id
     
 class CostOfSalesResults(models.Model):
-    cost_of_sale_result_id  = models.CharField(max_length=10, primary_key=True)
+    cost_of_sale_result_id  = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True)
     cost_of_sale =  models.ForeignKey(CostOfSales, on_delete=models.CASCADE, null=True)
-    year = models.CharField(max_length=4, default="2001")
-    month = models.CharField(max_length=2, default="01")
-    purchase = models.IntegerField(max_length=12)
-    outsourcing_expense = models.IntegerField(max_length=12)
-    product_purchase = models.IntegerField(max_length=12)
-    dispatch_labor_expense = models.IntegerField(max_length=12)
-    communication_expense = models.IntegerField(max_length=12)
-    work_in_progress_expense = models.IntegerField(max_length=12)
-    amortization_expense = models.IntegerField(max_length=12)
+    year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
+    month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
+    purchase = models.IntegerField()
+    outsourcing_expense = models.IntegerField()
+    product_purchase = models.IntegerField()
+    dispatch_labor_expense = models.IntegerField()
+    communication_expense = models.IntegerField()
+    work_in_progress_expense = models.IntegerField()
+    amortization_expense = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :
@@ -344,20 +375,20 @@ class CostOfSalesResults(models.Model):
         return self.cost_of_sale_result_id
     
 class Expenses(models.Model):
-    expense_id = models.CharField(max_length=10, primary_key=True)
-    year = models.CharField(max_length=4, default="2001")
-    month = models.CharField(max_length=2, default="01")
-    consumable_expense = models.IntegerField(max_length=12)
-    rent_expense = models.IntegerField(max_length=12)
-    tax_and_public_charge = models.IntegerField(max_length=12)
-    depreciation_expense = models.IntegerField(max_length=12)
-    travel_expense = models.IntegerField(max_length=12)
-    communication_expense = models.IntegerField(max_length=12)
-    utilities_expense = models.IntegerField(max_length=12)
-    transaction_fee = models.IntegerField(max_length=12)
-    advertising_expense = models.IntegerField(max_length=12)
-    entertainment_expense = models.IntegerField(max_length=12)
-    professional_service_fee = models.IntegerField(max_length=12)
+    expense_id = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True)
+    year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
+    month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
+    consumable_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    rent_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    tax_and_public_charge = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    depreciation_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    travel_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    communication_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    utilities_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    transaction_fee = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    advertising_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    entertainment_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    professional_service_fee = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :
@@ -380,21 +411,21 @@ class Expenses(models.Model):
     
 
 class ExpensesResults(models.Model):
-    expense_result_id  = models.CharField(max_length=10, primary_key=True)
+    expense_result_id  = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True)
     expense = models.ForeignKey(Expenses, on_delete=models.CASCADE, null=True)
-    year = models.CharField(max_length=4, default="2001")
-    month = models.CharField(max_length=2, default="01")
-    consumable_expense = models.IntegerField(max_length=12)
-    rent_expense = models.IntegerField(max_length=12)
-    tax_and_public_charge = models.IntegerField(max_length=12)
-    depreciation_expense = models.IntegerField(max_length=12)
-    travel_expense = models.IntegerField(max_length=12)
-    communication_expense = models.IntegerField(max_length=12)
-    utilities_expense = models.IntegerField(max_length=12)
-    transaction_fee = models.IntegerField(max_length=12)
-    advertising_expense = models.IntegerField(max_length=12)
-    entertainment_expense = models.IntegerField(max_length=12)
-    professional_service_fee = models.IntegerField(max_length=12)
+    year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
+    month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
+    consumable_expense = models.IntegerField()
+    rent_expense = models.IntegerField()
+    tax_and_public_charge = models.IntegerField()
+    depreciation_expense = models.IntegerField()
+    travel_expense = models.IntegerField()
+    communication_expense = models.IntegerField()
+    utilities_expense = models.IntegerField()
+    transaction_fee = models.IntegerField()
+    advertising_expense = models.IntegerField()
+    entertainment_expense = models.IntegerField()
+    professional_service_fee = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :
@@ -417,28 +448,28 @@ class ExpensesResults(models.Model):
     
 class ProjectsSalesResults(models.Model):
     project_sales_result_id  = models.CharField(
-        max_length=10, primary_key=True , editable=False
+        max_length=MAX_LENGTH_ID, primary_key=True , editable=False
     )
     project = models.ForeignKey(Projects, on_delete=models.CASCADE, null=True)
-    sales_revenue = models.IntegerField(max_length=12)
+    sales_revenue = models.IntegerField()
     dispatch_labor_expense = models.IntegerField(
-        max_length=12
+        
     )
     employee_expense = models.IntegerField(
-        max_length=12
+        
     )
     indirect_employee_expense = models.IntegerField(
-        max_length=12
+        
     )
-    expense = models.IntegerField(max_length=12)
-    operating_income = models.IntegerField(max_length=12)
+    expense = models.IntegerField()
+    operating_income = models.IntegerField()
     non_operating_income = models.IntegerField(
-        max_length=12
+        
     )
     non_operating_expense = models.IntegerField(
-        max_length=12
+        
     )
-    ordinary_profit = models.IntegerField(max_length=12)
+    ordinary_profit = models.IntegerField()
     ordinary_profit_margin = models.IntegerField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -464,10 +495,10 @@ class ProjectsSalesResults(models.Model):
         super().save(*args, **kwargs)
 
 class EmployeeExpensesResults(models.Model):
-    employee_expense_result_id  = models.CharField(max_length=10, primary_key=True, editable=False) 
+    employee_expense_result_id  = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True, editable=False) 
     employee = models.ForeignKey(Employees, on_delete=models.CASCADE, null=True)
-    year = models.CharField(max_length=4, default="2001")
-    month = models.CharField(max_length=2, default="01")
+    year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
+    month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     client = models.ForeignKey(MasterClient, on_delete=models.CASCADE)
     project = models.ForeignKey(ProjectsSalesResults, on_delete=models.CASCADE, null=True)
