@@ -229,6 +229,20 @@ const ProjectsListAndEdit: React.FC = () => {
           }
         }
       })
+ 
+    try {
+      await updateProject(modifiedFields, token);
+      const updatedProjects = await getProject(token);
+      setProjects(updatedProjects);
+      setOriginalProjectsList(updatedProjects);
+      setCrudMessage(translate('successfullyUpdated', language));
+      setIsCRUDOpen(true);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error updating projects:', error);
+      setCrudMessage(translate('error', language));
+      setIsCRUDOpen(true);
+    }
   }
 
   const handleUpdateConfirm = async () => {

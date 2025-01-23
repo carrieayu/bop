@@ -216,6 +216,21 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
       .catch((error) => {
         console.log('There was an error updating the projects sales results!', error)
       })
+
+    try {
+      await updateProjectSalesResults(modifiedFields, token);
+      const updatedProjects = await getProjectSalesResults(token);
+      setProjectSalesResults(updatedProjects);
+      setOriginalProjectSalesResultsList(updatedProjects);
+      setCrudMessage(translate('successfullyUpdated', language));
+      setIsCRUDOpen(true);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error updating projects:', error);
+      setCrudMessage(translate('error', language));
+      setIsCRUDOpen(true);
+    }
+
   }
 
   const handleUpdateConfirm = async () => {
