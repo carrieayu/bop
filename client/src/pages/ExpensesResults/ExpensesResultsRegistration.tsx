@@ -18,6 +18,7 @@ import {
 import { handleDisableKeysOnNumberInputs ,formatNumberWithCommas, removeCommas, sortByFinancialYear} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { filterExpenseResults } from '../../api/ExpenseResultEndpoint/FilterExpenseResults'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
+import { MAX_NUMBER_LENGTH } from '../../constants'
 
 const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 type ExpenseResults = {
@@ -77,14 +78,20 @@ const ExpensesResultsRegistration = () => {
   }
 
   const handleChange = (index, event) => {
+    
     const { name, value } = event.target
+    // Remove commas to get the raw number
+    // EG. 999,999 → 999999 in the DB
     const rawValue = removeCommas(value)
+    
+    const nonFinancialValuesArray = ['year', 'month']
 
-    const newFormData = [...formData]
-    newFormData[index] = {
-      ...newFormData[index],
-      [name]: rawValue,
+    if (!nonFinancialValuesArray.includes(name)) {
+      if (rawValue.length > MAX_NUMBER_LENGTH) {
+        return
+      }
     }
+
     setFormData((prevFormData) => {
       return prevFormData.map((form, i) => {
         if (i === index) {
