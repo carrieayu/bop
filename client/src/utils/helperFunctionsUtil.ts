@@ -117,3 +117,55 @@ export const handleInputChange = (
     updateFunction(updatedData)
   }
 }
+
+// Used for CostOfSalesResults & ExpensesResults Registration
+export const handleGeneralResultsInputChange = (
+  index,
+  event,
+  updateFunction,
+  nonFinancialValuesArray,
+  setFilteredMonth,
+) => { 
+
+    const { name, value } = event.target
+    const rawValue = removeCommas(value)
+  
+    if (!nonFinancialValuesArray.includes(name)) {
+      if (rawValue.length > MAX_NUMBER_LENGTH) {
+        return
+      }
+    }
+
+      updateFunction((prevFormData) => {
+        return prevFormData.map((form, i) => {
+          if (i === index) {
+            const resetFields = {
+              params: ['months'],
+            }
+            let month = form.month
+            if (name == 'year' && value == '') {
+              form.month = ''
+              setFilteredMonth((prev) => {
+                return prev.map((eachMonth, monthIndex) => {
+                  if (index == monthIndex) {
+                    return [{}]
+                  }
+                  return eachMonth
+                })
+              })
+            }
+            const fieldsToReset = resetFields[name] || []
+            const resetValues = fieldsToReset.reduce((acc, field) => {
+              acc[field] = ''
+              return acc
+            }, {})
+            return {
+              ...form,
+              [name]: rawValue,
+              ...resetValues,
+            }
+          }
+          return form
+        })
+      })
+}

@@ -15,7 +15,7 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs ,formatNumberWithCommas, removeCommas, sortByFinancialYear} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs ,formatNumberWithCommas, removeCommas, sortByFinancialYear, handleGeneralResultsInputChange} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { filterExpenseResults } from '../../api/ExpenseResultEndpoint/FilterExpenseResults'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
 import { MAX_NUMBER_LENGTH } from '../../constants'
@@ -78,52 +78,8 @@ const ExpensesResultsRegistration = () => {
   }
 
   const handleChange = (index, event) => {
-    
-    const { name, value } = event.target
-    // Remove commas to get the raw number
-    // EG. 999,999 → 999999 in the DB
-    const rawValue = removeCommas(value)
-    
     const nonFinancialValuesArray = ['year', 'month']
-
-    if (!nonFinancialValuesArray.includes(name)) {
-      if (rawValue.length > MAX_NUMBER_LENGTH) {
-        return
-      }
-    }
-
-    setFormData((prevFormData) => {
-      return prevFormData.map((form, i) => {
-        if (i === index) {
-          const resetFields = {
-            params: ['months'],
-          }
-          let month = form.month
-          if (name == 'year' && value == '') {
-            form.month = ''
-            setFilteredMonth((prev) => {
-              return prev.map((eachMonth, monthIndex) => {
-                if (index == monthIndex) {
-                  return [{}]
-                }
-                return eachMonth
-              })
-            })
-          }
-          const fieldsToReset = resetFields[name] || []
-          const resetValues = fieldsToReset.reduce((acc, field) => {
-            acc[field] = ''
-            return acc
-          }, {})
-          return {
-            ...form,
-            [name]: rawValue,
-            ...resetValues,
-          }
-        }
-        return form
-      })
-    })
+    handleGeneralResultsInputChange(index, event, setFormData, nonFinancialValuesArray, setFilteredMonth )
   }
 
   const maximumEntries = 10
