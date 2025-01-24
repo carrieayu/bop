@@ -7,8 +7,11 @@
             flex-direction: column;
         }
         .employeeExpensesResultsList_wrapper_div{
-                    width: 100%; // i do not know wjy but it breaks if i set to 100%
                     padding: 10px 30px 10px 30px;
+                    width: 100%;
+                    max-width: 100%;
+                    overflow-x: hidden;
+                    box-sizing: border-box;
                     .employeeExpensesResultsList_top_content{
                         
                         position: relative;
