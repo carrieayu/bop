@@ -113,7 +113,11 @@
                         padding: 8px; 
                     }
                     .EmployeesListAndEdit_table_cont{
+                        max-height: 100%;
+                        overflow-y: auto;
                         overflow-x: auto;
+                        white-space: nowrap;
+                        scrollbar-width: thin;
                         &::-webkit-scrollbar {
                             width: 8px;
                         }
@@ -133,10 +137,6 @@
                             }
                             scrollbar-width: none; 
                         }                         
-                        @media only screen and (min-width: 1024px) and (max-width: 1280px) {
-                            /* For small laptops */
-                            overflow-x: auto;
-                        }
                         table{
                             width: 130%;
                             @media only screen and (min-width: 1024px) and (max-width: 1280px) {
