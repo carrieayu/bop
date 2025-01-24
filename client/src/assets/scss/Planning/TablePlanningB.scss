@@ -4,21 +4,26 @@ table, th, td {
 }
 .table-b-table_header {
     width: 100%;
-    // background-color: #ddd;
-    // border: solid 1px #ddd;
+    border-collapse: collapse;
 }
 .table-b-container {
     // margin: 14px;
 }
 .table-b-planning-tr-header{
+    position: sticky;
+    top: 0;
+    z-index: 1;
     text-align: center;
-    border-top: 1px solid #ddd;
-    border-left: 1px solid #ddd;
+    border-top:   1px solid #ddd;
+    border-left:  1px solid #ddd;
     border-right: 1px solid #ddd;
     background-color: #fff;
     width: 100%;
     padding: 2px 0px 2px 0px;
     box-sizing: border-box;
+}
+.table-b-planning-tr-header:nth-of-type(2) {
+  top: 24px;
 }
 .table-b-client-header{
   width: 9% !important;
@@ -27,8 +32,6 @@ table, th, td {
   border-left: solid 1px #ddd;
   border-top: solid 1px #ddd;
   background-color: #efedea;
-
-
 }
 .table-b-client-data{
   width: 9% !important;
@@ -36,31 +39,31 @@ table, th, td {
   text-align: center;
   vertical-align: middle;
   border-left: solid 1px #ddd;
-  border-bottom: solid 1px #ddd;
+  border-top: solid 1px #ddd;
   border-right: solid 1px #ddd;
   padding:10px;
   box-sizing: border-box;
   background-color: #e0e0e0;
-  
 }
 .table-b-categories-header{
   width:  9% !important;
   text-align: center !important;
   border-left: solid 1px #ddd;
   border-top: solid 1px #ddd;
-    background-color: #f9f9f9cf;
-
-
+  border-bottom: solid 1px #ddd;
+  background-color: #f9f9f9cf;
 }
 .table-b-categories-data{
   box-sizing: border-box;
   width: 9% !important;
   text-align: center;
-  border-bottom: solid 1px #ddd;
+  border-top: solid 1px #ddd;
+  border-left: solid 1px #ddd;
   text-align: center;
   font-weight: bold;
   padding: 1px 0px 1px 2px;
   background-color: #f9f9f9;
+  white-space: nowrap;
 }
 .table-b-months-header{
   width: 6% !important;
@@ -72,7 +75,7 @@ table, th, td {
   // text-align: center !important;
   background-color: #fff;
   border-left: solid 1px #ddd;
-  border-bottom: solid 1px #ddd;
+  border-top: solid 1px #ddd;
   border-right: solid 1px #ddd;
 }
 .table-b-total-header{

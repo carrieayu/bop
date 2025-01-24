@@ -752,7 +752,7 @@ const TableResults: React.FC<TablePlanningAProps> = ({ isThousandYenChecked }) =
   const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable']
 
   return (
-    <div className='table-results_summary-container'>
+    <div className='table-results_summary-container editScrollable'>
       <div className='table-results_summary'>
         <table>
           <thead>
