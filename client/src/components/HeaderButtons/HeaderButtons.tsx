@@ -23,12 +23,11 @@ const HeaderButtons: React.FC<HeaderButtonsProps> = ({
   const { language } = useLanguage()
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const handleCloseModal = () => closeModal(setModalIsOpen)
+
   const handleConfirm = async () => {
-    localStorage.removeItem('accessToken')
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
+    localStorage.removeItem('token')
+    localStorage.clear() // Clears all localStorage keys
+    window.location.href = '/login'
     setModalIsOpen(false)
   }
 

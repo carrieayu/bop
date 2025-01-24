@@ -18,7 +18,14 @@ import {
 import { filterCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/FilterCostOfSalesResults'
 import { createCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/CreateCostOfSalesResults'
 import { overwriteCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/OverwriteCostOfSalesResults'
-import {handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas, sortByFinancialYear, handleGeneralResultsInputChange, handleResultsRegTabsClick} from '../../utils/helperFunctionsUtil' 
+import {
+  handleDisableKeysOnNumberInputs,
+  formatNumberWithCommas,
+  removeCommas,
+  sortByFinancialYear,
+  handleGeneralResultsInputChange,
+  handleResultsRegTabsClick,
+} from '../../utils/helperFunctionsUtil'
 import { getCostOfSale } from '../../api/CostOfSalesEndpoint/GetCostOfSale'
 import { maximumEntries, monthNames, resultsScreenTabs, token } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
@@ -100,6 +107,14 @@ const CostOfSalesResultsRegistration = () => {
   const handleChange = (index, event) => {
     const { name, value } = event.target
     const rawValue = removeCommas(value)
+    const nonFinancialValuesArray = ['year', 'month']
+
+    if (!nonFinancialValuesArray.includes(name)) {
+      if (rawValue.length > MAX_NUMBER_LENGTH) {
+        return
+      }
+    }
+
     setFormData((prevFormData) => {
       return prevFormData.map((form, i) => {
         if (i === index) {
@@ -132,7 +147,6 @@ const CostOfSalesResultsRegistration = () => {
         return form
       })
     })
-    const nonFinancialValuesArray = ['year', 'month'] 
     handleGeneralResultsInputChange(index, event, setFormData, nonFinancialValuesArray, setFilteredMonth)
   }
 
@@ -195,9 +209,7 @@ const CostOfSalesResultsRegistration = () => {
       .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
-        setFormData([
-          emptyFormData
-        ])
+        setFormData([emptyFormData])
       })
       .catch((error) => {
         if (error.response && error.response.status === 409) {
