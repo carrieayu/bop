@@ -12,20 +12,20 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { createExpense } from '../../api/ExpenseEndpoint/CreateExpense'
 import { overwriteExpense } from '../../api/ExpenseEndpoint/OverwriteExpense'
-import {
-  validateRecords,
-  translateAndFormatErrors,
-  getFieldChecks,
-  checkForDuplicates,
-} from '../../utils/validationUtil'
+import { maximumEntries, monthNames, storedUserID, token, years } from '../../constants'
+import { addFormInput, closeModal, openModal, removeFormInput, useTranslateSwitch } from '../../actions/hooks'
+import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
 import {
   handleDisableKeysOnNumberInputs,
   removeCommas,
   formatNumberWithCommas,
+  handleInputChange,
   handlePLRegTabsClick,
-} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-import { maximumEntries, monthNames, storedUserID, token, years } from '../../constants'
-import { addFormInput, closeModal, openModal, removeFormInput, useTranslateSwitch } from '../../actions/hooks'
+} from '../../utils/helperFunctionsUtil'
+
+const months = [
+  '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
+];
 
 const ExpensesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -77,18 +77,14 @@ const ExpensesRegistration = () => {
   const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear
   const [months, setMonths] = useState<number[]>([])
   const handleChange = (index, event) => {
+   
+    handleInputChange(index, event, setFormData, formData)
+    
     const { name, value } = event.target
 
     // Remove commas to get the raw number
     // EG. 999,999 → 999999 in the DB
     const rawValue = removeCommas(value)
-
-    const updatedFormData = [...formData]
-    updatedFormData[index] = {
-      ...updatedFormData[index],
-      [name]: rawValue,
-    }
-    setFormData(updatedFormData)
 
     if (name === 'year') {
       const selectedYear = parseInt(rawValue, 10)
@@ -101,7 +97,9 @@ const ExpensesRegistration = () => {
       }
     }
   }
-  useEffect(() => {}, [formData])
+
+  useEffect(() => { }, [formData])
+  
   useEffect(() => {
     const path = location.pathname
     if (path === '/dashboard' || path === '/planning-list' || path === '/*') {

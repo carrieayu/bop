@@ -16,9 +16,13 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs, handlePLRegTabsClick } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-import { removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import {
+  handleDisableKeysOnNumberInputs,
+  formatNumberWithCommas,
+  removeCommas,
+  handleInputChange,
+  handlePLRegTabsClick,
+} from '../../utils/helperFunctionsUtil'
 import { overwriteCostOfSale } from '../../api/CostOfSalesEndpoint/OverwriteCostOfSales'
 import { maximumEntries, monthNames, token, years } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
@@ -216,18 +220,13 @@ const CostOfSalesRegistration = () => {
   const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear
   const [months, setMonths] = useState<number[]>([])
   const handleChange = (index, event) => {
-    const { name, value } = event.target
 
+    handleInputChange(index, event, setFormData, formData)
+
+    const { name, value } = event.target
     // Remove commas to get the raw number
     // EG. 999,999 → 999999 in the DB
     const rawValue = removeCommas(value)
-
-    const updatedFormData = [...formData]
-    updatedFormData[index] = {
-      ...updatedFormData[index],
-      [name]: rawValue,
-    }
-    setFormData(updatedFormData)
 
     if (name === 'year') {
       const selectedYear = parseInt(rawValue, 10)
@@ -240,6 +239,7 @@ const CostOfSalesRegistration = () => {
       }
     }
   }
+
   useEffect(() => {}, [formData])
 
   useEffect(() => {

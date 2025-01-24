@@ -13,20 +13,11 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { createProject } from '../../api/ProjectsEndpoint/CreateProject'
 import { overwriteProject } from '../../api/ProjectsEndpoint/OverwriteProject'
-import {
-  validateRecords,
-  translateAndFormatErrors,
-  getFieldChecks,
-  checkForDuplicates,
-} from '../../utils/validationUtil'
-import {
-  handleDisableKeysOnNumberInputs,
-  removeCommas,
-  formatNumberWithCommas,
-  handlePLRegTabsClick,
-} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { maximumEntries, monthNames, token, years } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
+import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
+import {handleDisableKeysOnNumberInputs, removeCommas, formatNumberWithCommas, handleInputChange, handlePLRegTabsClick} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+
 
 const ProjectsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -107,23 +98,21 @@ const ProjectsRegistration = () => {
     }
   }
 
-  const currentDate = new Date()
-  const currentYear = currentDate.getFullYear()
-  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear
-  const [months, setMonths] = useState<number[]>([])
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear;
+  const [months, setMonths] = useState<number[]>([]);
+  
   const handleChange = (index, event) => {
+
+    const nonFinancialFieldsArray = ['year', 'month', 'project_name', 'project_type', 'client', 'business_division']
+    handleInputChange(index, event, setProjects, formProjects, nonFinancialFieldsArray)
+    
     const { name, value } = event.target
 
     // Remove commas to get the raw number
     // EG. 999,999 → 999999 in the DB
     const rawValue = removeCommas(value)
-
-    const updatedFormData = [...formProjects]
-    updatedFormData[index] = {
-      ...updatedFormData[index],
-      [name]: rawValue,
-    }
-    setProjects(updatedFormData)
 
     if (name === 'year') {
       const selectedYear = parseInt(rawValue, 10)

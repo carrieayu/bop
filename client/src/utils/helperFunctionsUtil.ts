@@ -1,5 +1,7 @@
 // GENERAL HELPER FUNCTIONS
 
+import { MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER, MAX_VALUE} from "../constants"
+
 // # Helper to block non-numeric key presses for number inputs
 
 export const handleDisableKeysOnNumberInputs = (event) => {
@@ -198,3 +200,41 @@ export const handleMMRegTabsClick = (tab, navigate, setActiveTabOther) => {
   }
 }
 
+export const handleInputChange = (
+  index,
+  event,
+  updateFunction,
+  dataList,
+  nonFinancialFieldsArray = null, // used in some screns
+) => {
+  const { name, value } = event.target
+  // Check if the field is in the non-numeric fields array
+  if (nonFinancialFieldsArray != null && nonFinancialFieldsArray.includes(name)) {
+    // Directly update the data for non-numeric fields
+    const updatedData = [...dataList]
+    updatedData[index] = {
+      ...updatedData[index],
+      [name]: value, // Use raw value for non-numeric fields
+    }
+    updateFunction(updatedData)
+    return // Skip the rest of the numeric-specific logic
+  }
+  // Remove commas to get the raw number
+  // EG. 999,999 → 999999 in the DB
+  const rawValue = removeCommas(value)
+
+  // Prevent entry of more than 15 digits in Input
+  if (rawValue.length > MAX_NUMBER_LENGTH) {
+    return // Ignore input if the length exceeds 15 digits
+  }
+
+  if (rawValue.length <= MAX_NUMBER_LENGTH && rawValue <= MAX_SAFE_INTEGER) {
+
+    const updatedData = [...dataList]
+    updatedData[index] = {
+      ...updatedData[index],
+      [name]: rawValue,
+    }
+    updateFunction(updatedData)
+  }
+}

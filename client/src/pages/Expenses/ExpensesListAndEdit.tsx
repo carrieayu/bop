@@ -17,13 +17,7 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import {
-  handleDisableKeysOnNumberInputs,
-  formatNumberWithCommas,
-  removeCommas,
-  handlePLListTabsClick,
-} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-
+import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, handleInputChange, handlePLListTabsClick, removeCommas } from '../../utils/helperFunctionsUtil'
 import { deleteExpense } from '../../api/ExpenseEndpoint/DeleteExpense'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
 import { updateExpense } from '../../api/ExpenseEndpoint/UpdateExpense'
@@ -35,7 +29,6 @@ const ExpensesList: React.FC = () => {
   const location = useLocation()
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  // added -ed
   const [isEditing, setIsEditing] = useState(false)
   const [initialLanguage, setInitialLanguage] = useState(language)
   const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -87,18 +80,7 @@ const ExpensesList: React.FC = () => {
   }, [isEditing])
 
   const handleChange = (index, e) => {
-    const { name, value } = e.target
-
-    // Remove commas to get the raw number
-    // EG. 999,999 → 999999 in the DB
-    const rawValue = removeCommas(value)
-
-    const updatedData = [...combinedData]
-    updatedData[index] = {
-      ...updatedData[index],
-      [name]: rawValue,
-    }
-    setExpensesList(updatedData)
+    handleInputChange(index, e, setExpensesList, combinedData)
   }
 
   const handleSubmit = async () => {

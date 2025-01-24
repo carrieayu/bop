@@ -21,10 +21,16 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs, handlePLListTabsClick, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import {
+  handleDisableKeysOnNumberInputs,
+  handlePLListTabsClick,
+  removeCommas,
+  formatNumberWithCommas,
+  handleInputChange,
+} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { createCostOfSale } from '../../api/CostOfSalesEndpoint/CreateCostOfSale'
 import { months, token } from '../../constants'
+
 
 const CostOfSalesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -79,19 +85,8 @@ const CostOfSalesList: React.FC = () => {
     }
   }, [isEditing])
 
-  const handleChange = (index, e) => {
-    const { name, value } = e.target
-
-    // Remove commas to get the raw number
-    // EG. 999,999 → 999999 in the DB
-    const rawValue = removeCommas(value)
-
-    const updatedData = [...combinedData]
-    updatedData[index] = {
-      ...updatedData[index],
-      [name]: rawValue,
-    }
-    setCostOfSales(updatedData)
+  const handleChange = (index, event) => {
+    handleInputChange(index, event, setCostOfSales, combinedData)
   }
 
   const handleSubmit = async () => {
