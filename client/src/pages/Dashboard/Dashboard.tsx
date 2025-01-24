@@ -15,14 +15,11 @@ import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import { useAppDispatch } from '../../actions/hooks'
+import { dates, header, smallDate } from '../../constants'
 
 function formatNumberWithCommas(number: number): string {
   return number.toLocaleString()
 }
-
-const header = ['計画	']
-const smallDate = ['2022/24月', '2022/25月', '2022/26月']
-const dates = ['04月', '05月', '06月', '07月', '08月', '09月', '10月', '11月', '12月', '1月', '2月', '3月']
 
 const Dashboard = () => {
   const [showMenu, setShowMenu] = useState(false)

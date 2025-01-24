@@ -60,9 +60,9 @@ const EmployeeExpensesRegistration = () => {
       ],
     },
   ])
-
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
+  const onTabClick = (tab) => handlePLRegTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -86,10 +86,6 @@ const EmployeeExpensesRegistration = () => {
     ])
     closeModal(setModalIsOpen)
   }
-
-  
-
-  
 
   useEffect(() => {
     const path = location.pathname
@@ -141,7 +137,6 @@ const EmployeeExpensesRegistration = () => {
 
     fetchData()
   }, [token])
-
 
   //This function will make ProjectName unique base on project_name, client and business_division
   const uniqueProjects = (projects) => {
@@ -532,7 +527,7 @@ const EmployeeExpensesRegistration = () => {
             <RegistrationButtons
               activeTabOther={'employeeExpenses'}
               message={translate('employeeExpensesRegistration', language)}
-              handleTabsClick={handlePLRegTabsClick}
+              handleTabsClick={onTabClick}
               handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'project', tabKey: 'project' },

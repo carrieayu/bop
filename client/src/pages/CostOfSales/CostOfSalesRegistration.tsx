@@ -21,7 +21,7 @@ import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // help
 import { removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { overwriteCostOfSale } from '../../api/CostOfSalesEndpoint/OverwriteCostOfSales'
 import { maximumEntries, monthNames, token, years } from '../../constants'
-import { closeModal, openModal } from '../../actions/hooks'
+import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 
 const CostOfSalesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -30,55 +30,31 @@ const CostOfSalesRegistration = () => {
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [formData, setFormData] = useState([
-    {
-      year: '',
-      month: '',
-      purchase: '',
-      outsourcing_expense: '',
-      product_purchase: '',
-      dispatch_labor_expense: '',
-      communication_expense: '',
-      work_in_progress_expense: '',
-      amortization_expense: '',
-      // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
-    },
-  ])
-
+  const emptyFormData = {
+    year: '',
+    month: '',
+    purchase: '',
+    outsourcing_expense: '',
+    product_purchase: '',
+    dispatch_labor_expense: '',
+    communication_expense: '',
+    work_in_progress_expense: '',
+    amortization_expense: '',
+  }
+  const [formData, setFormData] = useState([emptyFormData])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
-
+  const onTabClick = (tab) => handlePLRegTabsClick(tab, navigate, setActiveTab)
 
   const handleAdd = () => {
-    if (formData.length < maximumEntries) {
-      const newFormData = [...formData]
-      newFormData.push({
-        year: '',
-        month: '',
-        purchase: '',
-        outsourcing_expense: '',
-        product_purchase: '',
-        dispatch_labor_expense: '',
-        communication_expense: '',
-        work_in_progress_expense: '',
-        amortization_expense: '',
-        // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
-      })
-      setFormData(newFormData)
-    } else {
-      console.log('You can only add up to 10 forms.')
-    }
+    addFormInput(formData, setFormData, maximumEntries, emptyFormData)
   }
 
-  const handleMinus = () => {
-    if (formData.length > 1) {
-      const newFormData = [...formData]
-      newFormData.pop()
-      setFormData(newFormData)
-    }
+  const handleRemove = () => {
+    removeFormInput(formData, setFormData)
   }
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -91,22 +67,9 @@ const CostOfSalesRegistration = () => {
   }
 
   const handleRemoveInputData = () => {
-    setFormData([
-      {
-        year: '',
-        month: '',
-        purchase: '',
-        outsourcing_expense: '',
-        product_purchase: '',
-        dispatch_labor_expense: '',
-        communication_expense: '',
-        work_in_progress_expense: '',
-        amortization_expense: '',
-      },
-    ])
+    setFormData([emptyFormData])
     closeModal(setModalIsOpen)
   }
-
 
   useEffect(() => {}, [formData])
   const handleSubmit = async (e) => {
@@ -173,17 +136,7 @@ const CostOfSalesRegistration = () => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
         setFormData([
-          {
-            year: '',
-            month: '',
-            purchase: '',
-            outsourcing_expense: '',
-            product_purchase: '',
-            dispatch_labor_expense: '',
-            communication_expense: '',
-            work_in_progress_expense: '',
-            amortization_expense: '',
-          },
+          emptyFormData
         ])
       })
       .catch((error) => {
@@ -228,7 +181,6 @@ const CostOfSalesRegistration = () => {
   }
 
   const handleSubmitConfirmed = async () => {
-
     try {
       overwriteCostOfSale(formData, token)
         .then(() => {
@@ -325,7 +277,7 @@ const CostOfSalesRegistration = () => {
             <RegistrationButtons
               activeTabOther={'costOfSales'}
               message={translate('costOfSalesRegistration', language)}
-              handleTabsClick={handlePLRegTabsClick}
+              handleTabsClick={onTabClick}
               handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'project', tabKey: 'project' },
@@ -483,7 +435,7 @@ const CostOfSalesRegistration = () => {
                 <div className='costOfSalesRegistration_form-content'>
                   <div className='costOfSalesRegistration_plus-btn'>
                     {formData.length >= 2 ? (
-                      <button className='costOfSalesRegistration_dec' type='button' onClick={handleMinus}>
+                      <button className='costOfSalesRegistration_dec' type='button' onClick={handleRemove}>
                         -
                       </button>
                     ) : (

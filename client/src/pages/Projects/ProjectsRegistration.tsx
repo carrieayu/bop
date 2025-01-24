@@ -26,7 +26,7 @@ import {
   handlePLRegTabsClick,
 } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { maximumEntries, monthNames, token, years } from '../../constants'
-import { closeModal, openModal } from '../../actions/hooks'
+import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 
 const ProjectsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -44,61 +44,34 @@ const ProjectsRegistration = () => {
   const [modalMessage, setModalMessage] = useState('')
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
+  const onTabClick = (tab) => handlePLRegTabsClick(tab, navigate, setActiveTab)
 
-  const [formProjects, setProjects] = useState([
-    {
-      year: '',
-      month: '',
-      project_name: '',
-      project_type: '',
-      client: '',
-      business_division: '',
-      sales_revenue: '',
-      dispatch_labor_expense: '',
-      employee_expense: '',
-      indirect_employee_expense: '',
-      expense: '',
-      operating_income: '',
-      non_operating_income: '',
-      non_operating_expense: '',
-      ordinary_profit: '',
-      ordinary_profit_margin: '',
-    },
-  ])
-
+  const emptyFormData = {
+    year: '',
+    month: '',
+    project_name: '',
+    project_type: '',
+    client: '',
+    business_division: '',
+    sales_revenue: '',
+    dispatch_labor_expense: '',
+    employee_expense: '',
+    indirect_employee_expense: '',
+    expense: '',
+    operating_income: '',
+    non_operating_income: '',
+    non_operating_expense: '',
+    ordinary_profit: '',
+    ordinary_profit_margin: '',
+  }
+  const [formProjects, setProjects] = useState([emptyFormData])
 
   const handleAdd = () => {
-    if (formProjects.length < maximumEntries) {
-      setProjects([
-        ...formProjects,
-        {
-          year: '',
-          month: '',
-          project_name: '',
-          project_type: '',
-          client: '',
-          business_division: '',
-          sales_revenue: '',
-          dispatch_labor_expense: '',
-          employee_expense: '',
-          indirect_employee_expense: '',
-          expense: '',
-          operating_income: '',
-          non_operating_income: '',
-          non_operating_expense: '',
-          ordinary_profit: '',
-          ordinary_profit_margin: '',
-        },
-      ])
-    } else {
-      console.log('You can only add up to 10 forms.')
-    }
+    addFormInput(formProjects, setProjects, maximumEntries, emptyFormData)
   }
 
-  const handleMinus = () => {
-    if (formProjects.length > 1) {
-      setProjects(formProjects.slice(0, -1))
-    }
+  const handleRemove = () => {
+    removeFormInput(formProjects, setProjects)
   }
 
   const handleTabClick = (tab) => {
@@ -112,29 +85,9 @@ const ProjectsRegistration = () => {
   }
 
   const handleRemoveInputData = () => {
-    setProjects([
-      {
-        year: '',
-        month: '',
-        project_name: '',
-        project_type: '',
-        client: '',
-        business_division: '',
-        sales_revenue: '',
-        dispatch_labor_expense: '',
-        employee_expense: '',
-        indirect_employee_expense: '',
-        expense: '',
-        operating_income: '',
-        non_operating_income: '',
-        non_operating_expense: '',
-        ordinary_profit: '',
-        ordinary_profit_margin: '',
-      },
-    ])
+    setProjects([emptyFormData])
     closeModal(setModalIsOpen)
   }
-
 
   const fetchClients = async () => {
     try {
@@ -266,24 +219,7 @@ const ProjectsRegistration = () => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
         setProjects([
-          {
-            year: '',
-            month: '',
-            project_name: '',
-            project_type: '',
-            client: '',
-            business_division: '',
-            sales_revenue: '',
-            dispatch_labor_expense: '',
-            employee_expense: '',
-            indirect_employee_expense: '',
-            expense: '',
-            operating_income: '',
-            non_operating_income: '',
-            non_operating_expense: '',
-            ordinary_profit: '',
-            ordinary_profit_margin: '',
-          },
+          emptyFormData
         ])
       })
       .catch((error) => {
@@ -450,7 +386,7 @@ const ProjectsRegistration = () => {
             <RegistrationButtons
               activeTabOther={'project'}
               message={translate('projectsRegistration', language)}
-              handleTabsClick={handlePLRegTabsClick}
+              handleTabsClick={onTabClick}
               handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'project', tabKey: 'project' },
@@ -717,7 +653,7 @@ const ProjectsRegistration = () => {
                 <div className='projectsRegistration-form-content'>
                   <div className='projectsRegistration-plus-btn'>
                     {formProjects.length >= 2 ? (
-                      <button className='projectsRegistration-dec' type='button' onClick={handleMinus}>
+                      <button className='projectsRegistration-dec' type='button' onClick={handleRemove}>
                         -
                       </button>
                     ) : (

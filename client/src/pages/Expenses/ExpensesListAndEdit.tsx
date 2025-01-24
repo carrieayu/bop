@@ -44,7 +44,7 @@ const ExpensesList: React.FC = () => {
   const [expensesList, setExpensesList] = useState([])
   const [originalExpenseList, setOriginalExpensesList] = useState(expensesList)
   const [changes, setChanges] = useState({}) //ians code maybe i do not need.
-
+  const onTabClick = (tab) => handlePLListTabsClick(tab, navigate, setActiveTab)
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
@@ -428,7 +428,7 @@ const ExpensesList: React.FC = () => {
               <ListButtons
                 activeTabOther={'expenses'}
                 message={translate(isEditing ? 'expensesEdit' : 'expensesList', language)}
-                handleTabsClick={handlePLListTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
                   { labelKey: 'project', tabKey: 'project' },

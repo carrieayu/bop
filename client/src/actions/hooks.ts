@@ -18,7 +18,6 @@ export const useTranslateSwitch = (language: string) => {
 
 export const addFormInput = (formData, setFormData, maximumEntries, emptyFormData) => {
   if (formData.length < maximumEntries) {
-    console.log('added')
     setFormData([...formData, { ...emptyFormData }])
   } else {
     console.log('You can only add up to 10 forms.')
@@ -27,7 +26,6 @@ export const addFormInput = (formData, setFormData, maximumEntries, emptyFormDat
 }
 
 export const removeFormInput = (formData, setFormData) => {
-  console.log('removed')
   if (formData.length > 1) {
     setFormData(formData.slice(0, -1))
   }

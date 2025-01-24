@@ -34,7 +34,7 @@ import {
   removeCommas,
   handleMMListTabsClick,
 } from '../../utils/helperFunctionsUtil'
-import { token } from '../../constants'
+import { masterMaintenanceScreenTabs, token } from '../../constants'
 
 const EmployeesListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -65,6 +65,7 @@ const EmployeesListAndEdit: React.FC = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [userMap, setUserMap] = useState({})
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const onTabClick = (tab) => handleMMListTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -540,14 +541,9 @@ const EmployeesListAndEdit: React.FC = () => {
               <ListButtons
                 activeTabOther={'employee'}
                 message={translate(isEditing ? 'employeesEdit' : 'employeesList', language)}
-                handleTabsClick={handleMMListTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
-                buttonConfig={[
-                  { labelKey: 'client', tabKey: 'client' },
-                  { labelKey: 'employee', tabKey: 'employee' },
-                  { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                  { labelKey: 'users', tabKey: 'users' },
-                ]}
+                buttonConfig={masterMaintenanceScreenTabs}
               />
               <div className={`EmployeesListAndEdit_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                 <div className={`EmployeesListAndEdit_table_cont ${isEditing ? 'editScrollable' : ''}`}>

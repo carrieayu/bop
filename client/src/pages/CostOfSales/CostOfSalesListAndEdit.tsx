@@ -49,6 +49,7 @@ const CostOfSalesList: React.FC = () => {
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const onTabClick = (tab) => handlePLListTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -393,7 +394,7 @@ const CostOfSalesList: React.FC = () => {
               <ListButtons
                 activeTabOther={'costOfSales'}
                 message={translate(isEditing ? 'costOfSalesEdit' : 'costOfSalesList', language)}
-                handleTabsClick={handlePLListTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
                   { labelKey: 'project', tabKey: 'project' },

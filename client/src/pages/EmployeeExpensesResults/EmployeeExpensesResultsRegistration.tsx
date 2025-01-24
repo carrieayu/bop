@@ -21,7 +21,7 @@ import {
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
 import { getFilteredEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/FilterGetEmployeeExpenseResult'
 import { handleResultsRegTabsClick } from '../../utils/helperFunctionsUtil'
-import { monthNames, storedUserID, token } from '../../constants'
+import { maximumEntriesEE, monthNames, resultsScreenTabs, storedUserID, token } from '../../constants'
 import { closeModal, openModal } from '../../actions/hooks'
 
 type Date = {
@@ -59,6 +59,7 @@ const EmployeeExpensesResultsRegistration = () => {
   const [modalMessage, setModalMessage] = useState('')
   const [filteredDates, setFilteredDates] = useState<DateForm[]>([{ form: [{ date: [] }] }])
   const [selectionYearResults, setSelectionYearResults] = useState<DateForm[]>([{ form: [{ date: [] }] }])
+  const onTabClick = (tab) => handleResultsRegTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -82,8 +83,6 @@ const EmployeeExpensesResultsRegistration = () => {
     ])
     closeModal(setModalIsOpen)
   }
-
-
 
   useEffect(() => {
     const path = location.pathname
@@ -180,7 +179,7 @@ const EmployeeExpensesResultsRegistration = () => {
     const updatedContainers = [...employeeContainers]
     const projectEntries = updatedContainers[containerIndex].projectEntries
 
-    if (projectEntries.length < 5) {
+    if (projectEntries.length < maximumEntriesEE) {
       const newEntry = {
         id: projectEntries.length + 1, // Unique ID for each project entry
         clients: '',
@@ -584,14 +583,9 @@ const EmployeeExpensesResultsRegistration = () => {
             <RegistrationButtons
               activeTabOther={'employeeExpensesResults'}
               message={translate('employeeExpensesResultsRegistration', language)}
-              handleTabsClick={handleResultsRegTabsClick}
+              handleTabsClick={onTabClick}
               handleListClick={handleListClick}
-              buttonConfig={[
-                { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
-                { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
-                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
-                { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
-              ]}
+              buttonConfig={resultsScreenTabs}
             />
           </div>
           <div className='employeeExpensesResultsRegistration_mid_body_cont'>

@@ -1,29 +1,29 @@
-import React, { useEffect, useState } from "react";
-import Btn from "../../components/Button/Button";
-import axios from "axios";
-import Sidebar from "../../components/Sidebar/Sidebar";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useLanguage } from "../../contexts/LanguageContext";
-import { translate } from "../../utils/translationUtil";
-import AlertModal from "../../components/AlertModal/AlertModal";
+import React, { useEffect, useState } from 'react'
+import Btn from '../../components/Button/Button'
+import axios from 'axios'
+import Sidebar from '../../components/Sidebar/Sidebar'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { translate } from '../../utils/translationUtil'
+import AlertModal from '../../components/AlertModal/AlertModal'
 import { RiDeleteBin6Fill } from 'react-icons/ri'
 import DatePicker from 'react-datepicker'
-import ListButtons from "../../components/ListButtons/ListButtons";
-import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
-import CrudModal from "../../components/CrudModal/CrudModal";
+import ListButtons from '../../components/ListButtons/ListButtons'
+import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
+import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss'
-import { getUser } from "../../api/UserEndpoint/GetUser";
-import { deleteUser } from "../../api/UserEndpoint/DeleteUser";
-import { updateUser } from "../../api/UserEndpoint/UpdateUser";
+import { getUser } from '../../api/UserEndpoint/GetUser'
+import { deleteUser } from '../../api/UserEndpoint/DeleteUser'
+import { updateUser } from '../../api/UserEndpoint/UpdateUser'
 import {
   validateUserRecord,
   translateAndFormatErrors,
   getFieldChecks,
   checkForDuplicateUsers,
 } from '../../utils/validationUtil'
-import { formatDate, handleMMListTabsClick } from "../../utils/helperFunctionsUtil";
-import { token } from "../../constants";
+import { formatDate, handleMMListTabsClick } from '../../utils/helperFunctionsUtil'
+import { masterMaintenanceScreenTabs, token } from '../../constants'
 
 const UsersListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -56,7 +56,7 @@ const UsersListAndEdit: React.FC = () => {
   })
 
   const totalPages = Math.ceil(100 / 10)
-
+  const onTabClick = (tab) => handleMMListTabsClick(tab, navigate, setActiveTab)
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
@@ -78,18 +78,18 @@ const UsersListAndEdit: React.FC = () => {
   }
 
   const handleClick = () => {
-            setIsEditing((prevState) => !prevState)
-          }
-          useEffect(() => {
-            if (isEditing) {
-              setLanguage('jp')
-            }
-      
-            if (!isEditing) {
-              // Reset to original values when switching to list mode
-              setUserList(originalUserList)
-            }
-          }, [isEditing])
+    setIsEditing((prevState) => !prevState)
+  }
+  useEffect(() => {
+    if (isEditing) {
+      setLanguage('jp')
+    }
+
+    if (!isEditing) {
+      // Reset to original values when switching to list mode
+      setUserList(originalUserList)
+    }
+  }, [isEditing])
 
   const handleChange = (index, event) => {
     const { name, value } = event.target
@@ -197,8 +197,7 @@ const UsersListAndEdit: React.FC = () => {
     fetchUsers()
   }, [])
 
-  useEffect(() => {
-  }, [originalUserList])
+  useEffect(() => {}, [originalUserList])
 
   useEffect(() => {
     const startIndex = currentPage * rowsPerPage
@@ -308,14 +307,9 @@ const UsersListAndEdit: React.FC = () => {
               <ListButtons
                 activeTabOther={activeTabOther}
                 message={translate(isEditing ? 'usersEdit' : 'usersList', language)}
-                handleTabsClick={handleMMListTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
-                buttonConfig={[
-                  { labelKey: 'client', tabKey: 'client' },
-                  { labelKey: 'employee', tabKey: 'employee' },
-                  { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                  { labelKey: 'users', tabKey: 'users' },
-                ]}
+                buttonConfig={masterMaintenanceScreenTabs}
               />
               <div className={`UsersListAndEdit_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                 <div className='UsersListAndEdit_table_cont'>
@@ -497,6 +491,6 @@ const UsersListAndEdit: React.FC = () => {
       />
     </div>
   )
-};
+}
 
-export default UsersListAndEdit;
+export default UsersListAndEdit

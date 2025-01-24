@@ -26,8 +26,8 @@ import {
   handleMMRegTabsClick,
 } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import EmployeeExpensesList from '../EmployeeExpenses/EmployeeExpensesList'
-import { closeModal, openModal } from '../../actions/hooks'
-import { token } from '../../constants'
+import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
+import { masterMaintenanceScreenTabs, maximumEntries, token } from '../../constants'
 
 const EmployeesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -40,27 +40,25 @@ const EmployeesRegistration = () => {
   const [selectedCompanyId, setSelectedCompanyId] = useState('')
   const [companySelection, setCompanySelection] = useState<any>([])
   const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [selectedEmployeeType, setSelectedEmployeeType] = useState<any>([])
-  const [employees, setEmployees] = useState([
-    {
-      last_name: '',
-      first_name: '',
-      type: '',
-      email: '',
-      salary: '',
-      executive_renumeration: '',
-      company_name: '',
-      business_division_name: '',
-      bonus_and_fuel_allowance: '',
-      statutory_welfare_expense: '',
-      welfare_expense: '',
-      insurance_premium: '',
-      auth_id: '',
-      created_at: '',
-    },
-  ])
+  const emptyFormData = {
+    last_name: '',
+    first_name: '',
+    type: '',
+    email: '',
+    salary: '',
+    executive_renumeration: '',
+    company_name: '',
+    business_division_name: '',
+    bonus_and_fuel_allowance: '',
+    statutory_welfare_expense: '',
+    welfare_expense: '',
+    insurance_premium: '',
+    auth_id: '',
+    created_at: '',
+  }
+  const [employees, setEmployees] = useState([emptyFormData])
   const [allBusinessDivisions, setAllBusinessDivisions] = useState([])
-
+  const onTabClick = (tab) => handleMMRegTabsClick(tab, navigate, setActiveTab)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
@@ -163,28 +161,9 @@ const EmployeesRegistration = () => {
   }
 
   const handleRemoveInputData = () => {
-    setEmployees([
-      {
-        last_name: '',
-        first_name: '',
-        type: '',
-        email: '',
-        salary: '',
-        executive_renumeration: '',
-        company_name: '',
-        business_division_name: '',
-        bonus_and_fuel_allowance: '',
-        statutory_welfare_expense: '',
-        welfare_expense: '',
-        insurance_premium: '',
-        auth_id: '',
-        created_at: '',
-      },
-    ])
+    setEmployees([emptyFormData])
     closeModal(setModalIsOpen)
   }
-
-  
 
   const handleTranslationSwitchToggle = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
@@ -278,22 +257,7 @@ const EmployeesRegistration = () => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
         setEmployees([
-          {
-            last_name: '',
-            first_name: '',
-            type: '',
-            email: '',
-            salary: '',
-            executive_renumeration: '',
-            company_name: '',
-            business_division_name: '',
-            bonus_and_fuel_allowance: '',
-            statutory_welfare_expense: '',
-            welfare_expense: '',
-            insurance_premium: '',
-            auth_id: '',
-            created_at: '',
-          },
+          emptyFormData
         ])
       })
       .catch((error) => {
@@ -320,35 +284,11 @@ const EmployeesRegistration = () => {
   }
 
   const handleAddContainer = () => {
-    if (employees.length < 10) {
-      setEmployees([
-        ...employees,
-        {
-          last_name: '',
-          first_name: '',
-          type: '',
-          email: '',
-          salary: '',
-          executive_renumeration: '',
-          company_name: '',
-          business_division_name: '',
-          bonus_and_fuel_allowance: '',
-          statutory_welfare_expense: '',
-          welfare_expense: '',
-          insurance_premium: '',
-          auth_id: '',
-          created_at: '',
-        },
-      ])
-    }
+    addFormInput(employees, setEmployees, maximumEntries, emptyFormData)
   }
 
   const handleRemoveContainer = () => {
-    if (employees.length > 1) {
-      const newContainers = [...employees]
-      newContainers.pop()
-      setEmployees(newContainers)
-    }
+    removeFormInput(employees, setEmployees)
   }
 
   useEffect(() => {
@@ -376,14 +316,9 @@ const EmployeesRegistration = () => {
               <RegistrationButtons
                 activeTabOther={'employee'}
                 message={translate('employeesRegistration', language)}
-                handleTabsClick={handleMMRegTabsClick}
+                handleTabsClick={onTabClick}
                 handleListClick={handleListClick}
-                buttonConfig={[
-                  { labelKey: 'client', tabKey: 'client' },
-                  { labelKey: 'employee', tabKey: 'employee' },
-                  { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                  { labelKey: 'users', tabKey: 'users' },
-                ]}
+                buttonConfig={masterMaintenanceScreenTabs}
               />
             </div>
             <div className='EmployeesRegistration_mid_form_cont'>

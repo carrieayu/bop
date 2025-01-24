@@ -26,7 +26,7 @@ import {
   removeCommas,
   handleResultsListTabsClick,
 } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-import { months, token } from '../../constants'
+import { months, resultsScreenTabs, token } from '../../constants'
 
 const ExpensesResultsList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
@@ -42,7 +42,7 @@ const ExpensesResultsList: React.FC = () => {
   const [selectedExpense, setSelectedExpense] = useState<any>(null)
   const [expensesResultsList, setExpensesResultsList] = useState([])
   const [originalExpenseResultsList, setOriginalExpensesResultsList] = useState(expensesResultsList)
-
+  const onTabClick = (tab) => handleResultsListTabsClick(tab, navigate, setActiveTab)
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
@@ -399,14 +399,9 @@ const ExpensesResultsList: React.FC = () => {
               <ListButtons
                 activeTabOther={'expensesResults'}
                 message={translate(isEditing ? 'expensesResultsEdit' : 'expensesResultsList', language)}
-                handleTabsClick={handleResultsListTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
-                buttonConfig={[
-                  { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
-                  { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
-                  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
-                  { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
-                ]}
+                buttonConfig={resultsScreenTabs}
               />
               <div className={`expensesResultsList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                 <div className={`expensesResultsList_table_cont ${isEditing ? 'editScrollable' : ''}`}>

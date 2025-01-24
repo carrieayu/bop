@@ -1,78 +1,58 @@
-import React, { useState } from 'react';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { translate } from '../../utils/translationUtil';
-import Btn from '../Button/Button';
+import React, { useState } from 'react'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { translate } from '../../utils/translationUtil'
+import Btn from '../Button/Button'
 
 interface AlertModalProps {
   message: string
   onConfirm: () => void
-  onCancel: (setModalisOpen: React.Dispatch<React.SetStateAction<boolean>>) => void // Updated here
+  onCancel: (setModalisOpen: React.Dispatch<React.SetStateAction<boolean>>) => void 
   isOpen: boolean
 }
 
 const AlertModal: React.FC<AlertModalProps> = ({ message, onConfirm, onCancel, isOpen }) => {
-    const { language } = useLanguage();
-    const [showConfirmConfirmation, setShowConfirmConfirmation] = useState(false);
-    
-    if (!isOpen) return null;
+  const { language } = useLanguage()
+  const [showConfirmConfirmation, setShowConfirmConfirmation] = useState(false)
 
-    const handleConfirmClick = () => {
-        setShowConfirmConfirmation(true);
-    };
+  if (!isOpen) return null
 
-    const handleConfirmAccept = () => {
-        setShowConfirmConfirmation(false);  
-        onConfirm();  
-    };
+  const handleConfirmClick = () => {
+    setShowConfirmConfirmation(true)
+  }
 
-    const handleRejectConfirm = () => {
-        setShowConfirmConfirmation(false); 
-    };
+  const handleConfirmAccept = () => {
+    setShowConfirmConfirmation(false)
+    onConfirm()
+  }
 
-    return (
-        <div>
-            <div className="alert-modal-overlay">
-                <div className="alert-modal-content">
-                    <p className="alert-modal-message">
-                        {message}
-                    </p>
-                    <div className="alert-modal-buttons">
-                        <Btn
-                            label={translate('confirm', language)}
-                            onClick={handleConfirmClick}
-                            className="btn-confirm"
-                        />
-                        <Btn
-                            label={translate('cancel', language)}
-                            onClick={onCancel}
-                            className="btn-cancel"
-                        />
-                    </div>
-                </div>
-            </div>
-            {showConfirmConfirmation && (
-                <div className="alert-modal-overlay">
-                    <div className="alert-modal-content">
-                        <p className="alert-modal-message">
-                            {translate('confirmationMessage', language)}
-                        </p>
-                        <div className="alert-modal-buttons">
-                            <Btn
-                                label={translate('accept', language)}
-                                onClick={handleConfirmAccept}
-                                className="btn-confirm"
-                            />
-                            <Btn
-                                label={translate('reject', language)}
-                                onClick={handleRejectConfirm}
-                                className="btn-cancel"
-                            />
-                        </div>
-                    </div>
-                </div>
-            )}
+  const handleRejectConfirm = () => {
+    setShowConfirmConfirmation(false)
+  }
+
+  return (
+    <div>
+      <div className='alert-modal-overlay'>
+        <div className='alert-modal-content'>
+          <p className='alert-modal-message'>{message}</p>
+          <div className='alert-modal-buttons'>
+            <Btn label={translate('confirm', language)} onClick={handleConfirmClick} className='btn-confirm' />
+            <Btn label={translate('cancel', language)} onClick={onCancel} className='btn-cancel' />
+          </div>
         </div>
-    );
-};
+      </div>
+      {showConfirmConfirmation && (
+        <div className='alert-modal-overlay'>
+          <div className='alert-modal-content'>
+            <p className='alert-modal-message'>{translate('confirmationMessage', language)}</p>
+            <div className='alert-modal-buttons'>
+              <Btn label={translate('accept', language)} onClick={handleConfirmAccept} className='btn-confirm' />
+              <Btn label={translate('reject', language)} onClick={handleRejectConfirm} className='btn-cancel' />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
-export default AlertModal;
+export default AlertModal

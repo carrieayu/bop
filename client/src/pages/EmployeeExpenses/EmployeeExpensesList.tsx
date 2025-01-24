@@ -31,6 +31,8 @@ const EmployeeExpensesList: React.FC = () => {
   const [selectedEmployeeExpenses, setSelectedEmployeeExpenses] = useState<any>(null)
   const [deleteEmployeeExpensesId, setDeleteEmployeeExpensesId] = useState([])
   const [deletedId, setDeletedId] = useState<any>(null)
+  const onTabClick = (tab) => handlePLListTabsClick(tab, navigate, setActiveTab)
+
   const [employeeProjectId, setEmployeeProjectId] = useState<{
     employee_expense_id: string
     project_id: string
@@ -70,7 +72,6 @@ const EmployeeExpensesList: React.FC = () => {
       setLanguage(newLanguage)
     }
   }
-
 
   const handleNewRegistrationClick = () => {
     navigate('/employee-expenses-registration')
@@ -193,7 +194,7 @@ const EmployeeExpensesList: React.FC = () => {
               <ListButtons
                 activeTabOther={'employeeExpenses'}
                 message={translate(isEditing ? 'employeeExpensesEdit' : 'employeeExpensesList', language)}
-                handleTabsClick={handlePLListTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
                   { labelKey: 'project', tabKey: 'project' },

@@ -24,8 +24,8 @@ import {
 } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { filterExpenseResults } from '../../api/ExpenseResultEndpoint/FilterExpenseResults'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
-import { maximumEntries, monthNames, storedUserID, token, years } from '../../constants'
-import { closeModal, openModal } from '../../actions/hooks'
+import { maximumEntries, monthNames, resultsScreenTabs, storedUserID, token, years } from '../../constants'
+import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 
 type ExpenseResults = {
   month: string
@@ -49,26 +49,25 @@ const ExpensesResultsRegistration = () => {
   const [filteredMonth, setFilteredMonth] = useState<any>([{ month: [] }])
   const [expenseYear, setExpenseYear] = useState<any>([])
   const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [formData, setFormData] = useState([
-    {
-      year: '',
-      month: '',
-      tax_and_public_charge: '',
-      communication_expense: '',
-      advertising_expense: '',
-      consumable_expense: '',
-      depreciation_expense: '',
-      utilities_expense: '',
-      entertainment_expense: '',
-      rent_expense: '',
-      travel_expense: '',
-      transaction_fee: '',
-      professional_service_fee: '',
-      registered_user_id: storedUserID,
-      updated_at: '',
-    },
-  ])
-
+  const onTabClick = (tab) => handleResultsRegTabsClick(tab, navigate, setActiveTab)
+  const emptyFormData = {
+    year: '',
+    month: '',
+    tax_and_public_charge: '',
+    communication_expense: '',
+    advertising_expense: '',
+    consumable_expense: '',
+    depreciation_expense: '',
+    utilities_expense: '',
+    entertainment_expense: '',
+    rent_expense: '',
+    travel_expense: '',
+    transaction_fee: '',
+    professional_service_fee: '',
+    registered_user_id: storedUserID,
+    updated_at: '',
+  }
+  const [formData, setFormData] = useState([emptyFormData])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
@@ -123,37 +122,13 @@ const ExpensesResultsRegistration = () => {
     })
   }
 
-
   const handleAdd = () => {
-    if (formData.length < maximumEntries) {
-      const newFormData = [...formData]
-      newFormData.push({
-        year: '',
-        month: '',
-        tax_and_public_charge: '',
-        communication_expense: '',
-        advertising_expense: '',
-        consumable_expense: '',
-        depreciation_expense: '',
-        utilities_expense: '',
-        entertainment_expense: '',
-        rent_expense: '',
-        travel_expense: '',
-        transaction_fee: '',
-        professional_service_fee: '',
-        registered_user_id: storedUserID,
-        updated_at: '',
-      })
-      setFormData(newFormData)
-      setFilteredMonth([...filteredMonth, { month: [] }])
-    } else {
-    }
+    addFormInput(formData, setFormData, maximumEntries, emptyFormData)
+    setFilteredMonth([...filteredMonth, { month: [] }])
   }
 
-  const handleMinus = () => {
-    if (formData.length > 1) {
-      setFormData(formData.slice(0, -1))
-    }
+  const handleRemove = () => {
+    removeFormInput(formData, setFormData)
   }
 
   useEffect(() => {
@@ -256,23 +231,7 @@ const ExpensesResultsRegistration = () => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
         setFormData([
-          {
-            year: '',
-            month: '',
-            tax_and_public_charge: '',
-            communication_expense: '',
-            advertising_expense: '',
-            consumable_expense: '',
-            depreciation_expense: '',
-            utilities_expense: '',
-            entertainment_expense: '',
-            rent_expense: '',
-            travel_expense: '',
-            transaction_fee: '',
-            professional_service_fee: '',
-            registered_user_id: localStorage.getItem('userID'),
-            updated_at: '',
-          },
+          emptyFormData
         ])
       })
       .catch((error) => {
@@ -400,28 +359,9 @@ const ExpensesResultsRegistration = () => {
   }
 
   const handleRemoveInputData = () => {
-    setFormData([
-      {
-        year: '',
-        month: '',
-        tax_and_public_charge: '',
-        communication_expense: '',
-        advertising_expense: '',
-        consumable_expense: '',
-        depreciation_expense: '',
-        utilities_expense: '',
-        entertainment_expense: '',
-        rent_expense: '',
-        travel_expense: '',
-        transaction_fee: '',
-        professional_service_fee: '',
-        registered_user_id: '',
-        updated_at: '',
-      },
-    ])
+    setFormData([emptyFormData])
     closeModal(setModalIsOpen)
   }
-
 
   useEffect(() => {}, [formData])
 
@@ -448,14 +388,9 @@ const ExpensesResultsRegistration = () => {
             <RegistrationButtons
               activeTabOther={'expensesResults'}
               message={translate('expensesResultsRegistration', language)}
-              handleTabsClick={handleResultsRegTabsClick}
+              handleTabsClick={onTabClick}
               handleListClick={handleListClick}
-              buttonConfig={[
-                { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
-                { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
-                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
-                { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
-              ]}
+              buttonConfig={resultsScreenTabs}
             />
           </div>
           <div className='expensesResultsRegistration_mid_body_cont'>
@@ -660,7 +595,7 @@ const ExpensesResultsRegistration = () => {
                 <div className='expensesResultsRegistration_form-content'>
                   <div className='expensesResultsRegistration_plus-btn'>
                     {formData.length >= 2 ? (
-                      <button className='expensesResultsRegistration_dec' type='button' onClick={handleMinus}>
+                      <button className='expensesResultsRegistration_dec' type='button' onClick={handleRemove}>
                         -
                       </button>
                     ) : (

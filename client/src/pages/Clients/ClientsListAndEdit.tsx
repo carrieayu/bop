@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from "react";
-import Btn from "../../components/Button/Button";
-import axios from "axios";
-import Sidebar from "../../components/Sidebar/Sidebar";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useLanguage } from "../../contexts/LanguageContext";
-import { translate } from "../../utils/translationUtil";
-import AlertModal from "../../components/AlertModal/AlertModal";
-import { RiDeleteBin6Fill } from "react-icons/ri";
-import ListButtons from "../../components/ListButtons/ListButtons";
-import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
-import CrudModal from "../../components/CrudModal/CrudModal";
+import React, { useEffect, useState } from 'react'
+import Btn from '../../components/Button/Button'
+import axios from 'axios'
+import Sidebar from '../../components/Sidebar/Sidebar'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { translate } from '../../utils/translationUtil'
+import AlertModal from '../../components/AlertModal/AlertModal'
+import { RiDeleteBin6Fill } from 'react-icons/ri'
+import ListButtons from '../../components/ListButtons/ListButtons'
+import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
+import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss'
-import { getClient } from "../../api/MasterClientEndpoint/GetMasterClient";
-import { deleteClient } from "../../api/MasterClientEndpoint/DeleteMasterClient";
-import { updateMasterClient } from "../../api/MasterClientEndpoint/UpdateMasterClient";
+import { getClient } from '../../api/MasterClientEndpoint/GetMasterClient'
+import { deleteClient } from '../../api/MasterClientEndpoint/DeleteMasterClient'
+import { updateMasterClient } from '../../api/MasterClientEndpoint/UpdateMasterClient'
 import {
   validateRecords,
   translateAndFormatErrors,
@@ -22,8 +22,8 @@ import {
   checkForDuplicates,
 } from '../../utils/validationUtil'
 import { formatDate, handleMMListTabsClick } from '../../utils/helperFunctionsUtil'
-import { getUser } from "../../api/UserEndpoint/GetUser";
-import { token } from "../../constants";
+import { getUser } from '../../api/UserEndpoint/GetUser'
+import { masterMaintenanceScreenTabs, token } from '../../constants'
 
 const ClientsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -50,7 +50,7 @@ const ClientsListAndEdit: React.FC = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [userMap, setUserMap] = useState({})
   const [deleteComplete, setDeleteComplete] = useState(false)
-
+  const onTabClick = (tab) => handleMMListTabsClick(tab, navigate, setActiveTab)
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
@@ -66,18 +66,18 @@ const ClientsListAndEdit: React.FC = () => {
   }
 
   const handleClick = () => {
-            setIsEditing((prevState) => !prevState)
-          }
-          useEffect(() => {
-            if (isEditing) {
-              setLanguage('jp')
-            }
-      
-            if (!isEditing) {
-              // Reset to original values when switching to list mode
-              setUpdatedClients(originalClientsList)
-            }
-          }, [isEditing])
+    setIsEditing((prevState) => !prevState)
+  }
+  useEffect(() => {
+    if (isEditing) {
+      setLanguage('jp')
+    }
+
+    if (!isEditing) {
+      // Reset to original values when switching to list mode
+      setUpdatedClients(originalClientsList)
+    }
+  }, [isEditing])
 
   const handleChange = (index, e) => {
     const { name, value } = e.target
@@ -120,10 +120,10 @@ const ClientsListAndEdit: React.FC = () => {
       { errors: validationErrors, errorType: 'normalValidation' },
       { errors: duplicateErrors, errorType: 'duplicateValidation' },
     ]
-    
+
     // Step 5: Display the first set of errors found, if any
     const firstError = errorMapping.find(({ errors }) => errors.length > 0)
-  
+
     if (firstError) {
       const { errors, errorType } = firstError
       const translatedErrors = translateAndFormatErrors(errors, language, errorType)
@@ -349,14 +349,9 @@ const ClientsListAndEdit: React.FC = () => {
               <ListButtons
                 activeTabOther={activeTabOther}
                 message={translate(isEditing ? 'clientsEdit' : 'clientsList', language)}
-                handleTabsClick={handleMMListTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
-                buttonConfig={[
-                  { labelKey: 'client', tabKey: 'client' },
-                  { labelKey: 'employee', tabKey: 'employee' },
-                  { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                  { labelKey: 'users', tabKey: 'users' },
-                ]}
+                buttonConfig={masterMaintenanceScreenTabs}
               />
               <div className={`ClientsListAndEdit_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                 <div className='ClientsListAndEdit_table_cont'>
@@ -508,6 +503,6 @@ const ClientsListAndEdit: React.FC = () => {
       />
     </div>
   )
-};
+}
 
-export default ClientsListAndEdit;
+export default ClientsListAndEdit

@@ -16,7 +16,7 @@ import {
 } from '../../utils/validationUtil'
 import { handleMMRegTabsClick } from '../../utils/helperFunctionsUtil'
 import { closeModal, openModal } from '../../actions/hooks'
-import { token } from '../../constants'
+import { masterMaintenanceScreenTabs, token } from '../../constants'
 
 const UsersRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -31,7 +31,8 @@ const UsersRegistration = () => {
   const [isEmailValid, setIsEmailValid] = useState(true)
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [userData, setUserData] = useState({
+
+  const emptyFormData = {
     username: '',
     first_name: '',
     last_name: '',
@@ -39,12 +40,12 @@ const UsersRegistration = () => {
     email: '',
     confirm_password: '',
     confirm_email: '',
-  })
-
+  }
+  const [userData, setUserData] = useState(emptyFormData)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
-
+  const onTabClick = (tab) => handleMMRegTabsClick(tab, navigate, setActiveTab)
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
@@ -56,19 +57,9 @@ const UsersRegistration = () => {
   }
 
   const handleRemoveInputData = () => {
-    setUserData({
-      username: '',
-      first_name: '',
-      last_name: '',
-      password: '',
-      email: '',
-      confirm_password: '',
-      confirm_email: '',
-    })
+    setUserData(emptyFormData)
     closeModal(setModalIsOpen)
   }
-
- 
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -137,18 +128,10 @@ const UsersRegistration = () => {
     }
 
     createUser(userData, token)
-      .then((data) => {
+      .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
-        setUserData({
-          username: '',
-          first_name: '',
-          last_name: '',
-          password: '',
-          email: '',
-          confirm_password: '',
-          confirm_email: '',
-        })
+        setUserData(emptyFormData)
       })
       .catch((error) => {
         setModalMessage(translate('usersValidationText7', language))
@@ -180,14 +163,9 @@ const UsersRegistration = () => {
             <RegistrationButtons
               activeTabOther={activeTabOther}
               message={translate('usersRegistration', language)}
-              handleTabsClick={handleMMRegTabsClick}
+              handleTabsClick={onTabClick}
               handleListClick={handleListClick}
-              buttonConfig={[
-                { labelKey: 'client', tabKey: 'client' },
-                { labelKey: 'employee', tabKey: 'employee' },
-                { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                { labelKey: 'users', tabKey: 'users' },
-              ]}
+              buttonConfig={masterMaintenanceScreenTabs}
             />
           </div>
           <div className='UsersRegistration_mid_body_cont'>

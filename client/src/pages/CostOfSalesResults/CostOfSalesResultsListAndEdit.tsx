@@ -18,12 +18,16 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs, handleResultsListTabsClick, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import {
+  handleDisableKeysOnNumberInputs,
+  handleResultsListTabsClick,
+  removeCommas,
+} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { getCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/GetCostOfSalesResults'
 import { deleteCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/DeleteCostOfSalesResults'
 import { updateCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/UpdateCostOfSalesResults'
-import { months, token } from '../../constants'
+import { months, resultsScreenTabs, token } from '../../constants'
 
 const CostOfSalesResultsList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
@@ -48,6 +52,7 @@ const CostOfSalesResultsList: React.FC = () => {
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const onTabClick = (tab) => handleResultsListTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -396,14 +401,9 @@ const CostOfSalesResultsList: React.FC = () => {
               <ListButtons
                 activeTabOther={'costOfSalesResults'}
                 message={translate(isEditing ? 'costOfSalesResultsEdit' : 'costOfSalesResultsList', language)}
-                handleTabsClick={handleResultsListTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
-                buttonConfig={[
-                  { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
-                  { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
-                  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
-                  { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
-                ]}
+                buttonConfig={resultsScreenTabs}
               />
               <div className={`costOfSalesResultsList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                 <div className='costOfSalesResultsList_table_cont'>

@@ -1,10 +1,17 @@
-import { useLanguage } from './contexts/LanguageContext'
-
 export const ACCESS_TOKEN = 'accessToken'
 export const REFRESH_TOKEN = 'refresh'
 
-// Months and Month Names
+export const years = [2024, 2025]
+export const currentYear = new Date().getFullYear()
+export const token = localStorage.getItem('accessToken')
+export const maximumEntries = 10
+export const maximumEntriesEE = 5
+export const storedUserID = localStorage.getItem('userID')
+export const header = ['計画	']
+export const smallDate = ['2022/24月', '2022/25月', '2022/26月']
+export const dates = ['04月', '05月', '06月', '07月', '08月', '09月', '10月', '11月', '12月', '1月', '2月', '3月']
 export const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
+
 export const monthNames: { [key: number]: { en: string; jp: string } } = {
   1: { en: 'January', jp: '1月' },
   2: { en: 'February', jp: '2月' },
@@ -20,22 +27,23 @@ export const monthNames: { [key: number]: { en: string; jp: string } } = {
   12: { en: 'December', jp: '12月' },
 }
 
-// Years
-export const years = [2024, 2025]
-
-export const currentYear = new Date().getFullYear()
-
-export const token = localStorage.getItem('accessToken')
-
-export const maximumEntries = 10
-
-export const maximumEntriesEE = 5
-
-export const storedUserID = localStorage.getItem('userID')
-
 export const planningScreenTabs = [
   { labelKey: 'project', tabKey: 'project' },
   { labelKey: 'employeeExpenses', tabKey: 'employeeExpenses' },
   { labelKey: 'expenses', tabKey: 'expenses' },
   { labelKey: 'costOfSales', tabKey: 'costOfSales' },
+]
+
+export const resultsScreenTabs = [
+  { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
+  { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
+  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
+  { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
+]
+
+export const masterMaintenanceScreenTabs = [
+  { labelKey: 'client', tabKey: 'client' },
+  { labelKey: 'employee', tabKey: 'employee' },
+  { labelKey: 'businessDivision', tabKey: 'businessDivision' },
+  { labelKey: 'users', tabKey: 'users' },
 ]

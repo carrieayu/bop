@@ -16,7 +16,7 @@ import { getEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpo
 import { deleteEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/DeleteEmployeeExpenseResult'
 import { deleteProjectAssociationResults } from '../../api/EmployeeExpensesResultEndpoint/DeleteProjectAssociationResults'
 import { formatNumberWithCommas, handleResultsListTabsClick } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-import { monthNames, token } from '../../constants'
+import { monthNames, resultsScreenTabs, token } from '../../constants'
 
 const months: number[] = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3] // Store as numbers
 
@@ -40,6 +40,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
   }>({} as { employee_expense_result_id: []; project_id: string; mode: 'employee_expense' })
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
+  const onTabClick = (tab) => handleResultsListTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -198,14 +199,9 @@ const EmployeeExpensesResultsList: React.FC = () => {
               <ListButtons
                 activeTabOther={'employeeExpensesResults'}
                 message={translate(isEditing ? 'employeeExpensesResultsEdit' : 'employeeExpensesResultsList', language)}
-                handleTabsClick={handleResultsListTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
-                buttonConfig={[
-                  { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
-                  { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
-                  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
-                  { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
-                ]}
+                buttonConfig={resultsScreenTabs}
               />
               <div className={`employeeExpensesResultsList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                 <div className={`employeeExpensesResultsList_table_cont ${isEditing ? 'editScrollable' : ''}`}>

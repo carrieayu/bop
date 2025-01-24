@@ -28,7 +28,7 @@ import {
   removeCommas,
   handleResultsListTabsClick,
 } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-import { token } from '../../constants'
+import { resultsScreenTabs, token } from '../../constants'
 const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
@@ -51,6 +51,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [selectedProject, setSelectedProject] = useState<any>(null)
   const [deleteProjectsId, setDeleteProjectsId] = useState([])
+  const onTabClick = (tab) => handleResultsListTabsClick(tab, navigate, setActiveTab)
   const [formProjects, setFormProjects] = useState([
     {
       sales_revenue: '',
@@ -371,14 +372,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
               <ListButtons
                 activeTabOther={'projectSalesResults'}
                 message={translate(isEditing ? 'projectsSalesResultsEdit' : 'projectsSalesResultsList', language)}
-                handleTabsClick={handleResultsListTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
-                buttonConfig={[
-                  { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
-                  { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
-                  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
-                  { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
-                ]}
+                buttonConfig={resultsScreenTabs}
               />
               <div className={`projectSalesResultsList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                 <div className={`projectSalesResultsList_table_cont ${isEditing ? 'editScrollable' : ''}`}>

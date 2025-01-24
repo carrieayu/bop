@@ -25,37 +25,35 @@ import {
   handlePLRegTabsClick,
 } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { maximumEntries, monthNames, storedUserID, token, years } from '../../constants'
-import { closeModal, openModal } from '../../actions/hooks'
+import { addFormInput, closeModal, openModal, removeFormInput, useTranslateSwitch } from '../../actions/hooks'
 
 const ExpensesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
   const { language, setLanguage } = useLanguage()
-  
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
+  const onTabClick = (tab) => handlePLRegTabsClick(tab, navigate, setActiveTab)
+  const { isTranslateSwitchActive, setIsTranslateSwitchActive } = useTranslateSwitch(language)
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
-  const [formData, setFormData] = useState([
-    {
-      year: '',
-      month: '',
-      tax_and_public_charge: '',
-      communication_expense: '',
-      advertising_expense: '',
-      consumable_expense: '',
-      depreciation_expense: '',
-      utilities_expense: '',
-      entertainment_expense: '',
-      rent_expense: '',
-      travel_expense: '',
-      transaction_fee: '',
-      professional_service_fee: '',
-      registered_user_id: storedUserID,
-      updated_at: '',
-    },
-  ])
-
+  const emptyFormData = {
+    year: '',
+    month: '',
+    tax_and_public_charge: '',
+    communication_expense: '',
+    advertising_expense: '',
+    consumable_expense: '',
+    depreciation_expense: '',
+    utilities_expense: '',
+    entertainment_expense: '',
+    rent_expense: '',
+    travel_expense: '',
+    transaction_fee: '',
+    professional_service_fee: '',
+    updated_at: '',
+  }
+  const [formData, setFormData] = useState([emptyFormData])
+  const [messageOrigin, setMessageOrigin] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
@@ -66,37 +64,12 @@ const ExpensesRegistration = () => {
     setLanguage(newLanguage)
   }
 
-
   const handleAdd = () => {
-    if (formData.length < maximumEntries) {
-      const newFormData = [...formData]
-      newFormData.push({
-        year: '',
-        month: '',
-        tax_and_public_charge: '',
-        communication_expense: '',
-        advertising_expense: '',
-        consumable_expense: '',
-        depreciation_expense: '',
-        utilities_expense: '',
-        entertainment_expense: '',
-        rent_expense: '',
-        travel_expense: '',
-        transaction_fee: '',
-        professional_service_fee: '',
-        registered_user_id: storedUserID,
-        updated_at: '',
-      })
-      setFormData(newFormData)
-    } else {
-      console.log('You can only add up to 10 forms.')
-    }
+    addFormInput(formData, setFormData, maximumEntries, emptyFormData)
   }
 
-  const handleMinus = () => {
-    if (formData.length > 1) {
-      setFormData(formData.slice(0, -1))
-    }
+  const handleRemove = () => {
+    removeFormInput(formData, setFormData)
   }
 
   const currentDate = new Date()
@@ -207,23 +180,7 @@ const ExpensesRegistration = () => {
 
         setIsModalOpen(true)
         setFormData([
-          {
-            year: '',
-            month: '',
-            tax_and_public_charge: '',
-            communication_expense: '',
-            advertising_expense: '',
-            consumable_expense: '',
-            depreciation_expense: '',
-            utilities_expense: '',
-            entertainment_expense: '',
-            rent_expense: '',
-            travel_expense: '',
-            transaction_fee: '',
-            professional_service_fee: '',
-            registered_user_id: localStorage.getItem('userID'),
-            updated_at: '',
-          },
+          emptyFormData
         ])
       })
       .catch((error) => {
@@ -288,7 +245,6 @@ const ExpensesRegistration = () => {
             travel_expense: '',
             transaction_fee: '',
             professional_service_fee: '',
-            registered_user_id: localStorage.getItem('userID'),
             updated_at: '',
           },
         ])
@@ -312,29 +268,9 @@ const ExpensesRegistration = () => {
   }
 
   const handleRemoveInputData = () => {
-    setFormData([
-      {
-        year: '',
-        month: '',
-        tax_and_public_charge: '',
-        communication_expense: '',
-        advertising_expense: '',
-        consumable_expense: '',
-        depreciation_expense: '',
-        utilities_expense: '',
-        entertainment_expense: '',
-        rent_expense: '',
-        travel_expense: '',
-        transaction_fee: '',
-        professional_service_fee: '',
-        registered_user_id: '',
-        updated_at: '',
-      },
-    ])
+    setFormData([emptyFormData])
     closeModal(setModalIsOpen)
   }
-
-
 
   useEffect(() => {}, [formData])
 
@@ -361,7 +297,7 @@ const ExpensesRegistration = () => {
             <RegistrationButtons
               activeTabOther={'expenses'}
               message={translate('expensesRegistration', language)}
-              handleTabsClick={handlePLRegTabsClick}
+              handleTabsClick={onTabClick}
               handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'project', tabKey: 'project' },
@@ -565,7 +501,6 @@ const ExpensesRegistration = () => {
                         </div>
                       </div>
                     </div>
-                    <input type='hidden' name='registered_user_id' value={form.registered_user_id} />
                   </div>
                 ))}
               </div>
@@ -573,7 +508,7 @@ const ExpensesRegistration = () => {
                 <div className='expensesRegistration_form-content'>
                   <div className='expensesRegistration_plus-btn'>
                     {formData.length >= 2 ? (
-                      <button className='expensesRegistration_dec' type='button' onClick={handleMinus}>
+                      <button className='expensesRegistration_dec' type='button' onClick={handleRemove}>
                         -
                       </button>
                     ) : (

@@ -26,8 +26,8 @@ import { overwriteCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint
 import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { getCostOfSale } from '../../api/CostOfSalesEndpoint/GetCostOfSale'
-import { maximumEntries, monthNames, token } from '../../constants'
-import { closeModal, openModal } from '../../actions/hooks'
+import { maximumEntries, monthNames, resultsScreenTabs, token } from '../../constants'
+import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 
 type CostOfSaleResults = {
   month: string
@@ -47,31 +47,29 @@ const CostOfSalesResultsRegistration = () => {
   const location = useLocation()
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const [modalIsOpen, setModalIsOpen] = useState()
+  const [modalIsOpen, setModalIsOpen] = useState(false)
   const [costOfSaleResultsData, setCostOfSaleResultsData] = useState<CostOfSaleResult[]>([{ cosr: [] }])
   const [filteredMonth, setFilteredMonth] = useState<any>([{ month: [] }])
   const [costOfSaleYear, setCostOfSalesYear] = useState<any>([])
-  const [formData, setFormData] = useState([
-    {
-      year: '',
-      month: '',
-      purchase: '',
-      outsourcing_expense: '',
-      product_purchase: '',
-      dispatch_labor_expense: '',
-      communication_expense: '',
-      work_in_progress_expense: '',
-      amortization_expense: '',
-      cost_of_sale: '',
-    },
-  ])
-
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
-
+  const onTabClick = (tab) => handleResultsRegTabsClick(tab, navigate, setActiveTab)
+  const emptyFormData = {
+    year: '',
+    month: '',
+    purchase: '',
+    outsourcing_expense: '',
+    product_purchase: '',
+    dispatch_labor_expense: '',
+    communication_expense: '',
+    work_in_progress_expense: '',
+    amortization_expense: '',
+    cost_of_sale: '',
+  }
+  const [formData, setFormData] = useState([emptyFormData])
   const uniqueYears = costOfSaleYear.reduce((acc, item) => {
     if (!acc.includes(item.year)) {
       acc.push(item.year)
@@ -80,36 +78,15 @@ const CostOfSalesResultsRegistration = () => {
   }, [])
 
   const handleAdd = () => {
-    if (formData.length < maximumEntries) {
-      const newFormData = [...formData]
-      newFormData.push({
-        year: '',
-        month: '',
-        purchase: '',
-        outsourcing_expense: '',
-        product_purchase: '',
-        dispatch_labor_expense: '',
-        communication_expense: '',
-        work_in_progress_expense: '',
-        amortization_expense: '',
-        cost_of_sale: '',
-        // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
-      })
-      setFormData(newFormData)
-      setCostOfSaleResultsData([...costOfSaleResultsData, { cosr: [] }])
-      setFilteredMonth([...filteredMonth, { month: [] }])
-    } else {
-      console.log('You can only add up to 10 forms.')
-    }
+    addFormInput(formData, setFormData, maximumEntries, emptyFormData)
+    setCostOfSaleResultsData([...costOfSaleResultsData, { cosr: [] }])
+    setFilteredMonth([...filteredMonth, { month: [] }])
   }
 
-  const handleMinus = () => {
-    if (formData.length > 1) {
-      const newFormData = [...formData]
-      newFormData.pop()
-      setFormData(newFormData)
-    }
+  const handleRemove = () => {
+    removeFormInput(formData, setFormData)
   }
+
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
@@ -121,24 +98,9 @@ const CostOfSalesResultsRegistration = () => {
   }
 
   const handleRemoveInputData = () => {
-    setFormData([
-      {
-        year: '',
-        month: '',
-        purchase: '',
-        outsourcing_expense: '',
-        product_purchase: '',
-        dispatch_labor_expense: '',
-        communication_expense: '',
-        work_in_progress_expense: '',
-        amortization_expense: '',
-        cost_of_sale: '',
-      },
-    ])
+    setFormData([emptyFormData])
     closeModal(setModalIsOpen)
   }
-
-  
 
   const handleChange = (index, event) => {
     const { name, value } = event.target
@@ -233,22 +195,11 @@ const CostOfSalesResultsRegistration = () => {
     }
 
     createCostOfSaleResults(combinedObject, token)
-      .then((data) => {
+      .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
         setFormData([
-          {
-            year: '',
-            month: '',
-            purchase: '',
-            outsourcing_expense: '',
-            product_purchase: '',
-            dispatch_labor_expense: '',
-            communication_expense: '',
-            work_in_progress_expense: '',
-            amortization_expense: '',
-            cost_of_sale: '',
-          },
+          emptyFormData
         ])
       })
       .catch((error) => {
@@ -430,14 +381,9 @@ const CostOfSalesResultsRegistration = () => {
             <RegistrationButtons
               activeTabOther={'costOfSalesResults'}
               message={translate('costOfSalesResultsRegistration', language)}
-              handleTabsClick={handleResultsRegTabsClick}
+              handleTabsClick={onTabClick}
               handleListClick={handleListClick}
-              buttonConfig={[
-                { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
-                { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
-                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
-                { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
-              ]}
+              buttonConfig={resultsScreenTabs}
             />
           </div>
           <div className='costOfSalesResultsRegistration_mid_body_cont'>
@@ -591,7 +537,7 @@ const CostOfSalesResultsRegistration = () => {
                 <div className='costOfSalesResultsRegistration_form-content'>
                   <div className='costOfSalesResultsRegistration_plus-btn'>
                     {formData.length >= 2 ? (
-                      <button className='costOfSalesResultsRegistration_dec' type='button' onClick={handleMinus}>
+                      <button className='costOfSalesResultsRegistration_dec' type='button' onClick={handleRemove}>
                         -
                       </button>
                     ) : (

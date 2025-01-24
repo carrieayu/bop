@@ -56,6 +56,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
   const [deleteProjectsId, setDeleteProjectsId] = useState([])
   const [clientMap, setClientMap] = useState({})
   const [businessMap, setBusinessMap] = useState({})
+  const onTabClick = (tab) => handlePLListTabsClick(tab, navigate, setActiveTab)
   const [formProjects, setFormProjects] = useState([
     {
       year: '',
@@ -390,7 +391,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
               <ListButtons
                 activeTabOther={'project'}
                 message={translate(isEditing ? 'projectsEdit' : 'projectsList', language)}
-                handleTabsClick={handlePLListTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
                   { labelKey: 'project', tabKey: 'project' },
