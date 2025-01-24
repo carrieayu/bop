@@ -85,8 +85,7 @@
                         }
                         .expensesList_table_cont.editScrollable {
                             overflow-x: auto;
-                            padding: 0px 0px 0px 0px;
-                            
+                            padding: 0px 0px 0px 0px;                        
                         }
                         .expensesList_table_cont{
                             max-height: 100%;
@@ -94,6 +93,25 @@
                             overflow-x: auto;
                             white-space: nowrap;
                             scrollbar-width: thin;
+                            &::-webkit-scrollbar {
+                                width: 8px;
+                            }
+                            &::-webkit-scrollbar-track {
+                                background: #e0e0e0;
+                            }
+                            &::-webkit-scrollbar-thumb {
+                                background-color: #888;
+                                border-radius: 10px;
+                            }
+                            &::-webkit-scrollbar-thumb:hover {
+                                background-color: #555;
+                            }
+                            &:not(:hover) {
+                                &::-webkit-scrollbar {
+                                    width: 0;
+                                }
+                                scrollbar-width: none; 
+                            }                         
                             table{
                                 width: 100%;
                                 .expensesList_table_title{

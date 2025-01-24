@@ -1458,7 +1458,7 @@ const EditTablePlanning = () => {
 
   return (
     <div className='table-planning-container'>
-      <div className='table-planning'>
+      <div className='table-planning editScrollable'>
         <table>
           <thead>
             <tr>

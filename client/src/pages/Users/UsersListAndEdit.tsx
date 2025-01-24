@@ -312,7 +312,7 @@ const UsersListAndEdit: React.FC = () => {
                 buttonConfig={masterMaintenanceScreenTabs}
               />
               <div className={`UsersListAndEdit_table_wrapper ${isEditing ? 'editMode' : ''}`}>
-                <div className='UsersListAndEdit_table_cont'>
+                <div className={`UsersListAndEdit_table_cont ${isEditing ? 'editScrollable' : ''}`}>
                   <div className='columns is-mobile'>
                     <div className='column'>
                       {isEditing ? (

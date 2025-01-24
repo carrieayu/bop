@@ -65,10 +65,13 @@
                         .projectsList-table-cont.editScrollable {
                             overflow-x: auto;
                             padding: 0px 0px 0px 0px;
-                            
                         }
                         .projectsList-table-cont{  
+                            max-height: 100%;
+                            overflow-y: auto;
                             overflow-x: auto;
+                            white-space: nowrap;
+                            scrollbar-width: thin;
                             &::-webkit-scrollbar {
                                 width: 8px;
                             }
@@ -88,7 +91,7 @@
                                 }
                                 scrollbar-width: none; 
                             }                         
-                            .table{
+                            table{
                                 width: 130%;
                                 .projectsList-table-title{
                                     position: sticky;

@@ -82,10 +82,13 @@
                         .projectSalesResultsList_table_cont.editScrollable {
                             overflow-x: auto;
                             padding: 0px 0px 0px 0px;
-                            
                         }
                         .projectSalesResultsList_table_cont{  
+                            max-height: 100%;
+                            overflow-y: auto;
                             overflow-x: auto;
+                            white-space: nowrap;
+                            scrollbar-width: thin;
                             &::-webkit-scrollbar {
                                 width: 8px;
                             }

@@ -151,7 +151,7 @@ export const TableResultsB: React.FC<TableProps> = (props) => {
               </tr>
             </tbody>
           </table>
-          <div className='table-b-scrollable_container table-b-results_summary_scrollable'>
+          <div className='table-b-scrollable_container table-b-results_summary_scrollable editScrollable'>
             {grid.map((entityGrid, entityIndex) => {
               let totalSum = 0 // used for sum totals of projects for each client
               return (

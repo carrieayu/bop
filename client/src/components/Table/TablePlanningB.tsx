@@ -127,14 +127,13 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
     <div className='table-b-wrapper'>
       <div className='table-b-content-wrapper'>
         <div className='table-b-container'>
+        <div className='table-b-scrollable_container table-b-planning_scrollable editScrollable'>
           <table className='table-b-table_header'>
             <thead>
               <tr className='table-b-planning-tr-header'>
                 <th colSpan={15}>{translate('planning', language)}</th>
               </tr>
-            </thead>
-            <tbody>
-              <tr>
+              <tr className='table-b-planning-tr-header'>
                 <th className={`table-b-client-header ${isTranslateSwitchActive  ? '' : ''}`}>{translate('client', language)}</th>
                 <th className='table-b-categories-header'>{translate('accountCategories', language)}</th>
                 {months.map((month, index) => (
@@ -151,59 +150,54 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
                 ))}
                 <th className='table-b-total-header sky-txt'>{translate('totalAmount', language)}</th>
               </tr>
+            </thead>
+            <tbody>
+              {grid.map((entityGrid, entityIndex) => {
+                let totalSum = 0; // used for sum totals of projects for each client
+                return (
+                  <React.Fragment key={entityIndex}>
+                    <tr>
+                      <td className='table-b-client-data grey' rowSpan={(entityGrid.grid.length + 1)}>
+                        {entityGrid.clientName}
+                      </td>
+                    </tr>
+                    {entityGrid.grid.map((row, rowIndex) => {
+                      const rowTotal = row.reduce((acc, cell) => acc + (parseFloat(cell) || 0), 0);
+                      totalSum += rowTotal; // Accumulate the row total
+                      return (
+                        <tr key={rowIndex}>
+                          <td className={`table-b-categories-data ${isTranslateSwitchActive ? 'smaller-font' : ''}`}>
+                            {translate(headerTitle[rowIndex], language)}
+                          </td>
+                          {row.map((cell, colIndex) => (
+                            <td
+                              className='table-b-months-data'
+                              key={colIndex}
+                              style={{
+                                textAlign: 'center', // for some reason this would not work in scss file so I left it here.
+                              }}
+                            >
+                              {props.isThousandYenChecked ? formatNumberWithCommas(thousandYenConversion(cell)) : formatNumberWithCommas(cell)}
+                            </td>
+                          ))}
+                          <td className='table-b-total-data' style={{ textAlign: 'center', fontWeight: 'light' }}>
+                            {props.isThousandYenChecked ? formatNumberWithCommas(thousandYenConversion(rowTotal)) : formatNumberWithCommas(rowTotal)}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    <tr>
+                      <td className='table-b-divider' colSpan={14}></td>
+                      <td className='table-b-sum-of-totals sky-txt'>
+                        {props.isThousandYenChecked ? formatNumberWithCommas(thousandYenConversion(totalSum)) : formatNumberWithCommas(totalSum)}
+                      </td>
+                    </tr>
+                  </React.Fragment>
+                );
+              })}
             </tbody>
           </table>
-          <div className='table-b-scrollable_container table-b-planning_scrollable'>
-            {grid.map((entityGrid, entityIndex) => {
-              let totalSum = 0 // used for sum totals of projects for each client
-              return (
-                <div key={entityIndex}>
-                  <table className='table-b-grid' style={{ border: '1px solid #ddd' }}>
-                    <tbody className='table-b-client-table'>
-                      <tr>
-                        <td className='table-b-client-data grey' rowSpan={8}>
-                          {entityGrid.clientName}
-                        </td>
-                      </tr>
-                      {entityGrid.grid.map((row, rowIndex) => {
-                        const rowTotal = row.reduce((acc, cell) => acc + (parseFloat(cell) || 0), 0)
-                        totalSum += rowTotal // Accumulate the row total
-                        return (
-                          <tr key={rowIndex}>
-                            <td className={`table-b-categories-data ${isTranslateSwitchActive ? 'smaller-font' : ''}`}>
-                              {translate(headerTitle[rowIndex], language)}
-                            </td>
-                            {row.map((cell, colIndex) => (
-                              <td
-                                className='table-b-months-data'
-                                key={colIndex}
-                                style={{
-                                  textAlign: 'center', // for some reason this would not work in scss file so I left it here.
-                                }}
-                              >
-                                {props.isThousandYenChecked ? formatNumberWithCommas(thousandYenConversion(cell)) : formatNumberWithCommas(cell)}
-                              </td>
-                            ))}
-                            <td className='table-b-total-data' style={{ textAlign: 'center', fontWeight: 'light' }}>
-                              {props.isThousandYenChecked ? formatNumberWithCommas(thousandYenConversion(rowTotal)) : formatNumberWithCommas(rowTotal)}
-                            </td>
-                          </tr>
-                        )
-                      })}
-                      <tr>
-                        <td className='table-b-divider' colSpan={14}>
-                          {' '}
-                        </td>
-                        <td className='table-b-sum-of-totals sky-txt'>
-                          {props.isThousandYenChecked ? formatNumberWithCommas(thousandYenConversion(totalSum)) : formatNumberWithCommas(totalSum)}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              )
-            })}
-          </div>
+        </div>
         </div>
       </div>
     </div>
