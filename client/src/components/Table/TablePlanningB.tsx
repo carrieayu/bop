@@ -172,7 +172,7 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
                 return (
                   <React.Fragment key={entityIndex}>
                     <tr>
-                      <td className='table-b-client-data grey' rowSpan={entityGrid.grid.length}>
+                      <td className='table-b-client-data grey' rowSpan={(entityGrid.grid.length + 1)}>
                         {entityGrid.clientName}
                       </td>
                     </tr>
