@@ -25,7 +25,7 @@ import {
 import { getProject } from '../../api/ProjectsEndpoint/GetProject'
 import { updateProject } from '../../api/ProjectsEndpoint/UpdateProject'
 import { deleteProject } from '../../api/ProjectsEndpoint/DeleteProject'
-import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas, handleInputChange} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, handleInputChange} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const ProjectsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
