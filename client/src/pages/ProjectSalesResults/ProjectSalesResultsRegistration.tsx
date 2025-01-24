@@ -16,20 +16,16 @@ import { getFilteredProjectSalesResults } from '../../api/ProjectSalesResultsEnd
 import { createProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/CreateProjectSalesResults'
 import { overwriteProjectSalesResult } from '../../api/ProjectSalesResultsEndpoint/OverwriteProjectSalesResults'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
-import {
-  validateRecords,
-  translateAndFormatErrors,
-  getFieldChecks,
-  checkForDuplicates,
-} from '../../utils/validationUtil'
+import { maximumEntries, monthNames, months, resultsScreenTabs, token, years } from '../../constants'
+import { addFormInput, closeModal, openModal } from '../../actions/hooks'
+import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
 import {
   handleDisableKeysOnNumberInputs,
   formatNumberWithCommas,
   removeCommas,
   handleResultsRegTabsClick,
 } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-import { maximumEntries, monthNames, months, resultsScreenTabs, token, years } from '../../constants'
-import { addFormInput, closeModal, openModal } from '../../actions/hooks'
+import { MAX_NUMBER_LENGTH } from '../../constants'
 
 type Project = {
   client: string
@@ -152,11 +148,20 @@ const ProjectSalesResultsRegistration = () => {
   }
 
   const handleChange = (index, event) => {
+
     const { name, value } = event.target
 
     // Remove commas to get the raw number
     // EG. 999,999 → 999999 in the DB
     const rawValue = removeCommas(value)
+
+    const nonFinancialValuesArray = ['year', 'month']
+
+    if (!nonFinancialValuesArray.includes(name)) {
+      if (rawValue.length > MAX_NUMBER_LENGTH) {
+        return
+      }
+    }
 
     setProjects((prevFormProjects) => {
       return prevFormProjects.map((form, i) => {

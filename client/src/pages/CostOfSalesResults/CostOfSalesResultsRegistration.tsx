@@ -15,19 +15,14 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import {
-  handleDisableKeysOnNumberInputs,
-  handleResultsRegTabsClick,
-  sortByFinancialYear,
-} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { filterCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/FilterCostOfSalesResults'
 import { createCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/CreateCostOfSalesResults'
 import { overwriteCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/OverwriteCostOfSalesResults'
-import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-import { removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import {handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas, sortByFinancialYear, handleGeneralResultsInputChange, handleResultsRegTabsClick} from '../../utils/helperFunctionsUtil' 
 import { getCostOfSale } from '../../api/CostOfSalesEndpoint/GetCostOfSale'
 import { maximumEntries, monthNames, resultsScreenTabs, token } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
+import { MAX_NUMBER_LENGTH } from '../../constants'
 
 type CostOfSaleResults = {
   month: string
@@ -137,6 +132,8 @@ const CostOfSalesResultsRegistration = () => {
         return form
       })
     })
+    const nonFinancialValuesArray = ['year', 'month'] 
+    handleGeneralResultsInputChange(index, event, setFormData, nonFinancialValuesArray, setFilteredMonth)
   }
 
   const handleSubmit = async (e) => {

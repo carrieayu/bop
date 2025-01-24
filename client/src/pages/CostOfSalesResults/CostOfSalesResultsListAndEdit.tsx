@@ -20,14 +20,16 @@ import {
 } from '../../utils/validationUtil'
 import {
   handleDisableKeysOnNumberInputs,
-  handleResultsListTabsClick,
+  handleInputChange,
   removeCommas,
+  handleResultsListTabsClick,
 } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { getCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/GetCostOfSalesResults'
 import { deleteCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/DeleteCostOfSalesResults'
 import { updateCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/UpdateCostOfSalesResults'
 import { months, resultsScreenTabs, token } from '../../constants'
+import { MAX_NUMBER_LENGTH } from '../../constants'
 
 const CostOfSalesResultsList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
@@ -83,18 +85,7 @@ const CostOfSalesResultsList: React.FC = () => {
   }, [isEditing])
 
   const handleChange = (index, e) => {
-    const { name, value } = e.target
-
-    // Remove commas to get the raw number
-    // EG. 999,999 → 999999 in the DB
-    const rawValue = removeCommas(value)
-
-    const updatedData = [...combinedData]
-    updatedData[index] = {
-      ...updatedData[index],
-      [name]: rawValue,
-    }
-    setCostOfSalesResults(updatedData)
+    handleInputChange(index, e, setCostOfSalesResults, combinedData)
   }
 
   const handleSubmit = async () => {

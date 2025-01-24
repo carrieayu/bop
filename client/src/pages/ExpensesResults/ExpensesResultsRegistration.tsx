@@ -15,17 +15,19 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
+import { maximumEntries, monthNames, resultsScreenTabs, storedUserID, token, years } from '../../constants'
+import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 import {
   handleDisableKeysOnNumberInputs,
   formatNumberWithCommas,
   removeCommas,
   sortByFinancialYear,
+  handleGeneralResultsInputChange,
   handleResultsRegTabsClick,
 } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 import { filterExpenseResults } from '../../api/ExpenseResultEndpoint/FilterExpenseResults'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
-import { maximumEntries, monthNames, resultsScreenTabs, storedUserID, token, years } from '../../constants'
-import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
+import { MAX_NUMBER_LENGTH } from '../../constants'
 
 type ExpenseResults = {
   month: string
@@ -80,46 +82,8 @@ const ExpensesResultsRegistration = () => {
   }
 
   const handleChange = (index, event) => {
-    const { name, value } = event.target
-    const rawValue = removeCommas(value)
-
-    const newFormData = [...formData]
-    newFormData[index] = {
-      ...newFormData[index],
-      [name]: rawValue,
-    }
-    setFormData((prevFormData) => {
-      return prevFormData.map((form, i) => {
-        if (i === index) {
-          const resetFields = {
-            params: ['months'],
-          }
-          let month = form.month
-          if (name == 'year' && value == '') {
-            form.month = ''
-            setFilteredMonth((prev) => {
-              return prev.map((eachMonth, monthIndex) => {
-                if (index == monthIndex) {
-                  return [{}]
-                }
-                return eachMonth
-              })
-            })
-          }
-          const fieldsToReset = resetFields[name] || []
-          const resetValues = fieldsToReset.reduce((acc, field) => {
-            acc[field] = ''
-            return acc
-          }, {})
-          return {
-            ...form,
-            [name]: rawValue,
-            ...resetValues,
-          }
-        }
-        return form
-      })
-    })
+    const nonFinancialValuesArray = ['year', 'month']
+    handleGeneralResultsInputChange(index, event, setFormData, nonFinancialValuesArray, setFilteredMonth )
   }
 
   const handleAdd = () => {

@@ -16,19 +16,15 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
 import { updateProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/UpdateProjectSalesResults'
 import { deleteProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/DeleteProjectSalesResults'
-import {
-  validateRecords,
-  translateAndFormatErrors,
-  getFieldChecks,
-  checkForDuplicates,
-} from '../../utils/validationUtil'
+import { resultsScreenTabs, token } from '../../constants'
+import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
 import {
   handleDisableKeysOnNumberInputs,
   formatNumberWithCommas,
   removeCommas,
+  handleInputChange,
   handleResultsListTabsClick,
 } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-import { resultsScreenTabs, token } from '../../constants'
 const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
@@ -105,23 +101,8 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   }, [isEditing])
 
   const handleChange = (index, event) => {
-    const { name, value } = event.target
-
-    // Remove commas to get the raw number
-    // EG. 999,999 → 999999 in the DB
-    const rawValue = removeCommas(value)
-
-    setProjectSalesResults((prevState) => {
-      const updatedProjectsData = [...prevState]
-      updatedProjectsData[index] = {
-        ...updatedProjectsData[index],
-        [name]: rawValue,
-      }
-
-      setFormProjects(updatedProjectsData)
-      console.log('inside handle change', updatedProjectsData, formProjects)
-      return updatedProjectsData
-    })
+    const nonFinancialFieldsArray = ['year', 'month', 'project_name', 'project_type', 'client', 'business_division']
+    handleInputChange(index, event, setProjectSalesResults, projectSalesResults, nonFinancialFieldsArray)
   }
 
   const handleSubmit = async () => {

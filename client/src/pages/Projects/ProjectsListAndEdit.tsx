@@ -29,9 +29,9 @@ import { months, token, years } from '../../constants'
 import {
   handleDisableKeysOnNumberInputs,
   formatNumberWithCommas,
-  removeCommas,
   handleInputChange,
   handlePLListTabsClick,
+  removeCommas,
 } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const ProjectsListAndEdit: React.FC = ({}) => {

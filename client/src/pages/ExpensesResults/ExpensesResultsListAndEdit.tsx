@@ -20,13 +20,14 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
+import { months, resultsScreenTabs, token } from '../../constants'
 import {
   handleDisableKeysOnNumberInputs,
   formatNumberWithCommas,
+  handleInputChange,
   removeCommas,
   handleResultsListTabsClick,
 } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-import { months, resultsScreenTabs, token } from '../../constants'
 
 const ExpensesResultsList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
@@ -85,18 +86,7 @@ const ExpensesResultsList: React.FC = () => {
   }, [isEditing])
 
   const handleChange = (index, e) => {
-    const { name, value } = e.target
-
-    // Remove commas to get the raw number
-    // EG. 999,999 → 999999 in the DB
-    const rawValue = removeCommas(value)
-
-    const updatedData = [...combinedData]
-    updatedData[index] = {
-      ...updatedData[index],
-      [name]: rawValue,
-    }
-    setExpensesResultsList(updatedData)
+    handleInputChange(index, e, setExpensesResultsList, combinedData)
   }
 
   const handleSubmit = async () => {
