@@ -98,7 +98,10 @@
                                     padding: 0px 0px 0px 0px;
                                 }
                                 .employeeExpensesResultsList_table_cont{ 
-                                    overflow-x: auto;   
+                                    max-height: 100%;
+                                    overflow-y: auto;
+                                    overflow-x: auto;
+                                    scrollbar-width: thin;
                                     &::-webkit-scrollbar {
                                         width: 8px;
                                     }
