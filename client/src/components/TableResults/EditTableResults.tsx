@@ -5,7 +5,7 @@ import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { getResultsA } from '../../api/ResultsEndpoint/GetResultsA'
 import { updateResults } from '../../api/ResultsEndpoint/UpdateResults'
-import { token } from '../../constants'
+import { months, token } from '../../constants'
 
 const EditTableResults = () => {
   const [data, setData] = useState([])
@@ -131,8 +131,7 @@ const EditTableResults = () => {
 
           return acc
         }, {})
-        
-        const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
+
         // SALES REVENUE
         const salesValues = months.map((month) => aggregatedProjectSalesResultsData[month]?.sales_revenue || 0)
 
@@ -1378,7 +1377,6 @@ const EditTableResults = () => {
     'professionalServicesFees',
   ]
 
-  const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
   const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable']
   const [editableData, setEditableData] = useState(data)
   const isRowEditable = (label) => editableLabels.includes(label)
