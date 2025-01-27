@@ -25,7 +25,7 @@ import {
 import { getProject } from '../../api/ProjectsEndpoint/GetProject'
 import { updateProject } from '../../api/ProjectsEndpoint/UpdateProject'
 import { deleteProject } from '../../api/ProjectsEndpoint/DeleteProject'
-import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas, handleInputChange} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, handleInputChange} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const ProjectsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -229,20 +229,6 @@ const ProjectsListAndEdit: React.FC = () => {
           }
         }
       })
- 
-    try {
-      await updateProject(modifiedFields, token);
-      const updatedProjects = await getProject(token);
-      setProjects(updatedProjects);
-      setOriginalProjectsList(updatedProjects);
-      setCrudMessage(translate('successfullyUpdated', language));
-      setIsCRUDOpen(true);
-      setIsEditing(false);
-    } catch (error) {
-      console.error('Error updating projects:', error);
-      setCrudMessage(translate('error', language));
-      setIsCRUDOpen(true);
-    }
   }
 
   const handleUpdateConfirm = async () => {
@@ -275,18 +261,7 @@ const ProjectsListAndEdit: React.FC = () => {
         return
       }
 
-      getProject(token)
-        .then((data) => {
-          setProjects(data)
-          setOriginalProjectsList(data)
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('There was an error fetching the projects!', error)
-          }
-        })
+      fetchProjectsHandler()
     }
     fetchDivision()
     fetchClient()
@@ -331,6 +306,7 @@ const ProjectsListAndEdit: React.FC = () => {
     setSelectedProject(null)
     setModalIsOpen(false)
     setIsCRUDOpen(false)
+    fetchProjectsHandler()
   }
 
   // # Handle DELETE on Edit Screen
@@ -379,6 +355,20 @@ const ProjectsListAndEdit: React.FC = () => {
       setProjects(originalProjectsList)
     }
   }, [deleteComplete])
+
+  const fetchProjectsHandler = async () => {
+    try {
+      const data = await getProject(token)
+      setProjects(data)
+      setOriginalProjectsList(data)
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        window.location.href = '/login' // Redirect to login if unauthorized
+      } else {
+        console.error('There was an error fetching the projects!', error)
+      }
+    }
+  }
 
   return (
     <div className='projectsList-wrapper'>
