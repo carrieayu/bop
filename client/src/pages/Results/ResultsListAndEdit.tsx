@@ -38,7 +38,7 @@ const ResultsListAndEdit = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [initialLanguage, setInitialLanguage] = useState(language)
   const [isXLSModalOpen, setIsXLSModalOpen] = useState(false)
-  
+
   const additionalHeaders = {
     1: { en: 'H1', jp: '上期計	' },
     2: { en: 'H2', jp: '下期計	' },
@@ -707,7 +707,6 @@ const ResultsListAndEdit = () => {
           ['', ...reorderedMonthNames, ...additionalHeadersTranslation],
           ['', header, header, header, header, ...Array(11).fill(header)],
         ]
-
 
         data.forEach((item) => {
           excelRows.push([item.label, ...item.values])

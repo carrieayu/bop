@@ -83,7 +83,7 @@ const ExpensesResultsRegistration = () => {
 
   const handleChange = (index, event) => {
     const nonFinancialValuesArray = ['year', 'month']
-    handleGeneralResultsInputChange(index, event, setFormData, nonFinancialValuesArray, setFilteredMonth )
+    handleGeneralResultsInputChange(index, event, setFormData, nonFinancialValuesArray, setFilteredMonth)
   }
 
   const handleAdd = () => {
@@ -194,9 +194,7 @@ const ExpensesResultsRegistration = () => {
       .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
-        setFormData([
-          emptyFormData
-        ])
+        setFormData([emptyFormData])
       })
       .catch((error) => {
         if (error.response && error.response.status === 409) {

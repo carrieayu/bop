@@ -15,9 +15,19 @@ import { createProject } from '../../api/ProjectsEndpoint/CreateProject'
 import { overwriteProject } from '../../api/ProjectsEndpoint/OverwriteProject'
 import { maximumEntries, monthNames, token, years } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
-import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs, removeCommas, formatNumberWithCommas, handleInputChange, handlePLRegTabsClick} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+import {
+  handleDisableKeysOnNumberInputs,
+  removeCommas,
+  formatNumberWithCommas,
+  handleInputChange,
+  handlePLRegTabsClick,
+} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 
 const ProjectsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -98,16 +108,15 @@ const ProjectsRegistration = () => {
     }
   }
 
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear;
-  const [months, setMonths] = useState<number[]>([]);
-  
-  const handleChange = (index, event) => {
+  const currentDate = new Date()
+  const currentYear = currentDate.getFullYear()
+  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear
+  const [months, setMonths] = useState<number[]>([])
 
+  const handleChange = (index, event) => {
     const nonFinancialFieldsArray = ['year', 'month', 'project_name', 'project_type', 'client', 'business_division']
     handleInputChange(index, event, setProjects, formProjects, nonFinancialFieldsArray)
-    
+
     const { name, value } = event.target
 
     // Remove commas to get the raw number
@@ -207,9 +216,7 @@ const ProjectsRegistration = () => {
       .then((data) => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
-        setProjects([
-          emptyFormData
-        ])
+        setProjects([emptyFormData])
       })
       .catch((error) => {
         if (error.response && error.response.status === 409) {

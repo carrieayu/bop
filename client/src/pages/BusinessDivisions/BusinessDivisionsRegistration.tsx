@@ -152,9 +152,7 @@ const BusinessDivisionsRegistration = () => {
       .then((data) => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
-        setFormData([
-          emptyFormData
-        ])
+        setFormData([emptyFormData])
       })
       .catch((error) => {
         console.log('error', error)

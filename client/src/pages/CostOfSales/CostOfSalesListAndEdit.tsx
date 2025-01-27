@@ -31,7 +31,6 @@ import {
 import { createCostOfSale } from '../../api/CostOfSalesEndpoint/CreateCostOfSale'
 import { months, token } from '../../constants'
 
-
 const CostOfSalesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()

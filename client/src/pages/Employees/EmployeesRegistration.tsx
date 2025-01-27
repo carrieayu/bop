@@ -112,7 +112,7 @@ const EmployeesRegistration = () => {
       if (rawValue.length <= MAX_NUMBER_LENGTH && rawValue <= MAX_SAFE_INTEGER) {
       }
     }
-    
+
     if (name === 'company_name') {
       setSelectedCompanyId(value) // Update selected company ID
       const newContainers = [...employees]
@@ -266,9 +266,7 @@ const EmployeesRegistration = () => {
       .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
-        setEmployees([
-          emptyFormData
-        ])
+        setEmployees([emptyFormData])
       })
       .catch((error) => {
         if (error.response) {

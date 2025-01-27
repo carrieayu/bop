@@ -1,6 +1,6 @@
 // GENERAL HELPER FUNCTIONS
 
-import { MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER, MAX_VALUE} from "../constants"
+import { MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER, MAX_VALUE } from '../constants'
 
 // # Helper to block non-numeric key presses for number inputs
 
@@ -78,7 +78,6 @@ export const sortByFinancialYear = (months) => {
   const financialOrder = (month) => (month < 4 ? month + 12 : month)
   return months.sort((a, b) => financialOrder(a.month) - financialOrder(b.month))
 }
-
 
 export const handlePLRegTabsClick = (tab, navigate, setActiveTabOther) => {
   setActiveTabOther(tab)
@@ -184,17 +183,17 @@ export const handleMMRegTabsClick = (tab, navigate, setActiveTabOther) => {
   setActiveTabOther(tab)
   switch (tab) {
     case 'client':
-          navigate('/clients-registration');
-          break;
-        case 'employee':
-          navigate('/employees-registration');
-          break;
-        case 'businessDivision':
-          navigate('/business-divisions-registration');
-          break;
-        case 'users':
-          navigate('/users-registration');
-          break;
+      navigate('/clients-registration')
+      break
+    case 'employee':
+      navigate('/employees-registration')
+      break
+    case 'businessDivision':
+      navigate('/business-divisions-registration')
+      break
+    case 'users':
+      navigate('/users-registration')
+      break
     default:
       break
   }
@@ -229,7 +228,6 @@ export const handleInputChange = (
   }
 
   if (rawValue.length <= MAX_NUMBER_LENGTH && rawValue <= MAX_SAFE_INTEGER) {
-
     const updatedData = [...dataList]
     updatedData[index] = {
       ...updatedData[index],
@@ -245,47 +243,46 @@ export const handleGeneralResultsInputChange = (
   updateFunction,
   nonFinancialValuesArray,
   setFilteredMonth,
-) => { 
+) => {
+  const { name, value } = event.target
+  const rawValue = removeCommas(value)
 
-    const { name, value } = event.target
-    const rawValue = removeCommas(value)
-  
-    if (!nonFinancialValuesArray.includes(name)) {
-      if (rawValue.length > MAX_NUMBER_LENGTH) {
-        return
-      }
+  if (!nonFinancialValuesArray.includes(name)) {
+    if (rawValue.length > MAX_NUMBER_LENGTH) {
+      return
     }
+  }
 
-      updateFunction((prevFormData) => {
-        return prevFormData.map((form, i) => {
-          if (i === index) {
-            const resetFields = {
-              params: ['months'],
-            }
-            let month = form.month
-            if (name == 'year' && value == '') {
-              form.month = ''
-              setFilteredMonth((prev) => {
-                return prev.map((eachMonth, monthIndex) => {
-                  if (index == monthIndex) {
-                    return [{}]
-                  }
-                  return eachMonth
-                })
-              })
-            }
-            const fieldsToReset = resetFields[name] || []
-            const resetValues = fieldsToReset.reduce((acc, field) => {
-              acc[field] = ''
-              return acc
-            }, {})
-            return {
-              ...form,
-              [name]: rawValue,
-              ...resetValues,
-            }
-          }
-          return form
-        })
-      })
+  updateFunction((prevFormData) => {
+    return prevFormData.map((form, i) => {
+      if (i === index) {
+        const resetFields = {
+          params: ['months'],
+        }
+        let month = form.month
+        if (name == 'year' && value == '') {
+          form.month = ''
+          setFilteredMonth((prev) => {
+            return prev.map((eachMonth, monthIndex) => {
+              if (index == monthIndex) {
+                return [{}]
+              }
+              return eachMonth
+            })
+          })
+        }
+        const fieldsToReset = resetFields[name] || []
+        const resetValues = fieldsToReset.reduce((acc, field) => {
+          acc[field] = ''
+          return acc
+        }, {})
+        return {
+          ...form,
+          [name]: rawValue,
+          ...resetValues,
+        }
+      }
+      return form
+    })
+  })
 }

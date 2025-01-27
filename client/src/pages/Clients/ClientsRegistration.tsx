@@ -116,9 +116,7 @@ const ClientsRegistration = () => {
       .then((data) => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
-        setClientData([
-          emptyFormData
-        ])
+        setClientData([emptyFormData])
       })
       .catch((error) => {
         if (error.response) {

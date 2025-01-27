@@ -17,7 +17,12 @@ import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/Ge
 import { updateProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/UpdateProjectSalesResults'
 import { deleteProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/DeleteProjectSalesResults'
 import { resultsScreenTabs, token } from '../../constants'
-import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
 import {
   handleDisableKeysOnNumberInputs,
   formatNumberWithCommas,

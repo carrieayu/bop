@@ -35,8 +35,7 @@ import {
   removeCommas,
   handleMMListTabsClick,
 } from '../../utils/helperFunctionsUtil'
-import { MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER } from "../../constants";
-
+import { MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER } from '../../constants'
 
 const EmployeesListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -119,14 +118,13 @@ const EmployeesListAndEdit: React.FC = () => {
   }, [isEditing])
 
   const handleChange = (index, e) => {
-    
     const { name, value } = e.target
     // Remove commas to get the raw number
     // EG. 999,999 → 999999 in the DB
     const rawValue = removeCommas(value)
 
     if (name === 'salary' || name === 'executive_renumeration' || name === 'bonus_and_fuel_allowance') {
-      console.log('name',name, 'value:', rawValue, 'length', rawValue.length)
+      console.log('name', name, 'value:', rawValue, 'length', rawValue.length)
 
       if (rawValue.length > MAX_NUMBER_LENGTH) {
         console.log('rawValue.length > MAX_NUMBER_LENGTH:', rawValue.length > MAX_NUMBER_LENGTH, rawValue.length)

@@ -139,9 +139,7 @@ const CostOfSalesRegistration = () => {
       .then((data) => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
-        setFormData([
-          emptyFormData
-        ])
+        setFormData([emptyFormData])
       })
       .catch((error) => {
         if (error.response && error.response.status === 409) {
@@ -220,7 +218,6 @@ const CostOfSalesRegistration = () => {
   const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear
   const [months, setMonths] = useState<number[]>([])
   const handleChange = (index, event) => {
-
     handleInputChange(index, event, setFormData, formData)
 
     const { name, value } = event.target

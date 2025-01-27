@@ -18,7 +18,12 @@ import { overwriteProjectSalesResult } from '../../api/ProjectSalesResultsEndpoi
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
 import { maximumEntries, monthNames, months, resultsScreenTabs, token, years } from '../../constants'
 import { addFormInput, closeModal, openModal } from '../../actions/hooks'
-import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
 import {
   handleDisableKeysOnNumberInputs,
   formatNumberWithCommas,
@@ -148,7 +153,6 @@ const ProjectSalesResultsRegistration = () => {
   }
 
   const handleChange = (index, event) => {
-
     const { name, value } = event.target
 
     // Remove commas to get the raw number
@@ -422,9 +426,7 @@ const ProjectSalesResultsRegistration = () => {
       .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
-        setProjects([
-          emptyFormData
-        ])
+        setProjects([emptyFormData])
         setProjectsListSelection([{ projects: [] }])
         setClientsFilter([{ clients: [] }])
         setProjectsList([{ projects: [] }])

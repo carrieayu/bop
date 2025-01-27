@@ -14,7 +14,12 @@ import { createExpense } from '../../api/ExpenseEndpoint/CreateExpense'
 import { overwriteExpense } from '../../api/ExpenseEndpoint/OverwriteExpense'
 import { maximumEntries, monthNames, storedUserID, token, years } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput, useTranslateSwitch } from '../../actions/hooks'
-import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
 import {
   handleDisableKeysOnNumberInputs,
   removeCommas,
@@ -22,10 +27,6 @@ import {
   handleInputChange,
   handlePLRegTabsClick,
 } from '../../utils/helperFunctionsUtil'
-
-const months = [
-  '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
-];
 
 const ExpensesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -77,9 +78,8 @@ const ExpensesRegistration = () => {
   const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear
   const [months, setMonths] = useState<number[]>([])
   const handleChange = (index, event) => {
-   
     handleInputChange(index, event, setFormData, formData)
-    
+
     const { name, value } = event.target
 
     // Remove commas to get the raw number
@@ -98,8 +98,8 @@ const ExpensesRegistration = () => {
     }
   }
 
-  useEffect(() => { }, [formData])
-  
+  useEffect(() => {}, [formData])
+
   useEffect(() => {
     const path = location.pathname
     if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
@@ -177,9 +177,7 @@ const ExpensesRegistration = () => {
         console.log('in create function:modal message', modalMessage)
 
         setIsModalOpen(true)
-        setFormData([
-          emptyFormData
-        ])
+        setFormData([emptyFormData])
       })
       .catch((error) => {
         if (error.response && error.response.status === 409) {
