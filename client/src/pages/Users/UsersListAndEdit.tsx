@@ -180,6 +180,21 @@ const UsersListAndEdit: React.FC = () => {
           console.error('There was an error updating the user data!', error)
         }
       })
+
+      try {
+        await updateUser(userList, token);
+        const updatedUsers = await getUser(token);
+        setUserList(updatedUsers);
+        setOriginalUserList(updatedUsers);
+        setCrudMessage(translate('successfullyUpdated', language));
+        setIsCRUDOpen(true);
+        setIsEditing(false);
+      } catch (error) {
+        console.error('Error updating projects:', error);
+        setCrudMessage(translate('error', language));
+        setIsCRUDOpen(true);
+      }
+
   }
 
   const handleUpdateConfirm = async () => {
