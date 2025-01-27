@@ -17,7 +17,7 @@ import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/Ge
 import { updateProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/UpdateProjectSalesResults'
 import { deleteProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/DeleteProjectSalesResults'
 import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, handleInputChange } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
 const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
@@ -116,23 +116,8 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
             }, [isEditing])
 
   const handleChange = (index, event) => {
-    const { name, value } = event.target
-
-    // Remove commas to get the raw number
-    // EG. 999,999 → 999999 in the DB
-    const rawValue = removeCommas(value)
-
-    setProjectSalesResults((prevState) => {
-      const updatedProjectsData = [...prevState]
-      updatedProjectsData[index] = {
-        ...updatedProjectsData[index],
-        [name]: rawValue,
-      }
-
-      setFormProjects(updatedProjectsData)
-      console.log('inside handle change', updatedProjectsData, formProjects)
-      return updatedProjectsData
-    })
+    const nonFinancialFieldsArray = ['year', 'month', 'project_name', 'project_type', 'client', 'business_division']
+    handleInputChange(index, event, setProjectSalesResults, projectSalesResults, nonFinancialFieldsArray)
   }
 
   const handleSubmit = async () => {
@@ -216,21 +201,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
       .catch((error) => {
         console.log('There was an error updating the projects sales results!', error)
       })
-
-    try {
-      await updateProjectSalesResults(modifiedFields, token);
-      const updatedProjects = await getProjectSalesResults(token);
-      setProjectSalesResults(updatedProjects);
-      setOriginalProjectSalesResultsList(updatedProjects);
-      setCrudMessage(translate('successfullyUpdated', language));
-      setIsCRUDOpen(true);
-      setIsEditing(false);
-    } catch (error) {
-      console.error('Error updating projects:', error);
-      setCrudMessage(translate('error', language));
-      setIsCRUDOpen(true);
-    }
-
   }
 
   const handleUpdateConfirm = async () => {
@@ -263,18 +233,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
         return
       }
 
-      getProjectSalesResults(token)
-        .then((data) => {
-          setProjectSalesResults(data)
-          setOriginalProjectSalesResultsList(data)
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('There was an error fetching the projects sales results!', error)
-          }
-        })
+      fetchProjectsHandler()
     }
     fetchDivision()
     fetchClient()
@@ -319,6 +278,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
     setSelectedProject(null)
     setModalIsOpen(false)
     setIsCRUDOpen(false)
+    fetchProjectsHandler()
   }
 
   // # Handle DELETE on Edit Screen
@@ -367,6 +327,20 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
       setProjectSalesResults(originalProjectSalesResultsList)
     }
   }, [deleteComplete])
+
+  const fetchProjectsHandler = async () => {
+    try {
+      const data = await getProjectSalesResults(token);
+      setProjectSalesResults(data);
+      setOriginalProjectSalesResultsList(data);
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        window.location.href = '/login'; // Redirect to login if unauthorized
+      } else {
+        console.error('There was an error fetching the projects sales results!', error);
+      }
+    }
+  }
 
   return (
     <div className='projectSalesResultsList_wrapper'>
