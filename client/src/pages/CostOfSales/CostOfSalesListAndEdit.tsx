@@ -24,10 +24,9 @@ import {
 import {
   handleDisableKeysOnNumberInputs,
   handlePLListTabsClick,
-  removeCommas,
   formatNumberWithCommas,
   handleInputChange,
-} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+} from '../../utils/helperFunctionsUtil'
 import { createCostOfSale } from '../../api/CostOfSalesEndpoint/CreateCostOfSale'
 import { months, token } from '../../constants'
 

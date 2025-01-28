@@ -22,7 +22,6 @@ import {
   formatNumberWithCommas,
   handleInputChange,
   handlePLListTabsClick,
-  removeCommas,
 } from '../../utils/helperFunctionsUtil'
 import { deleteExpense } from '../../api/ExpenseEndpoint/DeleteExpense'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'

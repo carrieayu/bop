@@ -26,10 +26,9 @@ import {
 import {
   handleDisableKeysOnNumberInputs,
   formatNumberWithCommas,
-  removeCommas,
   handleInputChange,
   handleResultsListTabsClick,
-} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+} from '../../utils/helperFunctionsUtil'
 const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()

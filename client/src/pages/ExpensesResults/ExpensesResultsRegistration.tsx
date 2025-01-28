@@ -20,11 +20,10 @@ import { addFormInput, closeModal, openModal, removeFormInput } from '../../acti
 import {
   handleDisableKeysOnNumberInputs,
   formatNumberWithCommas,
-  removeCommas,
   sortByFinancialYear,
   handleGeneralResultsInputChange,
   handleResultsRegTabsClick,
-} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+} from '../../utils/helperFunctionsUtil'
 import { filterExpenseResults } from '../../api/ExpenseResultEndpoint/FilterExpenseResults'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
 import { MAX_NUMBER_LENGTH } from '../../constants'

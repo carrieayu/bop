@@ -1,6 +1,6 @@
 import { translate } from '../utils/translationUtil'
 import { inputFieldConfigurations } from '../inputFieldConfigurations'
-import { MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER, MAX_VALUE } from '../constants'
+import { MAX_SAFE_INTEGER } from '../constants'
 
 // # CLIENT SIDE //
 

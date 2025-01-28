@@ -21,15 +21,13 @@ import {
 import {
   handleDisableKeysOnNumberInputs,
   handleInputChange,
-  removeCommas,
+  formatNumberWithCommas,
   handleResultsListTabsClick,
-} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+} from '../../utils/helperFunctionsUtil'
 import { getCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/GetCostOfSalesResults'
 import { deleteCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/DeleteCostOfSalesResults'
 import { updateCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/UpdateCostOfSalesResults'
 import { months, resultsScreenTabs, token } from '../../constants'
-import { MAX_NUMBER_LENGTH } from '../../constants'
 
 const CostOfSalesResultsList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')

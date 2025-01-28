@@ -31,8 +31,7 @@ import {
   formatNumberWithCommas,
   handleInputChange,
   handlePLListTabsClick,
-  removeCommas,
-} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+} from '../../utils/helperFunctionsUtil'
 
 const ProjectsListAndEdit: React.FC = ({}) => {
   const [activeTab, setActiveTab] = useState('/planning-list')

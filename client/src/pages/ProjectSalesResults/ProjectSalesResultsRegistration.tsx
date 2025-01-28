@@ -29,7 +29,7 @@ import {
   formatNumberWithCommas,
   removeCommas,
   handleResultsRegTabsClick,
-} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+} from '../../utils/helperFunctionsUtil'
 import { MAX_NUMBER_LENGTH } from '../../constants'
 
 type Project = {
@@ -155,8 +155,6 @@ const ProjectSalesResultsRegistration = () => {
   const handleChange = (index, event) => {
     const { name, value } = event.target
 
-    // Remove commas to get the raw number
-    // EG. 999,999 → 999999 in the DB
     const rawValue = removeCommas(value)
 
     const nonFinancialValuesArray = ['year', 'month']

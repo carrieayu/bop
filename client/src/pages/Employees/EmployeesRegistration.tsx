@@ -24,7 +24,7 @@ import {
   formatNumberWithCommas,
   removeCommas,
   handleMMRegTabsClick,
-} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+} from '../../utils/helperFunctionsUtil'
 import EmployeeExpensesList from '../EmployeeExpenses/EmployeeExpensesList'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 import { masterMaintenanceScreenTabs, maximumEntries, token } from '../../constants'

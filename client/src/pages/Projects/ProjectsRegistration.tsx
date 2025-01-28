@@ -27,7 +27,7 @@ import {
   formatNumberWithCommas,
   handleInputChange,
   handlePLRegTabsClick,
-} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+} from '../../utils/helperFunctionsUtil'
 
 const ProjectsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')

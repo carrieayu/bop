@@ -15,7 +15,7 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/GetEmployeeExpense'
 import { deleteEmployeeExpenseX } from '../../api/EmployeeExpenseEndpoint/DeleteEmployeeExpenseX'
 import { deleteProjectAssociation } from '../../api/EmployeeExpenseEndpoint/DeleteProjectAssociation'
-import { formatNumberWithCommas, handlePLListTabsClick } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { formatNumberWithCommas, handlePLListTabsClick } from '../../utils/helperFunctionsUtil'
 import { monthNames, months, token } from '../../constants'
 
 const EmployeeExpensesList: React.FC = () => {
