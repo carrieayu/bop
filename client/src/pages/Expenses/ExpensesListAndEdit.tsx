@@ -17,17 +17,21 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, handleInputChange } from '../../utils/helperFunctionsUtil'
+import {
+  handleDisableKeysOnNumberInputs,
+  formatNumberWithCommas,
+  handleInputChange,
+  handlePLListTabsClick,
+} from '../../utils/helperFunctionsUtil'
 import { deleteExpense } from '../../api/ExpenseEndpoint/DeleteExpense'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
 import { updateExpense } from '../../api/ExpenseEndpoint/UpdateExpense'
-
+import { months, token } from '../../constants'
 
 const ExpensesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('expenses')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const [isEditing, setIsEditing] = useState(false)
@@ -37,29 +41,14 @@ const ExpensesList: React.FC = () => {
   const [selectedExpense, setSelectedExpense] = useState<any>(null)
   const [expensesList, setExpensesList] = useState([])
   const [originalExpenseList, setOriginalExpensesList] = useState(expensesList)
-  const token = localStorage.getItem('accessToken')
   const [changes, setChanges] = useState({}) //ians code maybe i do not need.
+  const onTabClick = (tab) => handlePLListTabsClick(tab, navigate, setActiveTab)
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [deleteComplete, setDeleteComplete] = useState(false)
 
-  const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
-  }
   const header: string[] = [
     'year',
     'month',
@@ -81,39 +70,19 @@ const ExpensesList: React.FC = () => {
     navigate(tab)
   }
 
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'project':
-        navigate('/projects-list')
-        break
-      case 'employeeExpenses':
-        navigate('/employee-expenses-list')
-        break
-      case 'expenses':
-        navigate('/expenses-list')
-        break
-      case 'costOfSales':
-        navigate('/cost-of-sales-list')
-        break
-      default:
-        break
-    }
-  }
-  
   const handleClick = () => {
-        setIsEditing((prevState) => !prevState)
-      }
-      useEffect(() => {
-        if (isEditing) {
-          setLanguage('jp')
-        }
-  
-        if (!isEditing) {
-          // Reset to original values when switching to list mode
-          setExpensesList(originalExpenseList)
-        }
-      }, [isEditing])
+    setIsEditing((prevState) => !prevState)
+  }
+  useEffect(() => {
+    if (isEditing) {
+      setLanguage('jp')
+    }
+
+    if (!isEditing) {
+      // Reset to original values when switching to list mode
+      setExpensesList(originalExpenseList)
+    }
+  }, [isEditing])
 
   const handleChange = (index, e) => {
     handleInputChange(index, e, setExpensesList, combinedData)
@@ -219,7 +188,6 @@ const ExpensesList: React.FC = () => {
       return
     }
 
-    const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login'
       return
@@ -259,7 +227,6 @@ const ExpensesList: React.FC = () => {
   }
 
   const fetchExpenses = async () => {
-    const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login' // Redirect to login if no token found
       return
@@ -293,40 +260,33 @@ const ExpensesList: React.FC = () => {
   const normalizedExpensesList = expensesList.map((item) => ({
     ...item,
     month: parseInt(item.month, 10),
-    year:  parseInt(item.year,  10),
-  }));
+    year: parseInt(item.year, 10),
+  }))
 
   // Calculate the fiscal year based on the access date
   const getFiscalYearRange = (accessDate) => {
-    const currentYear  = accessDate.getFullYear();
-    const currentMonth = accessDate.getMonth() + 1;
-    const startYear = currentMonth < 4 ? currentYear - 1 : currentYear;
-    const endYear   = startYear + 1;
+    const currentYear = accessDate.getFullYear()
+    const currentMonth = accessDate.getMonth() + 1
+    const startYear = currentMonth < 4 ? currentYear - 1 : currentYear
+    const endYear = startYear + 1
 
     return {
       startYear,
       endYear,
       startMonth: 4,
       endMonth: 3,
-    };
-  };
-  
+    }
+  }
+
   // Filter and combine data based on the fiscal year range
   const getFiscalYearData = (normalizedExpensesList, months, fiscalYearRange) => {
-    const { startYear, endYear, startMonth, endMonth } = fiscalYearRange;
+    const { startYear, endYear, startMonth, endMonth } = fiscalYearRange
     return months.flatMap((month) => {
-      const year =
-        month >= startMonth && month <= 12
-          ? startYear
-          : month <= endMonth
-          ? endYear
-          : null;
+      const year = month >= startMonth && month <= 12 ? startYear : month <= endMonth ? endYear : null
 
-      if (!year) return [];
+      if (!year) return []
 
-      const foundData = normalizedExpensesList.find(
-        (item) => item.month === month && item.year === year
-      );
+      const foundData = normalizedExpensesList.find((item) => item.month === month && item.year === year)
 
       return {
         expense_id: foundData ? foundData.expense_id : null,
@@ -342,20 +302,18 @@ const ExpensesList: React.FC = () => {
         transaction_fee: foundData ? foundData.transaction_fee : '',
         advertising_expense: foundData ? foundData.advertising_expense : '',
         entertainment_expense: foundData ? foundData.entertainment_expense : '',
-        professional_service_fee: foundData
-          ? foundData.professional_service_fee
-          : '',
-      };
-    });
-  };
+        professional_service_fee: foundData ? foundData.professional_service_fee : '',
+      }
+    })
+  }
 
   // Determine the 'fiscal year' based on the system date at the time of access.
-  const accessDate      = new Date();
-  const fiscalYearRange = getFiscalYearRange(accessDate);
-  const combinedData    = getFiscalYearData(normalizedExpensesList, months, fiscalYearRange);
+  const accessDate = new Date()
+  const fiscalYearRange = getFiscalYearRange(accessDate)
+  const combinedData = getFiscalYearData(normalizedExpensesList, months, fiscalYearRange)
 
   // Filter valid data (only rows with an expense_id)
-  const validData = combinedData.filter((data) => data.expense_id !== null);
+  const validData = combinedData.filter((data) => data.expense_id !== null)
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
@@ -455,9 +413,9 @@ const ExpensesList: React.FC = () => {
             </div>
             <div className='expensesList_mid_body_cont'>
               <ListButtons
-                activeTabOther={activeTabOther}
+                activeTabOther={'expenses'}
                 message={translate(isEditing ? 'expensesEdit' : 'expensesList', language)}
-                handleTabsClick={handleTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
                   { labelKey: 'project', tabKey: 'project' },
@@ -519,8 +477,8 @@ const ExpensesList: React.FC = () => {
                           </tr>
                         </thead>
                         <tbody className='expensesList_table_body'>
-                        {combinedData.map((expense, index) => {
-                            const isLastExpenseOfYear = expense.month === 3;
+                          {combinedData.map((expense, index) => {
+                            const isLastExpenseOfYear = expense.month === 3
                             const isEditable = expense.expense_id !== null
                             return (
                               <React.Fragment key={index}>
@@ -680,7 +638,7 @@ const ExpensesList: React.FC = () => {
                       </thead>
                       <tbody className='expensesList_table_body'>
                         {combinedData.map((expense, index) => {
-                          const isLastExpenseOfYear = expense.month === 3;
+                          const isLastExpenseOfYear = expense.month === 3
                           return (
                             <React.Fragment key={index}>
                               <tr className='expensesList_table_body_content_horizontal'>

@@ -15,12 +15,19 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs ,formatNumberWithCommas, removeCommas, sortByFinancialYear, handleGeneralResultsInputChange} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { maximumEntries, monthNames, resultsScreenTabs, storedUserID, token, years } from '../../constants'
+import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
+import {
+  handleDisableKeysOnNumberInputs,
+  formatNumberWithCommas,
+  sortByFinancialYear,
+  handleGeneralResultsInputChange,
+  handleResultsRegTabsClick,
+} from '../../utils/helperFunctionsUtil'
 import { filterExpenseResults } from '../../api/ExpenseResultEndpoint/FilterExpenseResults'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
 import { MAX_NUMBER_LENGTH } from '../../constants'
 
-const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 type ExpenseResults = {
   month: string
   year: string
@@ -37,35 +44,31 @@ const ExpensesResultsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('expensesResults')
-  const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
-  const token = localStorage.getItem('accessToken')
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const [expenseResultsData, setExpenseResultData] = useState<ExpenseResult[]>([{ cosr: [] }])
   const [filteredMonth, setFilteredMonth] = useState<any>([{ month: [] }])
   const [expenseYear, setExpenseYear] = useState<any>([])
   const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [formData, setFormData] = useState([
-    {
-      year: '',
-      month: '',
-      tax_and_public_charge: '',
-      communication_expense: '',
-      advertising_expense: '',
-      consumable_expense: '',
-      depreciation_expense: '',
-      utilities_expense: '',
-      entertainment_expense: '',
-      rent_expense: '',
-      travel_expense: '',
-      transaction_fee: '',
-      professional_service_fee: '',
-      registered_user_id: storedUserID,
-      updated_at: '',
-    },
-  ])
-
+  const onTabClick = (tab) => handleResultsRegTabsClick(tab, navigate, setActiveTab)
+  const emptyFormData = {
+    year: '',
+    month: '',
+    tax_and_public_charge: '',
+    communication_expense: '',
+    advertising_expense: '',
+    consumable_expense: '',
+    depreciation_expense: '',
+    utilities_expense: '',
+    entertainment_expense: '',
+    rent_expense: '',
+    travel_expense: '',
+    transaction_fee: '',
+    professional_service_fee: '',
+    registered_user_id: storedUserID,
+    updated_at: '',
+  }
+  const [formData, setFormData] = useState([emptyFormData])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
@@ -79,41 +82,16 @@ const ExpensesResultsRegistration = () => {
 
   const handleChange = (index, event) => {
     const nonFinancialValuesArray = ['year', 'month']
-    handleGeneralResultsInputChange(index, event, setFormData, nonFinancialValuesArray, setFilteredMonth )
+    handleGeneralResultsInputChange(index, event, setFormData, nonFinancialValuesArray, setFilteredMonth)
   }
-
-  const maximumEntries = 10
 
   const handleAdd = () => {
-    if (formData.length < maximumEntries) {
-      const newFormData = [...formData]
-      newFormData.push({
-        year: '',
-        month: '',
-        tax_and_public_charge: '',
-        communication_expense: '',
-        advertising_expense: '',
-        consumable_expense: '',
-        depreciation_expense: '',
-        utilities_expense: '',
-        entertainment_expense: '',
-        rent_expense: '',
-        travel_expense: '',
-        transaction_fee: '',
-        professional_service_fee: '',
-        registered_user_id: storedUserID,
-        updated_at: '',
-      })
-      setFormData(newFormData)
-      setFilteredMonth([...filteredMonth, { month: [] }])
-    } else {
-    }
+    addFormInput(formData, setFormData, maximumEntries, emptyFormData)
+    setFilteredMonth([...filteredMonth, { month: [] }])
   }
 
-  const handleMinus = () => {
-    if (formData.length > 1) {
-      setFormData(formData.slice(0, -1))
-    }
+  const handleRemove = () => {
+    removeFormInput(formData, setFormData)
   }
 
   useEffect(() => {
@@ -215,25 +193,7 @@ const ExpensesResultsRegistration = () => {
       .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
-        setFormData([
-          {
-            year: '',
-            month: '',
-            tax_and_public_charge: '',
-            communication_expense: '',
-            advertising_expense: '',
-            consumable_expense: '',
-            depreciation_expense: '',
-            utilities_expense: '',
-            entertainment_expense: '',
-            rent_expense: '',
-            travel_expense: '',
-            transaction_fee: '',
-            professional_service_fee: '',
-            registered_user_id: localStorage.getItem('userID'),
-            updated_at: '',
-          },
-        ])
+        setFormData([emptyFormData])
       })
       .catch((error) => {
         if (error.response && error.response.status === 409) {
@@ -310,103 +270,58 @@ const ExpensesResultsRegistration = () => {
       })
   }
 
-    useEffect(() => {
-      formData.forEach((exp, index) => {
-        let month = exp.month || ''
-        const year = exp.year || ''
-        let filterParams: FilterParams = {
-          ...(year !== null && { year }),
-        }
-        if (filterParams.year) {
-          filterExpenseResults(filterParams, token).then((data) => {
-            setExpenseResultData((prev) => {
-              return prev.map((row, projectIndex) => {
-                if (index == projectIndex) {
-                  return {
-                    cosr: data,
-                  }
+  useEffect(() => {
+    formData.forEach((exp, index) => {
+      let month = exp.month || ''
+      const year = exp.year || ''
+      let filterParams: FilterParams = {
+        ...(year !== null && { year }),
+      }
+      if (filterParams.year) {
+        filterExpenseResults(filterParams, token).then((data) => {
+          setExpenseResultData((prev) => {
+            return prev.map((row, projectIndex) => {
+              if (index == projectIndex) {
+                return {
+                  cosr: data,
                 }
-                return row
-              })
-            })
-            setFilteredMonth((prev) => {
-              return prev.map((month, monthIndex) => {
-                if (index == monthIndex) {
-                  return { month: data }
-                }
-                return month
-              })
+              }
+              return row
             })
           })
-        }
+          setFilteredMonth((prev) => {
+            return prev.map((month, monthIndex) => {
+              if (index == monthIndex) {
+                return { month: data }
+              }
+              return month
+            })
+          })
+        })
+      }
+    })
+    getExpense(token)
+      .then((data) => {
+        setExpenseYear(data)
       })
-      getExpense(token)
-        .then((data) => {
-          setExpenseYear(data)
-        })
-        .catch((error) => {
-          console.log(' error fetching cost of sales data: ' + error)
-        })
-    }, [formData])
+      .catch((error) => {
+        console.log(' error fetching cost of sales data: ' + error)
+      })
+  }, [formData])
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
   }
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'expensesResults':
-        navigate('/expenses-results-list')
-        break
-      case 'projectSalesResults':
-        navigate('/project-sales-results-list')
-        break
-      case 'employeeExpensesResults':
-        navigate('/employee-expenses-results-list')
-        break
-      case 'costOfSalesResults':
-        navigate('/cost-of-sales-results-list')
-        break
-      default:
-        break
-    }
-  }
 
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal()
+    openModal(setModalIsOpen)
   }
 
   const handleRemoveInputData = () => {
-    setFormData([
-      {
-        year: '',
-        month: '',
-        tax_and_public_charge: '',
-        communication_expense: '',
-        advertising_expense: '',
-        consumable_expense: '',
-        depreciation_expense: '',
-        utilities_expense: '',
-        entertainment_expense: '',
-        rent_expense: '',
-        travel_expense: '',
-        transaction_fee: '',
-        professional_service_fee: '',
-        registered_user_id: '',
-        updated_at: '',
-      },
-    ])
-    closeModal()
-  }
-
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalIsOpen(false)
+    setFormData([emptyFormData])
+    closeModal(setModalIsOpen)
   }
 
   useEffect(() => {}, [formData])
@@ -414,24 +329,6 @@ const ExpensesResultsRegistration = () => {
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
   }, [language])
-
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
-  }
-
-  // Creates an Array of years for dropdown input. 5 years before AND after current year.
-  const years = [2024, 2025]
 
   const handleListClick = () => {
     navigate('/expenses-results-list')
@@ -450,16 +347,11 @@ const ExpensesResultsRegistration = () => {
         <div className='expensesResultsRegistration_data_content'>
           <div className='expensesResultsRegistration_top_body_cont'>
             <RegistrationButtons
-              activeTabOther={activeTabOther}
+              activeTabOther={'expensesResults'}
               message={translate('expensesResultsRegistration', language)}
-              handleTabsClick={handleTabsClick}
+              handleTabsClick={onTabClick}
               handleListClick={handleListClick}
-              buttonConfig={[
-                { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
-                { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
-                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
-                { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
-              ]}
+              buttonConfig={resultsScreenTabs}
             />
           </div>
           <div className='expensesResultsRegistration_mid_body_cont'>
@@ -664,7 +556,7 @@ const ExpensesResultsRegistration = () => {
                 <div className='expensesResultsRegistration_form-content'>
                   <div className='expensesResultsRegistration_plus-btn'>
                     {formData.length >= 2 ? (
-                      <button className='expensesResultsRegistration_dec' type='button' onClick={handleMinus}>
+                      <button className='expensesResultsRegistration_dec' type='button' onClick={handleRemove}>
                         -
                       </button>
                     ) : (

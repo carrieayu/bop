@@ -1,14 +1,15 @@
-import React from 'react';
-import Btn from '../../components/Button/Button';
-import { translate } from '../../utils/translationUtil';
-import { useLanguage } from '../../contexts/LanguageContext';
+import React from 'react'
+import Btn from '../../components/Button/Button'
+import { translate } from '../../utils/translationUtil'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { useNavigate } from 'react-router-dom'
 
 interface ListButtonsProps {
-  activeTabOther: string;
-  message: string;
-  handleTabsClick: (tab: string) => void;
-  handleNewRegistrationClick: () => void;
-  buttonConfig: Array<{ labelKey: string; tabKey: string }>;
+  activeTabOther: string
+  message: string
+  handleTabsClick: (tab: string, navigate: (path: string) => void, setActiveTabOther: (tab: string) => void) => void
+  handleNewRegistrationClick: () => void
+  buttonConfig: Array<{ labelKey: string; tabKey: string }>
 }
 
 const ListButtons: React.FC<ListButtonsProps> = ({
@@ -16,9 +17,14 @@ const ListButtons: React.FC<ListButtonsProps> = ({
   message,
   handleTabsClick,
   handleNewRegistrationClick,
-  buttonConfig, 
+  buttonConfig,
 }) => {
-  const { language } = useLanguage();
+  const { language } = useLanguage()
+  const navigate = useNavigate() // Get navigate from react-router
+  const setActiveTabOther = (tab: string) => {
+    console.log(`Active tab set to: ${tab}`)
+    // Implement your tab state update logic here
+  }
 
   return (
     <div>
@@ -27,22 +33,16 @@ const ListButtons: React.FC<ListButtonsProps> = ({
           <Btn
             key={index}
             label={translate(button.labelKey, language)}
-            onClick={() => handleTabsClick(button.tabKey)}
-            className={
-              activeTabOther === button.tabKey
-                ? 'body-btn-active body-btn'
-                : 'body-btn'
-            }
+            onClick={() => handleTabsClick(button.tabKey, navigate, setActiveTabOther)}
+            className={activeTabOther === button.tabKey ? 'body-btn-active body-btn' : 'body-btn'}
           />
         ))}
       </div>
-      <div className="ListButtons_title_container">
+      <div className='ListButtons_title_container'>
         <div className='ListButtons_title_table_cont'>
-          <p className='ListButtons_title'>
-            {message}
-          </p>
+          <p className='ListButtons_title'>{message}</p>
         </div>
-        <div className="ListButtons_title_btn_cont">
+        <div className='ListButtons_title_btn_cont'>
           <Btn
             label={translate('newRegistration', language)}
             size='normal'
@@ -52,7 +52,7 @@ const ListButtons: React.FC<ListButtonsProps> = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ListButtons;
+export default ListButtons

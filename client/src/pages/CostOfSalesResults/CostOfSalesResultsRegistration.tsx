@@ -18,15 +18,23 @@ import {
 import { filterCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/FilterCostOfSalesResults'
 import { createCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/CreateCostOfSalesResults'
 import { overwriteCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/OverwriteCostOfSalesResults'
-import {handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas, sortByFinancialYear, handleGeneralResultsInputChange} from '../../utils/helperFunctionsUtil' 
+import {
+  handleDisableKeysOnNumberInputs,
+  formatNumberWithCommas,
+  removeCommas,
+  sortByFinancialYear,
+  handleGeneralResultsInputChange,
+  handleResultsRegTabsClick,
+} from '../../utils/helperFunctionsUtil'
 import { getCostOfSale } from '../../api/CostOfSalesEndpoint/GetCostOfSale'
+import { maximumEntries, monthNames, resultsScreenTabs, token } from '../../constants'
+import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 import { MAX_NUMBER_LENGTH } from '../../constants'
 
-const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 type CostOfSaleResults = {
   month: string
   year: string
-  cost_of_sale_id : string
+  cost_of_sale_id: string
 }
 type CostOfSaleResult = {
   cosr: CostOfSaleResults[]
@@ -39,38 +47,31 @@ const CostOfSalesResultsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('costOfSalesResults')
-  const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const years = [2024, 2025]
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [costOfSaleResultsData, setCostOfSaleResultsData] = useState<CostOfSaleResult[]>([{ cosr: [] }])
-  const [filteredMonth, setFilteredMonth] = useState<any>([{ month: []}])
+  const [filteredMonth, setFilteredMonth] = useState<any>([{ month: [] }])
   const [costOfSaleYear, setCostOfSalesYear] = useState<any>([])
-  const [formData, setFormData] = useState([
-    {
-      year: '',
-      month: '',
-      purchase: '',
-      outsourcing_expense: '',
-      product_purchase: '',
-      dispatch_labor_expense: '',
-      communication_expense: '',
-      work_in_progress_expense: '',
-      amortization_expense: '',
-      cost_of_sale: '',
-    },
-  ])
-
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
-  const token = localStorage.getItem('accessToken')
-  const maximumEntries = 10
-  
+  const onTabClick = (tab) => handleResultsRegTabsClick(tab, navigate, setActiveTab)
+  const emptyFormData = {
+    year: '',
+    month: '',
+    purchase: '',
+    outsourcing_expense: '',
+    product_purchase: '',
+    dispatch_labor_expense: '',
+    communication_expense: '',
+    work_in_progress_expense: '',
+    amortization_expense: '',
+    cost_of_sale: '',
+  }
+  const [formData, setFormData] = useState([emptyFormData])
   const uniqueYears = costOfSaleYear.reduce((acc, item) => {
     if (!acc.includes(item.year)) {
       acc.push(item.year)
@@ -79,97 +80,75 @@ const CostOfSalesResultsRegistration = () => {
   }, [])
 
   const handleAdd = () => {
-    if (formData.length < maximumEntries) {
-      const newFormData = [...formData]
-      newFormData.push({
-        year: '',
-        month: '',
-        purchase: '',
-        outsourcing_expense: '',
-        product_purchase: '',
-        dispatch_labor_expense: '',
-        communication_expense: '',
-        work_in_progress_expense: '',
-        amortization_expense: '',
-        cost_of_sale: '',
-        // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
-      })
-      setFormData(newFormData)
-      setCostOfSaleResultsData([...costOfSaleResultsData, { cosr: [] }])
-      setFilteredMonth([...filteredMonth, { month: []}])
-    } else {
-      console.log('You can only add up to 10 forms.')
-    }
+    addFormInput(formData, setFormData, maximumEntries, emptyFormData)
+    setCostOfSaleResultsData([...costOfSaleResultsData, { cosr: [] }])
+    setFilteredMonth([...filteredMonth, { month: [] }])
   }
 
-  const handleMinus = () => {
-    if (formData.length > 1) {
-      const newFormData = [...formData]
-      newFormData.pop()
-      setFormData(newFormData)
-    }
+  const handleRemove = () => {
+    removeFormInput(formData, setFormData)
   }
+
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
   }
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'projectSalesResults':
-        navigate('/project-sales-results-list')
-        break
-      case 'expensesResults':
-        navigate('/expenses-results-list')
-        break
-      case 'employeeExpensesResults':
-        navigate('/employee-expenses-results-list')
-        break
-      case 'costOfSalesResults':
-        navigate('/cost-of-sales-results-list')
-        break
-      default:
-        break
-    }
-  }
 
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal()
+    openModal(setModalIsOpen)
   }
 
   const handleRemoveInputData = () => {
-    setFormData([
-      {
-        year: '',
-        month: '',
-        purchase: '',
-        outsourcing_expense: '',
-        product_purchase: '',
-        dispatch_labor_expense: '',
-        communication_expense: '',
-        work_in_progress_expense: '',
-        amortization_expense: '',
-        cost_of_sale: '',
-      },
-    ])
-    closeModal()
-  }
-
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalIsOpen(false)
+    setFormData([emptyFormData])
+    closeModal(setModalIsOpen)
   }
 
   const handleChange = (index, event) => {
-    const nonFinancialValuesArray = ['year', 'month'] 
+    const { name, value } = event.target
+    const rawValue = removeCommas(value)
+    const nonFinancialValuesArray = ['year', 'month']
+
+    if (!nonFinancialValuesArray.includes(name)) {
+      if (rawValue.length > MAX_NUMBER_LENGTH) {
+        return
+      }
+    }
+
+    setFormData((prevFormData) => {
+      return prevFormData.map((form, i) => {
+        if (i === index) {
+          const resetFields = {
+            params: ['months'],
+          }
+          let month = form.month
+          if (name == 'year' && value == '') {
+            form.month = ''
+            setFilteredMonth((prev) => {
+              return prev.map((eachMonth, monthIndex) => {
+                if (index == monthIndex) {
+                  return [{}]
+                }
+                return eachMonth
+              })
+            })
+          }
+          const fieldsToReset = resetFields[name] || []
+          const resetValues = fieldsToReset.reduce((acc, field) => {
+            acc[field] = ''
+            return acc
+          }, {})
+          return {
+            ...form,
+            [name]: rawValue,
+            ...resetValues,
+          }
+        }
+        return form
+      })
+    })
     handleGeneralResultsInputChange(index, event, setFormData, nonFinancialValuesArray, setFilteredMonth)
   }
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -227,23 +206,10 @@ const CostOfSalesResultsRegistration = () => {
     }
 
     createCostOfSaleResults(combinedObject, token)
-      .then((data) => {
+      .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
-        setFormData([
-          {
-            year: '',
-            month: '',
-            purchase: '',
-            outsourcing_expense: '',
-            product_purchase: '',
-            dispatch_labor_expense: '',
-            communication_expense: '',
-            work_in_progress_expense: '',
-            amortization_expense: '',
-            cost_of_sale: '',
-          },
-        ])
+        setFormData([emptyFormData])
       })
       .catch((error) => {
         if (error.response && error.response.status === 409) {
@@ -343,7 +309,6 @@ const CostOfSalesResultsRegistration = () => {
           },
         ])
       })
-      
     } catch (overwriteError) {
       console.error('Error overwriting data:', overwriteError)
     } finally {
@@ -353,33 +318,33 @@ const CostOfSalesResultsRegistration = () => {
 
   useEffect(() => {
     formData.forEach((cosr, index) => {
-      let month = cosr.month || ""
-      const year = cosr.year || ""
-        let filterParams: FilterParams = {
-          ...(year !== null && { year }),
-        }
-        if (filterParams.year) {
-          filterCostOfSaleResults(filterParams, token).then((data) => {
-            setCostOfSaleResultsData((prev) => {
-              return prev.map((row, projectIndex) => {
-                if (index == projectIndex) {
-                  return {
-                    cosr: data,
-                  }
+      let month = cosr.month || ''
+      const year = cosr.year || ''
+      let filterParams: FilterParams = {
+        ...(year !== null && { year }),
+      }
+      if (filterParams.year) {
+        filterCostOfSaleResults(filterParams, token).then((data) => {
+          setCostOfSaleResultsData((prev) => {
+            return prev.map((row, projectIndex) => {
+              if (index == projectIndex) {
+                return {
+                  cosr: data,
                 }
-                return row
-              })
-            })
-            setFilteredMonth((prev) => {
-              return prev.map((month, monthIndex) => {
-                if (index == monthIndex) {
-                  return { month: data }
-                }
-                return month
-              })
+              }
+              return row
             })
           })
-        }
+          setFilteredMonth((prev) => {
+            return prev.map((month, monthIndex) => {
+              if (index == monthIndex) {
+                return { month: data }
+              }
+              return month
+            })
+          })
+        })
+      }
     })
     getCostOfSale(token)
       .then((data) => {
@@ -389,7 +354,6 @@ const CostOfSalesResultsRegistration = () => {
         console.log(' error fetching cost of sales data: ' + error)
       })
   }, [formData])
-  
 
   useEffect(() => {
     const path = location.pathname
@@ -405,21 +369,6 @@ const CostOfSalesResultsRegistration = () => {
   const handleTranslationSwitchToggle = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
     setLanguage(newLanguage)
-  }
-
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
   }
 
   const handleListClick = () => {
@@ -439,16 +388,11 @@ const CostOfSalesResultsRegistration = () => {
         <div className='costOfSalesResultsRegistration_data_content'>
           <div className='costOfSalesResultsRegistration_top_body_cont'>
             <RegistrationButtons
-              activeTabOther={activeTabOther}
+              activeTabOther={'costOfSalesResults'}
               message={translate('costOfSalesResultsRegistration', language)}
-              handleTabsClick={handleTabsClick}
+              handleTabsClick={onTabClick}
               handleListClick={handleListClick}
-              buttonConfig={[
-                { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
-                { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
-                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
-                { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
-              ]}
+              buttonConfig={resultsScreenTabs}
             />
           </div>
           <div className='costOfSalesResultsRegistration_mid_body_cont'>
@@ -602,7 +546,7 @@ const CostOfSalesResultsRegistration = () => {
                 <div className='costOfSalesResultsRegistration_form-content'>
                   <div className='costOfSalesResultsRegistration_plus-btn'>
                     {formData.length >= 2 ? (
-                      <button className='costOfSalesResultsRegistration_dec' type='button' onClick={handleMinus}>
+                      <button className='costOfSalesResultsRegistration_dec' type='button' onClick={handleRemove}>
                         -
                       </button>
                     ) : (

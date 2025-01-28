@@ -16,90 +16,55 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-
+import { handleMMRegTabsClick } from '../../utils/helperFunctionsUtil'
+import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
+import { masterMaintenanceScreenTabs, maximumEntries, storedUserID, token } from '../../constants'
 
 const ClientsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
   const [activeTabOther, setActiveTabOther] = useState('client')
-  const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [clientData, setClientData] = useState([
-      {
-        client_name: '',
-        created_at: '',
-        auth_user:'',
-      },
-    ])
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
-
+  const onTabClick = (tab) => handleMMRegTabsClick(tab, navigate, setActiveTab)
+  const emptyFormData = {
+    client_name: '',
+    created_at: '',
+    auth_user: '',
+  }
+  const [clientData, setClientData] = useState([emptyFormData])
 
   const handleTabClick = (tab) => {
-      setActiveTab(tab)
-      navigate(tab)
-  }
-
-  const handleTabsClick = (tab) => {
-      setActiveTabOther(tab)
-      switch (tab) {
-        case 'client':
-          navigate('/clients-registration');
-          break;
-        case 'employee':
-          navigate('/employees-registration');
-          break;
-        case 'businessDivision':
-          navigate('/business-divisions-registration');
-          break;
-        case 'users':
-          navigate('/users-registration');
-          break;
-        default:
-          break;
-      }
+    setActiveTab(tab)
+    navigate(tab)
   }
 
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal()
+    openModal(setModalIsOpen)
   }
 
   const handleRemoveInputData = () => {
-    setClientData([
-      {
-        client_name: '',
-        created_at: '',
-        auth_user: '',
-      },
-    ])
-    closeModal()
-  }
-
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalIsOpen(false)
+    setClientData([emptyFormData])
+    closeModal(setModalIsOpen)
   }
 
   const handleTranslationSwitchToggle = () => {
-      const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
-      setLanguage(newLanguage);
-  };
+    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
+    setLanguage(newLanguage)
+  }
 
   useEffect(() => {
-      const path = location.pathname;
-      if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
-        setActiveTab(path);
-      }
-    }, [location.pathname]);
+    const path = location.pathname
+    if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
+      setActiveTab(path)
+    }
+  }, [location.pathname])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -108,8 +73,6 @@ const ClientsRegistration = () => {
       auth_user: storedUserID,
       created_at: Date.now(),
     }))
-
-    const token = localStorage.getItem('accessToken')
 
     // # Client Side Validation
 
@@ -153,13 +116,7 @@ const ClientsRegistration = () => {
       .then((data) => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
-        setClientData([
-          {
-            client_name: '',
-            created_at: '',
-            auth_user: '',
-          },
-        ])
+        setClientData([emptyFormData])
       })
       .catch((error) => {
         if (error.response) {
@@ -169,10 +126,7 @@ const ClientsRegistration = () => {
               // setModalMessage(translate('clientNameExistsValidationMessage', language));
               const existingClientNames = data.errors.map((err) => err.client_name).join(', ') || 'Unknown client'
               setModalMessage(
-                translate('clientNameExistsValidationMessage', language).replace(
-                  '${clientName}',
-                  existingClientNames,
-                ),
+                translate('clientNameExistsValidationMessage', language).replace('${clientName}', existingClientNames),
               )
               setIsModalOpen(true)
               break
@@ -191,24 +145,11 @@ const ClientsRegistration = () => {
   }
 
   const handleAddContainer = () => {
-    if (clientData.length < 10) {
-      setClientData([
-        ...clientData,
-        {
-          client_name: '',
-          created_at: '',
-          auth_user: '',
-        },
-      ])
-    }
+    addFormInput(clientData, setClientData, maximumEntries, emptyFormData)
   }
 
   const handleRemoveContainer = () => {
-    if (clientData.length > 1) {
-      const newContainers = [...clientData]
-      newContainers.pop()
-      setClientData(newContainers)
-    }
+    removeFormInput(clientData, setClientData)
   }
 
   const handleInputChange = (containerIndex, projectIndex, event) => {
@@ -222,12 +163,12 @@ const ClientsRegistration = () => {
   }
 
   useEffect(() => {
-    setIsTranslateSwitchActive(language === 'en');
-  }, [language]);
+    setIsTranslateSwitchActive(language === 'en')
+  }, [language])
 
-  const handleListClick = () => { 
-    navigate('/clients-list');
-  };
+  const handleListClick = () => {
+    navigate('/clients-list')
+  }
 
   return (
     <div className='ClientsRegistration_wrapper'>
@@ -244,14 +185,9 @@ const ClientsRegistration = () => {
             <RegistrationButtons
               activeTabOther={activeTabOther}
               message={translate('clientsRegistration', language)}
-              handleTabsClick={handleTabsClick}
+              handleTabsClick={onTabClick}
               handleListClick={handleListClick}
-              buttonConfig={[
-                { labelKey: 'client', tabKey: 'client' },
-                { labelKey: 'employee', tabKey: 'employee' },
-                { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                { labelKey: 'users', tabKey: 'users' },
-              ]}
+              buttonConfig={masterMaintenanceScreenTabs}
             />
           </div>
           <div className='ClientsRegistration_mid_body_cont'>
@@ -289,7 +225,12 @@ const ClientsRegistration = () => {
                     ) : (
                       <div className='ClientsRegistration_dec_empty'></div>
                     )}
-                    <button className='ClientsRegistration_inc custom-disabled' type='button' onClick={handleAddContainer} disabled={clientData.length === 10}>
+                    <button
+                      className='ClientsRegistration_inc custom-disabled'
+                      type='button'
+                      onClick={handleAddContainer}
+                      disabled={clientData.length === 10}
+                    >
                       +
                     </button>
                   </div>

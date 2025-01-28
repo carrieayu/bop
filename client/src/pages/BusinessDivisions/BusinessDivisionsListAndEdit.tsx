@@ -1,29 +1,29 @@
-import React, { useEffect, useState } from "react";
-import Btn from "../../components/Button/Button";
-import axios from "axios";
-import Sidebar from "../../components/Sidebar/Sidebar";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useLanguage } from "../../contexts/LanguageContext";
-import { translate } from "../../utils/translationUtil";
-import AlertModal from "../../components/AlertModal/AlertModal";
-import { RiDeleteBin6Fill } from "react-icons/ri";
-import ListButtons from "../../components/ListButtons/ListButtons";
-import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
-import CrudModal from "../../components/CrudModal/CrudModal";
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import React, { useEffect, useState } from 'react'
+import Btn from '../../components/Button/Button'
+import axios from 'axios'
+import Sidebar from '../../components/Sidebar/Sidebar'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { translate } from '../../utils/translationUtil'
+import AlertModal from '../../components/AlertModal/AlertModal'
+import { RiDeleteBin6Fill } from 'react-icons/ri'
+import ListButtons from '../../components/ListButtons/ListButtons'
+import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
+import CrudModal from '../../components/CrudModal/CrudModal'
 import '../../assets/scss/Components/SliderToggle.scss'
-import { getBusinessDivision } from "../../api/BusinessDivisionEndpoint/GetBusinessDivision";
-import { getUser } from "../../api/UserEndpoint/GetUser";
-import { getCompany } from "../../api/CompanyEndpoint/GetCompany";
-import { deleteBusinessDivision } from "../../api/BusinessDivisionEndpoint/DeleteBusinessDivision";
-import { updateBusinessDivision } from "../../api/BusinessDivisionEndpoint/UpdateBusinessDivision";
+import { getBusinessDivision } from '../../api/BusinessDivisionEndpoint/GetBusinessDivision'
+import { getUser } from '../../api/UserEndpoint/GetUser'
+import { getCompany } from '../../api/CompanyEndpoint/GetCompany'
+import { deleteBusinessDivision } from '../../api/BusinessDivisionEndpoint/DeleteBusinessDivision'
+import { updateBusinessDivision } from '../../api/BusinessDivisionEndpoint/UpdateBusinessDivision'
 import {
   validateRecords,
   translateAndFormatErrors,
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { formatDate } from "../../utils/helperFunctionsUtil";
+import { formatDate, handleMMListTabsClick } from '../../utils/helperFunctionsUtil'
+import { masterMaintenanceScreenTabs, token } from '../../constants'
 
 const BusinessDivisionsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -47,7 +47,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
   const [selectedCompany, setSelectedCompany] = useState('')
 
   const totalPages = Math.ceil(100 / 10)
-
+  const onTabClick = (tab) => handleMMListTabsClick(tab, navigate, setActiveTab)
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
@@ -57,26 +57,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
-  }
-
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'client':
-        navigate('/clients-list')
-        break
-      case 'employee':
-        navigate('/employees-list')
-        break
-      case 'businessDivision':
-        navigate('/business-divisions-list')
-        break
-      case 'users':
-        navigate('/users-list')
-        break
-      default:
-        break
-    }
   }
 
   const handlePageChange = (page: number) => {
@@ -89,18 +69,18 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
   }
 
   const handleClick = () => {
-          setIsEditing((prevState) => !prevState)
-        }
-        useEffect(() => {
-          if (isEditing) {
-            setLanguage('jp')
-          }
-    
-          if (!isEditing) {
-            // Reset to original values when switching to list mode
-            setBusiness(originalBusiness)
-          }
-        }, [isEditing])
+    setIsEditing((prevState) => !prevState)
+  }
+  useEffect(() => {
+    if (isEditing) {
+      setLanguage('jp')
+    }
+
+    if (!isEditing) {
+      // Reset to original values when switching to list mode
+      setBusiness(originalBusiness)
+    }
+  }, [isEditing])
 
   const handleChange = (index, event) => {
     const { name, value } = event.target
@@ -108,7 +88,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
   }
 
   const handleSubmit = async () => {
-    const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login'
       return
@@ -173,7 +152,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
           }
         }
       })
-      
+
       return modifiedFields
     }
     const modifiedFields = getModifiedFields(originalBusiness, business)
@@ -216,7 +195,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
   }
 
   const fetchCompanyAndUserData = async () => {
-    const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login'
       return
@@ -259,7 +237,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
   }
 
   const fetchBusinessDivision = async () => {
-    const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login' // Redirect to login if no token found
       return
@@ -331,7 +308,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
     // Sets the Validation Errors if any to empty as they are not necessary for delete.
     setCrudValidationErrors([])
 
-    const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login'
       return
@@ -406,14 +382,9 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
               <ListButtons
                 activeTabOther={activeTabOther}
                 message={translate(isEditing ? 'businessDivisionsEdit' : 'businessDivisionsList', language)}
-                handleTabsClick={handleTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
-                buttonConfig={[
-                  { labelKey: 'client', tabKey: 'client' },
-                  { labelKey: 'employee', tabKey: 'employee' },
-                  { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                  { labelKey: 'users', tabKey: 'users' },
-                ]}
+                buttonConfig={masterMaintenanceScreenTabs}
               />
               <div className={`BusinessDivisionsListAndEdit_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                 <div className='BusinessDivisionsListAndEdit_table_cont'>
@@ -596,6 +567,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
       />
     </div>
   )
-};
+}
 
-export default BusinessDivisionsListAndEdit;
+export default BusinessDivisionsListAndEdit

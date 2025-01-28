@@ -16,135 +16,66 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas, handleInputChange } from '../../utils/helperFunctionsUtil'
+import {
+  handleDisableKeysOnNumberInputs,
+  formatNumberWithCommas,
+  removeCommas,
+  handleInputChange,
+  handlePLRegTabsClick,
+} from '../../utils/helperFunctionsUtil'
 import { overwriteCostOfSale } from '../../api/CostOfSalesEndpoint/OverwriteCostOfSales'
-
-const months = [
-   '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
-];
+import { maximumEntries, monthNames, token, years } from '../../constants'
+import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 
 const CostOfSalesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('costOfSales')
-  const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const years = [2024, 2025]
   const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [formData, setFormData] = useState([
-    {
-      year: '',
-      month: '',
-      purchase: '',
-      outsourcing_expense: '',
-      product_purchase: '',
-      dispatch_labor_expense: '',
-      communication_expense: '',
-      work_in_progress_expense: '',
-      amortization_expense: '',
-      // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
-    },
-  ])
-
+  const emptyFormData = {
+    year: '',
+    month: '',
+    purchase: '',
+    outsourcing_expense: '',
+    product_purchase: '',
+    dispatch_labor_expense: '',
+    communication_expense: '',
+    work_in_progress_expense: '',
+    amortization_expense: '',
+  }
+  const [formData, setFormData] = useState([emptyFormData])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
-  const token = localStorage.getItem('accessToken')
-
-  const maximumEntries = 10
+  const onTabClick = (tab) => handlePLRegTabsClick(tab, navigate, setActiveTab)
 
   const handleAdd = () => {
-    if (formData.length < maximumEntries) {
-      const newFormData = [...formData]
-      newFormData.push({
-        year: '',
-        month: '',
-        purchase: '',
-        outsourcing_expense: '',
-        product_purchase: '',
-        dispatch_labor_expense: '',
-        communication_expense: '',
-        work_in_progress_expense: '',
-        amortization_expense: '',
-        // registered_user_id: storedUserID, //for testing and will be removed it not used for future use
-      })
-      setFormData(newFormData)
-    } else {
-      console.log('You can only add up to 10 forms.')
-    }
+    addFormInput(formData, setFormData, maximumEntries, emptyFormData)
   }
 
-  const handleMinus = () => {
-    if (formData.length > 1) {
-      const newFormData = [...formData]
-      newFormData.pop()
-      setFormData(newFormData)
-    }
+  const handleRemove = () => {
+    removeFormInput(formData, setFormData)
   }
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
   }
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'project':
-        navigate('/projects-registration')
-        break
-      case 'employeeExpenses':
-        navigate('/employee-expenses-registration')
-        break
-      case 'expenses':
-        navigate('/expenses-registration')
-        break
-      case 'costOfSales':
-        navigate('/cost-of-sales-registration')
-        break
-      default:
-        break
-    }
-  }
 
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal()
+    openModal(setModalIsOpen)
   }
 
   const handleRemoveInputData = () => {
-    setFormData([
-      {
-        year: '',
-        month: '',
-        purchase: '',
-        outsourcing_expense: '',
-        product_purchase: '',
-        dispatch_labor_expense: '',
-        communication_expense: '',
-        work_in_progress_expense: '',
-        amortization_expense: '',
-      },
-    ])
-    closeModal()
+    setFormData([emptyFormData])
+    closeModal(setModalIsOpen)
   }
 
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalIsOpen(false)
-  }
-
-
-
-
-  
-  useEffect(() => {
-  },[formData])
+  useEffect(() => {}, [formData])
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -208,19 +139,7 @@ const CostOfSalesRegistration = () => {
       .then((data) => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
-        setFormData([
-          {
-            year: '',
-            month: '',
-            purchase: '',
-            outsourcing_expense: '',
-            product_purchase: '',
-            dispatch_labor_expense: '',
-            communication_expense: '',
-            work_in_progress_expense: '',
-            amortization_expense: '',
-          },
-        ])
+        setFormData([emptyFormData])
       })
       .catch((error) => {
         if (error.response && error.response.status === 409) {
@@ -264,8 +183,6 @@ const CostOfSalesRegistration = () => {
   }
 
   const handleSubmitConfirmed = async () => {
-    const token = localStorage.getItem('accessToken')
-
     try {
       overwriteCostOfSale(formData, token)
         .then(() => {
@@ -296,12 +213,11 @@ const CostOfSalesRegistration = () => {
     }
   }
 
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear;
-  const [months, setMonths] = useState<number[]>([]);
+  const currentDate = new Date()
+  const currentYear = currentDate.getFullYear()
+  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear
+  const [months, setMonths] = useState<number[]>([])
   const handleChange = (index, event) => {
-
     handleInputChange(index, event, setFormData, formData)
 
     const { name, value } = event.target
@@ -310,13 +226,13 @@ const CostOfSalesRegistration = () => {
     const rawValue = removeCommas(value)
 
     if (name === 'year') {
-      const selectedYear = parseInt(rawValue, 10);
+      const selectedYear = parseInt(rawValue, 10)
       if (selectedYear === currentFiscalYear) {
-        setMonths([4, 5, 6, 7, 8, 9, 10, 11, 12]);
-      } else if (selectedYear === (currentFiscalYear + 1)) {
-        setMonths([1, 2, 3]);
+        setMonths([4, 5, 6, 7, 8, 9, 10, 11, 12])
+      } else if (selectedYear === currentFiscalYear + 1) {
+        setMonths([1, 2, 3])
       } else {
-        setMonths([]);
+        setMonths([])
       }
     }
   }
@@ -339,21 +255,6 @@ const CostOfSalesRegistration = () => {
     setLanguage(newLanguage)
   }
 
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
-  }
-
   const handleListClick = () => {
     navigate('/cost-of-sales-list')
   }
@@ -371,9 +272,9 @@ const CostOfSalesRegistration = () => {
         <div className='costOfSalesRegistration_data_content'>
           <div className='costOfSalesRegistration_top_body_cont'>
             <RegistrationButtons
-              activeTabOther={activeTabOther}
+              activeTabOther={'costOfSales'}
               message={translate('costOfSalesRegistration', language)}
-              handleTabsClick={handleTabsClick}
+              handleTabsClick={onTabClick}
               handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'project', tabKey: 'project' },
@@ -531,7 +432,7 @@ const CostOfSalesRegistration = () => {
                 <div className='costOfSalesRegistration_form-content'>
                   <div className='costOfSalesRegistration_plus-btn'>
                     {formData.length >= 2 ? (
-                      <button className='costOfSalesRegistration_dec' type='button' onClick={handleMinus}>
+                      <button className='costOfSalesRegistration_dec' type='button' onClick={handleRemove}>
                         -
                       </button>
                     ) : (

@@ -3,6 +3,7 @@ import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 import axios from 'axios'
 import { getResultsB } from '../../api/ResultsEndpoint/GetResultsB'
+import { monthNames, months, token } from '../../constants'
 
 type TableProps = {
   header: string[]
@@ -41,7 +42,6 @@ interface EntityGrid {
 export const TableResultsB: React.FC<TableProps> = (props) => {
   const gridRows = objectEntity.length
   const gridCols = 12
-  const token = localStorage.getItem('accessToken')
   const [grid, setGrid] = useState<EntityGrid[]>([])
   const [data, setData] = useState<any[]>([])
   const { language, setLanguage } = useLanguage()
@@ -112,21 +112,6 @@ export const TableResultsB: React.FC<TableProps> = (props) => {
     setLanguage(newLanguage)
   }
 
-  const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'Jan', jp: '1月' }, // January
-    2: { en: 'Feb', jp: '2月' }, //February
-    3: { en: 'Mar', jp: '3月' }, // March
-    4: { en: 'Apr', jp: '4月' }, //April
-    5: { en: 'May', jp: '5月' }, //May
-    6: { en: 'Jun', jp: '6月' }, //June
-    7: { en: 'Jul', jp: '7月' }, //July
-    8: { en: 'Aug', jp: '8月' }, //August
-    9: { en: 'Sep', jp: '9月' }, //September
-    10: { en: 'Oct', jp: '10月' }, //October
-    11: { en: 'Nov', jp: '11月' }, //November
-    12: { en: 'Dec', jp: '12月' }, //December
-  }
 
   const thousandYenConversion = (value) => {
     return (Math.round((value / 1000) * 10) / 10).toLocaleString() // Rounds to 1 decimal place

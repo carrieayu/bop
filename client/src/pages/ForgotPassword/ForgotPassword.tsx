@@ -1,47 +1,43 @@
-import React, { useState } from "react";
-import dattLogo from  '../../assets/images/logo.png'
-import axios from "axios";
+import React, { useState } from 'react'
+import dattLogo from '../../assets/images/logo.png'
+import axios from 'axios'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import CrudModal from '../../components/CrudModal/CrudModal'
 import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [successMessage, setSuccessMessage] = useState('')
   const { language, setLanguage } = useLanguage()
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
 
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
-
   const closeSuccessModal = () => {
     setModalIsOpen(false)
     window.location.href = '/login' // Redirect to login if mail sent was successful
   }
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
     try {
       const response = await axios.post(`${getReactActiveEndpoint()}/api/password-forgot/`, { email })
       setIsModalOpen(true)
       setModalMessage(translate('MailSentSuccess', language))
-      
+
       setSuccessMessage(response.data.message)
     } catch (error) {
       setIsModalOpen(true)
       setModalMessage(translate('invalidInputOrEmailDoesNotExist', language))
-      setError(error.response.data.message);
+      setError(error.response.data.message)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
   return (
     <div className='container'>
       <div className='card-box'>
@@ -105,6 +101,6 @@ const ForgotPassword = () => {
       />
     </div>
   )
-};
+}
 
-export default ForgotPassword;
+export default ForgotPassword

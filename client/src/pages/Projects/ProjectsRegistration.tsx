@@ -13,23 +13,28 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { createProject } from '../../api/ProjectsEndpoint/CreateProject'
 import { overwriteProject } from '../../api/ProjectsEndpoint/OverwriteProject'
-import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs, removeCommas, formatNumberWithCommas, handleInputChange} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-
-const months = [
-  '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
-];
+import { maximumEntries, monthNames, token, years } from '../../constants'
+import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+import {
+  handleDisableKeysOnNumberInputs,
+  removeCommas,
+  formatNumberWithCommas,
+  handleInputChange,
+  handlePLRegTabsClick,
+} from '../../utils/helperFunctionsUtil'
 
 const ProjectsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('project')
-  const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const years = [2024, 2025];
-  const token = localStorage.getItem('accessToken')
   const [clients, setClients] = useState<any>([])
   const [selectedClient, setSelectedClient] = useState([])
   const [businessSelection, setBusinessSelection] = useState<any>([])
@@ -40,123 +45,49 @@ const ProjectsRegistration = () => {
   const [modalMessage, setModalMessage] = useState('')
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
+  const onTabClick = (tab) => handlePLRegTabsClick(tab, navigate, setActiveTab)
 
-  const [formProjects, setProjects] = useState([
-    {
-      year: '',
-      month: '',
-      project_name: '',
-      project_type: '',
-      client: '',
-      business_division: '',
-      sales_revenue: '',
-      dispatch_labor_expense: '',
-      employee_expense: '',
-      indirect_employee_expense: '',
-      expense: '',
-      operating_income: '',
-      non_operating_income: '',
-      non_operating_expense: '',
-      ordinary_profit: '',
-      ordinary_profit_margin: '',
-    },
-  ])
-
-  const maximumEntries = 10
+  const emptyFormData = {
+    year: '',
+    month: '',
+    project_name: '',
+    project_type: '',
+    client: '',
+    business_division: '',
+    sales_revenue: '',
+    dispatch_labor_expense: '',
+    employee_expense: '',
+    indirect_employee_expense: '',
+    expense: '',
+    operating_income: '',
+    non_operating_income: '',
+    non_operating_expense: '',
+    ordinary_profit: '',
+    ordinary_profit_margin: '',
+  }
+  const [formProjects, setProjects] = useState([emptyFormData])
 
   const handleAdd = () => {
-    if (formProjects.length < maximumEntries) {
-      setProjects([
-        ...formProjects,
-        {
-          year: '',
-          month: '',
-          project_name: '',
-          project_type: '',
-          client: '',
-          business_division: '',
-          sales_revenue: '',
-          dispatch_labor_expense: '',
-          employee_expense: '',
-          indirect_employee_expense: '',
-          expense: '',
-          operating_income: '',
-          non_operating_income: '',
-          non_operating_expense: '',
-          ordinary_profit: '',
-          ordinary_profit_margin: '',
-        },
-      ])
-    } else {
-      console.log('You can only add up to 10 forms.')
-    }
+    addFormInput(formProjects, setProjects, maximumEntries, emptyFormData)
   }
 
-  const handleMinus = () => {
-    if (formProjects.length > 1) {
-      setProjects(formProjects.slice(0, -1))
-    }
+  const handleRemove = () => {
+    removeFormInput(formProjects, setProjects)
   }
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
   }
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'project':
-        navigate('/projects-registration')
-        break
-      case 'employeeExpenses':
-        navigate('/employee-expenses-registration')
-        break
-      case 'expenses':
-        navigate('/expenses-registration')
-        break
-      case 'costOfSales':
-        navigate('/cost-of-sales-registration')
-        break
-      default:
-        break
-    }
-  }
 
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal()
+    openModal(setModalIsOpen)
   }
 
   const handleRemoveInputData = () => {
-    setProjects([
-      {
-        year: '',
-        month: '',
-        project_name: '',
-        project_type: '',
-        client: '',
-        business_division: '',
-        sales_revenue: '',
-        dispatch_labor_expense: '',
-        employee_expense: '',
-        indirect_employee_expense: '',
-        expense: '',
-        operating_income: '',
-        non_operating_income: '',
-        non_operating_expense: '',
-        ordinary_profit: '',
-        ordinary_profit_margin: '',
-      },
-    ])
-    closeModal()
-  }
-
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalIsOpen(false)
+    setProjects([emptyFormData])
+    closeModal(setModalIsOpen)
   }
 
   const fetchClients = async () => {
@@ -177,16 +108,15 @@ const ProjectsRegistration = () => {
     }
   }
 
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear;
-  const [months, setMonths] = useState<number[]>([]);
-  
-  const handleChange = (index, event) => {
+  const currentDate = new Date()
+  const currentYear = currentDate.getFullYear()
+  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear
+  const [months, setMonths] = useState<number[]>([])
 
+  const handleChange = (index, event) => {
     const nonFinancialFieldsArray = ['year', 'month', 'project_name', 'project_type', 'client', 'business_division']
     handleInputChange(index, event, setProjects, formProjects, nonFinancialFieldsArray)
-    
+
     const { name, value } = event.target
 
     // Remove commas to get the raw number
@@ -194,16 +124,15 @@ const ProjectsRegistration = () => {
     const rawValue = removeCommas(value)
 
     if (name === 'year') {
-      const selectedYear = parseInt(rawValue, 10);
+      const selectedYear = parseInt(rawValue, 10)
       if (selectedYear === currentFiscalYear) {
-        setMonths([4, 5, 6, 7, 8, 9, 10, 11, 12]);
-      } else if (selectedYear === (currentFiscalYear + 1)) {
-        setMonths([1, 2, 3]);
+        setMonths([4, 5, 6, 7, 8, 9, 10, 11, 12])
+      } else if (selectedYear === currentFiscalYear + 1) {
+        setMonths([1, 2, 3])
       } else {
-        setMonths([]);
+        setMonths([])
       }
     }
-
   }
   useEffect(() => {}, [formProjects])
 
@@ -217,7 +146,6 @@ const ProjectsRegistration = () => {
       setActiveTab(path)
     }
   }, [location.pathname])
-
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -288,26 +216,7 @@ const ProjectsRegistration = () => {
       .then((data) => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
-        setProjects([
-          {
-            year: '',
-            month: '',
-            project_name: '',
-            project_type: '',
-            client: '',
-            business_division: '',
-            sales_revenue: '',
-            dispatch_labor_expense: '',
-            employee_expense: '',
-            indirect_employee_expense: '',
-            expense: '',
-            operating_income: '',
-            non_operating_income: '',
-            non_operating_expense: '',
-            ordinary_profit: '',
-            ordinary_profit_margin: '',
-          },
-        ])
+        setProjects([emptyFormData])
       })
       .catch((error) => {
         if (error.response && error.response.status === 409) {
@@ -453,20 +362,6 @@ const ProjectsRegistration = () => {
     fetchDivision()
     fetchClients()
   }, [token])
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
-  }
 
   const handleListClick = () => {
     navigate('/projects-list')
@@ -485,9 +380,9 @@ const ProjectsRegistration = () => {
         <div className='projectsRegistration-data-content'>
           <div className='projectsRegistration-top-body-cont'>
             <RegistrationButtons
-              activeTabOther={activeTabOther}
+              activeTabOther={'project'}
               message={translate('projectsRegistration', language)}
-              handleTabsClick={handleTabsClick}
+              handleTabsClick={onTabClick}
               handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'project', tabKey: 'project' },
@@ -754,7 +649,7 @@ const ProjectsRegistration = () => {
                 <div className='projectsRegistration-form-content'>
                   <div className='projectsRegistration-plus-btn'>
                     {formProjects.length >= 2 ? (
-                      <button className='projectsRegistration-dec' type='button' onClick={handleMinus}>
+                      <button className='projectsRegistration-dec' type='button' onClick={handleRemove}>
                         -
                       </button>
                     ) : (
@@ -806,4 +701,3 @@ const ProjectsRegistration = () => {
 }
 
 export default ProjectsRegistration
-
