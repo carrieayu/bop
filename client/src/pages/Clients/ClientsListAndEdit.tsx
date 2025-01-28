@@ -1,28 +1,29 @@
-import React, { useEffect, useState } from "react";
-import Btn from "../../components/Button/Button";
-import axios from "axios";
-import Sidebar from "../../components/Sidebar/Sidebar";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useLanguage } from "../../contexts/LanguageContext";
-import { translate } from "../../utils/translationUtil";
-import AlertModal from "../../components/AlertModal/AlertModal";
-import { RiDeleteBin6Fill } from "react-icons/ri";
-import ListButtons from "../../components/ListButtons/ListButtons";
-import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
-import CrudModal from "../../components/CrudModal/CrudModal";
+import React, { useEffect, useState } from 'react'
+import Btn from '../../components/Button/Button'
+import axios from 'axios'
+import Sidebar from '../../components/Sidebar/Sidebar'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { translate } from '../../utils/translationUtil'
+import AlertModal from '../../components/AlertModal/AlertModal'
+import { RiDeleteBin6Fill } from 'react-icons/ri'
+import ListButtons from '../../components/ListButtons/ListButtons'
+import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
+import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss'
-import { getClient } from "../../api/MasterClientEndpoint/GetMasterClient";
-import { deleteClient } from "../../api/MasterClientEndpoint/DeleteMasterClient";
-import { updateMasterClient } from "../../api/MasterClientEndpoint/UpdateMasterClient";
+import { getClient } from '../../api/MasterClientEndpoint/GetMasterClient'
+import { deleteClient } from '../../api/MasterClientEndpoint/DeleteMasterClient'
+import { updateMasterClient } from '../../api/MasterClientEndpoint/UpdateMasterClient'
 import {
   validateRecords,
   translateAndFormatErrors,
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { formatDate } from '../../utils/helperFunctionsUtil'
-import { getUser } from "../../api/UserEndpoint/GetUser";
+import { formatDate, handleMMListTabsClick } from '../../utils/helperFunctionsUtil'
+import { getUser } from '../../api/UserEndpoint/GetUser'
+import { masterMaintenanceScreenTabs, token } from '../../constants'
 
 const ClientsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -42,7 +43,6 @@ const ClientsListAndEdit: React.FC = () => {
   const [initialLanguage, setInitialLanguage] = useState(language)
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [selectedClient, setSelectedClient] = useState<any>(null)
-  const token = localStorage.getItem('accessToken')
   const totalPages = Math.ceil(100 / 10)
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
@@ -50,30 +50,10 @@ const ClientsListAndEdit: React.FC = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [userMap, setUserMap] = useState({})
   const [deleteComplete, setDeleteComplete] = useState(false)
-
+  const onTabClick = (tab) => handleMMListTabsClick(tab, navigate, setActiveTab)
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
-  }
-
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'client':
-        navigate('/clients-list')
-        break
-      case 'employee':
-        navigate('/employees-list')
-        break
-      case 'businessDivision':
-        navigate('/business-divisions-list')
-        break
-      case 'users':
-        navigate('/users-list')
-        break
-      default:
-        break
-    }
   }
 
   const handlePageChange = (page: number) => {
@@ -86,18 +66,18 @@ const ClientsListAndEdit: React.FC = () => {
   }
 
   const handleClick = () => {
-            setIsEditing((prevState) => !prevState)
-          }
-          useEffect(() => {
-            if (isEditing) {
-              setLanguage('jp')
-            }
-      
-            if (!isEditing) {
-              // Reset to original values when switching to list mode
-              setUpdatedClients(originalClientsList)
-            }
-          }, [isEditing])
+    setIsEditing((prevState) => !prevState)
+  }
+  useEffect(() => {
+    if (isEditing) {
+      setLanguage('jp')
+    }
+
+    if (!isEditing) {
+      // Reset to original values when switching to list mode
+      setUpdatedClients(originalClientsList)
+    }
+  }, [isEditing])
 
   const handleChange = (index, e) => {
     const { name, value } = e.target
@@ -140,10 +120,10 @@ const ClientsListAndEdit: React.FC = () => {
       { errors: validationErrors, errorType: 'normalValidation' },
       { errors: duplicateErrors, errorType: 'duplicateValidation' },
     ]
-    
+
     // Step 5: Display the first set of errors found, if any
     const firstError = errorMapping.find(({ errors }) => errors.length > 0)
-  
+
     if (firstError) {
       const { errors, errorType } = firstError
       const translatedErrors = translateAndFormatErrors(errors, language, errorType)
@@ -180,7 +160,6 @@ const ClientsListAndEdit: React.FC = () => {
       return modifiedFields
     }
     const modifiedFields = getModifiedFields(originalClientsList, updatedClients)
-    const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login'
       return
@@ -222,7 +201,6 @@ const ClientsListAndEdit: React.FC = () => {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      const token = localStorage.getItem('accessToken')
       if (!token) {
         window.location.href = '/login' // Redirect to login if no token found
         return
@@ -371,14 +349,9 @@ const ClientsListAndEdit: React.FC = () => {
               <ListButtons
                 activeTabOther={activeTabOther}
                 message={translate(isEditing ? 'clientsEdit' : 'clientsList', language)}
-                handleTabsClick={handleTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
-                buttonConfig={[
-                  { labelKey: 'client', tabKey: 'client' },
-                  { labelKey: 'employee', tabKey: 'employee' },
-                  { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                  { labelKey: 'users', tabKey: 'users' },
-                ]}
+                buttonConfig={masterMaintenanceScreenTabs}
               />
               <div className={`ClientsListAndEdit_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                 <div className='ClientsListAndEdit_table_cont'>
@@ -423,7 +396,7 @@ const ClientsListAndEdit: React.FC = () => {
                                     />
                                   </td>
                                   <td className='ClientsListAndEdit_table_body_content_vertical'>
-                                  {userMap[clients.auth_user] || 'Unknown User'}
+                                    {userMap[clients.auth_user] || 'Unknown User'}
                                   </td>
                                   <td className='ClientsListAndEdit_table_body_content_vertical'>
                                     {formatDate(clients.created_at)}
@@ -530,6 +503,6 @@ const ClientsListAndEdit: React.FC = () => {
       />
     </div>
   )
-};
+}
 
-export default ClientsListAndEdit;
+export default ClientsListAndEdit

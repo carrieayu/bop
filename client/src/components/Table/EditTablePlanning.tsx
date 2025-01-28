@@ -5,6 +5,7 @@ import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { getPlanningA } from '../../api/PlanningEndpoint/GetPlanningA'
 import { updatePlanning } from '../../api/PlanningEndpoint/UpdatePlanning'
+import { months, token } from '../../constants'
 
 const EditTablePlanning = () => {
   const [data, setData] = useState([])
@@ -13,7 +14,6 @@ const EditTablePlanning = () => {
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login'
       return
@@ -33,7 +33,6 @@ const EditTablePlanning = () => {
           return acc
         }, {})
         const aggregatedExpensesData = response.expenses.reduce((acc, item) => {
-          
           const { month, ...values } = item
           if (!acc[month]) {
             acc[month] = { month, ...values } // Include month in the object
@@ -136,7 +135,6 @@ const EditTablePlanning = () => {
           return acc
         }, {})
 
-        const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
         // SALES REVENUE
         const salesValues = months.map((month) => aggregatedPlanningProjectData[month]?.sales_revenue || 0)
 
@@ -1380,7 +1378,6 @@ const EditTablePlanning = () => {
     'professionalServicesFees',
   ]
 
-  const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
   const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable']
   const [editableData, setEditableData] = useState(data)
   const isRowEditable = (label) => editableLabels.includes(label)
@@ -1400,7 +1397,6 @@ const EditTablePlanning = () => {
   }
 
   const saveData = async (changedData) => {
-    const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login'
       return
@@ -1498,11 +1494,11 @@ const EditTablePlanning = () => {
                 {item.values.map((value, valueIndex) => (
                   <td key={valueIndex}>
                     {/* if item.id === undefined then the record does not exist so Input should be editable */}
-                     {isRowEditable(item.label) && valueIndex < 12 && (
-                      Array.isArray(item.id)
-                        ? item.id[valueIndex] !== null && item.id[valueIndex] !== undefined // Check each id in the array
-                        : item.id !== null && item.id !== undefined // For single id
-                     ) ? (
+                    {isRowEditable(item.label) &&
+                    valueIndex < 12 &&
+                    (Array.isArray(item.id)
+                      ? item.id[valueIndex] !== null && item.id[valueIndex] !== undefined // Check each id in the array
+                      : item.id !== null && item.id !== undefined) ? ( // For single id
                       <input
                         className='input_tag'
                         type='text'

@@ -16,11 +16,22 @@ import { getFilteredProjectSalesResults } from '../../api/ProjectSalesResultsEnd
 import { createProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/CreateProjectSalesResults'
 import { overwriteProjectSalesResult } from '../../api/ProjectSalesResultsEndpoint/OverwriteProjectSalesResults'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
-import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { maximumEntries, monthNames, months, resultsScreenTabs, token, years } from '../../constants'
+import { addFormInput, closeModal, openModal } from '../../actions/hooks'
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+import {
+  handleDisableKeysOnNumberInputs,
+  formatNumberWithCommas,
+  removeCommas,
+  handleResultsRegTabsClick,
+} from '../../utils/helperFunctionsUtil'
 import { MAX_NUMBER_LENGTH } from '../../constants'
 
-const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
 type Project = {
   client: string
   client_name: string
@@ -53,85 +64,53 @@ const ProjectSalesResultsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('projectSalesResults')
-  const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const years = [2024, 2025];
-  const token = localStorage.getItem('accessToken')
   const [clients, setClients] = useState<any>([])
-  const [clientsFilter, setClientsFilter] = useState<Clients[]>([{ clients : []}])
+  const [clientsFilter, setClientsFilter] = useState<Clients[]>([{ clients: [] }])
   const [selectedClient, setSelectedClient] = useState([])
   const [businessSelection, setBusinessSelection] = useState<any>([])
-  const [businessDivisionFilter, setBusinessDivisionFilter] = useState<Divisions[]>([ { divisions: []}])
+  const [businessDivisionFilter, setBusinessDivisionFilter] = useState<Divisions[]>([{ divisions: [] }])
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [projectDataResult, setProjectDataResult] = useState<any>([])
-  const [projectList, setProjectsList] = useState<Projects[]>([{ projects : []}])
+  const [projectList, setProjectsList] = useState<Projects[]>([{ projects: [] }])
   const [projectListSelection, setProjectsListSelection] = useState<Projects[]>([{ projects: [] }])
-  const [enable , setEnabled] = useState(false)
+  const [enable, setEnabled] = useState(false)
   const dispatch = useDispatch()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
-
+  const onTabClick = (tab) => handleResultsRegTabsClick(tab, navigate, setActiveTab)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
 
-  const [formProjects, setProjects] = useState([
-    {
-      id: 1,
-      year: '',
-      month: '',
-      project_name: '',
-      project_type: '',
-      client: '',
-      business_division: '',
-      sales_revenue: '',
-      dispatch_labor_expense: '',
-      employee_expense: '',
-      indirect_employee_expense: '',
-      expense: '',
-      operating_income: '',
-      non_operating_income: '',
-      non_operating_expense: '',
-      ordinary_profit: '',
-      ordinary_profit_margin: '',
-    },
-  ])
-  
-  const maximumEntries = 10
+  const emptyFormData = {
+    id: 1,
+    year: '',
+    month: '',
+    project_name: '',
+    project_type: '',
+    client: '',
+    business_division: '',
+    sales_revenue: '',
+    dispatch_labor_expense: '',
+    employee_expense: '',
+    indirect_employee_expense: '',
+    expense: '',
+    operating_income: '',
+    non_operating_income: '',
+    non_operating_expense: '',
+    ordinary_profit: '',
+    ordinary_profit_margin: '',
+  }
 
+  const [formProjects, setProjects] = useState([emptyFormData])
   const handleAdd = () => {
-    if (formProjects.length < maximumEntries) {
-      const tempProject = formProjects
-      tempProject.push({
-        id: formProjects.length + 1,
-        year: '',
-        month: '',
-        project_name: '',
-        project_type: '',
-        client: '',
-        business_division: '',
-        sales_revenue: '',
-        dispatch_labor_expense: '',
-        employee_expense: '',
-        indirect_employee_expense: '',
-        expense: '',
-        operating_income: '',
-        non_operating_income: '',
-        non_operating_expense: '',
-        ordinary_profit: '',
-        ordinary_profit_margin: '',
-      })
-      setProjects(tempProject)
-      
-      setProjectsListSelection([...projectListSelection, { projects: [] }])
-      setClientsFilter([...clientsFilter, { clients: [] }])
-      setProjectsList([...projectList, { projects: [] }])
-      setBusinessDivisionFilter([...businessDivisionFilter, { divisions: [] }])
-    } else {
-      console.log('You can only add up to 10 forms.')
-    }
+    addFormInput(formProjects, setProjects, maximumEntries, emptyFormData)
+    setProjectsListSelection([...projectListSelection, { projects: [] }])
+    setClientsFilter([...clientsFilter, { clients: [] }])
+    setProjectsList([...projectList, { projects: [] }])
+    setBusinessDivisionFilter([...businessDivisionFilter, { divisions: [] }])
   }
 
   const handleMinus = () => {
@@ -144,62 +123,15 @@ const ProjectSalesResultsRegistration = () => {
     setActiveTab(tab)
     navigate(tab)
   }
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'expensesResults':
-        navigate('/expenses-results-list')
-        break
-      case 'projectSalesResults':
-        navigate('/project-sales-results-list')
-        break
-      case 'employeeExpensesResults':
-        navigate('/employee-expenses-results-list')
-        break
-      case 'costOfSalesResults':
-        navigate('/cost-of-sales-results-list')
-        break
-      default:
-        break
-    }
-  }
 
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal()
+    openModal(setModalIsOpen)
   }
 
   const handleRemoveInputData = () => {
-    setProjects([
-      {
-        id: 1,
-        year: '',
-        month: '',
-        project_name: '',
-        project_type: '',
-        client: '',
-        business_division: '',
-        sales_revenue: '',
-        dispatch_labor_expense: '',
-        employee_expense: '',
-        indirect_employee_expense: '',
-        expense: '',
-        operating_income: '',
-        non_operating_income: '',
-        non_operating_expense: '',
-        ordinary_profit: '',
-        ordinary_profit_margin: '',
-      },
-    ])
-    closeModal()
-  }
-
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalIsOpen(false)
+    setProjects([emptyFormData])
+    closeModal(setModalIsOpen)
   }
 
   const fetchClients = async () => {
@@ -221,11 +153,8 @@ const ProjectSalesResultsRegistration = () => {
   }
 
   const handleChange = (index, event) => {
-
     const { name, value } = event.target
 
-    // Remove commas to get the raw number
-    // EG. 999,999 → 999999 in the DB
     const rawValue = removeCommas(value)
 
     const nonFinancialValuesArray = ['year', 'month']
@@ -262,10 +191,10 @@ const ProjectSalesResultsRegistration = () => {
 
   useEffect(() => {
     formProjects.forEach((project, index) => {
-      const month = project.month || null;
-      const year = project.year || null;
-      const projectId = project.project_name || null;
-      if (month !== null || year !== null || projectId !== null ) {
+      const month = project.month || null
+      const year = project.year || null
+      const projectId = project.project_name || null
+      if (month !== null || year !== null || projectId !== null) {
         const filterParams = {
           ...(month !== null && { month }),
           ...(year !== null && { year }),
@@ -290,60 +219,11 @@ const ProjectSalesResultsRegistration = () => {
                   matchedBusinessDivision = [...matchedBusinessDivision, ...filteredBusinessDivision]
                 }
               })
-                setBusinessDivisionFilter((prev) => {
-                  return prev.map((row, projectIndex) => {
-                    if (index == projectIndex) {
-                      return {
-                        divisions: matchedBusinessDivision,
-                      }
-                    }
-                    return row
-                  })
-                })
-                setClientsFilter((prev) => {
-                  return prev.map((row, projectIndex) => {
-                    if (index == projectIndex) {
-                      return {
-                        clients: matchedClients,
-                      }
-                    }
-                    return row
-                  })
-                })
-                setProjectsList((prev) => {
-                  return prev.map((row, projectIndex) => {
-                    if (index == projectIndex) {
-                      return {
-                        projects: data,
-                      }
-                    }
-                    return row
-                  })
-                })
-                setProjectDataResult(data)
-            })
-            .catch((error) => {
-              console.error('Error fetching project sales result list:', error)
-            })
-        } else if (filterParams.year && filterParams.month) {
-          setEnabled(true)
-          getFilteredProjectSalesResults(filterParams, token)
-            .then((data) => {
-              setProjectsListSelection((prev) => {
-                return prev.map((row, projectIndex) => {
-                  if (index == projectIndex) {
-                    return {
-                      projects: data,
-                    }
-                  }
-                  return row
-                })
-              })
               setBusinessDivisionFilter((prev) => {
                 return prev.map((row, projectIndex) => {
                   if (index == projectIndex) {
                     return {
-                      divisions: [],
+                      divisions: matchedBusinessDivision,
                     }
                   }
                   return row
@@ -353,7 +233,7 @@ const ProjectSalesResultsRegistration = () => {
                 return prev.map((row, projectIndex) => {
                   if (index == projectIndex) {
                     return {
-                      clients: [],
+                      clients: matchedClients,
                     }
                   }
                   return row
@@ -363,7 +243,7 @@ const ProjectSalesResultsRegistration = () => {
                 return prev.map((row, projectIndex) => {
                   if (index == projectIndex) {
                     return {
-                      projects: [],
+                      projects: data,
                     }
                   }
                   return row
@@ -371,15 +251,61 @@ const ProjectSalesResultsRegistration = () => {
               })
               setProjectDataResult(data)
             })
+            .catch((error) => {
+              console.error('Error fetching project sales result list:', error)
+            })
+        } else if (filterParams.year && filterParams.month) {
+          setEnabled(true)
+          getFilteredProjectSalesResults(filterParams, token).then((data) => {
+            setProjectsListSelection((prev) => {
+              return prev.map((row, projectIndex) => {
+                if (index == projectIndex) {
+                  return {
+                    projects: data,
+                  }
+                }
+                return row
+              })
+            })
+            setBusinessDivisionFilter((prev) => {
+              return prev.map((row, projectIndex) => {
+                if (index == projectIndex) {
+                  return {
+                    divisions: [],
+                  }
+                }
+                return row
+              })
+            })
+            setClientsFilter((prev) => {
+              return prev.map((row, projectIndex) => {
+                if (index == projectIndex) {
+                  return {
+                    clients: [],
+                  }
+                }
+                return row
+              })
+            })
+            setProjectsList((prev) => {
+              return prev.map((row, projectIndex) => {
+                if (index == projectIndex) {
+                  return {
+                    projects: [],
+                  }
+                }
+                return row
+              })
+            })
+            setProjectDataResult(data)
+          })
           console.log(projectListSelection)
         } else {
           setEnabled(false)
         }
       }
-    });
-  }, [
-    formProjects
-  ])
+    })
+  }, [formProjects])
 
   const HandleClientChange = (e) => {
     setSelectedClient(e.target.value)
@@ -392,7 +318,6 @@ const ProjectSalesResultsRegistration = () => {
     }
   }, [location.pathname])
 
-
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -403,7 +328,7 @@ const ProjectSalesResultsRegistration = () => {
         business_division: project.business_division,
       })),
     )
-    
+
     const projectsData = formProjects.map((projects) => ({
       year: projects.year,
       month: projects.month,
@@ -424,7 +349,7 @@ const ProjectSalesResultsRegistration = () => {
     let combinedObject = formProjects.map(() => ({
       year: '',
       month: '',
-      project_name:'',
+      project_name: '',
       // project: '',
       type: '',
       client: '',
@@ -440,7 +365,7 @@ const ProjectSalesResultsRegistration = () => {
       ordinary_profit: '',
       ordinary_profit_margin: '',
     }))
-       
+
     // Combines the data from related "project", "client", "business division" and adds data to object
     const updatedCombinedObject = combinedObject.map((item, index) => {
       const relatedProject = getRelatedProjectIDs[index] || {} // Get the related project for this index
@@ -499,27 +424,7 @@ const ProjectSalesResultsRegistration = () => {
       .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
-        setProjects([
-          {
-            id: 1,
-            year: '',
-            month: '',
-            project_name: '',
-            project_type: '',
-            client: '',
-            business_division: '',
-            sales_revenue: '',
-            dispatch_labor_expense: '',
-            employee_expense: '',
-            indirect_employee_expense: '',
-            expense: '',
-            operating_income: '',
-            non_operating_income: '',
-            non_operating_expense: '',
-            ordinary_profit: '',
-            ordinary_profit_margin: '',
-          },
-        ])
+        setProjects([emptyFormData])
         setProjectsListSelection([{ projects: [] }])
         setClientsFilter([{ clients: [] }])
         setProjectsList([{ projects: [] }])
@@ -660,20 +565,6 @@ const ProjectSalesResultsRegistration = () => {
     fetchDivision()
     fetchClients()
   }, [token])
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
-  }
 
   const handleListClick = () => {
     navigate('/project-sales-results-list')
@@ -692,16 +583,11 @@ const ProjectSalesResultsRegistration = () => {
         <div className='projectSalesResultsRegistration_data_content'>
           <div className='projectSalesResultsRegistration_top_body_cont'>
             <RegistrationButtons
-              activeTabOther={activeTabOther}
+              activeTabOther={'projectSalesResults'}
               message={translate('projectsSalesResultsRegistration', language)}
-              handleTabsClick={handleTabsClick}
+              handleTabsClick={onTabClick}
               handleListClick={handleListClick}
-              buttonConfig={[
-                { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
-                { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
-                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
-                { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
-              ]}
+              buttonConfig={resultsScreenTabs}
             />
           </div>
           <div className='projectSalesResultsRegistration_mid_body_cont'>

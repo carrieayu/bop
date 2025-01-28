@@ -16,13 +16,23 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
 import { updateProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/UpdateProjectSalesResults'
 import { deleteProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/DeleteProjectSalesResults'
-import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas, handleInputChange } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { resultsScreenTabs, token } from '../../constants'
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+import {
+  handleDisableKeysOnNumberInputs,
+  formatNumberWithCommas,
+  handleInputChange,
+  handleResultsListTabsClick,
+} from '../../utils/helperFunctionsUtil'
 const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('projectSalesResults')
   const [currentPage, setCurrentPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [paginatedData, setPaginatedData] = useState<any[]>([])
@@ -32,7 +42,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [projectSalesResults, setProjectSalesResults] = useState([])
   const [originalProjectSalesResultsList, setOriginalProjectSalesResultsList] = useState(projectSalesResults)
-  const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
   const years = []
   const [initialLanguage, setInitialLanguage] = useState(language)
   const dispatch = useDispatch()
@@ -42,6 +51,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [selectedProject, setSelectedProject] = useState<any>(null)
   const [deleteProjectsId, setDeleteProjectsId] = useState([])
+  const onTabClick = (tab) => handleResultsListTabsClick(tab, navigate, setActiveTab)
   const [formProjects, setFormProjects] = useState([
     {
       sales_revenue: '',
@@ -62,7 +72,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [deleteComplete, setDeleteComplete] = useState(false)
-  const token = localStorage.getItem('accessToken')
 
   for (let year = 2020; year <= new Date().getFullYear(); year++) {
     years.push(year)
@@ -70,26 +79,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
-  }
-
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'expensesResults':
-        navigate('/expenses-results-list')
-        break
-      case 'projectSalesResults':
-        navigate('/project-sales-results-list')
-        break
-      case 'employeeExpensesResults':
-        navigate('/employee-expenses-results-list')
-        break
-      case 'costOfSalesResults':
-        navigate('/cost-of-sales-results-list')
-        break
-      default:
-        break
-    }
   }
 
   const handlePageChange = (page: number) => {
@@ -100,20 +89,20 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
     setRowsPerPage(numRows)
     setCurrentPage(0)
   }
-  
+
   const handleClick = () => {
-              setIsEditing((prevState) => !prevState)
-            }
-            useEffect(() => {
-              if (isEditing) {
-                setLanguage('jp')
-              }
-        
-              if (!isEditing) {
-                // Reset to original values when switching to list mode
-                setProjectSalesResults(originalProjectSalesResultsList)
-              }
-            }, [isEditing])
+    setIsEditing((prevState) => !prevState)
+  }
+  useEffect(() => {
+    if (isEditing) {
+      setLanguage('jp')
+    }
+
+    if (!isEditing) {
+      // Reset to original values when switching to list mode
+      setProjectSalesResults(originalProjectSalesResultsList)
+    }
+  }, [isEditing])
 
   const handleChange = (index, event) => {
     const nonFinancialFieldsArray = ['year', 'month', 'project_name', 'project_type', 'client', 'business_division']
@@ -324,7 +313,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   // Step #2
   const updateProjectSalesResultLists = (deleteId) => {
     // Deletes the record with deleteId from original list (This should always match DB)
-    setOriginalProjectSalesResultsList((prevList) => prevList.filter((pr) => pr.project_sales_result_id !== deleteProjectsId))
+    setOriginalProjectSalesResultsList((prevList) =>
+      prevList.filter((pr) => pr.project_sales_result_id !== deleteProjectsId),
+    )
     setDeleteComplete(true)
   }
 
@@ -364,16 +355,11 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
             </div>
             <div className='projectSalesResultsList_mid_body_cont'>
               <ListButtons
-                activeTabOther={activeTabOther}
+                activeTabOther={'projectSalesResults'}
                 message={translate(isEditing ? 'projectsSalesResultsEdit' : 'projectsSalesResultsList', language)}
-                handleTabsClick={handleTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
-                buttonConfig={[
-                  { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
-                  { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
-                  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
-                  { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
-                ]}
+                buttonConfig={resultsScreenTabs}
               />
               <div className={`projectSalesResultsList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                 <div className={`projectSalesResultsList_table_cont ${isEditing ? 'editScrollable' : ''}`}>

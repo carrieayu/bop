@@ -12,10 +12,17 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import { getProject } from '../../api/ProjectsEndpoint/GetProject'
 import { getEmployee } from '../../api/EmployeeEndpoint/GetEmployee'
 import { createEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/CreateEmployeeExpenseResult'
-import { checkForDuplicates, getFieldChecks, translateAndFormatErrors, validateEmployeeExpensesResultsRecords } from '../../utils/validationUtil'
+import {
+  checkForDuplicates,
+  getFieldChecks,
+  translateAndFormatErrors,
+  validateEmployeeExpensesResultsRecords,
+} from '../../utils/validationUtil'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
 import { getFilteredEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/FilterGetEmployeeExpenseResult'
-
+import { handleResultsRegTabsClick } from '../../utils/helperFunctionsUtil'
+import { maximumEntriesEE, monthNames, resultsScreenTabs, storedUserID, token } from '../../constants'
+import { closeModal, openModal } from '../../actions/hooks'
 
 type Date = {
   year: string
@@ -33,14 +40,10 @@ const EmployeeExpensesResultsRegistration = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [activeTab, setActiveTab] = useState('/results')
-  const [activeTabOther, setActiveTabOther] = useState('employeeExpensesResults')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const years = [2024, 2025]
-  const token = localStorage.getItem('accessToken')
   const [employees, setEmployees] = useState([])
   const [projectsSalesResults, setProjectSalesResult] = useState([])
-  const storedUserID = localStorage.getItem('userID')
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [employeeContainers, setEmployeeContainers] = useState([
     {
@@ -56,34 +59,16 @@ const EmployeeExpensesResultsRegistration = () => {
   const [modalMessage, setModalMessage] = useState('')
   const [filteredDates, setFilteredDates] = useState<DateForm[]>([{ form: [{ date: [] }] }])
   const [selectionYearResults, setSelectionYearResults] = useState<DateForm[]>([{ form: [{ date: [] }] }])
+  const onTabClick = (tab) => handleResultsRegTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
   }
 
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'projectSalesResults':
-        navigate('/project-sales-results-list')
-        break
-      case 'expensesResults':
-        navigate('/expenses-results-list')
-        break
-      case 'employeeExpensesResults':
-        navigate('/employee-expenses-results-list')
-        break
-      case 'costOfSalesResults':
-        navigate('/cost-of-sales-results-list')
-        break
-      default:
-    }
-  }
-
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal()
+    openModal(setModalIsOpen)
   }
 
   const handleRemoveInputData = () => {
@@ -96,15 +81,7 @@ const EmployeeExpensesResultsRegistration = () => {
         ],
       },
     ])
-    closeModal()
-  }
-
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalIsOpen(false)
+    closeModal(setModalIsOpen)
   }
 
   useEffect(() => {
@@ -121,21 +98,6 @@ const EmployeeExpensesResultsRegistration = () => {
   const handleTranslationSwitchToggle = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
     setLanguage(newLanguage)
-  }
-
-  const monthNames = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
   }
 
   useEffect(() => {
@@ -173,7 +135,7 @@ const EmployeeExpensesResultsRegistration = () => {
     fetchData()
   }, [token])
 
-  //This function will make ProjectName unique base on project_name , client and business_division on Employee Expense Results 
+  //This function will make ProjectName unique base on project_name , client and business_division on Employee Expense Results
   const uniqueProjectsResults = (projects) => {
     const seen = new Set()
     return projects.filter((project) => {
@@ -217,7 +179,7 @@ const EmployeeExpensesResultsRegistration = () => {
     const updatedContainers = [...employeeContainers]
     const projectEntries = updatedContainers[containerIndex].projectEntries
 
-    if (projectEntries.length < 5) {
+    if (projectEntries.length < maximumEntriesEE) {
       const newEntry = {
         id: projectEntries.length + 1, // Unique ID for each project entry
         clients: '',
@@ -277,7 +239,8 @@ const EmployeeExpensesResultsRegistration = () => {
         }
         employeeContainers.map((employee, index) => {
           const getProjectResultsName = employee.projectEntries.flatMap((entry) => entry.projects)[projectIndex]
-          const [project_id = null, project_name = null, client = null, business_division = null] = getProjectResultsName?.split(':') || []
+          const [project_id = null, project_name = null, client = null, business_division = null] =
+            getProjectResultsName?.split(':') || []
           const filterParams = {
             ...(project_id && { project_id }),
             ...(project_name && { project_name }),
@@ -618,16 +581,11 @@ const EmployeeExpensesResultsRegistration = () => {
         </div> */}
             {/* <div className='employeeExpensesRegistration_top_btn_cont'></div> */}
             <RegistrationButtons
-              activeTabOther={activeTabOther}
+              activeTabOther={'employeeExpensesResults'}
               message={translate('employeeExpensesResultsRegistration', language)}
-              handleTabsClick={handleTabsClick}
+              handleTabsClick={onTabClick}
               handleListClick={handleListClick}
-              buttonConfig={[
-                { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
-                { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
-                { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
-                { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
-              ]}
+              buttonConfig={resultsScreenTabs}
             />
           </div>
           <div className='employeeExpensesResultsRegistration_mid_body_cont'>

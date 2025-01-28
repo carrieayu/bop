@@ -1,41 +1,35 @@
 // src/components/HeaderButtons/HeaderButtons.tsx
-import React, { useState } from 'react';
-import Btn from '../Button/Button'; 
-import { translate } from '../../utils/translationUtil';
-import { useLanguage } from '../../contexts/LanguageContext';
+import React, { useState } from 'react'
+import Btn from '../Button/Button'
+import { translate } from '../../utils/translationUtil'
+import { useLanguage } from '../../contexts/LanguageContext'
 import { TbLogout } from 'react-icons/tb'
-import AlertModal from '../AlertModal/AlertModal';
+import AlertModal from '../AlertModal/AlertModal'
+import { closeModal, openModal } from '../../actions/hooks'
+import { token } from '../../constants'
 interface HeaderButtonsProps {
-  activeTab: string;
-  handleTabClick: (tab: string) => void;
-  isTranslateSwitchActive: boolean;
-  handleTranslationSwitchToggle: () => void;
+  activeTab: string
+  handleTabClick: (tab: string) => void
+  isTranslateSwitchActive: boolean
+  handleTranslationSwitchToggle: () => void
 }
 
-
-
-const HeaderButtons: React.FC<HeaderButtonsProps> = ({ activeTab, handleTabClick, isTranslateSwitchActive, handleTranslationSwitchToggle }) => {
-  const { language } = useLanguage();
+const HeaderButtons: React.FC<HeaderButtonsProps> = ({
+  activeTab,
+  handleTabClick,
+  isTranslateSwitchActive,
+  handleTranslationSwitchToggle,
+}) => {
+  const { language } = useLanguage()
   const [modalIsOpen, setModalIsOpen] = useState(false)
-
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalIsOpen(false)
-  }
-
+  const handleCloseModal = () => closeModal(setModalIsOpen)
 
   const handleConfirm = async () => {
-      localStorage.removeItem('accessToken')
-      const token = localStorage.getItem('accessToken')
-      if (!token) {
-        window.location.href = '/login' 
-        return
-      }
-      setModalIsOpen(false)
-    }
+    localStorage.removeItem('token')
+    localStorage.clear() // Clears all localStorage keys
+    window.location.href = '/login'
+    setModalIsOpen(false)
+  }
 
   return (
     <div className='HeaderButtons_header_cont'>
@@ -57,21 +51,21 @@ const HeaderButtons: React.FC<HeaderButtonsProps> = ({ activeTab, handleTabClick
         />
       </div>
       <div className='HeaderButtons_language-toggle'>
-        {isTranslateSwitchActive ?
+        {isTranslateSwitchActive ? (
           <p className='HeaderButtons_pl-label'>English</p>
-          :
+        ) : (
           <p className='HeaderButtons_pl-label'>日本語</p>
-        }
+        )}
         <label className='HeaderButtons_switch'>
           <input type='checkbox' checked={isTranslateSwitchActive} onChange={handleTranslationSwitchToggle} />
           <span className='HeaderButtons_slider'></span>
         </label>
-        <TbLogout className='logout-icon' onClick={() => openModal()} />
+        <TbLogout className='logout-icon' onClick={() => openModal(setModalIsOpen)} />
         <div>
           <AlertModal
             isOpen={modalIsOpen}
             onConfirm={handleConfirm}
-            onCancel={closeModal}
+            onCancel={handleCloseModal}
             message={translate('logout', language)}
           />
         </div>
@@ -80,4 +74,4 @@ const HeaderButtons: React.FC<HeaderButtonsProps> = ({ activeTab, handleTabClick
   )
 }
 
-export default HeaderButtons;
+export default HeaderButtons

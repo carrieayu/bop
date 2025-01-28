@@ -19,16 +19,21 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import {
+  handleDisableKeysOnNumberInputs,
+  formatNumberWithCommas,
+  removeCommas,
+  handleMMRegTabsClick,
+} from '../../utils/helperFunctionsUtil'
 import EmployeeExpensesList from '../EmployeeExpenses/EmployeeExpensesList'
+import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
+import { masterMaintenanceScreenTabs, maximumEntries, token } from '../../constants'
 import { MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER } from '../../constants'
 
 const EmployeesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('employee')
-  const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const dispatch = useDispatch()
@@ -36,32 +41,28 @@ const EmployeesRegistration = () => {
   const [selectedCompanyId, setSelectedCompanyId] = useState('')
   const [companySelection, setCompanySelection] = useState<any>([])
   const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [selectedEmployeeType, setSelectedEmployeeType] = useState<any>([])
-  const token = localStorage.getItem('accessToken')
-  const [employees, setEmployees] = useState([
-    {
-      last_name: '',
-      first_name: '',
-      type: '',
-      email: '',
-      salary: '',
-      executive_renumeration: '',
-      company_name: '',
-      business_division_name: '',
-      bonus_and_fuel_allowance: '',
-      statutory_welfare_expense: '',
-      welfare_expense: '',
-      insurance_premium: '',
-      auth_id: '',
-      created_at: '',
-    },
-  ])
+  const emptyFormData = {
+    last_name: '',
+    first_name: '',
+    type: '',
+    email: '',
+    salary: '',
+    executive_renumeration: '',
+    company_name: '',
+    business_division_name: '',
+    bonus_and_fuel_allowance: '',
+    statutory_welfare_expense: '',
+    welfare_expense: '',
+    insurance_premium: '',
+    auth_id: '',
+    created_at: '',
+  }
+  const [employees, setEmployees] = useState([emptyFormData])
   const [allBusinessDivisions, setAllBusinessDivisions] = useState([])
-
+  const onTabClick = (tab) => handleMMRegTabsClick(tab, navigate, setActiveTab)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
-
 
   const fetchData = async () => {
     try {
@@ -78,7 +79,6 @@ const EmployeesRegistration = () => {
 
   // This could possible be combined into handleInputChange (refactoring)
   const handleEmployeeTypePulldown = (e, containerIndex) => {
-
     const newType = e.target.value
     const newContainers = [...employees]
 
@@ -89,7 +89,7 @@ const EmployeesRegistration = () => {
     } else if (newType === '1') {
       // Reset salary if switching to executive employee
       newContainers[containerIndex].salary = '' // Set to an empty string directly
-    } else (newType === '')
+    } else newType === ''
     {
       newContainers[containerIndex].executive_renumeration = '' // Set to an empty string directly
       newContainers[containerIndex].salary = '' // Set to an empty string directly
@@ -112,7 +112,7 @@ const EmployeesRegistration = () => {
       if (rawValue.length <= MAX_NUMBER_LENGTH && rawValue <= MAX_SAFE_INTEGER) {
       }
     }
-    
+
     if (name === 'company_name') {
       setSelectedCompanyId(value) // Update selected company ID
       const newContainers = [...employees]
@@ -165,59 +165,14 @@ const EmployeesRegistration = () => {
     navigate(tab)
   }
 
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'client':
-        navigate('/clients-registration')
-        break
-      case 'employee':
-        navigate('/employees-registration')
-        break
-      case 'businessDivision':
-        navigate('/business-divisions-registration')
-        break
-      case 'users':
-        navigate('/users-registration')
-        break
-      default:
-        break
-    }
-  }
-
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal()
+    openModal(setModalIsOpen)
   }
 
   const handleRemoveInputData = () => {
-    setEmployees([
-      {
-        last_name: '',
-        first_name: '',
-        type: '',
-        email: '',
-        salary: '',
-        executive_renumeration: '',
-        company_name: '',
-        business_division_name: '',
-        bonus_and_fuel_allowance: '',
-        statutory_welfare_expense: '',
-        welfare_expense: '',
-        insurance_premium: '',
-        auth_id: '',
-        created_at: '',
-      },
-    ])
-    closeModal()
-  }
-
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalIsOpen(false)
+    setEmployees([emptyFormData])
+    closeModal(setModalIsOpen)
   }
 
   const handleTranslationSwitchToggle = () => {
@@ -311,24 +266,7 @@ const EmployeesRegistration = () => {
       .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
-        setEmployees([
-          {
-            last_name: '',
-            first_name: '',
-            type: '',
-            email: '',
-            salary: '',
-            executive_renumeration: '',
-            company_name: '',
-            business_division_name: '',
-            bonus_and_fuel_allowance: '',
-            statutory_welfare_expense: '',
-            welfare_expense: '',
-            insurance_premium: '',
-            auth_id: '',
-            created_at: '',
-          },
-        ])
+        setEmployees([emptyFormData])
       })
       .catch((error) => {
         if (error.response) {
@@ -354,37 +292,12 @@ const EmployeesRegistration = () => {
   }
 
   const handleAddContainer = () => {
-    if (employees.length < 10) {
-      setEmployees([
-        ...employees,
-        {
-          last_name: '',
-          first_name: '',
-          type: '',
-          email: '',
-          salary: '',
-          executive_renumeration: '',
-          company_name: '',
-          business_division_name: '',
-          bonus_and_fuel_allowance: '',
-          statutory_welfare_expense: '',
-          welfare_expense: '',
-          insurance_premium: '',
-          auth_id: '',
-          created_at: '',
-        },
-      ])
-    }
+    addFormInput(employees, setEmployees, maximumEntries, emptyFormData)
   }
 
   const handleRemoveContainer = () => {
-    if (employees.length > 1) {
-      const newContainers = [...employees]
-      newContainers.pop()
-      setEmployees(newContainers)
-    }
+    removeFormInput(employees, setEmployees)
   }
-
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
@@ -409,16 +322,11 @@ const EmployeesRegistration = () => {
           <div className='EmployeesRegistration_mid_body_cont'>
             <div className='EmployeesRegistration_top_body_cont'>
               <RegistrationButtons
-                activeTabOther={activeTabOther}
+                activeTabOther={'employee'}
                 message={translate('employeesRegistration', language)}
-                handleTabsClick={handleTabsClick}
+                handleTabsClick={onTabClick}
                 handleListClick={handleListClick}
-                buttonConfig={[
-                  { labelKey: 'client', tabKey: 'client' },
-                  { labelKey: 'employee', tabKey: 'employee' },
-                  { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                  { labelKey: 'users', tabKey: 'users' },
-                ]}
+                buttonConfig={masterMaintenanceScreenTabs}
               />
             </div>
             <div className='EmployeesRegistration_mid_form_cont'>
