@@ -90,7 +90,7 @@ const EditTableResults = () => {
               month,
               employees: [employee], // Store employees as an array
               projects: [project], // Store projects as an array
-              totalSalary: employee.salary || 0, // Initialize totalSalary with the first employee's salary
+              totalSalary: Number(employee.salary) || 0, // Initialize totalSalary with the first employee's salary
               ...values,
             }
           } else {
@@ -99,7 +99,7 @@ const EditTableResults = () => {
             acc[month].projects.push(project)
 
             // Add the employee's salary to the total
-            acc[month].totalSalary += employee.salary || 0
+            acc[month].totalSalary += Number(employee.salary) || 0
 
             // Aggregate other numeric fields
             Object.keys(values).forEach((key) => {

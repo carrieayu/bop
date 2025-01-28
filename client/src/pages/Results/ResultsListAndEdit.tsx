@@ -10,7 +10,7 @@ import { translate } from '../../utils/translationUtil'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import EditTableResults from '../../components/TableResults/EditTableResults'
 import { TableResultsB } from '../../components/TableResults/TableResultB'
-import TableResults from '../../components/TableResults/TableResultA'
+import TableResultsA from '../../components/TableResults/TableResultA'
 import { RxHamburgerMenu } from 'react-icons/rx'
 import { getResultsA } from '../../api/ResultsEndpoint/GetResultsA'
 import * as XLSX from 'xlsx'
@@ -136,14 +136,14 @@ const ResultsListAndEdit = () => {
               month,
               employees: [employee],
               projects: [project],
-              totalSalary: employee.salary || 0,
+              totalSalary: Number(employee.salary) || 0,
               ...values,
             }
           } else {
             acc[month].employees.push(employee)
             acc[month].projects.push(project)
 
-            acc[month].totalSalary += employee.salary || 0
+            acc[month].totalSalary += Number(employee.salary) || 0
 
             Object.keys(values).forEach((key) => {
               if (typeof values[key] === 'number') {
@@ -896,7 +896,7 @@ const ResultsListAndEdit = () => {
                 <div className='results_summary_tbl_cont'>
                   <div className={`table_content_results_summary ${isSwitchActive ? 'hidden' : ''}`}>
                     {/* Render the TablePlanning component here */}
-                    {isEditing ? <EditTableResults /> : <TableResults isThousandYenChecked={isThousandYenChecked} />}
+                    {isEditing ? <EditTableResults /> : <TableResultsA isThousandYenChecked={isThousandYenChecked} />}
                   </div>
                   <div className={`table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
                     <TableResultsB
