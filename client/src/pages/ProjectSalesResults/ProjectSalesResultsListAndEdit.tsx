@@ -197,6 +197,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
         setCrudMessage(translate('successfullyUpdated', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
+        fetchProjectsHandler()
       })
       .catch((error) => {
         console.log('There was an error updating the projects sales results!', error)
@@ -278,7 +279,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
     setSelectedProject(null)
     setModalIsOpen(false)
     setIsCRUDOpen(false)
-    fetchProjectsHandler()
   }
 
   // # Handle DELETE on Edit Screen

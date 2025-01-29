@@ -134,7 +134,12 @@ const ProjectsListAndEdit: React.FC = () => {
   }
 
   const handleSubmit = async () => {
+
+    console.log("handleSubmit 001");
+
     setFormProjects(projects)
+
+    console.log("handleSubmit 002");
 
     // # Client Side Validation
 
@@ -174,6 +179,8 @@ const ProjectsListAndEdit: React.FC = () => {
     }
     // Continue with submission if no errors
 
+    console.log("handleSubmit 003");
+
     const getModifiedFields = (original, updated) => {
       const modifiedFields = []
 
@@ -203,13 +210,17 @@ const ProjectsListAndEdit: React.FC = () => {
       return
     }
 
+    console.log("handleSubmit 004");
+
     updateProject(modifiedFields, token)
       .then(() => {
         setCrudMessage(translate('successfullyUpdated', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
+        fetchProjectsHandler()
       })
       .catch((error) => {
+        console.log("handleSubmit 004.3");
         if (error.response) {
           const { status, data } = error.response
           switch (status) {
@@ -306,7 +317,6 @@ const ProjectsListAndEdit: React.FC = () => {
     setSelectedProject(null)
     setModalIsOpen(false)
     setIsCRUDOpen(false)
-    fetchProjectsHandler()
   }
 
   // # Handle DELETE on Edit Screen

@@ -172,6 +172,7 @@ const UsersListAndEdit: React.FC = () => {
         setCrudMessage(translate('successfullyUpdated', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
+        fetchUserListHandler(token)
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
@@ -237,9 +238,6 @@ const UsersListAndEdit: React.FC = () => {
     setSelectedProject(null)
     setModalIsOpen(false)
     setIsCRUDOpen(false)
-
-    const token = localStorage.getItem('accessToken')
-    fetchUserListHandler(token)
   }
 
   // # Handle DELETE on Edit Screen
