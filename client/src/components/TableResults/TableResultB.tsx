@@ -112,12 +112,9 @@ export const TableResultsB: React.FC<TableProps> = (props) => {
     setLanguage(newLanguage)
   }
 
-
   const thousandYenConversion = (value) => {
     return (Math.round((value / 1000) * 10) / 10).toLocaleString() // Rounds to 1 decimal place
   }
-
-  console.log(thousandYenConversion(200000))
 
   return (
     <div className='table-b-wrapper'>
