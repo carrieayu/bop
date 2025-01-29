@@ -100,7 +100,7 @@ function cardCalculations(state) {
   const cards = state.cardsList || []
   const costOfSaleList = state.costOfSaleList || []
 
-  const totalCostOfSaleForYear = getCostOfSaleForYear(costOfSaleList, 2024) // To be updated when toogle is implemented.
+  const totalCostOfSaleForYear = getCostOfSaleForYear(costOfSaleList, 2024) // To be updated when toggle is implemented.
   //Total Sales
   state.totalSales = getSum(cards.map((card) => Number(card.sales_revenue)))
 

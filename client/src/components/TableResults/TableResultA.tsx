@@ -5,6 +5,7 @@ import { translate } from '../../utils/translationUtil'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { getPlanningA } from '../../api/PlanningEndpoint/GetPlanningA'
 import { getResultsA } from '../../api/ResultsEndpoint/GetResultsA'
+import { monthNames, months, token } from '../../constants'
 
 interface TablePlanningAProps {
   isThousandYenChecked: boolean
@@ -14,10 +15,8 @@ const TableResults: React.FC<TablePlanningAProps> = ({ isThousandYenChecked }) =
   const [data, setData] = useState([])
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en') // State for switch in translation
-  const token = localStorage.getItem('accessToken')
   useEffect(() => {
     
-    const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
     if (!token) {
       window.location.href = '/login'
       return
@@ -734,25 +733,10 @@ const TableResults: React.FC<TablePlanningAProps> = ({ isThousandYenChecked }) =
     'cumulativeOrdinaryIncome',
   ]
 
-  const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'Jan', jp: '1月' }, // January
-    2: { en: 'Feb', jp: '2月' }, //February
-    3: { en: 'Mar', jp: '3月' }, // March
-    4: { en: 'Apr', jp: '4月' }, //April
-    5: { en: 'May', jp: '5月' }, //May
-    6: { en: 'Jun', jp: '6月' }, //June
-    7: { en: 'Jul', jp: '7月' }, //July
-    8: { en: 'Aug', jp: '8月' }, //August
-    9: { en: 'Sep', jp: '9月' }, //September
-    10: { en: 'Oct', jp: '10月' }, //October
-    11: { en: 'Nov', jp: '11月' }, //November
-    12: { en: 'Dec', jp: '12月' }, //December
-  }
   const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable']
 
   return (
-    <div className='table-results_summary-container'>
+    <div className='table-results_summary-container editScrollable'>
       <div className='table-results_summary'>
         <table>
           <thead>

@@ -14,6 +14,7 @@ import TableResults from '../../components/TableResults/TableResultA'
 import { RxHamburgerMenu } from 'react-icons/rx'
 import { getResultsA } from '../../api/ResultsEndpoint/GetResultsA'
 import * as XLSX from 'xlsx'
+import { monthNames, months, token } from '../../constants'
 
 const header = ['計画']
 const smallDate = ['2022/24月', '2022/25月', '2022/26月']
@@ -34,25 +35,10 @@ const ResultsListAndEdit = () => {
   const location = useLocation()
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const token = localStorage.getItem('accessToken')
   const [isEditing, setIsEditing] = useState(false)
   const [initialLanguage, setInitialLanguage] = useState(language)
   const [isXLSModalOpen, setIsXLSModalOpen] = useState(false)
-  const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
-  const monthsNames = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
-  }
+
   const additionalHeaders = {
     1: { en: 'H1', jp: '上期計	' },
     2: { en: 'H2', jp: '下期計	' },
@@ -714,14 +700,13 @@ const ResultsListAndEdit = () => {
           },
         ]
         // Updated translation base on what language user has selected.
-        const monthNamesTranslation = Object.values(monthsNames).map(month => month[language]);
+        const monthNamesTranslation = Object.values(monthNames).map((month) => month[language])
         const reorderedMonthNames = [...monthNamesTranslation.slice(3), ...monthNamesTranslation.slice(0, 3)] //Changed the order of months [Apr - Mar]
         const additionalHeadersTranslation = Object.values(additionalHeaders).map((month) => month[language])
         const excelRows = [
           ['', ...reorderedMonthNames, ...additionalHeadersTranslation],
           ['', header, header, header, header, ...Array(11).fill(header)],
         ]
-
 
         data.forEach((item) => {
           excelRows.push([item.label, ...item.values])

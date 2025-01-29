@@ -2,14 +2,14 @@ import React from 'react'
 
 // Define props for the reusable button component
 interface ButtonProps {
-    label: string;
-    onClick: () => void;
-    customIcon?: React.ReactNode;
-    iconPosition?: "left" | "right";
-    borderRadius?: number;
-    size?: "small" | "normal" | "medium" | "large";
-    className?: string;
-    type?: "button" | "submit" | "reset";
+  label: string
+  onClick: (...args: any[]) => void
+  customIcon?: React.ReactNode
+  iconPosition?: 'left' | 'right'
+  borderRadius?: number
+  size?: 'small' | 'normal' | 'medium' | 'large'
+  className?: string
+  type?: 'button' | 'submit' | 'reset'
 }
 
 const Btn: React.FC<ButtonProps> = ({

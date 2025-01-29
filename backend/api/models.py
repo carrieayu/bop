@@ -345,13 +345,13 @@ class CostOfSalesResults(models.Model):
     cost_of_sale =  models.ForeignKey(CostOfSales, on_delete=models.CASCADE, null=True)
     year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
     month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
-    purchase = models.IntegerField()
-    outsourcing_expense = models.IntegerField()
-    product_purchase = models.IntegerField()
-    dispatch_labor_expense = models.IntegerField()
-    communication_expense = models.IntegerField()
-    work_in_progress_expense = models.IntegerField()
-    amortization_expense = models.IntegerField()
+    purchase = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    outsourcing_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    product_purchase = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    dispatch_labor_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    communication_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    work_in_progress_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    amortization_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :
@@ -413,17 +413,17 @@ class ExpensesResults(models.Model):
     expense = models.ForeignKey(Expenses, on_delete=models.CASCADE, null=True)
     year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
     month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
-    consumable_expense = models.IntegerField()
-    rent_expense = models.IntegerField()
-    tax_and_public_charge = models.IntegerField()
-    depreciation_expense = models.IntegerField()
-    travel_expense = models.IntegerField()
-    communication_expense = models.IntegerField()
-    utilities_expense = models.IntegerField()
-    transaction_fee = models.IntegerField()
-    advertising_expense = models.IntegerField()
-    entertainment_expense = models.IntegerField()
-    professional_service_fee = models.IntegerField()
+    consumable_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    rent_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    tax_and_public_charge = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    depreciation_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    travel_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    communication_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    utilities_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    transaction_fee = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    advertising_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    entertainment_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    professional_service_fee = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :
@@ -445,30 +445,18 @@ class ExpensesResults(models.Model):
         return self.expense_result_id
     
 class ProjectsSalesResults(models.Model):
-    project_sales_result_id  = models.CharField(
-        max_length=MAX_LENGTH_ID, primary_key=True , editable=False
-    )
+    project_sales_result_id  = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True , editable=False)
     project = models.ForeignKey(Projects, on_delete=models.CASCADE, null=True)
-    sales_revenue = models.IntegerField()
-    dispatch_labor_expense = models.IntegerField(
-        
-    )
-    employee_expense = models.IntegerField(
-        
-    )
-    indirect_employee_expense = models.IntegerField(
-        
-    )
-    expense = models.IntegerField()
-    operating_income = models.IntegerField()
-    non_operating_income = models.IntegerField(
-        
-    )
-    non_operating_expense = models.IntegerField(
-        
-    )
-    ordinary_profit = models.IntegerField()
-    ordinary_profit_margin = models.IntegerField(default=0.0)
+    sales_revenue = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    dispatch_labor_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    employee_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    indirect_employee_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    operating_income = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    non_operating_income = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    non_operating_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    ordinary_profit = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    ordinary_profit_margin = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES, default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :
