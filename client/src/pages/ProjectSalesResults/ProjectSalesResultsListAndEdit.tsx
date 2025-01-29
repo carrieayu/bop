@@ -89,7 +89,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
     setRowsPerPage(numRows)
     setCurrentPage(0)
   }
-
   const handleClick = () => {
     setIsEditing((prevState) => !prevState)
   }
@@ -103,7 +102,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
       setProjectSalesResults(originalProjectSalesResultsList)
     }
   }, [isEditing])
-
   const handleChange = (index, event) => {
     const nonFinancialFieldsArray = ['year', 'month', 'project_name', 'project_type', 'client', 'business_division']
     handleInputChange(index, event, setProjectSalesResults, projectSalesResults, nonFinancialFieldsArray)
@@ -186,6 +184,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
         setCrudMessage(translate('successfullyUpdated', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
+        fetchProjectsHandler()
       })
       .catch((error) => {
         console.log('There was an error updating the projects sales results!', error)
@@ -222,18 +221,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
         return
       }
 
-      getProjectSalesResults(token)
-        .then((data) => {
-          setProjectSalesResults(data)
-          setOriginalProjectSalesResultsList(data)
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('There was an error fetching the projects sales results!', error)
-          }
-        })
+      fetchProjectsHandler()
     }
     fetchDivision()
     fetchClient()
@@ -328,6 +316,20 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
       setProjectSalesResults(originalProjectSalesResultsList)
     }
   }, [deleteComplete])
+
+  const fetchProjectsHandler = async () => {
+    try {
+      const data = await getProjectSalesResults(token);
+      setProjectSalesResults(data);
+      setOriginalProjectSalesResultsList(data);
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        window.location.href = '/login'; // Redirect to login if unauthorized
+      } else {
+        console.error('There was an error fetching the projects sales results!', error);
+      }
+    }
+  }
 
   return (
     <div className='projectSalesResultsList_wrapper'>
