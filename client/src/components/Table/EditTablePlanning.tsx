@@ -54,7 +54,7 @@ const EditTablePlanning = () => {
           let totalWelfareExpense = 0
           let totalStatutoryWelfareExpense = 0
           let totalInsurancePremium = 0
-          
+
           employees.forEach((employee) => {
             totalAnnualExecutive += Number(employee.executive_renumeration)
             totalAnnualSalary += Number(employee.salary)
