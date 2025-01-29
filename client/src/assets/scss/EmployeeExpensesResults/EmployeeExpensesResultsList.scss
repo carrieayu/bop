@@ -124,14 +124,14 @@
                                         table-layout: fixed;
                                         width: 100%;
                                         .employeeExpensesResultsList_table_title{
-                                                position: sticky;
+                                            position: sticky;
                                             top: 0;
                                             z-index: 1;
                                             text-align: center;
                                             background-color: #808080;
                                             border: 1px solid #808080;
                                             .employeeExpensesResultsList_table_title_content_vertical{
-                                                width: 113px;
+                                                width: 125px;
                                                 color: #fff;
                                                 border: none;
                                                 font-size: 14px;
@@ -272,7 +272,7 @@
                                                 }
                                                 .employeeExpenseResultsModal{
                                                     position: relative;
-                                                    display: inline-block;
+                                                    /*display: inline-block;*/
                                                     cursor: pointer;
                                                 }
                                                 .employeeExpenseResultsModal .employeeExpenseResultsModal-tooltip {
