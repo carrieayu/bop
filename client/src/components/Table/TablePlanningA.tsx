@@ -58,12 +58,12 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         let totalInsurancePremium = 0
 
         employees.forEach((employee) => {
-          totalAnnualExecutive += employee.executive_renumeration
-          totalAnnualSalary += employee.salary
-          totalBonusAndFuelAllowance += employee.bonus_and_fuel_allowance
-          totalWelfareExpense += parseFloat(employee.welfare_expense) // Convert string to number if necessary
-          totalStatutoryWelfareExpense += parseFloat(employee.statutory_welfare_expense)
-          totalInsurancePremium += parseFloat(employee.insurance_premium)
+          totalAnnualExecutive += Number(employee.executive_renumeration)
+          totalAnnualSalary += Number(employee.salary)
+          totalBonusAndFuelAllowance += Number(employee.bonus_and_fuel_allowance)
+          totalWelfareExpense += Number(employee.welfare_expense)
+          totalStatutoryWelfareExpense += Number(employee.statutory_welfare_expense)
+          totalInsurancePremium += Number(employee.insurance_premium)
         })
 
         // Distribute the totals equally across all months by dividing by 12
@@ -98,7 +98,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
                 month,
                 employees: [employee],   // Store employees as an array
                 projects: [project],     // Store projects as an array
-                totalSalary: employee.salary || 0,  // Initialize totalSalary with the first employee's salary
+                totalSalary: Number(employee.salary) || 0,  // Initialize totalSalary with the first employee's salary
                 ...values
             };
         } else {
@@ -107,7 +107,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
             acc[month].projects.push(project);
     
             // Add the employee's salary to the total
-            acc[month].totalSalary += employee.salary || 0;
+            acc[month].totalSalary += Number(employee.salary) || 0;
     
             // Aggregate other numeric fields
             Object.keys(values).forEach(key => {
@@ -170,12 +170,12 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
 
       // EMPLOYEE EXPENSE
       const employeeExpensesValues = months.map(month => {
-        const executiveRenumeration = aggregatedExpensesData[month]?.executive_renumeration || 0;
-        const salary = aggregatedPlanningAssign[month]?.totalSalary || 0;
-        const fuel_allowance = aggregatedExpensesData[month]?.fuel_allowance || 0;
-        const statutory_welfare_expense = aggregatedExpensesData[month]?.statutory_welfare_expense || 0;
-        const welfare_expense = aggregatedExpensesData[month]?.welfare_expense || 0;
-        const insurance_premiums = aggregatedExpensesData[month]?.insurance_premiums || 0;
+        const executiveRenumeration = Number(aggregatedExpensesData[month]?.executive_renumeration) || 0
+        const salary = Number(aggregatedPlanningAssign[month]?.totalSalary) || 0
+        const fuel_allowance = Number(aggregatedExpensesData[month]?.fuel_allowance) || 0
+        const statutory_welfare_expense = Number(aggregatedExpensesData[month]?.statutory_welfare_expense) || 0
+        const welfare_expense = Number(aggregatedExpensesData[month]?.welfare_expense) || 0
+        const insurance_premiums = Number(aggregatedExpensesData[month]?.insurance_premiums) || 0
 
         return executiveRenumeration + salary + fuel_allowance + statutory_welfare_expense + welfare_expense + insurance_premiums;
       })

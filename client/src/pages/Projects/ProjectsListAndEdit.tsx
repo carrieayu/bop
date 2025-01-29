@@ -118,7 +118,6 @@ const ProjectsListAndEdit: React.FC = ({}) => {
 
   const handleSubmit = async () => {
     setFormProjects(projects)
-
     // # Client Side Validation
 
     // Step 1: Preparartion for validation
@@ -191,6 +190,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
         setCrudMessage(translate('successfullyUpdated', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
+        fetchProjectsHandler()
       })
       .catch((error) => {
         if (error.response) {
@@ -244,18 +244,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
         return
       }
 
-      getProject(token)
-        .then((data) => {
-          setProjects(data)
-          setOriginalProjectsList(data)
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('There was an error fetching the projects!', error)
-          }
-        })
+      fetchProjectsHandler()
     }
     fetchDivision()
     fetchClient()
@@ -348,6 +337,20 @@ const ProjectsListAndEdit: React.FC = ({}) => {
       setProjects(originalProjectsList)
     }
   }, [deleteComplete])
+
+  const fetchProjectsHandler = async () => {
+    try {
+      const data = await getProject(token)
+      setProjects(data)
+      setOriginalProjectsList(data)
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        window.location.href = '/login' // Redirect to login if unauthorized
+      } else {
+        console.error('There was an error fetching the projects!', error)
+      }
+    }
+  }
 
   return (
     <div className='projectsList-wrapper'>

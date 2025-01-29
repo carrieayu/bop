@@ -152,6 +152,7 @@ const UsersListAndEdit: React.FC = () => {
         setCrudMessage(translate('successfullyUpdated', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
+        fetchUserListHandler(token)
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
@@ -174,25 +175,7 @@ const UsersListAndEdit: React.FC = () => {
         return
       }
 
-      getUser(token)
-        .then((data) => {
-          // Update Date Format For Display: Formats the Date so it appears correctly in the Edit Page;
-          const originalData = data.map((user) => {
-            return {
-              ...user, // Keep other properties intact
-              date_joined: formatDate(user.date_joined), // Update the date format
-            }
-          })
-          setUserList(originalData) // Update state with the modified array. Will be updated on Front End (Edit Mode)
-          setOriginalUserList(originalData) // Current State in DB (List Mode)
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            console.log(error)
-          } else {
-            console.error('There was an error fetching the users!', error)
-          }
-        })
+      fetchUserListHandler(token)
     }
     fetchUsers()
   }, [])
@@ -277,6 +260,25 @@ const UsersListAndEdit: React.FC = () => {
   const handleNewRegistrationClick = () => {
     navigate('/users-registration')
   }
+
+  const fetchUserListHandler = async (token) => {
+    try {
+      const data = await getUser(token);
+      // Update Date Format For Display: Formats the Date so it appears correctly in the Edit Page
+      const originalData = data.map((user) => ({
+        ...user, // Keep other properties intact
+        date_joined: formatDate(user.date_joined), // Update the date format
+      }));
+      setUserList(originalData); // Update state with the modified array. Will be updated on Front End (Edit Mode)
+      setOriginalUserList(originalData); // Current State in DB (List Mode)
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        console.log(error);
+      } else {
+        console.error('There was an error fetching the users!', error);
+      }
+    }
+  };
 
   return (
     <div className='UsersListAndEdit_wrapper'>
