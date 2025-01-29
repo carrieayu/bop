@@ -118,6 +118,7 @@
                                         scrollbar-width: none; 
                                     }                          
                                     .table{
+                                        table-layout: fixed;
                                         width: 100%;
                                         .employeeExpensesList_table_title{
                                             position: sticky;
@@ -127,9 +128,11 @@
                                             background-color: #808080;
                                             border: 1px solid #808080;
                                             .employeeExpensesList_table_title_content_vertical{
+                                                width: 125px;
                                                 color: #fff;
                                                 border: none;
                                                 font-size: 14px;
+                                                white-space: nowrap;
                                             }
                                         }
                                         .employeeExpensesList_table_body{
@@ -266,7 +269,7 @@
                                                 }
                                                 .employeeExpenseModal{
                                                     position: relative;
-                                                    display: inline-block;
+                                                    /*display: inline-block;*/
                                                     cursor: pointer;
                                                 }
                                                 .employeeExpenseModal .employeeExpenseModal-tooltip {
