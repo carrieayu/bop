@@ -121,6 +121,7 @@
                                         scrollbar-width: none; 
                                     }                          
                                     .table{
+                                        table-layout: fixed;
                                         width: 100%;
                                         .employeeExpensesResultsList_table_title{
                                             position: sticky;
@@ -130,9 +131,11 @@
                                             background-color: #808080;
                                             border: 1px solid #808080;
                                             .employeeExpensesResultsList_table_title_content_vertical{
+                                                width: 125px;
                                                 color: #fff;
                                                 border: none;
                                                 font-size: 14px;
+                                                white-space: nowrap;
                                             }
                                         }
                                         .employeeExpensesResultsList_table_body{
@@ -269,7 +272,7 @@
                                                 }
                                                 .employeeExpenseResultsModal{
                                                     position: relative;
-                                                    display: inline-block;
+                                                    /*display: inline-block;*/
                                                     cursor: pointer;
                                                 }
                                                 .employeeExpenseResultsModal .employeeExpenseResultsModal-tooltip {
