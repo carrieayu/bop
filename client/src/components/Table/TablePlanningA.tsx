@@ -23,7 +23,6 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
 
     getPlanningA(token)
       .then(response => {
-        console.log('response', response)
         const aggregatedData = response.cost_of_sales.reduce((acc, item) => {
           const { month, ...values } = item
           if (!acc[month]) {
@@ -47,51 +46,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
           return acc
         }, {})
 
-        const aggregateEmployeeData = (employees) => {
-          console.log('employees', employees)
-
-          // Initialize an empty object to store aggregated monthly data
-          const aggregatedData = {}
-          // Calculate the total annual salary, bonus, and welfare once for all employees
-          let totalAnnualExecutive = 0
-          let totalAnnualSalary = 0
-          let totalBonusAndFuelAllowance = 0
-          let totalWelfareExpense = 0
-          let totalStatutoryWelfareExpense = 0
-          let totalInsurancePremium = 0
-
-          employees.forEach((employee) => {
-            totalAnnualExecutive += Number(employee.executive_renumeration)
-            totalAnnualSalary += Number(employee.salary)
-            totalBonusAndFuelAllowance += Number(employee.bonus_and_fuel_allowance)
-            totalWelfareExpense += Number(employee.welfare_expense)
-            totalStatutoryWelfareExpense += Number(employee.statutory_welfare_expense)
-            totalInsurancePremium += Number(employee.insurance_premium)
-          })
-
-          // Distribute the totals equally across all months by dividing by 12
-          const monthlyExecutive = totalAnnualExecutive
-          const monthlySalary = totalAnnualSalary
-          const yearlyBonusAndFuelAllowance = totalBonusAndFuelAllowance
-          const monthlyWelfareExpense = totalAnnualSalary * 0.0048
-          const monthStatutoryWelfareExpense = totalAnnualSalary * 0.0048
-          const monthlyInsurancePremium = totalInsurancePremium
-
-          // Fill the aggregatedData for each month with the calculated monthly amounts
-          months.forEach((month) => {
-            aggregatedData[month] = {
-              executive_renumeration: monthlyExecutive,
-              salary: monthlySalary,
-              bonus_and_fuel_allowance: yearlyBonusAndFuelAllowance,
-              welfare_expense: monthlyWelfareExpense,
-              statutory_welfare_expense: monthStatutoryWelfareExpense,
-              insurance_premium: monthlyInsurancePremium,
-            }
-          })
-
-          return aggregatedData
-        }
-
+        // EMPLOYEE EXPENSES (planningAssign is OLD name)
         const aggregatedPlanningAssign = response.planning_assign_data.reduce((acc, item) => {
           const { month, employee, project, ...values } = item // Destructure employee and project
 
@@ -109,7 +64,6 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
               totalInsurancePremium: Number(employee.insurance_premium) || 0,
               ...values,
             }
-            console.log('if:acc[month]', acc[month])
           } else {
             // Add the new employee and project objects to the array
             acc[month].employees.push(employee)
@@ -122,7 +76,6 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
             acc[month].totalWelfare += Number(employee.welfare_expense) || 0
             acc[month].totalInsurancePremium += Number(employee.insurance_premium) || 0
 
-            console.log('else:acc[month]', acc[month])
             // Aggregate other numeric fields
             Object.keys(values).forEach((key) => {
               if (typeof values[key] === 'number') {
@@ -135,8 +88,9 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
           }
           return acc
         }, {})
-        console.log('aggregatedPlanningAssign:', aggregatedPlanningAssign)
 
+        // PROJECTS   
+        // NOTE: (planningProjectsData is OLD name)
         const aggregatedPlanningProjectData = response.planning_project_data.reduce((acc, item) => {
           const { month, ...values } = item
           if (!acc[month]) {
@@ -156,7 +110,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         // SALES REVENUE
         const salesValues = months.map((month) => aggregatedPlanningProjectData[month]?.sales_revenue || 0)
 
-        //COST OF SALES
+        // COST OF SALES
         const costOfSalesValues = months.map((month) => {
           const purchases = Number(aggregatedData[month]?.purchase) || 0
           const outsourcing = Number(aggregatedData[month]?.outsourcing_expense) || 0
@@ -192,25 +146,28 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         })
 
         // EMPLOYEE EXPENSE
-        const employeeExpenseExecutiveRenumerationValues = months.map((month) => aggregatedPlanningAssign[month]?.totalExecutiveRenumeration || 0)
+        const employeeExpenseExecutiveRenumerationValues = months.map(
+          (month) => aggregatedPlanningAssign[month]?.totalExecutiveRenumeration || 0,
+        )
         const employeeExpenseSalaryValues = months.map((month) => aggregatedPlanningAssign[month]?.totalSalary || 0)
-        const employeeExpenseBonusAndFuelAllowanceValues = months.map((month) => aggregatedPlanningAssign[month]?.totalBonusAndFuel || 0)
-        const employeeExpenseStautoryWelfareValues = months.map((month) => aggregatedPlanningAssign[month]?.totalStatutoryWelfare || 0)
+        const employeeExpenseBonusAndFuelAllowanceValues = months.map(
+          (month) => aggregatedPlanningAssign[month]?.totalBonusAndFuel || 0,
+        )
+        const employeeExpenseStautoryWelfareValues = months.map(
+          (month) => aggregatedPlanningAssign[month]?.totalStatutoryWelfare || 0,
+        )
         const employeeExpenseWelfareValues = months.map((month) => aggregatedPlanningAssign[month]?.totalWelfare || 0)
-        const employeeExpenseInsurancePremiumValues = months.map((month) => aggregatedPlanningAssign[month]?.totalInsurancePremium || 0)
+        const employeeExpenseInsurancePremiumValues = months.map(
+          (month) => aggregatedPlanningAssign[month]?.totalInsurancePremium || 0,
+        )
 
-        console.log('employeeExpenseBonusAndFuelAllowanceValues', employeeExpenseBonusAndFuelAllowanceValues)
-        const bonusAndFuelTotal = employeeExpenseBonusAndFuelAllowanceValues.reduce((acc,item)=> acc + item)
-        console.log('bonusAndFuelTotal', bonusAndFuelTotal)
+        const bonusAndFuelTotal = employeeExpenseBonusAndFuelAllowanceValues.reduce((acc, item) => acc + item)
 
         // EMPLOYEE EXPENSE TOTALS
         const employeeExpensesValues = months.map((month) => {
           const executiveRenumeration = Number(aggregatedPlanningAssign[month]?.totalExecutiveRenumeration) || 0
           const salary = Number(aggregatedPlanningAssign[month]?.totalSalary) || 0
           const bonusAndFuelAllowance = Number(aggregatedPlanningAssign[month]?.totalBonusAndFuel) || 0
-          console.log('bonusAndFuel', bonusAndFuelAllowance)
-
-          // const fuel_allowance = Number(aggregatedPlanningAssign[month]?.totalBonusAndFuel) || 0 //empty
           const statutoryWelfareExpense = Number(aggregatedPlanningAssign[month]?.totalStatutoryWelfare) || 0 //empty
           const welfareExpense = Number(aggregatedPlanningAssign[month]?.totalWelfare) || 0 //empty
           const insurancePremium = Number(aggregatedPlanningAssign[month]?.totalInsurancePremium) || 0 //empty
@@ -223,21 +180,6 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
             insurancePremium
           )
         })
-
-        console.log('employeeExpensesValues:', employeeExpensesValues)
-
-        // EMPLOYEES
-        // (NOT BEING DISPLAYED ANYWHERE CURRENTLY)
-
-        const result = aggregateEmployeeData(response.employees)
-        const executiveRenumerationValues = months.map((month) => result[month]?.executive_renumeration || 0)
-        const salaryValues = months.map((month) => result[month]?.salary || 0)
-        const bonusAndFuelAllowance = months.map((month) => result[month]?.bonus_and_fuel_allowance || 0)
-        const statutoryWelfareExpenseValues = months.map((month) => result[month]?.statutory_welfare_expense || 0)
-        const welfareExpenseValues = months.map((month) => result[month]?.welfare_expense || 0)
-        const insurancePremiumsValues = months.map((month) => result[month]?.insurance_premium || 0)
-
-        console.log('result check:', result)
 
         // EXPENSES
         const expenseValues = months.map((month) => {
