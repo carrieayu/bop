@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
-import { id } from '../../../jest.config'
 import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { getResultsA } from '../../api/ResultsEndpoint/GetResultsA'
@@ -91,6 +89,11 @@ const EditTableResults = () => {
               employees: [employee], // Store employees as an array
               projects: [project], // Store projects as an array
               totalSalary: Number(employee.salary) || 0, // Initialize totalSalary with the first employee's salary
+              totalExecutiveRenumeration: Number(employee.executive_renumeration) || 0,
+              totalBonusAndFuel: Number(employee.bonus_and_fuel_allowance) || 0,
+              totalStatutoryWelfare: Number(employee.statutory_welfare_expense) || 0,
+              totalWelfare: Number(employee.welfare_expense) || 0,
+              totalInsurancePremium: Number(employee.insurance_premium) || 0,
               ...values,
             }
           } else {
@@ -100,6 +103,11 @@ const EditTableResults = () => {
 
             // Add the employee's salary to the total
             acc[month].totalSalary += Number(employee.salary) || 0
+            acc[month].totalExecutiveRenumeration += Number(employee.executive_renumeration) || 0
+            acc[month].totalBonusAndFuel += Number(employee.bonus_and_fuel_allowance) || 0
+            acc[month].totalStatutoryWelfare += Number(employee.statutory_welfare_expense) || 0
+            acc[month].totalWelfare += Number(employee.welfare_expense) || 0
+            acc[month].totalInsurancePremium += Number(employee.insurance_premium) || 0
 
             // Aggregate other numeric fields
             Object.keys(values).forEach((key) => {
@@ -241,21 +249,41 @@ const EditTableResults = () => {
         })
 
         // EMPLOYEE EXPENSE
-        const employeeExpensesValues = months.map((month) => {
-          const executiveRenumeration = aggregatedExpensesData[month]?.executive_renumeration || 0
-          const salary = aggregatedEmployeeExpensesResults[month]?.totalSalary || 0
-          const fuel_allowance = aggregatedExpensesData[month]?.fuel_allowance || 0
-          const statutory_welfare_expense = aggregatedExpensesData[month]?.statutory_welfare_expense || 0
-          const welfare_expense = aggregatedExpensesData[month]?.welfare_expense || 0
-          const insurance_premiums = aggregatedExpensesData[month]?.insurance_premiums || 0
+        const employeeExpenseExecutiveRenumerationValues = months.map(
+          (month) => aggregatedEmployeeExpensesResults[month]?.totalExecutiveRenumeration || 0,
+        )
+        const employeeExpenseSalaryValues = months.map(
+          (month) => aggregatedEmployeeExpensesResults[month]?.totalSalary || 0,
+        )
+        const employeeExpenseBonusAndFuelAllowanceValues = months.map(
+          (month) => aggregatedEmployeeExpensesResults[month]?.totalBonusAndFuel || 0,
+        )
+        const employeeExpenseStatutoryWelfareExpenseValues = months.map(
+          (month) => aggregatedEmployeeExpensesResults[month]?.totalStatutoryWelfare || 0,
+        )
+        const employeeExpenseWelfareExpenseValues = months.map(
+          (month) => aggregatedEmployeeExpensesResults[month]?.totalWelfare || 0,
+        )
+        const employeeExpenseInsurancePremiumValues = months.map(
+          (month) => aggregatedEmployeeExpensesResults[month]?.totalInsurancePremium || 0,
+        )
 
+        // EMPLOYEE EXPENSE TOTALS
+        const employeeExpensesValues = months.map((month) => {
+          const executiveRenumeration =
+            Number(aggregatedEmployeeExpensesResults[month]?.totalExecutiveRenumeration) || 0
+          const salary = Number(aggregatedEmployeeExpensesResults[month]?.totalSalary) || 0
+          const bonusAndFuelAllowance = Number(aggregatedEmployeeExpensesResults[month]?.totalBonusAndFuel) || 0
+          const statutoryWelfareExpense = Number(aggregatedEmployeeExpensesResults[month]?.totalStatutoryWelfare) || 0
+          const welfareExpense = Number(aggregatedEmployeeExpensesResults[month]?.totalWelfare) || 0
+          const insurancePremium = Number(aggregatedEmployeeExpensesResults[month]?.totalInsurancePremium) || 0
           return (
             executiveRenumeration +
             salary +
-            fuel_allowance +
-            statutory_welfare_expense +
-            welfare_expense +
-            insurance_premiums
+            bonusAndFuelAllowance +
+            statutoryWelfareExpense +
+            welfareExpense +
+            insurancePremium
           )
         })
 
@@ -616,13 +644,13 @@ const EditTableResults = () => {
             ],
           },
           {
-            id: executiveRenumerationValues.map((renumeration) => renumeration.id),
+            id: employeeExpenseExecutiveRenumerationValues.map((renumeration) => renumeration.id),
             label: 'executiveRenumeration',
             values: [
-              ...executiveRenumerationValues,
-              firstHalfTotal(executiveRenumerationValues),
-              secondHalfTotal(executiveRenumerationValues),
-              total(executiveRenumerationValues),
+              ...employeeExpenseExecutiveRenumerationValues,
+              firstHalfTotal(employeeExpenseExecutiveRenumerationValues),
+              secondHalfTotal(employeeExpenseExecutiveRenumerationValues),
+              total(employeeExpenseExecutiveRenumerationValues),
               // `${(total(executiveRenumerationValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
@@ -630,46 +658,46 @@ const EditTableResults = () => {
           {
             label: 'salary',
             values: [
-              ...salaryValues,
-              firstHalfTotal(salaryValues),
-              secondHalfTotal(salaryValues),
-              total(salaryValues),
+              ...employeeExpenseSalaryValues,
+              firstHalfTotal(employeeExpenseSalaryValues),
+              secondHalfTotal(employeeExpenseSalaryValues),
+              total(employeeExpenseSalaryValues),
               // `${(total(salaryValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: bonusAndFuelAllowanceValues.map((fuel) => fuel.id),
+            id: employeeExpenseBonusAndFuelAllowanceValues.map((fuel) => fuel.id),
             label: 'bonusAndFuelAllowance',
             values: [
-              ...bonusAndFuelAllowanceValues,
-              firstHalfTotal(bonusAndFuelAllowanceValues),
-              secondHalfTotal(bonusAndFuelAllowanceValues),
-              total(bonusAndFuelAllowanceValues),
+              ...employeeExpenseBonusAndFuelAllowanceValues,
+              firstHalfTotal(employeeExpenseBonusAndFuelAllowanceValues),
+              secondHalfTotal(employeeExpenseBonusAndFuelAllowanceValues),
+              total(employeeExpenseBonusAndFuelAllowanceValues),
               // `${(total(fuelAllowanceValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: statutoryWelfareExpenseValues.map((statutory) => statutory.id),
+            id: employeeExpenseStatutoryWelfareExpenseValues.map((statutory) => statutory.id),
             label: 'statutoryWelfareExpenses',
             values: [
-              ...statutoryWelfareExpenseValues,
-              firstHalfTotal(statutoryWelfareExpenseValues),
-              secondHalfTotal(statutoryWelfareExpenseValues),
-              total(statutoryWelfareExpenseValues),
+              ...employeeExpenseStatutoryWelfareExpenseValues,
+              firstHalfTotal(employeeExpenseStatutoryWelfareExpenseValues),
+              secondHalfTotal(employeeExpenseStatutoryWelfareExpenseValues),
+              total(employeeExpenseStatutoryWelfareExpenseValues),
               // `${(total(statutoryWelfareExpenseValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: welfareExpenseValues.map((welfare) => welfare.id),
+            id: employeeExpenseWelfareExpenseValues.map((welfare) => welfare.id),
             label: 'welfareExpenses',
             values: [
-              ...welfareExpenseValues,
-              firstHalfTotal(welfareExpenseValues),
-              secondHalfTotal(welfareExpenseValues),
-              total(welfareExpenseValues),
+              ...employeeExpenseWelfareExpenseValues,
+              firstHalfTotal(employeeExpenseWelfareExpenseValues),
+              secondHalfTotal(employeeExpenseWelfareExpenseValues),
+              total(employeeExpenseWelfareExpenseValues),
               // `${(total(welfareExpenseValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
@@ -677,10 +705,10 @@ const EditTableResults = () => {
           {
             label: 'insurancePremiums',
             values: [
-              ...insurancePremiumsValues,
-              firstHalfTotal(insurancePremiumsValues),
-              secondHalfTotal(insurancePremiumsValues),
-              total(insurancePremiumsValues),
+              ...employeeExpenseInsurancePremiumValues,
+              firstHalfTotal(employeeExpenseInsurancePremiumValues),
+              secondHalfTotal(employeeExpenseInsurancePremiumValues),
+              total(employeeExpenseInsurancePremiumValues),
               // `${(total(insurancePremiumsValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
@@ -1046,13 +1074,13 @@ const EditTableResults = () => {
             ],
           },
           {
-            id: executiveRenumerationValues.map((renumeration) => renumeration.id),
+            id: employeeExpenseExecutiveRenumerationValues.map((renumeration) => renumeration.id),
             label: 'executiveRenumeration',
             values: [
-              ...executiveRenumerationValues,
-              firstHalfTotal(executiveRenumerationValues),
-              secondHalfTotal(executiveRenumerationValues),
-              total(executiveRenumerationValues),
+              ...employeeExpenseExecutiveRenumerationValues,
+              firstHalfTotal(employeeExpenseExecutiveRenumerationValues),
+              secondHalfTotal(employeeExpenseExecutiveRenumerationValues),
+              total(employeeExpenseExecutiveRenumerationValues),
               // `${(total(executiveRenumerationValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
@@ -1060,46 +1088,46 @@ const EditTableResults = () => {
           {
             label: 'salary',
             values: [
-              ...salaryValues,
-              firstHalfTotal(salaryValues),
-              secondHalfTotal(salaryValues),
-              total(salaryValues),
+              ...employeeExpenseSalaryValues,
+              firstHalfTotal(employeeExpenseSalaryValues),
+              secondHalfTotal(employeeExpenseSalaryValues),
+              total(employeeExpenseSalaryValues),
               // `${(total(salaryValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: bonusAndFuelAllowanceValues.map((fuel) => fuel.id),
+            id: employeeExpenseBonusAndFuelAllowanceValues.map((fuel) => fuel.id),
             label: 'bonusAndFuelAllowance',
             values: [
-              ...bonusAndFuelAllowanceValues,
-              firstHalfTotal(bonusAndFuelAllowanceValues),
-              secondHalfTotal(bonusAndFuelAllowanceValues),
-              total(bonusAndFuelAllowanceValues),
+              ...employeeExpenseBonusAndFuelAllowanceValues,
+              firstHalfTotal(employeeExpenseBonusAndFuelAllowanceValues),
+              secondHalfTotal(employeeExpenseBonusAndFuelAllowanceValues),
+              total(employeeExpenseBonusAndFuelAllowanceValues),
               // `${(total(fuelAllowanceValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: statutoryWelfareExpenseValues.map((statutory) => statutory.id),
+            id: employeeExpenseStatutoryWelfareExpenseValues.map((statutory) => statutory.id),
             label: 'statutoryWelfareExpenses',
             values: [
-              ...statutoryWelfareExpenseValues,
-              firstHalfTotal(statutoryWelfareExpenseValues),
-              secondHalfTotal(statutoryWelfareExpenseValues),
-              total(statutoryWelfareExpenseValues),
+              ...employeeExpenseStatutoryWelfareExpenseValues,
+              firstHalfTotal(employeeExpenseStatutoryWelfareExpenseValues),
+              secondHalfTotal(employeeExpenseStatutoryWelfareExpenseValues),
+              total(employeeExpenseStatutoryWelfareExpenseValues),
               // `${(total(statutoryWelfareExpenseValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
           },
           {
-            id: welfareExpenseValues.map((welfare) => welfare.id),
+            id: employeeExpenseWelfareExpenseValues.map((welfare) => welfare.id),
             label: 'welfareExpenses',
             values: [
-              ...welfareExpenseValues,
-              firstHalfTotal(welfareExpenseValues),
-              secondHalfTotal(welfareExpenseValues),
-              total(welfareExpenseValues),
+              ...employeeExpenseWelfareExpenseValues,
+              firstHalfTotal(employeeExpenseWelfareExpenseValues),
+              secondHalfTotal(employeeExpenseWelfareExpenseValues),
+              total(employeeExpenseWelfareExpenseValues),
               // `${(total(welfareExpenseValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
@@ -1107,10 +1135,10 @@ const EditTableResults = () => {
           {
             label: 'insurancePremiums',
             values: [
-              ...insurancePremiumsValues,
-              firstHalfTotal(insurancePremiumsValues),
-              secondHalfTotal(insurancePremiumsValues),
-              total(insurancePremiumsValues),
+              ...employeeExpenseInsurancePremiumValues,
+              firstHalfTotal(employeeExpenseInsurancePremiumValues),
+              secondHalfTotal(employeeExpenseInsurancePremiumValues),
+              total(employeeExpenseInsurancePremiumValues),
               // `${(total(insurancePremiumsValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
