@@ -153,10 +153,10 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         const employeeExpenseBonusAndFuelAllowanceValues = months.map(
           (month) => aggregatedPlanningAssign[month]?.totalBonusAndFuel || 0,
         )
-        const employeeExpenseStautoryWelfareValues = months.map(
+        const employeeExpenseStatutoryWelfareExpenseValues = months.map(
           (month) => aggregatedPlanningAssign[month]?.totalStatutoryWelfare || 0,
         )
-        const employeeExpenseWelfareValues = months.map((month) => aggregatedPlanningAssign[month]?.totalWelfare || 0)
+        const employeeExpenseWelfareExpenseValues = months.map((month) => aggregatedPlanningAssign[month]?.totalWelfare || 0)
         const employeeExpenseInsurancePremiumValues = months.map(
           (month) => aggregatedPlanningAssign[month]?.totalInsurancePremium || 0,
         )
@@ -442,10 +442,10 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
           {
             label: 'statutoryWelfareExpenses',
             values: [
-              ...employeeExpenseStautoryWelfareValues,
-              firstHalfTotal(employeeExpenseStautoryWelfareValues),
-              secondHalfTotal(employeeExpenseStautoryWelfareValues),
-              total(employeeExpenseStautoryWelfareValues),
+              ...employeeExpenseStatutoryWelfareExpenseValues,
+              firstHalfTotal(employeeExpenseStatutoryWelfareExpenseValues),
+              secondHalfTotal(employeeExpenseStatutoryWelfareExpenseValues),
+              total(employeeExpenseStatutoryWelfareExpenseValues),
               // `${(total(statutoryWelfareExpenseValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
@@ -453,10 +453,10 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
           {
             label: 'welfareExpenses',
             values: [
-              ...employeeExpenseWelfareValues,
-              firstHalfTotal(employeeExpenseWelfareValues),
-              secondHalfTotal(employeeExpenseWelfareValues),
-              total(employeeExpenseWelfareValues),
+              ...employeeExpenseWelfareExpenseValues,
+              firstHalfTotal(employeeExpenseWelfareExpenseValues),
+              secondHalfTotal(employeeExpenseWelfareExpenseValues),
+              total(employeeExpenseWelfareExpenseValues),
               // `${(total(welfareExpenseValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
               '0',
             ],
