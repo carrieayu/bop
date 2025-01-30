@@ -15,7 +15,7 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/GetEmployeeExpenseResult'
 import { deleteEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/DeleteEmployeeExpenseResult'
 import { deleteProjectAssociationResults } from '../../api/EmployeeExpensesResultEndpoint/DeleteProjectAssociationResults'
-import { formatNumberWithCommas, handleResultsListTabsClick } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { formatNumberWithCommas, handleResultsListTabsClick } from '../../utils/helperFunctionsUtil'
 import { monthNames, resultsScreenTabs, token } from '../../constants'
 
 const months: number[] = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3] // Store as numbers
