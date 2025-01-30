@@ -78,14 +78,14 @@ export const validateEmployeeRecords = (records, fieldChecks, recordType) => {
     let updatedFieldChecks = [...fieldChecks] // Copy the original fieldChecks
 
     if (selectedInputToCheck === 'checkSalary') {
-      // Remove the 'executive_renumeration' field from checks if checkSalary is returned
-      updatedFieldChecks = updatedFieldChecks.filter((check) => check.field !== 'executive_renumeration')
-    } else if (selectedInputToCheck === 'checkExecutiveRenumeration') {
-      // Remove the 'salary' field from checks if checkExecutiveRenumeration is returned
+      // Remove the 'executive_remuneration' field from checks if checkSalary is returned
+      updatedFieldChecks = updatedFieldChecks.filter((check) => check.field !== 'executive_remuneration')
+    } else if (selectedInputToCheck === 'checkExecutiveRemuneration') {
+      // Remove the 'salary' field from checks if checkExecutiveRemuneration is returned
       updatedFieldChecks = updatedFieldChecks.filter((check) => check.field !== 'salary')
     } else if (selectedInputToCheck === 'UnknownEmployeeType') {
       updatedFieldChecks = updatedFieldChecks.filter(
-        (check) => check.field !== 'salary' && check.field !== 'executive_renumeration',
+        (check) => check.field !== 'salary' && check.field !== 'executive_remuneration',
       )
     }
     
@@ -112,19 +112,19 @@ export const validateEmployeeRecords = (records, fieldChecks, recordType) => {
   return validationErrors
 }
 
-// EMPLOYEES: Check if Salary OR Executive Renumeration Needs to be Validated.
+// EMPLOYEES: Check if Salary OR Executive Remuneration Needs to be Validated.
 // ONLY USED IN EMPLOYEES
 export const validateSalaryAndRemuneration = (records) => {
   // Default to 'AllValid'
   let validationStatus = 'AllValid';
 
-  for (const { type, salary, executive_renumeration } of records) {
+  for (const { type, salary, executive_remuneration } of records) {
     if (type === '0' || type === 0) {
-      // Regular employee: salary should be valid, executive_renumeration should be null
+      // Regular employee: salary should be valid, executive_remuneration should be null
       validationStatus = 'checkSalary';
     } else if (type === '1' || type === 1) {
-      // Executive employee: executive_renumeration should be valid, salary should be null
-      validationStatus = 'checkExecutiveRenumeration';
+      // Executive employee: executive_remuneration should be valid, salary should be null
+      validationStatus = 'checkExecutiveRemuneration';
     } else {
       // Unknown employee type
       validationStatus = 'UnknownEmployeeType';
@@ -327,8 +327,8 @@ export const validateField = (
   // Empty input validation
   if (typeof value === 'string' && value.trim() === '') return createError('inputCannotBeEmpty')
 
-  // Specific field validations for salary and executiveRenumeration
-  if ((fieldName === 'salary' || fieldName === 'executiveRenumeration') && value === null) {
+  // Specific field validations for salary and executiveRemuneration
+  if ((fieldName === 'salary' || fieldName === 'executiveRemuneration') && value === null) {
     return createError('inputCannotBeEmpty')
   }
 

@@ -47,7 +47,7 @@ const EmployeesRegistration = () => {
     type: '',
     email: '',
     salary: '',
-    executive_renumeration: '',
+    executive_remuneration: '',
     company_name: '',
     business_division_name: '',
     bonus_and_fuel_allowance: '',
@@ -85,13 +85,13 @@ const EmployeesRegistration = () => {
     newContainers[containerIndex].type = newType
     if (newType === '0') {
       // Reset executive remuneration if switching to regular employee
-      newContainers[containerIndex].executive_renumeration = '' // Set to an empty string directly
+      newContainers[containerIndex].executive_remuneration = '' // Set to an empty string directly
     } else if (newType === '1') {
       // Reset salary if switching to executive employee
       newContainers[containerIndex].salary = '' // Set to an empty string directly
     } else newType === ''
     {
-      newContainers[containerIndex].executive_renumeration = '' // Set to an empty string directly
+      newContainers[containerIndex].executive_remuneration = '' // Set to an empty string directly
       newContainers[containerIndex].salary = '' // Set to an empty string directly
     }
     setEmployees(newContainers) // Update employees state
@@ -104,7 +104,7 @@ const EmployeesRegistration = () => {
     // EG. 999,999 → 999999 in the DB
     const rawValue = removeCommas(value)
 
-    if (name === 'salary' || name === 'executive_renumeration' || name === 'bonus_and_fuel_allowance') {
+    if (name === 'salary' || name === 'executive_remuneration' || name === 'bonus_and_fuel_allowance') {
       if (rawValue.length > MAX_NUMBER_LENGTH) {
         return // Ignore input if the length exceeds 15 digits
       }
@@ -234,8 +234,8 @@ const EmployeesRegistration = () => {
       type: empl.type,
       email: empl.email,
       salary: empl.type === '0' ? (empl.salary !== '' ? empl.salary : null) : null, // Include salary only if regular
-      executive_renumeration:
-        empl.type === '1' ? (empl.executive_renumeration !== '' ? empl.executive_renumeration : null) : null, // Include executive remuneration only if executive
+      executive_remuneration:
+        empl.type === '1' ? (empl.executive_remuneration !== '' ? empl.executive_remuneration : null) : null, // Include executive remuneration only if executive
       company: empl.company_name,
       business_division: empl.business_division_name,
       bonus_and_fuel_allowance: empl.bonus_and_fuel_allowance,
@@ -398,7 +398,7 @@ const EmployeesRegistration = () => {
                                 (container.welfare_expense =
                                   container.type === '0'
                                     ? Math.round(Number(container.salary) * 0.0048).toString()
-                                    : Math.round(Number(container.executive_renumeration) * 0.0048).toString()),
+                                    : Math.round(Number(container.executive_remuneration) * 0.0048).toString()),
                               )}
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
                               onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -416,14 +416,14 @@ const EmployeesRegistration = () => {
                             />
                           </div>
                           {container.type === '1' && (
-                            <div className='EmployeesRegistration_executive_renumeration-div'>
-                              <label className='executive-renumeration-label'>
-                                {translate('executiveRenumeration', language)}
+                            <div className='EmployeesRegistration_executive_remuneration-div'>
+                              <label className='executive-remuneration-label'>
+                                {translate('executiveRemuneration', language)}
                               </label>
                               <input
                                 type='text'
-                                name='executive_renumeration'
-                                value={formatNumberWithCommas(container.executive_renumeration) || ''} // Ensure empty string as fallback for controlled input
+                                name='executive_remuneration'
+                                value={formatNumberWithCommas(container.executive_remuneration) || ''} // Ensure empty string as fallback for controlled input
                                 onChange={(e) => handleInputChange(containerIndex, null, e)}
                                 onKeyDown={handleDisableKeysOnNumberInputs}
                                 disabled={container.type !== '1'} // Disabled when not an executive employee
@@ -472,7 +472,7 @@ const EmployeesRegistration = () => {
                                 (container.insurance_premium =
                                   container.type === '0'
                                     ? Math.round(Number(container.salary) * 0.0224).toString()
-                                    : Math.round(Number(container.executive_renumeration) * 0.0224).toString()),
+                                    : Math.round(Number(container.executive_remuneration) * 0.0224).toString()),
                               )}
                               readOnly
                             />
@@ -517,7 +517,7 @@ const EmployeesRegistration = () => {
                                 (container.statutory_welfare_expense =
                                   container.type === '0'
                                     ? Math.round(Number(container.salary) * 0.1451).toString()
-                                    : Math.round(Number(container.executive_renumeration) * 0.1451).toString()),
+                                    : Math.round(Number(container.executive_remuneration) * 0.1451).toString()),
                               )}
                               readOnly
                             />

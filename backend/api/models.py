@@ -124,7 +124,7 @@ class Employees(models.Model):
     type = models.IntegerField(choices=EMPLOYEE_TYPES) # 0 = regular employee , 1 = executive employee
     email = models.EmailField(unique=True)
     salary = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES, null=True)
-    executive_renumeration = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES, null=True)
+    executive_remuneration = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES, null=True)
     company = models.ForeignKey(MasterCompany, on_delete=models.CASCADE)
     business_division = models.ForeignKey(MasterBusinessDivision, on_delete=models.CASCADE)
     statutory_welfare_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
@@ -226,7 +226,7 @@ class Results(models.Model):
     amortization_expense = models.IntegerField()
     gross_profit = models.IntegerField()
     employee_expense = models.IntegerField() # DELETE ?? MAY NOT BE NEEDED.
-    executive_renumeration = models.IntegerField()
+    executive_remuneration = models.IntegerField()
     salary = models.IntegerField()
     fuel_allowance = models.IntegerField()
     statutory_welfare_expense =  models.IntegerField(default=0)

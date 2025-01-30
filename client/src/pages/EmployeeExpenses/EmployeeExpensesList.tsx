@@ -270,7 +270,7 @@ const EmployeeExpensesList: React.FC = () => {
                                   monthlyExpenses[monthIndex].projects.push({
                                     project_name: expense.project_name,
                                     employee_salary: expense.employee_salary,
-                                    executive_renumeration: expense.executive_renumeration,
+                                    executive_remuneration: expense.executive_remuneration,
                                     project_id: expense.project_id,
                                     employee_expense_id: expense.employee_expense_id,
                                   })
@@ -290,7 +290,7 @@ const EmployeeExpensesList: React.FC = () => {
                                   existingMonthlyExpenses[monthIndex].projects.push({
                                     project_name: expense.project_name,
                                     employee_salary: expense.employee_salary,
-                                    executive_renumeration: expense.executive_renumeration,
+                                    executive_remuneration: expense.executive_remuneration,
                                     project_id: expense.project_id,
                                     employee_expense_id: expense.employee_expense_id,
                                   })
@@ -370,12 +370,12 @@ const EmployeeExpensesList: React.FC = () => {
                                                       <div className='employeeExpensesList_txt1_label1'>
                                                         {project.employee_salary
                                                           ? translate('salary', language)
-                                                          : translate('executiveRenumeration', language)}
+                                                          : translate('executiveRemuneration', language)}
                                                       </div>
                                                       <div className='employeeExpensesList_txt1_label2'>
                                                         {project.employee_salary
                                                           ? formatNumberWithCommas(project.employee_salary)
-                                                          : formatNumberWithCommas(project.executive_renumeration)}
+                                                          : formatNumberWithCommas(project.executive_remuneration)}
                                                       </div>
                                                     </div>
                                                     <div className='employeeExpensesList_txt2'>
@@ -486,7 +486,7 @@ const EmployeeExpensesList: React.FC = () => {
                                   client_name: expense.client_name,
                                   business_division_name: expense.business_division_name,
                                   employee_salary: expense.employee_salary,
-                                  executive_renumeration: expense.executive_renumeration,
+                                  executive_remuneration: expense.executive_remuneration,
                                 })
                                 monthlyExpenses[monthIndex].total_salary += expense.employee_salary
                               }
@@ -505,7 +505,7 @@ const EmployeeExpensesList: React.FC = () => {
                                   client_name: expense.client_name,
                                   business_division_name: expense.business_division_name,
                                   employee_salary: expense.employee_salary,
-                                  executive_renumeration: expense.executive_renumeration,
+                                  executive_remuneration: expense.executive_remuneration,
                                 })
                                 existingMonthlyExpenses[monthIndex].total_salary += expense.employee_salary
                               }
@@ -567,12 +567,12 @@ const EmployeeExpensesList: React.FC = () => {
                                                 <div className='employeeExpensesList_txt1_label1'>
                                                   {project.employee_salary
                                                     ? translate('salary', language)
-                                                    : translate('executiveRenumeration', language)}
+                                                    : translate('executiveRemuneration', language)}
                                                 </div>
                                                 <div className='employeeExpensesList_txt1_label2'>
                                                   {project.employee_salary
                                                     ? formatNumberWithCommas(project.employee_salary)
-                                                    : formatNumberWithCommas(project.executive_renumeration)}
+                                                    : formatNumberWithCommas(project.executive_remuneration)}
                                                 </div>
                                               </div>
                                               <div className='employeeExpensesList_txt2'>

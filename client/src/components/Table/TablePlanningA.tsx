@@ -58,7 +58,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
               employees: [employee], // Store employees as an array
               projects: [project], // Store projects as an array
               totalSalary: Number(employee.salary) || 0, // Initialize totalSalary with the first employee's salary
-              totalExecutiveRenumeration: Number(employee.executive_renumeration) || 0,
+              totalExecutiveRemuneration: Number(employee.executive_remuneration) || 0,
               totalBonusAndFuel: Number(employee.bonus_and_fuel_allowance) || 0,
               totalStatutoryWelfare: Number(employee.statutory_welfare_expense) || 0,
               totalWelfare: Number(employee.welfare_expense) || 0,
@@ -71,7 +71,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
             acc[month].projects.push(project)
             // Add the employee's salary to the total
             acc[month].totalSalary += Number(employee.salary) || 0
-            acc[month].totalExecutiveRenumeration += Number(employee.executive_renumeration) || 0
+            acc[month].totalExecutiveRemuneration += Number(employee.executive_remuneration) || 0
             acc[month].totalBonusAndFuel += Number(employee.bonus_and_fuel_allowance) || 0
             acc[month].totalStatutoryWelfare += Number(employee.statutory_welfare_expense) || 0
             acc[month].totalWelfare += Number(employee.welfare_expense) || 0
@@ -147,8 +147,8 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         })
 
         // EMPLOYEE EXPENSE
-        const employeeExpenseExecutiveRenumerationValues = months.map(
-          (month) => aggregatedEmployeeExpensesData[month]?.totalExecutiveRenumeration || 0,
+        const employeeExpenseExecutiveRemunerationValues = months.map(
+          (month) => aggregatedEmployeeExpensesData[month]?.totalExecutiveRemuneration || 0,
         )
         const employeeExpenseSalaryValues = months.map(
           (month) => aggregatedEmployeeExpensesData[month]?.totalSalary || 0,
@@ -168,14 +168,14 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
 
         // EMPLOYEE EXPENSE TOTALS
         const employeeExpensesValues = months.map((month) => {
-          const executiveRenumeration = Number(aggregatedEmployeeExpensesData[month]?.totalExecutiveRenumeration) || 0
+          const executiveRemuneration = Number(aggregatedEmployeeExpensesData[month]?.totalExecutiveRemuneration) || 0
           const salary = Number(aggregatedEmployeeExpensesData[month]?.totalSalary) || 0
           const bonusAndFuelAllowance = Number(aggregatedEmployeeExpensesData[month]?.totalBonusAndFuel) || 0
           const statutoryWelfareExpense = Number(aggregatedEmployeeExpensesData[month]?.totalStatutoryWelfare) || 0
           const welfareExpense = Number(aggregatedEmployeeExpensesData[month]?.totalWelfare) || 0
           const insurancePremium = Number(aggregatedEmployeeExpensesData[month]?.totalInsurancePremium) || 0
           return (
-            executiveRenumeration +
+            executiveRemuneration +
             salary +
             bonusAndFuelAllowance +
             statutoryWelfareExpense +
@@ -291,7 +291,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
 
           // Employee expense section
           { label: 'employeeExpenses', values: employeeExpensesValues },
-          { label: 'executiveRenumeration', values: employeeExpenseExecutiveRenumerationValues },
+          { label: 'executiveRemuneration', values: employeeExpenseExecutiveRemunerationValues },
           { label: 'salary', values: employeeExpenseSalaryValues },
           { label: 'bonusAndFuelAllowance', values: employeeExpenseBonusAndFuelAllowanceValues },
           { label: 'statutoryWelfareExpenses', values: employeeExpenseStatutoryWelfareExpenseValues },

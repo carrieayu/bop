@@ -99,7 +99,7 @@ const ResultsListAndEdit = () => {
           let totalInsurancePremium = 0
 
           employeesResults.forEach((employee) => {
-            totalAnnualExecutive += employee.executive_renumeration
+            totalAnnualExecutive += employee.executive_remuneration
             totalAnnualSalary += employee.salary
             totalBonusAndFuelAllowance += employee.bonus_and_fuel_allowance
             totalWelfareExpense += parseFloat(employee.welfare_expense)
@@ -116,7 +116,7 @@ const ResultsListAndEdit = () => {
 
           months.forEach((month) => {
             aggregatedData[month] = {
-              executive_renumeration: monthlyExecutive,
+              executive_remuneration: monthlyExecutive,
               salary: monthlySalary,
               bonus_and_fuel_allowance: yearlyBonusAndFuelAllowance,
               welfare_expense: monthlyWelfareExpense,
@@ -215,7 +215,7 @@ const ResultsListAndEdit = () => {
 
         // EMPLOYEE EXPENSE
         const employeeExpensesValues = months.map((month) => {
-          const executiveRenumeration = aggregatedExpensesData[month]?.executive_renumeration || 0
+          const executiveRemuneration = aggregatedExpensesData[month]?.executive_remuneration || 0
           const salary = aggregatedEmployeeExpensesResults[month]?.totalSalary || 0
           const fuel_allowance = aggregatedExpensesData[month]?.fuel_allowance || 0
           const statutory_welfare_expense = aggregatedExpensesData[month]?.statutory_welfare_expense || 0
@@ -223,7 +223,7 @@ const ResultsListAndEdit = () => {
           const insurance_premiums = aggregatedExpensesData[month]?.insurance_premiums || 0
 
           return (
-            executiveRenumeration +
+            executiveRemuneration +
             salary +
             fuel_allowance +
             statutory_welfare_expense +
@@ -233,7 +233,7 @@ const ResultsListAndEdit = () => {
         })
         // EMPLOYEES
         const result = aggregateEmployeeResultsData(response.employees_results)
-        const executiveRenumerationValues = months.map((month) => result[month]?.executive_renumeration || 0)
+        const executiveRemunerationValues = months.map((month) => result[month]?.executive_remuneration || 0)
         const salaryValues = months.map((month) => result[month]?.salary || 0)
         const totalBonusAndFuelAllowance = result[12]?.bonus_and_fuel_allowance || 0
         const bonusAndFuelAllowanceValues = months.map((month) => {
@@ -460,12 +460,12 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: translate('executiveRenumerations', language),
+            label: translate('executiveRemunerations', language),
             values: [
-              ...executiveRenumerationValues,
-              firstHalfTotal(executiveRenumerationValues),
-              secondHalfTotal(executiveRenumerationValues),
-              total(executiveRenumerationValues),
+              ...executiveRemunerationValues,
+              firstHalfTotal(executiveRemunerationValues),
+              secondHalfTotal(executiveRemunerationValues),
+              total(executiveRemunerationValues),
               '0',
             ],
           },
