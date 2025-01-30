@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { translate } from '../../utils/translationUtil';
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { getPlanningA } from '../../api/PlanningEndpoint/GetPlanningA';
 import { monthNames, months, token } from '../../constants';
+import { organiseTotals } from '../../utils/helperFunctionsUtil'
+
 
 interface TablePlanningAProps {
   isThousandYenChecked: boolean;
@@ -116,7 +116,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
           const outsourcing = Number(aggregatedData[month]?.outsourcing_expense) || 0
           const productPurchase = Number(aggregatedData[month]?.product_purchase) || 0
           const dispatchLabor = Number(aggregatedData[month]?.dispatch_labor_expense) || 0
-          const communicationCost = Number(aggregatedData[month]?.communication_expense) || 0
+          const communication = Number(aggregatedData[month]?.communication_expense) || 0
           const workInProgress = Number(aggregatedData[month]?.work_in_progress_expense) || 0
           const amortization = Number(aggregatedData[month]?.amortization_expense) || 0
           return (
@@ -124,7 +124,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
             outsourcing +
             productPurchase +
             dispatchLabor +
-            communicationCost +
+            communication +
             workInProgress +
             amortization
           )
@@ -274,400 +274,156 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
           //start for sales revenue section
           {
             label: 'salesRevenue',
-            values: [
-              ...salesValues,
-
-              firstHalfTotal(salesValues),
-              secondHalfTotal(salesValues),
-              total(salesValues),
-              // `${(total(salesValues) / total(salesValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(salesValues),
           },
           {
             label: 'sales',
-            values: [
-              ...salesValues,
-              firstHalfTotal(salesValues),
-              secondHalfTotal(salesValues),
-              total(salesValues),
-              // `${(total(salesValues) / total(salesValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(salesValues),
           },
           //start of cost of sales portion
           {
             label: 'costOfSales',
-            values: [
-              ...costOfSalesValues,
-              firstHalfTotal(costOfSalesValues),
-              secondHalfTotal(costOfSalesValues),
-              total(costOfSalesValues),
-              // `${(total(costOfSalesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(costOfSalesValues),
           },
           {
             label: 'purchases',
-            values: [
-              ...purchasesValues,
-              firstHalfTotal(purchasesValues),
-              secondHalfTotal(purchasesValues),
-              total(purchasesValues),
-              // `${(total(purchasesValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(purchasesValues),
           },
           {
             label: 'outsourcingExpenses',
-            values: [
-              ...outsourcingExpenseValues,
-              firstHalfTotal(outsourcingExpenseValues),
-              secondHalfTotal(outsourcingExpenseValues),
-              total(outsourcingExpenseValues),
-              // `${(total(outsourcingExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(outsourcingExpenseValues),
           },
           {
             label: 'productPurchases',
-            values: [
-              ...productPurchaseValues,
-              firstHalfTotal(productPurchaseValues),
-              secondHalfTotal(productPurchaseValues),
-              total(productPurchaseValues),
-              // `${(total(productPurchaseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(productPurchaseValues),
           },
           {
             label: 'dispatchLaborExpenses',
-            values: [
-              ...dispatchLaborExpenseValues,
-              firstHalfTotal(dispatchLaborExpenseValues),
-              secondHalfTotal(dispatchLaborExpenseValues),
-              total(dispatchLaborExpenseValues),
-              // `${(total(dispatchLaborExpenseValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(dispatchLaborExpenseValues),
           },
           {
             label: 'communicationExpenses',
-            values: [
-              ...communicationCostValues,
-              firstHalfTotal(communicationCostValues),
-              secondHalfTotal(communicationCostValues),
-              total(communicationCostValues),
-              // `${(total(communicationCostValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(communicationCostValues),
           },
           {
             label: 'workInProgressExpenses',
-            values: [
-              ...workInProgressValues,
-              firstHalfTotal(workInProgressValues),
-              secondHalfTotal(workInProgressValues),
-              total(workInProgressValues),
-              // `${(total(workInProgressValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(workInProgressValues),
           },
           {
             label: 'amortizationExpenses',
-            values: [
-              ...amortizationValues,
-              firstHalfTotal(amortizationValues),
-              secondHalfTotal(amortizationValues),
-              total(amortizationValues),
-              // `${(total(amortizationValues) / total(costOfSalesValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(amortizationValues),
           },
           // end for cost of sales section
           {
             label: 'grossProfit',
-            values: [
-              ...grossProfitValues,
-              firstHalfTotal(grossProfitValues),
-              secondHalfTotal(grossProfitValues),
-              total(grossProfitValues),
-              '',
-            ],
+            values: organiseTotals(grossProfitValues),
           },
           // start for employee expense section
           {
             label: 'employeeExpenses',
-            values: [
-              ...employeeExpensesValues,
-              firstHalfTotal(employeeExpensesValues),
-              secondHalfTotal(employeeExpensesValues),
-              total(employeeExpensesValues),
-              '0',
-            ],
+            values: organiseTotals(employeeExpensesValues),
           },
           {
             label: 'executiveRenumeration',
-            values: [
-              ...employeeExpenseExecutiveRenumerationValues,
-              firstHalfTotal(employeeExpenseExecutiveRenumerationValues),
-              secondHalfTotal(employeeExpenseExecutiveRenumerationValues),
-              total(employeeExpenseExecutiveRenumerationValues),
-              // `${(total(executiveRenumerationValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(employeeExpenseExecutiveRenumerationValues),
           },
           {
             label: 'salary',
-            values: [
-              ...employeeExpenseSalaryValues,
-              firstHalfTotal(employeeExpenseSalaryValues),
-              secondHalfTotal(employeeExpenseSalaryValues),
-              total(employeeExpenseSalaryValues),
-              // `${(total(salaryValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(employeeExpenseSalaryValues),
           },
           {
             label: 'bonusAndFuelAllowance',
-            values: [
-              ...employeeExpenseBonusAndFuelAllowanceValues,
-              firstHalfTotal(employeeExpenseBonusAndFuelAllowanceValues),
-              secondHalfTotal(employeeExpenseBonusAndFuelAllowanceValues),
-              total(employeeExpenseBonusAndFuelAllowanceValues),
-              // `${(temployeeExpenseBonusAndFuelAllowanceValuestal(fuelAllowanceValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(employeeExpenseBonusAndFuelAllowanceValues),
           },
           {
             label: 'statutoryWelfareExpenses',
-            values: [
-              ...employeeExpenseStatutoryWelfareExpenseValues,
-              firstHalfTotal(employeeExpenseStatutoryWelfareExpenseValues),
-              secondHalfTotal(employeeExpenseStatutoryWelfareExpenseValues),
-              total(employeeExpenseStatutoryWelfareExpenseValues),
-              // `${(total(statutoryWelfareExpenseValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(employeeExpenseStatutoryWelfareExpenseValues),
           },
           {
             label: 'welfareExpenses',
-            values: [
-              ...employeeExpenseWelfareExpenseValues,
-              firstHalfTotal(employeeExpenseWelfareExpenseValues),
-              secondHalfTotal(employeeExpenseWelfareExpenseValues),
-              total(employeeExpenseWelfareExpenseValues),
-              // `${(total(welfareExpenseValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(employeeExpenseWelfareExpenseValues),
           },
           {
             label: 'insurancePremiums',
-            values: [
-              ...employeeExpenseInsurancePremiumValues,
-              firstHalfTotal(employeeExpenseInsurancePremiumValues),
-              secondHalfTotal(employeeExpenseInsurancePremiumValues),
-              total(employeeExpenseInsurancePremiumValues),
-              // `${(total(insurancePremiumsValues) / total(employeeExpensesValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(employeeExpenseInsurancePremiumValues),
           },
           //end for employee expense section
           //start for expenses section
           {
             label: 'expenses',
-            values: [
-              ...expenseValues,
-              firstHalfTotal(expenseValues),
-              secondHalfTotal(expenseValues),
-              total(expenseValues),
-              '0',
-            ],
+            values: organiseTotals(expenseValues),
           },
           {
             //same value to " 給与手当 " ?
             label: 'consumableExpenses',
-            values: [
-              ...consumableValues,
-              firstHalfTotal(consumableValues),
-              secondHalfTotal(consumableValues),
-              total(consumableValues),
-              // `${(total(consumableValues) / total(expenseValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(consumableValues),
           },
           {
             label: 'rentExpenses',
-            values: [
-              ...rentValues,
-              firstHalfTotal(rentValues),
-              secondHalfTotal(rentValues),
-              total(rentValues),
-              // `${(total(rentValues) / total(expenseValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(rentValues),
           },
           {
             label: 'taxesAndPublicCharges',
-            values: [
-              ...taxesPublicChargesValues,
-              firstHalfTotal(taxesPublicChargesValues),
-              secondHalfTotal(taxesPublicChargesValues),
-              total(taxesPublicChargesValues),
-              // `${(total(taxesPublicChargesValues) / total(expenseValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(taxesPublicChargesValues),
           },
           {
             label: 'depreciationExpenses',
-            values: [
-              ...depreciationExpensesValues,
-              firstHalfTotal(depreciationExpensesValues),
-              secondHalfTotal(depreciationExpensesValues),
-              total(depreciationExpensesValues),
-              // `${(total(depreciationExpensesValues) / total(expenseValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(depreciationExpensesValues),
           },
           {
             label: 'travelExpenses',
-            values: [
-              ...travelExpenseValues,
-              firstHalfTotal(travelExpenseValues),
-              secondHalfTotal(travelExpenseValues),
-              total(travelExpenseValues),
-              // `${(total(travelExpenseValues) / total(expenseValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(travelExpenseValues),
           },
           {
             label: 'communicationExpenses',
-            values: [
-              ...communicationExpenseValues,
-              firstHalfTotal(communicationExpenseValues),
-              secondHalfTotal(communicationExpenseValues),
-              total(communicationExpenseValues),
-              // `${(total(communicationExpenseValues) / total(expenseValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(communicationExpenseValues),
           },
           {
             label: 'utilitiesExpenses',
-            values: [
-              ...utilitiesValues,
-              firstHalfTotal(utilitiesValues),
-              secondHalfTotal(utilitiesValues),
-              total(utilitiesValues),
-              // `${(total(utilitiesValues) / total(expenseValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(utilitiesValues),
           },
           {
             label: 'transactionFees',
-            values: [
-              ...transactionFeeValues,
-              firstHalfTotal(transactionFeeValues),
-              secondHalfTotal(transactionFeeValues),
-              total(transactionFeeValues),
-              // `${(total(transactionFeeValues) / total(expenseValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(transactionFeeValues),
           },
           {
             label: 'advertisingExpenses',
-            values: [
-              ...advertisingExpenseValues,
-              firstHalfTotal(advertisingExpenseValues),
-              secondHalfTotal(advertisingExpenseValues),
-              total(advertisingExpenseValues),
-              // `${(total(advertisingExpenseValues) / total(expenseValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(advertisingExpenseValues),
           },
           {
             label: 'entertainmentExpenses',
-            values: [
-              ...entertainmentExpenseValues,
-              firstHalfTotal(entertainmentExpenseValues),
-              secondHalfTotal(entertainmentExpenseValues),
-              total(entertainmentExpenseValues),
-              // `${(total(entertainmentExpenseValues) / total(expenseValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(entertainmentExpenseValues),
           },
           {
             label: 'professionalServicesFees',
-            values: [
-              ...professionalServiceFeeValues,
-              firstHalfTotal(professionalServiceFeeValues),
-              secondHalfTotal(professionalServiceFeeValues),
-              total(professionalServiceFeeValues),
-              // `${(total(professionalServiceFeeValues) / total(expenseValues) * 100).toFixed(2)}%`,
-              '0',
-            ],
+            values: organiseTotals(professionalServiceFeeValues),
           },
           // end for expense section
           {
             //add 人件費 + 経費 field
             label: 'sellingAndGeneralAdminExpensesShort', // shortened version as it is too long in English Mode
-            values: [
-              ...sellingAndGeneralAdminExpenseValues,
-              firstHalfTotal(sellingAndGeneralAdminExpenseValues),
-              secondHalfTotal(sellingAndGeneralAdminExpenseValues),
-              total(sellingAndGeneralAdminExpenseValues),
-              '0',
-            ],
+            values: organiseTotals(sellingAndGeneralAdminExpenseValues),
           },
           //Operating income 営業利益 ①
           {
             label: 'operatingIncome',
-            values: [
-              ...operatingIncomeValues,
-              firstHalfTotal(operatingIncomeValues),
-              secondHalfTotal(operatingIncomeValues),
-              total(operatingIncomeValues),
-              '0',
-            ],
+            values: organiseTotals(operatingIncomeValues),
           },
           {
             label: 'nonOperatingIncome',
-            values: [
-              ...nonOperatingIncomeValues,
-              firstHalfTotal(nonOperatingIncomeValues),
-              secondHalfTotal(nonOperatingIncomeValues),
-              total(nonOperatingIncomeValues),
-              '0',
-            ],
+            values: organiseTotals(nonOperatingIncomeValues),
           },
           {
             label: 'nonOperatingExpenses',
-            values: [
-              ...nonOperatingExpensesValues,
-              firstHalfTotal(nonOperatingExpensesValues),
-              secondHalfTotal(nonOperatingExpensesValues),
-              total(nonOperatingExpensesValues),
-              '0',
-            ],
+            values: organiseTotals(nonOperatingExpensesValues),
           },
           {
             label: 'ordinaryIncome',
-            values: [
-              ...ordinaryProfitValues,
-              firstHalfTotal(ordinaryProfitValues),
-              secondHalfTotal(ordinaryProfitValues),
-              total(ordinaryProfitValues),
-              '0',
-            ],
+            values: organiseTotals(ordinaryProfitValues),
           },
           {
             label: 'cumulativeOrdinaryIncome',
-            values: [
-              ...cumulativeOrdinaryProfitValues,
-              firstHalfTotal(cumulativeOrdinaryProfitValues),
-              secondHalfTotal(cumulativeOrdinaryProfitValues),
-              total(cumulativeOrdinaryProfitValues),
-              '0',
-            ],
+            values: organiseTotals(cumulativeOrdinaryProfitValues),
           },
         ]
 
