@@ -123,7 +123,7 @@ const EmployeesListAndEdit: React.FC = () => {
     // EG. 999,999 → 999999 in the DB
     const rawValue = removeCommas(value)
 
-    if (name === 'salary' || name === 'executive_renumeration' || name === 'bonus_and_fuel_allowance') {
+    if (name === 'salary' || name === 'executive_remuneration' || name === 'bonus_and_fuel_allowance') {
       console.log('name', name, 'value:', rawValue, 'length', rawValue.length)
 
       if (rawValue.length > MAX_NUMBER_LENGTH) {
@@ -140,9 +140,9 @@ const EmployeesListAndEdit: React.FC = () => {
       const previousEmployee = prevState[index].employee
       const updatedEmployee = { ...previousEmployee, [name]: rawValue }
 
-      // Calculate non-editable fields based on type and salary or executive_renumeration
-      if (name === 'salary' || name === 'executive_renumeration') {
-        const baseValue = name === 'salary' ? Number(rawValue) : Number(updatedEmployee.executive_renumeration)
+      // Calculate non-editable fields based on type and salary or executive_remuneration
+      if (name === 'salary' || name === 'executive_remuneration') {
+        const baseValue = name === 'salary' ? Number(rawValue) : Number(updatedEmployee.executive_remuneration)
         updatedEmployee.statutory_welfare_expense = Math.round(baseValue * 0.1451).toString()
         updatedEmployee.welfare_expense = Math.round(baseValue * 0.0048).toString()
         updatedEmployee.insurance_premium = Math.round(baseValue * 0.0224).toString()
@@ -505,11 +505,11 @@ const EmployeesListAndEdit: React.FC = () => {
         ...previousEmployee,
         [name]: value, // Update the type
         salary: value === '0' ? previousEmployee.salary : null, // Clear if not regularEmployee
-        executive_renumeration: value === '1' ? previousEmployee.executive_renumeration : null, // Clear if not executiveEmployee
+        executive_remuneration: value === '1' ? previousEmployee.executive_remuneration : null, // Clear if not executiveEmployee
       }
 
       // Recalculate non-editable fields based on updated value
-      const baseValue = value === '0' ? Number(updatedEmployee.salary) : Number(updatedEmployee.executive_renumeration)
+      const baseValue = value === '0' ? Number(updatedEmployee.salary) : Number(updatedEmployee.executive_remuneration)
       updatedEmployee.statutory_welfare_expense = Math.round(baseValue * 0.1451).toString() || ''
       updatedEmployee.welfare_expense = Math.round(baseValue * 0.0048).toString() || ''
       updatedEmployee.insurance_premium = Math.round(baseValue * 0.0224).toString() || ''
@@ -582,7 +582,7 @@ const EmployeesListAndEdit: React.FC = () => {
                                   {translate('salary', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('executiveRenumeration', language)}
+                                  {translate('executiveRemuneration', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-left'>
                                   {translate('companyName', language)}
@@ -685,10 +685,10 @@ const EmployeesListAndEdit: React.FC = () => {
                                       <input
                                         className='edit_input'
                                         type='text'
-                                        name='executive_renumeration'
+                                        name='executive_remuneration'
                                         value={
                                           ((employee.type === 1 || employee.type === '1') &&
-                                            formatNumberWithCommas(employee.executive_renumeration).toString()) ||
+                                            formatNumberWithCommas(employee.executive_remuneration).toString()) ||
                                           ''
                                         }
                                         onChange={(e) => handleChange(employeeIndex, e)}
@@ -808,7 +808,7 @@ const EmployeesListAndEdit: React.FC = () => {
                                   {translate('salary', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
-                                  {translate('executiveRenumeration', language)}
+                                  {translate('executiveRemuneration', language)}
                                 </th>
                                 <th className='EmployeesListAndEdit_table_title_content_vertical has-text-centered'>
                                   {translate('companyName', language)}
@@ -859,7 +859,7 @@ const EmployeesListAndEdit: React.FC = () => {
                                     {employee.type === 0 && formatNumberWithCommas(employee.salary)}
                                   </td>
                                   <td className='EmployeesListAndEdit_table_body_content_vertical'>
-                                    {employee.type === 1 && formatNumberWithCommas(employee.executive_renumeration)}
+                                    {employee.type === 1 && formatNumberWithCommas(employee.executive_remuneration)}
                                   </td>
                                   <td className='EmployeesListAndEdit_table_body_content_vertical'>
                                     {employee.company}

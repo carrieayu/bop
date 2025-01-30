@@ -17,7 +17,7 @@ class EmployeesListSerializer(serializers.ModelSerializer):
             'type',
             'email',
             'salary',
-            'executive_renumeration',
+            'executive_remuneration',
             'company',
             'business_division', 
             'bonus_and_fuel_allowance',
@@ -38,7 +38,7 @@ class EmployeesCreateSerializer(serializers.ModelSerializer):
             'first_name', 
             'type', 'email', 
             'salary', 
-            'executive_renumeration', 
+            'executive_remuneration', 
             'company', 
             'business_division', 
             'bonus_and_fuel_allowance',
@@ -51,7 +51,7 @@ class EmployeesCreateSerializer(serializers.ModelSerializer):
         
         extra_kwargs = {
             'salary': {'allow_null': True, 'required': False},
-            'executive_renumeration': {'allow_null': True, 'required': False},
+            'executive_remuneration': {'allow_null': True, 'required': False},
         }
 
 class EmployeesUpdateSerializer(serializers.ModelSerializer):

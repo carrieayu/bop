@@ -564,7 +564,7 @@ class EmployeesEdit(generics.ListAPIView):
                     'type': employee.type,
                     'email': employee.email,
                     'salary': employee.salary,
-                    'executive_renumeration':employee.executive_renumeration,
+                    'executive_remuneration':employee.executive_remuneration,
                     'company_id': employee.company_id,
                     'business_division_id': employee.business_division_id,
                     'statutory_welfare_expense':employee.statutory_welfare_expense,
@@ -1305,7 +1305,7 @@ class EmployeeExpensesList(generics.ListAPIView):
                 employee_first_name = employee['first_name'] if employee else ''
                 employee_type = employee['type'] if employee else ''
                 employee_salary = employee['salary'] if employee else 0  # Default to 0 if None
-                employee_executive_renumeration = employee['executive_renumeration'] if employee else 0
+                employee_executive_remuneration = employee['executive_remuneration'] if employee else 0
                 employee_statutory_welfare_expense = employee['statutory_welfare_expense'] if employee else 0
                 employee_welfare_expense = employee['welfare_expense'] if employee else 0
                 employee_insurance_premium = employee['insurance_premium'] if employee else 0
@@ -1323,7 +1323,7 @@ class EmployeeExpensesList(generics.ListAPIView):
                     'employee_first_name': employee_first_name,
                     'employee_type': employee_type,
                     'employee_salary': employee_salary,
-                    'executive_renumeration': employee_executive_renumeration,
+                    'executive_remuneration': employee_executive_remuneration,
                     'statutory_welfare_expense':employee_statutory_welfare_expense,
                     'welfare_expense':employee_welfare_expense,
                     'insurance_premium':employee_insurance_premium,
@@ -1484,7 +1484,7 @@ class EmployeeExpensesResultsList(generics.ListAPIView):
             employee_first_name = employee['first_name'] if employee else ''
             employee_type = employee['type'] if employee else ''
             employee_salary = employee['salary'] if employee else 0  
-            employee_executive_renumeration = employee['executive_renumeration'] if employee else 0
+            employee_executive_remuneration = employee['executive_remuneration'] if employee else 0
             employee_statutory_welfare_expense = employee['statutory_welfare_expense'] if employee else 0
             employee_welfare_expense = employee['welfare_expense'] if employee else 0
             employee_insurance_premium = employee['insurance_premium'] if employee else 0
@@ -1503,7 +1503,7 @@ class EmployeeExpensesResultsList(generics.ListAPIView):
                 'employee_first_name': employee_first_name,
                 'employee_type': employee_type,
                 'employee_salary': employee_salary,
-                'executive_renumeration': employee_executive_renumeration,
+                'executive_remuneration': employee_executive_remuneration,
                 'statutory_welfare_expense':employee_statutory_welfare_expense,
                 'welfare_expense':employee_welfare_expense,
                 'insurance_premium':employee_insurance_premium,

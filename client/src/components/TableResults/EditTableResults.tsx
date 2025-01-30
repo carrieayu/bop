@@ -47,7 +47,7 @@ const EditTableResults = () => {
               employees: [employee], // Store employees as an array
               projects: [project], // Store projects as an array
               totalSalary: Number(employee.salary) || 0, // Initialize totalSalary with the first employee's salary
-              totalExecutiveRenumeration: Number(employee.executive_renumeration) || 0,
+              totalExecutiveRemuneration: Number(employee.executive_remuneration) || 0,
               totalBonusAndFuel: Number(employee.bonus_and_fuel_allowance) || 0,
               totalStatutoryWelfare: Number(employee.statutory_welfare_expense) || 0,
               totalWelfare: Number(employee.welfare_expense) || 0,
@@ -61,7 +61,7 @@ const EditTableResults = () => {
 
             // Add the employee's salary to the total
             acc[month].totalSalary += Number(employee.salary) || 0
-            acc[month].totalExecutiveRenumeration += Number(employee.executive_renumeration) || 0
+            acc[month].totalExecutiveRemuneration += Number(employee.executive_remuneration) || 0
             acc[month].totalBonusAndFuel += Number(employee.bonus_and_fuel_allowance) || 0
             acc[month].totalStatutoryWelfare += Number(employee.statutory_welfare_expense) || 0
             acc[month].totalWelfare += Number(employee.welfare_expense) || 0
@@ -207,8 +207,8 @@ const EditTableResults = () => {
         })
 
         // EMPLOYEE EXPENSE
-        const employeeExpenseExecutiveRenumerationValues = months.map(
-          (month) => aggregatedEmployeeExpensesResults[month]?.totalExecutiveRenumeration || 0,
+        const employeeExpenseExecutiveRemunerationValues = months.map(
+          (month) => aggregatedEmployeeExpensesResults[month]?.totalExecutiveRemuneration || 0,
         )
         const employeeExpenseSalaryValues = months.map(
           (month) => aggregatedEmployeeExpensesResults[month]?.totalSalary || 0,
@@ -228,15 +228,15 @@ const EditTableResults = () => {
 
         // EMPLOYEE EXPENSE TOTALS
         const employeeExpensesValues = months.map((month) => {
-          const executiveRenumeration =
-            Number(aggregatedEmployeeExpensesResults[month]?.totalExecutiveRenumeration) || 0
+          const executiveRemuneration =
+            Number(aggregatedEmployeeExpensesResults[month]?.totalExecutiveRemuneration) || 0
           const salary = Number(aggregatedEmployeeExpensesResults[month]?.totalSalary) || 0
           const bonusAndFuelAllowance = Number(aggregatedEmployeeExpensesResults[month]?.totalBonusAndFuel) || 0
           const statutoryWelfareExpense = Number(aggregatedEmployeeExpensesResults[month]?.totalStatutoryWelfare) || 0
           const welfareExpense = Number(aggregatedEmployeeExpensesResults[month]?.totalWelfare) || 0
           const insurancePremium = Number(aggregatedEmployeeExpensesResults[month]?.totalInsurancePremium) || 0
           return (
-            executiveRenumeration +
+            executiveRemuneration +
             salary +
             bonusAndFuelAllowance +
             statutoryWelfareExpense +
@@ -507,9 +507,9 @@ const EditTableResults = () => {
             values: organiseTotals(employeeExpensesValues),
           },
           {
-            id: employeeExpenseExecutiveRenumerationValues.map((renumeration) => renumeration.id),
-            label: 'executiveRenumeration',
-            values: organiseTotals(employeeExpenseExecutiveRenumerationValues),
+            id: employeeExpenseExecutiveRemunerationValues.map((remuneration) => remuneration.id),
+            label: 'executiveRemuneration',
+            values: organiseTotals(employeeExpenseExecutiveRemunerationValues),
           },
           {
             label: 'salary',
@@ -629,6 +629,7 @@ const EditTableResults = () => {
           },
         ]
 
+
         const previousData = [
           // Sales revenue section
           {
@@ -690,9 +691,9 @@ const EditTableResults = () => {
             values: organiseTotals(employeeExpensesValues),
           },
           {
-            id: employeeExpenseExecutiveRenumerationValues.map((renumeration) => renumeration.id),
-            label: 'executiveRenumeration',
-            values: organiseTotals(employeeExpenseExecutiveRenumerationValues),
+            id: employeeExpenseExecutiveRemunerationValues.map((remuneration) => remuneration.id),
+            label: 'executiveRemuneration',
+            values: organiseTotals(employeeExpenseExecutiveRemunerationValues),
           },
           {
             label: 'salary',
