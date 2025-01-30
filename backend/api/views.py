@@ -1973,21 +1973,21 @@ class PlanningList(generics.ListAPIView):
     def get(self, request):
         expenses = Expenses.objects.all()
         cost_of_sales = CostOfSales.objects.all()
-        planning_assign = EmployeeExpenses.objects.all()
-        planning_project_data = Projects.objects.all()
+        employee_expenses = EmployeeExpenses.objects.all()
+        projects = Projects.objects.all()
         employee = Employees.objects.all()
         employee_serializer = EmployeesListSerializer(employee, many=True)
         expenses_serializer = ExpensesListSerializer(expenses, many=True)
         cost_of_sales_serializer = CostOfSalesSerializer(cost_of_sales, many=True)
-        planning_assign_serializer = EmployeeExpensesListSerializer(planning_assign, many=True)
-        planning_project_data_serializer = ProjectsListSerializer(planning_project_data, many=True)
+        employee_expenses_serializer = EmployeeExpensesListSerializer(employee_expenses, many=True)
+        projects_serializer = ProjectsListSerializer(projects, many=True)
     
         combined_data = {
             'expenses': expenses_serializer.data,
             'employees': employee_serializer.data,
             'cost_of_sales': cost_of_sales_serializer.data,
-            'planning_assign_data': planning_assign_serializer.data,
-            'planning_project_data': planning_project_data_serializer.data
+            'employee_expenses': employee_expenses_serializer.data,
+            'projects': projects_serializer.data
         }
 
         return Response(combined_data)

@@ -45,8 +45,8 @@ const EditTablePlanning = () => {
           return acc
         }, {})
 
-        // EMPLOYEE EXPENSE (planningAssign is OLD name)
-        const aggregatedPlanningAssign = response.planning_assign_data.reduce((acc, item) => {
+        // EMPLOYEE EXPENSE
+        const aggregatedEmployeeExpensesData = response.employee_expenses.reduce((acc, item) => {
           const { month, employee, project, ...values } = item // Destructure employee and project
 
           // Initialize month if not already present
@@ -87,7 +87,7 @@ const EditTablePlanning = () => {
           }
           return acc
         }, {})
-        const aggregatedPlanningProjectData = response.planning_project_data.reduce((acc, item) => {
+        const aggregatedProjectsData = response.projects.reduce((acc, item) => {
           const { month, ...values } = item
           if (!acc[month]) {
             acc[month] = { month }
@@ -104,7 +104,7 @@ const EditTablePlanning = () => {
         }, {})
 
         // SALES REVENUE
-        const salesValues = months.map((month) => aggregatedPlanningProjectData[month]?.sales_revenue || 0)
+        const salesValues = months.map((month) => aggregatedProjectsData[month]?.sales_revenue || 0)
 
         //COST OF SALES
         const costOfSalesValues = months.map((month) => {
@@ -213,30 +213,30 @@ const EditTablePlanning = () => {
 
         // EMPLOYEE EXPENSE
         const employeeExpenseExecutiveRenumerationValues = months.map(
-          (month) => aggregatedPlanningAssign[month]?.totalExecutiveRenumeration || 0,
+          (month) => aggregatedEmployeeExpensesData[month]?.totalExecutiveRenumeration || 0,
         )
-        const employeeExpenseSalaryValues = months.map((month) => aggregatedPlanningAssign[month]?.totalSalary || 0)
+        const employeeExpenseSalaryValues = months.map((month) => aggregatedEmployeeExpensesData[month]?.totalSalary || 0)
         const employeeExpenseBonusAndFuelAllowanceValues = months.map(
-          (month) => aggregatedPlanningAssign[month]?.totalBonusAndFuel || 0,
+          (month) => aggregatedEmployeeExpensesData[month]?.totalBonusAndFuel || 0,
         )
         const employeeExpenseStatutoryWelfareExpenseValues = months.map(
-          (month) => aggregatedPlanningAssign[month]?.totalStatutoryWelfare || 0,
+          (month) => aggregatedEmployeeExpensesData[month]?.totalStatutoryWelfare || 0,
         )
         const employeeExpenseWelfareExpenseValues = months.map(
-          (month) => aggregatedPlanningAssign[month]?.totalWelfare || 0,
+          (month) => aggregatedEmployeeExpensesData[month]?.totalWelfare || 0,
         )
         const employeeExpenseInsurancePremiumValues = months.map(
-          (month) => aggregatedPlanningAssign[month]?.totalInsurancePremium || 0,
+          (month) => aggregatedEmployeeExpensesData[month]?.totalInsurancePremium || 0,
         )
 
         // EMPLOYEE EXPENSE TOTALS
         const employeeExpensesValues = months.map((month) => {
-          const executiveRenumeration = Number(aggregatedPlanningAssign[month]?.totalExecutiveRenumeration) || 0
-          const salary = Number(aggregatedPlanningAssign[month]?.totalSalary) || 0
-          const bonusAndFuelAllowance = Number(aggregatedPlanningAssign[month]?.totalBonusAndFuel) || 0
-          const statutoryWelfareExpense = Number(aggregatedPlanningAssign[month]?.totalStatutoryWelfare) || 0
-          const welfareExpense = Number(aggregatedPlanningAssign[month]?.totalWelfare) || 0
-          const insurancePremium = Number(aggregatedPlanningAssign[month]?.totalInsurancePremium) || 0
+          const executiveRenumeration = Number(aggregatedEmployeeExpensesData[month]?.totalExecutiveRenumeration) || 0
+          const salary = Number(aggregatedEmployeeExpensesData[month]?.totalSalary) || 0
+          const bonusAndFuelAllowance = Number(aggregatedEmployeeExpensesData[month]?.totalBonusAndFuel) || 0
+          const statutoryWelfareExpense = Number(aggregatedEmployeeExpensesData[month]?.totalStatutoryWelfare) || 0
+          const welfareExpense = Number(aggregatedEmployeeExpensesData[month]?.totalWelfare) || 0
+          const insurancePremium = Number(aggregatedEmployeeExpensesData[month]?.totalInsurancePremium) || 0
           return (
             executiveRenumeration +
             salary +
@@ -422,11 +422,9 @@ const EditTablePlanning = () => {
           return operatingIncomeValue
         })
         //NoN Operating Income & Expense
-        const nonOperatingIncomeValues = months.map(
-          (month) => aggregatedPlanningProjectData[month]?.non_operating_income || 0,
-        )
+        const nonOperatingIncomeValues = months.map((month) => aggregatedProjectsData[month]?.non_operating_income || 0)
         const nonOperatingExpensesValues = months.map(
-          (month) => aggregatedPlanningProjectData[month]?.non_operating_expense || 0,
+          (month) => aggregatedProjectsData[month]?.non_operating_expense || 0,
         )
 
         const ordinaryProfitValues = months.map((month, index) => {
