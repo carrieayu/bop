@@ -266,166 +266,62 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
         }
         const cumulativeOrdinaryProfitValues = cumulativeSum(ordinaryProfitValues)
 
-        const firstHalfTotal = (arr) => arr.slice(0, 6).reduce((acc, value) => acc + parseFloat(value), 0)
-        const secondHalfTotal = (arr) => arr.slice(6).reduce((acc, value) => acc + parseFloat(value), 0)
-        const total = (arr) => arr.reduce((acc, value) => acc + parseFloat(value), 0)
+        const labelsAndValues = [
+          // Sales revenue section
+          { label: 'salesRevenue', values: salesValues },
+          { label: 'sales', values: salesValues },
 
-        const data = [
-          //start for sales revenue section
-          {
-            label: 'salesRevenue',
-            values: organiseTotals(salesValues),
-          },
-          {
-            label: 'sales',
-            values: organiseTotals(salesValues),
-          },
-          //start of cost of sales portion
-          {
-            label: 'costOfSales',
-            values: organiseTotals(costOfSalesValues),
-          },
-          {
-            label: 'purchases',
-            values: organiseTotals(purchasesValues),
-          },
-          {
-            label: 'outsourcingExpenses',
-            values: organiseTotals(outsourcingExpenseValues),
-          },
-          {
-            label: 'productPurchases',
-            values: organiseTotals(productPurchaseValues),
-          },
-          {
-            label: 'dispatchLaborExpenses',
-            values: organiseTotals(dispatchLaborExpenseValues),
-          },
-          {
-            label: 'communicationExpenses',
-            values: organiseTotals(communicationCostValues),
-          },
-          {
-            label: 'workInProgressExpenses',
-            values: organiseTotals(workInProgressValues),
-          },
-          {
-            label: 'amortizationExpenses',
-            values: organiseTotals(amortizationValues),
-          },
-          // end for cost of sales section
-          {
-            label: 'grossProfit',
-            values: organiseTotals(grossProfitValues),
-          },
-          // start for employee expense section
-          {
-            label: 'employeeExpenses',
-            values: organiseTotals(employeeExpensesValues),
-          },
-          {
-            label: 'executiveRenumeration',
-            values: organiseTotals(employeeExpenseExecutiveRenumerationValues),
-          },
-          {
-            label: 'salary',
-            values: organiseTotals(employeeExpenseSalaryValues),
-          },
-          {
-            label: 'bonusAndFuelAllowance',
-            values: organiseTotals(employeeExpenseBonusAndFuelAllowanceValues),
-          },
-          {
-            label: 'statutoryWelfareExpenses',
-            values: organiseTotals(employeeExpenseStatutoryWelfareExpenseValues),
-          },
-          {
-            label: 'welfareExpenses',
-            values: organiseTotals(employeeExpenseWelfareExpenseValues),
-          },
-          {
-            label: 'insurancePremiums',
-            values: organiseTotals(employeeExpenseInsurancePremiumValues),
-          },
-          //end for employee expense section
-          //start for expenses section
-          {
-            label: 'expenses',
-            values: organiseTotals(expenseValues),
-          },
-          {
-            //same value to " 給与手当 " ?
-            label: 'consumableExpenses',
-            values: organiseTotals(consumableValues),
-          },
-          {
-            label: 'rentExpenses',
-            values: organiseTotals(rentValues),
-          },
-          {
-            label: 'taxesAndPublicCharges',
-            values: organiseTotals(taxesPublicChargesValues),
-          },
-          {
-            label: 'depreciationExpenses',
-            values: organiseTotals(depreciationExpensesValues),
-          },
-          {
-            label: 'travelExpenses',
-            values: organiseTotals(travelExpenseValues),
-          },
-          {
-            label: 'communicationExpenses',
-            values: organiseTotals(communicationExpenseValues),
-          },
-          {
-            label: 'utilitiesExpenses',
-            values: organiseTotals(utilitiesValues),
-          },
-          {
-            label: 'transactionFees',
-            values: organiseTotals(transactionFeeValues),
-          },
-          {
-            label: 'advertisingExpenses',
-            values: organiseTotals(advertisingExpenseValues),
-          },
-          {
-            label: 'entertainmentExpenses',
-            values: organiseTotals(entertainmentExpenseValues),
-          },
-          {
-            label: 'professionalServicesFees',
-            values: organiseTotals(professionalServiceFeeValues),
-          },
-          // end for expense section
-          {
-            //add 人件費 + 経費 field
-            label: 'sellingAndGeneralAdminExpensesShort', // shortened version as it is too long in English Mode
-            values: organiseTotals(sellingAndGeneralAdminExpenseValues),
-          },
-          //Operating income 営業利益 ①
-          {
-            label: 'operatingIncome',
-            values: organiseTotals(operatingIncomeValues),
-          },
-          {
-            label: 'nonOperatingIncome',
-            values: organiseTotals(nonOperatingIncomeValues),
-          },
-          {
-            label: 'nonOperatingExpenses',
-            values: organiseTotals(nonOperatingExpensesValues),
-          },
-          {
-            label: 'ordinaryIncome',
-            values: organiseTotals(ordinaryProfitValues),
-          },
-          {
-            label: 'cumulativeOrdinaryIncome',
-            values: organiseTotals(cumulativeOrdinaryProfitValues),
-          },
+          // Cost of sales section
+          { label: 'costOfSales', values: costOfSalesValues },
+          { label: 'purchases', values: purchasesValues },
+          { label: 'outsourcingExpenses', values: outsourcingExpenseValues },
+          { label: 'productPurchases', values: productPurchaseValues },
+          { label: 'dispatchLaborExpenses', values: dispatchLaborExpenseValues },
+          { label: 'communicationExpenses', values: communicationCostValues },
+          { label: 'workInProgressExpenses', values: workInProgressValues },
+          { label: 'amortizationExpenses', values: amortizationValues },
+
+          // Gross profit
+          { label: 'grossProfit', values: grossProfitValues },
+
+          // Employee expense section
+          { label: 'employeeExpenses', values: employeeExpensesValues },
+          { label: 'executiveRenumeration', values: employeeExpenseExecutiveRenumerationValues },
+          { label: 'salary', values: employeeExpenseSalaryValues },
+          { label: 'bonusAndFuelAllowance', values: employeeExpenseBonusAndFuelAllowanceValues },
+          { label: 'statutoryWelfareExpenses', values: employeeExpenseStatutoryWelfareExpenseValues },
+          { label: 'welfareExpenses', values: employeeExpenseWelfareExpenseValues },
+          { label: 'insurancePremiums', values: employeeExpenseInsurancePremiumValues },
+
+          // Expenses section
+          { label: 'expenses', values: expenseValues },
+          { label: 'consumableExpenses', values: consumableValues },
+          { label: 'rentExpenses', values: rentValues },
+          { label: 'taxesAndPublicCharges', values: taxesPublicChargesValues },
+          { label: 'depreciationExpenses', values: depreciationExpensesValues },
+          { label: 'travelExpenses', values: travelExpenseValues },
+          { label: 'communicationExpenses', values: communicationExpenseValues },
+          { label: 'utilitiesExpenses', values: utilitiesValues },
+          { label: 'transactionFees', values: transactionFeeValues },
+          { label: 'advertisingExpenses', values: advertisingExpenseValues },
+          { label: 'entertainmentExpenses', values: entertainmentExpenseValues },
+          { label: 'professionalServicesFees', values: professionalServiceFeeValues },
+
+          // Selling and general admin expenses
+          { label: 'sellingAndGeneralAdminExpensesShort', values: sellingAndGeneralAdminExpenseValues },
+
+          // Operating income section
+          { label: 'operatingIncome', values: operatingIncomeValues },
+          { label: 'nonOperatingIncome', values: nonOperatingIncomeValues },
+          { label: 'nonOperatingExpenses', values: nonOperatingExpensesValues },
+          { label: 'ordinaryIncome', values: ordinaryProfitValues },
+          { label: 'cumulativeOrdinaryIncome', values: cumulativeOrdinaryProfitValues },
         ]
+
+        const data = labelsAndValues.map((item) => ({
+          label: item.label,
+          values: organiseTotals(item.values),
+        }))
 
         setData(data)
       })
