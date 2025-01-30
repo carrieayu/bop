@@ -430,7 +430,6 @@ const EditTablePlanning = () => {
           const nonOperatingIncome = nonOperatingIncomeValues[index]
           const totalOperating = operatingIncome + nonOperatingIncome
           const totalOrdinaryIncome = totalOperating - nonOperatingExpensesValues[index]
-
           return totalOrdinaryIncome
         })
 
