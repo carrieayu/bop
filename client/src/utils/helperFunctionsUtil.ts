@@ -286,3 +286,18 @@ export const handleGeneralResultsInputChange = (
     })
   })
 }
+
+//  Plannning / Results (Dashboard Screens)
+
+const sumValues = (arr) => arr.reduce((acc, value) => acc + parseFloat(value), 0)
+
+export const organiseTotals = (arr) => {
+
+  return [
+    ...arr,
+    sumValues(arr.slice(0, 6)), // First Half Total
+    sumValues(arr.slice(6)), // Second Half Total
+    sumValues(arr), // Total
+    '0',
+  ]
+}
