@@ -36,49 +36,6 @@ const EditTableResults = () => {
           return acc
         }, {})
 
-        const aggregateEmployeeResultsData = (employeesResults) => {
-          // Initialize an empty object to store aggregated monthly data
-          const aggregatedData = {}
-          // Calculate the total annual salary, bonus, and welfare once for all employees
-          let totalAnnualExecutive = 0
-          let totalAnnualSalary = 0
-          let totalBonusAndFuelAllowance = 0
-          let totalWelfareExpense = 0
-          let totalStatutoryWelfareExpense = 0
-          let totalInsurancePremium = 0
-
-          employeesResults.forEach((employee) => {
-            totalAnnualExecutive += Number(employee.executive_renumeration)
-            totalAnnualSalary += Number(employee.salary)
-            totalBonusAndFuelAllowance += Number(employee.bonus_and_fuel_allowance)
-            totalWelfareExpense += Number(employee.welfare_expense) // Convert string to number if necessary
-            totalStatutoryWelfareExpense += Number(employee.statutory_welfare_expense)
-            totalInsurancePremium += Number(employee.insurance_premium)
-          })
-
-          // Distribute the totals equally across all months by dividing by 12
-          const monthlyExecutive = totalAnnualExecutive / 12
-          const monthlySalary = totalAnnualSalary / 12
-          const yearlyBonusAndFuelAllowance = totalBonusAndFuelAllowance
-          const monthlyWelfareExpense = (totalAnnualSalary * 0.0048) / 12
-          const monthStatutoryWelfareExpense = (totalAnnualSalary * 0.0048) / 12
-          const monthlyInsurancePremium = totalInsurancePremium / 12
-
-          // Fill the aggregatedData for each month with the calculated monthly amounts
-          months.forEach((month) => {
-            aggregatedData[month] = {
-              executive_renumeration: monthlyExecutive,
-              salary: monthlySalary,
-              bonus_and_fuel_allowance: yearlyBonusAndFuelAllowance,
-              welfare_expense: monthlyWelfareExpense,
-              statutory_welfare_expense: monthStatutoryWelfareExpense,
-              insurance_premium: monthlyInsurancePremium,
-            }
-          })
-
-          return aggregatedData
-        }
-
         const aggregatedEmployeeExpensesResults = response.employee_expenses_results.reduce((acc, item) => {
           const { month, employee, project, ...values } = item // Destructure employee and project
 
@@ -287,43 +244,31 @@ const EditTableResults = () => {
           )
         })
 
-        // EMPLOYEES
-        const result = aggregateEmployeeResultsData(response.employees_results)
-        const executiveRenumerationValues = months.map((month) => result[month]?.executive_renumeration || 0)
-        const salaryValues = months.map((month) => result[month]?.salary || 0)
-        const totalBonusAndFuelAllowance = result[12]?.bonus_and_fuel_allowance || 0
-        const bonusAndFuelAllowanceValues = months.map((month) => {
-          return month === 12 ? totalBonusAndFuelAllowance : 0 // Only display total for December
-        })
-        const statutoryWelfareExpenseValues = months.map((month) => result[month]?.statutory_welfare_expense || 0)
-        const welfareExpenseValues = months.map((month) => result[month]?.welfare_expense || 0)
-        const insurancePremiumsValues = months.map((month) => result[month]?.insurance_premium || 0)
-
         // EXPENSES
         const expenseValues = months.map((month) => {
           const consumables = Number(aggregatedExpensesData[month]?.consumable_expense) || 0
           const rent = Number(aggregatedExpensesData[month]?.rent_expense) || 0
           const taxAndPublicCharge = Number(aggregatedExpensesData[month]?.tax_and_public_charge) || 0
           const depreciation = Number(aggregatedExpensesData[month]?.depreciation_expense) || 0
-          const travel_expense = Number(aggregatedExpensesData[month]?.travel_expense) || 0
-          const communication_expense = Number(aggregatedExpensesData[month]?.communication_expense) || 0
-          const utilities_expense = Number(aggregatedExpensesData[month]?.utilities_expense) || 0
-          const transaction_fee = Number(aggregatedExpensesData[month]?.transaction_fee) || 0
-          const advertising_expense = Number(aggregatedExpensesData[month]?.advertising_expense) || 0
-          const entertainment_expense = Number(aggregatedExpensesData[month]?.entertainment_expense) || 0
-          const professional_service_fee = Number(aggregatedExpensesData[month]?.professional_service_fee) || 0
+          const travelExpense = Number(aggregatedExpensesData[month]?.travel_expense) || 0
+          const communicationExpense = Number(aggregatedExpensesData[month]?.communication_expense) || 0
+          const utilitiesExpense = Number(aggregatedExpensesData[month]?.utilities_expense) || 0
+          const transactionFee = Number(aggregatedExpensesData[month]?.transaction_fee) || 0
+          const advertisingExpense = Number(aggregatedExpensesData[month]?.advertising_expense) || 0
+          const entertainmentExpense = Number(aggregatedExpensesData[month]?.entertainment_expense) || 0
+          const professionalServiceFee = Number(aggregatedExpensesData[month]?.professional_service_fee) || 0
           return (
             consumables +
             rent +
             taxAndPublicCharge +
             depreciation +
-            travel_expense +
-            communication_expense +
-            utilities_expense +
-            transaction_fee +
-            advertising_expense +
-            entertainment_expense +
-            professional_service_fee
+            travelExpense +
+            communicationExpense +
+            utilitiesExpense +
+            transactionFee +
+            advertisingExpense +
+            entertainmentExpense +
+            professionalServiceFee
           )
         })
         // const consumableValues = months.map((month) => aggregatedExpensesData[month]?.consumable_expense || 0)
@@ -461,18 +406,18 @@ const EditTableResults = () => {
 
         // SELLING AND GENERAL ADMIN EXPENSES
         const sellingAndGeneralAdminExpenseValues = months.map((month, index) => {
-          const total_employee_expense = employeeExpensesValues[index] // Get the total employee expense for the current month
-          const total_expense = expenseValues[index] // Get the total expense for the current month
-          const sellingAndGeneralAdminExpense = total_employee_expense + total_expense // Calculation for Selling and General Admin Expense
+          const totalEmployeeExpense = employeeExpensesValues[index] // Get the total employee expense for the current month
+          const totalExpense = expenseValues[index] // Get the total expense for the current month
+          const sellingAndGeneralAdminExpense = totalEmployeeExpense + totalExpense // Calculation for Selling and General Admin Expense
           return sellingAndGeneralAdminExpense
         })
 
         // OPERATING INCOME
         const operatingIncomeValues = months.map((month, index) => {
-          const gross_profit = grossProfitValues[index] // Get the gross profit for the current month
-          const selling_and_general_admin = sellingAndGeneralAdminExpenseValues[index] // Get the Selling and General Admin Expense for the current month
-          const operating_income_value = gross_profit - selling_and_general_admin // Calculate operating income value
-          return operating_income_value
+          const grossProfit = grossProfitValues[index] // Get the gross profit for the current month
+          const sellingAndGeneralAdmin = sellingAndGeneralAdminExpenseValues[index] // Get the Selling and General Admin Expense for the current month
+          const operatingIncomeValue = grossProfit - sellingAndGeneralAdmin // Calculate operating income value
+          return operatingIncomeValue
         })
         //NoN Operating Income & Expense
         const nonOperatingIncomeValues = months.map(
@@ -483,11 +428,10 @@ const EditTableResults = () => {
         )
 
         const ordinaryProfitValues = months.map((month, index) => {
-          const operating_income = operatingIncomeValues[index]
-          const non_operating_income = nonOperatingIncomeValues[index]
-          const totalOperating = operating_income + non_operating_income
+          const operatingIncome = operatingIncomeValues[index]
+          const nonOperatingIncome = nonOperatingIncomeValues[index]
+          const totalOperating = operatingIncome + nonOperatingIncome
           const totalOrdinaryIncome = totalOperating - nonOperatingExpensesValues[index]
-
           return totalOrdinaryIncome
         })
 

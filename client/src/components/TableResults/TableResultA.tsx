@@ -226,18 +226,6 @@ const TableResultsA: React.FC<TablePlanningAProps> = ({ isThousandYenChecked }) 
           )
         })
 
-        // EMPLOYEES
-        const result = aggregateEmployeeResultsData(response.employees_results)
-        const executiveRenumerationValues = months.map((month) => result[month]?.executive_renumeration || 0)
-        const salaryValues = months.map((month) => result[month]?.salary || 0)
-        const totalBonusAndFuelAllowance = result[12]?.bonus_and_fuel_allowance || 0
-        const bonusAndFuelAllowanceValues = months.map((month) => {
-          return month === 12 ? totalBonusAndFuelAllowance : 0 // Only display total for December
-        })
-        const statutoryWelfareExpenseValues = months.map((month) => result[month]?.statutory_welfare_expense || 0)
-        const welfareExpenseValues = months.map((month) => result[month]?.welfare_expense || 0)
-        const insurancePremiumsValues = months.map((month) => result[month]?.insurance_premium || 0)
-
         // EXPENSES
         const expenseValues = months.map((month) => {
           const consumables = Number(aggregatedExpensesData[month]?.consumable_expense) || 0
@@ -289,18 +277,18 @@ const TableResultsA: React.FC<TablePlanningAProps> = ({ isThousandYenChecked }) 
 
         // SELLING AND GENERAL ADMIN EXPENSES
         const sellingAndGeneralAdminExpenseValues = months.map((month, index) => {
-          const total_employee_expense = employeeExpensesValues[index] // Get the total employee expense for the current month
-          const total_expense = expenseValues[index] // Get the total expense for the current month
-          const sellingAndGeneralAdminExpense = total_employee_expense + total_expense // Calculation for Selling and General Admin Expense
+          const totalEmployeeExpense = employeeExpensesValues[index] // Get the total employee expense for the current month
+          const totalExpense = expenseValues[index] // Get the total expense for the current month
+          const sellingAndGeneralAdminExpense = totalEmployeeExpense + totalExpense // Calculation for Selling and General Admin Expense
           return sellingAndGeneralAdminExpense
         })
 
         // OPERATING INCOME
         const operatingIncomeValues = months.map((month, index) => {
-          const gross_profit = grossProfitValues[index] // Get the gross profit for the current month
-          const selling_and_general_admin = sellingAndGeneralAdminExpenseValues[index] // Get the Selling and General Admin Expense for the current month
-          const operating_income_value = gross_profit - selling_and_general_admin // Calculate operating income value
-          return operating_income_value
+          const grossProfit = grossProfitValues[index] // Get the gross profit for the current month
+          const sellingAndGeneralAdmin = sellingAndGeneralAdminExpenseValues[index] // Get the Selling and General Admin Expense for the current month
+          const operatingIncomeValue = grossProfit - sellingAndGeneralAdmin // Calculate operating income value
+          return operatingIncomeValue
         })
         //NoN Operating Income & Expense
         const nonOperatingIncomeValues = months.map(
@@ -311,11 +299,10 @@ const TableResultsA: React.FC<TablePlanningAProps> = ({ isThousandYenChecked }) 
         )
 
         const ordinaryProfitValues = months.map((month, index) => {
-          const operating_income = operatingIncomeValues[index]
-          const non_operating_income = nonOperatingIncomeValues[index]
-          const totalOperating = operating_income + non_operating_income
+          const operatingIncome = operatingIncomeValues[index]
+          const nonOperatingIncome = nonOperatingIncomeValues[index]
+          const totalOperating = operatingIncome + nonOperatingIncome
           const totalOrdinaryIncome = totalOperating - nonOperatingExpensesValues[index]
-
           return totalOrdinaryIncome
         })
 
