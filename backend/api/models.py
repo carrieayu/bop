@@ -365,7 +365,7 @@ class CostOfSalesResults(models.Model):
                 numeric_part = int(max_id[1:]) + 1  # Extract numeric part after 'A'
             else:
                 numeric_part = 1  # Start with 1 if no records exist
-            self.cost_of_sale_result_id = f'A{numeric_part:09d}'  # Format as 'A000000001'
+            self.cost_of_sale_result_id = f'AR{numeric_part:09d}'  # Format as 'A000000001'
         
         super().save(*args, **kwargs) 
 
@@ -447,6 +447,8 @@ class ExpensesResults(models.Model):
 class ProjectsSalesResults(models.Model):
     project_sales_result_id  = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True , editable=False)
     project = models.ForeignKey(Projects, on_delete=models.CASCADE, null=True)
+    month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
+    year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
     sales_revenue = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
     dispatch_labor_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
     employee_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)

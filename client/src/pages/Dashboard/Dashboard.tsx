@@ -11,11 +11,14 @@ import { fetchGraphData } from '../../reducers/graph/graphSlice'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import { useLocation, useNavigate } from 'react-router-dom'
 import TablePlanningA from '../../components/Table/TablePlanningA'
+import { getResultsA } from '../../api/ResultsEndpoint/GetResultsA'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import { useAppDispatch } from '../../actions/hooks'
 import { dates, header, smallDate } from '../../constants'
+
+import TableDashboard from '../../components/TableDashboard/TableDashboard'
 
 function formatNumberWithCommas(number: number): string {
   return number.toLocaleString()
@@ -98,7 +101,7 @@ const Dashboard = () => {
     }
 
     fetchData()
-  }, [])
+  }, [tableList])
 
   useEffect(() => {
     const path = location.pathname
@@ -107,10 +110,10 @@ const Dashboard = () => {
     }
   }, [location.pathname])
 
-  useEffect(() => {
-    const startIndex = currentPage * rowsPerPage
-    setPaginatedData(tableList?.slice(startIndex, startIndex + rowsPerPage))
-  }, [currentPage, rowsPerPage, tableList])
+  // useEffect(() => {
+  //   const startIndex = currentPage * rowsPerPage
+  //   setPaginatedData(tableList?.slice(startIndex, startIndex + rowsPerPage))
+  // }, [currentPage, rowsPerPage, tableList])
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
@@ -344,7 +347,10 @@ const Dashboard = () => {
             <div className='dashboard_tbl_cont'>
               <div className={`dashboard_table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
                 {/* Render the TablePlanning component here */}
-                <TablePlanningA isThousandYenChecked={isThousandYenChecked} />
+                {/* <TablePlanningA isThousandYenChecked={isThousandYenChecked} /> */}
+
+                {/* Render the  DASHBOARD TEST component here */}
+                <TableDashboard isThousandYenChecked={isThousandYenChecked} />
               </div>
               <div className={`dashboard_table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
                 <TablePlanningB

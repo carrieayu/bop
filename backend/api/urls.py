@@ -130,4 +130,7 @@ urlpatterns = [
     path('api/results/<int:pk>/update/', views.ResultsUpdate.as_view(), name="results-update"),  
     path('api/results/<int:pk>/delete/', views.ResultsDelete.as_view(), name="results-delete"), 
 
+    # Dashboard / Analysis Screen (Planning And Results)
+    path('api/planning-and-results/list/',views.PlanningAndResultsData.as_view(), name="planning-and-results-list")
+
 ]
