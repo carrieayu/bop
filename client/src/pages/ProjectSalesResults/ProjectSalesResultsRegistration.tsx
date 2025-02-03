@@ -77,7 +77,7 @@ const ProjectSalesResultsRegistration = () => {
   const [businessSelection, setBusinessSelection] = useState<any>([])
   const [businessDivisionFilter, setBusinessDivisionFilter] = useState<Divisions[]>([{ divisions: [] }])
   const [filteredMonth, setFilteredMonth] = useState<any>([{ month: [] }])
-  const [ProjectYear, setProjectYear] = useState<any>([])
+  const [projectYear, setProjectYear] = useState<any>([])
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [projectDataResult, setProjectDataResult] = useState<any>([])
   const [projectList, setProjectsList] = useState<Projects[]>([{ projects: [] }])
@@ -112,7 +112,7 @@ const ProjectSalesResultsRegistration = () => {
   }
 
   const [formProjects, setProjects] = useState([emptyFormData])
-  const uniqueYears = ProjectYear.reduce((acc, item) => {
+  const uniqueYears = projectYear.reduce((acc, item) => {
     if (!acc.includes(item.year)) {
       acc.push(item.year)
     }
