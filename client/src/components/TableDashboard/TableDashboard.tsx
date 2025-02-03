@@ -8,6 +8,10 @@ import {
   aggregatedCostOfSalesFunction,
   aggregatedExpensesFunction,
   aggregatedEmployeeExpensesFunction,
+  aggregatedProjectsFunction,
+  costOfSalesTotalsFunction,
+  expensesTotalsFunction,
+  employeeExpensesTotalsFunction,
 } from '../../utils/tableAggregationUtil'
 
 interface TableDashboardProps {
@@ -28,122 +32,44 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
 
     getPlanningAndResultsData(token)
       .then((response) => {
-        console.log('response',response)
-        // planning
+
+        // --- PLANNING TABLE DATA ---
+
+        // PLANNING:COST OF SALES
         const aggregatedCostOfSalesData = aggregatedCostOfSalesFunction(response.planning_data.cost_of_sales)
-        // const aggregatedCostOfSalesData = response.planning_data.cost_of_sales.reduce((acc, item) => {
-        //   const { month, ...values } = item
-        //   if (!acc[month]) {
-        //     acc[month] = { ...values }
-        //   } else {
-        //     Object.keys(values).forEach((key) => {
-        //       acc[month][key] += values[key]
-        //     })
-        //   }
-        //   return acc
-        // }, {})
-
+        // PLANNING:EXPENSES
         const aggregatedExpensesData = aggregatedExpensesFunction(response.planning_data.expenses)
-        // const aggregatedExpensesData = response.planning_data.expenses.reduce((acc, item) => {
-        //   const { month, ...values } = item
-        //   if (!acc[month]) {
-        //     acc[month] = { month, ...values } // Include month in the object
-        //   } else {
-        //     Object.keys(values).forEach((key) => {
-        //       acc[month][key] += values[key]
-        //     })
-        //   }
-        //   return acc
-        // }, {})
-
-        // EMPLOYEE EXPENSES
+        // PLANNING:EMPLOYEE EXPENSES
         const aggregatedEmployeeExpensesData = aggregatedEmployeeExpensesFunction(
           response.planning_data.employee_expenses,
         )
-        // const aggregatedEmployeeExpensesData = response.planning_data.employee_expenses.reduce((acc, item) => {
-          // const { month, employee, project, ...values } = item // Destructure employee and project
-
-          // Initialize month if not already present
-        //   if (!acc[month]) {
-        //     acc[month] = {
-        //       month,
-        //       employees: [employee], // Store employees as an array
-        //       projects: [project], // Store projects as an array
-        //       totalSalary: Number(employee.salary) || 0, // Initialize totalSalary with the first employee's salary
-        //       totalExecutiveRemuneration: Number(employee.executive_remuneration) || 0,
-        //       totalBonusAndFuel: Number(employee.bonus_and_fuel_allowance) || 0,
-        //       totalStatutoryWelfare: Number(employee.statutory_welfare_expense) || 0,
-        //       totalWelfare: Number(employee.welfare_expense) || 0,
-        //       totalInsurancePremium: Number(employee.insurance_premium) || 0,
-        //       ...values,
-        //     }
-        //   } else {
-        //     // Add the new employee and project objects to the array
-        //     acc[month].employees.push(employee)
-        //     acc[month].projects.push(project)
-        //     // Add the employee's salary to the total
-        //     acc[month].totalSalary += Number(employee.salary) || 0
-        //     acc[month].totalExecutiveRemuneration += Number(employee.executive_remuneration) || 0
-        //     acc[month].totalBonusAndFuel += Number(employee.bonus_and_fuel_allowance) || 0
-        //     acc[month].totalStatutoryWelfare += Number(employee.statutory_welfare_expense) || 0
-        //     acc[month].totalWelfare += Number(employee.welfare_expense) || 0
-        //     acc[month].totalInsurancePremium += Number(employee.insurance_premium) || 0
-
-        //     // Aggregate other numeric fields
-        //     Object.keys(values).forEach((key) => {
-        //       if (typeof values[key] === 'number') {
-        //         acc[month][key] += values[key]
-        //       } else if (typeof values[key] === 'string') {
-        //         // Handle strings like `created_at`, `updated_at`, and other concatenation-sensitive fields
-        //         acc[month][key] = values[key] // Keep the latest value or handle as needed
-        //       }
-        //     })
-        //   }
-        //   return acc
-        // }, {})
-
-        // PROJECTS
-        // NOTE: (planningProjectsData is OLD name)
-        const aggregatedProjectsData = response.planning_data.projects.reduce((acc, item) => {
-          const { month, ...values } = item
-          if (!acc[month]) {
-            acc[month] = { month }
-          }
-          Object.keys(values).forEach((key) => {
-            // Convert value to a float
-            const value = parseFloat(values[key])
-            if (!isNaN(value)) {
-              acc[month][key] = (acc[month][key] || 0) + value
-            }
-          })
-
-          return acc
-        }, {})
+        // PLANNING:PROJECTS
+        const aggregatedProjectsData = aggregatedProjectsFunction(response.planning_data.projects)
 
         // SALES REVENUE
         const salesValues = months.map((month) => aggregatedProjectsData[month]?.sales_revenue || 0)
         console.log('salesValues', salesValues, 'aggregatedProjectsData', aggregatedProjectsData)
 
-        // COST OF SALES
-        const costOfSalesValues = months.map((month) => {
-          const purchases = Number(aggregatedCostOfSalesData[month]?.purchase) || 0
-          const outsourcing = Number(aggregatedCostOfSalesData[month]?.outsourcing_expense) || 0
-          const productPurchase = Number(aggregatedCostOfSalesData[month]?.product_purchase) || 0
-          const dispatchLabor = Number(aggregatedCostOfSalesData[month]?.dispatch_labor_expense) || 0
-          const communication = Number(aggregatedCostOfSalesData[month]?.communication_expense) || 0
-          const workInProgress = Number(aggregatedCostOfSalesData[month]?.work_in_progress_expense) || 0
-          const amortization = Number(aggregatedCostOfSalesData[month]?.amortization_expense) || 0
-          return (
-            purchases + outsourcing + productPurchase + dispatchLabor + communication + workInProgress + amortization
-          )
-        })
+        // PLANNING: COST OF SALES TOTALS VALUES
+        const costOfSalesValues = costOfSalesTotalsFunction(months, aggregatedCostOfSalesData)
+        
+    
         const purchasesValues = months.map((month) => aggregatedCostOfSalesData[month]?.purchase || 0)
-        const outsourcingExpenseValues = months.map((month) => aggregatedCostOfSalesData[month]?.outsourcing_expense || 0)
+        const outsourcingExpenseValues = months.map(
+          (month) => aggregatedCostOfSalesData[month]?.outsourcing_expense || 0,
+        )
         const productPurchaseValues = months.map((month) => aggregatedCostOfSalesData[month]?.product_purchase || 0)
-        const dispatchLaborExpenseValues = months.map((month) => aggregatedCostOfSalesData[month]?.dispatch_labor_expense || 0)
-        const communicationCostValues = months.map((month) => aggregatedCostOfSalesData[month]?.communication_expense || 0)
-        const workInProgressValues = months.map((month) => aggregatedCostOfSalesData[month]?.work_in_progress_expense || 0)
+        const dispatchLaborExpenseValues = months.map(
+          (month) => aggregatedCostOfSalesData[month]?.dispatch_labor_expense || 0,
+        )
+        const communicationCostValues = months.map(
+          (month) => aggregatedCostOfSalesData[month]?.communication_expense || 0,
+        )
+        const workInProgressValues = months.map(
+          (month) => aggregatedCostOfSalesData[month]?.work_in_progress_expense || 0,
+        )
         const amortizationValues = months.map((month) => aggregatedCostOfSalesData[month]?.amortization_expense || 0)
+
 
         // GROSS PROFIT
         const grossProfitValues = months.map((month, index) => {
@@ -174,50 +100,11 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
         )
 
         // EMPLOYEE EXPENSE TOTALS
-        const employeeExpensesValues = months.map((month) => {
-          const executiveRemuneration = Number(aggregatedEmployeeExpensesData[month]?.totalExecutiveRemuneration) || 0
-          const salary = Number(aggregatedEmployeeExpensesData[month]?.totalSalary) || 0
-          const bonusAndFuelAllowance = Number(aggregatedEmployeeExpensesData[month]?.totalBonusAndFuel) || 0
-          const statutoryWelfareExpense = Number(aggregatedEmployeeExpensesData[month]?.totalStatutoryWelfare) || 0
-          const welfareExpense = Number(aggregatedEmployeeExpensesData[month]?.totalWelfare) || 0
-          const insurancePremium = Number(aggregatedEmployeeExpensesData[month]?.totalInsurancePremium) || 0
-          return (
-            executiveRemuneration +
-            salary +
-            bonusAndFuelAllowance +
-            statutoryWelfareExpense +
-            welfareExpense +
-            insurancePremium
-          )
-        })
+        const employeeExpensesValues = employeeExpensesTotalsFunction(months, aggregatedEmployeeExpensesData)
 
         // EXPENSES
-        const expenseValues = months.map((month) => {
-          const consumables = Number(aggregatedExpensesData[month]?.consumable_expense) || 0
-          const rent = Number(aggregatedExpensesData[month]?.rent_expense) || 0
-          const taxAndPublicCharge = Number(aggregatedExpensesData[month]?.tax_and_public_charge) || 0
-          const depreciation = Number(aggregatedExpensesData[month]?.depreciation_expense) || 0
-          const travelExpense = Number(aggregatedExpensesData[month]?.travel_expense) || 0
-          const communicationExpense = Number(aggregatedExpensesData[month]?.communication_expense) || 0
-          const utilitiesExpense = Number(aggregatedExpensesData[month]?.utilities_expense) || 0
-          const transactionFee = Number(aggregatedExpensesData[month]?.transaction_fee) || 0
-          const advertisingExpense = Number(aggregatedExpensesData[month]?.advertising_expense) || 0
-          const entertainmentExpense = Number(aggregatedExpensesData[month]?.entertainment_expense) || 0
-          const professionalServiceFee = Number(aggregatedExpensesData[month]?.professional_service_fee) || 0
-          return (
-            consumables +
-            rent +
-            taxAndPublicCharge +
-            depreciation +
-            travelExpense +
-            communicationExpense +
-            utilitiesExpense +
-            transactionFee +
-            advertisingExpense +
-            entertainmentExpense +
-            professionalServiceFee
-          )
-        })
+        const expenseValues = expensesTotalsFunction(months, aggregatedExpensesData)
+        
         const consumableValues = months.map((month) => aggregatedExpensesData[month]?.consumable_expense || 0)
         const rentValues = months.map((month) => aggregatedExpensesData[month]?.rent_expense || 0)
         const taxesPublicChargesValues = months.map(
@@ -334,96 +221,18 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
         }))
         setPlanningData(data)
 
-          
-        // results
+        // --- RESULTS TABLE DATA ---
 
-        const aggregatedResultsCostOfSalesData = response.results_data.cost_of_sales.reduce((acc, item) => {
-          const { month, ...values } = item
-          if (!acc[month]) {
-            acc[month] = { ...values }
-          } else {
-            Object.keys(values).forEach((key) => {
-              acc[month][key] += values[key]
-            })
-          }
-          return acc
-        }, {})
-        const aggregatedResultsExpensesData = response.results_data.expenses.reduce((acc, item) => {
-          const { month, ...values } = item
-          if (!acc[month]) {
-            acc[month] = { month, ...values } // Include month in the object
-          } else {
-            Object.keys(values).forEach((key) => {
-              acc[month][key] += values[key]
-            })
-          }
-          return acc
-        }, {})
-
-        // EMPLOYEE EXPENSES
-        const aggregatedResultsEmployeeExpensesData = response.results_data.employee_expenses.reduce(
-          (acc, item) => {
-            const { month, employee, project, ...values } = item // Destructure employee and project
-
-            // Initialize month if not already present
-            if (!acc[month]) {
-              acc[month] = {
-                month,
-                employees: [employee], // Store employees as an array
-                projects: [project], // Store projects as an array
-                totalSalary: Number(employee.salary) || 0, // Initialize totalSalary with the first employee's salary
-                totalExecutiveRemuneration: Number(employee.executive_remuneration) || 0,
-                totalBonusAndFuel: Number(employee.bonus_and_fuel_allowance) || 0,
-                totalStatutoryWelfare: Number(employee.statutory_welfare_expense) || 0,
-                totalWelfare: Number(employee.welfare_expense) || 0,
-                totalInsurancePremium: Number(employee.insurance_premium) || 0,
-                ...values,
-              }
-            } else {
-              // Add the new employee and project objects to the array
-              acc[month].employees.push(employee)
-              acc[month].projects.push(project)
-              // Add the employee's salary to the total
-              acc[month].totalSalary += Number(employee.salary) || 0
-              acc[month].totalExecutiveRemuneration += Number(employee.executive_remuneration) || 0
-              acc[month].totalBonusAndFuel += Number(employee.bonus_and_fuel_allowance) || 0
-              acc[month].totalStatutoryWelfare += Number(employee.statutory_welfare_expense) || 0
-              acc[month].totalWelfare += Number(employee.welfare_expense) || 0
-              acc[month].totalInsurancePremium += Number(employee.insurance_premium) || 0
-
-              // Aggregate other numeric fields
-              Object.keys(values).forEach((key) => {
-                if (typeof values[key] === 'number') {
-                  acc[month][key] += values[key]
-                } else if (typeof values[key] === 'string') {
-                  // Handle strings like `created_at`, `updated_at`, and other concatenation-sensitive fields
-                  acc[month][key] = values[key] // Keep the latest value or handle as needed
-                }
-              })
-            }
-            return acc
-          },
-          {},
+        // RESULTS:COST OF SALES
+        const aggregatedResultsCostOfSalesData = aggregatedCostOfSalesFunction(response.results_data.cost_of_sales)
+        // RESULTS:EXPENSES
+        const aggregatedResultsExpensesData = aggregatedExpensesFunction(response.results_data.expenses)
+        // RESULTS:EMPLOYEE EXPENSES
+        const aggregatedResultsEmployeeExpensesData = aggregatedEmployeeExpensesFunction(
+          response.results_data.employee_expenses,
         )
-        
-        console.log('aggregatedResultsEmployeeExpensesData', aggregatedResultsEmployeeExpensesData)
-        // PROJECTS
-        // NOTE: (planningProjectsData is OLD name)
-        const aggregatedResultsProjectsData = response.results_data.projects.reduce((acc, item) => {
-          const { month, ...values } = item
-          if (!acc[month]) {
-            acc[month] = { month }
-          }
-          Object.keys(values).forEach((key) => {
-            // Convert value to a float
-            const value = parseFloat(values[key])
-            if (!isNaN(value)) {
-              acc[month][key] = (acc[month][key] || 0) + value
-            }
-          })
-
-          return acc
-        }, {})
+        // RESULTS:PROJECTS
+        const aggregatedResultsProjectsData = aggregatedProjectsFunction(response.results_data.projects)
 
         // SALES REVENUE
         const salesResultsValues = months.map((month) => aggregatedResultsProjectsData[month]?.sales_revenue || 0)
@@ -435,24 +244,8 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
         )
 
         // COST OF SALES
-        const costOfSalesResultsValues = months.map((month) => {
-          const purchases = Number(aggregatedResultsCostOfSalesData[month]?.purchase) || 0
-          const outsourcing = Number(aggregatedResultsCostOfSalesData[month]?.outsourcing_expense) || 0
-          const productPurchase = Number(aggregatedResultsCostOfSalesData[month]?.product_purchase) || 0
-          const dispatchLabor = Number(aggregatedResultsCostOfSalesData[month]?.dispatch_labor_expense) || 0
-          const communication = Number(aggregatedResultsCostOfSalesData[month]?.communication_expense) || 0
-          const workInProgress = Number(aggregatedResultsCostOfSalesData[month]?.work_in_progress_expense) || 0
-          const amortization = Number(aggregatedResultsCostOfSalesData[month]?.amortization_expense) || 0
-          return (
-            purchases +
-            outsourcing +
-            productPurchase +
-            dispatchLabor +
-            communication +
-            workInProgress +
-            amortization
-          )
-        })
+        const costOfSalesResultsValues = costOfSalesTotalsFunction(months, aggregatedResultsCostOfSalesData)
+
         const purchasesResultsValues = months.map((month) => aggregatedResultsCostOfSalesData[month]?.purchase || 0)
         const outsourcingExpenseResultsValues = months.map(
           (month) => aggregatedResultsCostOfSalesData[month]?.outsourcing_expense || 0,
@@ -501,68 +294,32 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
           (month) => aggregatedResultsEmployeeExpensesData[month]?.totalInsurancePremium || 0,
         )
 
-        // EMPLOYEE EXPENSE TOTALS
-        const employeeExpensesResultsValues = months.map((month) => {
-          const executiveRemuneration =
-            Number(aggregatedResultsEmployeeExpensesData[month]?.totalExecutiveRemuneration) || 0
-          const salary = Number(aggregatedResultsEmployeeExpensesData[month]?.totalSalary) || 0
-          const bonusAndFuelAllowance =
-            Number(aggregatedResultsEmployeeExpensesData[month]?.totalBonusAndFuel) || 0
-          const statutoryWelfareExpense =
-            Number(aggregatedResultsEmployeeExpensesData[month]?.totalStatutoryWelfare) || 0
-          const welfareExpense = Number(aggregatedResultsEmployeeExpensesData[month]?.totalWelfare) || 0
-          const insurancePremium =
-            Number(aggregatedResultsEmployeeExpensesData[month]?.totalInsurancePremium) || 0
-          return (
-            executiveRemuneration +
-            salary +
-            bonusAndFuelAllowance +
-            statutoryWelfareExpense +
-            welfareExpense +
-            insurancePremium
-          )
-        })
+        // EMPLOYEE EXPENSE TOTALS          
+        const employeeExpensesResultsValues = employeeExpensesTotalsFunction(months, aggregatedResultsEmployeeExpensesData)
+
 
         // EXPENSES
-        const expenseResultsValues = months.map((month) => {
-          const consumables = Number(aggregatedResultsExpensesData[month]?.consumable_expense) || 0
-          const rent = Number(aggregatedResultsExpensesData[month]?.rent_expense) || 0
-          const taxAndPublicCharge = Number(aggregatedResultsExpensesData[month]?.tax_and_public_charge) || 0
-          const depreciation = Number(aggregatedResultsExpensesData[month]?.depreciation_expense) || 0
-          const travelExpense = Number(aggregatedResultsExpensesData[month]?.travel_expense) || 0
-          const communicationExpense = Number(aggregatedResultsExpensesData[month]?.communication_expense) || 0
-          const utilitiesExpense = Number(aggregatedResultsExpensesData[month]?.utilities_expense) || 0
-          const transactionFee = Number(aggregatedResultsExpensesData[month]?.transaction_fee) || 0
-          const advertisingExpense = Number(aggregatedResultsExpensesData[month]?.advertising_expense) || 0
-          const entertainmentExpense = Number(aggregatedResultsExpensesData[month]?.entertainment_expense) || 0
-          const professionalServiceFee = Number(aggregatedResultsExpensesData[month]?.professional_service_fee) || 0
-          return (
-            consumables +
-            rent +
-            taxAndPublicCharge +
-            depreciation +
-            travelExpense +
-            communicationExpense +
-            utilitiesExpense +
-            transactionFee +
-            advertisingExpense +
-            entertainmentExpense +
-            professionalServiceFee
-          )
-        })
-        const consumableResultsValues = months.map((month) => aggregatedExpensesData[month]?.consumable_expense || 0)
-        const rentResultsValues = months.map((month) => aggregatedExpensesData[month]?.rent_expense || 0)
+        const expenseResultsValues = expensesTotalsFunction(months, aggregatedResultsExpensesData)
+        
+        const consumableResultsValues = months.map(
+          (month) => aggregatedResultsExpensesData[month]?.consumable_expense || 0,
+        )
+        const rentResultsValues = months.map((month) => aggregatedResultsExpensesData[month]?.rent_expense || 0)
         const taxesPublicChargesResultsValues = months.map(
           (month) => aggregatedResultsExpensesData[month]?.tax_and_public_charge || 0,
         )
         const depreciationExpensesResultsValues = months.map(
           (month) => aggregatedResultsExpensesData[month]?.depreciation_expense || 0,
         )
-        const travelExpenseResultsValues = months.map((month) => aggregatedExpensesData[month]?.travel_expense || 0)
-        const communicationExpenseResultsValues = months.map(
-          (month) => aggregatedExpensesData[month]?.communication_expense || 0,
+        const travelExpenseResultsValues = months.map(
+          (month) => aggregatedResultsExpensesData[month]?.travel_expense || 0,
         )
-        const utilitiesResultsValues = months.map((month) => aggregatedExpensesData[month]?.utilities_expense || 0)
+        const communicationExpenseResultsValues = months.map(
+          (month) => aggregatedResultsExpensesData[month]?.communication_expense || 0,
+        )
+        const utilitiesResultsValues = months.map(
+          (month) => aggregatedResultsExpensesData[month]?.utilities_expense || 0,
+        )
         const transactionFeeResultsValues = months.map(
           (month) => aggregatedResultsExpensesData[month]?.transaction_fee || 0,
         )
@@ -677,7 +434,7 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
 
         const totalsalesResults = salesResultsValues.reduce((arr, item) => arr + item)
         const totalSalesValues = salesValues.reduce((arr, item) => arr + item)
-        
+
         const salesRatio = ((totalsalesResults / totalSalesValues) * 100).toFixed(2)
         console.log(
           'totalsalesResults',
@@ -784,7 +541,7 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
           </thead>
           <tbody>
             {planningData.map((item, index) => (
-              <tr key={index}>
+              <tr style={{}} key={index}>
                 <td
                   className={`${noIndentLabels.includes(item.label) ? (language !== 'en' ? 'no-indent' : 'no-indent-english-mode') : language !== 'en' ? 'indented-label' : 'indented-label-english-mode'}`}
                 >
