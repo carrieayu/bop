@@ -3,6 +3,7 @@
   // console.log('response', response)
 
 import { months } from "../constants"
+import { organiseTotals, snakeCaseToCamelCase } from "./helperFunctionsUtil"
 
   // const generalAggregate = (acc, item) => {
   //   const { month, ...values } = item
@@ -31,7 +32,7 @@ export const aggregatedExpensesFunction = (expenses) => {
   }, {})
 }
 
-export const expensesTotalsFunction = (months, expensesData) => {
+export const expensesTotalsFunction = (expensesData) => {
 
   return months.map((month) => {
     const consumables = Number(expensesData[month]?.consumable_expense) || 0
@@ -76,7 +77,7 @@ export const aggregatedCostOfSalesFunction = (cost_of_sales) => {
   }, {})
 }
 
-export const costOfSalesTotalsFunction = (months, aggregatedCostOfSalesData) => {
+export const costOfSalesTotalsFunction = (aggregatedCostOfSalesData) => {
   return months.map((month) => {
     const purchases = Number(aggregatedCostOfSalesData[month]?.purchase) || 0
     const outsourcing = Number(aggregatedCostOfSalesData[month]?.outsourcing_expense) || 0
@@ -135,7 +136,7 @@ export const aggregatedEmployeeExpensesFunction = (employee_expenses) => {
   }, {})
 }
 
-export const employeeExpensesTotalsFunction = (months, employeeExpensesdata) => {
+export const employeeExpensesTotalsFunction = (employeeExpensesdata) => {
   return months.map((month) => {
     const executiveRemuneration = Number(employeeExpensesdata[month]?.totalExecutiveRemuneration) || 0
     const salary = Number(employeeExpensesdata[month]?.totalSalary) || 0
@@ -173,10 +174,54 @@ export const aggregatedProjectsFunction = (projects) => {
   }, {})
 }
 
+// GROSS PROFIT
+export const grossProfitFunction = (salesRevenue, costOfSalesValues) => {
+  return months.map((month, index) => {
+    const totalSales = salesRevenue[index] // Get the salesRevenue  for the current month
+    const totalCostOfSales = costOfSalesValues[index] // Get the cost of sales for the current month
+    const grossProfit = totalSales - totalCostOfSales // Calculate gross profit
+    return grossProfit
+  })
+}
 
-  // return {
-  //   aggregated_expenses: aggregatedExpensesData,
-  //   aggregated_cost_of_sales: aggregatedCostOfSaleData,
-  //   aggregated_employee_expenses: aggregatedEmployeeExpensesData,
-  // }
-// }
+// SELLING AND GENERAL ADMIN EXPENSES
+export const sellingAndGeneralAdminExpenseFunction = (employeeExpensesValues, expensesValues) => {
+  return months.map((month, index) => {
+    const totalEmployeeExpense = employeeExpensesValues[index] // Get the total employee expense for the current month
+    const totalExpense = expensesValues[index] // Get the total expense for the current month
+    const sellingAndGeneralAdminExpense = totalEmployeeExpense + totalExpense // Calculation for Selling and General Admin Expense
+    return sellingAndGeneralAdminExpense
+  })
+}
+// OPERATING INCOME
+export const operatingIncomeFunction = (grossProfitValues, sellingAndGeneralAdminExpenseValues) => {
+  return months.map((month, index) => {
+    const grossProfit = grossProfitValues[index] // Get the gross profit for the current month
+    const sellingAndGeneralAdmin = sellingAndGeneralAdminExpenseValues[index] // Get the Selling and General Admin Expense for the current month
+    const operatingIncomeValue = grossProfit - sellingAndGeneralAdmin // Calculate operating income value
+    return operatingIncomeValue 
+  })
+}
+
+// ORDINARY PROFIT
+export const ordinaryProfitFunction = (
+  operatingIncomeValues,
+  nonOperatingIncomeValues,
+  nonOperatingExpensesValues,
+) => {
+  return months.map((month, index) => {
+    const operatingIncome = operatingIncomeValues[index]
+    const nonOperatingIncome = nonOperatingIncomeValues[index]
+    const totalOperating = operatingIncome + nonOperatingIncome
+    const totalOrdinaryIncome = totalOperating - nonOperatingExpensesValues[index]
+
+    return totalOrdinaryIncome
+  })
+}
+// OTHER
+export const mapValue = (key, data) => {
+  return months.map((month) => data[month]?.[key] || 0) // return the mapped values properly
+}
+
+
+

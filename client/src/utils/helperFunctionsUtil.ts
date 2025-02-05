@@ -289,15 +289,43 @@ export const handleGeneralResultsInputChange = (
 
 //  Plannning / Results (Dashboard Screens)
 
-const sumValues = (arr) => arr.reduce((acc, value) => acc + parseFloat(value), 0)
+export const getRatio = (result, planning) => {
+  if (planning === 0) return '0.00'
+  return ((result / planning) * 100).toFixed(2)
+}
 
-export const organiseTotals = (arr) => {
+export const sumValues = (arr) => arr.reduce((acc, value) => acc + parseFloat(value), 0)
+
+export const organiseTotals = (arr, planningArr = []) => {
+  console.log('arr', arr, 'planningArr', planningArr)
+  
+  const firstHalfTotal = sumValues(arr.slice(0, 6)) // First Half Total
+  const secondHalfTotal = sumValues(arr.slice(6)) // Second Half Total
+  const total = sumValues(arr) // Total
+  // let salesRatio = '' // ( results / planning * 100 )
+  
+  // if (planningArr.length) {
+  //   console.log('planningArr.length', planningArr.length)
+
+  //   const planningTotal = sumValues(planningArr)
+  //   const resultsTotal = sumValues(arr)
+  //   const salesRatio = getRatio(total, planningTotal)
+  //   console.log('planningTotal', planningTotal, 'resultsTotal', resultsTotal, 'salesRatio', salesRatio)
+  //   // return salesRatio
+  // }
 
   return [
     ...arr,
-    sumValues(arr.slice(0, 6)), // First Half Total
-    sumValues(arr.slice(6)), // Second Half Total
-    sumValues(arr), // Total
-    '0',
+    firstHalfTotal, // First Half Total
+    secondHalfTotal, // Second Half Total
+    total, // Total
+    // salesRatio // Sales Ratio
   ]
+}
+
+export const snakeCaseToCamelCase = (str) => {
+  const camelCaseString = str
+    .replace(/_([a-z])/g, (match, letter) => letter.toUpperCase())
+    .replace(/^([a-z])/, (match, letter) => letter.toLowerCase())
+return camelCaseString
 }
