@@ -72,7 +72,7 @@ export const formatNumberWithDecimal = (value: number | string): string => {
   if (isNaN(number) || number === null) {
     return ''; // 無効な入力は空文字を返す
   }
-  return number.toLocaleString(undefined, { maximumFractionDigits: 20 });
+  return number.toLocaleString(undefined, { maximumFractionDigits: 20 }) + '%';
 }
 
 // # Remove commas used when displaying numbers in List, Edit, Registration Screens
