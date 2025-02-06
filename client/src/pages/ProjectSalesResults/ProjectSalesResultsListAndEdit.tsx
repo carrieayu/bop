@@ -26,6 +26,7 @@ import {
 import {
   handleDisableKeysOnNumberInputs,
   formatNumberWithCommas,
+  formatNumberWithDecimal,
   handleInputChange,
   handleResultsListTabsClick,
 } from '../../utils/helperFunctionsUtil'
@@ -545,7 +546,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                       <input
                                         type='text'
                                         name='ordinary_profit_margin'
-                                        value={formatNumberWithCommas(projectSalesResults.ordinary_profit_margin)}
+                                        value={formatNumberWithDecimal(projectSalesResults.ordinary_profit_margin)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
@@ -676,7 +677,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     {formatNumberWithCommas(project.ordinary_profit)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {formatNumberWithCommas(project.ordinary_profit_margin)}
+                                    {formatNumberWithDecimal(project.ordinary_profit_margin)}
                                   </td>
                                 </tr>
                               ))}
