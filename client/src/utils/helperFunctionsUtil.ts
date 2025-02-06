@@ -60,6 +60,21 @@ export const formatNumberWithCommas = (value: number | string): string => {
   return number.toLocaleString()
 }
 
+export const formatNumberWithDecimal = (value: number | string): string => {
+  if (typeof value === 'string') {
+    value = value.replace(/[^0-9.]/g, ''); // 数字と小数点以外を削除
+    const dotCount = (value.match(/\./g) || []).length;
+    if (dotCount > 1) {
+      return '';
+    }
+  }
+  const number = typeof value === 'string' ? parseFloat(value) : value;
+  if (isNaN(number) || number === null) {
+    return ''; // 無効な入力は空文字を返す
+  }
+  return number.toLocaleString(undefined, { maximumFractionDigits: 20 }) + '%';
+}
+
 // # Remove commas used when displaying numbers in List, Edit, Registration Screens
 // EG. "999,999" → "999999"
 export const removeCommas = (val) => val.replace(/,/g, '')

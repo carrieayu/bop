@@ -15,7 +15,7 @@ import { overwriteProject } from '../../api/ProjectsEndpoint/OverwriteProject'
 import { getFilteredProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/FilteredGetProjectSalesResults'
 import { createProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/CreateProjectSalesResults'
 import { overwriteProjectSalesResult } from '../../api/ProjectSalesResultsEndpoint/OverwriteProjectSalesResults'
-import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
+import { getProject } from '../../api/ProjectsEndpoint/GetProject'
 import { maximumEntries, monthNames, months, resultsScreenTabs, token, years } from '../../constants'
 import { addFormInput, closeModal, openModal } from '../../actions/hooks'
 import {
@@ -27,7 +27,10 @@ import {
 import {
   handleDisableKeysOnNumberInputs,
   formatNumberWithCommas,
+  formatNumberWithDecimal,
   removeCommas,
+  sortByFinancialYear,
+  handleGeneralResultsInputChange,
   handleResultsRegTabsClick,
 } from '../../utils/helperFunctionsUtil'
 import { MAX_NUMBER_LENGTH } from '../../constants'
@@ -59,7 +62,10 @@ type Division = {
   business_division_id: string
   business_division_name: string
 }
-
+type FilterParams = {
+  month?: string
+  year?: string
+}
 const ProjectSalesResultsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
@@ -71,6 +77,8 @@ const ProjectSalesResultsRegistration = () => {
   const [selectedClient, setSelectedClient] = useState([])
   const [businessSelection, setBusinessSelection] = useState<any>([])
   const [businessDivisionFilter, setBusinessDivisionFilter] = useState<Divisions[]>([{ divisions: [] }])
+  const [filteredMonth, setFilteredMonth] = useState<any>([{ month: [] }])
+  const [projectYear, setProjectYear] = useState<any>([])
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [projectDataResult, setProjectDataResult] = useState<any>([])
   const [projectList, setProjectsList] = useState<Projects[]>([{ projects: [] }])
@@ -105,12 +113,19 @@ const ProjectSalesResultsRegistration = () => {
   }
 
   const [formProjects, setProjects] = useState([emptyFormData])
-  const handleAdd = () => {
+  const uniqueYears = projectYear.reduce((acc, item) => {
+    if (!acc.includes(item.year)) {
+      acc.push(item.year)
+    }
+    return acc
+  }, [])
+const handleAdd = () => {
     addFormInput(formProjects, setProjects, maximumEntries, emptyFormData)
     setProjectsListSelection([...projectListSelection, { projects: [] }])
     setClientsFilter([...clientsFilter, { clients: [] }])
     setProjectsList([...projectList, { projects: [] }])
     setBusinessDivisionFilter([...businessDivisionFilter, { divisions: [] }])
+    setFilteredMonth([...filteredMonth, { month: [] }])
   }
 
   const handleMinus = () => {
@@ -165,12 +180,57 @@ const ProjectSalesResultsRegistration = () => {
       }
     }
 
+    const updatedProjects = [...formProjects]
+    updatedProjects[index] = {
+      ...updatedProjects[index],
+      [name]: removeCommas(value),
+    }
+
+    const relevantFields = [
+      "sales_revenue", 
+      "indirect_employee_expense", 
+      "dispatch_labor_expense", 
+      "employee_expense", 
+      "expense", 
+      "non_operating_income", 
+      "non_operating_expense"
+    ];
+    if (relevantFields.includes(name)) {
+      const { sales_revenue, indirect_employee_expense, dispatch_labor_expense, employee_expense, expense, non_operating_income } = updatedProjects[index];
+      const operating_income_ = parseFloat(sales_revenue) - 
+                                (
+                                  (parseFloat(indirect_employee_expense)  || 0) +
+                                  (parseFloat(dispatch_labor_expense)     || 0) +
+                                  (parseFloat(employee_expense)           || 0) +
+                                  (parseFloat(expense)                    || 0)
+                                );
+      updatedProjects[index].operating_income = operating_income_.toString();
+      const _ordinary_profit = operating_income_ + parseFloat(non_operating_income)
+      updatedProjects[index].ordinary_profit = _ordinary_profit.toString();
+      const _ordinary_profit_margin = ((operating_income_ / (parseFloat(sales_revenue))) * 100)
+      updatedProjects[index].ordinary_profit_margin = _ordinary_profit_margin.toFixed(2);
+    }
+    setProjects(updatedProjects)
+
     setProjects((prevFormProjects) => {
       return prevFormProjects.map((form, i) => {
         if (i === index) {
           const resetFields = {
+            year: ['month', 'project_name', 'client', 'business_division'],
             month: ['project_name', 'client', 'business_division'],
             project_name: ['client', 'business_division'],
+          }
+          let month = form.month
+          if (name == 'year' && value == '') {
+            form.month = ''
+            setFilteredMonth((prev) => {
+              return prev.map((eachMonth, monthIndex) => {
+                if (index == monthIndex) {
+                  return [{}]
+                }
+                return eachMonth
+              })
+            })
           }
           const fieldsToReset = resetFields[name] || []
           const resetValues = fieldsToReset.reduce((acc, field) => {
@@ -199,6 +259,23 @@ const ProjectSalesResultsRegistration = () => {
           ...(month !== null && { month }),
           ...(year !== null && { year }),
           ...(projectId !== null && { projectId }),
+        }
+        if (filterParams.year) {
+          getFilteredProjectSalesResults(filterParams, token)
+            .then((data) => {
+              const uniqueData = data.filter(
+                (item, index, self) =>
+                  index === self.findIndex((t) => t.month === item.month)
+              );
+              setFilteredMonth((prev) => {
+                return prev.map((month, monthIndex) => {
+                  if (index == monthIndex) {
+                    return { month: uniqueData }
+                  }
+                  return month
+                })
+              })
+            })
         }
         if (filterParams.year && filterParams.month && filterParams.projectId) {
           getFilteredProjectSalesResults(filterParams, token)
@@ -305,6 +382,14 @@ const ProjectSalesResultsRegistration = () => {
         }
       }
     })
+    getProject(token)
+      .then((data) => {
+        console.table(data);
+        setProjectYear(data)
+      })
+      .catch((error) => {
+        console.log(' error fetching project sales results data: ' + error)
+      })
   }, [formProjects])
 
   const HandleClientChange = (e) => {
@@ -613,7 +698,7 @@ const ProjectSalesResultsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           >
                             <option value=''>{translate('selectYear', language)}</option>
-                            {years.map((year, idx) => (
+                            {uniqueYears.map((year, idx) => (
                               <option key={idx} value={year}>
                                 {year}
                               </option>
@@ -684,10 +769,11 @@ const ProjectSalesResultsRegistration = () => {
                           <input
                             type='text'
                             name='ordinary_profit_margin'
-                            value={formatNumberWithCommas(form.ordinary_profit_margin)}
+                            value={formatNumberWithDecimal(form.ordinary_profit_margin)}
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                             onKeyDown={handleDisableKeysOnNumberInputs}
+                            disabled
                           />
                         </div>
                       </div>
@@ -704,9 +790,9 @@ const ProjectSalesResultsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           >
                             <option value=''>{translate('selectMonth', language)}</option>
-                            {months.map((month, idx) => (
-                              <option key={idx} value={month}>
-                                {language === 'en' ? monthNames[month].en : monthNames[month].jp}
+                            {sortByFinancialYear(filteredMonth[index]?.month || []).map((month, idx) => (
+                              <option key={idx} value={month.month}>
+                                {language === 'en' ? monthNames[month.month].en : monthNames[month.month].jp}
                               </option>
                             ))}
                           </select>
@@ -854,6 +940,7 @@ const ProjectSalesResultsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                             onKeyDown={handleDisableKeysOnNumberInputs}
+                            disabled
                           />
                         </div>
                         <div className='projectSalesResultsRegistration_ordinary-income-div'>
@@ -867,6 +954,7 @@ const ProjectSalesResultsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                             onKeyDown={handleDisableKeysOnNumberInputs}
+                            disabled
                           />
                         </div>
                       </div>

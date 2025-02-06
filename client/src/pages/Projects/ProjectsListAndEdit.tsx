@@ -28,7 +28,9 @@ import { deleteProject } from '../../api/ProjectsEndpoint/DeleteProject'
 import { months, token, years } from '../../constants'
 import {
   handleDisableKeysOnNumberInputs,
+  removeCommas,
   formatNumberWithCommas,
+  formatNumberWithDecimal,
   handleInputChange,
   handlePLListTabsClick,
 } from '../../utils/helperFunctionsUtil'
@@ -98,6 +100,17 @@ const ProjectsListAndEdit: React.FC = ({}) => {
   }
 
   const handleClick = () => {
+    const updatedProjects = projects.map((project) => {
+      const selectedYear = parseInt(project.year, 10);
+      const monthsForProject = getMonthsByFiscalYear(selectedYear, currentFiscalYear);
+      return {
+        ...project,
+        months: monthsForProject,
+      };
+    });
+    
+    setProjects(updatedProjects);
+
     setIsEditing((prevState) => !prevState)
   }
   useEffect(() => {
@@ -111,11 +124,44 @@ const ProjectsListAndEdit: React.FC = ({}) => {
     }
   }, [isEditing])
 
+  const currentDate = new Date()
+  const currentYear = currentDate.getFullYear()
+  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear
+  const [months, setMonths] = useState<number[]>([])
+
   const handleChange = (index, event) => {
     const nonFinancialFieldsArray = ['year', 'month', 'project_name', 'project_type', 'client', 'business_division']
     handleInputChange(index, event, setProjects, projects, nonFinancialFieldsArray)
-  }
 
+    const { name, value } = event.target
+
+    // Remove commas to get the raw number
+    // EG. 999,999 → 999999 in the DB
+    const rawValue = removeCommas(value)
+
+    if (name === 'year') {
+      const selectedYear = parseInt(rawValue, 10)
+      const updatedProjects = [...projects];
+      const updatedMonths = getMonthsByFiscalYear(selectedYear, currentFiscalYear);
+      setMonths(updatedMonths);
+      updatedProjects[index] = {
+        ...updatedProjects[index],
+        year: value,
+        months: updatedMonths,
+        month: '',
+      };
+      setProjects(updatedProjects);
+    }
+  }
+  const getMonthsByFiscalYear = (selectedYear, currentFiscalYear) => {
+    if (selectedYear === currentFiscalYear) {
+      return [4, 5, 6, 7, 8, 9, 10, 11, 12];
+    } else if (selectedYear === currentFiscalYear + 1) {
+      return [1, 2, 3];
+    } else {
+      return [];
+    }
+  };
   const handleSubmit = async () => {
     setFormProjects(projects)
     // # Client Side Validation
@@ -475,7 +521,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
                                         onChange={(e) => handleChange(index, e)}
                                       >
                                         <option value=''></option>
-                                        {months.map((month, idx) => (
+                                        {project.months && project.months.map((month, idx) => (
                                           <option key={idx} value={month}>
                                             {month}月
                                           </option>
@@ -616,7 +662,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
                                       <input
                                         type='text'
                                         name='ordinary_profit_margin'
-                                        value={formatNumberWithCommas(project.ordinary_profit_margin)}
+                                        value={formatNumberWithDecimal(project.ordinary_profit_margin)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
@@ -739,7 +785,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
                                     {formatNumberWithCommas(project.ordinary_profit)}
                                   </td>
                                   <td className='projectsList-table-body-content-vertical'>
-                                    {formatNumberWithCommas(project.ordinary_profit_margin)}
+                                    {formatNumberWithDecimal(project.ordinary_profit_margin)}
                                   </td>
                                 </tr>
                               ))}
