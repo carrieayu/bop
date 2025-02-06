@@ -1,120 +1,79 @@
-  th {
-    border: 1px solid #9c9c9c !important;
-        // background-color: pink !important;
-    // top: -1px !important; // Need this to deal with padding on container so content does not reappear above header when scrolling
-    // border: 1px solid black !important;
-        // background-color: pink;
-        }
+.dashboard-sticky, .dashboard-scnd-row{
+    position: sticky;
+    background-color: white;
+}
 
-.planning-header{
-    // background-color: #CAE3FF;
-    // background-color: #ffb86b;
-    // border: solid 1px #1c302c89 !important;
-    // background-color: seashell;
+.dashboard-first-row {
+    top: 0;
+    box-shadow: 
+    inset 0 0.5px 0 #000000,  /* Top shadow */
+    inset 0 0px 0 #000000,  /* Bottom shadow */
+    inset 0.5px 0 0 #000000,   /* Left shadow */
+    inset -0.5px 0 0 #000000;  /* Right shadow */
+}
+
+.dashboard-scnd-row {
+    top: 22px;
+    box-shadow: 
+    inset 0 0.5px 0 #000000,  /* Top shadow */
+    inset 0 -0.5px 0 #000000,  /* Bottom shadow */
+    inset 0.5px 0 0 #000000,   /* Left shadow */
+    inset -0.5px 0 0 #000000;  /* Right shadow */
+}
+
+.planning-header {
     background-color: #fec384c7;
 
-
-    // background-color: #e0e8fa00;
-
 }
 
-.result-header{
-    // background-color: #BADCCC;
-    // background-color: #bce386e4;
-    // background-color: #CECDFC;
-    // background-color: #84abfe90;
-    // background-color: #16c1f55e;
+.result-header {
     background-color: #CDE4FC;
 
-
-
-    // border: solid 1px #1c302ca9 !important;
-
 }
 
-.half-year-first{
-// background-color: #fce5cd;
-// background-color: #fff;
-// color:#1c302cd3;
-// text-align: center !important;
-// background-color: #f9cc9d81;
-// background-color: #f9cc9d41;
-background-color: white;
-background-color: #80808072;
-background-color: #fce5cd;;
-// z-index: 2;
-// border: solid 1px #f9f9f9 !important;
-// border: 1px solid #000000 !important;
-
-}
-
-.half-year-second{
-// background-color: #1c302cd3;
-// color:#fff;
-// background-color: #c9daf8;
-// background-color: #CDE4FC;
-background-color: #fec384c7;
-background-color: #88b9e664;
-// border: solid 1px #f9f9f9 !important;
-
+.half-year-first {
+background-color: #fce5cd; 
 text-align: center !important;
-// border: 1px solid #ddd !important;
-// border: 1px solid #000000 !important;
-
-
-// border: solid 1px #1c302cd7 !important;
-
-// border: solid 1px #1C302C !important;;
-
 }
 
-.totals{
-// background-color: #e0ffff;
-// background-color: #6d68757f;
-// background-color: #CDE4FC;
+.half-year-second {
+background-color: #c9daf8;
 text-align: center !important;
-// border: solid 1px #1C302C !important;
-
 }
 
-.planning-cells{
-    // background-color: #fefef0;
-    // background-color: #c8eeff59;
-    // background-color: #f9cc9d69;
-    // background-color: #d8e2f72c;
-    background-color: seashell;
-    // border: solid 1px #1c302c18 !important;
-    background-color: #fce5cd7a;
+.totals {
+text-align: center !important;
+background-color: #daeef3;
+}
+
+.planning-cells {
     background-color: #fce5cd31;
-
-    
+    border-left: solid 1px #9c9c9c !important;
 }
 
-.result-cells{
-    // background-color: #f3fef9;
-    // background-color: #bce3867e;
-    // background-color: #cecdfc66;
-    // background-color: #96e1f84d;
-    background-color: #cde4fc93;
-    background-color: aliceblue;
+.result-cells {
     background-color: #cae3ff5f;
-
-
-    // background-color: #9dc9f962;
-    border: solid 1px #1c302c18 !important;
+    border-right: solid 1px #9c9c9c !important;
 }
 
-.dashboard-sticky{
-    border-left: 1px solid #000000 !important;
-
-    // background-color: pink !important;
-    // position: sticky;
-    // background-color: white;
-    // z-index: 2;
-    // top: 0;
-    // top: -1px !important; // Need this to deal with padding on container so content does not reappear above header when scrolling
-    // border: 1px solid black !important;
-
-    
+.sales-ratio {
+    text-align: center !important;
+    background-color: palegoldenrod;
 }
 
+.border {
+    border-right: 1px solid #9c9c9c !important;
+    border-left: 1px solid #9c9c9c !important;
+}
+
+.border-left {
+    border-left: 1px solid #9c9c9c !important;
+}
+
+.border-right {
+    border-right: 1px solid #9c9c9c !important;
+}
+
+.sale-ratio-cells {
+background-color: rgba(238, 232, 170, 0.456);
+}
