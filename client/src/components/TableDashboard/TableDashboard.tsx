@@ -411,15 +411,14 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
       <div className='table-planning'>
         <table>
           <thead>
-            <tr className='table-header-sticky'>
+            <tr className='dashboard-sticky'>
               <th className=''>{''}</th>
               {months.map((month, index) => (
                 <>
                   <th
                     key={`month-planning-${index}`}
-                    className={month >= 10 || month <= 3 ? 'light-txt' : 'orange-txt'}
+                    className={month >= 10 || month <= 3 ? 'half-year-second' : 'half-year-first'}
                     colSpan={2}
-                    style={{ textAlign: 'center' }}
                   >
                     {language === 'en' ? monthNames[month].en : monthNames[month].jp}
                   </th>
@@ -427,31 +426,31 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
               ))}
               {halfYears.map((halfYear, index) => (
                 <>
-                  <th key={index} className='sky-txt' colSpan={2} style={{ textAlign: 'center' }}>
+                  <th key={index} className='totals' colSpan={2}>
                     {translate(`${halfYear}`, language)}
                   </th>
                 </>
               ))}
               <th className='total-txt'>{translate(language === 'en' ? 'salesRatioShort' : 'salesRatio', language)}</th>
             </tr>
-            <tr className='scnd-row'>
+            <tr className='scnd-row '>
               <th className='borderless'>{''}</th>
               {months.map((month, index) => (
                 <>
-                  <th key={`planning-${index}`} style={{ backgroundColor: '#FCFCCD' }}>
+                  <th key={`planning-${index}`} className='planning-header'>
                     {translate('planning', language)}
                   </th>
-                  <th key={`results-${index}`} style={{ backgroundColor: '#e3fdf0' }}>
+                  <th key={`results-${index}`} className='result-header'>
                     {translate('results', language)}
                   </th>
                 </>
               ))}
               {halfYears.map((_, index) => (
                 <>
-                  <th key={index} className=''>
+                  <th key={index} className='planning-header'>
                     {translate('planning', language)}
                   </th>
-                  <th key={index} className=''>
+                  <th key={index} className='result-header'>
                     {translate('results', language)}
                   </th>
                 </>
@@ -470,14 +469,15 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
                 {item.values.map((value, valueIndex) => (
                   <>
                     {/* Planning Column */}
-                    <td style={{ backgroundColor: '#fefef0' }} className='month-data' key={`planning-${valueIndex}`}>
+                    <td className='month-data planning-cells' key={`planning-${valueIndex}`}>
+                      
                       {isThousandYenChecked
                         ? (Math.round((value / 1000) * 10) / 10).toLocaleString() // Rounds to 1 decimal place
                         : value.toLocaleString()}
                     </td>
 
                     {/* Results Column - Use resultsData here */}
-                    <td style={{ backgroundColor: '#f3fef9' }} className='month-data' key={`results-${valueIndex}`}>
+                    <td className='month-data result-cells' key={`results-${valueIndex}`}>
                       {resultsData[index]?.values[valueIndex] !== undefined // Ensure resultsData exists
                         ? isThousandYenChecked
                           ? (Math.round((resultsData[index].values[valueIndex] / 1000) * 10) / 10).toLocaleString() // Rounds to 1 decimal place
