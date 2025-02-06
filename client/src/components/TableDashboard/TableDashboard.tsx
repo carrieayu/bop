@@ -356,7 +356,7 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
   }, [])
 
   // SALES RATIO (COMPARING RESULTS AND PLANNING)
-  const getTotalsOnlyArr = (dataArr) => dataArr.map((item) => item.values[item.values.length - 2])
+  const getTotalsOnlyArr = (dataArr) => dataArr.map((item) => item.values[item.values.length - 1])
 
   let planningTotalsOnlyArr
   let resultsTotalsOnlyArr
@@ -364,7 +364,7 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
   useEffect(() => {
     planningTotalsOnlyArr = getTotalsOnlyArr(planningData)
     resultsTotalsOnlyArr = getTotalsOnlyArr(resultsData)
-
+    console.log('planningTotalsOnlyArr', planningTotalsOnlyArr, 'data',planningData, 'resultsTotalsOnlyArr', resultsTotalsOnlyArr)
     if (planningTotalsOnlyArr.length && resultsTotalsOnlyArr.length) {
       const saleRatio = getSalesRatios(planningTotalsOnlyArr, resultsTotalsOnlyArr)
     }
@@ -374,10 +374,10 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
   }, [resultsData]) // Runs whenever data updates
 
   const getSalesRatios = (planningArr, resultsArr) => {
-    return resultsArr.map((totalValue, i) => {
+    return resultsArr.map((resultTotalValue, i) => {
       const planningTotalValue = planningArr[i]
       // Prevent division by zero
-      const salesRatio = planningTotalValue !== 0 ? (totalValue / planningTotalValue) * 100 : 0
+      const salesRatio = planningTotalValue !== 0 ? (resultTotalValue / planningTotalValue) * 100 : 0
       return salesRatio.toFixed(2) // Optional: round to 2 decimal places
     })
   }
