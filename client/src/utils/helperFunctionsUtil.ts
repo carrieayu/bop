@@ -60,6 +60,33 @@ export const formatNumberWithCommas = (value: number | string): string => {
   return number.toLocaleString()
 }
 
+
+export const formatNumberWithDecimal = (value: number | string): string => {
+  // 小数点と数字以外の文字を削除
+  if (typeof value === 'string') {
+    // 数値または小数点以外を削除（ただし、小数点は1つだけ許可）
+    value = value.replace(/[^0-9.]/g, ''); // 数字と小数点以外を削除
+    const dotCount = (value.match(/\./g) || []).length;
+    if (dotCount > 1) {
+      return ''; // 小数点が複数ある場合は無効として空文字を返す
+    }
+  }
+
+  // 数値に変換
+  const number = typeof value === 'string' ? parseFloat(value) : value;
+
+  // 無効な数値のチェック
+  if (isNaN(number) || number === null) {
+    return ''; // 無効な入力は空文字を返す
+  }
+
+  // 小数点以下も保持したフォーマット
+  return number.toLocaleString(undefined, { maximumFractionDigits: 20 });
+}
+
+
+
+
 // # Remove commas used when displaying numbers in List, Edit, Registration Screens
 // EG. "999,999" → "999999"
 export const removeCommas = (val) => val.replace(/,/g, '')

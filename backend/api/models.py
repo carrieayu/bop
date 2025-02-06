@@ -21,6 +21,7 @@ MAX_LENGTH_CHARFIELD = 100
 # DECIMALS
 MAX_DIGITS = 15
 DECIMAL_PLACES = 0
+DECIMAL_PLACES_PROJECT = 2
 
 # RANGE (CHOICES)
 YEAR_CHOICES = [(str(year), str(year)) for year in range(2000, 2101)]
@@ -177,7 +178,7 @@ class Projects(models.Model):
     non_operating_income = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
     non_operating_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
     ordinary_profit = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
-    ordinary_profit_margin = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
+    ordinary_profit_margin = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES_PROJECT)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :
@@ -456,7 +457,7 @@ class ProjectsSalesResults(models.Model):
     non_operating_income = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
     non_operating_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
     ordinary_profit = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
-    ordinary_profit_margin = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES, default=0.0)
+    ordinary_profit_margin = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES_PROJECT, default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta :

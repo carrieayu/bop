@@ -25,6 +25,7 @@ import {
   handleDisableKeysOnNumberInputs,
   removeCommas,
   formatNumberWithCommas,
+  formatNumberWithDecimal,
   handleInputChange,
   handlePLRegTabsClick,
 } from '../../utils/helperFunctionsUtil'
@@ -133,6 +134,33 @@ const ProjectsRegistration = () => {
         setMonths([])
       }
     }
+
+    const updatedProjects = [...formProjects]
+    updatedProjects[index] = {
+      ...updatedProjects[index],
+      [name]: removeCommas(value),
+    }
+
+    if (name === 'sales_revenue' || name === 'indirect_employee_expense' || name === 'dispatch_labor_expense' || name === 'employee_expense' || name === 'expense' || name === 'non_operating_income' || name == 'non_operating_expense') {
+      const { sales_revenue, indirect_employee_expense, dispatch_labor_expense, employee_expense, expense, non_operating_income } = updatedProjects[index];
+
+      const operating_income_ = parseFloat(sales_revenue) - 
+                                (
+                                  (parseFloat(indirect_employee_expense)  || 0) +
+                                  (parseFloat(dispatch_labor_expense)     || 0) +
+                                  (parseFloat(employee_expense)           || 0) +
+                                  (parseFloat(expense)                    || 0)
+                                );
+      updatedProjects[index].operating_income = operating_income_.toString();
+
+      const _ordinary_profit = operating_income_ + parseFloat(non_operating_income)
+      updatedProjects[index].ordinary_profit = _ordinary_profit.toString();
+
+      const _ordinary_profit_margin = ((operating_income_ / (parseFloat(sales_revenue))) * 100)
+      updatedProjects[index].ordinary_profit_margin = _ordinary_profit_margin.toFixed(2);
+    }
+
+    setProjects(updatedProjects)
   }
   useEffect(() => {}, [formProjects])
 
@@ -480,7 +508,7 @@ const ProjectsRegistration = () => {
                             type='text'
                             name='ordinary_profit_margin'
                             // 更新必要： This Probably Needs to be Calculated Automatically
-                            value={formatNumberWithCommas(form.ordinary_profit_margin)}
+                            value={formatNumberWithDecimal(form.ordinary_profit_margin)}
                             onChange={(e) => handleChange(index, e)}
                             onKeyDown={handleDisableKeysOnNumberInputs}
                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
