@@ -1,6 +1,7 @@
 .dashboard-sticky, .dashboard-scnd-row{
     position: sticky;
     background-color: white;
+    z-index: 2;
 }
 
 .dashboard-first-row {
@@ -8,7 +9,7 @@
     box-shadow: 
     inset 0 0.5px 0 #000000,  /* Top shadow */
     inset 0 0px 0 #000000,  /* Bottom shadow */
-    inset 0.5px 0 0 #000000,   /* Left shadow */
+    // inset 0.5px 0 0 #000000,   /* Left shadow */
     inset -0.5px 0 0 #000000;  /* Right shadow */
 }
 
@@ -17,7 +18,7 @@
     box-shadow: 
     inset 0 0.5px 0 #000000,  /* Top shadow */
     inset 0 -0.5px 0 #000000,  /* Bottom shadow */
-    inset 0.5px 0 0 #000000,   /* Left shadow */
+    // inset 0.5px 0 0 #000000,   /* Left shadow */
     inset -0.5px 0 0 #000000;  /* Right shadow */
 }
 
@@ -59,6 +60,14 @@ background-color: #daeef3;
 .sales-ratio {
     text-align: center !important;
     background-color: palegoldenrod;
+    background-color: #eeaaaa;
+
+}
+
+.sale-ratio-cells {
+background-color: rgba(238, 232, 170, 0.456);
+background-color: #eeaaaa55;
+
 }
 
 .border {
@@ -74,6 +83,30 @@ background-color: #daeef3;
     border-right: 1px solid #9c9c9c !important;
 }
 
-.sale-ratio-cells {
-background-color: rgba(238, 232, 170, 0.456);
+.sticky {
+    left: 0;
+    position: sticky;
+    background-color: white;
+    z-index: 1;
+}
+
+.first-column{
+// box-shadow: 
+}
+
+.border-sides-shadow {
+    box-shadow: 
+    inset 0.5px 0 0 #000000,   /* Left shadow */
+    inset -0.5px 0 0 #000000;  /* Right shadow */
+
+}
+
+.border-left-shadow {
+    box-shadow: 
+    inset 0.5px 0 0 #000000;   /* Left shadow */
+}
+
+.border-right-shadow {
+    box-shadow: 
+    inset -0.5px 0 0 #000000;  /* Right shadow */
 }

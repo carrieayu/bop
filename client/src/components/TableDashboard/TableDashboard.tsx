@@ -412,7 +412,7 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
         <table>
           <thead>
             <tr className='main-header dashboard-sticky dashboard-first-row'>
-              <th className='border-right'>{translate('item', language)}</th>
+              <th className='border-sides-shadow sticky'>{translate('item', language)}</th>
               {months.map((month, index) => (
                 <>
                   <th
@@ -436,7 +436,7 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
               </th>
             </tr>
             <tr className='main-header dashboard-scnd-row'>
-              <th className='borderless'>{''}</th>
+              <th className='borderless border-sides-shadow sticky'>{''}</th>
               {months.map((month, index) => (
                 <>
                   <th key={`planning-${index}`} className='planning-header'>
@@ -464,7 +464,7 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
             {planningData.map((item, index) => (
               <tr style={{}} key={index}>
                 <td
-                  className={`${noIndentLabels.includes(item.label) ? (language !== 'en' ? 'no-indent' : 'no-indent-english-mode') : language !== 'en' ? 'indented-label' : 'indented-label-english-mode'}`}
+                  className={`sticky border-sides-shadow  ${noIndentLabels.includes(item.label) ? (language !== 'en' ? 'no-indent' : 'no-indent-english-mode') : language !== 'en' ? 'indented-label' : 'indented-label-english-mode'}`}
                 >
                   {translate(item.label, language)}
                 </td>
