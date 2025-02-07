@@ -346,10 +346,7 @@ const Dashboard = () => {
             </div>
             <div className='dashboard_tbl_cont'>
               <div className={`dashboard_table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
-                {/* Render the TablePlanning component here */}
-                {/* <TablePlanningA isThousandYenChecked={isThousandYenChecked} /> */}
-
-                {/* Render the  DASHBOARD TEST component here */}
+                {/* Render the TablePlanning & TableResults here (TableDashboard) */}
                 <TableDashboard isThousandYenChecked={isThousandYenChecked} />
               </div>
               <div className={`dashboard_table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
@@ -366,7 +363,6 @@ const Dashboard = () => {
         </div>
       </div>
     </div>
-    // </div>
   )
 }
 

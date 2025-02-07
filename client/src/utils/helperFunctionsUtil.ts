@@ -41,7 +41,6 @@ export const handleDisableKeysOnNumberInputs = (event) => {
 // # Add Commas to Financial Numbers for Display on List, Edit, Registration Screens
 
 export const formatNumberWithCommas = (value: number | string): string => {
-  // console.log('formatNumberWithCommas',value, typeof value, )
   // Trim the string and remove non-numeric characters,
   if (typeof value === 'string') {
     value = value.replace(/[^0-9]/g, '') // Remove non-numeric characters
@@ -52,7 +51,6 @@ export const formatNumberWithCommas = (value: number | string): string => {
 
   // Handle invalid number cases
   if (isNaN(number) || number === null) {
-    // console.log('is NaN === true', value)
     return '' // Return empty string for invalid inputs
   }
 
@@ -302,7 +300,14 @@ export const handleGeneralResultsInputChange = (
   })
 }
 
-//  Plannning / Results (Dashboard Screens)
+export const snakeCaseToCamelCase = (str) => {
+  const camelCaseString = str
+    .replace(/_([a-z])/g, (match, letter) => letter.toUpperCase())
+    .replace(/^([a-z])/, (match, letter) => letter.toLowerCase())
+  return camelCaseString
+}
+
+//  (Plannning / Results / Dashboard) Screens
 
 export const getRatio = (result, planning) => {
   if (planning === 0) return '0.00'
@@ -311,38 +316,17 @@ export const getRatio = (result, planning) => {
 
 export const sumValues = (arr) => arr.reduce((acc, value) => acc + parseFloat(value), 0)
 
-export const organiseTotals = (arr, planningArr = []) => {
-  console.log('arr', arr, 'planningArr', planningArr)
-  
+export const organiseTotals = (arr, planningArr = []) => {  
   const firstHalfTotal = sumValues(arr.slice(0, 6)) // First Half Total
   const secondHalfTotal = sumValues(arr.slice(6)) // Second Half Total
   const total = sumValues(arr) // Total
-  // let salesRatio = '' // ( results / planning * 100 )
-  
-  // if (planningArr.length) {
-  //   console.log('planningArr.length', planningArr.length)
-
-  //   const planningTotal = sumValues(planningArr)
-  //   const resultsTotal = sumValues(arr)
-  //   const salesRatio = getRatio(total, planningTotal)
-  //   console.log('planningTotal', planningTotal, 'resultsTotal', resultsTotal, 'salesRatio', salesRatio)
-  //   // return salesRatio
-  // }
 
   return [
     ...arr,
     firstHalfTotal, // First Half Total
     secondHalfTotal, // Second Half Total
     total, // Total
-    // salesRatio // Sales Ratio
   ]
-}
-
-export const snakeCaseToCamelCase = (str) => {
-  const camelCaseString = str
-    .replace(/_([a-z])/g, (match, letter) => letter.toUpperCase())
-    .replace(/^([a-z])/, (match, letter) => letter.toLowerCase())
-return camelCaseString
 }
 
 export const cumulativeSum = (arr) => {
