@@ -1,34 +1,22 @@
 
-// export const aggregatedData = (response: any) => {
-  // console.log('response', response)
-
 import { months } from "../constants"
-import { organiseTotals, snakeCaseToCamelCase } from "./helperFunctionsUtil"
 
-  // const generalAggregate = (acc, item) => {
-  //   const { month, ...values } = item
-  //   if (!acc[month]) {
-  //     acc[month] = { month, ...values } // Include month in the object
-  //   } else {
-  //     Object.keys(values).forEach((key) => {
-  //       acc[month][key] += values[key] // Aggregating values
-  //     })
-  //   }
-  //   return acc
-  // }
+const generalAggregate = (acc, item) => {
+  const { month, ...values } = item
+  if (!acc[month]) {
+    acc[month] = { month, ...values } // Include month in the object
+  } else {
+    Object.keys(values).forEach((key) => {
+      acc[month][key] += values[key] // Aggregating values
+    })
+  }
+  return acc
+}
 
 // EXPENSES
 export const aggregatedExpensesFunction = (expenses) => {
   return expenses.reduce((acc, item) => {
-    const { month, ...values } = item
-    if (!acc[month]) {
-      acc[month] = { ...values }
-    } else {
-      Object.keys(values).forEach((key) => {
-        acc[month][key] += values[key]
-      })
-    }
-    return acc
+      return generalAggregate(acc, item)
   }, {})
 }
 
@@ -65,15 +53,7 @@ export const expensesTotalsFunction = (expensesData) => {
 // COST OF SALES
 export const aggregatedCostOfSalesFunction = (cost_of_sales) => {
   return cost_of_sales.reduce((acc, item) => {
-    const { month, ...values } = item
-    if (!acc[month]) {
-      acc[month] = { ...values }
-    } else {
-      Object.keys(values).forEach((key) => {
-        acc[month][key] += values[key]
-      })
-    }
-    return acc
+    return generalAggregate(acc,item)
   }, {})
 }
 
@@ -222,6 +202,3 @@ export const ordinaryProfitFunction = (
 export const mapValue = (key, data) => {
   return months.map((month) => data[month]?.[key] || 0) // return the mapped values properly
 }
-
-
-

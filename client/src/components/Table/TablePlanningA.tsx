@@ -207,7 +207,6 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
                   {translate(`${halfYear}`, language)}
                 </th>
               ))}
-              <th className='total-txt'>{translate(language === 'en' ? 'salesRatioShort' : 'salesRatio', language)}</th>
             </tr>
             <tr className='scnd-row'>
               <th className='borderless'>{''}</th>
@@ -219,7 +218,6 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
                   {translate('planning', language)}
                 </th>
               ))}
-              <th>{''}</th>
             </tr>
           </thead>
           <tbody>
