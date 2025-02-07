@@ -344,3 +344,8 @@ export const snakeCaseToCamelCase = (str) => {
     .replace(/^([a-z])/, (match, letter) => letter.toLowerCase())
 return camelCaseString
 }
+
+export const cumulativeSum = (arr) => {
+  let sum = 0
+  return arr.map((value) => (sum += value))
+}
