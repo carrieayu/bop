@@ -11,7 +11,6 @@ export async function getPlanningAndResultsData(token: string) {
         'Content-Type': 'application/json',
       },
     })
-    console.log('api : data',response.data)
     return response.data
   } catch (error) {
     if (error.response && error.response.status === 401) {
