@@ -5,24 +5,21 @@ import { fetchAllCards } from '../../reducers/card/cardSlice'
 import { fetchCos } from '../../reducers/costOfSale/costOfSaleSlice'
 import { useAppSelector } from '../../actions/hooks'
 import { RootState } from '../../app/store'
-import { TablePlanningB } from '../../components/Table/TablePlanningB'
 import { fetchAllClientData } from '../../reducers/table/tableSlice'
 import { fetchGraphData } from '../../reducers/graph/graphSlice'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import { useLocation, useNavigate } from 'react-router-dom'
-import TablePlanningA from '../../components/Table/TablePlanningA'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import { useAppDispatch } from '../../actions/hooks'
-import { dates, header, smallDate } from '../../constants'
+import TableDashboard from '../../components/TableDashboard/TableDashboard'
 
 function formatNumberWithCommas(number: number): string {
   return number.toLocaleString()
 }
 
 const Dashboard = () => {
-  const [showMenu, setShowMenu] = useState(false)
   const [tableList, setTableList] = useState<any>([])
   const totalSales = useAppSelector((state: RootState) => state.cards.totalSales)
   const totalOperatingProfit = useAppSelector((state: RootState) => state.cards.totalOperatingProfit)
@@ -30,9 +27,6 @@ const Dashboard = () => {
   const totalNetProfitPeriod = useAppSelector((state: RootState) => state.cards.totalNetProfitPeriod)
   const totalGrossProfitMargin = useAppSelector((state: RootState) => state.cards.totalGrossProfitMargin)
   const totalOperatingProfitMargin = useAppSelector((state: RootState) => state.cards.totalOperatingProfitMargin)
-  const [currentPage, setCurrentPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(5)
-  const totalPages = Math.ceil(tableList?.length / rowsPerPage)
   const totalSalesByDate = useAppSelector((state: RootState) => state.graph.totalSalesByDate)
   const totalOperatingIncomeByDate = useAppSelector((state: RootState) => state.graph.totalOperatingIncomeByDate)
   const totalGrossProfitByDate = useAppSelector((state: RootState) => state.graph.totalGrossProfitByDate)
@@ -44,8 +38,6 @@ const Dashboard = () => {
     (state: RootState) => state.graph.totalOperatingProfitMarginByDate,
   )
   const month = useAppSelector((state: RootState) => state.graph.month)
-  const select = [5, 10, 100]
-  const [paginatedData, setPaginatedData] = useState<any[]>([])
   const [activeTab, setActiveTab] = useState('/dashboard')
   const [isSwitchActive, setIsSwitchActive] = useState(false)
   const { language, setLanguage } = useLanguage()
@@ -62,9 +54,6 @@ const Dashboard = () => {
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
-  }
-  const toggleMenu = () => {
-    setShowMenu(!showMenu)
   }
 
   useEffect(() => {
@@ -98,7 +87,7 @@ const Dashboard = () => {
     }
 
     fetchData()
-  }, [])
+  }, [tableList])
 
   useEffect(() => {
     const path = location.pathname
@@ -106,11 +95,6 @@ const Dashboard = () => {
       setActiveTab(path)
     }
   }, [location.pathname])
-
-  useEffect(() => {
-    const startIndex = currentPage * rowsPerPage
-    setPaginatedData(tableList?.slice(startIndex, startIndex + rowsPerPage))
-  }, [currentPage, rowsPerPage, tableList])
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
@@ -181,15 +165,6 @@ const Dashboard = () => {
         fill: false,
       },
     ],
-  }
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page)
-  }
-
-  const handleRowsPerPageChange = (numRows: number) => {
-    setRowsPerPage(numRows)
-    setCurrentPage(0)
   }
 
   const handleSwitchToggle = () => {
@@ -328,12 +303,7 @@ const Dashboard = () => {
           </div>
           <div className='dashboard_bottom_cont'>
             <div className='dashboard_right-content'>
-              <div className='dashboard_paginate'>
-                <p className='dashboard_pl-label'>{translate('displayByProject', language)}</p>
-                <label className='dashboard_switch'>
-                  <input type='checkbox' checked={isSwitchActive} onChange={handleSwitchToggle} />
-                  <span className='dashboard_slider'></span>
-                </label>
+              <div className='dashboard_switches'>
                 <p className='dashboard_pl-label'>{translate('thousandYen', language)}</p>
                 <label className='dashboard_switch'>
                   <input type='checkbox' checked={isThousandYenChecked} onChange={handleThousandYenToggle} />
@@ -343,24 +313,14 @@ const Dashboard = () => {
             </div>
             <div className='dashboard_tbl_cont'>
               <div className={`dashboard_table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
-                {/* Render the TablePlanning component here */}
-                <TablePlanningA isThousandYenChecked={isThousandYenChecked} />
-              </div>
-              <div className={`dashboard_table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
-                <TablePlanningB
-                  data={paginatedData}
-                  header={header}
-                  dates={dates}
-                  smallDate={smallDate}
-                  isThousandYenChecked={isThousandYenChecked}
-                />
+                {/* Render the TablePlanning & TableResults here (TableDashboard) */}
+                <TableDashboard isThousandYenChecked={isThousandYenChecked} />
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    // </div>
   )
 }
 

@@ -111,14 +111,18 @@
             .dashboard_bottom_cont{
                 margin-top: 6px;
                 width: 100%;
-                // padding: 5px;
+                padding: 0 10px 0 0;
                 .dashboard_right-content{
-                    padding: 10px 10px 10px 10px;
-                    .dashboard_paginate{
+                    padding: 5px 0px 0px 0px;
+                    display: flex;
+                    justify-content: flex-end;
+                    .dashboard_switches{
                         gap: 10px;
                         display: flex;
                         justify-content: flex-end;
-                        margin-right: 20px;
+                        padding: 3px 10px;
+                        background-color: white;
+                        border-radius: 5px;
                         .dashboard_pl-label{
                             display: inline-block;
                         }

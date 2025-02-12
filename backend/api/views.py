@@ -1967,6 +1967,62 @@ class CostOfSalesResultsFilter(generics.ListCreateAPIView):
             queryset = queryset.filter(year=year)
         return queryset
 
+# Dashboard (Display Planning and Results)
+
+class PlanningAndResultsData(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+
+        # Planning
+        expenses = Expenses.objects.all()
+        cost_of_sales = CostOfSales.objects.all()
+        employee_expenses = EmployeeExpenses.objects.all()
+        projects = Projects.objects.all()
+        expenses_serializer = ExpensesListSerializer(expenses, many=True)
+        cost_of_sales_serializer = CostOfSalesSerializer(cost_of_sales, many=True)
+        employee_expenses_serializer = EmployeeExpensesListSerializer(employee_expenses, many=True)
+        projects_serializer = ProjectsListSerializer(projects, many=True)
+    
+        combined_planning_data = {
+            'expenses': expenses_serializer.data,
+            'cost_of_sales': cost_of_sales_serializer.data,
+            'employee_expenses': employee_expenses_serializer.data,
+            'projects': projects_serializer.data
+        }
+
+        # Results
+        expenses_results = ExpensesResults.objects.all()
+        cost_of_sales_results = CostOfSalesResults.objects.all()
+        employee_expenses_results = EmployeeExpensesResults.objects.all()
+        project_sales_results = ProjectsSalesResults.objects.all()
+        expenses_results_serializer = ExpensesResultsListSerializer(expenses_results, many=True)
+        cost_of_sales_results_serializer = CostOfSalesResultsListSerializer(cost_of_sales_results, many=True)
+        employee_expenses_results_serializer = EmployeeExpensesResultsListSerializer(employee_expenses_results, many=True)
+        project_sales_results_data_serializer = ProjectSalesResultsSerializer(project_sales_results, many=True)
+    
+        combined_results_data = {
+            'expenses': expenses_results_serializer.data,
+            'cost_of_sales': cost_of_sales_results_serializer.data,
+            'employee_expenses': employee_expenses_results_serializer.data,
+            'projects': project_sales_results_data_serializer.data
+        }
+
+        # Shared (Not specific to planning or results)
+        employee = Employees.objects.all() 
+        employee_serializer = EmployeesListSerializer(employee, many=True)
+
+        shared_data = {
+            'employees': employee_serializer.data,
+        }
+
+        data = {
+            'shared_data': shared_data, 
+            'planning_data':combined_planning_data, 
+            'results_data':combined_results_data 
+        }
+
+        return Response(data)
+
 # Planning
 class PlanningList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
