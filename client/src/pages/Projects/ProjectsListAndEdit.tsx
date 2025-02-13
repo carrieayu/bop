@@ -240,7 +240,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
         setCrudMessage(translate('successfullyUpdated', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
-        //fetchProjectsHandler()
+        fetchProjectsHandler()
       })
       .catch((error) => {
         if (error.response) {
@@ -331,24 +331,26 @@ const ProjectsListAndEdit: React.FC = ({}) => {
 
       console.log("ProjectsListAndEdit 005");
 
-      getProject(token)
-        .then((data) => {
+      fetchProjectsHandler()
 
-          console.log("ProjectsListAndEdit 006");
-          setProjects(data)
-          setOriginalProjectsList(data)
-        })
-        .catch((error) => {
-          console.log("ProjectsListAndEdit 007");
-          if (error.response && error.response.status === 401) {
+      // getProject(token)
+      //   .then((data) => {
+
+      //     console.log("ProjectsListAndEdit 006");
+      //     setProjects(data)
+      //     setOriginalProjectsList(data)
+      //   })
+      //   .catch((error) => {
+      //     console.log("ProjectsListAndEdit 007");
+      //     if (error.response && error.response.status === 401) {
           
-            console.log("ProjectsListAndEdit 008");
-            setIsNonActiveOpen(true)
-            // window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('There was an error fetching the projects!', error)
-          }
-        })
+      //       console.log("ProjectsListAndEdit 008");
+      //       setIsNonActiveOpen(true)
+      //       // window.location.href = '/login' // Redirect to login if unauthorized
+      //     } else {
+      //       console.error('There was an error fetching the projects!', error)
+      //     }
+      //   })
     }
 
       //fetchProjectsHandler()
@@ -454,12 +456,21 @@ const ProjectsListAndEdit: React.FC = ({}) => {
 
   const fetchProjectsHandler = async () => {
     try {
+
+      console.log("ProjectsListAndEdit 006");
+
       const data = await getProject(token)
       setProjects(data)
       setOriginalProjectsList(data)
     } catch (error) {
+
+      console.log("ProjectsListAndEdit 007");
+
       if (error.response && error.response.status === 401) {
-        window.location.href = '/login' // Redirect to login if unauthorized
+
+        console.log("ProjectsListAndEdit 008");
+
+        // window.location.href = '/login' // Redirect to login if unauthorized
       } else {
         console.error('There was an error fetching the projects!', error)
       }
