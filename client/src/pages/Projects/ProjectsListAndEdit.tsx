@@ -33,6 +33,7 @@ import {
   formatNumberWithDecimal,
   handleInputChange,
   handlePLListTabsClick,
+  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
 
 const ProjectsListAndEdit: React.FC = ({}) => {
@@ -84,6 +85,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
   const [crudMessage, setCrudMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const [deleteComplete, setDeleteComplete] = useState(false)
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -226,8 +228,10 @@ const ProjectsListAndEdit: React.FC = ({}) => {
       return modifiedFields
     }
     const modifiedFields = getModifiedFields(originalProjectsList, projects)
+    console.log("koko desuka ---- 001");
     if (!token) {
-      window.location.href = '/login'
+      console.log("koko desuka ---- 002");
+      //window.location.href = '/login'
       return
     }
 
@@ -236,7 +240,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
         setCrudMessage(translate('successfullyUpdated', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
-        fetchProjectsHandler()
+        //fetchProjectsHandler()
       })
       .catch((error) => {
         if (error.response) {
@@ -248,7 +252,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
               break
             case 401:
               console.error('Validation error:', data)
-              window.location.href = '/login'
+              //window.location.href = '/login'
               break
             default:
               console.error('There was an error creating the project data!', error)
@@ -264,6 +268,15 @@ const ProjectsListAndEdit: React.FC = ({}) => {
     await handleSubmit() // Call the submit function for update
     setIsUpdateConfirmationOpen(false)
   }
+
+  const handleNonActiveConfirm = async () => {
+    // await handleSubmit() // Call the submit function for update
+    console.log("koko desuka ------------- 003")
+    setIsNonActiveOpen(false)
+    console.log("koko desuka ------------- 004")
+    //window.location.href = '/login'
+  }
+
 
   const fetchClient = async () => {
     try {
@@ -283,17 +296,68 @@ const ProjectsListAndEdit: React.FC = ({}) => {
     }
   }
 
+
+  const [isIdle, setIsIdle] = useState(false);
+
   useEffect(() => {
+    // 非アクティブ時の処理を定義
+    const onIdle = () => {
+      setIsIdle(true);
+      console.log("User is idle!");
+      setIsNonActiveOpen(true)
+    };
+    // 非アクティブタイマーをセットアップ
+    // 15分 = 900000ミリ秒
+    // 30秒 = 30000ミリ秒
+    // 5秒 = 5000ミリ秒
+    const idleTimer = setupIdleTimer(onIdle, 5000);
+    idleTimer.startListening(); // イベントの監視を開始
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+
+  console.log("ProjectsListAndEdit 001");
+  useEffect(() => {
+    console.log("ProjectsListAndEdit 002");
     const fetchProjects = async () => {
+      console.log("ProjectsListAndEdit 003");
       if (!token) {
-        window.location.href = '/login' // Redirect to login if no token found
+        console.log("ProjectsListAndEdit 004");
+        setIsNonActiveOpen(true)
+        // window.location.href = '/login' // Redirect to login if no token found
         return
       }
 
-      fetchProjectsHandler()
+      console.log("ProjectsListAndEdit 005");
+
+      getProject(token)
+        .then((data) => {
+
+          console.log("ProjectsListAndEdit 006");
+          setProjects(data)
+          setOriginalProjectsList(data)
+        })
+        .catch((error) => {
+          console.log("ProjectsListAndEdit 007");
+          if (error.response && error.response.status === 401) {
+          
+            console.log("ProjectsListAndEdit 008");
+            setIsNonActiveOpen(true)
+            // window.location.href = '/login' // Redirect to login if unauthorized
+          } else {
+            console.error('There was an error fetching the projects!', error)
+          }
+        })
     }
+
+      //fetchProjectsHandler()
+    //}
+    console.log("ProjectsListAndEdit 009");
     fetchDivision()
+    console.log("ProjectsListAndEdit 010");
     fetchClient()
+    console.log("ProjectsListAndEdit 011");
     fetchProjects()
   }, [])
 
@@ -344,8 +408,11 @@ const ProjectsListAndEdit: React.FC = ({}) => {
     // Sets the Validation Errors if any to empty as they are not necessary for delete.
     setCrudValidationErrors([])
 
+    console.log("koko desuka ------------- 005")
+
     if (!token) {
-      window.location.href = '/login'
+      console.log("koko desuka ------------- 006")
+      // window.location.href = '/login'
       return
     }
 
@@ -358,7 +425,8 @@ const ProjectsListAndEdit: React.FC = ({}) => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          window.location.href = '/login'
+          console.log("koko desuka ------------- 007")
+          // window.location.href = '/login'
         } else {
           console.error('Error deleting projects', error)
         }
@@ -836,6 +904,12 @@ const ProjectsListAndEdit: React.FC = ({}) => {
         onConfirm={handleUpdateConfirm}
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )
