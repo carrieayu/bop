@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import PersonnelPlanningEntity from "../../entity/personnelplanningEntity";
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
-// import personnelSlice from "./personnelSlice";
+import { token } from "../../constants";
 
 const initialState = {
     personnelPlanning: [],
@@ -10,7 +10,6 @@ const initialState = {
 };
 
 export const fetchPlanning = createAsyncThunk('personnel/fetchPlanning', async () => {
-    const token = localStorage.getItem('accessToken'); // Replace with your actual token
     const response = await fetch(`${getReactActiveEndpoint()}/api/projects/list/`, {
       method: 'GET',
       headers: {

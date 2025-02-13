@@ -16,13 +16,24 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
 import { updateProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/UpdateProjectSalesResults'
 import { deleteProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/DeleteProjectSalesResults'
-import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import { resultsScreenTabs, token } from '../../constants'
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+import {
+  handleDisableKeysOnNumberInputs,
+  formatNumberWithCommas,
+  formatNumberWithDecimal,
+  handleInputChange,
+  handleResultsListTabsClick,
+} from '../../utils/helperFunctionsUtil'
 const ProjectSalesResultsListAndEdit: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('/planning-list')
+  const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('projectSalesResults')
   const [currentPage, setCurrentPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [paginatedData, setPaginatedData] = useState<any[]>([])
@@ -32,7 +43,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [projectSalesResults, setProjectSalesResults] = useState([])
   const [originalProjectSalesResultsList, setOriginalProjectSalesResultsList] = useState(projectSalesResults)
-  const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
   const years = []
   const [initialLanguage, setInitialLanguage] = useState(language)
   const dispatch = useDispatch()
@@ -42,12 +52,13 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [selectedProject, setSelectedProject] = useState<any>(null)
   const [deleteProjectsId, setDeleteProjectsId] = useState([])
+  const onTabClick = (tab) => handleResultsListTabsClick(tab, navigate, setActiveTab)
   const [formProjects, setFormProjects] = useState([
     {
       sales_revenue: '',
+      indirect_employee_expense: '',
       dispatch_labor_expense: '',
       employee_expense: '',
-      indirect_employee_expense: '',
       expense: '',
       operating_income: '',
       non_operating_income: '',
@@ -62,7 +73,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [deleteComplete, setDeleteComplete] = useState(false)
-  const token = localStorage.getItem('accessToken')
 
   for (let year = 2020; year <= new Date().getFullYear(); year++) {
     years.push(year)
@@ -70,26 +80,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
-  }
-
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'expensesResults':
-        navigate('/expenses-results-list')
-        break
-      case 'projectSalesResults':
-        navigate('/project-sales-results-list')
-        break
-      case 'employeeExpensesResults':
-        navigate('/employee-expenses-results-list')
-        break
-      case 'costOfSalesResults':
-        navigate('/cost-of-sales-results-list')
-        break
-      default:
-        break
-    }
   }
 
   const handlePageChange = (page: number) => {
@@ -100,41 +90,22 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
     setRowsPerPage(numRows)
     setCurrentPage(0)
   }
-
   const handleClick = () => {
-    setIsEditing((prevState) => {
-      const newEditingState = !prevState
-      if (newEditingState) {
-        setLanguage('jp')
-      }
-
-      if (!newEditingState) {
-        // Reset to original values when switching to list mode
-        setProjectSalesResults(originalProjectSalesResultsList)
-      }
-
-      return newEditingState
-    })
+    setIsEditing((prevState) => !prevState)
   }
+  useEffect(() => {
+    if (isEditing) {
+      setLanguage('jp')
+    }
 
+    if (!isEditing) {
+      // Reset to original values when switching to list mode
+      setProjectSalesResults(originalProjectSalesResultsList)
+    }
+  }, [isEditing])
   const handleChange = (index, event) => {
-    const { name, value } = event.target
-
-    // Remove commas to get the raw number
-    // EG. 999,999 → 999999 in the DB
-    const rawValue = removeCommas(value)
-
-    setProjectSalesResults((prevState) => {
-      const updatedProjectsData = [...prevState]
-      updatedProjectsData[index] = {
-        ...updatedProjectsData[index],
-        [name]: rawValue,
-      }
-
-      setFormProjects(updatedProjectsData)
-      console.log('inside handle change', updatedProjectsData, formProjects)
-      return updatedProjectsData
-    })
+    const nonFinancialFieldsArray = ['year', 'month', 'project_name', 'project_type', 'client', 'business_division']
+    handleInputChange(index, event, setProjectSalesResults, projectSalesResults, nonFinancialFieldsArray)
   }
 
   const handleSubmit = async () => {
@@ -214,6 +185,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
         setCrudMessage(translate('successfullyUpdated', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
+        fetchProjectsHandler()
       })
       .catch((error) => {
         console.log('There was an error updating the projects sales results!', error)
@@ -250,18 +222,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
         return
       }
 
-      getProjectSalesResults(token)
-        .then((data) => {
-          setProjectSalesResults(data)
-          setOriginalProjectSalesResultsList(data)
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('There was an error fetching the projects sales results!', error)
-          }
-        })
+      fetchProjectsHandler()
     }
     fetchDivision()
     fetchClient()
@@ -341,7 +302,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   // Step #2
   const updateProjectSalesResultLists = (deleteId) => {
     // Deletes the record with deleteId from original list (This should always match DB)
-    setOriginalProjectSalesResultsList((prevList) => prevList.filter((pr) => pr.project_sales_result_id !== deleteProjectsId))
+    setOriginalProjectSalesResultsList((prevList) =>
+      prevList.filter((pr) => pr.project_sales_result_id !== deleteProjectsId),
+    )
     setDeleteComplete(true)
   }
 
@@ -354,6 +317,20 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
       setProjectSalesResults(originalProjectSalesResultsList)
     }
   }, [deleteComplete])
+
+  const fetchProjectsHandler = async () => {
+    try {
+      const data = await getProjectSalesResults(token);
+      setProjectSalesResults(data);
+      setOriginalProjectSalesResultsList(data);
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        window.location.href = '/login'; // Redirect to login if unauthorized
+      } else {
+        console.error('There was an error fetching the projects sales results!', error);
+      }
+    }
+  }
 
   return (
     <div className='projectSalesResultsList_wrapper'>
@@ -381,16 +358,11 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
             </div>
             <div className='projectSalesResultsList_mid_body_cont'>
               <ListButtons
-                activeTabOther={activeTabOther}
+                activeTabOther={'projectSalesResults'}
                 message={translate(isEditing ? 'projectsSalesResultsEdit' : 'projectsSalesResultsList', language)}
-                handleTabsClick={handleTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
-                buttonConfig={[
-                  { labelKey: 'expensesResultsShort', tabKey: 'expensesResults' },
-                  { labelKey: 'projectSalesResultsShort', tabKey: 'projectSalesResults' },
-                  { labelKey: 'employeeExpensesResultsShort', tabKey: 'employeeExpensesResults' },
-                  { labelKey: 'costOfSalesResultsShort', tabKey: 'costOfSalesResults' },
-                ]}
+                buttonConfig={resultsScreenTabs}
               />
               <div className={`projectSalesResultsList_table_wrapper ${isEditing ? 'editMode' : ''}`}>
                 <div className={`projectSalesResultsList_table_cont ${isEditing ? 'editScrollable' : ''}`}>
@@ -501,6 +473,15 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     <td className='projectSalesResultsList_table_body_content_vertical'>
                                       <input
                                         type='text'
+                                        name='indirect_employee_expense'
+                                        value={formatNumberWithCommas(projectSalesResults.indirect_employee_expense)}
+                                        onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
+                                      />
+                                    </td>
+                                    <td className='projectSalesResultsList_table_body_content_vertical'>
+                                      <input
+                                        type='text'
                                         name='dispatch_labor_expense'
                                         value={formatNumberWithCommas(projectSalesResults.dispatch_labor_expense)}
                                         onChange={(e) => handleChange(index, e)}
@@ -512,15 +493,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                         type='text'
                                         name='employee_expense'
                                         value={formatNumberWithCommas(projectSalesResults.employee_expense)}
-                                        onChange={(e) => handleChange(index, e)}
-                                        onKeyDown={handleDisableKeysOnNumberInputs}
-                                      />
-                                    </td>
-                                    <td className='projectSalesResultsList_table_body_content_vertical'>
-                                      <input
-                                        type='text'
-                                        name='indirect_employee_expense'
-                                        value={formatNumberWithCommas(projectSalesResults.indirect_employee_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
@@ -574,7 +546,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                       <input
                                         type='text'
                                         name='ordinary_profit_margin'
-                                        value={formatNumberWithCommas(projectSalesResults.ordinary_profit_margin)}
+                                        value={formatNumberWithDecimal(projectSalesResults.ordinary_profit_margin)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
@@ -618,13 +590,13 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                   {translate('saleRevenue', language)}
                                 </th>
                                 <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
+                                  {translate('indirectEmployeeExpense', language)}
+                                </th>
+                                <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                   {translate('dispatchLaborExpense', language)}
                                 </th>
                                 <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                   {translate('employeeExpense', language)}
-                                </th>
-                                <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
-                                  {translate('indirectEmployeeExpense', language)}
                                 </th>
                                 <th className='projectSalesResultsList_table_title_content_vertical has-text-centered'>
                                   {translate('expense', language)}
@@ -681,13 +653,13 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     {formatNumberWithCommas(project.sales_revenue)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
+                                    {formatNumberWithCommas(project.indirect_employee_expense)}
+                                  </td>
+                                  <td className='projectSalesResultsList_table_body_content_vertical'>
                                     {formatNumberWithCommas(project.dispatch_labor_expense)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
                                     {formatNumberWithCommas(project.employee_expense)}
-                                  </td>
-                                  <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {formatNumberWithCommas(project.indirect_employee_expense)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
                                     {formatNumberWithCommas(project.expense)}
@@ -705,7 +677,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
                                     {formatNumberWithCommas(project.ordinary_profit)}
                                   </td>
                                   <td className='projectSalesResultsList_table_body_content_vertical'>
-                                    {formatNumberWithCommas(project.ordinary_profit_margin)}
+                                    {formatNumberWithDecimal(project.ordinary_profit_margin)}
                                   </td>
                                 </tr>
                               ))}

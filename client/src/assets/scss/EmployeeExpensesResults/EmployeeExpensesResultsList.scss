@@ -1,15 +1,16 @@
 .employeeExpensesResultsList_wrapper{
-    max-width: 2560px;
     .employeeExpensesResultsList_cont_wrapper{
         display: flex;
         background-color: #EFEDEA;
-        
         @media only screen and (max-width: 1000px){
             flex-direction: column;
         }
         .employeeExpensesResultsList_wrapper_div{
-                    width: 84%; // i do not know wjy but it breaks if i set to 100%
                     padding: 10px 30px 10px 30px;
+                    width: 100%;
+                    max-width: 100%;
+                    overflow-x: hidden;
+                    box-sizing: border-box;
                     .employeeExpensesResultsList_top_content{
                         
                         position: relative;
@@ -20,6 +21,9 @@
                         height: 100%;
                         border: 1px solid #fff;
                         border-radius: 5px;
+                        @media only screen and (min-width: 1024px) and (max-width: 1536px) {
+                        /* For small laptops */
+                        }
                         .employeeExpensesResultsList_top_body_cont{
                             background-color: #fff;
                             height: 2rem;
@@ -93,7 +97,10 @@
                                     padding: 0px 0px 0px 0px;
                                 }
                                 .employeeExpensesResultsList_table_cont{ 
-                                    overflow-x: auto;   
+                                    max-height: 100%;
+                                    overflow-y: auto;
+                                    overflow-x: auto;
+                                    scrollbar-width: thin;
                                     &::-webkit-scrollbar {
                                         width: 8px;
                                     }
@@ -114,6 +121,7 @@
                                         scrollbar-width: none; 
                                     }                          
                                     .table{
+                                        table-layout: fixed;
                                         width: 100%;
                                         .employeeExpensesResultsList_table_title{
                                             position: sticky;
@@ -123,9 +131,11 @@
                                             background-color: #808080;
                                             border: 1px solid #808080;
                                             .employeeExpensesResultsList_table_title_content_vertical{
+                                                width: 125px;
                                                 color: #fff;
                                                 border: none;
                                                 font-size: 14px;
+                                                white-space: nowrap;
                                             }
                                         }
                                         .employeeExpensesResultsList_table_body{
@@ -262,7 +272,7 @@
                                                 }
                                                 .employeeExpenseResultsModal{
                                                     position: relative;
-                                                    display: inline-block;
+                                                    /*display: inline-block;*/
                                                     cursor: pointer;
                                                 }
                                                 .employeeExpenseResultsModal .employeeExpenseResultsModal-tooltip {

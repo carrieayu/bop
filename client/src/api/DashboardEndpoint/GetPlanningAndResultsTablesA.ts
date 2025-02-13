@@ -1,9 +1,8 @@
 import axios from 'axios'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 
-// Not sure if this API is used. 
-export async function getMasterBusinessDivisionCompany(token: string) {
-  const endpoint = `${getReactActiveEndpoint()}/api/master-business-divisions-companies/list/`
+export async function getPlanningAndResultsData(token: string) {
+  const endpoint = `${getReactActiveEndpoint()}/api/planning-and-results/list/`
 
   try {
     const response = await axios.get(endpoint, {
@@ -17,7 +16,7 @@ export async function getMasterBusinessDivisionCompany(token: string) {
     if (error.response && error.response.status === 401) {
       console.log('Unauthorized access - redirecting to login')
     } else {
-      console.error('Error fetching business:', error)
+      console.error('Error fetching planning A:', error)
     }
     throw error
   }

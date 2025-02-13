@@ -1,6 +1,4 @@
 .EmployeesListAndEdit_wrapper{
-    width: 100%;
-    max-width: 2560px;
     .EmployeesListAndEdit_cont_wrapper{
         display: flex;
         background-color: #EFEDEA;
@@ -8,24 +6,24 @@
             flex-direction: column;
         }
         .EmployeesListAndEdit_maincontent_wrapper{
-            width: 84%; 
-            padding: 10px 30px 10px 30px;
-            @media only screen and (min-width: 1024px) and (max-width: 1280px) {
-                /* For small laptops */
-                width: 80%;
-            }
+            padding: 10px 30px;
+            width: 100%; 
+            max-width: 100%; 
+            overflow-x: hidden; 
+            box-sizing: border-box; 
             .EmployeesListAndEdit_top_content{
                 position: relative;
                 display: flex;
                 background-color: #fff;
                 flex-direction: column;
                 width: 100%;
-                height: 100%;
+                height: auto;
                 border: 1px solid #fff;
                 border-radius: 5px;
                 .EmployeesListAndEdit_top_body_cont{
                     background-color: #fff;
                     height: 2rem;
+                    width: 100%;
                 }
                 button.EmployeesListAndEdit_mode_switch{
                     position: absolute;
@@ -94,8 +92,32 @@
                         overflow-x: auto;
                         padding: 0px 0px 0px 0px;
                         }
-                    .EmployeesListAndEdit_table_cont{
+                    .EmployeesListAndEdit_table_cont {
                         overflow-x: auto;
+                        padding: 0;
+                        max-width: 100%; 
+                        box-sizing: border-box;
+                        scrollbar-width: thin;
+                    }
+                    .EmployeesListAndEdit_table_cont table {
+                        width: 100%; 
+                        table-layout: auto; 
+                        border-collapse: collapse; 
+                    }
+
+                    .EmployeesListAndEdit_table_cont table td,
+                    .EmployeesListAndEdit_table_cont table th {
+                        word-wrap: break-word; 
+                        overflow-wrap: anywhere;
+                        max-width: 150px; 
+                        padding: 8px; 
+                    }
+                    .EmployeesListAndEdit_table_cont{
+                        max-height: 100%;
+                        overflow-y: auto;
+                        overflow-x: auto;
+                        white-space: nowrap;
+                        scrollbar-width: thin;
                         &::-webkit-scrollbar {
                             width: 8px;
                         }
@@ -115,10 +137,6 @@
                             }
                             scrollbar-width: none; 
                         }                         
-                        @media only screen and (min-width: 1024px) and (max-width: 1280px) {
-                            /* For small laptops */
-                            overflow-x: auto;
-                        }
                         table{
                             width: 130%;
                             @media only screen and (min-width: 1024px) and (max-width: 1280px) {
@@ -164,7 +182,7 @@
                                             width: 100px;
                                         }
                                         .email{
-                                            width: 160px;
+                                            width: 136px;
                                         }
                                         .delete-icon{
                                             color: red;

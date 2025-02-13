@@ -1,24 +1,40 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import api from '../../api/api'
-import TableEntity from '../../entity/tableEntity'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { ACCESS_TOKEN } from '../../constants'
+import { TableEntity } from '../../entity/tableEntity'
 
-const initialState = {
-  isLoading: false,
-  tableList: [new TableEntity({})],
+interface TableState {
+  tableList: TableEntity[]
+  status: 'idle' | 'loading' | 'succeeded' | 'failed'
+  error: string | null
 }
+const initialState: TableState = {
+  tableList: [] as TableEntity[],
+  status: 'idle',
+  error: null,
+};
+
 const POLLING_INTERVAL = 60000
 const MAX_RETRIES = 12
+const token = localStorage.getItem(ACCESS_TOKEN)
 
 async function fetchWithPolling(retries = MAX_RETRIES): Promise<TableEntity[]> {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      const response = await api.get<TableEntity[]>(`${getReactActiveEndpoint()}/api/projects/list/`)
-      if (response.data && response.data.length > 0) {
-        return response.data.map((data) => new TableEntity(data))
-      } else {
-        console.log(`Attempt ${attempt}: Data is empty, retrying in 5 minutes...`)
+      const response = await fetch(`${getReactActiveEndpoint()}/api/projects/list/`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      })
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
+      const data = await response.json()
+      return data.data
+      
     } catch (error) {
       console.error(`Attempt ${attempt}: Error fetching data -`, error)
     }
@@ -27,8 +43,9 @@ async function fetchWithPolling(retries = MAX_RETRIES): Promise<TableEntity[]> {
   throw new Error('Failed to fetch data after maximum retries.')
 }
 
-export const fetchAllClientData = createAsyncThunk('', async () => {
-  return await fetchWithPolling()
+export const fetchAllClientData = createAsyncThunk<TableEntity[], void>('client/fetchAll', async () => {
+  const data = await fetchWithPolling()
+  return data
 })
 
 
@@ -40,13 +57,14 @@ const tableSlice = createSlice({
     builder
       .addCase(fetchAllClientData.fulfilled, (state, action) => {
         state.tableList = action.payload
-        state.isLoading = false
+        state.status = 'succeeded'
       })
       .addCase(fetchAllClientData.pending, (state) => {
-        state.isLoading = true
+        state.status = 'loading'
       })
-      .addCase(fetchAllClientData.rejected, (state) => {
-        state.isLoading = false
+      .addCase(fetchAllClientData.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
       })
   },
 })

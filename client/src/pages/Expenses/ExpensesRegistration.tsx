@@ -12,44 +12,49 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { createExpense } from '../../api/ExpenseEndpoint/CreateExpense'
 import { overwriteExpense } from '../../api/ExpenseEndpoint/OverwriteExpense'
-import { validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
-import { handleDisableKeysOnNumberInputs, removeCommas, formatNumberWithCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
-
-const months = [
-  '4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3'
-];
+import { maximumEntries, monthNames, storedUserID, token, years } from '../../constants'
+import { addFormInput, closeModal, openModal, removeFormInput, useTranslateSwitch } from '../../actions/hooks'
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+import {
+  handleDisableKeysOnNumberInputs,
+  removeCommas,
+  formatNumberWithCommas,
+  handleInputChange,
+  handlePLRegTabsClick,
+} from '../../utils/helperFunctionsUtil'
 
 const ExpensesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('expenses')
-  const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
-  const token = localStorage.getItem('accessToken')
-  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
+  const onTabClick = (tab) => handlePLRegTabsClick(tab, navigate, setActiveTab)
+  const { isTranslateSwitchActive, setIsTranslateSwitchActive } = useTranslateSwitch(language)
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
-  const [formData, setFormData] = useState([
-    {
-      year: '',
-      month: '',
-      tax_and_public_charge: '',
-      communication_expense: '',
-      advertising_expense: '',
-      consumable_expense: '',
-      depreciation_expense: '',
-      utilities_expense: '',
-      entertainment_expense: '',
-      rent_expense: '',
-      travel_expense: '',
-      transaction_fee: '',
-      professional_service_fee: '',
-      registered_user_id: storedUserID,
-      updated_at: '',
-    },
-  ])
-
+  const emptyFormData = {
+    year: '',
+    month: '',
+    tax_and_public_charge: '',
+    communication_expense: '',
+    advertising_expense: '',
+    consumable_expense: '',
+    depreciation_expense: '',
+    utilities_expense: '',
+    entertainment_expense: '',
+    rent_expense: '',
+    travel_expense: '',
+    transaction_fee: '',
+    professional_service_fee: '',
+    updated_at: '',
+  }
+  const [formData, setFormData] = useState([emptyFormData])
+  const [messageOrigin, setMessageOrigin] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
@@ -60,57 +65,40 @@ const ExpensesRegistration = () => {
     setLanguage(newLanguage)
   }
 
-const handleChange = (index, event) => {
-  const { name, value } = event.target
-
-  // Remove commas to get the raw number
-  // EG. 999,999 → 999999 in the DB
-  const rawValue = removeCommas(value)
-
-  // Update form data
-  const newFormData = [...formData]
-  newFormData[index] = {
-    ...newFormData[index],
-    [name]: rawValue,
-  }
-
-  setFormData(newFormData)
-}
-
-  const maximumEntries = 10;
-
   const handleAdd = () => {
-    if (formData.length < maximumEntries) {
-      const newFormData = [...formData]
-      newFormData.push({
-        year: '',
-        month: '',
-        tax_and_public_charge: '',
-        communication_expense: '',
-        advertising_expense: '',
-        consumable_expense: '',
-        depreciation_expense: '',
-        utilities_expense: '',
-        entertainment_expense: '',
-        rent_expense: '',
-        travel_expense: '',
-        transaction_fee: '',
-        professional_service_fee: '',
-        registered_user_id: storedUserID,
-        updated_at: '',
-      })
-      setFormData(newFormData)
-      console.log('add:' + formData)
-    } else {
-      console.log('You can only add up to 10 forms.')
+    addFormInput(formData, setFormData, maximumEntries, emptyFormData)
+  }
+
+  const handleRemove = () => {
+    removeFormInput(formData, setFormData)
+  }
+
+  const currentDate = new Date()
+  const currentYear = currentDate.getFullYear()
+  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear
+  const [months, setMonths] = useState<number[]>([])
+  const handleChange = (index, event) => {
+    handleInputChange(index, event, setFormData, formData)
+
+    const { name, value } = event.target
+
+    // Remove commas to get the raw number
+    // EG. 999,999 → 999999 in the DB
+    const rawValue = removeCommas(value)
+
+    if (name === 'year') {
+      const selectedYear = parseInt(rawValue, 10)
+      if (selectedYear === currentFiscalYear) {
+        setMonths([4, 5, 6, 7, 8, 9, 10, 11, 12])
+      } else if (selectedYear === currentFiscalYear + 1) {
+        setMonths([1, 2, 3])
+      } else {
+        setMonths([])
+      }
     }
   }
 
-  const handleMinus = () => {
-    if (formData.length > 1) {
-      setFormData(formData.slice(0, -1))
-    }
-  }
+  useEffect(() => {}, [formData])
 
   useEffect(() => {
     const path = location.pathname
@@ -123,7 +111,7 @@ const handleChange = (index, event) => {
     setModalMessage('') // Reset Modal Message Content
 
     e.preventDefault()
-    
+
     // # Client Side Validation
 
     // Step 1: Preparartion for validation
@@ -189,25 +177,7 @@ const handleChange = (index, event) => {
         console.log('in create function:modal message', modalMessage)
 
         setIsModalOpen(true)
-        setFormData([
-          {
-            year: '',
-            month: '',
-            tax_and_public_charge: '',
-            communication_expense: '',
-            advertising_expense: '',
-            consumable_expense: '',
-            depreciation_expense: '',
-            utilities_expense: '',
-            entertainment_expense: '',
-            rent_expense: '',
-            travel_expense: '',
-            transaction_fee: '',
-            professional_service_fee: '',
-            registered_user_id: localStorage.getItem('userID'),
-            updated_at: '',
-          },
-        ])
+        setFormData([emptyFormData])
       })
       .catch((error) => {
         if (error.response && error.response.status === 409) {
@@ -271,7 +241,6 @@ const handleChange = (index, event) => {
             travel_expense: '',
             transaction_fee: '',
             professional_service_fee: '',
-            registered_user_id: localStorage.getItem('userID'),
             updated_at: '',
           },
         ])
@@ -288,60 +257,15 @@ const handleChange = (index, event) => {
     setActiveTab(tab)
     navigate(tab)
   }
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'project':
-        navigate('/projects-registration')
-        break
-      case 'employeeExpenses':
-        navigate('/employee-expenses-registration')
-        break
-      case 'expenses':
-        navigate('/expenses-registration')
-        break
-      case 'costOfSales':
-        navigate('/cost-of-sales-registration')
-        break
-      default:
-        break
-    }
-  }
 
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal()
+    openModal(setModalIsOpen)
   }
 
   const handleRemoveInputData = () => {
-    setFormData([
-      {
-        year: '',
-        month: '',
-        tax_and_public_charge: '',
-        communication_expense: '',
-        advertising_expense: '',
-        consumable_expense: '',
-        depreciation_expense: '',
-        utilities_expense: '',
-        entertainment_expense: '',
-        rent_expense: '',
-        travel_expense: '',
-        transaction_fee: '',
-        professional_service_fee: '',
-        registered_user_id: '',
-        updated_at: '',
-      },
-    ])
-    closeModal()
-  }
-
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalIsOpen(false)
+    setFormData([emptyFormData])
+    closeModal(setModalIsOpen)
   }
 
   useEffect(() => {}, [formData])
@@ -349,24 +273,6 @@ const handleChange = (index, event) => {
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
   }, [language])
-
-  const monthNames: { [key: number]: { en: string; jp: string } } = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
-  }
-
-  // Creates an Array of years for dropdown input. 5 years before AND after current year.
-  const years = [2024, 2025]
 
   const handleListClick = () => {
     navigate('/expenses-list')
@@ -385,9 +291,9 @@ const handleChange = (index, event) => {
         <div className='expensesRegistration_data_content'>
           <div className='expensesRegistration_top_body_cont'>
             <RegistrationButtons
-              activeTabOther={activeTabOther}
+              activeTabOther={'expenses'}
               message={translate('expensesRegistration', language)}
-              handleTabsClick={handleTabsClick}
+              handleTabsClick={onTabClick}
               handleListClick={handleListClick}
               buttonConfig={[
                 { labelKey: 'project', tabKey: 'project' },
@@ -591,7 +497,6 @@ const handleChange = (index, event) => {
                         </div>
                       </div>
                     </div>
-                    <input type='hidden' name='registered_user_id' value={form.registered_user_id} />
                   </div>
                 ))}
               </div>
@@ -599,7 +504,7 @@ const handleChange = (index, event) => {
                 <div className='expensesRegistration_form-content'>
                   <div className='expensesRegistration_plus-btn'>
                     {formData.length >= 2 ? (
-                      <button className='expensesRegistration_dec' type='button' onClick={handleMinus}>
+                      <button className='expensesRegistration_dec' type='button' onClick={handleRemove}>
                         -
                       </button>
                     ) : (

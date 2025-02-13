@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import Btn from '../../components/Button/Button'
 import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar/Sidebar'
-import axios from 'axios'
 import RegistrationButtons from '../../components/RegistrationButtons/RegistrationButtons'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import AlertModal from '../../components/AlertModal/AlertModal'
@@ -16,111 +14,72 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-
+import { handleMMRegTabsClick } from '../../utils/helperFunctionsUtil'
+import { closeModal, openModal } from '../../actions/hooks'
+import { masterMaintenanceScreenTabs, token } from '../../constants'
 
 const UsersRegistration = () => {
-    const [activeTab, setActiveTab] = useState('/planning-list')
-    const navigate = useNavigate()
-    const location = useLocation()
-    const [activeTabOther, setActiveTabOther] = useState('users')
-    const storedUserID = localStorage.getItem('userID')
-    const { language, setLanguage } = useLanguage()
-    const [isUsernameValid, setIsUsernameValid] = useState(true)
-    const [isPasswordValid, setIsPasswordValid] = useState(true)
-    const [isPasswordMatch, setIsPasswordMatch] = useState(true)
-    const [isEmailMatch, setIsEmailMatch] = useState(true)
-    const [isEmailValid, setIsEmailValid] = useState(true)
-    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
-    const [modalIsOpen, setModalIsOpen] = useState(false)
-    const token = localStorage.getItem('accessToken')
-    const [userData, setUserData] = useState(
-      {
-        username: '',
-        first_name: '',
-        last_name: '',
-        password: '',
-        email: '',
-        confirm_password: '',
-        confirm_email: '',
-      },
-    )
+  const [activeTab, setActiveTab] = useState('/planning-list')
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [activeTabOther, setActiveTabOther] = useState('users')
+  const { language, setLanguage } = useLanguage()
+  const [isUsernameValid, setIsUsernameValid] = useState(true)
+  const [isPasswordValid, setIsPasswordValid] = useState(true)
+  const [isPasswordMatch, setIsPasswordMatch] = useState(true)
+  const [isEmailMatch, setIsEmailMatch] = useState(true)
+  const [isEmailValid, setIsEmailValid] = useState(true)
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
+  const [modalIsOpen, setModalIsOpen] = useState(false)
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
+  const emptyFormData = {
+    username: '',
+    first_name: '',
+    last_name: '',
+    password: '',
+    email: '',
+    confirm_password: '',
+    confirm_email: '',
+  }
+  const [userData, setUserData] = useState(emptyFormData)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
+  const onTabClick = (tab) => handleMMRegTabsClick(tab, navigate, setActiveTab)
+  const handleTabClick = (tab) => {
+    setActiveTab(tab)
+    navigate(tab)
+  }
 
-
-    const handleTabClick = (tab) => {
-        setActiveTab(tab)
-        navigate(tab)
-    }
-
-    const handleTabsClick = (tab) => {
-        setActiveTabOther(tab)
-        switch (tab) {
-          case 'client':
-            navigate('/clients-registration');
-            break;
-          case 'employee':
-            navigate('/employees-registration');
-            break;
-          case 'businessDivision':
-            navigate('/business-divisions-registration');
-            break;
-          case 'users':
-            navigate('/users-registration');
-            break;
-          default:
-            break;
-        }
-    }
-  
-  
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal()
+    openModal(setModalIsOpen)
   }
 
   const handleRemoveInputData = () => {
-    setUserData({
-      username: '',
-      first_name: '',
-      last_name: '',
-      password: '',
-      email: '',
-      confirm_password: '',
-      confirm_email: '',
-    })
-    closeModal()
+    setUserData(emptyFormData)
+    closeModal(setModalIsOpen)
   }
 
-  const openModal = () => {
-    setModalIsOpen(true)
+  const handleChange = (event) => {
+    const { name, value } = event.target
+    setUserData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }))
   }
 
-  const closeModal = () => {
-    setModalIsOpen(false)
+  const handleTranslationSwitchToggle = () => {
+    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
+    setLanguage(newLanguage)
   }
 
-    const handleChange = (event) => {
-      const { name, value } = event.target
-      setUserData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }))
+  useEffect(() => {
+    const path = location.pathname
+    if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
+      setActiveTab(path)
     }
-
-    const handleTranslationSwitchToggle = () => {
-        const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
-        setLanguage(newLanguage);
-    };
-
-    useEffect(() => {
-        const path = location.pathname;
-        if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
-          setActiveTab(path);
-        }
-      }, [location.pathname]);
+  }, [location.pathname])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -142,7 +101,7 @@ const UsersRegistration = () => {
 
     // Step 2: Validate client-side input
     const validationErrors = validateUser([userData]) // Only one User can be registered but function expects an Array.
-        
+
     // Step 3: Check for duplicate entries on specific fields
     const uniqueFields = ['']
     const duplicateErrors = checkForDuplicates([userData], uniqueFields, 'user', language)
@@ -167,20 +126,12 @@ const UsersRegistration = () => {
     } else {
       setCrudValidationErrors([])
     }
-        
+
     createUser(userData, token)
-      .then((data) => {
+      .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
-        setUserData({
-          username: '',
-          first_name: '',
-          last_name: '',
-          password: '',
-          email: '',
-          confirm_password: '',
-          confirm_email: '',
-        })
+        setUserData(emptyFormData)
       })
       .catch((error) => {
         setModalMessage(translate('usersValidationText7', language))
@@ -190,12 +141,12 @@ const UsersRegistration = () => {
   }
 
   useEffect(() => {
-    setIsTranslateSwitchActive(language === 'en');
-  }, [language]);
+    setIsTranslateSwitchActive(language === 'en')
+  }, [language])
 
-  const handleListClick = () => { 
-    navigate('/users-list');
-  };
+  const handleListClick = () => {
+    navigate('/users-list')
+  }
 
   return (
     <div className='UsersRegistration_wrapper'>
@@ -212,14 +163,9 @@ const UsersRegistration = () => {
             <RegistrationButtons
               activeTabOther={activeTabOther}
               message={translate('usersRegistration', language)}
-              handleTabsClick={handleTabsClick}
+              handleTabsClick={onTabClick}
               handleListClick={handleListClick}
-              buttonConfig={[
-                { labelKey: 'client', tabKey: 'client' },
-                { labelKey: 'employee', tabKey: 'employee' },
-                { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                { labelKey: 'users', tabKey: 'users' },
-              ]}
+              buttonConfig={masterMaintenanceScreenTabs}
             />
           </div>
           <div className='UsersRegistration_mid_body_cont'>

@@ -19,16 +19,21 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import {handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas} from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import {
+  handleDisableKeysOnNumberInputs,
+  formatNumberWithCommas,
+  removeCommas,
+  handleMMRegTabsClick,
+} from '../../utils/helperFunctionsUtil'
 import EmployeeExpensesList from '../EmployeeExpenses/EmployeeExpensesList'
-
+import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
+import { masterMaintenanceScreenTabs, maximumEntries, token } from '../../constants'
+import { MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER } from '../../constants'
 
 const EmployeesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('employee')
-  const storedUserID = localStorage.getItem('userID')
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const dispatch = useDispatch()
@@ -36,32 +41,28 @@ const EmployeesRegistration = () => {
   const [selectedCompanyId, setSelectedCompanyId] = useState('')
   const [companySelection, setCompanySelection] = useState<any>([])
   const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [selectedEmployeeType, setSelectedEmployeeType] = useState<any>([])
-  const token = localStorage.getItem('accessToken')
-  const [employees, setEmployees] = useState([
-    {
-      last_name: '',
-      first_name: '',
-      type: '',
-      email: '',
-      salary: '',
-      executive_renumeration: '',
-      company_name: '',
-      business_division_name: '',
-      bonus_and_fuel_allowance: '',
-      statutory_welfare_expense: '',
-      welfare_expense: '',
-      insurance_premium: '',
-      auth_id: '',
-      created_at: '',
-    },
-  ])
+  const emptyFormData = {
+    last_name: '',
+    first_name: '',
+    type: '',
+    email: '',
+    salary: '',
+    executive_remuneration: '',
+    company_name: '',
+    business_division_name: '',
+    bonus_and_fuel_allowance: '',
+    statutory_welfare_expense: '',
+    welfare_expense: '',
+    insurance_premium: '',
+    auth_id: '',
+    created_at: '',
+  }
+  const [employees, setEmployees] = useState([emptyFormData])
   const [allBusinessDivisions, setAllBusinessDivisions] = useState([])
-
+  const onTabClick = (tab) => handleMMRegTabsClick(tab, navigate, setActiveTab)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
-
 
   const fetchData = async () => {
     try {
@@ -78,20 +79,19 @@ const EmployeesRegistration = () => {
 
   // This could possible be combined into handleInputChange (refactoring)
   const handleEmployeeTypePulldown = (e, containerIndex) => {
-
     const newType = e.target.value
     const newContainers = [...employees]
 
     newContainers[containerIndex].type = newType
     if (newType === '0') {
       // Reset executive remuneration if switching to regular employee
-      newContainers[containerIndex].executive_renumeration = '' // Set to an empty string directly
+      newContainers[containerIndex].executive_remuneration = '' // Set to an empty string directly
     } else if (newType === '1') {
       // Reset salary if switching to executive employee
       newContainers[containerIndex].salary = '' // Set to an empty string directly
-    } else (newType === '')
+    } else newType === ''
     {
-      newContainers[containerIndex].executive_renumeration = '' // Set to an empty string directly
+      newContainers[containerIndex].executive_remuneration = '' // Set to an empty string directly
       newContainers[containerIndex].salary = '' // Set to an empty string directly
     }
     setEmployees(newContainers) // Update employees state
@@ -103,6 +103,15 @@ const EmployeesRegistration = () => {
     // Remove commas to get the raw number
     // EG. 999,999 → 999999 in the DB
     const rawValue = removeCommas(value)
+
+    if (name === 'salary' || name === 'executive_remuneration' || name === 'bonus_and_fuel_allowance') {
+      if (rawValue.length > MAX_NUMBER_LENGTH) {
+        return // Ignore input if the length exceeds 15 digits
+      }
+
+      if (rawValue.length <= MAX_NUMBER_LENGTH && rawValue <= MAX_SAFE_INTEGER) {
+      }
+    }
 
     if (name === 'company_name') {
       setSelectedCompanyId(value) // Update selected company ID
@@ -156,59 +165,14 @@ const EmployeesRegistration = () => {
     navigate(tab)
   }
 
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'client':
-        navigate('/clients-registration')
-        break
-      case 'employee':
-        navigate('/employees-registration')
-        break
-      case 'businessDivision':
-        navigate('/business-divisions-registration')
-        break
-      case 'users':
-        navigate('/users-registration')
-        break
-      default:
-        break
-    }
-  }
-
   const handleCancel = () => {
     //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-    openModal()
+    openModal(setModalIsOpen)
   }
 
   const handleRemoveInputData = () => {
-    setEmployees([
-      {
-        last_name: '',
-        first_name: '',
-        type: '',
-        email: '',
-        salary: '',
-        executive_renumeration: '',
-        company_name: '',
-        business_division_name: '',
-        bonus_and_fuel_allowance: '',
-        statutory_welfare_expense: '',
-        welfare_expense: '',
-        insurance_premium: '',
-        auth_id: '',
-        created_at: '',
-      },
-    ])
-    closeModal()
-  }
-
-  const openModal = () => {
-    setModalIsOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalIsOpen(false)
+    setEmployees([emptyFormData])
+    closeModal(setModalIsOpen)
   }
 
   const handleTranslationSwitchToggle = () => {
@@ -270,8 +234,8 @@ const EmployeesRegistration = () => {
       type: empl.type,
       email: empl.email,
       salary: empl.type === '0' ? (empl.salary !== '' ? empl.salary : null) : null, // Include salary only if regular
-      executive_renumeration:
-        empl.type === '1' ? (empl.executive_renumeration !== '' ? empl.executive_renumeration : null) : null, // Include executive remuneration only if executive
+      executive_remuneration:
+        empl.type === '1' ? (empl.executive_remuneration !== '' ? empl.executive_remuneration : null) : null, // Include executive remuneration only if executive
       company: empl.company_name,
       business_division: empl.business_division_name,
       bonus_and_fuel_allowance: empl.bonus_and_fuel_allowance,
@@ -302,24 +266,7 @@ const EmployeesRegistration = () => {
       .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
-        setEmployees([
-          {
-            last_name: '',
-            first_name: '',
-            type: '',
-            email: '',
-            salary: '',
-            executive_renumeration: '',
-            company_name: '',
-            business_division_name: '',
-            bonus_and_fuel_allowance: '',
-            statutory_welfare_expense: '',
-            welfare_expense: '',
-            insurance_premium: '',
-            auth_id: '',
-            created_at: '',
-          },
-        ])
+        setEmployees([emptyFormData])
       })
       .catch((error) => {
         if (error.response) {
@@ -345,37 +292,12 @@ const EmployeesRegistration = () => {
   }
 
   const handleAddContainer = () => {
-    if (employees.length < 10) {
-      setEmployees([
-        ...employees,
-        {
-          last_name: '',
-          first_name: '',
-          type: '',
-          email: '',
-          salary: '',
-          executive_renumeration: '',
-          company_name: '',
-          business_division_name: '',
-          bonus_and_fuel_allowance: '',
-          statutory_welfare_expense: '',
-          welfare_expense: '',
-          insurance_premium: '',
-          auth_id: '',
-          created_at: '',
-        },
-      ])
-    }
+    addFormInput(employees, setEmployees, maximumEntries, emptyFormData)
   }
 
   const handleRemoveContainer = () => {
-    if (employees.length > 1) {
-      const newContainers = [...employees]
-      newContainers.pop()
-      setEmployees(newContainers)
-    }
+    removeFormInput(employees, setEmployees)
   }
-
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
@@ -400,16 +322,11 @@ const EmployeesRegistration = () => {
           <div className='EmployeesRegistration_mid_body_cont'>
             <div className='EmployeesRegistration_top_body_cont'>
               <RegistrationButtons
-                activeTabOther={activeTabOther}
+                activeTabOther={'employee'}
                 message={translate('employeesRegistration', language)}
-                handleTabsClick={handleTabsClick}
+                handleTabsClick={onTabClick}
                 handleListClick={handleListClick}
-                buttonConfig={[
-                  { labelKey: 'client', tabKey: 'client' },
-                  { labelKey: 'employee', tabKey: 'employee' },
-                  { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                  { labelKey: 'users', tabKey: 'users' },
-                ]}
+                buttonConfig={masterMaintenanceScreenTabs}
               />
             </div>
             <div className='EmployeesRegistration_mid_form_cont'>
@@ -481,7 +398,7 @@ const EmployeesRegistration = () => {
                                 (container.welfare_expense =
                                   container.type === '0'
                                     ? Math.round(Number(container.salary) * 0.0048).toString()
-                                    : Math.round(Number(container.executive_renumeration) * 0.0048).toString()),
+                                    : Math.round(Number(container.executive_remuneration) * 0.0048).toString()),
                               )}
                               onChange={(e) => handleInputChange(containerIndex, null, e)}
                               onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -499,14 +416,14 @@ const EmployeesRegistration = () => {
                             />
                           </div>
                           {container.type === '1' && (
-                            <div className='EmployeesRegistration_executive_renumeration-div'>
-                              <label className='executive-renumeration-label'>
-                                {translate('executiveRenumeration', language)}
+                            <div className='EmployeesRegistration_executive_remuneration-div'>
+                              <label className='executive-remuneration-label'>
+                                {translate('executiveRemuneration', language)}
                               </label>
                               <input
                                 type='text'
-                                name='executive_renumeration'
-                                value={formatNumberWithCommas(container.executive_renumeration) || ''} // Ensure empty string as fallback for controlled input
+                                name='executive_remuneration'
+                                value={formatNumberWithCommas(container.executive_remuneration) || ''} // Ensure empty string as fallback for controlled input
                                 onChange={(e) => handleInputChange(containerIndex, null, e)}
                                 onKeyDown={handleDisableKeysOnNumberInputs}
                                 disabled={container.type !== '1'} // Disabled when not an executive employee
@@ -555,7 +472,7 @@ const EmployeesRegistration = () => {
                                 (container.insurance_premium =
                                   container.type === '0'
                                     ? Math.round(Number(container.salary) * 0.0224).toString()
-                                    : Math.round(Number(container.executive_renumeration) * 0.0224).toString()),
+                                    : Math.round(Number(container.executive_remuneration) * 0.0224).toString()),
                               )}
                               readOnly
                             />
@@ -600,7 +517,7 @@ const EmployeesRegistration = () => {
                                 (container.statutory_welfare_expense =
                                   container.type === '0'
                                     ? Math.round(Number(container.salary) * 0.1451).toString()
-                                    : Math.round(Number(container.executive_renumeration) * 0.1451).toString()),
+                                    : Math.round(Number(container.executive_remuneration) * 0.1451).toString()),
                               )}
                               readOnly
                             />

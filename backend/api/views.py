@@ -564,7 +564,7 @@ class EmployeesEdit(generics.ListAPIView):
                     'type': employee.type,
                     'email': employee.email,
                     'salary': employee.salary,
-                    'executive_renumeration':employee.executive_renumeration,
+                    'executive_remuneration':employee.executive_remuneration,
                     'company_id': employee.company_id,
                     'business_division_id': employee.business_division_id,
                     'statutory_welfare_expense':employee.statutory_welfare_expense,
@@ -1305,7 +1305,7 @@ class EmployeeExpensesList(generics.ListAPIView):
                 employee_first_name = employee['first_name'] if employee else ''
                 employee_type = employee['type'] if employee else ''
                 employee_salary = employee['salary'] if employee else 0  # Default to 0 if None
-                employee_executive_renumeration = employee['executive_renumeration'] if employee else 0
+                employee_executive_remuneration = employee['executive_remuneration'] if employee else 0
                 employee_statutory_welfare_expense = employee['statutory_welfare_expense'] if employee else 0
                 employee_welfare_expense = employee['welfare_expense'] if employee else 0
                 employee_insurance_premium = employee['insurance_premium'] if employee else 0
@@ -1323,7 +1323,7 @@ class EmployeeExpensesList(generics.ListAPIView):
                     'employee_first_name': employee_first_name,
                     'employee_type': employee_type,
                     'employee_salary': employee_salary,
-                    'executive_renumeration': employee_executive_renumeration,
+                    'executive_remuneration': employee_executive_remuneration,
                     'statutory_welfare_expense':employee_statutory_welfare_expense,
                     'welfare_expense':employee_welfare_expense,
                     'insurance_premium':employee_insurance_premium,
@@ -1484,7 +1484,7 @@ class EmployeeExpensesResultsList(generics.ListAPIView):
             employee_first_name = employee['first_name'] if employee else ''
             employee_type = employee['type'] if employee else ''
             employee_salary = employee['salary'] if employee else 0  
-            employee_executive_renumeration = employee['executive_renumeration'] if employee else 0
+            employee_executive_remuneration = employee['executive_remuneration'] if employee else 0
             employee_statutory_welfare_expense = employee['statutory_welfare_expense'] if employee else 0
             employee_welfare_expense = employee['welfare_expense'] if employee else 0
             employee_insurance_premium = employee['insurance_premium'] if employee else 0
@@ -1503,7 +1503,7 @@ class EmployeeExpensesResultsList(generics.ListAPIView):
                 'employee_first_name': employee_first_name,
                 'employee_type': employee_type,
                 'employee_salary': employee_salary,
-                'executive_renumeration': employee_executive_renumeration,
+                'executive_remuneration': employee_executive_remuneration,
                 'statutory_welfare_expense':employee_statutory_welfare_expense,
                 'welfare_expense':employee_welfare_expense,
                 'insurance_premium':employee_insurance_premium,
@@ -1967,27 +1967,83 @@ class CostOfSalesResultsFilter(generics.ListCreateAPIView):
             queryset = queryset.filter(year=year)
         return queryset
 
+# Dashboard (Display Planning and Results)
+
+class PlanningAndResultsData(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+
+        # Planning
+        expenses = Expenses.objects.all()
+        cost_of_sales = CostOfSales.objects.all()
+        employee_expenses = EmployeeExpenses.objects.all()
+        projects = Projects.objects.all()
+        expenses_serializer = ExpensesListSerializer(expenses, many=True)
+        cost_of_sales_serializer = CostOfSalesSerializer(cost_of_sales, many=True)
+        employee_expenses_serializer = EmployeeExpensesListSerializer(employee_expenses, many=True)
+        projects_serializer = ProjectsListSerializer(projects, many=True)
+    
+        combined_planning_data = {
+            'expenses': expenses_serializer.data,
+            'cost_of_sales': cost_of_sales_serializer.data,
+            'employee_expenses': employee_expenses_serializer.data,
+            'projects': projects_serializer.data
+        }
+
+        # Results
+        expenses_results = ExpensesResults.objects.all()
+        cost_of_sales_results = CostOfSalesResults.objects.all()
+        employee_expenses_results = EmployeeExpensesResults.objects.all()
+        project_sales_results = ProjectsSalesResults.objects.all()
+        expenses_results_serializer = ExpensesResultsListSerializer(expenses_results, many=True)
+        cost_of_sales_results_serializer = CostOfSalesResultsListSerializer(cost_of_sales_results, many=True)
+        employee_expenses_results_serializer = EmployeeExpensesResultsListSerializer(employee_expenses_results, many=True)
+        project_sales_results_data_serializer = ProjectSalesResultsSerializer(project_sales_results, many=True)
+    
+        combined_results_data = {
+            'expenses': expenses_results_serializer.data,
+            'cost_of_sales': cost_of_sales_results_serializer.data,
+            'employee_expenses': employee_expenses_results_serializer.data,
+            'projects': project_sales_results_data_serializer.data
+        }
+
+        # Shared (Not specific to planning or results)
+        employee = Employees.objects.all() 
+        employee_serializer = EmployeesListSerializer(employee, many=True)
+
+        shared_data = {
+            'employees': employee_serializer.data,
+        }
+
+        data = {
+            'shared_data': shared_data, 
+            'planning_data':combined_planning_data, 
+            'results_data':combined_results_data 
+        }
+
+        return Response(data)
+
 # Planning
 class PlanningList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
         expenses = Expenses.objects.all()
         cost_of_sales = CostOfSales.objects.all()
-        planning_assign = EmployeeExpenses.objects.all()
-        planning_project_data = Projects.objects.all()
+        employee_expenses = EmployeeExpenses.objects.all()
+        projects = Projects.objects.all()
         employee = Employees.objects.all()
         employee_serializer = EmployeesListSerializer(employee, many=True)
         expenses_serializer = ExpensesListSerializer(expenses, many=True)
         cost_of_sales_serializer = CostOfSalesSerializer(cost_of_sales, many=True)
-        planning_assign_serializer = EmployeeExpensesListSerializer(planning_assign, many=True)
-        planning_project_data_serializer = ProjectsListSerializer(planning_project_data, many=True)
+        employee_expenses_serializer = EmployeeExpensesListSerializer(employee_expenses, many=True)
+        projects_serializer = ProjectsListSerializer(projects, many=True)
     
         combined_data = {
             'expenses': expenses_serializer.data,
             'employees': employee_serializer.data,
             'cost_of_sales': cost_of_sales_serializer.data,
-            'planning_assign_data': planning_assign_serializer.data,
-            'planning_project_data': planning_project_data_serializer.data
+            'employee_expenses': employee_expenses_serializer.data,
+            'projects': projects_serializer.data
         }
 
         return Response(combined_data)

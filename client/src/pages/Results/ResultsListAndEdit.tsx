@@ -10,10 +10,11 @@ import { translate } from '../../utils/translationUtil'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import EditTableResults from '../../components/TableResults/EditTableResults'
 import { TableResultsB } from '../../components/TableResults/TableResultB'
-import TableResults from '../../components/TableResults/TableResultA'
+import TableResultsA from '../../components/TableResults/TableResultA'
 import { RxHamburgerMenu } from 'react-icons/rx'
 import { getResultsA } from '../../api/ResultsEndpoint/GetResultsA'
 import * as XLSX from 'xlsx'
+import { monthNames, months, token } from '../../constants'
 
 const header = ['計画']
 const smallDate = ['2022/24月', '2022/25月', '2022/26月']
@@ -34,25 +35,10 @@ const ResultsListAndEdit = () => {
   const location = useLocation()
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const token = localStorage.getItem('accessToken')
   const [isEditing, setIsEditing] = useState(false)
   const [initialLanguage, setInitialLanguage] = useState(language)
   const [isXLSModalOpen, setIsXLSModalOpen] = useState(false)
-  const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
-  const monthsNames = {
-    1: { en: 'January', jp: '1月' },
-    2: { en: 'February', jp: '2月' },
-    3: { en: 'March', jp: '3月' },
-    4: { en: 'April', jp: '4月' },
-    5: { en: 'May', jp: '5月' },
-    6: { en: 'June', jp: '6月' },
-    7: { en: 'July', jp: '7月' },
-    8: { en: 'August', jp: '8月' },
-    9: { en: 'September', jp: '9月' },
-    10: { en: 'October', jp: '10月' },
-    11: { en: 'November', jp: '11月' },
-    12: { en: 'December', jp: '12月' },
-  }
+
   const additionalHeaders = {
     1: { en: 'H1', jp: '上期計	' },
     2: { en: 'H2', jp: '下期計	' },
@@ -113,7 +99,7 @@ const ResultsListAndEdit = () => {
           let totalInsurancePremium = 0
 
           employeesResults.forEach((employee) => {
-            totalAnnualExecutive += employee.executive_renumeration
+            totalAnnualExecutive += employee.executive_remuneration
             totalAnnualSalary += employee.salary
             totalBonusAndFuelAllowance += employee.bonus_and_fuel_allowance
             totalWelfareExpense += parseFloat(employee.welfare_expense)
@@ -130,7 +116,7 @@ const ResultsListAndEdit = () => {
 
           months.forEach((month) => {
             aggregatedData[month] = {
-              executive_renumeration: monthlyExecutive,
+              executive_remuneration: monthlyExecutive,
               salary: monthlySalary,
               bonus_and_fuel_allowance: yearlyBonusAndFuelAllowance,
               welfare_expense: monthlyWelfareExpense,
@@ -150,14 +136,14 @@ const ResultsListAndEdit = () => {
               month,
               employees: [employee],
               projects: [project],
-              totalSalary: employee.salary || 0,
+              totalSalary: Number(employee.salary) || 0,
               ...values,
             }
           } else {
             acc[month].employees.push(employee)
             acc[month].projects.push(project)
 
-            acc[month].totalSalary += employee.salary || 0
+            acc[month].totalSalary += Number(employee.salary) || 0
 
             Object.keys(values).forEach((key) => {
               if (typeof values[key] === 'number') {
@@ -229,7 +215,7 @@ const ResultsListAndEdit = () => {
 
         // EMPLOYEE EXPENSE
         const employeeExpensesValues = months.map((month) => {
-          const executiveRenumeration = aggregatedExpensesData[month]?.executive_renumeration || 0
+          const executiveRemuneration = aggregatedExpensesData[month]?.executive_remuneration || 0
           const salary = aggregatedEmployeeExpensesResults[month]?.totalSalary || 0
           const fuel_allowance = aggregatedExpensesData[month]?.fuel_allowance || 0
           const statutory_welfare_expense = aggregatedExpensesData[month]?.statutory_welfare_expense || 0
@@ -237,7 +223,7 @@ const ResultsListAndEdit = () => {
           const insurance_premiums = aggregatedExpensesData[month]?.insurance_premiums || 0
 
           return (
-            executiveRenumeration +
+            executiveRemuneration +
             salary +
             fuel_allowance +
             statutory_welfare_expense +
@@ -247,7 +233,7 @@ const ResultsListAndEdit = () => {
         })
         // EMPLOYEES
         const result = aggregateEmployeeResultsData(response.employees_results)
-        const executiveRenumerationValues = months.map((month) => result[month]?.executive_renumeration || 0)
+        const executiveRemunerationValues = months.map((month) => result[month]?.executive_remuneration || 0)
         const salaryValues = months.map((month) => result[month]?.salary || 0)
         const totalBonusAndFuelAllowance = result[12]?.bonus_and_fuel_allowance || 0
         const bonusAndFuelAllowanceValues = months.map((month) => {
@@ -474,12 +460,12 @@ const ResultsListAndEdit = () => {
             ],
           },
           {
-            label: translate('executiveRenumerations', language),
+            label: translate('executiveRemunerations', language),
             values: [
-              ...executiveRenumerationValues,
-              firstHalfTotal(executiveRenumerationValues),
-              secondHalfTotal(executiveRenumerationValues),
-              total(executiveRenumerationValues),
+              ...executiveRemunerationValues,
+              firstHalfTotal(executiveRemunerationValues),
+              secondHalfTotal(executiveRemunerationValues),
+              total(executiveRemunerationValues),
               '0',
             ],
           },
@@ -714,14 +700,13 @@ const ResultsListAndEdit = () => {
           },
         ]
         // Updated translation base on what language user has selected.
-        const monthNamesTranslation = Object.values(monthsNames).map(month => month[language]);
+        const monthNamesTranslation = Object.values(monthNames).map((month) => month[language])
         const reorderedMonthNames = [...monthNamesTranslation.slice(3), ...monthNamesTranslation.slice(0, 3)] //Changed the order of months [Apr - Mar]
         const additionalHeadersTranslation = Object.values(additionalHeaders).map((month) => month[language])
         const excelRows = [
           ['', ...reorderedMonthNames, ...additionalHeadersTranslation],
           ['', header, header, header, header, ...Array(11).fill(header)],
         ]
-
 
         data.forEach((item) => {
           excelRows.push([item.label, ...item.values])
@@ -911,7 +896,7 @@ const ResultsListAndEdit = () => {
                 <div className='results_summary_tbl_cont'>
                   <div className={`table_content_results_summary ${isSwitchActive ? 'hidden' : ''}`}>
                     {/* Render the TablePlanning component here */}
-                    {isEditing ? <EditTableResults /> : <TableResults isThousandYenChecked={isThousandYenChecked} />}
+                    {isEditing ? <EditTableResults /> : <TableResultsA isThousandYenChecked={isThousandYenChecked} />}
                   </div>
                   <div className={`table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
                     <TableResultsB

@@ -1,6 +1,6 @@
 import { translate } from '../utils/translationUtil'
 import { inputFieldConfigurations } from '../inputFieldConfigurations'
-
+import { MAX_SAFE_INTEGER } from '../constants'
 
 // # CLIENT SIDE //
 
@@ -78,14 +78,14 @@ export const validateEmployeeRecords = (records, fieldChecks, recordType) => {
     let updatedFieldChecks = [...fieldChecks] // Copy the original fieldChecks
 
     if (selectedInputToCheck === 'checkSalary') {
-      // Remove the 'executive_renumeration' field from checks if checkSalary is returned
-      updatedFieldChecks = updatedFieldChecks.filter((check) => check.field !== 'executive_renumeration')
-    } else if (selectedInputToCheck === 'checkExecutiveRenumeration') {
-      // Remove the 'salary' field from checks if checkExecutiveRenumeration is returned
+      // Remove the 'executive_remuneration' field from checks if checkSalary is returned
+      updatedFieldChecks = updatedFieldChecks.filter((check) => check.field !== 'executive_remuneration')
+    } else if (selectedInputToCheck === 'checkExecutiveRemuneration') {
+      // Remove the 'salary' field from checks if checkExecutiveRemuneration is returned
       updatedFieldChecks = updatedFieldChecks.filter((check) => check.field !== 'salary')
     } else if (selectedInputToCheck === 'UnknownEmployeeType') {
       updatedFieldChecks = updatedFieldChecks.filter(
-        (check) => check.field !== 'salary' && check.field !== 'executive_renumeration',
+        (check) => check.field !== 'salary' && check.field !== 'executive_remuneration',
       )
     }
     
@@ -112,19 +112,19 @@ export const validateEmployeeRecords = (records, fieldChecks, recordType) => {
   return validationErrors
 }
 
-// EMPLOYEES: Check if Salary OR Executive Renumeration Needs to be Validated.
+// EMPLOYEES: Check if Salary OR Executive Remuneration Needs to be Validated.
 // ONLY USED IN EMPLOYEES
 export const validateSalaryAndRemuneration = (records) => {
   // Default to 'AllValid'
   let validationStatus = 'AllValid';
 
-  for (const { type, salary, executive_renumeration } of records) {
+  for (const { type, salary, executive_remuneration } of records) {
     if (type === '0' || type === 0) {
-      // Regular employee: salary should be valid, executive_renumeration should be null
+      // Regular employee: salary should be valid, executive_remuneration should be null
       validationStatus = 'checkSalary';
     } else if (type === '1' || type === 1) {
-      // Executive employee: executive_renumeration should be valid, salary should be null
-      validationStatus = 'checkExecutiveRenumeration';
+      // Executive employee: executive_remuneration should be valid, salary should be null
+      validationStatus = 'checkExecutiveRemuneration';
     } else {
       // Unknown employee type
       validationStatus = 'UnknownEmployeeType';
@@ -189,7 +189,6 @@ export const validateEmployeeExpensesRecords = (records, fieldChecks, recordType
 
   return validationErrors; // Return collected validation errors
 };
-
 
 // # EMPLOYEES EXEPENSES VALIDATION (UNIQUE): REGISTRATION & LISTANDEDIT
 // # Employees Expenses
@@ -293,9 +292,9 @@ export const validateField = (
   record = {}, // optional
   isRequired = false // optional
 ) => {
-
-  const maxDecimal = 9999999999.99;
-  const maxInteger = 2147483647;
+  
+  const maxDecimal = Number.MAX_SAFE_INTEGER
+  // const maxInteger = Number.MAX_SAFE_INTEGER // 9007199254740991
 
   // Helper function to create error message
   const createError = (message) => ({
@@ -303,58 +302,70 @@ export const validateField = (
     errorMessage: message,
     recordId,
     recordType,
-  });
+  })
 
   // Number validations
   if (isNumber) {
-    if (value < 0) return createError('cannotBeLessThanZero');
-    if (Number.isInteger(value) && value > maxInteger) return createError('valueTooLarge');
-    if (!Number.isInteger(value) && value > maxDecimal) return createError('valueTooLarge');
+    console.log('is number:', isNumber, 'typeof value:', typeof value, 'Number.isInteger:', Number.isInteger(value))
+    Number(value)
+    if (value < 0) return createError('cannotBeLessThanZero')
+    if (Number.isInteger(value) && value > MAX_SAFE_INTEGER) {
+      console.log('is integer:', typeof value)
+      return createError('valueTooLarge')
+    }
+    if (!Number.isInteger(value)) {
+      if (typeof value === 'string') { 
+        if (Number(value) > MAX_SAFE_INTEGER) {
+          console.log('is integer:', typeof value)
+          return createError('valueTooLarge')
+         }
+      } 
+  }
+
   }
 
   // Empty input validation
-  if (typeof value === 'string' && value.trim() === '') return createError('inputCannotBeEmpty');
+  if (typeof value === 'string' && value.trim() === '') return createError('inputCannotBeEmpty')
 
-  // Specific field validations for salary and executiveRenumeration
-  if ((fieldName === 'salary' || fieldName === 'executiveRenumeration') && value === null) {
-    return createError('inputCannotBeEmpty');
+  // Specific field validations for salary and executiveRemuneration
+  if ((fieldName === 'salary' || fieldName === 'executiveRemuneration') && value === null) {
+    return createError('inputCannotBeEmpty')
   }
 
   // Username validation
   if (isUsername && !/^[a-zA-Z]+_[a-zA-Z]+$/.test(value)) {
-    return createError('usersValidationText1');
+    return createError('usersValidationText1')
   }
 
   // Password validation
   if (isPassword) {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/
     if (!passwordRegex.test(value)) {
-      return createError('invalidPasswordFormat');
+      return createError('invalidPasswordFormat')
     }
 
     // Check if password and confirm password match for user registration
     if (recordType === 'user' && fieldName === 'password' && record['password'] !== record['confirm_password']) {
-      return createError('PasswordsDoNotMatch');
+      return createError('PasswordsDoNotMatch')
     }
   }
 
   // Email validation
   if (isEmail) {
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     if (!emailRegex.test(value)) {
-      return createError('invalidEmailFormat');
+      return createError('invalidEmailFormat')
     }
 
     // Check if email and confirm email match for user registration
     if (recordType === 'user' && fieldName === 'email' && record['email'] !== record['confirm_email']) {
-      return createError('EmailsDoNotMatch');
+      return createError('EmailsDoNotMatch')
     }
   }
 
   // No errors, return empty string
-  return '';
+  return ''
 };
-
 
 // ------------------------------
 // #3 CHECK FOR DUPLICATES IN FORMS 
@@ -475,7 +486,6 @@ export const checkForDuplicateUsers = (records, uniqueFields, recordType, langua
   }
   return duplicates;
 };
-
 
 // ------------------------------
 // #4 TRANSLATIONS AND FORMATTING

@@ -1,32 +1,44 @@
-import React, { useEffect, useState } from "react";
-import Btn from "../../components/Button/Button";
-import axios from "axios";
-import Sidebar from "../../components/Sidebar/Sidebar";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useLanguage } from "../../contexts/LanguageContext";
-import { translate } from "../../utils/translationUtil";
-import ListButtons from "../../components/ListButtons/ListButtons";
-import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
+import React, { useEffect, useState } from 'react'
+import Btn from '../../components/Button/Button'
+import axios from 'axios'
+import Sidebar from '../../components/Sidebar/Sidebar'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { translate } from '../../utils/translationUtil'
+import ListButtons from '../../components/ListButtons/ListButtons'
+import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import { useDispatch } from 'react-redux'
 import { UnknownAction } from 'redux'
-import { fetchBusinessDivisions } from "../../reducers/businessDivisions/businessDivisionsSlice";
-import { fetchMasterClient } from "../../reducers/client/clientSlice";
-import { RiDeleteBin6Fill } from "react-icons/ri";
-import AlertModal from "../../components/AlertModal/AlertModal";
-import CrudModal from "../../components/CrudModal/CrudModal";
+import { fetchBusinessDivisions } from '../../reducers/businessDivisions/businessDivisionsSlice'
+import { fetchMasterClient } from '../../reducers/client/clientSlice'
+import { RiDeleteBin6Fill } from 'react-icons/ri'
+import AlertModal from '../../components/AlertModal/AlertModal'
+import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
-import '../../assets/scss/Components/SliderToggle.scss';
-import {validateRecords, translateAndFormatErrors, getFieldChecks, checkForDuplicates } from '../../utils/validationUtil'
-import { getProject } from "../../api/ProjectsEndpoint/GetProject";
-import { updateProject } from "../../api/ProjectsEndpoint/UpdateProject";
-import { deleteProject } from "../../api/ProjectsEndpoint/DeleteProject";
-import { handleDisableKeysOnNumberInputs, formatNumberWithCommas, removeCommas } from '../../utils/helperFunctionsUtil' // helper to block non-numeric key presses for number inputs
+import '../../assets/scss/Components/SliderToggle.scss'
+import {
+  validateRecords,
+  translateAndFormatErrors,
+  getFieldChecks,
+  checkForDuplicates,
+} from '../../utils/validationUtil'
+import { getProject } from '../../api/ProjectsEndpoint/GetProject'
+import { updateProject } from '../../api/ProjectsEndpoint/UpdateProject'
+import { deleteProject } from '../../api/ProjectsEndpoint/DeleteProject'
+import { months, token, years } from '../../constants'
+import {
+  handleDisableKeysOnNumberInputs,
+  removeCommas,
+  formatNumberWithCommas,
+  formatNumberWithDecimal,
+  handleInputChange,
+  handlePLListTabsClick,
+} from '../../utils/helperFunctionsUtil'
 
-const ProjectsListAndEdit: React.FC = () => {
+const ProjectsListAndEdit: React.FC = ({}) => {
   const [activeTab, setActiveTab] = useState('/planning-list')
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeTabOther, setActiveTabOther] = useState('project')
   const [currentPage, setCurrentPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [paginatedData, setPaginatedData] = useState<any[]>([])
@@ -36,8 +48,6 @@ const ProjectsListAndEdit: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [projects, setProjects] = useState([])
   const [originalProjectsList, setOriginalProjectsList] = useState(projects)
-  const months = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '1', '2', '3']
-  const years = [2024, 2025];
   const [initialLanguage, setInitialLanguage] = useState(language)
   const dispatch = useDispatch()
   const [clients, setClients] = useState<any>([])
@@ -48,6 +58,7 @@ const ProjectsListAndEdit: React.FC = () => {
   const [deleteProjectsId, setDeleteProjectsId] = useState([])
   const [clientMap, setClientMap] = useState({})
   const [businessMap, setBusinessMap] = useState({})
+  const onTabClick = (tab) => handlePLListTabsClick(tab, navigate, setActiveTab)
   const [formProjects, setFormProjects] = useState([
     {
       year: '',
@@ -57,9 +68,9 @@ const ProjectsListAndEdit: React.FC = () => {
       client: '',
       business_division: '',
       sales_revenue: '',
+      indirect_employee_expense: '',
       dispatch_labor_expense: '',
       employee_expense: '',
-      indirect_employee_expense: '',
       expense: '',
       operating_income: '',
       non_operating_income: '',
@@ -73,31 +84,10 @@ const ProjectsListAndEdit: React.FC = () => {
   const [crudMessage, setCrudMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
-  const token = localStorage.getItem('accessToken')
   const [deleteComplete, setDeleteComplete] = useState(false)
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
-  }
-
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'project':
-        navigate('/projects-list')
-        break
-      case 'employeeExpenses':
-        navigate('/employee-expenses-list')
-        break
-      case 'expenses':
-        navigate('/expenses-list')
-        break
-      case 'costOfSales':
-        navigate('/cost-of-sales-list')
-        break
-      default:
-        break
-    }
   }
 
   const handlePageChange = (page: number) => {
@@ -110,43 +100,70 @@ const ProjectsListAndEdit: React.FC = () => {
   }
 
   const handleClick = () => {
-    setIsEditing((prevState) => {
-      const newEditingState = !prevState
-      if (newEditingState) {
-        setLanguage('jp')
-      }
+    const updatedProjects = projects.map((project) => {
+      const selectedYear = parseInt(project.year, 10);
+      const monthsForProject = getMonthsByFiscalYear(selectedYear, currentFiscalYear);
+      return {
+        ...project,
+        months: monthsForProject,
+      };
+    });
+    
+    setProjects(updatedProjects);
 
-      if (!newEditingState) {
-        // Reset to original values when switching to list mode
-        setProjects(originalProjectsList)
-      }
-
-      return newEditingState
-    })
+    setIsEditing((prevState) => !prevState)
   }
+  useEffect(() => {
+    if (isEditing) {
+      setLanguage('jp')
+    }
+
+    if (!isEditing) {
+      // Reset to original values when switching to list mode
+      setProjects(originalProjectsList)
+    }
+  }, [isEditing])
+
+  const currentDate = new Date()
+  const currentYear = currentDate.getFullYear()
+  const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear
+  const [months, setMonths] = useState<number[]>([])
 
   const handleChange = (index, event) => {
+    const nonFinancialFieldsArray = ['year', 'month', 'project_name', 'project_type', 'client', 'business_division']
+    handleInputChange(index, event, setProjects, projects, nonFinancialFieldsArray)
+
     const { name, value } = event.target
 
     // Remove commas to get the raw number
     // EG. 999,999 → 999999 in the DB
     const rawValue = removeCommas(value)
 
-    setProjects((prevState) => {
-      const updatedProjectsData = [...prevState]
-      updatedProjectsData[index] = {
-        ...updatedProjectsData[index],
-        [name]: rawValue,
-      }
-      setFormProjects(updatedProjectsData)
-
-      return updatedProjectsData
-    })
+    if (name === 'year') {
+      const selectedYear = parseInt(rawValue, 10)
+      const updatedProjects = [...projects];
+      const updatedMonths = getMonthsByFiscalYear(selectedYear, currentFiscalYear);
+      setMonths(updatedMonths);
+      updatedProjects[index] = {
+        ...updatedProjects[index],
+        year: value,
+        months: updatedMonths,
+        month: '',
+      };
+      setProjects(updatedProjects);
+    }
   }
-
+  const getMonthsByFiscalYear = (selectedYear, currentFiscalYear) => {
+    if (selectedYear === currentFiscalYear) {
+      return [4, 5, 6, 7, 8, 9, 10, 11, 12];
+    } else if (selectedYear === currentFiscalYear + 1) {
+      return [1, 2, 3];
+    } else {
+      return [];
+    }
+  };
   const handleSubmit = async () => {
     setFormProjects(projects)
-
     // # Client Side Validation
 
     // Step 1: Preparartion for validation
@@ -219,6 +236,7 @@ const ProjectsListAndEdit: React.FC = () => {
         setCrudMessage(translate('successfullyUpdated', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
+        fetchProjectsHandler()
       })
       .catch((error) => {
         if (error.response) {
@@ -272,18 +290,7 @@ const ProjectsListAndEdit: React.FC = () => {
         return
       }
 
-      getProject(token)
-        .then((data) => {
-          setProjects(data)
-          setOriginalProjectsList(data)
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('There was an error fetching the projects!', error)
-          }
-        })
+      fetchProjectsHandler()
     }
     fetchDivision()
     fetchClient()
@@ -377,6 +384,20 @@ const ProjectsListAndEdit: React.FC = () => {
     }
   }, [deleteComplete])
 
+  const fetchProjectsHandler = async () => {
+    try {
+      const data = await getProject(token)
+      setProjects(data)
+      setOriginalProjectsList(data)
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        window.location.href = '/login' // Redirect to login if unauthorized
+      } else {
+        console.error('There was an error fetching the projects!', error)
+      }
+    }
+  }
+
   return (
     <div className='projectsList-wrapper'>
       <HeaderButtons
@@ -403,9 +424,9 @@ const ProjectsListAndEdit: React.FC = () => {
             </div>
             <div className='projectsList-mid-body-cont'>
               <ListButtons
-                activeTabOther={activeTabOther}
+                activeTabOther={'project'}
                 message={translate(isEditing ? 'projectsEdit' : 'projectsList', language)}
-                handleTabsClick={handleTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
                 buttonConfig={[
                   { labelKey: 'project', tabKey: 'project' },
@@ -446,13 +467,13 @@ const ProjectsListAndEdit: React.FC = () => {
                                     {translate('saleRevenue', language)}
                                   </th>
                                   <th className='projectsList-table-title-content-vertical has-text-centered'>
+                                    {translate('indirectEmployeeExpense', language)}
+                                  </th>
+                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('dispatchLaborExpense', language)}
                                   </th>
                                   <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('employeeExpense', language)}
-                                  </th>
-                                  <th className='projectsList-table-title-content-vertical has-text-centered'>
-                                    {translate('indirectEmployeeExpense', language)}
                                   </th>
                                   <th className='projectsList-table-title-content-vertical has-text-centered'>
                                     {translate('expense', language)}
@@ -486,7 +507,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         onChange={(e) => handleChange(index, e)}
                                       >
                                         {years.map((year, idx) => (
-                                          <option key={idx} value={year} selected={year === project.year}>
+                                          <option key={idx} value={year}>
                                             {year}
                                           </option>
                                         ))}
@@ -500,8 +521,8 @@ const ProjectsListAndEdit: React.FC = () => {
                                         onChange={(e) => handleChange(index, e)}
                                       >
                                         <option value=''></option>
-                                        {months.map((month, idx) => (
-                                          <option key={idx} value={month} selected={month === project.month}>
+                                        {project.months && project.months.map((month, idx) => (
+                                          <option key={idx} value={month}>
                                             {month}月
                                           </option>
                                         ))}
@@ -533,11 +554,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                         onChange={(e) => handleChange(index, e)}
                                       >
                                         {clients.map((client) => (
-                                          <option
-                                            key={client.client_id}
-                                            value={client.client_id}
-                                            selected={client.client_id === project.client_id}
-                                          >
+                                          <option key={client.client_id} value={client.client_id}>
                                             {client.client_name}
                                           </option>
                                         ))}
@@ -554,7 +571,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                           <option
                                             key={division.business_division_id}
                                             value={division.business_division_id}
-                                            selected={division.business_division_id === project.business_division_id}
                                           >
                                             {division.business_division_name}
                                           </option>
@@ -573,6 +589,15 @@ const ProjectsListAndEdit: React.FC = () => {
                                     <td className='projectsList-table-body-content-vertical'>
                                       <input
                                         type='text'
+                                        name='indirect_employee_expense'
+                                        value={formatNumberWithCommas(project.indirect_employee_expense)}
+                                        onChange={(e) => handleChange(index, e)}
+                                        onKeyDown={handleDisableKeysOnNumberInputs}
+                                      />
+                                    </td>
+                                    <td className='projectsList-table-body-content-vertical'>
+                                      <input
+                                        type='text'
                                         name='dispatch_labor_expense'
                                         value={formatNumberWithCommas(project.dispatch_labor_expense)}
                                         onChange={(e) => handleChange(index, e)}
@@ -584,15 +609,6 @@ const ProjectsListAndEdit: React.FC = () => {
                                         type='text'
                                         name='employee_expense'
                                         value={formatNumberWithCommas(project.employee_expense)}
-                                        onChange={(e) => handleChange(index, e)}
-                                        onKeyDown={handleDisableKeysOnNumberInputs}
-                                      />
-                                    </td>
-                                    <td className='projectsList-table-body-content-vertical'>
-                                      <input
-                                        type='text'
-                                        name='indirect_employee_expense'
-                                        value={formatNumberWithCommas(project.indirect_employee_expense)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
@@ -646,7 +662,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                       <input
                                         type='text'
                                         name='ordinary_profit_margin'
-                                        value={formatNumberWithCommas(project.ordinary_profit_margin)}
+                                        value={formatNumberWithDecimal(project.ordinary_profit_margin)}
                                         onChange={(e) => handleChange(index, e)}
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
@@ -769,7 +785,7 @@ const ProjectsListAndEdit: React.FC = () => {
                                     {formatNumberWithCommas(project.ordinary_profit)}
                                   </td>
                                   <td className='projectsList-table-body-content-vertical'>
-                                    {formatNumberWithCommas(project.ordinary_profit_margin)}
+                                    {formatNumberWithDecimal(project.ordinary_profit_margin)}
                                   </td>
                                 </tr>
                               ))}
@@ -823,6 +839,6 @@ const ProjectsListAndEdit: React.FC = () => {
       />
     </div>
   )
-};
+}
 
-export default ProjectsListAndEdit;
+export default ProjectsListAndEdit

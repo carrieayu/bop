@@ -17,264 +17,203 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-
+import { handleMMRegTabsClick } from '../../utils/helperFunctionsUtil'
+import { masterMaintenanceScreenTabs, maximumEntries, storedUserID, token } from '../../constants'
+import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 
 const BusinessDivisionsRegistration = () => {
-    const [activeTab, setActiveTab] = useState('/planning-list')
-    const navigate = useNavigate()
-    const location = useLocation()
-    const [activeTabOther, setActiveTabOther] = useState('businessDivision')
-    const storedUserID = localStorage.getItem('userID')
-    const { language, setLanguage } = useLanguage()
-    const token = localStorage.getItem('accessToken')
-    const [companyList, setCompanyList] = useState([]);
-    const [selectedCompany, setSelectedCompany] = useState('');
-    const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en');
-    const [businessDivisionName, setBusinessDivisionName] = useState('');
-    const [authUserID] = useState(storedUserID);
-    const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState('/planning-list')
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [activeTabOther, setActiveTabOther] = useState('businessDivision')
+  const { language, setLanguage } = useLanguage()
+  const [companyList, setCompanyList] = useState([])
+  const [selectedCompany, setSelectedCompany] = useState('')
+  const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
+  const [businessDivisionName, setBusinessDivisionName] = useState('')
+  const [authUserID] = useState(storedUserID)
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+  const onTabClick = (tab) => handleMMRegTabsClick(tab, navigate, setActiveTab)
+  const emptyFormData = {
+    business_division_name: '',
+    company_id: '',
+    auth_user_id: authUserID,
+  }
+  const [formData, setFormData] = useState([emptyFormData])
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
+  const [crudValidationErrors, setCrudValidationErrors] = useState([])
 
-    const [formData, setFormData] = useState([
-        {
-          business_division_name: '',
-          company_id: '',
-          auth_user_id: authUserID,
-        },
-      ])
+  const handleTabClick = (tab) => {
+    setActiveTab(tab)
+    navigate(tab)
+  }
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalMessage, setModalMessage] = useState('');
-    const [crudValidationErrors, setCrudValidationErrors] = useState([])
+  const handleCancel = () => {
+    //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
+    openModal(setModalIsOpen)
+  }
 
+  const handleRemoveInputData = () => {
+    setFormData([emptyFormData])
+    closeModal(setModalIsOpen)
+  }
 
-    const handleTabClick = (tab) => {
-        setActiveTab(tab)
-        navigate(tab)
+  const handleTranslationSwitchToggle = () => {
+    const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
+    setLanguage(newLanguage)
+  }
+
+  const handleChange = (index, event) => {
+    const { name, value } = event.target
+    const updatedFormData = [...formData]
+    updatedFormData[index] = {
+      ...updatedFormData[index],
+      [name]: value,
+    }
+    setFormData(updatedFormData)
+  }
+
+  const handleAdd = () => {
+    addFormInput(formData, setFormData, maximumEntries, emptyFormData)
+  }
+
+  const validateBusinessDivision = (businessDivision) => {
+    return businessDivision.every((bd) => {
+      return bd.business_division_name.trim() !== ''
+    })
+  }
+
+  const handleRemove = () => {
+    removeFormInput(formData, setFormData)
+  }
+
+  useEffect(() => {
+    const path = location.pathname
+    if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
+      setActiveTab(path)
+    }
+  }, [location.pathname])
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    const postData = formData.map((business) => ({
+      business_division_name: business.business_division_name,
+      company_id: business.company_id,
+      auth_user_id: business.auth_user_id,
+    }))
+
+    if (!token) {
+      window.location.href = '/login'
+      return
     }
 
-    const handleTabsClick = (tab) => {
-        setActiveTabOther(tab)
-        switch (tab) {
-          case 'client':
-            navigate('/clients-registration');
-            break;
-          case 'employee':
-            navigate('/employees-registration');
-            break;
-          case 'businessDivision':
-            navigate('/business-divisions-registration');
-            break;
-          case 'users':
-            navigate('/users-registration');
-            break;
-          default:
-            break;
-        }
-    }
-  
-    const handleCancel = () => {
-      //opens the modal to confirm whether to cancel the input information and remove all added input project containers.
-      openModal()
+    // # Client Side Validation
+
+    // Step 1: Preparartion for validation
+    // Set record type for validation
+    const recordType = 'businessDivisions'
+    // Retrieve field validation checks based on the record type
+    const fieldChecks = getFieldChecks(recordType)
+    console.log(fieldChecks)
+    // Validate records for the specified project fields
+    const validateBusinessDivision = (records) => validateRecords(records, fieldChecks, 'businessDivision')
+
+    // Step 2: Validate client-side input
+    const validationErrors = validateBusinessDivision(formData) // Only one User can be registered but function expects an Array.
+
+    // Step 3: Check for duplicate entries on specific fields
+    const uniqueFields = ['business_division_name', 'company_id']
+    const duplicateErrors = checkForDuplicates(formData, uniqueFields, 'businessDivision', language)
+
+    // Step 4: Map error types to data and translation keys for handling in the modal
+    const errorMapping = [
+      { errors: validationErrors, errorType: 'normalValidation' },
+      { errors: duplicateErrors, errorType: 'duplicateValidation' },
+    ]
+
+    // Step 5: Display the first set of errors found, if any
+    const firstError = errorMapping.find(({ errors }) => errors.length > 0)
+
+    if (firstError) {
+      const { errors, errorType } = firstError
+      const translatedErrors = translateAndFormatErrors(errors, language, errorType)
+      console.log(translatedErrors, 'trans errors')
+      setModalMessage(translatedErrors)
+      setCrudValidationErrors(translatedErrors)
+      setIsModalOpen(true)
+      return
+    } else {
+      setCrudValidationErrors([])
     }
 
-    const handleRemoveInputData = () => {
-      setFormData([
-        {
-          business_division_name: '',
-          company_id: '',
-          auth_user_id: authUserID,
-        },
-      ])
-      closeModal()
-    }
-
-    const openModal = () => {
-      setModalIsOpen(true)
-    }
-
-    const closeModal = () => {
-      setModalIsOpen(false)
-    }
-
-    const handleTranslationSwitchToggle = () => {
-        const newLanguage = isTranslateSwitchActive ? 'jp' : 'en';
-        setLanguage(newLanguage);
-    };
-
-    const handleChange = (index, event) => {
-      const {name, value} = event.target
-      const updatedFormData = [...formData]
-      updatedFormData[index] = {
-        ...updatedFormData[index],
-        [name]: value,
-      }
-      setFormData(updatedFormData)
-    }
-
-    const maximumEntries = 10
-  
-    const handleAdd = () => {
-      if (formData.length < maximumEntries) {
-        setFormData([
-          ...formData,
-          {
-            business_division_name: '',
-            company_id: '',
-            auth_user_id: authUserID,
-          },
-        ])
-      } else {
-      }
-    }
-  
-  
-    const validateBusinessDivision = (businessDivision) => {
-      return businessDivision.every((bd) => {
-        return bd.business_division_name.trim() !== ''
+    createBusinessDivision(postData, token)
+      .then((data) => {
+        setModalMessage(translate('successfullySaved', language))
+        setIsModalOpen(true)
+        setFormData([emptyFormData])
       })
-    }
+      .catch((error) => {
+        console.log('error', error)
+        if (error.response) {
+          const { status, data } = error.response
 
-    const handleMinus = () => {
-      if (formData.length > 1) {
-        setFormData(formData.slice(0, -1));
+          switch (status) {
+            case 409:
+              const existingDivisions =
+                data.errors.map((err) => err.business_division_name).join(', ') || 'Unknown division'
+              setModalMessage(
+                translate('businessDivisionNameExistsValidationMessage', language).replace(
+                  '${businessDivisionName}',
+                  existingDivisions,
+                ),
+              )
+              setIsModalOpen(true)
+              break
+            case 401:
+              console.error('Validation error:', data)
+              window.location.href = '/login'
+              break
+            default:
+              console.error('There was an error creating the business division data!', error)
+              setModalMessage(translate('error', language))
+              setIsModalOpen(true)
+              break
+          }
+        }
+      })
+  }
+
+  useEffect(() => {
+    const fetchCompany = async () => {
+      try {
+        const response = await axios.get(`${getReactActiveEndpoint()}/api/master-companies/list/`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        setCompanyList(response.data)
+      } catch (error) {
+        console.error('Error fetching business:', error)
       }
     }
 
-    useEffect(() => {
-        const path = location.pathname;
-        if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
-          setActiveTab(path);
-        }
-      }, [location.pathname]);
+    fetchCompany()
+  }, [token])
 
-    
-      const handleSubmit = async (e) => {
-        e.preventDefault()
+  const handleCompanyChange = (e) => {
+    setSelectedCompany(e.target.value) // Update the selected company state
+  }
 
-        const postData = formData.map((business) => ({
-          business_division_name: business.business_division_name,
-          company_id: business.company_id,
-          auth_user_id: business.auth_user_id,
-        }))
+  useEffect(() => {
+    setIsTranslateSwitchActive(language === 'en')
+  }, [language])
 
-        if (!token) {
-          window.location.href = '/login'
-          return
-        }
-
-        // # Client Side Validation
-
-        // Step 1: Preparartion for validation
-        // Set record type for validation
-        const recordType = 'businessDivisions'
-        // Retrieve field validation checks based on the record type
-        const fieldChecks = getFieldChecks(recordType)
-        console.log(fieldChecks)
-        // Validate records for the specified project fields
-        const validateBusinessDivision = (records) => validateRecords(records, fieldChecks, 'businessDivision')
-
-        // Step 2: Validate client-side input
-        const validationErrors = validateBusinessDivision(formData) // Only one User can be registered but function expects an Array.
-
-        // Step 3: Check for duplicate entries on specific fields
-        const uniqueFields = ['business_division_name', 'company_id']
-        const duplicateErrors = checkForDuplicates(formData, uniqueFields, 'businessDivision', language)
-
-        // Step 4: Map error types to data and translation keys for handling in the modal
-        const errorMapping = [
-          { errors: validationErrors, errorType: 'normalValidation' },
-          { errors: duplicateErrors, errorType: 'duplicateValidation' },
-        ]
-
-        // Step 5: Display the first set of errors found, if any
-        const firstError = errorMapping.find(({ errors }) => errors.length > 0)
-
-        if (firstError) {
-          const { errors, errorType } = firstError
-          const translatedErrors = translateAndFormatErrors(errors, language, errorType)
-          console.log(translatedErrors, 'trans errors')
-          setModalMessage(translatedErrors)
-          setCrudValidationErrors(translatedErrors)
-          setIsModalOpen(true)
-          return
-        } else {
-          setCrudValidationErrors([])
-        }
-
-        createBusinessDivision(postData, token)
-          .then((data) => {
-            setModalMessage(translate('successfullySaved', language))
-            setIsModalOpen(true)
-            setFormData([
-              {
-                business_division_name: '',
-                company_id: '',
-                auth_user_id: authUserID,
-              },
-            ])
-          })
-          .catch((error) => {
-            console.log('error',error)
-            if (error.response) {
-              const { status, data } = error.response
-
-              switch (status) {
-                case 409:
-                  const existingDivisions =
-                    data.errors.map((err) => err.business_division_name).join(', ') || 'Unknown division'
-                  setModalMessage(
-                    translate('businessDivisionNameExistsValidationMessage', language).replace(
-                      '${businessDivisionName}',
-                      existingDivisions,
-                    ),
-                  )
-                  setIsModalOpen(true)
-                  break
-                case 401:
-                  console.error('Validation error:', data)
-                  window.location.href = '/login'
-                  break
-                default:
-                  console.error('There was an error creating the business division data!', error)
-                  setModalMessage(translate('error', language))
-                  setIsModalOpen(true)
-                  break
-              }
-            }
-          })
-      }
-  
-      useEffect(() => {
-        const fetchCompany = async () => {
-          try{
-            const response = await axios.get(`${getReactActiveEndpoint()}/api/master-companies/list/`, {
-              headers: { 
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}` 
-              },
-            });
-            setCompanyList(response.data);
-          }
-          catch (error) {
-            console.error('Error fetching business:', error);
-          }
-        };
-    
-        fetchCompany();
-      }, [token]);
-  
-      const handleCompanyChange = (e) => {
-        setSelectedCompany(e.target.value); // Update the selected company state
-      };
-   
-
-      useEffect(() => {
-        setIsTranslateSwitchActive(language === 'en');
-      }, [language]);
-
-      const handleListClick = () => { 
-        navigate('/business-divisions-list');
-      };
+  const handleListClick = () => {
+    navigate('/business-divisions-list')
+  }
 
   return (
     <div className='BusinessDivisionsRegistration_wrapper'>
@@ -291,14 +230,9 @@ const BusinessDivisionsRegistration = () => {
             <RegistrationButtons
               activeTabOther={activeTabOther}
               message={translate('businessDivisionsRegistration', language)}
-              handleTabsClick={handleTabsClick}
+              handleTabsClick={onTabClick}
               handleListClick={handleListClick}
-              buttonConfig={[
-                { labelKey: 'client', tabKey: 'client' },
-                { labelKey: 'employee', tabKey: 'employee' },
-                { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                { labelKey: 'users', tabKey: 'users' },
-              ]}
+              buttonConfig={masterMaintenanceScreenTabs}
             />
           </div>
           <div className='BusinessDivisionsRegistration_mid_body_cont'>
@@ -352,13 +286,18 @@ const BusinessDivisionsRegistration = () => {
               <div className='BusinessDivisionsRegistration_form-btn-content'>
                 <div className='BusinessDivisionsRegistration_plus-btn'>
                   {formData.length >= 2 ? (
-                    <button className='BusinessDivisionsRegistration_dec' type='button' onClick={handleMinus}>
+                    <button className='BusinessDivisionsRegistration_dec' type='button' onClick={handleRemove}>
                       -
                     </button>
                   ) : (
                     <div className='BusinessDivisionsRegistration_dec_empty'></div>
                   )}
-                  <button className='BusinessDivisionsRegistration_inc custom-disabled' type='button' onClick={handleAdd} disabled={formData.length === maximumEntries}>
+                  <button
+                    className='BusinessDivisionsRegistration_inc custom-disabled'
+                    type='button'
+                    onClick={handleAdd}
+                    disabled={formData.length === maximumEntries}
+                  >
                     +
                   </button>
                 </div>

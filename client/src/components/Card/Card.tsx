@@ -6,6 +6,7 @@ interface CardProps {
   border?: string;
   width?: string;
   height?: string;
+  borderRadius?: string;
   contentClassName?: string;
   CardClassName?: string;
   children?: React.ReactNode;
@@ -17,6 +18,7 @@ const Card: React.FC<CardProps> = ({
   border = "1px solid #ddd",
   width = "auto", 
   height = "auto",
+  borderRadius = "5px",
   contentClassName = "",
   CardClassName = "",
   children,
@@ -28,6 +30,7 @@ const Card: React.FC<CardProps> = ({
         backgroundColor: backgroundColor,
         boxShadow: shadow,
         border: border,
+        borderRadius: borderRadius,
         width: typeof width === 'number'? `${width}px` : width,
         height: typeof height === 'number'? `${height}px` : height,
       }}

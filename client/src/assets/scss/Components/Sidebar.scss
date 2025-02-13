@@ -1,5 +1,6 @@
 .sidebar {
-    max-width: 330px;
+    //max-width: 330px; Temporarily commented out for testing purposes
+    min-width: 267px;
     height: 98vh;
     display: flex;
     flex-direction: column;

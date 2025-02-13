@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import api from '../../api/api'
-import CardEntity from '../../entity/cardEntity'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { CardEntity } from '../../entity/cardEntity'
+import { token } from '../../constants'
 
 interface GraphDataState {
   isLoading: boolean
@@ -44,7 +45,6 @@ const calculateOperatingIncome = (card) => {
   return salesRevenue - costOfSale - dispatchLaborExpense - employeeExpense - indirectEmployeeExpense - otherExpense
 }
 
-const token = localStorage.getItem('accessToken')
 export const fetchGraphData = createAsyncThunk('graphData/fetch', async () => {
   const response = await api.get<CardEntity[]>(`${getReactActiveEndpoint()}/api/projects/list/`, {
     headers: {
@@ -52,7 +52,7 @@ export const fetchGraphData = createAsyncThunk('graphData/fetch', async () => {
       'Content-Type': 'application/json',
     },
   })
-  const cards = response.data.map((data) => new CardEntity(data))
+  const cards = response.data
   const aggregatedData: Partial<GraphDataState> = {
     totalSalesByDate: {},
     totalOperatingIncomeByDate: {},
@@ -68,8 +68,8 @@ export const fetchGraphData = createAsyncThunk('graphData/fetch', async () => {
     const operatingIncome = calculateOperatingIncome(card)
     const grossProfit = calculateGrossProfit(card)
 
-    const cumulataiveOridinaryIncome = calculateCumulativeOrdinaryIncome(card)
-    const grossProfitMargin = calculateGrossProfitMargin(calculateGrossProfit(card), card.sales_revenue)
+    const cumulativeOrdinaryIncome = calculateCumulativeOrdinaryIncome(card)
+    const grossProfitMargin = calculateGrossProfitMargin(grossProfit, card.sales_revenue)
     const operatingProfitMargin = calculateOperatingProfitMargin(Number(card.operating_income), card.sales_revenue)
 
     if (!aggregatedData.totalSalesByDate![date]) {
@@ -84,11 +84,12 @@ export const fetchGraphData = createAsyncThunk('graphData/fetch', async () => {
     aggregatedData.totalSalesByDate![date] += parseFloat(card.sales_revenue?.toString() || '0')
     aggregatedData.totalOperatingIncomeByDate![date] += parseFloat(operatingIncome?.toString() || '0')
     aggregatedData.totalGrossProfitByDate![date] += parseFloat(grossProfit?.toString() || '0')
-
-    aggregatedData.totalCumulativeOrdinaryIncome![date] += parseFloat(cumulataiveOridinaryIncome?.toString() || '0')
+    aggregatedData.totalCumulativeOrdinaryIncome![date] += parseFloat(cumulativeOrdinaryIncome?.toString() || '0')
     aggregatedData.totalGrossProfitMarginByDate![date] += parseFloat(grossProfitMargin?.toString() || '0')
     aggregatedData.totalOperatingProfitMarginByDate![date] += parseFloat(operatingProfitMargin?.toString() || '0')
-    aggregatedData.month.push(date)
+    if (!aggregatedData.month.includes(date)) {
+      aggregatedData.month.push(date)
+    }  
   })
   return aggregatedData
 })

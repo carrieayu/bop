@@ -11,10 +11,7 @@ import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 import EditTablePlanning from '../../components/Table/EditTablePlanning'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
-
-const header = ['計画']
-const smallDate = ['2022/24月', '2022/25月', '2022/26月']
-const dates = ['04月', '05月', '06月', '07月', '08月', '09月', '10月', '11月', '12月', '1月', '2月', '3月']
+import { dates, header, smallDate } from '../../constants'
 
 const PlanningListAndEdit = () => {
   const [tableList, setTableList] = useState<any>([])
@@ -36,20 +33,18 @@ const PlanningListAndEdit = () => {
   const [initialLanguage, setInitialLanguage] = useState(language)
 
   const handleThousandYenToggle = () => {
-      setIsThousandYenChecked((prevState) => !prevState)
-    
+    setIsThousandYenChecked((prevState) => !prevState)
   }
 
   const handleEditModeToggle = () => {
     setIsThousandYenChecked(false)
-    setIsEditing((prevState) => {
-      const newEditingState = !prevState
-      if (newEditingState) {
-        setLanguage(initialLanguage)
-      }
-      return newEditingState
-    })
+    setIsEditing((prevState) => !prevState)
   }
+  useEffect(() => {
+    if (isEditing) {
+      setLanguage(initialLanguage)
+    }
+  }, [isEditing])
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -181,7 +176,12 @@ const PlanningListAndEdit = () => {
 
                       {isEditing ? (
                         <label className='planning_switch'>
-                          <input type='checkbox' checked={isThousandYenChecked} onChange={handleThousandYenToggle} disabled/>
+                          <input
+                            type='checkbox'
+                            checked={isThousandYenChecked}
+                            onChange={handleThousandYenToggle}
+                            disabled
+                          />
                           <span className='planning_slider'></span>
                         </label>
                       ) : (

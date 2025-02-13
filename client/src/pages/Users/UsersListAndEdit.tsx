@@ -1,28 +1,29 @@
-import React, { useEffect, useState } from "react";
-import Btn from "../../components/Button/Button";
-import axios from "axios";
-import Sidebar from "../../components/Sidebar/Sidebar";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useLanguage } from "../../contexts/LanguageContext";
-import { translate } from "../../utils/translationUtil";
-import AlertModal from "../../components/AlertModal/AlertModal";
+import React, { useEffect, useState } from 'react'
+import Btn from '../../components/Button/Button'
+import axios from 'axios'
+import Sidebar from '../../components/Sidebar/Sidebar'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { translate } from '../../utils/translationUtil'
+import AlertModal from '../../components/AlertModal/AlertModal'
 import { RiDeleteBin6Fill } from 'react-icons/ri'
 import DatePicker from 'react-datepicker'
-import ListButtons from "../../components/ListButtons/ListButtons";
-import HeaderButtons from "../../components/HeaderButtons/HeaderButtons";
-import CrudModal from "../../components/CrudModal/CrudModal";
+import ListButtons from '../../components/ListButtons/ListButtons'
+import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
+import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import '../../assets/scss/Components/SliderToggle.scss'
-import { getUser } from "../../api/UserEndpoint/GetUser";
-import { deleteUser } from "../../api/UserEndpoint/DeleteUser";
-import { updateUser } from "../../api/UserEndpoint/UpdateUser";
+import { getUser } from '../../api/UserEndpoint/GetUser'
+import { deleteUser } from '../../api/UserEndpoint/DeleteUser'
+import { updateUser } from '../../api/UserEndpoint/UpdateUser'
 import {
   validateUserRecord,
   translateAndFormatErrors,
   getFieldChecks,
   checkForDuplicateUsers,
 } from '../../utils/validationUtil'
-import { formatDate } from "../../utils/helperFunctionsUtil";
+import { formatDate, handleMMListTabsClick } from '../../utils/helperFunctionsUtil'
+import { masterMaintenanceScreenTabs, token } from '../../constants'
 
 const UsersListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -55,7 +56,7 @@ const UsersListAndEdit: React.FC = () => {
   })
 
   const totalPages = Math.ceil(100 / 10)
-
+  const onTabClick = (tab) => handleMMListTabsClick(tab, navigate, setActiveTab)
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
@@ -65,26 +66,6 @@ const UsersListAndEdit: React.FC = () => {
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
-  }
-
-  const handleTabsClick = (tab) => {
-    setActiveTabOther(tab)
-    switch (tab) {
-      case 'client':
-        navigate('/clients-list')
-        break
-      case 'employee':
-        navigate('/employees-list')
-        break
-      case 'businessDivision':
-        navigate('/business-divisions-list')
-        break
-      case 'users':
-        navigate('/users-list')
-        break
-      default:
-        break
-    }
   }
 
   const handlePageChange = (page: number) => {
@@ -97,19 +78,18 @@ const UsersListAndEdit: React.FC = () => {
   }
 
   const handleClick = () => {
-    setIsEditing((prevState) => {
-      const newEditingState = !prevState
-      if (newEditingState) {
-        setLanguage('jp')
-      }
-
-      if (!newEditingState) {
-        // Reset to original values when switching to list mode
-        setUserList(originalUserList)
-      }
-      return newEditingState
-    })
+    setIsEditing((prevState) => !prevState)
   }
+  useEffect(() => {
+    if (isEditing) {
+      setLanguage('jp')
+    }
+
+    if (!isEditing) {
+      // Reset to original values when switching to list mode
+      setUserList(originalUserList)
+    }
+  }, [isEditing])
 
   const handleChange = (index, event) => {
     const { name, value } = event.target
@@ -124,7 +104,6 @@ const UsersListAndEdit: React.FC = () => {
   }
 
   const handleSubmit = async () => {
-    const token = localStorage.getItem('accessToken')
     if (!token) {
       window.location.href = '/login'
       return
@@ -173,6 +152,7 @@ const UsersListAndEdit: React.FC = () => {
         setCrudMessage(translate('successfullyUpdated', language))
         setIsCRUDOpen(true)
         setIsEditing(false)
+        fetchUserListHandler(token)
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
@@ -190,38 +170,17 @@ const UsersListAndEdit: React.FC = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const token = localStorage.getItem('accessToken')
       if (!token) {
         window.location.href = '/login' // Redirect to login if no token found
         return
       }
 
-      getUser(token)
-        .then((data) => {
-          // Update Date Format For Display: Formats the Date so it appears correctly in the Edit Page;
-          const originalData = data.map((user) => {
-            return {
-              ...user, // Keep other properties intact
-              date_joined: formatDate(user.date_joined), // Update the date format
-            }
-          })
-          setUserList(originalData) // Update state with the modified array. Will be updated on Front End (Edit Mode)
-          setOriginalUserList(originalData) // Current State in DB (List Mode)
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            console.log(error)
-          } else {
-            console.error('There was an error fetching the users!', error)
-          }
-        })
+      fetchUserListHandler(token)
     }
     fetchUsers()
   }, [])
 
-  useEffect(() => {
-    console.log('originalUserList', originalUserList)
-  }, [originalUserList])
+  useEffect(() => {}, [originalUserList])
 
   useEffect(() => {
     const startIndex = currentPage * rowsPerPage
@@ -265,7 +224,6 @@ const UsersListAndEdit: React.FC = () => {
   const handleConfirm = async () => {
     // Sets the Validation Errors if any to empty as they are not necessary for delete.
     setCrudValidationErrors([])
-    const token = localStorage.getItem('accessToken')
     deleteUser(deleteId, token)
       .then(() => {
         updateUserLists(deleteId)
@@ -303,6 +261,25 @@ const UsersListAndEdit: React.FC = () => {
     navigate('/users-registration')
   }
 
+  const fetchUserListHandler = async (token) => {
+    try {
+      const data = await getUser(token);
+      // Update Date Format For Display: Formats the Date so it appears correctly in the Edit Page
+      const originalData = data.map((user) => ({
+        ...user, // Keep other properties intact
+        date_joined: formatDate(user.date_joined), // Update the date format
+      }));
+      setUserList(originalData); // Update state with the modified array. Will be updated on Front End (Edit Mode)
+      setOriginalUserList(originalData); // Current State in DB (List Mode)
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        console.log(error);
+      } else {
+        console.error('There was an error fetching the users!', error);
+      }
+    }
+  };
+
   return (
     <div className='UsersListAndEdit_wrapper'>
       <HeaderButtons
@@ -332,17 +309,12 @@ const UsersListAndEdit: React.FC = () => {
               <ListButtons
                 activeTabOther={activeTabOther}
                 message={translate(isEditing ? 'usersEdit' : 'usersList', language)}
-                handleTabsClick={handleTabsClick}
+                handleTabsClick={onTabClick}
                 handleNewRegistrationClick={handleNewRegistrationClick}
-                buttonConfig={[
-                  { labelKey: 'client', tabKey: 'client' },
-                  { labelKey: 'employee', tabKey: 'employee' },
-                  { labelKey: 'businessDivision', tabKey: 'businessDivision' },
-                  { labelKey: 'users', tabKey: 'users' },
-                ]}
+                buttonConfig={masterMaintenanceScreenTabs}
               />
               <div className={`UsersListAndEdit_table_wrapper ${isEditing ? 'editMode' : ''}`}>
-                <div className='UsersListAndEdit_table_cont'>
+                <div className={`UsersListAndEdit_table_cont ${isEditing ? 'editScrollable' : ''}`}>
                   <div className='columns is-mobile'>
                     <div className='column'>
                       {isEditing ? (
@@ -521,6 +493,6 @@ const UsersListAndEdit: React.FC = () => {
       />
     </div>
   )
-};
+}
 
-export default UsersListAndEdit;
+export default UsersListAndEdit
