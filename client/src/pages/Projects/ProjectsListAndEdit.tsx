@@ -267,11 +267,6 @@ const ProjectsListAndEdit: React.FC = ({}) => {
     setIsUpdateConfirmationOpen(false)
   }
 
-  const handleNonActiveConfirm = async () => {
-    setIsNonActiveOpen(false)
-    window.location.href = '/login'
-  }
-
   const fetchClient = async () => {
     try {
       const resMasterClients = await dispatch(fetchMasterClient() as unknown as UnknownAction)
@@ -289,34 +284,6 @@ const ProjectsListAndEdit: React.FC = ({}) => {
       console.error(e)
     }
   }
-
-  const [isIdle, setIsIdle] = useState(false);
-  useEffect(() => {
-    const onIdle = () => {
-      setIsIdle(true);
-      setIsNonActiveOpen(true)
-    };
-    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
-    idleTimer.startListening();
-    return () => {
-      idleTimer.stopListening();
-    };
-  }, []);
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      if (!token) {
-        setIsNonActiveOpen(true)
-        window.location.href = '/login'
-        return
-      }
-      fetchProjectsHandler()
-    }
-
-    fetchDivision()
-    fetchClient()
-    fetchProjects()
-  }, [])
 
   useEffect(() => {
     const startIndex = currentPage * rowsPerPage
@@ -416,6 +383,39 @@ const ProjectsListAndEdit: React.FC = ({}) => {
         console.error('There was an error fetching the projects!', error)
       }
     }
+  }
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      if (!token) {
+        setIsNonActiveOpen(true)
+        window.location.href = '/login'
+        return
+      }
+      fetchProjectsHandler()
+    }
+
+    fetchDivision()
+    fetchClient()
+    fetchProjects()
+  }, [])
+
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    window.location.href = '/login'
   }
 
   return (

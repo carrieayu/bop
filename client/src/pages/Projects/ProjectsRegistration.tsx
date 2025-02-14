@@ -111,19 +111,6 @@ const ProjectsRegistration = () => {
     }
   }
 
-  const [isIdle, setIsIdle] = useState(false);
-  useEffect(() => {
-    const onIdle = () => {
-      setIsIdle(true);
-      setIsNonActiveOpen(true)
-    };
-    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
-    idleTimer.startListening();
-    return () => {
-      idleTimer.stopListening();
-    };
-  }, []);
-
   const currentDate = new Date()
   const currentYear = currentDate.getFullYear()
   const currentFiscalYear = currentDate.getMonth() + 1 < 4 ? currentYear - 1 : currentYear
@@ -340,11 +327,6 @@ const ProjectsRegistration = () => {
     await handleSubmitConfirmed()
   }
 
-  const handleNonActiveConfirm = async () => {
-    setIsNonActiveOpen(false)
-    window.location.href = '/login'
-  }
-
   const handleSubmitConfirmed = async () => {
     const projectsData = formProjects.map((projects) => ({
       year: projects.year,
@@ -419,6 +401,24 @@ const ProjectsRegistration = () => {
 
   const handleListClick = () => {
     navigate('/projects-list')
+  }
+
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+  
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    window.location.href = '/login'
   }
 
   return (

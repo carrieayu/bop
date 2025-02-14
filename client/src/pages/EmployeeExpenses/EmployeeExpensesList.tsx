@@ -100,19 +100,6 @@ const EmployeeExpensesList: React.FC = () => {
     fetchEmployeeExpenses()
   }, [])
 
-  const [isIdle, setIsIdle] = useState(false);
-  useEffect(() => {
-    const onIdle = () => {
-      setIsIdle(true);
-      setIsNonActiveOpen(true)
-    };
-    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
-    idleTimer.startListening();
-    return () => {
-      idleTimer.stopListening();
-    };
-  }, []);
-
   const openModal = (users, id) => {
     setSelectedEmployeeExpenses(users)
     setModalIsOpen(true)
@@ -177,6 +164,19 @@ const EmployeeExpensesList: React.FC = () => {
         }
       })
   }
+
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
 
   const handleNonActiveConfirm = async () => {
     setIsNonActiveOpen(false)
