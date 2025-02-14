@@ -20,8 +20,8 @@ import {
   checkForDuplicates,
 } from '../../utils/validationUtil'
 import { getFilteredEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/FilterGetEmployeeExpense'
-import { currentYear, maximumEntriesEE, monthNames, storedUserID, token } from '../../constants'
-import { handlePLRegTabsClick } from '../../utils/helperFunctionsUtil'
+import { currentYear, maximumEntriesEE, monthNames, storedUserID, token, IDLE_TIMEOUT } from '../../constants'
+import { handlePLRegTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import { closeModal, openModal } from '../../actions/hooks'
 
 type Date = {
@@ -61,6 +61,7 @@ const EmployeeExpensesRegistration = () => {
     },
   ])
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const onTabClick = (tab) => handlePLRegTabsClick(tab, navigate, setActiveTab)
 
@@ -508,6 +509,24 @@ const EmployeeExpensesRegistration = () => {
     navigate('/employee-expenses-list')
   }
 
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+  
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    window.location.href = '/login'
+  }
+
   return (
     <div className='employeeExpensesRegistration_wrapper'>
       <HeaderButtons
@@ -730,6 +749,12 @@ const EmployeeExpensesRegistration = () => {
         onClose={() => setIsModalOpen(false)}
         isCRUDOpen={isModalOpen}
         validationMessages={crudValidationErrors}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )
