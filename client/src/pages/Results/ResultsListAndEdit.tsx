@@ -14,7 +14,9 @@ import TableResultsA from '../../components/TableResults/TableResultA'
 import { RxHamburgerMenu } from 'react-icons/rx'
 import { getResultsA } from '../../api/ResultsEndpoint/GetResultsA'
 import * as XLSX from 'xlsx'
-import { monthNames, months, token } from '../../constants'
+import { monthNames, months, token, IDLE_TIMEOUT } from '../../constants'
+import { setupIdleTimer } from '../../utils/helperFunctionsUtil'
+import AlertModal from '../../components/AlertModal/AlertModal'
 
 const header = ['計画']
 const smallDate = ['2022/24月', '2022/25月', '2022/26月']
@@ -38,6 +40,7 @@ const ResultsListAndEdit = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [initialLanguage, setInitialLanguage] = useState(language)
   const [isXLSModalOpen, setIsXLSModalOpen] = useState(false)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
 
   const additionalHeaders = {
     1: { en: 'H1', jp: '上期計	' },
@@ -805,6 +808,24 @@ const ResultsListAndEdit = () => {
     }
   }
 
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    window.location.href = '/login'
+  }
+
   return (
     <div className='results_summary_wrapper'>
       <HeaderButtons
@@ -913,6 +934,12 @@ const ResultsListAndEdit = () => {
           </div>
         </div>
       </div>
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
+      />
     </div>
   )
 }

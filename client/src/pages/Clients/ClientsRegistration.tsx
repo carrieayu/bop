@@ -16,9 +16,9 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleMMRegTabsClick } from '../../utils/helperFunctionsUtil'
+import { handleMMRegTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
-import { masterMaintenanceScreenTabs, maximumEntries, storedUserID, token } from '../../constants'
+import { masterMaintenanceScreenTabs, maximumEntries, storedUserID, token, IDLE_TIMEOUT } from '../../constants'
 
 const ClientsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -31,6 +31,7 @@ const ClientsRegistration = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const onTabClick = (tab) => handleMMRegTabsClick(tab, navigate, setActiveTab)
   const emptyFormData = {
     client_name: '',
@@ -170,6 +171,24 @@ const ClientsRegistration = () => {
     navigate('/clients-list')
   }
 
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    window.location.href = '/login'
+  }
+
   return (
     <div className='ClientsRegistration_wrapper'>
       <HeaderButtons
@@ -259,6 +278,12 @@ const ClientsRegistration = () => {
         onClose={() => setIsModalOpen(false)}
         isCRUDOpen={isModalOpen}
         validationMessages={crudValidationErrors}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

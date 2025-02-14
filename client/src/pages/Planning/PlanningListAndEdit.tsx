@@ -11,7 +11,10 @@ import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 import EditTablePlanning from '../../components/Table/EditTablePlanning'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
-import { dates, header, smallDate } from '../../constants'
+import { dates, header, smallDate, IDLE_TIMEOUT } from '../../constants'
+import { setupIdleTimer } from '../../utils/helperFunctionsUtil'
+import AlertModal from '../../components/AlertModal/AlertModal'
+
 
 const PlanningListAndEdit = () => {
   const [tableList, setTableList] = useState<any>([])
@@ -31,6 +34,7 @@ const PlanningListAndEdit = () => {
 
   const [isEditing, setIsEditing] = useState(false)
   const [initialLanguage, setInitialLanguage] = useState(language)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
 
   const handleThousandYenToggle = () => {
     setIsThousandYenChecked((prevState) => !prevState)
@@ -99,6 +103,24 @@ const PlanningListAndEdit = () => {
       setInitialLanguage(language)
       setLanguage(newLanguage)
     }
+  }
+
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    window.location.href = '/login'
   }
 
   return (
@@ -213,6 +235,12 @@ const PlanningListAndEdit = () => {
           </div>
         </div>
       </div>
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
+      />
     </div>
   )
 }

@@ -20,12 +20,13 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { months, resultsScreenTabs, token } from '../../constants'
+import { months, resultsScreenTabs, token, IDLE_TIMEOUT } from '../../constants'
 import {
   handleDisableKeysOnNumberInputs,
   formatNumberWithCommas,
   handleInputChange,
   handleResultsListTabsClick,
+  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
 const ExpensesResultsList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
@@ -47,6 +48,7 @@ const ExpensesResultsList: React.FC = () => {
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
 
   const header: string[] = [
     'year',
@@ -355,6 +357,24 @@ const ExpensesResultsList: React.FC = () => {
 
   const handleNewRegistrationClick = () => {
     navigate('/expenses-results-registration')
+  }
+
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    window.location.href = '/login'
   }
 
   return (
@@ -710,6 +730,12 @@ const ExpensesResultsList: React.FC = () => {
         onConfirm={handleUpdateConfirm}
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

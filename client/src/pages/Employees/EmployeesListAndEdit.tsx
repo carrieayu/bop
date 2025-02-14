@@ -34,8 +34,9 @@ import {
   formatNumberWithCommas,
   removeCommas,
   handleMMListTabsClick,
+  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
-import { MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER } from '../../constants'
+import { MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER, IDLE_TIMEOUT } from '../../constants'
 
 const EmployeesListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -66,6 +67,7 @@ const EmployeesListAndEdit: React.FC = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [userMap, setUserMap] = useState({})
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const onTabClick = (tab) => handleMMListTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
@@ -523,6 +525,24 @@ const EmployeesListAndEdit: React.FC = () => {
     })
   }
 
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    window.location.href = '/login'
+  }
+  
   return (
     <div className='EmployeesListAndEdit_wrapper'>
       <HeaderButtons
@@ -937,6 +957,12 @@ const EmployeesListAndEdit: React.FC = () => {
         onConfirm={handleUpdateConfirm}
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

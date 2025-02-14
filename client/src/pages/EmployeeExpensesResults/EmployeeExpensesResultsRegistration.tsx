@@ -20,8 +20,8 @@ import {
 } from '../../utils/validationUtil'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
 import { getFilteredEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/FilterGetEmployeeExpenseResult'
-import { handleResultsRegTabsClick } from '../../utils/helperFunctionsUtil'
-import { maximumEntriesEE, monthNames, resultsScreenTabs, storedUserID, token } from '../../constants'
+import { handleResultsRegTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
+import { maximumEntriesEE, monthNames, resultsScreenTabs, storedUserID, token, IDLE_TIMEOUT } from '../../constants'
 import { closeModal, openModal } from '../../actions/hooks'
 
 type Date = {
@@ -59,6 +59,7 @@ const EmployeeExpensesResultsRegistration = () => {
   const [modalMessage, setModalMessage] = useState('')
   const [filteredDates, setFilteredDates] = useState<DateForm[]>([{ form: [{ date: [] }] }])
   const [selectionYearResults, setSelectionYearResults] = useState<DateForm[]>([{ form: [{ date: [] }] }])
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const onTabClick = (tab) => handleResultsRegTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
@@ -564,6 +565,24 @@ const EmployeeExpensesResultsRegistration = () => {
     navigate('/employee-expenses-results-list')
   }
 
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    window.location.href = '/login'
+  }
+
   return (
     <div className='employeeExpensesResultsRegistration_wrapper'>
       <HeaderButtons
@@ -766,6 +785,12 @@ const EmployeeExpensesResultsRegistration = () => {
         onConfirm={handleRemoveInputData}
         onCancel={closeModal}
         message={translate('cancelCreation', language)}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
       <CrudModal
         message={modalMessage}

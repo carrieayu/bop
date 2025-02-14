@@ -15,7 +15,7 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { maximumEntries, monthNames, resultsScreenTabs, storedUserID, token, years } from '../../constants'
+import { maximumEntries, monthNames, resultsScreenTabs, storedUserID, token, years, IDLE_TIMEOUT } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 import {
   handleDisableKeysOnNumberInputs,
@@ -23,6 +23,7 @@ import {
   sortByFinancialYear,
   handleGeneralResultsInputChange,
   handleResultsRegTabsClick,
+  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
 import { filterExpenseResults } from '../../api/ExpenseResultEndpoint/FilterExpenseResults'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
@@ -74,6 +75,7 @@ const ExpensesResultsRegistration = () => {
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
 
   const handleTranslationSwitchToggle = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
@@ -332,6 +334,24 @@ const ExpensesResultsRegistration = () => {
 
   const handleListClick = () => {
     navigate('/expenses-results-list')
+  }
+
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    window.location.href = '/login'
   }
 
   return (
@@ -602,6 +622,12 @@ const ExpensesResultsRegistration = () => {
         onCancel={() => setIsOverwriteModalOpen(false)}
         onConfirm={handleOverwriteConfirmation}
         message={modalMessage}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

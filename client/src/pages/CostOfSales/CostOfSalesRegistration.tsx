@@ -22,9 +22,10 @@ import {
   removeCommas,
   handleInputChange,
   handlePLRegTabsClick,
+  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
 import { overwriteCostOfSale } from '../../api/CostOfSalesEndpoint/OverwriteCostOfSales'
-import { maximumEntries, monthNames, token, years } from '../../constants'
+import { maximumEntries, monthNames, token, years, IDLE_TIMEOUT } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 
 const CostOfSalesRegistration = () => {
@@ -51,6 +52,7 @@ const CostOfSalesRegistration = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const onTabClick = (tab) => handlePLRegTabsClick(tab, navigate, setActiveTab)
 
   const handleAdd = () => {
@@ -257,6 +259,24 @@ const CostOfSalesRegistration = () => {
 
   const handleListClick = () => {
     navigate('/cost-of-sales-list')
+  }
+
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    window.location.href = '/login'
   }
 
   return (
@@ -478,6 +498,12 @@ const CostOfSalesRegistration = () => {
         onCancel={() => setIsOverwriteModalOpen(false)}
         onConfirm={handleOverwriteConfirmation}
         message={modalMessage}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

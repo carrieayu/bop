@@ -22,8 +22,8 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { formatDate, handleMMListTabsClick } from '../../utils/helperFunctionsUtil'
-import { masterMaintenanceScreenTabs, token } from '../../constants'
+import { formatDate, handleMMListTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
+import { masterMaintenanceScreenTabs, token, IDLE_TIMEOUT } from '../../constants'
 
 const BusinessDivisionsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -53,6 +53,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -353,6 +354,24 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
     navigate('/business-divisions-registration')
   }
 
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    window.location.href = '/login'
+  }
+
   return (
     <div className='BusinessDivisionsListAndEdit_wrapper'>
       <HeaderButtons
@@ -564,6 +583,12 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         onConfirm={handleUpdateConfirm}
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

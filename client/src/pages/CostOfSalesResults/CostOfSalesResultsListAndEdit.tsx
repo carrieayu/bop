@@ -23,11 +23,12 @@ import {
   handleInputChange,
   formatNumberWithCommas,
   handleResultsListTabsClick,
+  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
 import { getCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/GetCostOfSalesResults'
 import { deleteCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/DeleteCostOfSalesResults'
 import { updateCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/UpdateCostOfSalesResults'
-import { months, resultsScreenTabs, token } from '../../constants'
+import { months, resultsScreenTabs, token, IDLE_TIMEOUT } from '../../constants'
 
 const CostOfSalesResultsList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
@@ -52,6 +53,7 @@ const CostOfSalesResultsList: React.FC = () => {
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const onTabClick = (tab) => handleResultsListTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
@@ -361,6 +363,24 @@ const CostOfSalesResultsList: React.FC = () => {
     navigate('/cost-of-sales-results-registration')
   }
 
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    window.location.href = '/login'
+  }
+
   return (
     <div className='costOfSalesResultsList_wrapper'>
       <HeaderButtons
@@ -667,6 +687,12 @@ const CostOfSalesResultsList: React.FC = () => {
         onConfirm={handleUpdateConfirm}
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

@@ -17,8 +17,8 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleMMRegTabsClick } from '../../utils/helperFunctionsUtil'
-import { masterMaintenanceScreenTabs, maximumEntries, storedUserID, token } from '../../constants'
+import { handleMMRegTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
+import { masterMaintenanceScreenTabs, maximumEntries, storedUserID, token, IDLE_TIMEOUT } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 
 const BusinessDivisionsRegistration = () => {
@@ -43,6 +43,7 @@ const BusinessDivisionsRegistration = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -215,6 +216,24 @@ const BusinessDivisionsRegistration = () => {
     navigate('/business-divisions-list')
   }
 
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    window.location.href = '/login'
+  }
+
   return (
     <div className='BusinessDivisionsRegistration_wrapper'>
       <HeaderButtons
@@ -326,6 +345,12 @@ const BusinessDivisionsRegistration = () => {
         onClose={() => setIsModalOpen(false)}
         isCRUDOpen={isModalOpen}
         validationMessages={crudValidationErrors}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )
