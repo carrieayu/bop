@@ -28,8 +28,7 @@ import {
 } from '../../utils/helperFunctionsUtil'
 import EmployeeExpensesList from '../EmployeeExpenses/EmployeeExpensesList'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
-import { masterMaintenanceScreenTabs, maximumEntries, token, IDLE_TIMEOUT } from '../../constants'
-import { MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER } from '../../constants'
+import { masterMaintenanceScreenTabs, maximumEntries, token, MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER, IDLE_TIMEOUT } from '../../constants'
 
 const EmployeesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
