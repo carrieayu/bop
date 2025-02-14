@@ -22,11 +22,12 @@ import {
   formatNumberWithCommas,
   handleInputChange,
   handlePLListTabsClick,
+  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
 import { deleteExpense } from '../../api/ExpenseEndpoint/DeleteExpense'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
 import { updateExpense } from '../../api/ExpenseEndpoint/UpdateExpense'
-import { months, token } from '../../constants'
+import { months, token, IDLE_TIMEOUT } from '../../constants'
 
 const ExpensesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -47,6 +48,7 @@ const ExpensesList: React.FC = () => {
   const [crudMessage, setCrudMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const [deleteComplete, setDeleteComplete] = useState(false)
 
   const header: string[] = [
@@ -383,6 +385,25 @@ const ExpensesList: React.FC = () => {
 
   const handleNewRegistrationClick = () => {
     navigate('/expenses-registration')
+  }
+
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+
+
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    window.location.href = '/login'
   }
 
   return (
@@ -740,6 +761,12 @@ const ExpensesList: React.FC = () => {
         onConfirm={handleUpdateConfirm}
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )
