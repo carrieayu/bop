@@ -13,7 +13,7 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { createProject } from '../../api/ProjectsEndpoint/CreateProject'
 import { overwriteProject } from '../../api/ProjectsEndpoint/OverwriteProject'
-import { maximumEntries, monthNames, token, years } from '../../constants'
+import { maximumEntries, monthNames, token, years, IDLE_TIMEOUT } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 import {
   validateRecords,
@@ -28,6 +28,7 @@ import {
   formatNumberWithDecimal,
   handleInputChange,
   handlePLRegTabsClick,
+  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
 
 const ProjectsRegistration = () => {
@@ -46,6 +47,7 @@ const ProjectsRegistration = () => {
   const [modalMessage, setModalMessage] = useState('')
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const onTabClick = (tab) => handlePLRegTabsClick(tab, navigate, setActiveTab)
 
   const emptyFormData = {
@@ -108,6 +110,19 @@ const ProjectsRegistration = () => {
       console.error(e)
     }
   }
+
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
 
   const currentDate = new Date()
   const currentYear = currentDate.getFullYear()
@@ -323,6 +338,11 @@ const ProjectsRegistration = () => {
 
     // Call the submission method again after confirmation
     await handleSubmitConfirmed()
+  }
+
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    window.location.href = '/login'
   }
 
   const handleSubmitConfirmed = async () => {
@@ -732,6 +752,12 @@ const ProjectsRegistration = () => {
         onCancel={() => setIsOverwriteModalOpen(false)}
         onConfirm={handleOverwriteConfirmation}
         message={modalMessage}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

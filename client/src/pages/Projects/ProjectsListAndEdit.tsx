@@ -25,7 +25,7 @@ import {
 import { getProject } from '../../api/ProjectsEndpoint/GetProject'
 import { updateProject } from '../../api/ProjectsEndpoint/UpdateProject'
 import { deleteProject } from '../../api/ProjectsEndpoint/DeleteProject'
-import { months, token, years } from '../../constants'
+import { months, token, years, IDLE_TIMEOUT } from '../../constants'
 import {
   handleDisableKeysOnNumberInputs,
   removeCommas,
@@ -296,7 +296,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
       setIsIdle(true);
       setIsNonActiveOpen(true)
     };
-    const idleTimer = setupIdleTimer(onIdle, 5000);
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
     idleTimer.startListening();
     return () => {
       idleTimer.stopListening();
