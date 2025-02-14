@@ -290,21 +290,14 @@ const ProjectsListAndEdit: React.FC = ({}) => {
     }
   }
 
-
   const [isIdle, setIsIdle] = useState(false);
-
   useEffect(() => {
-    // 非アクティブ時の処理を定義
     const onIdle = () => {
       setIsIdle(true);
       setIsNonActiveOpen(true)
     };
-    // 非アクティブタイマーをセットアップ
-    // 15分 = 900000ミリ秒
-    // 30秒 = 30000ミリ秒
-    // 5秒 = 5000ミリ秒
     const idleTimer = setupIdleTimer(onIdle, 5000);
-    idleTimer.startListening(); // イベントの監視を開始
+    idleTimer.startListening();
     return () => {
       idleTimer.stopListening();
     };
@@ -314,7 +307,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
     const fetchProjects = async () => {
       if (!token) {
         setIsNonActiveOpen(true)
-        window.location.href = '/login' // Redirect to login if no token found
+        window.location.href = '/login'
         return
       }
       fetchProjectsHandler()
