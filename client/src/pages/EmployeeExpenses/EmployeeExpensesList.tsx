@@ -15,8 +15,8 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/GetEmployeeExpense'
 import { deleteEmployeeExpenseX } from '../../api/EmployeeExpenseEndpoint/DeleteEmployeeExpenseX'
 import { deleteProjectAssociation } from '../../api/EmployeeExpenseEndpoint/DeleteProjectAssociation'
-import { formatNumberWithCommas, handlePLListTabsClick } from '../../utils/helperFunctionsUtil'
-import { monthNames, months, token } from '../../constants'
+import { formatNumberWithCommas, handlePLListTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
+import { monthNames, months, token, IDLE_TIMEOUT } from '../../constants'
 
 const EmployeeExpensesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -32,7 +32,7 @@ const EmployeeExpensesList: React.FC = () => {
   const [deleteEmployeeExpensesId, setDeleteEmployeeExpensesId] = useState([])
   const [deletedId, setDeletedId] = useState<any>(null)
   const onTabClick = (tab) => handlePLListTabsClick(tab, navigate, setActiveTab)
-
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const [employeeProjectId, setEmployeeProjectId] = useState<{
     employee_expense_id: string
     project_id: string
@@ -165,6 +165,40 @@ const EmployeeExpensesList: React.FC = () => {
       })
   }
 
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    sessionStorage.removeItem("showAlert");
+    sessionStorage.removeItem("showAlertInitialized");
+    window.location.href = '/login'
+  }
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const isInitialized = sessionStorage.getItem("showAlertInitialized");
+      if (isInitialized) {
+        clearInterval(interval);
+        const showAlert = sessionStorage.getItem("showAlert");
+        if (showAlert === "ON") {
+          setIsNonActiveOpen(true);
+        }
+      }
+    }, 100);
+      return () => clearInterval(interval);
+  }, []);
+  
   return (
     <div className='employeeExpensesList_wrapper'>
       <HeaderButtons
@@ -611,6 +645,12 @@ const EmployeeExpensesList: React.FC = () => {
         onConfirm={handleDelete}
         onCancel={closeModal}
         message={translate('deleteMessage', language)}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
       <CrudModal isCRUDOpen={isCRUDOpen} onClose={closeModal} message={crudMessage} />
     </div>

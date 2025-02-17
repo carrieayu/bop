@@ -20,12 +20,13 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { months, resultsScreenTabs, token } from '../../constants'
+import { months, resultsScreenTabs, token, IDLE_TIMEOUT } from '../../constants'
 import {
   handleDisableKeysOnNumberInputs,
   formatNumberWithCommas,
   handleInputChange,
   handleResultsListTabsClick,
+  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
 const ExpensesResultsList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
@@ -47,6 +48,7 @@ const ExpensesResultsList: React.FC = () => {
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
 
   const header: string[] = [
     'year',
@@ -357,6 +359,40 @@ const ExpensesResultsList: React.FC = () => {
     navigate('/expenses-results-registration')
   }
 
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    sessionStorage.removeItem("showAlert");
+    sessionStorage.removeItem("showAlertInitialized");
+    window.location.href = '/login'
+  }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const isInitialized = sessionStorage.getItem("showAlertInitialized");
+      if (isInitialized) {
+        clearInterval(interval);
+        const showAlert = sessionStorage.getItem("showAlert");
+        if (showAlert === "ON") {
+          setIsNonActiveOpen(true);
+        }
+      }
+    }, 100);
+      return () => clearInterval(interval);
+  }, []);
+  
   return (
     <div className={'expensesResultsList_wrapper'}>
       <HeaderButtons
@@ -710,6 +746,12 @@ const ExpensesResultsList: React.FC = () => {
         onConfirm={handleUpdateConfirm}
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

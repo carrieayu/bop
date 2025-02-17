@@ -13,7 +13,7 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { createProject } from '../../api/ProjectsEndpoint/CreateProject'
 import { overwriteProject } from '../../api/ProjectsEndpoint/OverwriteProject'
-import { maximumEntries, monthNames, token, years } from '../../constants'
+import { maximumEntries, monthNames, token, years, IDLE_TIMEOUT } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 import {
   validateRecords,
@@ -28,6 +28,7 @@ import {
   formatNumberWithDecimal,
   handleInputChange,
   handlePLRegTabsClick,
+  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
 
 const ProjectsRegistration = () => {
@@ -46,6 +47,7 @@ const ProjectsRegistration = () => {
   const [modalMessage, setModalMessage] = useState('')
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const onTabClick = (tab) => handlePLRegTabsClick(tab, navigate, setActiveTab)
 
   const emptyFormData = {
@@ -401,6 +403,40 @@ const ProjectsRegistration = () => {
     navigate('/projects-list')
   }
 
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+  
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    sessionStorage.removeItem("showAlert");
+    sessionStorage.removeItem("showAlertInitialized");
+    window.location.href = '/login'
+  }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const isInitialized = sessionStorage.getItem("showAlertInitialized");
+      if (isInitialized) {
+        clearInterval(interval);
+        const showAlert = sessionStorage.getItem("showAlert");
+        if (showAlert === "ON") {
+          setIsNonActiveOpen(true);
+        }
+      }
+    }, 100);
+      return () => clearInterval(interval);
+  }, []);
+  
   return (
     <div className='projectsRegistration-wrapper'>
       <HeaderButtons
@@ -732,6 +768,12 @@ const ProjectsRegistration = () => {
         onCancel={() => setIsOverwriteModalOpen(false)}
         onConfirm={handleOverwriteConfirmation}
         message={modalMessage}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

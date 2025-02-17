@@ -13,6 +13,9 @@ import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import { useAppDispatch } from '../../actions/hooks'
+import { dates, header, smallDate, IDLE_TIMEOUT } from '../../constants'
+import { setupIdleTimer } from '../../utils/helperFunctionsUtil'
+import AlertModal from '../../components/AlertModal/AlertModal'
 import TableDashboard from '../../components/TableDashboard/TableDashboard'
 
 function formatNumberWithCommas(number: number): string {
@@ -45,6 +48,7 @@ const Dashboard = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [isThousandYenChecked, setIsThousandYenChecked] = useState(false)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const dispatch = useAppDispatch()
 
   const handleThousandYenToggle = () => {
@@ -170,6 +174,40 @@ const Dashboard = () => {
   const handleSwitchToggle = () => {
     setIsSwitchActive((prevState) => !prevState)
   }
+
+  const [isIdle, setIsIdle] = useState(false);
+  useEffect(() => {
+    const onIdle = () => {
+      setIsIdle(true);
+      setIsNonActiveOpen(true)
+    };
+    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
+    idleTimer.startListening();
+    return () => {
+      idleTimer.stopListening();
+    };
+  }, []);
+
+  const handleNonActiveConfirm = async () => {
+    setIsNonActiveOpen(false)
+    sessionStorage.removeItem("showAlert");
+    sessionStorage.removeItem("showAlertInitialized");
+    window.location.href = '/login'
+  }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const isInitialized = sessionStorage.getItem("showAlertInitialized");
+      if (isInitialized) {
+        clearInterval(interval);
+        const showAlert = sessionStorage.getItem("showAlert");
+        if (showAlert === "ON") {
+          setIsNonActiveOpen(true);
+        }
+      }
+    }, 100);
+      return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className='dashboard_wrapper'>
@@ -320,6 +358,12 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
+      />
     </div>
   )
 }
