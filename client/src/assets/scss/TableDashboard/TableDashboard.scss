@@ -1,0 +1,112 @@
+.dashboard-sticky, .dashboard-scnd-row{
+    position: sticky;
+    background-color: white;
+    z-index: 2;
+}
+
+.dashboard-first-row {
+    top: 0;
+    box-shadow: 
+    inset 0 0.5px 0 #000000,  /* Top shadow */
+    inset 0 0px 0 #000000,  /* Bottom shadow */
+    // inset 0.5px 0 0 #000000,   /* Left shadow */
+    inset -0.5px 0 0 #000000;  /* Right shadow */
+}
+
+.dashboard-scnd-row {
+    top: 22px;
+    box-shadow: 
+    inset 0 0.5px 0 #000000,  /* Top shadow */
+    inset 0 -0.5px 0 #000000,  /* Bottom shadow */
+    // inset 0.5px 0 0 #000000,   /* Left shadow */
+    inset -0.5px 0 0 #000000;  /* Right shadow */
+}
+
+.planning-header {
+    background-color: #fec384c7;
+
+}
+
+.result-header {
+    background-color: #CDE4FC;
+
+}
+
+.half-year-first {
+background-color: #fce5cd; 
+text-align: center !important;
+}
+
+.half-year-second {
+background-color: #c9daf8;
+text-align: center !important;
+}
+
+.totals {
+text-align: center !important;
+background-color: #daeef3;
+}
+
+.planning-cells {
+    background-color: #fce5cd31;
+    border-left: solid 1px #9c9c9c !important;
+}
+
+.result-cells {
+    background-color: #cae3ff5f;
+    border-right: solid 1px #9c9c9c !important;
+}
+
+.sales-ratio {
+    text-align: center !important;
+    background-color: palegoldenrod;
+    background-color: #eeaaaa;
+
+}
+
+.sale-ratio-cells {
+background-color: rgba(238, 232, 170, 0.456);
+background-color: #eeaaaa55;
+
+}
+
+.border {
+    border-right: 1px solid #9c9c9c !important;
+    border-left: 1px solid #9c9c9c !important;
+}
+
+.border-left {
+    border-left: 1px solid #9c9c9c !important;
+}
+
+.border-right {
+    border-right: 1px solid #9c9c9c !important;
+}
+
+.sticky {
+    left: 0;
+    position: sticky;
+    background-color: white;
+    z-index: 1;
+}
+
+.first-column{
+// box-shadow: 
+}
+
+.border-sides-shadow {
+    box-shadow: 
+    inset 0.5px 0 0 #000000,   /* Left shadow */
+    inset -0.5px 0 0 #000000;  /* Right shadow */
+
+}
+
+.border-left-shadow {
+    box-shadow: 
+    inset 0.5px 0 0 #000000;   /* Left shadow */
+}
+
+.border-right-shadow {
+    box-shadow: 
+    inset -0.5px 0 0 #000000;  /* Right shadow */
+}

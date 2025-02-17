@@ -25,7 +25,7 @@ TWO_DECIMAL_PLACES = 2
 
 # RANGE (CHOICES)
 YEAR_CHOICES = [(str(year), str(year)) for year in range(2000, 2101)]
-MONTH_CHOICES = [(i, i) for i in range(1, 13)]
+MONTH_CHOICES = [(str(month), str(month)) for month in range(1, 13)]
 
 # Reusable Decimal Validator
 min_max_decimal_validator = [ MinValueValidator(Decimal(min_int)), MaxValueValidator(Decimal(max_int)) ] 
@@ -167,8 +167,8 @@ class Projects(models.Model):
     business_division = models.ForeignKey(
         "MasterBusinessDivision", on_delete=models.CASCADE, related_name="business_division"
     )
-    year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
-    month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
+    year = models.CharField(max_length=4, default="2024",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
+    month = models.CharField(max_length=2, default="1", choices=MONTH_CHOICES ) # Only (1 - 12) Range Accepted.
     sales_revenue = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=ZERO_DECIMAL_PLACES)
     dispatch_labor_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=ZERO_DECIMAL_PLACES)
     employee_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=ZERO_DECIMAL_PLACES)
@@ -276,8 +276,8 @@ class Results(models.Model):
 class EmployeeExpenses(models.Model):
     employee_expense_id = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True, editable=False)  # Change to CharField for formatted ID
     client = models.ForeignKey(MasterClient, on_delete=models.CASCADE)
-    year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
-    month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
+    year = models.CharField(max_length=4, default="2024",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
+    month = models.CharField(max_length=2, default="1", choices=MONTH_CHOICES ) # Only (1 - 12) Range Accepted.
     project = models.ForeignKey(Projects, on_delete=models.CASCADE, null=True)
     employee = models.ForeignKey(Employees, on_delete=models.CASCADE, null=True)
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
@@ -312,8 +312,8 @@ class EmployeeExpenses(models.Model):
     
 class CostOfSales(models.Model):
     cost_of_sale_id = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True)
-    year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
-    month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
+    year = models.CharField(max_length=4, default="2024",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
+    month = models.CharField(max_length=2, default="1", choices=MONTH_CHOICES ) # Only (1 - 12) Range Accepted.
     purchase = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=ZERO_DECIMAL_PLACES)
     outsourcing_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=ZERO_DECIMAL_PLACES)
     product_purchase = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=ZERO_DECIMAL_PLACES)
@@ -344,8 +344,8 @@ class CostOfSales(models.Model):
 class CostOfSalesResults(models.Model):
     cost_of_sale_result_id  = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True)
     cost_of_sale =  models.ForeignKey(CostOfSales, on_delete=models.CASCADE, null=True)
-    year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
-    month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
+    year = models.CharField(max_length=4, default="2024",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
+    month = models.CharField(max_length=2, default="1", choices=MONTH_CHOICES ) # Only (1 - 12) Range Accepted.
     purchase = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=ZERO_DECIMAL_PLACES)
     outsourcing_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=ZERO_DECIMAL_PLACES)
     product_purchase = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=ZERO_DECIMAL_PLACES)
@@ -366,7 +366,7 @@ class CostOfSalesResults(models.Model):
                 numeric_part = int(max_id[1:]) + 1  # Extract numeric part after 'A'
             else:
                 numeric_part = 1  # Start with 1 if no records exist
-            self.cost_of_sale_result_id = f'A{numeric_part:09d}'  # Format as 'A000000001'
+            self.cost_of_sale_result_id = f'AR{numeric_part:09d}'  # Format as 'A000000001'
         
         super().save(*args, **kwargs) 
 
@@ -375,8 +375,8 @@ class CostOfSalesResults(models.Model):
     
 class Expenses(models.Model):
     expense_id = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True)
-    year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
-    month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
+    year = models.CharField(max_length=4, default="2024",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
+    month = models.CharField(max_length=2, default="1", choices=MONTH_CHOICES ) # Only (1 - 12) Range Accepted.
     consumable_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=ZERO_DECIMAL_PLACES)
     rent_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=ZERO_DECIMAL_PLACES)
     tax_and_public_charge = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=ZERO_DECIMAL_PLACES)
@@ -412,8 +412,8 @@ class Expenses(models.Model):
 class ExpensesResults(models.Model):
     expense_result_id  = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True)
     expense = models.ForeignKey(Expenses, on_delete=models.CASCADE, null=True)
-    year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
-    month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
+    year = models.CharField(max_length=4, default="2024",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
+    month = models.CharField(max_length=2, default="1", choices=MONTH_CHOICES ) # Only (1 - 12) Range Accepted.
     consumable_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=ZERO_DECIMAL_PLACES)
     rent_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=ZERO_DECIMAL_PLACES)
     tax_and_public_charge = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=ZERO_DECIMAL_PLACES)
@@ -448,6 +448,8 @@ class ExpensesResults(models.Model):
 class ProjectsSalesResults(models.Model):
     project_sales_result_id  = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True , editable=False)
     project = models.ForeignKey(Projects, on_delete=models.CASCADE, null=True)
+    month = models.CharField(max_length=2, default="1", choices=MONTH_CHOICES ) # Only (1 - 12) Range Accepted.
+    year = models.CharField(max_length=4, default="2024",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
     sales_revenue = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=ZERO_DECIMAL_PLACES)
     dispatch_labor_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=ZERO_DECIMAL_PLACES)
     employee_expense = models.DecimalField(validators=min_max_decimal_validator, max_digits=MAX_DIGITS, decimal_places=ZERO_DECIMAL_PLACES)
@@ -484,8 +486,8 @@ class ProjectsSalesResults(models.Model):
 class EmployeeExpensesResults(models.Model):
     employee_expense_result_id  = models.CharField(max_length=MAX_LENGTH_ID, primary_key=True, editable=False) 
     employee = models.ForeignKey(Employees, on_delete=models.CASCADE, null=True)
-    year = models.CharField(max_length=4, default="2001",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
-    month = models.CharField(max_length=2, default="01", choices=MONTH_CHOICES ) # Only (01 - 12) Range Accepted.
+    year = models.CharField(max_length=4, default="2024",choices=YEAR_CHOICES ) # Only (2000 - 2101) Range Accepted.)
+    month = models.CharField(max_length=2, default="1", choices=MONTH_CHOICES ) # Only (1 - 12) Range Accepted.
     auth_user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
     client = models.ForeignKey(MasterClient, on_delete=models.CASCADE)
     project = models.ForeignKey(ProjectsSalesResults, on_delete=models.CASCADE, null=True)
