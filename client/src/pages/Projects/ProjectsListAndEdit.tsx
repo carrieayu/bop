@@ -428,7 +428,6 @@ const ProjectsListAndEdit: React.FC = ({}) => {
         const showAlert = sessionStorage.getItem("showAlert");
         if (showAlert === "ON") {
           setIsNonActiveOpen(true);
-          sessionStorage.setItem("showAlert", "OFF");
         }
       }
     }, 100);
