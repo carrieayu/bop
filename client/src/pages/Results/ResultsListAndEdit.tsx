@@ -17,6 +17,7 @@ import * as XLSX from 'xlsx'
 import { monthNames, months, token, IDLE_TIMEOUT } from '../../constants'
 import { setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import AlertModal from '../../components/AlertModal/AlertModal'
+import { useIdleTimer } from '../../hooks/useIdleTimer';
 
 const header = ['計画']
 const smallDate = ['2022/24月', '2022/25月', '2022/26月']
@@ -808,40 +809,14 @@ const ResultsListAndEdit = () => {
     }
   }
 
-  const [isIdle, setIsIdle] = useState(false);
+  const onIdle = () => {};
+  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
   useEffect(() => {
-    const onIdle = () => {
-      setIsIdle(true);
-      setIsNonActiveOpen(true)
-    };
-    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
-    idleTimer.startListening();
-    return () => {
-      idleTimer.stopListening();
-    };
-  }, []);
-
-  const handleNonActiveConfirm = async () => {
-    setIsNonActiveOpen(false)
-    sessionStorage.removeItem("showAlert");
-    sessionStorage.removeItem("showAlertInitialized");
-    window.location.href = '/login'
-  }
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const isInitialized = sessionStorage.getItem("showAlertInitialized");
-      if (isInitialized) {
-        clearInterval(interval);
-        const showAlert = sessionStorage.getItem("showAlert");
-        if (showAlert === "ON") {
-          setIsNonActiveOpen(true);
-        }
+      if (isIdleModalOpen) {
+          setIsNonActiveOpen(true)
       }
-    }, 100);
-      return () => clearInterval(interval);
-  }, []);
-
+  }, [isIdleModalOpen]);
+  
   return (
     <div className='results_summary_wrapper'>
       <HeaderButtons

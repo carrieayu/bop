@@ -23,6 +23,7 @@ import { getFilteredEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/Fi
 import { currentYear, maximumEntriesEE, monthNames, storedUserID, token, IDLE_TIMEOUT } from '../../constants'
 import { handlePLRegTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import { closeModal, openModal } from '../../actions/hooks'
+import { useIdleTimer } from '../../hooks/useIdleTimer';
 
 type Date = {
   year: string
@@ -509,39 +510,13 @@ const EmployeeExpensesRegistration = () => {
     navigate('/employee-expenses-list')
   }
 
-  const [isIdle, setIsIdle] = useState(false);
+  const onIdle = () => {};
+  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
   useEffect(() => {
-    const onIdle = () => {
-      setIsIdle(true);
-      setIsNonActiveOpen(true)
-    };
-    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
-    idleTimer.startListening();
-    return () => {
-      idleTimer.stopListening();
-    };
-  }, []);
-  
-  const handleNonActiveConfirm = async () => {
-    setIsNonActiveOpen(false)
-    sessionStorage.removeItem("showAlert");
-    sessionStorage.removeItem("showAlertInitialized");
-    window.location.href = '/login'
-  }
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const isInitialized = sessionStorage.getItem("showAlertInitialized");
-      if (isInitialized) {
-        clearInterval(interval);
-        const showAlert = sessionStorage.getItem("showAlert");
-        if (showAlert === "ON") {
-          setIsNonActiveOpen(true);
-        }
+      if (isIdleModalOpen) {
+          setIsNonActiveOpen(true)
       }
-    }, 100);
-      return () => clearInterval(interval);
-  }, []);
+  }, [isIdleModalOpen]);
 
   return (
     <div className='employeeExpensesRegistration_wrapper'>

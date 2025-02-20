@@ -17,6 +17,7 @@ import { deleteEmployeeExpenseX } from '../../api/EmployeeExpenseEndpoint/Delete
 import { deleteProjectAssociation } from '../../api/EmployeeExpenseEndpoint/DeleteProjectAssociation'
 import { formatNumberWithCommas, handlePLListTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import { monthNames, months, token, IDLE_TIMEOUT } from '../../constants'
+import { useIdleTimer } from '../../hooks/useIdleTimer';
 
 const EmployeeExpensesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -164,41 +165,15 @@ const EmployeeExpensesList: React.FC = () => {
         }
       })
   }
-
-  const [isIdle, setIsIdle] = useState(false);
-  useEffect(() => {
-    const onIdle = () => {
-      setIsIdle(true);
-      setIsNonActiveOpen(true)
-    };
-    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
-    idleTimer.startListening();
-    return () => {
-      idleTimer.stopListening();
-    };
-  }, []);
-
-  const handleNonActiveConfirm = async () => {
-    setIsNonActiveOpen(false)
-    sessionStorage.removeItem("showAlert");
-    sessionStorage.removeItem("showAlertInitialized");
-    window.location.href = '/login'
-  }
   
+  const onIdle = () => {};
+  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
   useEffect(() => {
-    const interval = setInterval(() => {
-      const isInitialized = sessionStorage.getItem("showAlertInitialized");
-      if (isInitialized) {
-        clearInterval(interval);
-        const showAlert = sessionStorage.getItem("showAlert");
-        if (showAlert === "ON") {
-          setIsNonActiveOpen(true);
-        }
+      if (isIdleModalOpen) {
+          setIsNonActiveOpen(true)
       }
-    }, 100);
-      return () => clearInterval(interval);
-  }, []);
-  
+  }, [isIdleModalOpen]);
+
   return (
     <div className='employeeExpensesList_wrapper'>
       <HeaderButtons

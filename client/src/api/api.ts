@@ -13,8 +13,6 @@ api.interceptors.request.use(
   (config: any) => {
     const token = localStorage.getItem(ACCESS_TOKEN);
     if (token) {
-      sessionStorage.setItem("showAlert", "OFF");
-      sessionStorage.setItem("showAlertInitialized", "true");
       // Extend config with token using a type assertion
       return {
         ...config,
@@ -23,8 +21,6 @@ api.interceptors.request.use(
         } as RequestConfigWithToken["headers"],
       };
     } else {
-      sessionStorage.setItem("showAlert", "ON");
-      sessionStorage.setItem("showAlertInitialized", "true");
       return config;
     }
   },

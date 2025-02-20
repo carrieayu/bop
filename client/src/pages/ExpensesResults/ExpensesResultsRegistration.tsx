@@ -28,6 +28,7 @@ import {
 import { filterExpenseResults } from '../../api/ExpenseResultEndpoint/FilterExpenseResults'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
 import { MAX_NUMBER_LENGTH } from '../../constants'
+import { useIdleTimer } from '../../hooks/useIdleTimer';
 
 type ExpenseResults = {
   month: string
@@ -336,39 +337,13 @@ const ExpensesResultsRegistration = () => {
     navigate('/expenses-results-list')
   }
 
-  const [isIdle, setIsIdle] = useState(false);
+  const onIdle = () => {};
+  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
   useEffect(() => {
-    const onIdle = () => {
-      setIsIdle(true);
-      setIsNonActiveOpen(true)
-    };
-    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
-    idleTimer.startListening();
-    return () => {
-      idleTimer.stopListening();
-    };
-  }, []);
-
-  const handleNonActiveConfirm = async () => {
-    setIsNonActiveOpen(false)
-    sessionStorage.removeItem("showAlert");
-    sessionStorage.removeItem("showAlertInitialized");
-    window.location.href = '/login'
-  }
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const isInitialized = sessionStorage.getItem("showAlertInitialized");
-      if (isInitialized) {
-        clearInterval(interval);
-        const showAlert = sessionStorage.getItem("showAlert");
-        if (showAlert === "ON") {
-          setIsNonActiveOpen(true);
-        }
+      if (isIdleModalOpen) {
+          setIsNonActiveOpen(true)
       }
-    }, 100);
-      return () => clearInterval(interval);
-  }, []);
+  }, [isIdleModalOpen]);
   
   return (
     <div className='expensesResultsRegistration_wrapper'>

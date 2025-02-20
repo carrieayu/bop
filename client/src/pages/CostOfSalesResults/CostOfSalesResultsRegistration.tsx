@@ -31,6 +31,7 @@ import { getCostOfSale } from '../../api/CostOfSalesEndpoint/GetCostOfSale'
 import { maximumEntries, monthNames, resultsScreenTabs, token } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 import { MAX_NUMBER_LENGTH, IDLE_TIMEOUT } from '../../constants'
+import { useIdleTimer } from '../../hooks/useIdleTimer';
 
 type CostOfSaleResults = {
   month: string
@@ -377,39 +378,13 @@ const CostOfSalesResultsRegistration = () => {
     navigate('/cost-of-sales-results-list')
   }
 
-  const [isIdle, setIsIdle] = useState(false);
+  const onIdle = () => {};
+  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
   useEffect(() => {
-    const onIdle = () => {
-      setIsIdle(true);
-      setIsNonActiveOpen(true)
-    };
-    const idleTimer = setupIdleTimer(onIdle, IDLE_TIMEOUT);
-    idleTimer.startListening();
-    return () => {
-      idleTimer.stopListening();
-    };
-  }, []);
-
-  const handleNonActiveConfirm = async () => {
-    setIsNonActiveOpen(false)
-    sessionStorage.removeItem("showAlert");
-    sessionStorage.removeItem("showAlertInitialized");
-    window.location.href = '/login'
-  }
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const isInitialized = sessionStorage.getItem("showAlertInitialized");
-      if (isInitialized) {
-        clearInterval(interval);
-        const showAlert = sessionStorage.getItem("showAlert");
-        if (showAlert === "ON") {
-          setIsNonActiveOpen(true);
-        }
+      if (isIdleModalOpen) {
+          setIsNonActiveOpen(true)
       }
-    }, 100);
-      return () => clearInterval(interval);
-  }, []);
+  }, [isIdleModalOpen]);
 
   return (
     <div className='costOfSalesResultsRegistration_wrapper'>
