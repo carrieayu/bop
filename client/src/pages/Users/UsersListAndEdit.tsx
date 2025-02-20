@@ -22,8 +22,9 @@ import {
   getFieldChecks,
   checkForDuplicateUsers,
 } from '../../utils/validationUtil'
-import { formatDate, handleMMListTabsClick } from '../../utils/helperFunctionsUtil'
-import { masterMaintenanceScreenTabs, token } from '../../constants'
+import { formatDate, handleMMListTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
+import { masterMaintenanceScreenTabs, token, IDLE_TIMEOUT } from '../../constants'
+import { useIdleTimer } from '../../hooks/useIdleTimer';
 
 const UsersListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -62,6 +63,7 @@ const UsersListAndEdit: React.FC = () => {
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -280,6 +282,14 @@ const UsersListAndEdit: React.FC = () => {
     }
   };
 
+  const onIdle = () => {};
+  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
+  useEffect(() => {
+      if (isIdleModalOpen) {
+          setIsNonActiveOpen(true)
+      }
+  }, [isIdleModalOpen]);
+
   return (
     <div className='UsersListAndEdit_wrapper'>
       <HeaderButtons
@@ -490,6 +500,12 @@ const UsersListAndEdit: React.FC = () => {
         onConfirm={handleUpdateConfirm}
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

@@ -25,7 +25,7 @@ import {
 import { getProject } from '../../api/ProjectsEndpoint/GetProject'
 import { updateProject } from '../../api/ProjectsEndpoint/UpdateProject'
 import { deleteProject } from '../../api/ProjectsEndpoint/DeleteProject'
-import { months, token, years } from '../../constants'
+import { months, token, years, IDLE_TIMEOUT } from '../../constants'
 import {
   handleDisableKeysOnNumberInputs,
   removeCommas,
@@ -33,7 +33,9 @@ import {
   formatNumberWithDecimal,
   handleInputChange,
   handlePLListTabsClick,
+  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
+import { useIdleTimer } from '../../hooks/useIdleTimer';
 
 const ProjectsListAndEdit: React.FC = ({}) => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -84,6 +86,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
   const [crudMessage, setCrudMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const [deleteComplete, setDeleteComplete] = useState(false)
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -284,20 +287,6 @@ const ProjectsListAndEdit: React.FC = ({}) => {
   }
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      if (!token) {
-        window.location.href = '/login' // Redirect to login if no token found
-        return
-      }
-
-      fetchProjectsHandler()
-    }
-    fetchDivision()
-    fetchClient()
-    fetchProjects()
-  }, [])
-
-  useEffect(() => {
     const startIndex = currentPage * rowsPerPage
     setPaginatedData(projects.slice(startIndex, startIndex + rowsPerPage))
   }, [currentPage, rowsPerPage, projects])
@@ -343,7 +332,6 @@ const ProjectsListAndEdit: React.FC = ({}) => {
   const handleConfirm = async () => {
     // Sets the Validation Errors if any to empty as they are not necessary for delete.
     setCrudValidationErrors([])
-
     if (!token) {
       window.location.href = '/login'
       return
@@ -397,6 +385,29 @@ const ProjectsListAndEdit: React.FC = ({}) => {
       }
     }
   }
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      if (!token) {
+        setIsNonActiveOpen(true)
+        window.location.href = '/login'
+        return
+      }
+      fetchProjectsHandler()
+    }
+
+    fetchDivision()
+    fetchClient()
+    fetchProjects()
+  }, [])
+
+  const onIdle = () => {};
+  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
+  useEffect(() => {
+      if (isIdleModalOpen) {
+          setIsNonActiveOpen(true)
+      }
+  }, [isIdleModalOpen]);
 
   return (
     <div className='projectsList-wrapper'>
@@ -836,6 +847,12 @@ const ProjectsListAndEdit: React.FC = ({}) => {
         onConfirm={handleUpdateConfirm}
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

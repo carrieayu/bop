@@ -20,9 +20,10 @@ import {
   checkForDuplicates,
 } from '../../utils/validationUtil'
 import { getFilteredEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/FilterGetEmployeeExpense'
-import { currentYear, maximumEntriesEE, monthNames, storedUserID, token } from '../../constants'
-import { handlePLRegTabsClick } from '../../utils/helperFunctionsUtil'
+import { currentYear, maximumEntriesEE, monthNames, storedUserID, token, IDLE_TIMEOUT } from '../../constants'
+import { handlePLRegTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import { closeModal, openModal } from '../../actions/hooks'
+import { useIdleTimer } from '../../hooks/useIdleTimer';
 
 type Date = {
   year: string
@@ -61,6 +62,7 @@ const EmployeeExpensesRegistration = () => {
     },
   ])
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const onTabClick = (tab) => handlePLRegTabsClick(tab, navigate, setActiveTab)
 
@@ -508,6 +510,14 @@ const EmployeeExpensesRegistration = () => {
     navigate('/employee-expenses-list')
   }
 
+  const onIdle = () => {};
+  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
+  useEffect(() => {
+      if (isIdleModalOpen) {
+          setIsNonActiveOpen(true)
+      }
+  }, [isIdleModalOpen]);
+
   return (
     <div className='employeeExpensesRegistration_wrapper'>
       <HeaderButtons
@@ -730,6 +740,12 @@ const EmployeeExpensesRegistration = () => {
         onClose={() => setIsModalOpen(false)}
         isCRUDOpen={isModalOpen}
         validationMessages={crudValidationErrors}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

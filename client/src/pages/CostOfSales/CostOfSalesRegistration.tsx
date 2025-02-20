@@ -22,10 +22,12 @@ import {
   removeCommas,
   handleInputChange,
   handlePLRegTabsClick,
+  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
 import { overwriteCostOfSale } from '../../api/CostOfSalesEndpoint/OverwriteCostOfSales'
-import { maximumEntries, monthNames, token, years } from '../../constants'
+import { maximumEntries, monthNames, token, years, IDLE_TIMEOUT } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
+import { useIdleTimer } from '../../hooks/useIdleTimer';
 
 const CostOfSalesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -51,6 +53,7 @@ const CostOfSalesRegistration = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const onTabClick = (tab) => handlePLRegTabsClick(tab, navigate, setActiveTab)
 
   const handleAdd = () => {
@@ -258,6 +261,15 @@ const CostOfSalesRegistration = () => {
   const handleListClick = () => {
     navigate('/cost-of-sales-list')
   }
+
+  const onIdle = () => {};
+  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
+  useEffect(() => {
+      if (isIdleModalOpen) {
+          setIsNonActiveOpen(true)
+      }
+  }, [isIdleModalOpen]);
+
 
   return (
     <div className='costOfSalesRegistration_wrapper'>
@@ -478,6 +490,12 @@ const CostOfSalesRegistration = () => {
         onCancel={() => setIsOverwriteModalOpen(false)}
         onConfirm={handleOverwriteConfirmation}
         message={modalMessage}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )
