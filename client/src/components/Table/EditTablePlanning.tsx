@@ -620,7 +620,7 @@ const EditTablePlanning = () => {
           },
           {
             label: 'cumulativeOrdinaryIncome',
-            values: organiseTotals(cumulativeOrdinaryProfitValues),
+            values: organiseTotals(cumulativeOrdinaryProfitValues, 'cumulativeOrdinaryIncome'), 
           },
         ]
 
@@ -804,7 +804,7 @@ const EditTablePlanning = () => {
           },
           {
             label: 'cumulativeOrdinaryIncome',
-            values: organiseTotals(cumulativeOrdinaryProfitValues),
+            values: organiseTotals(cumulativeOrdinaryProfitValues, 'cumulativeOrdinaryIncome'),
           },
         ]
 
@@ -952,7 +952,6 @@ const EditTablePlanning = () => {
                   {translate(`${halfYear}`, language)}
                 </th>
               ))}
-              <th className='total-txt'>{translate('salesRatio', language)}</th>
             </tr>
             <tr className='scnd-row'>
               <th className='borderless'></th>
@@ -964,7 +963,6 @@ const EditTablePlanning = () => {
                   {translate('planning', language)}
                 </th>
               ))}
-              <th>{''}</th>
             </tr>
           </thead>
           <tbody>

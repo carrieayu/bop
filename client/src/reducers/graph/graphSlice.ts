@@ -3,6 +3,7 @@ import api from '../../api/api'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { CardEntity } from '../../entity/cardEntity'
 import { token } from '../../constants'
+import { RootState } from '../../app/store'
 
 interface GraphDataState {
   isLoading: boolean
@@ -13,8 +14,9 @@ interface GraphDataState {
   totalGrossProfitMarginByDate: Record<string, number>
   totalOperatingProfitMarginByDate: Record<string, number>
   month: string[]
+  projectSalesRevenueMonthlyPlanning: {}
+  ordinaryIncomeMonthlyPlanning: {}
 }
-
 
 const initialState: GraphDataState = {
   isLoading: false,
@@ -25,6 +27,8 @@ const initialState: GraphDataState = {
   totalGrossProfitMarginByDate: {},
   totalOperatingProfitMarginByDate: {},
   month: [],
+  projectSalesRevenueMonthlyPlanning: {},
+  ordinaryIncomeMonthlyPlanning:{}
 }
 
 const calculateGrossProfit = (card) => Number(card.sales_revenue) - Number(card.cost_of_sale) // Need to update the calculation since cost of sale from projects is removed.
@@ -44,15 +48,46 @@ const calculateOperatingIncome = (card) => {
 
   return salesRevenue - costOfSale - dispatchLaborExpense - employeeExpense - indirectEmployeeExpense - otherExpense
 }
+export const fetchGraphDataTest = createAsyncThunk('graphDataTest/fetch', async (_, { getState }) => {
+  const state = getState() as RootState
 
-export const fetchGraphData = createAsyncThunk('graphData/fetch', async () => {
+  // NEW CODE
+  const planning = {
+    projectSalesRevenueMonthlyPlanning : state.project.salesRevenueMonthly
+  }
+
+  
+  // const reformattedMonthlyValue = (valuesArr) => {
+  //   return valuesArr.reduce((acc, item) => {
+  //     const label = `${item.year}-${item.month}`;
+  //     const monthValue = item.salesRevenue;
+  //     acc[label] = monthValue;
+  //     return acc;
+  //   }, {});
+  // };
+
+  // const test = reformattedMonthlyValue(projectSalesRevenueMonthlyPlanning)
+
+  return { planning }
+  // END NEW CODE
+}
+)
+
+
+export const fetchGraphData = createAsyncThunk('graphData/fetch', async (_, {getState}) => {
   const response = await api.get<CardEntity[]>(`${getReactActiveEndpoint()}/api/projects/list/`, {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
   })
+  // const state = getState() as RootState
+  // const projectSalesRevenueMonthlyPlanning = state.project.salesRevenueTotal
+
   const cards = response.data
+
+
+
   const aggregatedData: Partial<GraphDataState> = {
     totalSalesByDate: {},
     totalOperatingIncomeByDate: {},
@@ -89,7 +124,7 @@ export const fetchGraphData = createAsyncThunk('graphData/fetch', async () => {
     aggregatedData.totalOperatingProfitMarginByDate![date] += parseFloat(operatingProfitMargin?.toString() || '0')
     if (!aggregatedData.month.includes(date)) {
       aggregatedData.month.push(date)
-    }  
+    }
   })
   return aggregatedData
 })
@@ -114,6 +149,9 @@ const graphSlice = createSlice({
       })
       .addCase(fetchGraphData.rejected, (state) => {
         state.isLoading = false
+      }).addCase(fetchGraphDataTest.fulfilled, (state, action) => {
+        const { planning } = action.payload
+        state.projectSalesRevenueMonthlyPlanning = planning.projectSalesRevenueMonthlyPlanning
       })
   },
 })

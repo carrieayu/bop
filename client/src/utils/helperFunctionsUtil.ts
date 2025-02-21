@@ -1,6 +1,8 @@
 // GENERAL HELPER FUNCTIONS
 
-import { MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER, MAX_VALUE } from '../constants'
+import api from '../api/api'
+import { MAX_NUMBER_LENGTH, MAX_RETRIES, MAX_SAFE_INTEGER, MAX_VALUE, POLLING_INTERVAL } from '../constants'
+import { getReactActiveEndpoint } from '../toggleEndpoint'
 
 // # Helper to block non-numeric key presses for number inputs
 
@@ -41,9 +43,10 @@ export const handleDisableKeysOnNumberInputs = (event) => {
 // # Add Commas to Financial Numbers for Display on List, Edit, Registration Screens
 
 export const formatNumberWithCommas = (value: number | string): string => {
+  console.log('tetsing formatNumberWithCommas',value)
   // Trim the string and remove non-numeric characters,
   if (typeof value === 'string') {
-    value = value.replace(/[^0-9]/g, '') // Remove non-numeric characters
+    value = value.replace(/[^0-9-]/g, '') // Remove non-numeric characters
   }
 
   // Convert the sanitized string to a number
@@ -316,13 +319,27 @@ export const getRatio = (result, planning) => {
 
 export const sumValues = (arr) => arr.reduce((acc, value) => acc + parseFloat(value), 0)
 
-export const organiseTotals = (arr, planningArr = []) => {  
-  const firstHalfTotal = sumValues(arr.slice(0, 6)) // First Half Total
-  const secondHalfTotal = sumValues(arr.slice(6)) // Second Half Total
-  const total = sumValues(arr) // Total
+// Create new array: get totals for values in each row for planning, result, analysis tables.
+export const organiseTotals = (valuesArr, label = '') => {
+
+  let firstHalfTotal
+  let secondHalfTotal
+  let total
+
+  if (label === 'cumulativeOrdinaryIncome') {
+    console.log('cumulativeOrdinaryIncomeValues TRUE', label, valuesArr)
+    firstHalfTotal = valuesArr[5] // values already summed in cumulative so do not need sumValues.
+    secondHalfTotal = valuesArr[11] // values already summed in cumulative so do not need sumValues.
+    total = valuesArr[11] // values already summed in cumulative so do not need sumValues. (secondHalfTotal === total)
+  }
+  else {
+    firstHalfTotal = sumValues(valuesArr.slice(0, 6)) // First Half Total
+    secondHalfTotal = sumValues(valuesArr.slice(6)) // Second Half Total
+    total = sumValues(valuesArr) // Total
+  }
 
   return [
-    ...arr,
+    ...valuesArr,
     firstHalfTotal, // First Half Total
     secondHalfTotal, // Second Half Total
     total, // Total
@@ -332,4 +349,30 @@ export const organiseTotals = (arr, planningArr = []) => {
 export const cumulativeSum = (arr) => {
   let sum = 0
   return arr.map((value) => (sum += value))
+}
+
+export const grossProfitTotal = (salesRevenueTotal, costOfSalesTotal) => {
+  const grossProfit = salesRevenueTotal - costOfSalesTotal // Calculate gross profit
+  return grossProfit
+}
+
+export async function fetchWithPolling<T>(
+  endpoint: string,
+  retries = MAX_RETRIES,
+  pollingInterval = POLLING_INTERVAL,
+): Promise<T> {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await api.get(`${getReactActiveEndpoint()}/api/${endpoint}`)
+      if (response.data && response.data.length > 0) {
+        return response.data // Ensure this is returning the correct type T
+      } else {
+        console.error(`Attempt ${attempt}: Data is empty, retrying in ${pollingInterval / 1000} seconds...`)
+      }
+    } catch (error) {
+      console.error(`Attempt ${attempt}: Error fetching data -`, error)
+    }
+    await new Promise((resolve) => setTimeout(resolve, pollingInterval))
+  }
+  throw new Error('Failed to fetch data after maximum retries.')
 }

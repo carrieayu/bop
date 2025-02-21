@@ -18,7 +18,7 @@
   "costOfSale": "売上原価",
   "costOfSalesResults": "売上原価結果",
   "costOfSaleResult": "売上原価結果",
-  "costOfSalesResultsShort" : "売上原価結果",
+  "costOfSalesResultsShort": "売上原価結果",
   "ordinaryIncomeProfitMargin": "経常利益率",
   "ordinaryIncome": "経常利益",
   "ordinaryProfit": "経常利益",
@@ -67,8 +67,8 @@
   "projectSalesResultsId": "アイド",
   "projectSalesResultsList": "案件売上実績一覧",
   "projectSalesResultsRegistration": "案件売上実績登録",
-  "projectSalesResults" : "案件売上実績",
-  "projectSalesResultsShort" : "案件売上実績",
+  "projectSalesResults": "案件売上実績",
+  "projectSalesResultsShort": "案件売上実績",
   "rentExpenses": "賃借料",
   "rentExpense": "賃借料",
   "executiveRemunerations": "役員報酬",
@@ -105,6 +105,7 @@
   "firstHalftotal": "上期計",
   "secondHalftotal": "下期計",
   "totalTable": "合計",
-  "sellingAndGeneralAdminExpensesShort": "販売及び一般管理費"
+  "sellingAndGeneralAdminExpensesShort": "販売及び一般管理費",
+  "margins": "益率"
 }
 
