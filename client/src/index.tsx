@@ -10,6 +10,7 @@ import 'bulma/css/bulma.min.css'
 import './assets/scss/main.scss'
 import 'react-datepicker/dist/react-datepicker.css'
 import { LanguageProvider } from './contexts/LanguageContext'
+import { IdleProvider } from './contexts/IdleAndTokenTimeout'
 
 // import dotenv from "dotenv";
 
@@ -22,7 +23,9 @@ root.render(
       <HelmetProvider>
         <BrowserRouter>
           <LanguageProvider>
-            <App />
+            <IdleProvider>
+              <App />
+            </IdleProvider>
           </LanguageProvider>
         </BrowserRouter>
       </HelmetProvider>
