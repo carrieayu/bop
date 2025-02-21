@@ -194,6 +194,11 @@ export const ordinaryProfitFunction = (
     const nonOperatingIncome = nonOperatingIncomeValues[index]
     const totalOperating = operatingIncome + nonOperatingIncome
     const totalOrdinaryIncome = totalOperating - nonOperatingExpensesValues[index]
+    
+    console.log('operatingIncome', operatingIncome)
+    console.log('nonOperatingIncome', nonOperatingIncome)
+    console.log('totalOperating', totalOperating)
+    console.log('totalOrdinaryIncome', totalOrdinaryIncome)
 
     return totalOrdinaryIncome
   })

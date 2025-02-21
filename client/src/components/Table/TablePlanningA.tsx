@@ -157,7 +157,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
 
         const data = labelsAndValues.map((item) => ({
           label: item.label,
-          values: organiseTotals(item.values),
+          values: organiseTotals(item.values, item.label),
         }))
 
         setData(data)

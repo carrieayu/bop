@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import Card from '../../components/Card/Card'
 import GraphDashboard from '../../components/GraphDashboard/GraphDashboard'
 import { fetchAllCards } from '../../reducers/card/cardSlice'
-import { fetchCos } from '../../reducers/costOfSale/costOfSaleSlice'
 import { useAppSelector } from '../../actions/hooks'
 import { RootState } from '../../app/store'
 import { fetchAllClientData } from '../../reducers/table/tableSlice'
@@ -14,14 +13,94 @@ import { translate } from '../../utils/translationUtil'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import { useAppDispatch } from '../../actions/hooks'
 import TableDashboard from '../../components/TableDashboard/TableDashboard'
+import { error } from 'console'
+
+import { useDispatch, useSelector } from "react-redux";
+
+// planning
+import { fetchCos } from '../../reducers/costOfSale/costOfSaleSlice'
+import { getCostOfSaleTotals } from '../../reducers/costOfSale/costOfSaleSlice'
+
+import { fetchExpense } from '../../reducers/expenses/expensesSlice'
+import { getExpenseTotals } from '../../reducers/expenses/expensesSlice'
+
+import { fetchEmployeeExpense, getEmployeeExpenseTotals } from '../../reducers/employeeExpense/employeeExpenseSlice'
+// results
+import { fetchCosResult, getCostOfSaleResultsTotals } from '../../reducers/costOfSale/costOfSaleResultSlice'
+
+import { fetchExpenseResult, getExpenseResultsTotals } from '../../reducers/expenses/expensesResultsSlice'
+
+import { fetchProjectResult, getProjectTotalSales } from '../../reducers/project/projectResultSlice'
+import { fetchProject, getProjectTotals } from '../../reducers/project/projectSlice'
+
+import { fetchEmployeeExpenseResult, getEmployeeExpenseResultTotals} from '../../reducers/employeeExpense/employeeExpenseResultSlice'
+import { Root } from 'react-dom/client'
+import { DashboardCard } from '../../components/Card/DashboardCard'
 
 function formatNumberWithCommas(number: number): string {
   return number.toLocaleString()
 }
 
 const Dashboard = () => {
-  const [tableList, setTableList] = useState<any>([])
   const totalSales = useAppSelector((state: RootState) => state.cards.totalSales)
+
+  // GET TOTALS FOR CARDS USING REDUX
+  const expenseTotalsArray = useSelector((state: RootState) => state.expenses.expenseTotals)
+  const expenseYearTotal = useSelector((state: RootState) => state.expenses.expensesYearTotal)
+
+  const costOfSaleTotalsArray = useSelector((state: RootState) => state.costOfSale.costOfSaleTotals)
+  const costOfSaleYearTotal = useSelector((state: RootState) => state.costOfSale.costOfSaleYearTotal)
+
+  const costOfSaleResultYearTotal = useSelector((state: RootState) => state.costOfSaleResult.costOfSaleResultYearTotal)
+
+  const expenseResultYearTotal = useSelector((state: RootState) => state.expensesResults.expenseResultYearTotal)
+
+  const projectResultTotalSales = useSelector((state: RootState) => state.projectResult.totalSales)
+
+
+  const employeeExpenseResultYearTotal = useSelector(
+    (state: RootState) => state.employeeExpenseResult.employeeExpenseResultYearTotal,
+  )
+
+  const employeeExpenseYearTotal = useSelector((state: RootState) => state.employeeExpense.employeeExpenseYearTotal)
+  const employeeExpenseList = useSelector((state: RootState) => state.employeeExpense.employeeExpenseList)
+
+  // sales revenue - cos totals
+  const planningGrossProfit = totalSales - parseFloat(costOfSaleYearTotal)
+  const planningGrossProfitMargin = totalSales !== 0 ? (planningGrossProfit / totalSales) * 100 : 0 // Prevent division by zero
+
+  const resultGrossProfit = projectResultTotalSales - parseFloat(costOfSaleResultYearTotal)
+  const resultGrossProfitMargin = totalSales !== 0 ? (resultGrossProfit / projectResultTotalSales) * 100 : 0 // Prevent division by zero
+
+  const sellingAndAdminPlanningTotal = employeeExpenseYearTotal + expenseYearTotal
+  const sellingAndAdminResultTotal = employeeExpenseResultYearTotal + expenseResultYearTotal
+
+  const operatingIncomePlanning = planningGrossProfit - parseFloat(sellingAndAdminPlanningTotal)
+  const operatingIncomeResult = resultGrossProfit - parseFloat(sellingAndAdminResultTotal)
+
+  const operatingProfitMarginPlanning = totalSales !== 0 ? (operatingIncomePlanning / totalSales) * 100 : 0
+  const operatingProfitMarginResult =
+    projectResultTotalSales !== 0 ? (operatingIncomeResult / projectResultTotalSales) * 100 : 0
+
+  
+  const operatingIncomeTotalPlanningFromProjects = useSelector((state: RootState) => state.project.operatingIncomeTotal)
+  const nonOperatingIncomeTotalPlanning = useSelector((state: RootState) => state.project.nonOperatingIncomeTotal)
+  const nonOperatingExpenseTotalPlanning = useSelector((state: RootState) => state.project.nonOperatingExpenseTotal)
+
+  const nonOperatingIncomeTotalResult = useSelector((state: RootState) => state.projectResult.nonOperatingIncomeTotal)
+  const nonOperatingExpenseTotalResult = useSelector((state: RootState) => state.projectResult.nonOperatingExpenseTotal)
+
+  // cumulative income: (total, calculate**):** operating income + non-operating income - non-operating expense
+  const cumulativeOrdinaryIncomePlanningFromProjects = useSelector((state: RootState) => state.project.cumulativeOrdinaryIncome)
+  // BEING USED HERE (operating income comes from dahsboard values not project.operating_income)
+  const cumulativeOrdinaryIncomePlanning =
+    (operatingIncomePlanning + nonOperatingIncomeTotalPlanning) - nonOperatingExpenseTotalPlanning
+
+  const cumulativeOrdinaryIncomeResult =
+    (operatingIncomeResult + nonOperatingIncomeTotalResult) - nonOperatingExpenseTotalResult
+  // END   // GET TOTALS FOR CARDS USING REDUX
+
+  const [tableList, setTableList] = useState<any>([])
   const totalOperatingProfit = useAppSelector((state: RootState) => state.cards.totalOperatingProfit)
   const totalGrossProfit = useAppSelector((state: RootState) => state.cards.totalGrossProfit)
   const totalNetProfitPeriod = useAppSelector((state: RootState) => state.cards.totalNetProfitPeriod)
@@ -57,9 +136,24 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
+    console.log(
+      'projectResultTotalSales',
+      projectResultTotalSales,
+      'costOfSaleResultYearTotal',
+      costOfSaleResultYearTotal,
+      'totalSales',
+      totalSales,
+      'costOfSaleYearTotal',
+      costOfSaleYearTotal,
+    )
+  }, [tableList])
+
+  useEffect(() => {
     // Updated to catch errors when executing dispatch
     const fetchData = async () => {
       try {
+        // PLANNING
+        // WHY IS THIS CALLED CLIENTDATA???? NEED TO INVESTIGATE AND POSSIBLY FIX
         const [clientData] = await Promise.all([
           dispatch(fetchAllClientData()).catch((error) => {
             console.error('Error fetching client data:', error)
@@ -73,10 +167,71 @@ const Dashboard = () => {
             console.error('Error fetching graph data:', error)
             return null
           }),
-          dispatch(fetchCos()).catch((error) => {
-            console.error('Error fetching COS data:', error)
-            return null
-          }),
+          dispatch(fetchCos())
+            .catch((error) => {
+              console.error('Error fetching COS data:', error)
+              return null
+            })
+            .then(() => {
+              dispatch(getCostOfSaleTotals())
+            }),
+          dispatch(fetchExpense())
+            .catch((error) => {
+              console.error('Error fetching Expense data:', error)
+              return null
+            })
+            .then(() => {
+              dispatch(getExpenseTotals())
+            }),
+          dispatch(fetchEmployeeExpense())
+            .catch((error) => {
+              console.error('Error fetching Expense Result data:', error)
+              return null
+            })
+            .then(() => {
+              dispatch(getEmployeeExpenseTotals())
+            }),
+          dispatch(fetchProject())
+            .catch((error) => {
+              console.error('Error fetching Project data:', error)
+              return null
+            })
+            .then(() => {
+              dispatch(getProjectTotals())
+            }),
+          // RESULTS
+          dispatch(fetchExpenseResult())
+            .catch((error) => {
+              console.error('Error fetching Expense Result data:', error)
+              return null
+            })
+            .then(() => {
+              dispatch(getExpenseResultsTotals())
+            }),
+          dispatch(fetchCosResult())
+            .catch((error) => {
+              console.error('Error fetching COS Result data:', error)
+              return null
+            })
+            .then(() => {
+              dispatch(getCostOfSaleResultsTotals())
+            }),
+          dispatch(fetchProjectResult())
+            .catch((error) => {
+              console.error('Error fetching Project Result data:', error)
+              return null
+            })
+            .then(() => {
+              dispatch(getProjectTotalSales())
+            }),
+          dispatch(fetchEmployeeExpenseResult())
+            .catch((error) => {
+              console.error('Error fetching Employee Expense Result data:', error)
+              return null
+            })
+            .then(() => {
+              dispatch(getEmployeeExpenseResultTotals())
+            }),
         ])
         if (clientData) {
           setTableList(clientData.payload)
@@ -167,10 +322,6 @@ const Dashboard = () => {
     ],
   }
 
-  const handleSwitchToggle = () => {
-    setIsSwitchActive((prevState) => !prevState)
-  }
-
   return (
     <div className='dashboard_wrapper'>
       <HeaderButtons
@@ -186,112 +337,59 @@ const Dashboard = () => {
           <div className='dashboard_body_cont'>
             <div className='dashboard_card_cont'>
               <div className='dashboard_left_card'>
-                <Card
-                  backgroundColor='#fff'
-                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-                  border='2px solid #ccc'
-                  width='auto'
-                  height='120px'
-                >
-                  <div className='dashboard_custom-card-content'>
-                    <p className='dashboard_text1'>{translate('sales', language)}</p>
-                    <p className='dashboard_numTxt'>
-                      {formatNumberWithCommas(totalSales)}&nbsp;
-                      <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
-                    </p>
-                    <p className='dashboard_text2'>{translate('total', language)}</p>
-                  </div>
-                </Card>
-                <Card
-                  backgroundColor='#fff'
-                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-                  border='2px solid #ccc'
-                  width='auto'
-                  height='120px'
-                >
-                  <div className='dashboard_custom-card-content'>
-                    <p className='dashboard_text1 tooltip'>
-                      {translate(language === 'en' ? 'operatingIncomeShort' : 'operatingIncome', language)}{' '}
-                    </p>
-                    <p className='dashboard_numTxt'>
-                      {formatNumberWithCommas(totalOperatingProfit)}&nbsp;
-                      <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
-                    </p>
-                    <p className='dashboard_text2'>{translate('total', language)}</p>
-                  </div>
-                </Card>
-                <Card
-                  backgroundColor='#fff'
-                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-                  border='2px solid #ccc'
-                  width='auto'
-                  height='120px'
-                >
-                  <div className='dashboard_custom-card-content'>
-                    <p className='dashboard_text1'>{translate('grossProfitMargin', language)}</p>
-                    <p className='dashboard_numTxt'>
-                      {totalGrossProfitMargin.toFixed(2)}&nbsp;<span className='dashboard_totalTxt'>%</span>
-                    </p>
-                    <p className='dashboard_text2'>{translate('total', language)}</p>
-                  </div>
-                </Card>
+                <DashboardCard
+                  title={translate('sales', language)}
+                  planningValue={totalSales}
+                  resultValue={projectResultTotalSales}
+                  translateKey='sales'
+                  language={language}
+                />
+                <DashboardCard
+                  title={translate(language === 'en' ? 'operatingIncomeShort' : 'operatingIncome', language)}
+                  planningValue={operatingIncomePlanning}
+                  resultValue={operatingIncomeResult}
+                  translateKey='operatingIncome'
+                  language={language}
+                />
+                <DashboardCard
+                  title={translate('grossProfitMargin', language)}
+                  planningValue={planningGrossProfitMargin.toFixed(2)}
+                  resultValue={resultGrossProfitMargin.toFixed(2)}
+                  translateKey='grossProfitMargin'
+                  language={language}
+                  percentage={true}
+                />
               </div>
               &nbsp;&nbsp;&nbsp;
               <div className='dashboard_right_card'>
-                <Card
-                  backgroundColor='#fff'
-                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-                  border='2px solid #ccc'
-                  width='auto'
-                  height='120px'
-                >
-                  <div className='dashboard_custom-card-content'>
-                    <p className='dashboard_text1'>{translate('grossProfit', language)}</p>
-                    <p className='dashboard_numTxt'>
-                      {formatNumberWithCommas(totalGrossProfit)}&nbsp;
-                      <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
-                    </p>
-                    <p className='dashboard_text2'>{translate('total', language)}</p>
-                  </div>
-                </Card>
-                <Card
-                  backgroundColor='#fff'
-                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-                  border='2px solid #ccc'
-                  width='auto'
-                  height='120px'
-                >
-                  <div className='dashboard_custom-card-content'>
-                    <p className='dashboard_text1'>
-                      {translate(
-                        language === 'en' ? 'cumulativeOrdinaryIncomeShort' : 'cumulativeOrdinaryIncome',
-                        language,
-                      )}
-                    </p>
-                    <p className='dashboard_numTxt'>
-                      {formatNumberWithCommas(totalNetProfitPeriod)}&nbsp;
-                      <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
-                    </p>
-                    <p className='dashboard_text2'>{translate('total', language)}</p>
-                  </div>
-                </Card>
-                <Card
-                  backgroundColor='#fff'
-                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-                  border='2px solid #ccc'
-                  width='auto'
-                  height='120px'
-                >
-                  <div className='dashboard_custom-card-content'>
-                    <p className='dashboard_text1'>
-                      {translate(language === 'en' ? 'operatingProfitMarginShort' : 'operatingProfitMargin', language)}
-                    </p>
-                    <p className='dashboard_numTxt'>
-                      {totalOperatingProfitMargin.toFixed(2)}&nbsp;<span className='dashboard_totalTxt'>%</span>
-                    </p>
-                    <p className='dashboard_text2'>{translate('total', language)}</p>
-                  </div>
-                </Card>
+                <DashboardCard
+                  title={translate('grossProfit', language)}
+                  planningValue={planningGrossProfit}
+                  resultValue={resultGrossProfit}
+                  translateKey='grossProfit'
+                  language={language}
+                />
+                <DashboardCard
+                  title={translate(
+                    language === 'en' ? 'cumulativeOrdinaryIncomeShort' : 'cumulativeOrdinaryIncome',
+                    language,
+                  )}
+                  planningValue={cumulativeOrdinaryIncomePlanning}
+                  resultValue={cumulativeOrdinaryIncomeResult}
+                  translateKey='cumulativeOrdinaryIncome'
+                  language={language}
+                />
+                <DashboardCard
+                  title={translate(
+                    language === 'en' ? 'operatingProfitMarginShort' : 'operatingProfitMargin',
+                    language,
+                  )}
+                  planningValue={operatingProfitMarginPlanning.toFixed(2)}
+                  resultValue={operatingProfitMarginResult.toFixed(2)}
+                  translateKey='operatingProfitMargin'
+                  language={language}
+                  percentage={true}
+                />
               </div>
             </div>
             &nbsp;&nbsp;&nbsp;

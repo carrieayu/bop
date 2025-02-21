@@ -5,6 +5,7 @@ import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { fetchCos } from '../costOfSale/costOfSaleSlice'
 import { CardEntity } from '../../entity/cardEntity'
 import { CostOfSaleEntity } from '../../entity/cosEntity'
+import Card from '../../components/Card/Card'
 
 const initialState = {
   isLoading: false,
@@ -20,6 +21,7 @@ const initialState = {
   totalCostOfSaleForYear: 0,
   status: 'idle',
   error: null,
+  test:0
 }
 const POLLING_INTERVAL = 60000
 const MAX_RETRIES = 12
@@ -96,10 +98,16 @@ const getCostOfSaleForYear = (cards, year) => {
 }
 
 function cardCalculations(state) {
+
   const currentYear = new Date().getFullYear() // To be updated when toogle year is implemented.
   const cards = state.cardsList || []
   const costOfSaleList = state.costOfSaleList || []
-
+  
+  //test
+  state.test = getSum(cards.map((card)=> parseFloat(card.non_operating_expense)))
+  console.log('cards', state.test)
+  //end test
+  
   const totalCostOfSaleForYear = getCostOfSaleForYear(costOfSaleList, 2024) // To be updated when toggle is implemented.
   //Total Sales
   state.totalSales = getSum(cards.map((card) => Number(card.sales_revenue)))
@@ -147,15 +155,22 @@ function cardCalculations(state) {
 
   // Total Net Profit Period
   state.totalNetProfitPeriod = getSum(
-    cards.map(
+    cards
+      .filter((card) => card.month === '4')
+      .map(
       (card) =>
         Number(card.operating_income || 0) +
-        Number(card.non_operating_income || 0) -
-        Number(card.non_operating_expense || 0) -
-        Number(card.expense || 0),
+      Number(card.non_operating_income || 0) -
+      Number(card.non_operating_expense || 0) -
+      Number(card.expense || 0),
     ),
   )
-
+  
+  const getCumulativeOrdinaryIncome = (cards) => {
+    const nonOperatingIncome = getSum(cards.map((card) => parseFloat(card.non_operating_income)))
+    const nonOperatingExpense = getSum(cards.map((card) => parseFloat(card.non_operating_expense)))
+    
+  } 
   //Total Cummulative Ordinary Income
   state.totalCumulativeOrdinaryIncome = getSum(
     cards.map((card) => {

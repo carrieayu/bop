@@ -11,21 +11,44 @@ import masterCompanySlice from '../reducers/company/companySlice';
 import personnelPlanningSlice from "../reducers/personnel/personnelPlanningSlice";
 import clientMasterSlice from "../reducers/client/clientSlice";
 import costOfSaleSlice from "../reducers/costOfSale/costOfSaleSlice";
+import costOfSaleResultSlice from '../reducers/costOfSale/costOfSaleResultSlice'
+import expensesSlice from "../reducers/expenses/expensesSlice";
+import expensesResultsSlice from '../reducers/expenses/expensesResultsSlice'
+import planningAndResultTotalsSlice from '../reducers/planningAndResultTotals/planningAndResultTotalsSlice'
+import projectResultSlice from '../reducers/project/projectResultSlice'
+import employeeExpenseSlice from '../reducers/employeeExpense/employeeExpenseSlice'
+import employeeExpenseResultSlice from '../reducers/employeeExpense/employeeExpenseResultSlice'
+import projectSlice from '../reducers/project/projectSlice'
 
 export const store = configureStore({
   reducer: {
     counter: CounterReducer,
     user: userReducer,
+    // cards is actually projects?
     cards: CardReducer,
     table: tableSlice,
     graph: graphSlice,
+    // personnel is employee ??
     personnel: personnelExpensesSlice,
     personnelData: personnelSlice,
+    // personnelPlanning is employee expenses??
     personnelPlanning: personnelPlanningSlice,
+    
     businessDivisionsSlice: businessDivisionsSlice,
     masterCompanySlice: masterCompanySlice,
     clientMasterSlice: clientMasterSlice,
+    
+    totals: planningAndResultTotalsSlice,
+    
+    employeeExpense: employeeExpenseSlice,
+    expenses: expensesSlice,
     costOfSale: costOfSaleSlice,
+    project: projectSlice,
+    // RESULTS
+    costOfSaleResult: costOfSaleResultSlice,
+    expensesResults: expensesResultsSlice,
+    projectResult: projectResultSlice,
+    employeeExpenseResult: employeeExpenseResultSlice
   },
 })
 

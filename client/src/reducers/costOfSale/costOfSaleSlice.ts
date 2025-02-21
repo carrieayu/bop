@@ -2,10 +2,14 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import api from '../../api/api'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { CostOfSaleEntity } from '../../entity/cosEntity'
+import { aggregatedCostOfSalesFunction, costOfSalesTotalsFunction } from '../../utils/tableAggregationUtil'
+import { sumValues } from '../../utils/helperFunctionsUtil'
 
 const initialState = {
   isLoading: false,
   costOfSaleList: [] as CostOfSaleEntity[],
+  costOfSaleTotals: [],
+  costOfSaleYearTotal: 0 || '0',
 }
 const POLLING_INTERVAL = 60000
 const MAX_RETRIES = 12
@@ -35,7 +39,13 @@ export const fetchCos = createAsyncThunk('cost-of-sale/fetch', async () => {
 const costOfSale = createSlice({
   name: 'cos',
   initialState,
-  reducers: {},
+  reducers: {
+    getCostOfSaleTotals : (state) => {
+      const aggregatedCostOfSalesData = aggregatedCostOfSalesFunction(state.costOfSaleList)
+      state.costOfSaleTotals = costOfSalesTotalsFunction(aggregatedCostOfSalesData)
+      state.costOfSaleYearTotal = sumValues(state.costOfSaleTotals)
+    }
+  },
   extraReducers(builder) {
     builder
       .addCase(fetchCos.fulfilled, (state, action) => {
@@ -51,6 +61,6 @@ const costOfSale = createSlice({
   },
 })
 
-export const {} = costOfSale.actions
+export const {getCostOfSaleTotals} = costOfSale.actions
 
 export default costOfSale.reducer

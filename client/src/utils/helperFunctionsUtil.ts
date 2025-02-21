@@ -316,13 +316,27 @@ export const getRatio = (result, planning) => {
 
 export const sumValues = (arr) => arr.reduce((acc, value) => acc + parseFloat(value), 0)
 
-export const organiseTotals = (arr, planningArr = []) => {  
-  const firstHalfTotal = sumValues(arr.slice(0, 6)) // First Half Total
-  const secondHalfTotal = sumValues(arr.slice(6)) // Second Half Total
-  const total = sumValues(arr) // Total
+// Create new array: get totals for values in each row for planning, result, analysis tables.
+export const organiseTotals = (valuesArr, label = '') => {
+
+  let firstHalfTotal
+  let secondHalfTotal
+  let total
+
+  if (label === 'cumulativeOrdinaryIncome') {
+    console.log('cumulativeOrdinaryIncomeValues TRUE', label, valuesArr)
+    firstHalfTotal = valuesArr[5] // values already summed in cumulative so do not need sumValues.
+    secondHalfTotal = valuesArr[11] // values already summed in cumulative so do not need sumValues.
+    total = valuesArr[11] // values already summed in cumulative so do not need sumValues. (secondHalfTotal === total)
+  }
+  else {
+    firstHalfTotal = sumValues(valuesArr.slice(0, 6)) // First Half Total
+    secondHalfTotal = sumValues(valuesArr.slice(6)) // Second Half Total
+    total = sumValues(valuesArr) // Total
+  }
 
   return [
-    ...arr,
+    ...valuesArr,
     firstHalfTotal, // First Half Total
     secondHalfTotal, // Second Half Total
     total, // Total
