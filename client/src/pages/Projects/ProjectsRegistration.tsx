@@ -13,7 +13,7 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { createProject } from '../../api/ProjectsEndpoint/CreateProject'
 import { overwriteProject } from '../../api/ProjectsEndpoint/OverwriteProject'
-import { maximumEntries, monthNames, token, years } from '../../constants'
+import { maximumEntries, monthNames, token, years, IDLE_TIMEOUT } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 import {
   validateRecords,
@@ -28,7 +28,9 @@ import {
   formatNumberWithDecimal,
   handleInputChange,
   handlePLRegTabsClick,
+  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
+import { useIdleTimer } from '../../hooks/useIdleTimer';
 
 const ProjectsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -46,6 +48,7 @@ const ProjectsRegistration = () => {
   const [modalMessage, setModalMessage] = useState('')
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const onTabClick = (tab) => handlePLRegTabsClick(tab, navigate, setActiveTab)
 
   const emptyFormData = {
@@ -401,6 +404,14 @@ const ProjectsRegistration = () => {
     navigate('/projects-list')
   }
 
+  const onIdle = () => {};
+  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
+  useEffect(() => {
+      if (isIdleModalOpen) {
+          setIsNonActiveOpen(true)
+      }
+  }, [isIdleModalOpen]);
+
   return (
     <div className='projectsRegistration-wrapper'>
       <HeaderButtons
@@ -732,6 +743,12 @@ const ProjectsRegistration = () => {
         onCancel={() => setIsOverwriteModalOpen(false)}
         onConfirm={handleOverwriteConfirmation}
         message={modalMessage}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

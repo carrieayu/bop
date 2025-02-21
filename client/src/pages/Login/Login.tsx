@@ -54,6 +54,8 @@ const Login = ({ onSubmit }) => {
           const userID = decodedAccess["user_id"]
           localStorage.setItem('accessToken', accessToken)
           localStorage.setItem('userID', userID)
+          sessionStorage.setItem("showAlert", "OFF");
+          sessionStorage.setItem("showAlertInitialized", "false");
           window.location.href = '/dashboard'
         },
         (error) => {

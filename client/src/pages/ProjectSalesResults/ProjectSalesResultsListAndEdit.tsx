@@ -16,7 +16,7 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
 import { updateProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/UpdateProjectSalesResults'
 import { deleteProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/DeleteProjectSalesResults'
-import { resultsScreenTabs, token } from '../../constants'
+import { resultsScreenTabs, token, IDLE_TIMEOUT } from '../../constants'
 import {
   validateRecords,
   translateAndFormatErrors,
@@ -29,7 +29,9 @@ import {
   formatNumberWithDecimal,
   handleInputChange,
   handleResultsListTabsClick,
+  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
+import { useIdleTimer } from '../../hooks/useIdleTimer';
 const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
@@ -73,6 +75,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
 
   for (let year = 2020; year <= new Date().getFullYear(); year++) {
     years.push(year)
@@ -331,6 +334,14 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
       }
     }
   }
+
+  const onIdle = () => {};
+  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
+  useEffect(() => {
+      if (isIdleModalOpen) {
+          setIsNonActiveOpen(true)
+      }
+  }, [isIdleModalOpen]);
 
   return (
     <div className='projectSalesResultsList_wrapper'>
@@ -728,6 +739,12 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
         onConfirm={handleUpdateConfirm}
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

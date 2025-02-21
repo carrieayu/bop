@@ -15,8 +15,9 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/GetEmployeeExpense'
 import { deleteEmployeeExpenseX } from '../../api/EmployeeExpenseEndpoint/DeleteEmployeeExpenseX'
 import { deleteProjectAssociation } from '../../api/EmployeeExpenseEndpoint/DeleteProjectAssociation'
-import { formatNumberWithCommas, handlePLListTabsClick } from '../../utils/helperFunctionsUtil'
-import { monthNames, months, token } from '../../constants'
+import { formatNumberWithCommas, handlePLListTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
+import { monthNames, months, token, IDLE_TIMEOUT } from '../../constants'
+import { useIdleTimer } from '../../hooks/useIdleTimer';
 
 const EmployeeExpensesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -32,7 +33,7 @@ const EmployeeExpensesList: React.FC = () => {
   const [deleteEmployeeExpensesId, setDeleteEmployeeExpensesId] = useState([])
   const [deletedId, setDeletedId] = useState<any>(null)
   const onTabClick = (tab) => handlePLListTabsClick(tab, navigate, setActiveTab)
-
+  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const [employeeProjectId, setEmployeeProjectId] = useState<{
     employee_expense_id: string
     project_id: string
@@ -164,6 +165,14 @@ const EmployeeExpensesList: React.FC = () => {
         }
       })
   }
+  
+  const onIdle = () => {};
+  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
+  useEffect(() => {
+      if (isIdleModalOpen) {
+          setIsNonActiveOpen(true)
+      }
+  }, [isIdleModalOpen]);
 
   return (
     <div className='employeeExpensesList_wrapper'>
@@ -611,6 +620,12 @@ const EmployeeExpensesList: React.FC = () => {
         onConfirm={handleDelete}
         onCancel={closeModal}
         message={translate('deleteMessage', language)}
+      />
+      <AlertModal
+        isOpen={isNonActiveOpen}
+        onConfirm={handleNonActiveConfirm}
+        onCancel={() => setIsNonActiveOpen(false)}
+        message={translate('nonActiveMessage', language)}
       />
       <CrudModal isCRUDOpen={isCRUDOpen} onClose={closeModal} message={crudMessage} />
     </div>
