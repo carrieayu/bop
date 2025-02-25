@@ -1,43 +1,55 @@
 import React, { useEffect, useState } from 'react'
-import Card from '../../components/Card/Card'
-import GraphDashboard from '../../components/GraphDashboard/GraphDashboard'
-import { fetchAllCards } from '../../reducers/card/cardSlice'
-import { fetchCos } from '../../reducers/costOfSale/costOfSaleSlice'
-import { useAppSelector } from '../../actions/hooks'
-import { RootState } from '../../app/store'
-import { fetchAllClientData } from '../../reducers/table/tableSlice'
-import { fetchGraphData } from '../../reducers/graph/graphSlice'
-import Sidebar from '../../components/Sidebar/Sidebar'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
+import { useAppDispatch, useAppSelector } from '../../actions/hooks'
+import GraphDashboard from '../../components/GraphDashboard/GraphDashboard'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
-import { useAppDispatch } from '../../actions/hooks'
 import TableDashboard from '../../components/TableDashboard/TableDashboard'
-
-function formatNumberWithCommas(number: number): string {
-  return number.toLocaleString()
-}
+import Sidebar from '../../components/Sidebar/Sidebar'
+import { DashboardCard } from '../../components/Card/DashboardCard'
+// Reducers
+import { fetchAllCards } from '../../reducers/card/cardSlice'
+import { fetchAllClientData } from '../../reducers/table/tableSlice'
+// Graph
+import { fetchGraphData } from '../../reducers/graph/graphSlice'
+import { fetchNewGraphData, selectNewGraphValues } from '../../reducers/graph/newGraphSlice'
+// Planning
+import { fetchCos } from '../../reducers/costOfSale/costOfSaleSlice'
+import { getCostOfSaleTotals } from '../../reducers/costOfSale/costOfSaleSlice'
+import { fetchExpense } from '../../reducers/expenses/expensesSlice'
+import { getExpenseTotals } from '../../reducers/expenses/expensesSlice'
+import { fetchEmployeeExpense, getEmployeeExpenseTotals } from '../../reducers/employeeExpense/employeeExpenseSlice'
+// Results
+import { fetchCosResult, getCostOfSaleResultsTotals } from '../../reducers/costOfSale/costOfSaleResultSlice'
+import { fetchExpenseResult, getExpenseResultsTotals } from '../../reducers/expenses/expensesResultsSlice'
+import { fetchProjectResult, getProjectTotalSales } from '../../reducers/project/projectResultSlice'
+import { fetchProject, getProjectTotals, getMonthlyValues } from '../../reducers/project/projectSlice'
+import {
+  fetchEmployeeExpenseResult,
+  getEmployeeExpenseResultTotals,
+} from '../../reducers/employeeExpense/employeeExpenseResultSlice'
+// Totals
+import { fetchTotals, selectTotals } from '../../reducers/planningAndResultTotals/planningAndResultTotalsSlice'
 
 const Dashboard = () => {
+  const { planning, results } = useAppSelector(selectTotals)
+
+  const { planningMonthly } = useAppSelector(selectNewGraphValues)
+
+  const {
+    projectSalesRevenueMonthlyPlanning,
+    operatingIncomeMonthlyPlanning,
+    operatingProfitMarginMonthlyPlanning,
+    ordinaryIncomeMonthlyPlanning,
+    grossProfitMarginMonthlyPlanning,
+    grossProfitMonthlyPlanning,
+    dates,
+  } = planningMonthly
+
+  const dispatch = useAppDispatch()
   const [tableList, setTableList] = useState<any>([])
-  const totalSales = useAppSelector((state: RootState) => state.cards.totalSales)
-  const totalOperatingProfit = useAppSelector((state: RootState) => state.cards.totalOperatingProfit)
-  const totalGrossProfit = useAppSelector((state: RootState) => state.cards.totalGrossProfit)
-  const totalNetProfitPeriod = useAppSelector((state: RootState) => state.cards.totalNetProfitPeriod)
-  const totalGrossProfitMargin = useAppSelector((state: RootState) => state.cards.totalGrossProfitMargin)
-  const totalOperatingProfitMargin = useAppSelector((state: RootState) => state.cards.totalOperatingProfitMargin)
-  const totalSalesByDate = useAppSelector((state: RootState) => state.graph.totalSalesByDate)
-  const totalOperatingIncomeByDate = useAppSelector((state: RootState) => state.graph.totalOperatingIncomeByDate)
-  const totalGrossProfitByDate = useAppSelector((state: RootState) => state.graph.totalGrossProfitByDate)
-  const totalCumulativeOrdinaryIncomeByDate = useAppSelector(
-    (state: RootState) => state.graph.totalCumulativeOrdinaryIncome,
-  )
-  const totalGrossProfitMarginByDate = useAppSelector((state: RootState) => state.graph.totalGrossProfitMarginByDate)
-  const totalOperatingProfitMarginByDate = useAppSelector(
-    (state: RootState) => state.graph.totalOperatingProfitMarginByDate,
-  )
-  const month = useAppSelector((state: RootState) => state.graph.month)
+
   const [activeTab, setActiveTab] = useState('/dashboard')
   const [isSwitchActive, setIsSwitchActive] = useState(false)
   const { language, setLanguage } = useLanguage()
@@ -45,7 +57,6 @@ const Dashboard = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [isThousandYenChecked, setIsThousandYenChecked] = useState(false)
-  const dispatch = useAppDispatch()
 
   const handleThousandYenToggle = () => {
     setIsThousandYenChecked((prevState) => !prevState)
@@ -57,37 +68,52 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    // Updated to catch errors when executing dispatch
     const fetchData = async () => {
-      try {
-        const [clientData] = await Promise.all([
-          dispatch(fetchAllClientData()).catch((error) => {
-            console.error('Error fetching client data:', error)
-            return null
-          }),
-          dispatch(fetchAllCards()).catch((error) => {
-            console.error('Error fetching cards data:', error)
-            return null
-          }),
-          dispatch(fetchGraphData()).catch((error) => {
-            console.error('Error fetching graph data:', error)
-            return null
-          }),
-          dispatch(fetchCos()).catch((error) => {
-            console.error('Error fetching COS data:', error)
-            return null
-          }),
-        ])
-        if (clientData) {
-          setTableList(clientData.payload)
+        try {
+          const [data] = await Promise.all([
+            dispatch(fetchAllClientData()).catch(handleError('client data')),
+            dispatch(fetchAllCards()).catch(handleError('cards data')),
+            dispatch(fetchGraphData()).catch(handleError('graph data')),
+            dispatch(fetchNewGraphData()).catch(handleError('new graph data')),
+            dispatch(fetchCos())
+              .catch(handleError('Cost Of Sales Planning data'))
+              .then(() => dispatch(getCostOfSaleTotals())),
+            dispatch(fetchExpense())
+              .catch(handleError('Expenses Planning data'))
+              .then(() => dispatch(getExpenseTotals())),
+            dispatch(fetchEmployeeExpense())
+              .catch(handleError('Employee Expenses Planning data'))
+              .then(() => dispatch(getEmployeeExpenseTotals())),
+            dispatch(fetchProject())
+              .catch(handleError('Projects Planning data'))
+              .then(() => dispatch(getProjectTotals()))
+              .then(() => dispatch(getMonthlyValues())),
+            dispatch(fetchExpenseResult())
+              .catch(handleError('Expenses Result data'))
+              .then(() => dispatch(getExpenseResultsTotals())),
+            dispatch(fetchCosResult())
+              .catch(handleError('Cost Of Sales Result data'))
+              .then(() => dispatch(getCostOfSaleResultsTotals())),
+            dispatch(fetchProjectResult())
+              .catch(handleError('Projects Result data'))
+              .then(() => dispatch(getProjectTotalSales())),
+            dispatch(fetchEmployeeExpenseResult())
+              .catch(handleError('Employee Expenses Result data'))
+              .then(() => dispatch(getEmployeeExpenseResultTotals())),
+            dispatch(fetchTotals()).catch(handleError('Totals data')),
+          ])
+          if (data) setTableList(data.payload)
+              } catch (error) {
+                console.error('Unexpected error:', error)
+              }
         }
-      } catch (error) {
-        console.error('Unexpected error:', error)
-      }
-    }
-
-    fetchData()
-  }, [tableList])
+        fetchData()
+      }, [tableList])
+          
+  const handleError = (dataType) => (error) => {
+    console.error(`Error fetching ${dataType}:`, error)
+    return null
+  }
 
   useEffect(() => {
     const path = location.pathname
@@ -106,69 +132,65 @@ const Dashboard = () => {
   }
 
   const graphData = {
-    labels: month, // This displays the 'dates' in y axis in the csv.
+    labels: dates, // This displays the 'dates' in y axis in the csv.
     datasets: [
       {
         type: 'bar' as const,
         label: translate('sales', language),
-        data: month?.map((date) => totalSalesByDate[date] || 0),
+        data: dates.map((date) => projectSalesRevenueMonthlyPlanning[date] || 0),
         backgroundColor: '#6e748c',
         borderColor: 'black',
         borderWidth: 1,
-        yAxisID: 'y',
       },
       {
         type: 'bar' as const,
         label: translate('grossProfit', language),
-        data: month?.map((date) => totalGrossProfitByDate[date]),
+        data: dates.map((date) => grossProfitMonthlyPlanning[date]),
         backgroundColor: '#7696c6',
         borderColor: 'black',
         borderWidth: 1,
-        yAxisID: 'y',
       },
       {
         type: 'bar' as const,
         label: translate('operatingIncome', language),
-        data: month?.map((date) => totalOperatingIncomeByDate[date]),
+        data: dates.map((date) => operatingIncomeMonthlyPlanning[date]),
         backgroundColor: '#b8cbe2',
         borderColor: 'black',
         borderWidth: 1,
-        yAxisID: 'y',
       },
       {
         type: 'bar' as const,
-        label: translate('cumulativeOrdinaryIncome', language),
-        data: month?.map((date) => totalCumulativeOrdinaryIncomeByDate[date]),
+        label: translate('ordinaryIncome', language), // changed to monthly not cumulative
+        data: dates.map((date) => ordinaryIncomeMonthlyPlanning[date] ?? 0),
         backgroundColor: '#bde386',
         borderColor: 'black',
         borderWidth: 1,
-        yAxisID: 'y',
-      },
-      {
-        type: 'line' as const,
-        label: translate('grossProfitMargin', language),
-        data: month?.map((date) => totalGrossProfitMarginByDate[date]),
-        backgroundColor: '#ff8e13',
-        borderColor: '#ff8e13',
-        borderWidth: 2,
-        yAxisID: 'y1',
-        fill: false,
-      },
-      {
-        type: 'line' as const,
-        label: translate('operatingProfitMargin', language),
-        data: month?.map((date) => totalOperatingProfitMarginByDate[date]),
-        backgroundColor: '#ec3e4a',
-        borderColor: '#ec3e4a',
-        borderWidth: 2,
-        yAxisID: 'y1',
-        fill: false,
       },
     ],
   }
 
-  const handleSwitchToggle = () => {
-    setIsSwitchActive((prevState) => !prevState)
+  const lineGraphData = {
+    labels: dates,
+    datasets: [
+      {
+        type: 'line' as const,
+        label: translate('grossProfitMargin', language),
+        data: dates
+          ?.filter((date) => grossProfitMarginMonthlyPlanning[date])
+          .map((date) => grossProfitMarginMonthlyPlanning[date]),
+        backgroundColor: '#ff8e13',
+        borderColor: '#ff8e13',
+        borderWidth: 2,
+      },
+      {
+        type: 'line' as const,
+        label: translate('operatingProfitMargin', language),
+        data: dates.map((date) => operatingProfitMarginMonthlyPlanning[date] ?? 0),
+        backgroundColor: '#ec3e4a',
+        borderColor: '#ec3e4a',
+        borderWidth: 2,
+      },
+    ],
   }
 
   return (
@@ -181,123 +203,69 @@ const Dashboard = () => {
       />
       <div className='dashboard_content_wrapper'>
         <Sidebar />
-        {/* <div className='dashboard_table_wrapper'> */}
         <div className='dashboard_content'>
           <div className='dashboard_body_cont'>
             <div className='dashboard_card_cont'>
               <div className='dashboard_left_card'>
-                <Card
-                  backgroundColor='#fff'
-                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-                  border='2px solid #ccc'
-                  width='auto'
-                  height='120px'
-                >
-                  <div className='dashboard_custom-card-content'>
-                    <p className='dashboard_text1'>{translate('sales', language)}</p>
-                    <p className='dashboard_numTxt'>
-                      {formatNumberWithCommas(totalSales)}&nbsp;
-                      <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
-                    </p>
-                    <p className='dashboard_text2'>{translate('total', language)}</p>
-                  </div>
-                </Card>
-                <Card
-                  backgroundColor='#fff'
-                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-                  border='2px solid #ccc'
-                  width='auto'
-                  height='120px'
-                >
-                  <div className='dashboard_custom-card-content'>
-                    <p className='dashboard_text1 tooltip'>
-                      {translate(language === 'en' ? 'operatingIncomeShort' : 'operatingIncome', language)}{' '}
-                    </p>
-                    <p className='dashboard_numTxt'>
-                      {formatNumberWithCommas(totalOperatingProfit)}&nbsp;
-                      <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
-                    </p>
-                    <p className='dashboard_text2'>{translate('total', language)}</p>
-                  </div>
-                </Card>
-                <Card
-                  backgroundColor='#fff'
-                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-                  border='2px solid #ccc'
-                  width='auto'
-                  height='120px'
-                >
-                  <div className='dashboard_custom-card-content'>
-                    <p className='dashboard_text1'>{translate('grossProfitMargin', language)}</p>
-                    <p className='dashboard_numTxt'>
-                      {totalGrossProfitMargin.toFixed(2)}&nbsp;<span className='dashboard_totalTxt'>%</span>
-                    </p>
-                    <p className='dashboard_text2'>{translate('total', language)}</p>
-                  </div>
-                </Card>
+                <DashboardCard
+                  title={translate('sales', language)}
+                  planningValue={planning.projects.totalSalesRevenue}
+                  resultValue={results.projectsResults.totalSalesRevenue}
+                  translateKey='sales'
+                  language={language}
+                />
+                <DashboardCard
+                  title={translate(language === 'en' ? 'operatingIncomeShort' : 'operatingIncome', language)}
+                  planningValue={planning.calculations.operatingIncomeYearlyTotal}
+                  resultValue={results.calculationsResults.operatingIncomeYearlyTotal}
+                  translateKey='operatingIncome'
+                  language={language}
+                />
+                <DashboardCard
+                  title={translate('grossProfitMargin', language)}
+                  planningValue={planning.calculations.grossProfitMargin.toFixed(2)}
+                  resultValue={results.calculationsResults.grossProfitMargin.toFixed(2)}
+                  translateKey='grossProfitMargin'
+                  language={language}
+                  percentage={true}
+                />
               </div>
               &nbsp;&nbsp;&nbsp;
               <div className='dashboard_right_card'>
-                <Card
-                  backgroundColor='#fff'
-                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-                  border='2px solid #ccc'
-                  width='auto'
-                  height='120px'
-                >
-                  <div className='dashboard_custom-card-content'>
-                    <p className='dashboard_text1'>{translate('grossProfit', language)}</p>
-                    <p className='dashboard_numTxt'>
-                      {formatNumberWithCommas(totalGrossProfit)}&nbsp;
-                      <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
-                    </p>
-                    <p className='dashboard_text2'>{translate('total', language)}</p>
-                  </div>
-                </Card>
-                <Card
-                  backgroundColor='#fff'
-                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-                  border='2px solid #ccc'
-                  width='auto'
-                  height='120px'
-                >
-                  <div className='dashboard_custom-card-content'>
-                    <p className='dashboard_text1'>
-                      {translate(
-                        language === 'en' ? 'cumulativeOrdinaryIncomeShort' : 'cumulativeOrdinaryIncome',
-                        language,
-                      )}
-                    </p>
-                    <p className='dashboard_numTxt'>
-                      {formatNumberWithCommas(totalNetProfitPeriod)}&nbsp;
-                      <span className='dashboard_totalTxt'>{translate('yen', language)}</span>
-                    </p>
-                    <p className='dashboard_text2'>{translate('total', language)}</p>
-                  </div>
-                </Card>
-                <Card
-                  backgroundColor='#fff'
-                  shadow='2px 2px 4px rgba(0, 0, 0, 0.2)'
-                  border='2px solid #ccc'
-                  width='auto'
-                  height='120px'
-                >
-                  <div className='dashboard_custom-card-content'>
-                    <p className='dashboard_text1'>
-                      {translate(language === 'en' ? 'operatingProfitMarginShort' : 'operatingProfitMargin', language)}
-                    </p>
-                    <p className='dashboard_numTxt'>
-                      {totalOperatingProfitMargin.toFixed(2)}&nbsp;<span className='dashboard_totalTxt'>%</span>
-                    </p>
-                    <p className='dashboard_text2'>{translate('total', language)}</p>
-                  </div>
-                </Card>
+                <DashboardCard
+                  title={translate('grossProfit', language)}
+                  planningValue={planning.calculations.grossProfit}
+                  resultValue={results.calculationsResults.grossProfit}
+                  translateKey='grossProfit'
+                  language={language}
+                />
+                <DashboardCard
+                  title={translate(
+                    language === 'en' ? 'cumulativeOrdinaryIncomeShort' : 'cumulativeOrdinaryIncome',
+                    language,
+                  )}
+                  planningValue={planning.calculations.ordinaryIncome}
+                  resultValue={results.calculationsResults.ordinaryIncome}
+                  translateKey='cumulativeOrdinaryIncome'
+                  language={language}
+                />
+                <DashboardCard
+                  title={translate(
+                    language === 'en' ? 'operatingProfitMarginShort' : 'operatingProfitMargin',
+                    language,
+                  )}
+                  planningValue={planning.calculations.operatingProfitMargin.toFixed(2)}
+                  resultValue={results.calculationsResults.operatingProfitMargin.toFixed(2)}
+                  translateKey='operatingProfitMargin'
+                  language={language}
+                  percentage={true}
+                />
               </div>
             </div>
             &nbsp;&nbsp;&nbsp;
             <div className='dashboard_graph_cont'>
               <div className='dashboard_graph_wrap'>
-                <GraphDashboard data={graphData} language={language} />
+                <GraphDashboard data={graphData} secondData={lineGraphData} language={language} type={'bar'} />
               </div>
             </div>
           </div>

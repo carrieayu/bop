@@ -1,6 +1,8 @@
 // GENERAL HELPER FUNCTIONS
 
-import { MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER, MAX_VALUE } from '../constants'
+import api from '../api/api'
+import { MAX_NUMBER_LENGTH, MAX_RETRIES, MAX_SAFE_INTEGER, MAX_VALUE, POLLING_INTERVAL } from '../constants'
+import { getReactActiveEndpoint } from '../toggleEndpoint'
 
 // # Helper to block non-numeric key presses for number inputs
 
@@ -41,9 +43,10 @@ export const handleDisableKeysOnNumberInputs = (event) => {
 // # Add Commas to Financial Numbers for Display on List, Edit, Registration Screens
 
 export const formatNumberWithCommas = (value: number | string): string => {
+  console.log('tetsing formatNumberWithCommas',value)
   // Trim the string and remove non-numeric characters,
   if (typeof value === 'string') {
-    value = value.replace(/[^0-9]/g, '') // Remove non-numeric characters
+    value = value.replace(/[^0-9-]/g, '') // Remove non-numeric characters
   }
 
   // Convert the sanitized string to a number
@@ -316,13 +319,27 @@ export const getRatio = (result, planning) => {
 
 export const sumValues = (arr) => arr.reduce((acc, value) => acc + parseFloat(value), 0)
 
-export const organiseTotals = (arr, planningArr = []) => {  
-  const firstHalfTotal = sumValues(arr.slice(0, 6)) // First Half Total
-  const secondHalfTotal = sumValues(arr.slice(6)) // Second Half Total
-  const total = sumValues(arr) // Total
+// Create new array: get totals for values in each row for planning, result, analysis tables.
+export const organiseTotals = (valuesArr, label = '') => {
+
+  let firstHalfTotal
+  let secondHalfTotal
+  let total
+
+  if (label === 'cumulativeOrdinaryIncome') {
+    console.log('cumulativeOrdinaryIncomeValues TRUE', label, valuesArr)
+    firstHalfTotal = valuesArr[5] // values already summed in cumulative so do not need sumValues.
+    secondHalfTotal = valuesArr[11] // values already summed in cumulative so do not need sumValues.
+    total = valuesArr[11] // values already summed in cumulative so do not need sumValues. (secondHalfTotal === total)
+  }
+  else {
+    firstHalfTotal = sumValues(valuesArr.slice(0, 6)) // First Half Total
+    secondHalfTotal = sumValues(valuesArr.slice(6)) // Second Half Total
+    total = sumValues(valuesArr) // Total
+  }
 
   return [
-    ...arr,
+    ...valuesArr,
     firstHalfTotal, // First Half Total
     secondHalfTotal, // Second Half Total
     total, // Total
@@ -332,4 +349,197 @@ export const organiseTotals = (arr, planningArr = []) => {
 export const cumulativeSum = (arr) => {
   let sum = 0
   return arr.map((value) => (sum += value))
+}
+
+export const grossProfitTotal = (salesRevenueTotal, costOfSalesTotal) => {
+  const grossProfit = salesRevenueTotal - costOfSalesTotal // Calculate gross profit
+  return grossProfit
+}
+
+export async function fetchWithPolling<T>(
+  endpoint: string,
+  retries = MAX_RETRIES,
+  pollingInterval = POLLING_INTERVAL,
+): Promise<T> {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await api.get(`${getReactActiveEndpoint()}/api/${endpoint}`)
+      if (response.data && response.data.length > 0) {
+        return response.data // Ensure this is returning the correct type T
+      } else {
+        console.error(`Attempt ${attempt}: Data is empty, retrying in ${pollingInterval / 1000} seconds...`)
+      }
+    } catch (error) {
+      console.error(`Attempt ${attempt}: Error fetching data -`, error)
+    }
+    await new Promise((resolve) => setTimeout(resolve, pollingInterval))
+  }
+  throw new Error('Failed to fetch data after maximum retries.')
+}
+
+// DASHBOARD CALCULATIONS USED IN GRAPH SLICE
+
+// Creates Object with year & month, monthly total. 
+// Eg. { 2024 - 5: 500000, 2024 - 6: 40000 } '
+export const reformattedMonthlyTotalValues = (valuesArr) => {
+  return valuesArr.reduce((acc, item) => {
+    const label = `${item.year}-${item.month}`
+    const monthValue = item.total
+    if (acc[label]) {
+      acc[label] += Number(monthValue)
+    } else {
+      acc[label] = Number(monthValue)
+    }
+    return acc
+  }, {})
+}
+
+// Year/Months with data to be displayed on graph in Financial Year Order.
+// EG. ['2024-4',... '2025-3']
+export const activeDatesOnGraph = (datesArrOne, datesArrTwo) => {
+    const datesSet = new Set([...Object.keys(datesArrOne), ...Object.keys(datesArrTwo)])
+    const dates = Array.from(datesSet)
+
+    dates.sort((a, b) => {
+      const [yearA, monthA] = a.split('-').map(Number)
+      const [yearB, monthB] = b.split('-').map(Number)
+
+      const fiscalYearA = monthA >= 4 ? yearA : yearA - 1
+      const fiscalYearB = monthB >= 4 ? yearB : yearB - 1
+
+      // Sort by fiscal year first
+      if (fiscalYearA !== fiscalYearB) {
+        return fiscalYearA - fiscalYearB
+      }
+
+      // If same fiscal year, prioritize April-Dec (4-12) over Jan-March (1-3)
+      const aPriority = monthA >= 4 ? monthA : monthA + 12
+      const bPriority = monthB >= 4 ? monthB : monthB + 12
+
+      return aPriority - bPriority
+    })
+  
+    return dates
+}
+  
+// Gross Profit Monthly By Date: Object
+// Eg. { 2024 - 4: 500000, ..., 2025 - 3: 40000 } '
+// CALCULATION: sales revenue - cost of sale
+export const calculateMonthlyGrossProfit = (cosMonths, salesRevenueMonths) => {
+  const grossProfitMonthlyByDate = {}
+
+  const allMonths = new Set([...Object.keys(cosMonths), ...Object.keys(salesRevenueMonths)])
+  allMonths.forEach((key) => {
+    const sales = salesRevenueMonths[key] || 0
+    const costOfSales = cosMonths[key] || 0
+    grossProfitMonthlyByDate[key] = sales - costOfSales
+  })
+  return grossProfitMonthlyByDate
+}
+
+// Admin and General Expense Monthly by Date: Object
+// Eg. { 2024 - 4: 500000, ..., 2025 - 3: 40000 }
+// Calculation: expense total + employee total
+export const calculateMonthlyAdminAndGeneralExpense = (expenseMonths, employeeExpenseMonths) => {
+  const adminAndGeneralMonthlyTotalByDate = {}
+
+  // Get all unique dates from both objects
+  const allDates = new Set([...Object.keys(expenseMonths), ...Object.keys(employeeExpenseMonths)])
+
+  for (const date of allDates) {
+    const expenseTotal = expenseMonths[date] ?? 0
+    const employeeTotal = employeeExpenseMonths[date] ?? 0
+
+    adminAndGeneralMonthlyTotalByDate[date] = expenseTotal + employeeTotal
+  }
+
+  return adminAndGeneralMonthlyTotalByDate
+}
+
+// Gross Profit Margin Monthly by Date: Object
+// Eg. { 2024 - 4: 82.45, ..., 2025 - 3: 89.12 } 
+// CALCULATION: gross profit / sales revenue * 100
+export const calculateMonthlyGrossProfitMargin = (salesRevenueMonths, grossProfitsMonths) => {
+
+  const grossProfitMarginByDate = {}
+  for (let date in salesRevenueMonths) {
+    if (grossProfitsMonths[date]) {
+      const salesRevenueAmount = salesRevenueMonths[date]
+      const grossProfitAmount = grossProfitsMonths[date]
+
+      // Check if salesRevenueAmount is 0
+      if (salesRevenueAmount === 0) {
+        grossProfitMarginByDate[date] = '' // or another default value, like '0'
+      } else {
+        const margin = ((grossProfitAmount / salesRevenueAmount) * 100).toFixed(2)
+        grossProfitMarginByDate[date] = parseFloat(margin)
+      }
+    }
+  }
+
+  return grossProfitMarginByDate
+}
+
+// Operating Income Monthly by Date: Object 
+// Eg. { 2024 - 4: 500000, ..., 2025 - 3: 400000 } '
+// CALCULATION: operating income =  gross profit + admin and general expense
+export const calculateMonthlyOperatingIncome = (grossProfitMonths, adminGeneralMonths) => {
+  const operatingIncomeMonthlyTotalByDate = {}
+
+  const allDates = new Set([...Object.keys(grossProfitMonths), ...Object.keys(adminGeneralMonths)])
+
+  for (let date of allDates) {
+    const grossProfitTotal = grossProfitMonths[date]
+    const adminGeneralTotal = adminGeneralMonths[date]
+
+    operatingIncomeMonthlyTotalByDate[date] = grossProfitTotal - adminGeneralTotal
+  }
+  return operatingIncomeMonthlyTotalByDate
+}
+
+// Operating Profit Margin Monthly by Date: Object 
+// Eg. { 2024 - 4: 82.45, ..., 2025 - 3: 89.12 } '
+// CALCULATION: operating income / sales revenue * 100
+export const calculateMonthlyOperatingProfitMargin = (operatingIncomeMonths, salesRevenueMonths) => {
+  const operatingIncomeMonthlyProfitMarginByDate = {}
+
+  const allDates = new Set([...Object.keys(operatingIncomeMonths), ...Object.keys(salesRevenueMonths)])
+
+  for (let date of allDates) {
+    const operatingIncomeAmount = operatingIncomeMonths[date]
+    const salesRevenueAmount = salesRevenueMonths[date]
+
+    // Check if salesRevenueAmount is 0
+    if (salesRevenueAmount === 0) {
+      operatingIncomeMonthlyProfitMarginByDate[date] = '' // or another default value, like '0'
+    } else {
+      const margin = ((operatingIncomeAmount / salesRevenueAmount) * 100).toFixed(2)
+      operatingIncomeMonthlyProfitMarginByDate[date] = parseFloat(margin)
+    }
+  }
+  return operatingIncomeMonthlyProfitMarginByDate
+}
+
+// Ordinary Income Monthly by Date: Object 
+// Eg. { 2024 - 4: 500000, ..., 2025 - 3: 40000 }
+// CALCULATION: operating income + non operating income - non operating expense
+export const calculateMonthlyOrdinaryIncome = (
+  operatingIncomeMonths, // calculated
+  nonOperatingIncomeMonths, // from projects
+  nonOperatingExpenseMonths, // from projects.non_operatin
+) => {
+  const ordinaryIncomeMonthlyByDate = {}
+
+  const allDates = new Set([
+    ...Object.keys(nonOperatingExpenseMonths),
+    ...Object.keys(nonOperatingIncomeMonths),
+    ...Object.keys(operatingIncomeMonths),
+  ])
+
+  for (let date of allDates) {
+    ordinaryIncomeMonthlyByDate[date] =
+      (operatingIncomeMonths[date] + nonOperatingIncomeMonths[date]) - nonOperatingExpenseMonths[date]
+  }
+
+  return ordinaryIncomeMonthlyByDate
 }

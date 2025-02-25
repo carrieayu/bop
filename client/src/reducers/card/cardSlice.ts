@@ -1,10 +1,8 @@
-import { AsyncThunkAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-
-import api from '../../api/api'
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { fetchCos } from '../costOfSale/costOfSaleSlice'
 import { CardEntity } from '../../entity/cardEntity'
 import { CostOfSaleEntity } from '../../entity/cosEntity'
+import { fetchWithPolling } from '../../utils/helperFunctionsUtil'
 
 const initialState = {
   isLoading: false,
@@ -20,9 +18,8 @@ const initialState = {
   totalCostOfSaleForYear: 0,
   status: 'idle',
   error: null,
+  test:0
 }
-const POLLING_INTERVAL = 60000
-const MAX_RETRIES = 12
 
 function getSum(data: number[]) {
   return data?.reduce((accumulator: number, currentValue: number): number => {
@@ -56,26 +53,8 @@ const calculateCumulativeOrdinaryIncome = (operatingIncome, nonOperatingIncome, 
   return operatingIncome + nonOperatingIncome - nonOperatingExpense
 }
 
-async function fetchWithPolling(retries = MAX_RETRIES): Promise<CardEntity[]> {
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      const response = await api.get<CardEntity[]>(`${getReactActiveEndpoint()}/api/projects/list/`)
-
-      if (response.data && response.data.length > 0) {
-        return response.data;
-      } else {
-        console.log(`Attempt ${attempt}: Data is empty, retrying in 5 minutes...`)
-      }
-    } catch (error) {
-      console.error(`Attempt ${attempt}: Error fetching data -`, error)
-    }
-    await new Promise((resolve) => setTimeout(resolve, POLLING_INTERVAL))
-  }
-  throw new Error('Failed to fetch data after maximum retries.')
-}
-
 export const fetchAllCards = createAsyncThunk('', async () => {
-  return await fetchWithPolling()
+  return await fetchWithPolling<CardEntity[]>('projects/list/')
 })
 
 const getCostOfSaleForYear = (cards, year) => {
@@ -96,10 +75,15 @@ const getCostOfSaleForYear = (cards, year) => {
 }
 
 function cardCalculations(state) {
+
   const currentYear = new Date().getFullYear() // To be updated when toogle year is implemented.
   const cards = state.cardsList || []
   const costOfSaleList = state.costOfSaleList || []
-
+  
+  //test
+  state.test = getSum(cards.map((card)=> parseFloat(card.non_operating_expense)))
+  //end test
+  
   const totalCostOfSaleForYear = getCostOfSaleForYear(costOfSaleList, 2024) // To be updated when toggle is implemented.
   //Total Sales
   state.totalSales = getSum(cards.map((card) => Number(card.sales_revenue)))
@@ -147,15 +131,22 @@ function cardCalculations(state) {
 
   // Total Net Profit Period
   state.totalNetProfitPeriod = getSum(
-    cards.map(
+    cards
+      .filter((card) => card.month === '4')
+      .map(
       (card) =>
         Number(card.operating_income || 0) +
-        Number(card.non_operating_income || 0) -
-        Number(card.non_operating_expense || 0) -
-        Number(card.expense || 0),
+      Number(card.non_operating_income || 0) -
+      Number(card.non_operating_expense || 0) -
+      Number(card.expense || 0),
     ),
   )
-
+  
+  const getCumulativeOrdinaryIncome = (cards) => {
+    const nonOperatingIncome = getSum(cards.map((card) => parseFloat(card.non_operating_income)))
+    const nonOperatingExpense = getSum(cards.map((card) => parseFloat(card.non_operating_expense)))
+    
+  } 
   //Total Cummulative Ordinary Income
   state.totalCumulativeOrdinaryIncome = getSum(
     cards.map((card) => {

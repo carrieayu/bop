@@ -1,26 +1,34 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Card from '../Card/Card'
 import Chart from 'react-apexcharts'
 import { ApexOptions } from 'apexcharts'
 import { translate } from '../../utils/translationUtil'
-import { formatDate } from '../../utils/helperFunctionsUtil'
+import { formatDate , formatNumberWithCommas} from '../../utils/helperFunctionsUtil'
 
 interface CustomBarProps {
   className?: string
   style?: React.CSSProperties
   data: any
   language
+  secondData
+  type
 }
 
-const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, data, language }) => {
+const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, data, secondData, language, type}) => {
   const categories = data.datasets[0].data.map((_: any, index: number) => `Category ${index + 1}`)
   
   const currentDate = new Date()
   const currentDateFormatted = formatDate(currentDate) // returns `${year}-${month}-${day}`
+  const [isToggled, setIsToggled] = useState(false)
+      const handleToggle = () => {
+        setIsToggled((prevState) => !prevState)
+      }
+
 
   const options: ApexOptions = {
     chart: {
-      type: 'bar',
+      // stacked: true,
+      type: type,
       height: 350,
       toolbar: {
         export: {
@@ -30,6 +38,15 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, data, lang
           },
         },
       },
+    },
+    grid: {
+      padding: {
+        top: 15,
+      }
+    },
+    legend: {
+      position: 'bottom',
+      // offsetY:20
     },
     plotOptions: {
       bar: {
@@ -47,6 +64,10 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, data, lang
     },
     xaxis: {
       categories: data.labels,
+      labels: {
+        show: true,
+        rotate: -180
+      }
     },
     yaxis: [
       {
@@ -60,33 +81,70 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, data, lang
       opacity: 1,
     },
     tooltip: {
+      followCursor:true,
       y: {
         formatter: function (val: number) {
-          return val.toFixed(0)
+          if (type !== 'line'){
+            return `${formatNumberWithCommas(val)} 円`
+          }
+          else {
+            return `${val.toFixed(2)}%`
+          }
         },
       },
     },
+  
     colors: data.datasets.map((dataset: any) => dataset.backgroundColor),
   }
 
-  const series = data.datasets.map((dataset: any) => ({
+  const optionsTwo: ApexOptions = {
+    tooltip: {
+      followCursor: true,
+      y: {
+        formatter: function (val: number) {
+            return `${val} %`
+        },
+      },
+    },
+  }
+
+  const seriesOne = data.datasets.map((dataset: any, index: number) => ({
     name: dataset.label,
-    type: dataset.type,
     data: dataset.data,
+    type: dataset.type,
+    color: dataset.backgroundColor,
+  }))
+
+  const seriesTwo = secondData.datasets.map((dataset: any, index: number) => ({
+    name: dataset.label,
+    data: dataset.data,
+    type: dataset.type,
     color: dataset.backgroundColor,
   }))
 
   return (
-    <Card
-      backgroundColor='#ffffff'
-      shadow='0px 4px 8px rgba(0, 0, 0, 0.1)'
-      border='1px solid #dddddd'
-      width='50%'
-      height='30rem'
-      CardClassName='card-custom'
+      <Card
+        backgroundColor='#ffffff'
+        shadow='0px 4px 8px rgba(0, 0, 0, 0.1)'
+        border='1px solid #dddddd'
+        width='50%'
+        height='30rem'
+        CardClassName='card-custom'
     >
-      <Chart options={options} series={series} type='bar' height={350} className='custom-bar' />
-    </Card>
+      {/* <div style={{backgroundColor:'yellow'}}> */}
+        <div style={{ position: 'absolute', top: 0, left: 0, padding: '10px' }}>
+          <label className='slider-switch'>
+            <input type='checkbox' checked={isToggled} onChange={handleToggle} />
+            <span className='slider'></span>
+          </label>
+        </div>
+        {!isToggled ? (
+          <Chart options={options} series={seriesOne} type='line' height={350} className='custom-bar' />
+        ) : (
+          <Chart options={optionsTwo} series={seriesTwo} type='line' height={350} className='custom-bar' />
+        )}
+      {/* </div> */}
+      </Card>
   )
 }
 
