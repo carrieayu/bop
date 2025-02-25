@@ -376,3 +376,170 @@ export async function fetchWithPolling<T>(
   }
   throw new Error('Failed to fetch data after maximum retries.')
 }
+
+// DASHBOARD CALCULATIONS USED IN GRAPH SLICE
+
+// Creates Object with year & month, monthly total. 
+// Eg. { 2024 - 5: 500000, 2024 - 6: 40000 } '
+export const reformattedMonthlyTotalValues = (valuesArr) => {
+  return valuesArr.reduce((acc, item) => {
+    const label = `${item.year}-${item.month}`
+    const monthValue = item.total
+    if (acc[label]) {
+      acc[label] += Number(monthValue)
+    } else {
+      acc[label] = Number(monthValue)
+    }
+    return acc
+  }, {})
+}
+
+// Year/Months with data to be displayed on graph in Financial Year Order.
+// EG. ['2024-4',... '2025-3']
+export const activeDatesOnGraph = (datesArrOne, datesArrTwo) => {
+    const datesSet = new Set([...Object.keys(datesArrOne), ...Object.keys(datesArrTwo)])
+    const dates = Array.from(datesSet)
+
+    dates.sort((a, b) => {
+      const [yearA, monthA] = a.split('-').map(Number)
+      const [yearB, monthB] = b.split('-').map(Number)
+
+      const fiscalYearA = monthA >= 4 ? yearA : yearA - 1
+      const fiscalYearB = monthB >= 4 ? yearB : yearB - 1
+
+      // Sort by fiscal year first
+      if (fiscalYearA !== fiscalYearB) {
+        return fiscalYearA - fiscalYearB
+      }
+
+      // If same fiscal year, prioritize April-Dec (4-12) over Jan-March (1-3)
+      const aPriority = monthA >= 4 ? monthA : monthA + 12
+      const bPriority = monthB >= 4 ? monthB : monthB + 12
+
+      return aPriority - bPriority
+    })
+  
+    return dates
+}
+  
+// Gross Profit Monthly By Date: Object
+// Eg. { 2024 - 4: 500000, ..., 2025 - 3: 40000 } '
+// CALCULATION: sales revenue - cost of sale
+export const calculateMonthlyGrossProfit = (cosMonths, salesRevenueMonths) => {
+  const grossProfitMonthlyByDate = {}
+
+  const allMonths = new Set([...Object.keys(cosMonths), ...Object.keys(salesRevenueMonths)])
+  allMonths.forEach((key) => {
+    const sales = salesRevenueMonths[key] || 0
+    const costOfSales = cosMonths[key] || 0
+    grossProfitMonthlyByDate[key] = sales - costOfSales
+  })
+  return grossProfitMonthlyByDate
+}
+
+// Admin and General Expense Monthly by Date: Object
+// Eg. { 2024 - 4: 500000, ..., 2025 - 3: 40000 }
+// Calculation: expense total + employee total
+export const calculateMonthlyAdminAndGeneralExpense = (expenseMonths, employeeExpenseMonths) => {
+  const adminAndGeneralMonthlyTotalByDate = {}
+
+  // Get all unique dates from both objects
+  const allDates = new Set([...Object.keys(expenseMonths), ...Object.keys(employeeExpenseMonths)])
+
+  for (const date of allDates) {
+    const expenseTotal = expenseMonths[date] ?? 0
+    const employeeTotal = employeeExpenseMonths[date] ?? 0
+
+    adminAndGeneralMonthlyTotalByDate[date] = expenseTotal + employeeTotal
+  }
+
+  return adminAndGeneralMonthlyTotalByDate
+}
+
+// Gross Profit Margin Monthly by Date: Object
+// Eg. { 2024 - 4: 82.45, ..., 2025 - 3: 89.12 } 
+// CALCULATION: gross profit / sales revenue * 100
+export const calculateMonthlyGrossProfitMargin = (salesRevenueMonths, grossProfitsMonths) => {
+
+  const grossProfitMarginByDate = {}
+  for (let date in salesRevenueMonths) {
+    if (grossProfitsMonths[date]) {
+      const salesRevenueAmount = salesRevenueMonths[date]
+      const grossProfitAmount = grossProfitsMonths[date]
+
+      // Check if salesRevenueAmount is 0
+      if (salesRevenueAmount === 0) {
+        grossProfitMarginByDate[date] = '' // or another default value, like '0'
+      } else {
+        const margin = ((grossProfitAmount / salesRevenueAmount) * 100).toFixed(2)
+        grossProfitMarginByDate[date] = parseFloat(margin)
+      }
+    }
+  }
+
+  return grossProfitMarginByDate
+}
+
+// Operating Income Monthly by Date: Object 
+// Eg. { 2024 - 4: 500000, ..., 2025 - 3: 400000 } '
+// CALCULATION: operating income =  gross profit + admin and general expense
+export const calculateMonthlyOperatingIncome = (grossProfitMonths, adminGeneralMonths) => {
+  const operatingIncomeMonthlyTotalByDate = {}
+
+  const allDates = new Set([...Object.keys(grossProfitMonths), ...Object.keys(adminGeneralMonths)])
+
+  for (let date of allDates) {
+    const grossProfitTotal = grossProfitMonths[date]
+    const adminGeneralTotal = adminGeneralMonths[date]
+
+    operatingIncomeMonthlyTotalByDate[date] = grossProfitTotal - adminGeneralTotal
+  }
+  return operatingIncomeMonthlyTotalByDate
+}
+
+// Operating Profit Margin Monthly by Date: Object 
+// Eg. { 2024 - 4: 82.45, ..., 2025 - 3: 89.12 } '
+// CALCULATION: operating income / sales revenue * 100
+export const calculateMonthlyOperatingProfitMargin = (operatingIncomeMonths, salesRevenueMonths) => {
+  const operatingIncomeMonthlyProfitMarginByDate = {}
+
+  const allDates = new Set([...Object.keys(operatingIncomeMonths), ...Object.keys(salesRevenueMonths)])
+
+  for (let date of allDates) {
+    const operatingIncomeAmount = operatingIncomeMonths[date]
+    const salesRevenueAmount = salesRevenueMonths[date]
+
+    // Check if salesRevenueAmount is 0
+    if (salesRevenueAmount === 0) {
+      operatingIncomeMonthlyProfitMarginByDate[date] = '' // or another default value, like '0'
+    } else {
+      const margin = ((operatingIncomeAmount / salesRevenueAmount) * 100).toFixed(2)
+      operatingIncomeMonthlyProfitMarginByDate[date] = parseFloat(margin)
+    }
+  }
+  return operatingIncomeMonthlyProfitMarginByDate
+}
+
+// Ordinary Income Monthly by Date: Object 
+// Eg. { 2024 - 4: 500000, ..., 2025 - 3: 40000 }
+// CALCULATION: operating income + non operating income - non operating expense
+export const calculateMonthlyOrdinaryIncome = (
+  operatingIncomeMonths, // calculated
+  nonOperatingIncomeMonths, // from projects
+  nonOperatingExpenseMonths, // from projects.non_operatin
+) => {
+  const ordinaryIncomeMonthlyByDate = {}
+
+  const allDates = new Set([
+    ...Object.keys(nonOperatingExpenseMonths),
+    ...Object.keys(nonOperatingIncomeMonths),
+    ...Object.keys(operatingIncomeMonths),
+  ])
+
+  for (let date of allDates) {
+    ordinaryIncomeMonthlyByDate[date] =
+      (operatingIncomeMonths[date] + nonOperatingIncomeMonths[date]) - nonOperatingExpenseMonths[date]
+  }
+
+  return ordinaryIncomeMonthlyByDate
+}

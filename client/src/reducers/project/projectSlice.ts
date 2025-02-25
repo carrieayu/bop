@@ -38,7 +38,7 @@ const project = createSlice({
         return {
           year: project.year,
           month: project.month,
-          salesRevenue: project.sales_revenue
+          total: project.sales_revenue
         }
       })
 
@@ -46,7 +46,7 @@ const project = createSlice({
         return {
           year: project.year,
           month: project.month,
-          totals: project.non_operating_expense,
+          total: project.non_operating_expense,
         }
       })
       state.nonOperatingIncomeMonthly = state.projectList.map((project) => {
@@ -54,7 +54,7 @@ const project = createSlice({
         return {
           year: project.year,
           month: project.month,
-          totals: project.non_operating_income,
+          total: project.non_operating_income,
         }
       })
     }

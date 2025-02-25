@@ -4,7 +4,6 @@ import Chart from 'react-apexcharts'
 import { ApexOptions } from 'apexcharts'
 import { translate } from '../../utils/translationUtil'
 import { formatDate , formatNumberWithCommas} from '../../utils/helperFunctionsUtil'
-import { MAX_SAFE_INTEGER } from '../../constants'
 
 interface CustomBarProps {
   className?: string
@@ -40,6 +39,15 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, data, seco
         },
       },
     },
+    grid: {
+      padding: {
+        top: 15,
+      }
+    },
+    legend: {
+      position: 'bottom',
+      // offsetY:20
+    },
     plotOptions: {
       bar: {
         columnWidth: '55%',
@@ -56,6 +64,10 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, data, seco
     },
     xaxis: {
       categories: data.labels,
+      labels: {
+        show: true,
+        rotate: -180
+      }
     },
     yaxis: [
       {
@@ -64,44 +76,6 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, data, seco
           text: '',
         },
       },
-      // {
-      //   opposite: true,
-      //   show: false,
-      //   title: {
-      //     text: '',
-      //   },
-      // },
-      // {
-      //   opposite: true,
-      //   show: false,
-      //   title: {
-      //     text: '',
-      //   },
-      // },
-      // {
-      //   opposite: true,
-      //   show: false,
-      //   title: {
-      //     text: '',
-      //   },
-      // },
-      // {
-      //   opposite: false,
-      //   min: -400,
-      //   max: 400,
-      //   title: {
-      //     text: '',
-      //   },
-      // },
-      // {
-      //   opposite: false,
-      //   show: false,
-      //   // min: 0,
-      //   // max: 100,
-      //   title: {
-      //     text: '',
-      //   },
-      // },
     ],
     fill: {
       opacity: 1,
@@ -149,32 +123,28 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, data, seco
   }))
 
   return (
-    <div>
       <Card
-        // language={language}
         backgroundColor='#ffffff'
         shadow='0px 4px 8px rgba(0, 0, 0, 0.1)'
         border='1px solid #dddddd'
         width='50%'
         height='30rem'
         CardClassName='card-custom'
-      >
+    >
+      {/* <div style={{backgroundColor:'yellow'}}> */}
         <div style={{ position: 'absolute', top: 0, left: 0, padding: '10px' }}>
-          <div className='dashboard_switches'>
-            <p className='dashboard_pl-label'>{translate('margins', language)}</p>
-            <label className='dashboard_switch'>
-              <input type='checkbox' checked={isToggled} onChange={handleToggle} />
-              <span className='dashboard_slider'></span>
-            </label>
-          </div>
+          <label className='slider-switch'>
+            <input type='checkbox' checked={isToggled} onChange={handleToggle} />
+            <span className='slider'></span>
+          </label>
         </div>
-        {isToggled ? (
+        {!isToggled ? (
           <Chart options={options} series={seriesOne} type='line' height={350} className='custom-bar' />
         ) : (
           <Chart options={optionsTwo} series={seriesTwo} type='line' height={350} className='custom-bar' />
         )}
+      {/* </div> */}
       </Card>
-    </div>
   )
 }
 
