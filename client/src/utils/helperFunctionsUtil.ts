@@ -377,9 +377,9 @@ export async function fetchWithPolling<T>(
   throw new Error('Failed to fetch data after maximum retries.')
 }
 
-// DASHBOARD CALCULATIONS USED IN GRAPH SLICE
+// -- DASHBOARD CALCULATIONS USED IN GRAPH SLICE --
 
-// Creates Object with year & month, monthly total. 
+// # Creates Object with year & month, monthly total. 
 // Eg. { 2024 - 5: 500000, 2024 - 6: 40000 } '
 export const reformattedMonthlyTotalValues = (valuesArr) => {
   return valuesArr.reduce((acc, item) => {
@@ -394,7 +394,7 @@ export const reformattedMonthlyTotalValues = (valuesArr) => {
   }, {})
 }
 
-// Year/Months with data to be displayed on graph in Financial Year Order.
+// # Year/Months with data to be displayed on graph in Financial Year Order.
 // EG. ['2024-4',... '2025-3']
 export const activeDatesOnGraph = (datesArrOne, datesArrTwo) => {
     const datesSet = new Set([...Object.keys(datesArrOne), ...Object.keys(datesArrTwo)])
@@ -422,7 +422,7 @@ export const activeDatesOnGraph = (datesArrOne, datesArrTwo) => {
     return dates
 }
   
-// Gross Profit Monthly By Date: Object
+// # Gross Profit Monthly By Date: Object
 // Eg. { 2024 - 4: 500000, ..., 2025 - 3: 40000 } '
 // CALCULATION: sales revenue - cost of sale
 export const calculateMonthlyGrossProfit = (cosMonths, salesRevenueMonths) => {
@@ -437,7 +437,7 @@ export const calculateMonthlyGrossProfit = (cosMonths, salesRevenueMonths) => {
   return grossProfitMonthlyByDate
 }
 
-// Admin and General Expense Monthly by Date: Object
+// # Admin and General Expense Monthly by Date: Object
 // Eg. { 2024 - 4: 500000, ..., 2025 - 3: 40000 }
 // Calculation: expense total + employee total
 export const calculateMonthlyAdminAndGeneralExpense = (expenseMonths, employeeExpenseMonths) => {
@@ -456,7 +456,7 @@ export const calculateMonthlyAdminAndGeneralExpense = (expenseMonths, employeeEx
   return adminAndGeneralMonthlyTotalByDate
 }
 
-// Gross Profit Margin Monthly by Date: Object
+// # Gross Profit Margin Monthly by Date: Object
 // Eg. { 2024 - 4: 82.45, ..., 2025 - 3: 89.12 } 
 // CALCULATION: gross profit / sales revenue * 100
 export const calculateMonthlyGrossProfitMargin = (salesRevenueMonths, grossProfitsMonths) => {
@@ -480,7 +480,7 @@ export const calculateMonthlyGrossProfitMargin = (salesRevenueMonths, grossProfi
   return grossProfitMarginByDate
 }
 
-// Operating Income Monthly by Date: Object 
+// # Operating Income Monthly by Date: Object 
 // Eg. { 2024 - 4: 500000, ..., 2025 - 3: 400000 } '
 // CALCULATION: operating income =  gross profit + admin and general expense
 export const calculateMonthlyOperatingIncome = (grossProfitMonths, adminGeneralMonths) => {
@@ -497,7 +497,7 @@ export const calculateMonthlyOperatingIncome = (grossProfitMonths, adminGeneralM
   return operatingIncomeMonthlyTotalByDate
 }
 
-// Operating Profit Margin Monthly by Date: Object 
+// # Operating Profit Margin Monthly by Date: Object 
 // Eg. { 2024 - 4: 82.45, ..., 2025 - 3: 89.12 } '
 // CALCULATION: operating income / sales revenue * 100
 export const calculateMonthlyOperatingProfitMargin = (operatingIncomeMonths, salesRevenueMonths) => {
@@ -520,7 +520,7 @@ export const calculateMonthlyOperatingProfitMargin = (operatingIncomeMonths, sal
   return operatingIncomeMonthlyProfitMarginByDate
 }
 
-// Ordinary Income Monthly by Date: Object 
+// # Ordinary Income Monthly by Date: Object 
 // Eg. { 2024 - 4: 500000, ..., 2025 - 3: 40000 }
 // CALCULATION: operating income + non operating income - non operating expense
 export const calculateMonthlyOrdinaryIncome = (
@@ -543,3 +543,13 @@ export const calculateMonthlyOrdinaryIncome = (
 
   return ordinaryIncomeMonthlyByDate
 }
+
+// -- Graph Dashboard  --
+
+ export const mapDataset = (datasets: any) =>
+   datasets.map((dataset: any) => ({
+     name: dataset.label,
+     data: dataset.data,
+     type: dataset.type,
+     color: dataset.backgroundColor,
+   }))

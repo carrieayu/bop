@@ -1,7 +1,17 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
 import { fetchProject } from '../project/projectSlice'
-import { activeDatesOnGraph, calculateMonthlyAdminAndGeneralExpense, calculateMonthlyGrossProfit, calculateMonthlyGrossProfitMargin, calculateMonthlyOperatingIncome, calculateMonthlyOperatingProfitMargin, calculateMonthlyOrdinaryIncome, reformattedMonthlyTotalValues, sortByFinancialYear } from '../../utils/helperFunctionsUtil'
+import {
+  activeDatesOnGraph,
+  calculateMonthlyAdminAndGeneralExpense,
+  calculateMonthlyGrossProfit,
+  calculateMonthlyGrossProfitMargin, 
+  calculateMonthlyOperatingIncome, 
+  calculateMonthlyOperatingProfitMargin, 
+  calculateMonthlyOrdinaryIncome, 
+  reformattedMonthlyTotalValues,
+  sortByFinancialYear
+} from '../../utils/helperFunctionsUtil'
 
 const initialState = {
   isLoading: false,
@@ -20,7 +30,19 @@ const initialState = {
     ordinaryIncomeMonthlyPlanning: {},
   },
   // NEED TO ADD RESULTS MONTHLY FOR 2nd Set of Graphs
-  resultsMonthly:{}
+  resultsMonthly: {
+    projectSalesRevenueMonthlyResults: [],
+    grossProfitMonthlyResults: {},
+    costOfSalesMonthlyResults: [],
+    grossProfitMarginMonthlyResults: {},
+    datesResults: [], // Eg. '2024-5'
+    expensesMonthlyResults: [],
+    employeeExpensesMonthlyResults: [],
+    adminAndGeneralExpensesMonthlyResults: {},
+    operatingIncomeMonthlyResults: {},
+    operatingProfitMarginMonthlyResults: {},
+    ordinaryIncomeMonthlyResults: {},
+  },
 }
 
 export const fetchNewGraphData = createAsyncThunk('newGraph/fetchNewGraphData', async (_, { dispatch, getState }) => {
@@ -43,9 +65,12 @@ export const fetchNewGraphData = createAsyncThunk('newGraph/fetchNewGraphData', 
     nonOperatingExpense: reformattedMonthlyTotalValues(nonOperatingExpenseMonthly),
   }
 
-  const grossProfitMonthlyPlanning = calculateMonthlyGrossProfit(reformattedData.costOfSales, reformattedData.salesRevenue)
+  const grossProfitMonthlyPlanning = calculateMonthlyGrossProfit(
+    reformattedData.costOfSales,
+    reformattedData.salesRevenue,
+  )
   const dates = activeDatesOnGraph(reformattedData.costOfSales, reformattedData.salesRevenue)
-  
+
   const grossProfitMarginMonthlyPlanning = calculateMonthlyGrossProfitMargin(
     reformattedData.salesRevenue,
     grossProfitMonthlyPlanning,
@@ -64,7 +89,6 @@ export const fetchNewGraphData = createAsyncThunk('newGraph/fetchNewGraphData', 
     reformattedData.salesRevenue,
   )
 
-  //ordinary
   const reformattedOrdinaryIncomeMonthly = calculateMonthlyOrdinaryIncome(
     reformattedOperatingIncomeMonthlyTotalByDate,
     reformattedData.nonOperatingIncome,
@@ -86,7 +110,70 @@ export const fetchNewGraphData = createAsyncThunk('newGraph/fetchNewGraphData', 
     ordinaryIncomeMonthlyPlanning: reformattedOrdinaryIncomeMonthly,
   }
 
-  return { planningMonthly }
+  // RESULTS
+
+  // Data Variables
+  const { salesRevenueResultsMonthly, nonOperatingIncomeResultsMonthly, nonOperatingExpenseResultsMonthly } = state.projectResult
+  const { costOfSaleResultMonthlyTotalsByDate } = state.costOfSaleResult
+  const { expensesResultMonthlyTotalsByDate } = state.expensesResults
+  const { employeeExpensesResultMonthlyTotalsByDate } = state.employeeExpenseResult
+
+   const reformattedResultData = {
+     salesRevenue: reformattedMonthlyTotalValues(salesRevenueResultsMonthly),
+     costOfSales: reformattedMonthlyTotalValues(costOfSaleResultMonthlyTotalsByDate),
+     expenses: reformattedMonthlyTotalValues(expensesResultMonthlyTotalsByDate),
+     employeeExpenses: reformattedMonthlyTotalValues(employeeExpensesResultMonthlyTotalsByDate),
+     nonOperatingIncome: reformattedMonthlyTotalValues(nonOperatingIncomeResultsMonthly),
+     nonOperatingExpense: reformattedMonthlyTotalValues(nonOperatingExpenseResultsMonthly),
+   }
+  
+  
+  const grossProfitMonthlyResults = calculateMonthlyGrossProfit(
+    reformattedResultData.costOfSales,
+    reformattedResultData.salesRevenue,
+  )
+  const datesResult = activeDatesOnGraph(reformattedResultData.costOfSales, reformattedResultData.salesRevenue)
+
+  const grossProfitMarginResultMonthlyResults = calculateMonthlyGrossProfitMargin(
+    reformattedResultData.salesRevenue,
+    grossProfitMonthlyResults,
+  )
+
+  const reformattedAdminAndGeneralResultMonthlyTotalsByDate = calculateMonthlyAdminAndGeneralExpense(
+    reformattedResultData.expenses,
+    reformattedResultData.employeeExpenses,
+  )
+  const reformattedOperatingIncomeResultMonthlyTotalByDate = calculateMonthlyOperatingIncome(
+    grossProfitMonthlyResults,
+    reformattedAdminAndGeneralResultMonthlyTotalsByDate,
+  )
+  const operatingProfitMarginResultMonthly = calculateMonthlyOperatingProfitMargin(
+    reformattedOperatingIncomeResultMonthlyTotalByDate,
+    reformattedResultData.salesRevenue,
+  )
+
+  const reformattedOrdinaryIncomeResultMonthly = calculateMonthlyOrdinaryIncome(
+    reformattedOperatingIncomeResultMonthlyTotalByDate,
+    reformattedResultData.nonOperatingIncome,
+    reformattedResultData.nonOperatingExpense,
+  )
+
+    const resultsMonthly = {
+      projectSalesRevenueMonthlyResults: reformattedResultData.salesRevenue,
+      costOfSalesMonthlyResults: reformattedResultData.costOfSales,
+      grossProfitMonthlyResults: grossProfitMonthlyResults,
+      grossProfitMarginMonthlyResults: grossProfitMarginResultMonthlyResults,
+      datesResults: datesResult,
+
+      expensesMonthlyResults: reformattedResultData.expenses,
+      employeeExpensesMonthlyResults: reformattedResultData.employeeExpenses,
+      adminAndGeneralExpensesMonthlyResults: reformattedAdminAndGeneralResultMonthlyTotalsByDate,
+      operatingIncomeMonthlyResults: reformattedOperatingIncomeResultMonthlyTotalByDate,
+      operatingProfitMarginMonthlyResults: operatingProfitMarginResultMonthly,
+      ordinaryIncomeMonthlyResults: reformattedOrdinaryIncomeResultMonthly,
+    }
+
+  return { planningMonthly, resultsMonthly }
 })
 
 const newGraphSlice = createSlice({
@@ -102,12 +189,18 @@ const newGraphSlice = createSlice({
     .addCase(fetchNewGraphData.fulfilled, (state, action) => {
         
       const { planningMonthly } = action.payload
+      const { resultsMonthly } = action.payload
       
       state.isLoading = false
       
       state.planningMonthly = {
         ...state.planningMonthly, // Preserving the existing state properties
         ...planningMonthly,  // Overriding with the new data from the payload
+      }
+
+      state.resultsMonthly = {
+        ...state.resultsMonthly,
+        ...resultsMonthly
       }
       
       })

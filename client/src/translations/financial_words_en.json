@@ -108,5 +108,6 @@
   "cumulativeOrdinaryIncomeShort": "Cumulative Ord. Inc.",
   "operatingIncomeShort": "Op. Income",
   "operatingProfitMarginShort": "Op. Profit Margin",
-  "margins": "Margins"
+  "margins": "Margins",
+  "financials": "Financials"
 }

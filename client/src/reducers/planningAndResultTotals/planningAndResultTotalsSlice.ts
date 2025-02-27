@@ -22,7 +22,7 @@ export const fetchTotals = createAsyncThunk('totals/fetchTotals', async (_, { di
 
     // Results
     const results= {
-      projectSalesRevenueYearTotalResult : state.projectResult.totalSales,
+      projectSalesRevenueYearTotalResult : state.projectResult.salesRevenueTotal,
       projectNonOperatingIncomeTotalResult : state.projectResult.nonOperatingIncomeTotal,
       projectNonOperatingExpenseTotalResult : state.projectResult.nonOperatingExpenseTotal,
       expenseListResultArray : state.expensesResults.expenseResultList,

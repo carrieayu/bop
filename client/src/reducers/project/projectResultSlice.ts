@@ -4,10 +4,18 @@ import { fetchWithPolling, sumValues } from '../../utils/helperFunctionsUtil'
 
 const initialState = {
   isLoading: false,
+  // RESULTS
   projectResultList: [] as ProjectResultEntity[],
   totalSales: 0,
-  nonOperatingIncomeTotal: 0,
   nonOperatingExpenseTotal: 0,
+  nonOperatingIncomeTotal: 0,
+  //newly added
+  salesRevenueTotal: 0,
+  operatingIncomeTotal: 0,
+  cumulativeOrdinaryIncome: 0,
+  salesRevenueResultsMonthly: [],
+  nonOperatingIncomeResultsMonthly: [],
+  nonOperatingExpenseResultsMonthly: [],
 }
 
 export const fetchProjectResult = createAsyncThunk('project-results/fetch', async () => {
@@ -18,12 +26,38 @@ const projectResult = createSlice({
   name: 'projectResult',
   initialState,
   reducers: {
-    getProjectTotalSales: (state) => {
-      state.totalSales = sumValues(state.projectResultList.map((project) => Number(project.sales_revenue)))
+    getProjectResultTotals: (state) => {
+      state.salesRevenueTotal = sumValues(state.projectResultList.map((project) => project.sales_revenue))
+      state.operatingIncomeTotal = sumValues(state.projectResultList.map((project) => project.operating_income))
       state.nonOperatingIncomeTotal = sumValues(state.projectResultList.map((project) => project.non_operating_income))
       state.nonOperatingExpenseTotal = sumValues(
         state.projectResultList.map((project) => project.non_operating_expense),
       )
+      state.cumulativeOrdinaryIncome =
+        state.operatingIncomeTotal + state.nonOperatingIncomeTotal - state.nonOperatingExpenseTotal
+    },
+    getMonthlyResultValues: (state) => {
+      state.salesRevenueResultsMonthly = state.projectResultList.map((project) => {
+        return {
+          year: project.projects.year, // gets year from related project (planning)
+          month: project.projects.month, // gets month from related project (planning)
+          total: project.sales_revenue,
+        }
+      })
+      state.nonOperatingExpenseResultsMonthly = state.projectResultList.map((project) => {
+        return {
+          year: project.projects.year,
+          month: project.projects.month,
+          total: project.non_operating_expense,
+        }
+      })
+      state.nonOperatingIncomeResultsMonthly = state.projectResultList.map((project) => {
+        return {
+          year: project.projects.year,
+          month: project.projects.month,
+          total: project.non_operating_income,
+        }
+      })
     },
   },
   extraReducers(builder) {
@@ -41,6 +75,6 @@ const projectResult = createSlice({
   },
 })
 
-export const { getProjectTotalSales } = projectResult.actions
+export const { getProjectResultTotals, getMonthlyResultValues } = projectResult.actions
 
 export default projectResult.reducer

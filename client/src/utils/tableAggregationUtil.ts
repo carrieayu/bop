@@ -97,7 +97,7 @@ export const costOfSalesTotalsFunction = (aggregatedCostOfSalesData) => {
 }
 
 // USED FOR GRAPH / REDUX
-export const montlyTotalsCostOfSalesFunction = (costOfSales) => {
+export const monthlyTotalsCostOfSalesFunction = (costOfSales) => {
   return costOfSales.map((item) => {
     const object = {
       month: item.month,
@@ -115,7 +115,6 @@ export const montlyTotalsCostOfSalesFunction = (costOfSales) => {
     return object
   })
 }
-
 
 // EMPLOYEE EXPENSES
 export const aggregatedEmployeeExpensesFunction = (employee_expenses) => {
@@ -183,7 +182,7 @@ export const employeeExpensesTotalsFunction = (employeeExpensesdata) => {
 }
 
 // USED FOR GRAPH / REDUX
-export const montlyTotalsEmployeeExpenseFunction = (employeeExpense) => {
+export const monthlyTotalsEmployeeExpenseFunction = (employeeExpense) => {
   return employeeExpense.map((item) => {
     const object = {
       month: item.month,

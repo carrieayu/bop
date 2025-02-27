@@ -1,12 +1,14 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { EmployeeExpenseResultEntity } from '../../entity/employeeExpenseResultEntity'
 import { fetchWithPolling, sumValues } from '../../utils/helperFunctionsUtil'
+import { monthlyTotalsEmployeeExpenseFunction } from '../../utils/tableAggregationUtil'
 
 const initialState = {
   isLoading: false,
   employeeExpenseResultList: [] as EmployeeExpenseResultEntity[],
   employeeExpenseResultTotals: [],
   employeeExpenseResultYearTotal: 0,
+  employeeExpensesResultMonthlyTotalsByDate: [],
 }
 
 export const fetchEmployeeExpenseResult = createAsyncThunk('employee-expense-result/fetch', async () => {
@@ -44,6 +46,8 @@ const employeeExpenseResult = createSlice({
         bonusAndFuelTotal
 
       state.employeeExpenseResultYearTotal = total
+      state.employeeExpensesResultMonthlyTotalsByDate = monthlyTotalsEmployeeExpenseFunction(state.employeeExpenseResultList)
+
     },
   },
   extraReducers(builder) {

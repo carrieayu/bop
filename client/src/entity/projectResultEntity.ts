@@ -1,9 +1,5 @@
 export interface ProjectResultEntity {
   project_sales_result_id: string
-  project_name: string
-  project_type: string
-  year: string
-  month: string
   sales_revenue: string // Decimal in Django → String in Entity
   dispatch_labor_expense: string
   employee_expense: string
@@ -18,5 +14,14 @@ export interface ProjectResultEntity {
   client: string
   created_at: string
   updated_at: string
-  project_id: string
+  projects: ProjectEntity
 }
+// Related Project (Planning)
+export interface ProjectEntity {
+  project_id: string
+  project_name: string
+  project_type: string
+  year: string
+  month: string
+}
+

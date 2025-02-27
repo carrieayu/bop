@@ -4,16 +4,16 @@ import { fetchWithPolling, sumValues } from '../../utils/helperFunctionsUtil'
 
 const initialState = {
   isLoading: false,
+  //PLANNING
   projectList: [] as ProjectEntity[],
   salesRevenueTotal: 0,
-  nonOperatingIncomeTotal: 0,
   operatingIncomeTotal: 0,
-  nonOperatingExpenseTotal:0,
+  nonOperatingIncomeTotal: 0,
+  nonOperatingExpenseTotal: 0,
   cumulativeOrdinaryIncome: 0,
   salesRevenueMonthly: [],
-  // working on
   nonOperatingIncomeMonthly: [],
-  nonOperatingExpenseMonthly:[],
+  nonOperatingExpenseMonthly: []
 }
 
 export const fetchProject = createAsyncThunk('project/fetch', async () => {
@@ -25,7 +25,6 @@ const project = createSlice({
   initialState,
   reducers: {
     getProjectTotals: (state) => {
-
       state.salesRevenueTotal = sumValues(state.projectList.map((project)=> project.sales_revenue))
       state.operatingIncomeTotal = sumValues(state.projectList.map((project) => project.operating_income))
       state.nonOperatingIncomeTotal = sumValues(state.projectList.map((project) => project.non_operating_income))
@@ -41,7 +40,6 @@ const project = createSlice({
           total: project.sales_revenue
         }
       })
-
       state.nonOperatingExpenseMonthly = state.projectList.map((project) => {
         return {
           year: project.year,
@@ -57,7 +55,7 @@ const project = createSlice({
           total: project.non_operating_income,
         }
       })
-    }
+    },
   },
   extraReducers(builder) {
     builder

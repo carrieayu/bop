@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
@@ -23,7 +23,11 @@ import { fetchEmployeeExpense, getEmployeeExpenseTotals } from '../../reducers/e
 // Results
 import { fetchCosResult, getCostOfSaleResultsTotals } from '../../reducers/costOfSale/costOfSaleResultSlice'
 import { fetchExpenseResult, getExpenseResultsTotals } from '../../reducers/expenses/expensesResultsSlice'
-import { fetchProjectResult, getProjectTotalSales } from '../../reducers/project/projectResultSlice'
+import {
+  fetchProjectResult,
+  getProjectResultTotals,
+  getMonthlyResultValues,
+} from '../../reducers/project/projectResultSlice'
 import { fetchProject, getProjectTotals, getMonthlyValues } from '../../reducers/project/projectSlice'
 import {
   fetchEmployeeExpenseResult,
@@ -31,11 +35,22 @@ import {
 } from '../../reducers/employeeExpense/employeeExpenseResultSlice'
 // Totals
 import { fetchTotals, selectTotals } from '../../reducers/planningAndResultTotals/planningAndResultTotalsSlice'
+import { RootState } from '../../app/store'
+import { stat } from 'fs'
+import { Root } from 'react-dom/client'
 
 const Dashboard = () => {
+  // DATA FOR CARDS
   const { planning, results } = useAppSelector(selectTotals)
+  // DATA FOR GRAPH
+  const { planningMonthly, resultsMonthly } = useAppSelector(selectNewGraphValues)
 
-  const { planningMonthly } = useAppSelector(selectNewGraphValues)
+  const [test, setTest] = useState<any>([])
+
+  useEffect(() => {
+    console.log('Current Planning:', planning)
+    console.log('Current Results:', results)
+  }, [planning, results]) // L
 
   const {
     projectSalesRevenueMonthlyPlanning,
@@ -47,6 +62,16 @@ const Dashboard = () => {
     dates,
   } = planningMonthly
 
+  const {
+    projectSalesRevenueMonthlyResults,
+    operatingIncomeMonthlyResults,
+    operatingProfitMarginMonthlyResults,
+    ordinaryIncomeMonthlyResults,
+    grossProfitMarginMonthlyResults,
+    grossProfitMonthlyResults,
+    datesResults,
+  } = resultsMonthly
+
   const dispatch = useAppDispatch()
   const [tableList, setTableList] = useState<any>([])
 
@@ -54,9 +79,11 @@ const Dashboard = () => {
   const [isSwitchActive, setIsSwitchActive] = useState(false)
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
+  const [isPlanningGraph, setIsPlanningGraph] = useState(true)
   const navigate = useNavigate()
   const location = useLocation()
   const [isThousandYenChecked, setIsThousandYenChecked] = useState(false)
+  const isDataFetchedRef = useRef(false)
 
   const handleThousandYenToggle = () => {
     setIsThousandYenChecked((prevState) => !prevState)
@@ -67,60 +94,73 @@ const Dashboard = () => {
     navigate(tab)
   }
 
+  const handleGraphToggle = () => {
+    setIsPlanningGraph((prevState) => !prevState)
+  }
+  
   useEffect(() => {
     const fetchData = async () => {
-        try {
-          const [data] = await Promise.all([
-            dispatch(fetchAllClientData()).catch(handleError('client data')),
-            dispatch(fetchAllCards()).catch(handleError('cards data')),
-            dispatch(fetchGraphData()).catch(handleError('graph data')),
-            dispatch(fetchNewGraphData()).catch(handleError('new graph data')),
-            dispatch(fetchCos())
-              .catch(handleError('Cost Of Sales Planning data'))
-              .then(() => dispatch(getCostOfSaleTotals())),
-            dispatch(fetchExpense())
-              .catch(handleError('Expenses Planning data'))
-              .then(() => dispatch(getExpenseTotals())),
-            dispatch(fetchEmployeeExpense())
-              .catch(handleError('Employee Expenses Planning data'))
-              .then(() => dispatch(getEmployeeExpenseTotals())),
-            dispatch(fetchProject())
-              .catch(handleError('Projects Planning data'))
-              .then(() => dispatch(getProjectTotals()))
-              .then(() => dispatch(getMonthlyValues())),
-            dispatch(fetchExpenseResult())
-              .catch(handleError('Expenses Result data'))
-              .then(() => dispatch(getExpenseResultsTotals())),
-            dispatch(fetchCosResult())
-              .catch(handleError('Cost Of Sales Result data'))
-              .then(() => dispatch(getCostOfSaleResultsTotals())),
-            dispatch(fetchProjectResult())
-              .catch(handleError('Projects Result data'))
-              .then(() => dispatch(getProjectTotalSales())),
+      try {
+        const [data] = await Promise.all([
+          dispatch(fetchAllClientData()).catch(handleError('client data')),
+          // dispatch(fetchAllCards()).catch(handleError('cards data')),
+          // dispatch(fetchGraphData()).catch(handleError('graph data')),
+          dispatch(fetchNewGraphData()).catch(handleError('new graph data')),
+
+          dispatch(fetchExpense())
+            .catch(handleError('Expenses Planning data'))
+            .then(() => dispatch(getExpenseTotals())),
+          dispatch(fetchCos())
+            .catch(handleError('Cost Of Sales Planning data'))
+            .then(() => dispatch(getCostOfSaleTotals())),
+          dispatch(fetchEmployeeExpense())
+            .catch(handleError('Employee Expenses Planning data'))
+            .then(() => dispatch(getEmployeeExpenseTotals())),
+          dispatch(fetchProject())
+            .catch(handleError('Projects Planning data'))
+            .then(() => dispatch(getProjectTotals()))
+            .then(() => dispatch(getMonthlyValues())),
+          
+          dispatch(fetchExpenseResult())
+            .catch(handleError('Expenses Result data'))
+            .then(() => dispatch(getExpenseResultsTotals())),
+          dispatch(fetchCosResult())
+            .catch(handleError('Cost Of Sales Result data'))
+            .then(() => dispatch(getCostOfSaleResultsTotals())),
             dispatch(fetchEmployeeExpenseResult())
               .catch(handleError('Employee Expenses Result data'))
               .then(() => dispatch(getEmployeeExpenseResultTotals())),
-            dispatch(fetchTotals()).catch(handleError('Totals data')),
-          ])
-          if (data) setTableList(data.payload)
-              } catch (error) {
-                console.error('Unexpected error:', error)
-              }
-        }
-        fetchData()
-      }, [tableList])
+          dispatch(fetchProjectResult())
+            .catch(handleError('Projects Result data'))
+            .then(() => dispatch(getProjectResultTotals()))
+            .then(() => dispatch(getMonthlyResultValues())),
           
+          dispatch(fetchTotals()).catch(handleError('Totals data')),
+        ])
+        if (data) setTableList(data.payload)
+      } catch (error) {
+        console.error('Unexpected error:', error)
+      }
+    }
+    fetchData()
+  }, [tableList])
+          
+
   const handleError = (dataType) => (error) => {
     console.error(`Error fetching ${dataType}:`, error)
     return null
   }
 
   useEffect(() => {
+    console.log('TEST TEST',test)
+   },
+  [test])
+  useEffect(() => {
     const path = location.pathname
     if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
       setActiveTab(path)
     }
-  }, [location.pathname])
+  }, [location.pathname, activeTab])
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
@@ -131,7 +171,7 @@ const Dashboard = () => {
     setLanguage(newLanguage)
   }
 
-  const graphData = {
+  const planningGraphData = {
     labels: dates, // This displays the 'dates' in y axis in the csv.
     datasets: [
       {
@@ -169,7 +209,7 @@ const Dashboard = () => {
     ],
   }
 
-  const lineGraphData = {
+  const planningLineGraphData = {
     labels: dates,
     datasets: [
       {
@@ -186,6 +226,68 @@ const Dashboard = () => {
         type: 'line' as const,
         label: translate('operatingProfitMargin', language),
         data: dates.map((date) => operatingProfitMarginMonthlyPlanning[date] ?? 0),
+        backgroundColor: '#ec3e4a',
+        borderColor: '#ec3e4a',
+        borderWidth: 2,
+      },
+    ],
+  }
+
+  const resultsGraphData = {
+    labels: dates, // This displays the 'dates' in y axis in the csv.
+    datasets: [
+      {
+        type: 'bar' as const,
+        label: translate('sales', language),
+        data: dates.map((date) => projectSalesRevenueMonthlyResults[date] || 0),
+        backgroundColor: '#6e748c',
+        borderColor: 'black',
+        borderWidth: 1,
+      },
+      {
+        type: 'bar' as const,
+        label: translate('grossProfit', language),
+        data: dates.map((date) => grossProfitMonthlyResults[date]),
+        backgroundColor: '#7696c6',
+        borderColor: 'black',
+        borderWidth: 1,
+      },
+      {
+        type: 'bar' as const,
+        label: translate('operatingIncome', language),
+        data: dates.map((date) => operatingIncomeMonthlyResults[date]),
+        backgroundColor: '#b8cbe2',
+        borderColor: 'black',
+        borderWidth: 1,
+      },
+      {
+        type: 'bar' as const,
+        label: translate('ordinaryIncome', language), // changed to monthly not cumulative
+        data: dates.map((date) => ordinaryIncomeMonthlyResults[date] ?? 0),
+        backgroundColor: '#bde386',
+        borderColor: 'black',
+        borderWidth: 1,
+      },
+    ],
+  }
+
+  const resultsLineGraphData = {
+    labels: dates,
+    datasets: [
+      {
+        type: 'line' as const,
+        label: translate('grossProfitMargin', language),
+        data: dates
+          ?.filter((date) => grossProfitMarginMonthlyResults[date])
+          .map((date) => grossProfitMarginMonthlyResults[date]),
+        backgroundColor: '#ff8e13',
+        borderColor: '#ff8e13',
+        borderWidth: 2,
+      },
+      {
+        type: 'line' as const,
+        label: translate('operatingProfitMargin', language),
+        data: dates.map((date) => operatingProfitMarginMonthlyResults[date] ?? 0),
         backgroundColor: '#ec3e4a',
         borderColor: '#ec3e4a',
         borderWidth: 2,
@@ -264,8 +366,30 @@ const Dashboard = () => {
             </div>
             &nbsp;&nbsp;&nbsp;
             <div className='dashboard_graph_cont'>
+              <div
+                className='dashboard-graph-change'
+                style={{
+                  backgroundColor: `${isPlanningGraph ? '#fec384c7' : '#CDE4FC'}`,
+                }}
+              >
+                <label className='slider-switch'>
+                  <input type='checkbox' checked={!isPlanningGraph} onChange={handleGraphToggle} />
+                  <span className='slider'></span>
+                </label>
+                <p
+                  style={{
+                    padding: '0px',
+                  }}
+                >
+                  {translate(`${!isPlanningGraph ? 'results' : 'planning'}`, language)}
+                </p>
+              </div>
               <div className='dashboard_graph_wrap'>
-                <GraphDashboard data={graphData} secondData={lineGraphData} language={language} type={'bar'} />
+                <GraphDashboard
+                  financialData={isPlanningGraph ? planningGraphData : resultsGraphData}
+                  marginData={isPlanningGraph ? planningLineGraphData : resultsLineGraphData}
+                  language={language}
+                />
               </div>
             </div>
           </div>
