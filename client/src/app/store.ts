@@ -1,9 +1,8 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
 import CounterReducer from "../reducers/counter/counterSlice";
 import userReducer from '../reducers/user/userSlice'
-import CardReducer from "../reducers/card/cardSlice"
+// import CardReducer from "../reducers/card/cardSlice"
 import tableSlice from "../reducers/table/tableSlice";
-import graphSlice from "../reducers/graph/graphSlice";
 import personnelExpensesSlice from "../reducers/personnel/personnelExpensesSlice";
 import personnelSlice from "../reducers/personnel/personnelSlice";
 import businessDivisionsSlice from '../reducers/businessDivisions/businessDivisionsSlice'
@@ -19,26 +18,23 @@ import projectResultSlice from '../reducers/project/projectResultSlice'
 import employeeExpenseSlice from '../reducers/employeeExpense/employeeExpenseSlice'
 import employeeExpenseResultSlice from '../reducers/employeeExpense/employeeExpenseResultSlice'
 import projectSlice from '../reducers/project/projectSlice'
-import newGraphSlice from '../reducers/graph/newGraphSlice'
+import graphSlice from '../reducers/graph/graphSlice'
 
 export const store = configureStore({
   reducer: {
     counter: CounterReducer,
     user: userReducer,
-    // cards is actually projects?
-    cards: CardReducer,
     table: tableSlice,
     graph: graphSlice,
-    newGraph: newGraphSlice,
     // personnel is employee ??
-    personnel: personnelExpensesSlice,
+    employee: personnelExpensesSlice,
     personnelData: personnelSlice,
     // personnelPlanning is employee expenses??
     personnelPlanning: personnelPlanningSlice,
     
-    businessDivisionsSlice: businessDivisionsSlice,
-    masterCompanySlice: masterCompanySlice,
-    clientMasterSlice: clientMasterSlice,
+    businessDivisions: businessDivisionsSlice,
+    masterCompany: masterCompanySlice,
+    clientMaster: clientMasterSlice,
     
     totals: planningAndResultTotalsSlice,
     

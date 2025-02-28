@@ -110,15 +110,8 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
         // PLANNING:OPERATING INCOME
         const operatingIncomeValues = operatingIncomeFunction(grossProfitValues, sellingAndGeneralAdminExpenseValues)
         
-        console.log(
-          'DASHBOARD: grossProfitValues',
-          grossProfitValues,
-          'DASHBOARD:sellingAndGeneralAdminExpenseValues',
-          sellingAndGeneralAdminExpenseValues,
-        )
         // Non-Operating Income & Expense
         const nonOperatingIncomeValues = mapValue('non_operating_income', aggregatedProjectsData)
-        console.log('aggregatedProjectsData', aggregatedProjectsData)
         const nonOperatingExpenseValues = mapValue('non_operating_expense', aggregatedProjectsData)
 
         // PLANNING:ORDINARY PROFIT

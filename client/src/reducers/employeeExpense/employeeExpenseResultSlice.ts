@@ -55,10 +55,6 @@ const employeeExpenseResult = createSlice({
       .addCase(fetchEmployeeExpenseResult.fulfilled, (state, action) => {
         state.employeeExpenseResultList = action.payload
         state.isLoading = false
-        console.log('Employee Expense List', state.employeeExpenseResultList)
-        console.log('Employee Expense Totals', state.employeeExpenseResultTotals)
-        console.log('Employee Expense YearTotal', state.employeeExpenseResultYearTotal)
-        console.log('State after update:', state)
       })
       .addCase(fetchEmployeeExpenseResult.pending, (state) => {
         state.isLoading = true

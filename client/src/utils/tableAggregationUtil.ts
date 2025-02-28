@@ -52,7 +52,6 @@ export const expensesTotalsFunction = (expensesData) => {
 
 // USED FOR GRAPH / REDUX
 export const monthlyTotalsExpensesFunction = (expenses) => {
-  console.log('inside monthly total expense', expenses)
   return expenses.map((item) => {
     const object = {
       month: item.month,
@@ -257,11 +256,6 @@ export const ordinaryProfitFunction = (
     const nonOperatingIncome = nonOperatingIncomeValues[index]
     const totalOperating = operatingIncome + nonOperatingIncome
     const totalOrdinaryIncome = totalOperating - nonOperatingExpensesValues[index]
-    
-    console.log('operatingIncome', operatingIncome)
-    console.log('nonOperatingIncome', nonOperatingIncome)
-    console.log('totalOperating', totalOperating)
-    console.log('totalOrdinaryIncome', totalOrdinaryIncome)
 
     return totalOrdinaryIncome
   })

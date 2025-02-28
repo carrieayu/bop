@@ -817,14 +817,6 @@ const EditTablePlanning = () => {
   }, [])
 
   useEffect(() => {
-    console.log('data',data)
-  },[data])
-
-  useEffect(() => {
-    console.log('previous data', previousData)
-  }, [previousData])
-
-  useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
   }, [language])
 

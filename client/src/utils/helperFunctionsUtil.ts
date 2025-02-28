@@ -3,6 +3,7 @@
 import api from '../api/api'
 import { MAX_NUMBER_LENGTH, MAX_RETRIES, MAX_SAFE_INTEGER, MAX_VALUE, POLLING_INTERVAL } from '../constants'
 import { getReactActiveEndpoint } from '../toggleEndpoint'
+import { translate } from './translationUtil'
 
 // # Helper to block non-numeric key presses for number inputs
 
@@ -43,7 +44,6 @@ export const handleDisableKeysOnNumberInputs = (event) => {
 // # Add Commas to Financial Numbers for Display on List, Edit, Registration Screens
 
 export const formatNumberWithCommas = (value: number | string): string => {
-  console.log('tetsing formatNumberWithCommas',value)
   // Trim the string and remove non-numeric characters,
   if (typeof value === 'string') {
     value = value.replace(/[^0-9-]/g, '') // Remove non-numeric characters
@@ -327,7 +327,6 @@ export const organiseTotals = (valuesArr, label = '') => {
   let total
 
   if (label === 'cumulativeOrdinaryIncome') {
-    console.log('cumulativeOrdinaryIncomeValues TRUE', label, valuesArr)
     firstHalfTotal = valuesArr[5] // values already summed in cumulative so do not need sumValues.
     secondHalfTotal = valuesArr[11] // values already summed in cumulative so do not need sumValues.
     total = valuesArr[11] // values already summed in cumulative so do not need sumValues. (secondHalfTotal === total)
@@ -546,10 +545,31 @@ export const calculateMonthlyOrdinaryIncome = (
 
 // -- Graph Dashboard  --
 
- export const mapDataset = (datasets: any) =>
-   datasets.map((dataset: any) => ({
-     name: dataset.label,
-     data: dataset.data,
-     type: dataset.type,
-     color: dataset.backgroundColor,
-   }))
+export const mapDataset = (datasets: any) =>
+  datasets.map((dataset: any) => ({
+    name: dataset.label,
+    data: dataset.data,
+    type: dataset.type,
+    color: dataset.backgroundColor,
+  }))
+
+export const createGraphData = (
+       datasetMappings: {
+         labelKey: string
+         data: any
+         backgroundColor: string
+         type: string
+       }[],
+       dates: string[],
+       language,
+     ) => ({
+       labels: dates,
+       datasets: datasetMappings.map(({ labelKey, data, backgroundColor, type }) => ({
+         type,
+         label: translate(labelKey, language),
+         data: dates.map((date) => data[date] ?? 0),
+         backgroundColor,
+         borderColor: type === 'bar' ? 'black' : backgroundColor,
+         borderWidth: type === 'bar' ? 1 : 2,
+       })),
+     })

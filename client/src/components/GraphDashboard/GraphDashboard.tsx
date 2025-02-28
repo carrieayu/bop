@@ -19,8 +19,6 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, financialD
   const currentDateFormatted = formatDate(currentDate)
   const [isToggled, setIsToggled] = useState(false)
 
-  console.log('marginData labels:', marginData.labels, 'financialData labels:', financialData)
-
   const handleToggle = () => {
     setIsToggled((prevState) => !prevState)
   }
@@ -42,8 +40,6 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, financialD
       })),
     [marginData, isToggled],
   )
-
-  console.log('series One:', seriesOne, 'series Two:', seriesTwo)
 
   const optionsOne: ApexOptions = useMemo(
     () => ({
