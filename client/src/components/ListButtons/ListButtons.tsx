@@ -22,7 +22,6 @@ const ListButtons: React.FC<ListButtonsProps> = ({
   const { language } = useLanguage()
   const navigate = useNavigate() // Get navigate from react-router
   const setActiveTabOther = (tab: string) => {
-    console.log(`Active tab set to: ${tab}`)
     // Implement your tab state update logic here
   }
 

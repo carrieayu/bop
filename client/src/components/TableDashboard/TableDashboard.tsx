@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { token, months, monthNames } from '../../constants'
 import { getPlanningAndResultsData } from '../../api/DashboardEndpoint/GetPlanningAndResultsTablesA'
-import { organiseTotals, sumValues } from '../../utils/helperFunctionsUtil'
+import { cumulativeSum, organiseTotals } from '../../utils/helperFunctionsUtil'
 import { translate } from '../../utils/translationUtil'
 import {
   aggregatedCostOfSalesFunction,
@@ -53,7 +53,6 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
 
         // PLANNING:SALES REVENUE
         const salesRevenueValues = mapValue('sales_revenue', aggregatedProjectsData)
-        console.log('salesValues', salesRevenueValues, 'aggregatedProjectsData', aggregatedProjectsData)
 
         // PLANNING: COST OF SALES TOTALS VALUES
         const costOfSalesValues = costOfSalesTotalsFunction(aggregatedCostOfSalesData)
@@ -110,7 +109,7 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
 
         // PLANNING:OPERATING INCOME
         const operatingIncomeValues = operatingIncomeFunction(grossProfitValues, sellingAndGeneralAdminExpenseValues)
-
+        
         // Non-Operating Income & Expense
         const nonOperatingIncomeValues = mapValue('non_operating_income', aggregatedProjectsData)
         const nonOperatingExpenseValues = mapValue('non_operating_expense', aggregatedProjectsData)
@@ -122,10 +121,6 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
           nonOperatingExpenseValues,
         )
 
-        const cumulativeSum = (arr) => {
-          let sum = 0
-          return arr.map((value) => (sum += value))
-        }
         const cumulativeOrdinaryIncomeValues = cumulativeSum(ordinaryIncomeValues)
 
         const labelsAndValues = [
@@ -182,11 +177,10 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
 
         const planningData = labelsAndValues.map((item) => ({
           label: item.label,
-          values: organiseTotals(item.values),
+          values: organiseTotals(item.values, item.label),
         }))
 
         setPlanningData(planningData)
-
         // --- RESULTS TABLE DATA ---
 
         // RESULTS:COST OF SALES
@@ -271,8 +265,8 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
         )
 
         //Non-Operating Income & Expense
-        const nonOperatingIncomeResultsValues = mapValue('non_operating_income', aggregatedProjectsData)
-        const nonOperatingExpensesResultsValues = mapValue('non_operating_expense', aggregatedProjectsData)
+        const nonOperatingIncomeResultsValues = mapValue('non_operating_income', aggregatedResultsProjectsData)
+        const nonOperatingExpensesResultsValues = mapValue('non_operating_expense', aggregatedResultsProjectsData)
 
         // RESULTS:ORDINARY PROFIT
         const ordinaryIncomeResultsValues = ordinaryProfitFunction(
@@ -281,10 +275,6 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
           nonOperatingExpensesResultsValues,
         )
 
-        const cumulativeSumResults = (arr) => {
-          let sum = 0
-          return arr.map((value) => (sum += value))
-        }
         const cumulativeOrdinaryIncomeResultsValues = cumulativeSum(ordinaryIncomeResultsValues)
 
         const labelsAndValuesResults = [
@@ -336,19 +326,20 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
 
           // Operating income section
           { label: 'operatingIncome', values: operatingIncomeResultsValues },
+          
           { label: 'nonOperatingIncome', values: nonOperatingIncomeResultsValues },
           { label: 'nonOperatingExpenses', values: nonOperatingExpensesResultsValues },
+
           { label: 'ordinaryIncome', values: ordinaryIncomeResultsValues },
           { label: 'cumulativeOrdinaryIncome', values: cumulativeOrdinaryIncomeResultsValues },
         ]
 
         const results = labelsAndValuesResults.map((item) => ({
           label: item.label,
-          values: organiseTotals(item.values), // planningData is included to calculate sales ratio
+          values: organiseTotals(item.values, item.label), // planningData is included to calculate sales ratio
         }))
 
         setResultsData(results)
-        console.log('resultsData after set:', results) // Confirm data is set
       })
       .catch((error) => {
         console.error(error)
@@ -364,7 +355,6 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
   useEffect(() => {
     planningTotalsOnlyArr = getTotalsOnlyArr(planningData)
     resultsTotalsOnlyArr = getTotalsOnlyArr(resultsData)
-    console.log('planningTotalsOnlyArr', planningTotalsOnlyArr, 'data',planningData, 'resultsTotalsOnlyArr', resultsTotalsOnlyArr)
     if (planningTotalsOnlyArr.length && resultsTotalsOnlyArr.length) {
       const saleRatio = getSalesRatios(planningTotalsOnlyArr, resultsTotalsOnlyArr)
     }

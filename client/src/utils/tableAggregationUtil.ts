@@ -50,6 +50,31 @@ export const expensesTotalsFunction = (expensesData) => {
   })
 }
 
+// USED FOR GRAPH / REDUX
+export const monthlyTotalsExpensesFunction = (expenses) => {
+  return expenses.map((item) => {
+    const object = {
+      month: item.month,
+      year: item.year,
+      total:
+        parseFloat(item.consumable_expense) +
+        parseFloat(item.rent_expense) +
+        parseFloat(item.tax_and_public_charge) +
+        parseFloat(item.depreciation_expense) +
+        parseFloat(item.travel_expense) +
+        parseFloat(item.communication_expense) +
+        parseFloat(item.utilities_expense) +
+        parseFloat(item.transaction_fee) +
+        parseFloat(item.advertising_expense) +
+        parseFloat(item.entertainment_expense) +
+        parseFloat(item.professional_service_fee),
+    }
+
+    return object
+  })
+}
+
+
 // COST OF SALES
 export const aggregatedCostOfSalesFunction = (cost_of_sales) => {
   return cost_of_sales.reduce((acc, item) => {
@@ -67,6 +92,26 @@ export const costOfSalesTotalsFunction = (aggregatedCostOfSalesData) => {
     const workInProgress = Number(aggregatedCostOfSalesData[month]?.work_in_progress_expense) || 0
     const amortization = Number(aggregatedCostOfSalesData[month]?.amortization_expense) || 0
     return purchases + outsourcing + productPurchase + dispatchLabor + communication + workInProgress + amortization
+  })
+}
+
+// USED FOR GRAPH / REDUX
+export const monthlyTotalsCostOfSalesFunction = (costOfSales) => {
+  return costOfSales.map((item) => {
+    const object = {
+      month: item.month,
+      year: item.year,
+      total:
+        parseFloat(item.purchase) +
+        parseFloat(item.outsourcing_expense) +
+        parseFloat(item.product_purchase) +
+        parseFloat(item.dispatch_labor_expense) +
+        parseFloat(item.communication_expense) +
+        parseFloat(item.work_in_progress_expense) +
+        parseFloat(item.amortization_expense),
+    }
+
+    return object
   })
 }
 
@@ -135,6 +180,23 @@ export const employeeExpensesTotalsFunction = (employeeExpensesdata) => {
   })
 }
 
+// USED FOR GRAPH / REDUX
+export const monthlyTotalsEmployeeExpenseFunction = (employeeExpense) => {
+  return employeeExpense.map((item) => {
+    const object = {
+      month: item.month,
+      year: item.year,
+      total:
+        (parseFloat(item.salary ?? 0) || 0) +
+        (parseFloat(item.executive_remuneration ?? 0) || 0) +
+        parseFloat(item.statutory_welfare_expense) +
+        parseFloat(item.welfare_expense) +
+        parseFloat(item.insurance_premium) 
+    }
+
+    return object
+  })
+}
 // PROJECTS
 export const aggregatedProjectsFunction = (projects) => {
   return projects.reduce((acc, item) => {

@@ -138,7 +138,6 @@ const UsersListAndEdit: React.FC = () => {
     if (firstError) {
       const { errors, errorType } = firstError
       const translatedErrors = translateAndFormatErrors(errors, language, errorType)
-      console.log(translatedErrors, 'trans errors')
       setCrudMessage(translatedErrors)
       setCrudValidationErrors(translatedErrors)
       setIsCRUDOpen(true)

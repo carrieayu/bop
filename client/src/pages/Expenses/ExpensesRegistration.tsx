@@ -172,10 +172,7 @@ const ExpensesRegistration = () => {
 
     createExpense(formData, token)
       .then(() => {
-        console.log('in create function')
         setModalMessage(translate('successfullySaved', language))
-        console.log('in create function:modal message', modalMessage)
-
         setIsModalOpen(true)
         setFormData([emptyFormData])
       })
