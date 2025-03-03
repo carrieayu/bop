@@ -85,7 +85,6 @@ const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked })
 
         // PLANNING:EMPLOYEE EXPENSE TOTALS
         const employeeExpenseValues = employeeExpensesTotalsFunction(aggregatedEmployeeExpensesData)
-
         // PLANNING:EXPENSES
         const expenseValues = expensesTotalsFunction(aggregatedExpensesData)
 

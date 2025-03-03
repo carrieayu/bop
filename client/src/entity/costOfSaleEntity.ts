@@ -12,3 +12,10 @@ export interface CostOfSaleEntity {
   created_at: string | undefined
   updated_at: string | undefined
 }
+
+export interface CostOfSaleDataEntity {
+  yearlyTotal: number
+  list: any[] 
+  monthlyTotals: any[] 
+  // monthlyTotalsByDate: any[]
+}

@@ -1,5 +1,6 @@
 
 import { months } from "../constants"
+import { sumValues } from "./helperFunctionsUtil"
 
 const generalAggregate = (acc, item) => {
   const { month, ...values } = item
@@ -73,7 +74,6 @@ export const monthlyTotalsExpensesFunction = (expenses) => {
     return object
   })
 }
-
 
 // COST OF SALES
 export const aggregatedCostOfSalesFunction = (cost_of_sales) => {
@@ -161,7 +161,8 @@ export const aggregatedEmployeeExpensesFunction = (employee_expenses) => {
   }, {})
 }
 
-export const employeeExpensesTotalsFunction = (employeeExpensesdata) => {
+// Array of total per month [] (just number values. not properly assigned months)
+export const employeeExpensesTotalsFunction = (employeeExpensesdata, from = '') => {
   return months.map((month) => {
     const executiveRemuneration = Number(employeeExpensesdata[month]?.totalExecutiveRemuneration) || 0
     const salary = Number(employeeExpensesdata[month]?.totalSalary) || 0
@@ -193,7 +194,6 @@ export const monthlyTotalsEmployeeExpenseFunction = (employeeExpense) => {
         parseFloat(item.welfare_expense) +
         parseFloat(item.insurance_premium) 
     }
-
     return object
   })
 }
@@ -260,7 +260,39 @@ export const ordinaryProfitFunction = (
     return totalOrdinaryIncome
   })
 }
+
 // OTHER
 export const mapValue = (key, data) => {
   return months.map((month) => data[month]?.[key] || 0) // return the mapped values properly
+}
+
+// EMPLOYEE EXPENSES FUNCTION FOR EMPLOYEE EXPENSES SLICE 
+// REFACTOR: I FEEL THIS COULD BE COMBINED WITH ALREADY EXISTING FUNCTION)
+export const employeeExpenseYearlyTotals = (state) => {
+  const salaryTotal = sumValues(state.list.map((emp) => Number(emp.salary) || 0))
+  const executiveRemunerationTotal = sumValues(state.list.map((emp) => Number(emp.executive_remuneration) || 0))
+  const insurancePremiumTotal = sumValues(state.list.map((emp) => Number(emp.insurance_premium) || 0))
+  const welfareExpenseTotal = sumValues(state.list.map((emp) => Number(emp.welfare_expense) || 0))
+  const statutoryWelfareTotal = sumValues(state.list.map((emp) => Number(emp.statutory_welfare_expense) || 0))
+  const bonusAndFuelTotal = sumValues(state.list.map((emp) => Number(emp.bonus_and_fuel_allowance) || 0))
+
+  const combinedTotal =
+    salaryTotal +
+    executiveRemunerationTotal +
+    insurancePremiumTotal +
+    welfareExpenseTotal +
+    statutoryWelfareTotal +
+    bonusAndFuelTotal
+
+  const totals = {
+    salaryTotal: salaryTotal,
+    executiveRemunerationTotal: executiveRemunerationTotal,
+    insurancePremiumTotal: insurancePremiumTotal,
+    welfareExpenseTotal: welfareExpenseTotal,
+    statutoryWelfareTotal: statutoryWelfareTotal,
+    bonusAndFuelTotal: bonusAndFuelTotal,
+    combinedTotal: combinedTotal,
+  }
+
+  return totals
 }

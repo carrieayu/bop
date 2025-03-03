@@ -16,3 +16,7 @@ export interface EmployeeExpenseEntity {
   insurance_premium: string
   bonus_and_fuel_allowance: string
 }
+
+export interface EmployeeExpenseDataEntity {
+  yearlyTotal: number
+}

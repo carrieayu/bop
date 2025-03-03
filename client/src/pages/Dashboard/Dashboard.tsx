@@ -11,12 +11,12 @@ import Sidebar from '../../components/Sidebar/Sidebar'
 import { DashboardCard } from '../../components/Card/DashboardCard'
 // Reducers
 import { fetchGraphData, selectGraphValues } from '../../reducers/graph/graphSlice'
-import { fetchCos } from '../../reducers/costOfSale/costOfSaleSlice'
+import { fetchCostOfSale } from '../../reducers/costOfSale/costOfSaleSlice'
 import { getCostOfSaleTotals } from '../../reducers/costOfSale/costOfSaleSlice'
 import { fetchExpense } from '../../reducers/expenses/expensesSlice'
 import { getExpenseTotals } from '../../reducers/expenses/expensesSlice'
 import { fetchEmployeeExpense, getEmployeeExpenseTotals } from '../../reducers/employeeExpense/employeeExpenseSlice'
-import { fetchCosResult, getCostOfSaleResultsTotals } from '../../reducers/costOfSale/costOfSaleResultSlice'
+import { fetchCostOfSaleResult, getCostOfSaleResultsTotals } from '../../reducers/costOfSale/costOfSaleResultSlice'
 import { fetchExpenseResult, getExpenseResultsTotals } from '../../reducers/expenses/expensesResultsSlice'
 import {
   fetchProjectResult,
@@ -30,6 +30,7 @@ import {
 } from '../../reducers/employeeExpense/employeeExpenseResultSlice'
 // Totals
 import { fetchTotals, selectTotals } from '../../reducers/planningAndResultTotals/planningAndResultTotalsSlice'
+import { RootState } from '../../app/store'
 
 const Dashboard = () => {
   // DATA FOR CARDS
@@ -84,10 +85,11 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const [data] = await Promise.all([
+          // PLANNING
           dispatch(fetchExpense())
             .catch(handleError('Expenses Planning data'))
             .then(() => dispatch(getExpenseTotals())),
-          dispatch(fetchCos())
+          dispatch(fetchCostOfSale())
             .catch(handleError('Cost Of Sales Planning data'))
             .then(() => dispatch(getCostOfSaleTotals())),
           dispatch(fetchEmployeeExpense())
@@ -97,11 +99,11 @@ const Dashboard = () => {
             .catch(handleError('Projects Planning data'))
             .then(() => dispatch(getProjectTotals()))
             .then(() => dispatch(getMonthlyValues())),
-
+          // RESULTS
           dispatch(fetchExpenseResult())
             .catch(handleError('Expenses Result data'))
             .then(() => dispatch(getExpenseResultsTotals())),
-          dispatch(fetchCosResult())
+          dispatch(fetchCostOfSaleResult())
             .catch(handleError('Cost Of Sales Result data'))
             .then(() => dispatch(getCostOfSaleResultsTotals())),
           dispatch(fetchEmployeeExpenseResult())
@@ -111,7 +113,7 @@ const Dashboard = () => {
             .catch(handleError('Projects Result data'))
             .then(() => dispatch(getProjectResultTotals()))
             .then(() => dispatch(getMonthlyResultValues())),
-
+          // TOTALS / GRAPH
           dispatch(fetchTotals()).catch(handleError('Totals data')),
           dispatch(fetchGraphData()).catch(handleError('new graph data')),
         ])
@@ -147,10 +149,10 @@ const Dashboard = () => {
   // Financials (Planning)
   const planningGraphData = createGraphData(
     [
-      { labelKey: 'sales', data: projectSalesRevenueMonthlyPlanning, backgroundColor: '#6e748c', type: 'bar' },
-      { labelKey: 'grossProfit', data: grossProfitMonthlyPlanning, backgroundColor: '#7696c6', type: 'bar' },
-      { labelKey: 'operatingIncome', data: operatingIncomeMonthlyPlanning, backgroundColor: '#b8cbe2', type: 'bar' },
-      { labelKey: 'ordinaryIncome', data: ordinaryIncomeMonthlyPlanning, backgroundColor: '#bde386', type: 'bar' },
+      { label: 'sales', data: projectSalesRevenueMonthlyPlanning, bgColor: '#6e748c', type: 'bar' },
+      { label: 'grossProfit', data: grossProfitMonthlyPlanning, bgColor: '#7696c6', type: 'bar' },
+      { label: 'operatingIncome', data: operatingIncomeMonthlyPlanning, bgColor: '#b8cbe2', type: 'bar' },
+      { label: 'ordinaryIncome', data: ordinaryIncomeMonthlyPlanning, bgColor: '#bde386', type: 'bar' },
     ],
     dates,
     language,
@@ -159,18 +161,8 @@ const Dashboard = () => {
   // Margins (Planning)
   const planningLineGraphData = createGraphData(
     [
-      {
-        labelKey: 'grossProfitMargin',
-        data: grossProfitMarginMonthlyPlanning,
-        backgroundColor: '#ff8e13',
-        type: 'line',
-      },
-      {
-        labelKey: 'operatingProfitMargin',
-        data: operatingProfitMarginMonthlyPlanning,
-        backgroundColor: '#ec3e4a',
-        type: 'line',
-      },
+      { label: 'grossProfitMargin', data: grossProfitMarginMonthlyPlanning, bgColor: '#ff8e13', type: 'line' },
+      { label: 'operatingProfitMargin', data: operatingProfitMarginMonthlyPlanning, bgColor: '#ec3e4a', type: 'line' },
     ],
     dates,
     language,
@@ -179,10 +171,10 @@ const Dashboard = () => {
   // Financials (Results)
   const resultsGraphData = createGraphData(
     [
-      { labelKey: 'sales', data: projectSalesRevenueMonthlyResults, backgroundColor: '#6e748c', type: 'bar' },
-      { labelKey: 'grossProfit', data: grossProfitMonthlyResults, backgroundColor: '#7696c6', type: 'bar' },
-      { labelKey: 'operatingIncome', data: operatingIncomeMonthlyResults, backgroundColor: '#b8cbe2', type: 'bar' },
-      { labelKey: 'ordinaryIncome', data: ordinaryIncomeMonthlyResults, backgroundColor: '#bde386', type: 'bar' },
+      { label: 'sales', data: projectSalesRevenueMonthlyResults, bgColor: '#6e748c', type: 'bar' },
+      { label: 'grossProfit', data: grossProfitMonthlyResults, bgColor: '#7696c6', type: 'bar' },
+      { label: 'operatingIncome', data: operatingIncomeMonthlyResults, bgColor: '#b8cbe2', type: 'bar' },
+      { label: 'ordinaryIncome', data: ordinaryIncomeMonthlyResults, bgColor: '#bde386', type: 'bar' },
     ],
     datesResults,
     language,
@@ -191,18 +183,8 @@ const Dashboard = () => {
   // Margins (Results)
   const resultsLineGraphData = createGraphData(
     [
-      {
-        labelKey: 'grossProfitMargin',
-        data: grossProfitMarginMonthlyResults,
-        backgroundColor: '#ff8e13',
-        type: 'line',
-      },
-      {
-        labelKey: 'operatingProfitMargin',
-        data: operatingProfitMarginMonthlyResults,
-        backgroundColor: '#ec3e4a',
-        type: 'line',
-      },
+      { label: 'grossProfitMargin', data: grossProfitMarginMonthlyResults, bgColor: '#ff8e13', type: 'line' },
+      { label: 'operatingProfitMargin', data: operatingProfitMarginMonthlyResults, bgColor: '#ec3e4a',type: 'line' },
     ],
     dates,
     language,
@@ -224,22 +206,22 @@ const Dashboard = () => {
               <div className='dashboard_left_card'>
                 <DashboardCard
                   title={translate('sales', language)}
-                  planningValue={planning.projects.totalSalesRevenue}
-                  resultValue={results.projectsResults.totalSalesRevenue}
+                  planningValue={planning.projects.salesRevenueTotal}
+                  resultValue={results.projects.salesRevenueTotal}
                   translateKey='sales'
                   language={language}
                 />
                 <DashboardCard
                   title={translate(language === 'en' ? 'operatingIncomeShort' : 'operatingIncome', language)}
                   planningValue={planning.calculations.operatingIncomeYearlyTotal}
-                  resultValue={results.calculationsResults.operatingIncomeYearlyTotal}
+                  resultValue={results.calculations.operatingIncomeYearlyTotal}
                   translateKey='operatingIncome'
                   language={language}
                 />
                 <DashboardCard
                   title={translate('grossProfitMargin', language)}
                   planningValue={planning.calculations.grossProfitMargin.toFixed(2)}
-                  resultValue={results.calculationsResults.grossProfitMargin.toFixed(2)}
+                  resultValue={results.calculations.grossProfitMargin.toFixed(2)}
                   translateKey='grossProfitMargin'
                   language={language}
                   percentage={true}
@@ -250,7 +232,7 @@ const Dashboard = () => {
                 <DashboardCard
                   title={translate('grossProfit', language)}
                   planningValue={planning.calculations.grossProfit}
-                  resultValue={results.calculationsResults.grossProfit}
+                  resultValue={results.calculations.grossProfit}
                   translateKey='grossProfit'
                   language={language}
                 />
@@ -260,7 +242,7 @@ const Dashboard = () => {
                     language,
                   )}
                   planningValue={planning.calculations.ordinaryIncome}
-                  resultValue={results.calculationsResults.ordinaryIncome}
+                  resultValue={results.calculations.ordinaryIncome}
                   translateKey='cumulativeOrdinaryIncome'
                   language={language}
                 />
@@ -270,7 +252,7 @@ const Dashboard = () => {
                     language,
                   )}
                   planningValue={planning.calculations.operatingProfitMargin.toFixed(2)}
-                  resultValue={results.calculationsResults.operatingProfitMargin.toFixed(2)}
+                  resultValue={results.calculations.operatingProfitMargin.toFixed(2)}
                   translateKey='operatingProfitMargin'
                   language={language}
                   percentage={true}

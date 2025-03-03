@@ -1,36 +1,69 @@
-import { createAsyncThunk, createSlice} from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
-import { stat } from 'fs'
+import {
+  calculateGrossProfit, 
+  calculateGrossProfitMargin, 
+  calculateOperatingIncome, 
+  calculateOperatingProfitMargin, 
+  calculateOrdinaryIncome, 
+  calculateSellingAndGeneralAdmin
+} from '../../utils/financialCalculationsUtil'
+import { ProjectDataEntity } from '../../entity/projectEntity'
+import { ExpenseDataEntity } from '../../entity/expenseEntity'
+import { CostOfSaleDataEntity } from '../../entity/costOfSaleEntity'
+import { EmployeeExpenseDataEntity } from '../../entity/employeeExpenseEntity'
+import { CalculationDataEntity } from '../../entity/calculationEntity'
 
 export const fetchTotals = createAsyncThunk('totals/fetchTotals', async (_, { dispatch, getState }) => {
-    const state = getState() as RootState
 
-    // Planning
-    const planning = {
-      projectSalesRevenueYearTotalPlanning: state.project.salesRevenueTotal,
-      projectNonOperatingIncomeTotalPlanning: state.project.nonOperatingIncomeTotal,
-      projectNonOperatingExpenseTotalPlanning: state.project.nonOperatingExpenseTotal,
-      expenseListPlanningArray: state.expenses.expenseList,
-      expenseMonthlyTotalsPlanning: state.expenses.expenseTotals,
-      expenseYearTotalPlanning: state.expenses.expensesYearTotal,
-      cosListPlanningArray: state.costOfSale.costOfSaleList,
-      cosMonthlyTotalsPlanning: state.costOfSale.costOfSaleTotals,
-      cosYearTotalPlanning: state.costOfSale.costOfSaleYearTotal,
-      cosMonthlyTotalsByDate: state.costOfSale.costOfSaleMonthlyTotalsByDate,
-      employeeExpenseYearTotalPlanning: state.employeeExpense.employeeExpenseYearTotal,
+  const state = getState() as RootState
+  const {project, projectResult, expenses, expensesResults, costOfSale, costOfSaleResult, employeeExpense, employeeExpenseResult} = state
+
+  // Planning
+  const planning = {
+    projects: {
+      salesRevenueTotal: project.salesRevenueTotal, // total for year
+      nonOperatingIncomeTotal: project.nonOperatingIncomeTotal,
+      nonOperatingExpenseTotal: project.nonOperatingExpenseTotal
+      },
+    expenses: {
+      list: expenses.list,
+      monthlyTotals: expenses.monthlyTotals,
+      yearlyTotal: expenses.yearlyTotal,
+      monthlyTotalsByDate: expenses.monthlyTotalsByDate
+    },
+    costOfSales: {
+      list: costOfSale.list,
+      monthlyTotals: costOfSale.totals, // just values in array []
+      yearlyTotal: costOfSale.yearlyTotal, // value
+      monthlyTotalsByDate: costOfSale.monthlyTotalsByDate // values and month in arrau [{},{}]
+    },
+    employeeExpenses: {
+      yearlyTotal: employeeExpense.yearlyTotal
+    }
     }
 
     // Results
-    const results= {
-      projectSalesRevenueYearTotalResult : state.projectResult.salesRevenueTotal,
-      projectNonOperatingIncomeTotalResult : state.projectResult.nonOperatingIncomeTotal,
-      projectNonOperatingExpenseTotalResult : state.projectResult.nonOperatingExpenseTotal,
-      expenseListResultArray : state.expensesResults.expenseResultList,
-      expenseMonthlyTotalsResult : state.expensesResults.expenseResultTotals,
-      expenseYearTotalResult: state.expensesResults.expenseResultYearTotal,
-      cosListResultArray : state.costOfSaleResult.costOfSaleResultList,
-      cosYearTotalResult : state.costOfSaleResult.costOfSaleResultYearTotal,
-      employeeExpenseYearTotalResult: state.employeeExpenseResult.employeeExpenseResultYearTotal,
+  const results = {
+    projects: {
+      salesRevenueTotal : projectResult.salesRevenueTotal,
+      nonOperatingIncomeTotal : projectResult.nonOperatingIncomeTotal,
+      nonOperatingExpenseTotal: projectResult.nonOperatingExpenseTotal
+    },
+    expenses: {
+      list : expensesResults.list,
+      monthlyTotals : expensesResults.monthlyTotals,
+      yearlyTotal: expensesResults.yearlyTotal
+    },
+    costOfSales:
+    {
+      list: costOfSaleResult.list,
+      monthlyTotals: costOfSaleResult.monthlyTotals,
+      yearlyTotal: costOfSaleResult.yearlyTotal
+    }, 
+    employeeExpenses: {
+      yearlyTotal: employeeExpenseResult.yearlyTotal
+    }
     }
 
     return {
@@ -43,114 +76,72 @@ export const fetchTotals = createAsyncThunk('totals/fetchTotals', async (_, { di
 const initialState = {
   isLoading: false,
   planning: {
-    projects: {
-      totalSalesRevenue: 0,
-        
-      nonOperatingIncome: 0,
-      nonOperatingExpense: 0,
-      cumulativeOrdinaryIncome: 0,
-    },
-    expenses: {
-      yearlyTotal: 0,
-      list: [],
-      monthly: [],
-    },
-    costOfSales: {
-      yearlyTotal: 0,
-      list: [],
-      monthly: [],
-      monthlyTotalsByDate: [],
-    },
-    employeeExpenses: {
-      yearlyTotal: 0,
-    },
+    projects: { salesRevenueTotal: 0, nonOperatingIncomeTotal: 0, nonOperatingExpenseTotal: 0, cumulativeOrdinaryIncomeTotal: 0 }, // year totals
+    expenses: { yearlyTotal: 0, list: [], monthlyTotals: [], monthlyTotalsByDate: [] },
+    costOfSales: { yearlyTotal: 0, list: [], monthlyTotals: [], monthlyTotalsByDate: [] },
+    employeeExpenses: { yearlyTotal: 0 },
     calculations: {
       grossProfit: 0,
-      // grossProfitMonthlyByDate: [],
       grossProfitMargin: 0,
-      
       sellingAndAdminYearlyTotal: 0,
-
       operatingIncomeYearlyTotal: 0,
       operatingProfitMargin: 0,
-
       nonOperatingIncome: 0,
       nonOperatingExpense: 0,
-
       ordinaryIncome: 0,
     },
   },
   results: {
-    projectsResults: {
-      totalSalesRevenue: 0,
-      nonOperatingIncome: 0,
-      nonOperatingExpense: 0,
-      cumulativeOrdinaryIncome: 0,
-    },
-    expensesResults: {
-      yearlyTotal: 0,
-      list: [],
-      monthly: [],
-    },
-    costOfSalesResults: {
-      yearlyTotal: 0,
-      list: [],
-      monthly: [],
-    },
-    employeeExpensesResults: {
-      yearlyTotal: 0,
-    },
-    calculationsResults: {
+    projects: { salesRevenueTotal: 0, nonOperatingIncomeTotal: 0, nonOperatingExpenseTotal: 0, cumulativeOrdinaryIncomeTotal: 0 }, // year totals
+    expenses: { yearlyTotal: 0, list: [], monthlyTotals: [] },
+    costOfSales: { yearlyTotal: 0, list: [], monthlyTotals: [] },
+    employeeExpenses: { yearlyTotal: 0 },
+    calculations: {
       grossProfit: 0,
       grossProfitMargin: 0,
       sellingAndAdminYearlyTotal: 0,
-
       operatingIncomeYearlyTotal: 0,
       operatingProfitMargin: 0,
-
       nonOperatingIncome: 0,
       nonOperatingExpense: 0,
-
       ordinaryIncome: 0,
     },
   },
 }
 
 const calculateFinancials = (
-  projects: any,
-  expenses: any,
-  costOfSales: any,
-  employeeExpenses: any,
-  calculations: any
+  projects: ProjectDataEntity,
+  expenses: ExpenseDataEntity,
+  costOfSales: CostOfSaleDataEntity,
+  employeeExpenses: EmployeeExpenseDataEntity,
+  calculations: CalculationDataEntity,
 ) => {
   // Gross Profit
-  calculations.grossProfit = projects.totalSalesRevenue - costOfSales.yearlyTotal;
-  
-  // Gross Profit Monthly 
-  // calculations.grossProfitMonthlyByDate = costOfSales.monthlyTotalsByDate
-    
+  calculations.grossProfit = calculateGrossProfit(projects.salesRevenueTotal, costOfSales.yearlyTotal)
   // Gross Profit Margin
-  calculations.grossProfitMargin =
-    projects.totalSalesRevenue !== 0
-      ? (calculations.grossProfit / projects.totalSalesRevenue) * 100
-      : 0;
-
+  calculations.grossProfitMargin = calculateGrossProfitMargin(calculations.grossProfit, projects.salesRevenueTotal)
   // Admin and General Expenses
-  calculations.sellingAndAdminYearlyTotal = employeeExpenses.yearlyTotal + expenses.yearlyTotal;
-
+  calculations.sellingAndAdminYearlyTotal = calculateSellingAndGeneralAdmin(
+    employeeExpenses.yearlyTotal,
+    expenses.yearlyTotal,
+  )
   // Operating Income
-  calculations.operatingIncomeYearlyTotal = calculations.grossProfit - calculations.sellingAndAdminYearlyTotal;
-
+  calculations.operatingIncomeYearlyTotal = calculateOperatingIncome(
+    calculations.grossProfit,
+    calculations.sellingAndAdminYearlyTotal,
+  )
   // Operating Profit Margin
-  calculations.operatingProfitMargin =
-    projects.totalSalesRevenue !== 0
-      ? (calculations.operatingIncomeYearlyTotal / projects.totalSalesRevenue) * 100
-      : 0;
-
+  calculations.operatingProfitMargin = calculateOperatingProfitMargin(
+    projects.salesRevenueTotal,
+    calculations.operatingIncomeYearlyTotal,
+  )
   // Ordinary Income
-  calculations.ordinaryIncome =
-    calculations.operatingIncomeYearlyTotal + projects.nonOperatingIncome - projects.nonOperatingExpense;
-};
+  calculations.ordinaryIncome = calculateOrdinaryIncome(
+    calculations.operatingIncomeYearlyTotal,
+    projects.nonOperatingIncomeTotal,
+    projects.nonOperatingExpenseTotal,
+  )
+}
 
 const planningAndResultTotalsSlice = createSlice({
   name: 'totals',
@@ -158,56 +149,45 @@ const planningAndResultTotalsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(fetchTotals.fulfilled, (state, action) => {
-      const { planning, results } = action.payload
 
-      // Destructure planning state
-      const { projects, expenses, costOfSales, employeeExpenses, calculations } = state.planning
-
-      // Update Planning State
-      projects.totalSalesRevenue = planning.projectSalesRevenueYearTotalPlanning
-      projects.nonOperatingIncome = planning.projectNonOperatingIncomeTotalPlanning
-      projects.nonOperatingExpense = planning.projectNonOperatingExpenseTotalPlanning
-      expenses.list = planning.expenseListPlanningArray
-      expenses.yearlyTotal = parseFloat(planning.expenseYearTotalPlanning)
-      expenses.monthly = planning.expenseMonthlyTotalsPlanning
-        
-      costOfSales.list = planning.cosListPlanningArray
-      costOfSales.yearlyTotal = parseFloat(planning.cosYearTotalPlanning)
-      costOfSales.monthly = planning.cosMonthlyTotalsPlanning
-      costOfSales.monthlyTotalsByDate = planning.cosMonthlyTotalsByDate
-        
-      employeeExpenses.yearlyTotal = planning.employeeExpenseYearTotalPlanning
-
+      // --PLANNING--
+      const { planning } = action.payload
+      // Destructure planning state ('PL' = Planning)
+      const { projects: projectsPL, expenses: expensesPL, costOfSales: costOfSalesPL, employeeExpenses: employeeExpensesPL } = planning
+      // Update planning state with action
+      state.planning.projects = { ...state.planning.projects, ...projectsPL }
+      state.planning.expenses = { ...state.planning.expenses, ...expensesPL }
+      state.planning.costOfSales = { ...state.planning.costOfSales, ...costOfSalesPL }
+      state.planning.employeeExpenses = { ...state.planning.employeeExpenses, ...employeeExpensesPL }
       // ** PLANNING Calculations **
-      calculateFinancials(projects, expenses, costOfSales, employeeExpenses, calculations)
+      calculateFinancials(
+        state.planning.projects, 
+        state.planning.expenses, 
+        state.planning.costOfSales, 
+        state.planning.employeeExpenses, 
+        state.planning.calculations)
 
-      // ** RESULTS ** (destructure results state)
-      const { projectsResults, expensesResults, costOfSalesResults, employeeExpensesResults, calculationsResults } =
-        state.results
-
-      projectsResults.totalSalesRevenue = results.projectSalesRevenueYearTotalResult
-      projectsResults.nonOperatingIncome = results.projectNonOperatingIncomeTotalResult
-      projectsResults.nonOperatingExpense = results.projectNonOperatingExpenseTotalResult
-      expensesResults.yearlyTotal = parseFloat(results.expenseYearTotalResult)
-      expensesResults.monthly = results.expenseMonthlyTotalsResult
-      expensesResults.list = results.expenseListResultArray
-      costOfSalesResults.yearlyTotal = parseFloat(results.cosYearTotalResult)
-      costOfSalesResults.monthly = results.cosListResultArray
-      employeeExpensesResults.yearlyTotal = results.employeeExpenseYearTotalResult
-
+      // --RESULTS--
+      const { results } = action.payload
+      // Destructure results state ('RES' = Results)
+      const { projects: projectsRES, expenses: expensesRES, costOfSales: costOfSalesRES, employeeExpenses: employeeExpensesRES } = results
+      // Update planning state with action
+      state.results.projects = { ...state.results.projects, ...projectsRES }
+      state.results.expenses = { ...state.results.expenses, ...expensesRES }
+      state.results.costOfSales = { ...state.results.costOfSales, ...costOfSalesRES }
+      state.results.employeeExpenses = { ...state.results.employeeExpenses, ...employeeExpensesRES }
       // ** RESULTS Calculations **
       calculateFinancials(
-        projectsResults,
-        expensesResults,
-        costOfSalesResults,
-        employeeExpensesResults,
-        calculationsResults,
+        state.results.projects,
+        state.results.expenses,
+        state.results.costOfSales,
+        state.results.employeeExpenses,
+        state.results.calculations,
       )
     })
   },
 })
 
-// Selectors (to access the state in your components)
 export const selectTotals = (state: RootState) => state.totals
 
 export default planningAndResultTotalsSlice.reducer

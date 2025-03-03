@@ -5,10 +5,10 @@ import { fetchWithPolling, sumValues } from '../../utils/helperFunctionsUtil'
 
 const initialState = {
   isLoading: false,
-  expenseList: [] as ExpenseEntity[],
-  expenseTotals: [],
-  expensesYearTotal: 0 || '0',
-  expensesMonthlyTotalsByDate: [],
+  list: [] as ExpenseEntity[],
+  monthlyTotals: [],
+  yearlyTotal: 0,
+  monthlyTotalsByDate: [],
 }
 
 export const fetchExpense = createAsyncThunk('expense/fetch', async () => {
@@ -20,16 +20,16 @@ const expense = createSlice({
   initialState,
   reducers: {
     getExpenseTotals: (state) => {
-      const aggregatedExpensesData = aggregatedExpensesFunction(state.expenseList)
-      state.expenseTotals = expensesTotalsFunction(aggregatedExpensesData)
-      state.expensesYearTotal = sumValues(state.expenseTotals)
-      state.expensesMonthlyTotalsByDate = monthlyTotalsExpensesFunction(state.expenseList)
+      const aggregatedExpensesData = aggregatedExpensesFunction(state.list)
+      state.monthlyTotals = expensesTotalsFunction(aggregatedExpensesData)
+      state.yearlyTotal = sumValues(state.monthlyTotals)
+      state.monthlyTotalsByDate = monthlyTotalsExpensesFunction(state.list)
     }
   },
   extraReducers(builder) {
     builder
       .addCase(fetchExpense.fulfilled, (state, action) => {
-        state.expenseList = action.payload
+        state.list = action.payload
         state.isLoading = false
       })
       .addCase(fetchExpense.pending, (state) => {

@@ -1,14 +1,19 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { EmployeeExpenseEntity } from '../../entity/employeeExpenseEntity'
 import { fetchWithPolling, sumValues } from '../../utils/helperFunctionsUtil'
-import { monthlyTotalsEmployeeExpenseFunction } from '../../utils/tableAggregationUtil'
+import {
+  aggregatedEmployeeExpensesFunction,
+  employeeExpensesTotalsFunction,
+  monthlyTotalsEmployeeExpenseFunction,
+  employeeExpenseYearlyTotals,
+} from '../../utils/tableAggregationUtil'
 
 const initialState = {
   isLoading: false,
-  employeeExpenseList: [] as EmployeeExpenseEntity[],
-  employeeExpenseTotals: [],
-  employeeExpenseYearTotal: 0,
-  employeeExpensesMonthlyTotalsByDate: []
+  list: [] as EmployeeExpenseEntity[],
+  monthlyTotals: [], // doing nothing?
+  yearlyTotal: 0,
+  monthlyTotalsByDate: []
 }
 
 export const fetchEmployeeExpense = createAsyncThunk('employee-expense/fetch', async () => {
@@ -19,35 +24,18 @@ const employeeExpense = createSlice({
   name: 'employeeExpense',
   initialState,
   reducers: {
-    getEmployeeExpenseTotals: (state) => {
-        
-      // Aggregating totals for the specific fields
-      const salaryTotal = sumValues(state.employeeExpenseList.map((emp) => Number(emp.salary) || 0));
-      const executiveRemunerationTotal = sumValues(state.employeeExpenseList.map((emp) => Number(emp.executive_remuneration) || 0));
-      const insurancePremiumTotal = sumValues(state.employeeExpenseList.map((emp) => Number(emp.insurance_premium) || 0));
-      const welfareExpenseTotal = sumValues(state.employeeExpenseList.map((emp) => Number(emp.welfare_expense) || 0));
-      const statutoryWelfareTotal = sumValues(state.employeeExpenseList.map((emp) => Number(emp.statutory_welfare_expense) || 0));
-      const bonusAndFuelTotal = sumValues(state.employeeExpenseList.map((emp) => Number(emp.bonus_and_fuel_allowance) || 0));
-
-      const total =
-        salaryTotal +
-        executiveRemunerationTotal +
-        insurancePremiumTotal +
-        welfareExpenseTotal +
-        statutoryWelfareTotal +
-        bonusAndFuelTotal
-        
-      // Assign total to state
-      state.employeeExpenseYearTotal = total
-      state.employeeExpensesMonthlyTotalsByDate = monthlyTotalsEmployeeExpenseFunction(state.employeeExpenseList)
-
+    getEmployeeExpenseTotals: (state) => { 
+      const employeeExpenseTotals = employeeExpenseYearlyTotals(state)
+      state.yearlyTotal = employeeExpenseTotals.combinedTotal
+      state.monthlyTotalsByDate = monthlyTotalsEmployeeExpenseFunction(state.list)
     },
   },
   extraReducers(builder) {
     builder
       .addCase(fetchEmployeeExpense.fulfilled, (state, action) => {
-        state.employeeExpenseList = action.payload
+        state.list = action.payload
         state.isLoading = false
+        state.monthlyTotals = action.payload
       })
       .addCase(fetchEmployeeExpense.pending, (state) => {
         state.isLoading = true

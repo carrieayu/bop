@@ -1,42 +1,42 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { CostOfSaleEntity } from '../../entity/cosEntity'
+import { CostOfSaleEntity } from '../../entity/costOfSaleEntity'
 import { aggregatedCostOfSalesFunction, costOfSalesTotalsFunction, monthlyTotalsCostOfSalesFunction } from '../../utils/tableAggregationUtil'
 import { fetchWithPolling, sumValues } from '../../utils/helperFunctionsUtil'
 
 const initialState = {
   isLoading: false,
-  costOfSaleList: [] as CostOfSaleEntity[],
-  costOfSaleTotals: [],
-  costOfSaleYearTotal: 0 || '0',
-  costOfSaleMonthlyTotalsByDate: []
+  list: [] as CostOfSaleEntity[],
+  totals: [],
+  yearlyTotal: 0,
+  monthlyTotalsByDate: [],
 }
 
-export const fetchCos = createAsyncThunk('cost-of-sale/fetch', async () => {
+export const fetchCostOfSale = createAsyncThunk('cost-of-sale/fetch', async () => {
   return await fetchWithPolling<CostOfSaleEntity[]>('cost-of-sales/list/')
 })
 
 const costOfSale = createSlice({
-  name: 'cos',
+  name: 'costOfSale',
   initialState,
   reducers: {
     getCostOfSaleTotals : (state) => {
-      const aggregatedCostOfSalesData = aggregatedCostOfSalesFunction(state.costOfSaleList)
-      state.costOfSaleTotals = costOfSalesTotalsFunction(aggregatedCostOfSalesData)
-      state.costOfSaleYearTotal = sumValues(state.costOfSaleTotals)
-      state.costOfSaleMonthlyTotalsByDate = monthlyTotalsCostOfSalesFunction(state.costOfSaleList)
+      const aggregatedCostOfSalesData = aggregatedCostOfSalesFunction(state.list)
+      state.totals = costOfSalesTotalsFunction(aggregatedCostOfSalesData)
+      state.yearlyTotal = sumValues(state.totals)
+      state.monthlyTotalsByDate = monthlyTotalsCostOfSalesFunction(state.list)
 
     }
   },
   extraReducers(builder) {
     builder
-      .addCase(fetchCos.fulfilled, (state, action) => {
-        state.costOfSaleList = action.payload
+      .addCase(fetchCostOfSale.fulfilled, (state, action) => {
+        state.list = action.payload
         state.isLoading = false
       })
-      .addCase(fetchCos.pending, (state) => {
+      .addCase(fetchCostOfSale.pending, (state) => {
         state.isLoading = true
       })
-      .addCase(fetchCos.rejected, (state) => {
+      .addCase(fetchCostOfSale.rejected, (state) => {
         state.isLoading = false
       })
   },

@@ -37,12 +37,12 @@ export const fetchGraphData = createAsyncThunk('graph/fetchGraphData', async (_,
 
   const state = getState() as RootState
 
-  // PLANNING
+  // PLANNING MONTHLY
   const planningData = {
     salesRevenueMonthly: state.project.salesRevenueMonthly,
-    costOfSaleMonthlyTotalsByDate: state.costOfSale.costOfSaleMonthlyTotalsByDate,
-    expensesMonthlyTotalsByDate: state.expenses.expensesMonthlyTotalsByDate,
-    employeeExpensesMonthlyTotalsByDate: state.employeeExpense.employeeExpensesMonthlyTotalsByDate,
+    costOfSaleMonthlyTotalsByDate: state.costOfSale.monthlyTotalsByDate,
+    expensesMonthlyTotalsByDate: state.expenses.monthlyTotalsByDate,
+    employeeExpensesMonthlyTotalsByDate: state.employeeExpense.monthlyTotalsByDate,
     nonOperatingIncomeMonthly: state.project.nonOperatingIncomeMonthly,
     nonOperatingExpenseMonthly: state.project.nonOperatingExpenseMonthly,
   }
@@ -50,14 +50,14 @@ export const fetchGraphData = createAsyncThunk('graph/fetchGraphData', async (_,
   const calculatedDataPlanning = prepareGraphData(planningData, 'planning')
   const planningMonthly = { ...calculatedDataPlanning } 
 
-  // RESULTS
+  // RESULTS MONTHLY
   const resultsData = {
     salesRevenueMonthly: state.projectResult.salesRevenueResultsMonthly,
-    costOfSaleMonthlyTotalsByDate: state.costOfSaleResult.costOfSaleResultMonthlyTotalsByDate,
-    expensesMonthlyTotalsByDate: state.expensesResults.expensesResultMonthlyTotalsByDate,
-    employeeExpensesMonthlyTotalsByDate: state.employeeExpenseResult.employeeExpensesResultMonthlyTotalsByDate,
     nonOperatingIncomeMonthly: state.projectResult.nonOperatingIncomeResultsMonthly,
-    nonOperatingExpenseMonthly: state.projectResult.nonOperatingExpenseResultsMonthly
+    nonOperatingExpenseMonthly: state.projectResult.nonOperatingExpenseResultsMonthly,
+    expensesMonthlyTotalsByDate: state.expensesResults.monthlyTotalsByDate,
+    costOfSaleMonthlyTotalsByDate: state.costOfSaleResult.monthlyTotalsByDate,
+    employeeExpensesMonthlyTotalsByDate: state.employeeExpenseResult.monthlyTotalsByDate,
   }
 
   const calculatedDataResults = prepareGraphData(resultsData, 'results')
@@ -79,19 +79,18 @@ const graphSlice = createSlice({
     })
     .addCase(fetchGraphData.fulfilled, (state, action) => {
         
-      const { planningMonthly } = action.payload
-      const { resultsMonthly } = action.payload
+      const { planningMonthly, resultsMonthly } = action.payload
       
       state.isLoading = false
       
       state.planningMonthly = {
-        ...state.planningMonthly,
-        ...planningMonthly,
+        ...state.planningMonthly, // existing state values
+        ...planningMonthly, // update state with any new data from action payload
       }
 
       state.resultsMonthly = {
-        ...state.resultsMonthly, 
-        ...resultsMonthly
+        ...state.resultsMonthly, // existing state values
+        ...resultsMonthly, // update state with any new data from action payload
       }
       
       })

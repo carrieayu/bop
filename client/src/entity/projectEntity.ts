@@ -19,3 +19,9 @@ export interface ProjectEntity {
   created_at: string
   updated_at: string
 }
+
+export interface ProjectDataEntity {
+  salesRevenueTotal: number
+  nonOperatingIncomeTotal: number
+  nonOperatingExpenseTotal: number
+}

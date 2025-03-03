@@ -6,10 +6,10 @@ import { RootState } from '../../app/store'
 
 const initialState = {
   isLoading: false,
-  expenseResultList: [] as ExpenseResultEntity[],
-  expenseResultTotals: [],
-  expenseResultYearTotal: 0 || '0',
-  expensesResultMonthlyTotalsByDate: []
+  list: [] as ExpenseResultEntity[],
+  monthlyTotals: [],
+  yearlyTotal: 0,
+  monthlyTotalsByDate: []
 }
 
 export const fetchExpenseResult = createAsyncThunk('expense-results/fetch', async () => {
@@ -21,17 +21,16 @@ const expenseResults = createSlice({
   initialState,
   reducers: {
     getExpenseResultsTotals: (state) => {
-      const aggregatedExpensesData = aggregatedExpensesFunction(state.expenseResultList)
-      state.expenseResultTotals = expensesTotalsFunction(aggregatedExpensesData)
-      state.expenseResultYearTotal = sumValues(state.expenseResultTotals)
-      state.expensesResultMonthlyTotalsByDate = monthlyTotalsExpensesFunction(state.expenseResultList)
-
+      const aggregatedExpensesData = aggregatedExpensesFunction(state.list)
+      state.monthlyTotals= expensesTotalsFunction(aggregatedExpensesData)
+      state.yearlyTotal = sumValues(state.monthlyTotals)
+      state.monthlyTotalsByDate = monthlyTotalsExpensesFunction(state.list)
     },
   },
   extraReducers(builder) {
     builder
       .addCase(fetchExpenseResult.fulfilled, (state, action) => {
-        state.expenseResultList = action.payload
+        state.list = action.payload
         state.isLoading = false
       })
       .addCase(fetchExpenseResult.pending, (state) => {
@@ -44,7 +43,5 @@ const expenseResults = createSlice({
 })
 
 export const { getExpenseResultsTotals } = expenseResults.actions
-
-export const expenseTotalYearResult = (state: RootState) => state.expensesResults.expenseResultYearTotal
 
 export default expenseResults.reducer

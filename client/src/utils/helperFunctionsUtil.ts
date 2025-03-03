@@ -420,128 +420,6 @@ export const activeDatesOnGraph = (datesArrOne, datesArrTwo) => {
   
     return dates
 }
-  
-// # Gross Profit Monthly By Date: Object
-// Eg. { 2024 - 4: 500000, ..., 2025 - 3: 40000 } '
-// CALCULATION: sales revenue - cost of sale
-export const calculateMonthlyGrossProfit = (cosMonths, salesRevenueMonths) => {
-  const grossProfitMonthlyByDate = {}
-
-  const allMonths = new Set([...Object.keys(cosMonths), ...Object.keys(salesRevenueMonths)])
-  allMonths.forEach((key) => {
-    const sales = salesRevenueMonths[key] || 0
-    const costOfSales = cosMonths[key] || 0
-    grossProfitMonthlyByDate[key] = sales - costOfSales
-  })
-  return grossProfitMonthlyByDate
-}
-
-// # Admin and General Expense Monthly by Date: Object
-// Eg. { 2024 - 4: 500000, ..., 2025 - 3: 40000 }
-// Calculation: expense total + employee total
-export const calculateMonthlyAdminAndGeneralExpense = (expenseMonths, employeeExpenseMonths) => {
-  const adminAndGeneralMonthlyTotalByDate = {}
-
-  // Get all unique dates from both objects
-  const allDates = new Set([...Object.keys(expenseMonths), ...Object.keys(employeeExpenseMonths)])
-
-  for (const date of allDates) {
-    const expenseTotal = expenseMonths[date] ?? 0
-    const employeeTotal = employeeExpenseMonths[date] ?? 0
-
-    adminAndGeneralMonthlyTotalByDate[date] = expenseTotal + employeeTotal
-  }
-
-  return adminAndGeneralMonthlyTotalByDate
-}
-
-// # Gross Profit Margin Monthly by Date: Object
-// Eg. { 2024 - 4: 82.45, ..., 2025 - 3: 89.12 } 
-// CALCULATION: gross profit / sales revenue * 100
-export const calculateMonthlyGrossProfitMargin = (salesRevenueMonths, grossProfitsMonths) => {
-
-  const grossProfitMarginByDate = {}
-  for (let date in salesRevenueMonths) {
-    if (grossProfitsMonths[date]) {
-      const salesRevenueAmount = salesRevenueMonths[date]
-      const grossProfitAmount = grossProfitsMonths[date]
-
-      // Check if salesRevenueAmount is 0
-      if (salesRevenueAmount === 0) {
-        grossProfitMarginByDate[date] = '' // or another default value, like '0'
-      } else {
-        const margin = ((grossProfitAmount / salesRevenueAmount) * 100).toFixed(2)
-        grossProfitMarginByDate[date] = parseFloat(margin)
-      }
-    }
-  }
-
-  return grossProfitMarginByDate
-}
-
-// # Operating Income Monthly by Date: Object 
-// Eg. { 2024 - 4: 500000, ..., 2025 - 3: 400000 } '
-// CALCULATION: operating income =  gross profit + admin and general expense
-export const calculateMonthlyOperatingIncome = (grossProfitMonths, adminGeneralMonths) => {
-  const operatingIncomeMonthlyTotalByDate = {}
-
-  const allDates = new Set([...Object.keys(grossProfitMonths), ...Object.keys(adminGeneralMonths)])
-
-  for (let date of allDates) {
-    const grossProfitTotal = grossProfitMonths[date]
-    const adminGeneralTotal = adminGeneralMonths[date]
-
-    operatingIncomeMonthlyTotalByDate[date] = grossProfitTotal - adminGeneralTotal
-  }
-  return operatingIncomeMonthlyTotalByDate
-}
-
-// # Operating Profit Margin Monthly by Date: Object 
-// Eg. { 2024 - 4: 82.45, ..., 2025 - 3: 89.12 } '
-// CALCULATION: operating income / sales revenue * 100
-export const calculateMonthlyOperatingProfitMargin = (operatingIncomeMonths, salesRevenueMonths) => {
-  const operatingIncomeMonthlyProfitMarginByDate = {}
-
-  const allDates = new Set([...Object.keys(operatingIncomeMonths), ...Object.keys(salesRevenueMonths)])
-
-  for (let date of allDates) {
-    const operatingIncomeAmount = operatingIncomeMonths[date]
-    const salesRevenueAmount = salesRevenueMonths[date]
-
-    // Check if salesRevenueAmount is 0
-    if (salesRevenueAmount === 0) {
-      operatingIncomeMonthlyProfitMarginByDate[date] = '' // or another default value, like '0'
-    } else {
-      const margin = ((operatingIncomeAmount / salesRevenueAmount) * 100).toFixed(2)
-      operatingIncomeMonthlyProfitMarginByDate[date] = parseFloat(margin)
-    }
-  }
-  return operatingIncomeMonthlyProfitMarginByDate
-}
-
-// # Ordinary Income Monthly by Date: Object 
-// Eg. { 2024 - 4: 500000, ..., 2025 - 3: 40000 }
-// CALCULATION: operating income + non operating income - non operating expense
-export const calculateMonthlyOrdinaryIncome = (
-  operatingIncomeMonths, // calculated
-  nonOperatingIncomeMonths, // from projects
-  nonOperatingExpenseMonths, // from projects.non_operatin
-) => {
-  const ordinaryIncomeMonthlyByDate = {}
-
-  const allDates = new Set([
-    ...Object.keys(nonOperatingExpenseMonths),
-    ...Object.keys(nonOperatingIncomeMonths),
-    ...Object.keys(operatingIncomeMonths),
-  ])
-
-  for (let date of allDates) {
-    ordinaryIncomeMonthlyByDate[date] =
-      (operatingIncomeMonths[date] + nonOperatingIncomeMonths[date]) - nonOperatingExpenseMonths[date]
-  }
-
-  return ordinaryIncomeMonthlyByDate
-}
 
 // -- Graph Dashboard  --
 
@@ -553,23 +431,24 @@ export const mapDataset = (datasets: any) =>
     color: dataset.backgroundColor,
   }))
 
+// # Maps the necessary data for each line or bar in chart
 export const createGraphData = (
        datasetMappings: {
-         labelKey: string
+         label: string
          data: any
-         backgroundColor: string
+         bgColor: string
          type: string
        }[],
        dates: string[],
        language,
      ) => ({
        labels: dates,
-       datasets: datasetMappings.map(({ labelKey, data, backgroundColor, type }) => ({
+       datasets: datasetMappings.map(({ label, data, bgColor, type }) => ({
          type,
-         label: translate(labelKey, language),
+         label: translate(label, language),
          data: dates.map((date) => data[date] ?? 0),
-         backgroundColor,
-         borderColor: type === 'bar' ? 'black' : backgroundColor,
+         backgroundColor: bgColor,
+         borderColor: type === 'bar' ? 'black' : bgColor,
          borderWidth: type === 'bar' ? 1 : 2,
        })),
      })

@@ -1,17 +1,17 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { CostOfSaleResultEntity } from '../../entity/cosResultEntity'
+import { CostOfSaleResultEntity } from '../../entity/costOfSaleResultEntity'
 import { aggregatedCostOfSalesFunction, costOfSalesTotalsFunction, monthlyTotalsCostOfSalesFunction } from '../../utils/tableAggregationUtil'
 import { fetchWithPolling, sumValues } from '../../utils/helperFunctionsUtil'
 
 const initialState = {
   isLoading: false,
-  costOfSaleResultList: [] as CostOfSaleResultEntity[],
-  costOfSaleResultTotals: [],
-  costOfSaleResultYearTotal: 0 || '0',
-  costOfSaleResultMonthlyTotalsByDate: [],
+  list: [] as CostOfSaleResultEntity[],
+  monthlyTotals: [],
+  yearlyTotal: 0,
+  monthlyTotalsByDate: [],
 }
 
-export const fetchCosResult = createAsyncThunk('cost-of-sale-result/fetch', async () => {
+export const fetchCostOfSaleResult = createAsyncThunk('cost-of-sale-result/fetch', async () => {
   return await fetchWithPolling<CostOfSaleResultEntity[]>('cost-of-sales-results/list/')
 })
 
@@ -20,23 +20,23 @@ const costOfSaleResult = createSlice({
   initialState,
   reducers: {
     getCostOfSaleResultsTotals: (state) => {
-      const aggregatedCostOfSalesResultsData = aggregatedCostOfSalesFunction(state.costOfSaleResultList)
-      state.costOfSaleResultTotals = costOfSalesTotalsFunction(aggregatedCostOfSalesResultsData)
-      state.costOfSaleResultYearTotal = sumValues(state.costOfSaleResultTotals)
-      state.costOfSaleResultMonthlyTotalsByDate = monthlyTotalsCostOfSalesFunction(state.costOfSaleResultList)
+      const aggregatedCostOfSalesResultsData = aggregatedCostOfSalesFunction(state.list)
+      state.monthlyTotals = costOfSalesTotalsFunction(aggregatedCostOfSalesResultsData)
+      state.yearlyTotal = sumValues(state.monthlyTotals)
+      state.monthlyTotalsByDate = monthlyTotalsCostOfSalesFunction(state.list)
 
     },
   },
   extraReducers(builder) {
     builder
-      .addCase(fetchCosResult.fulfilled, (state, action) => {
-        state.costOfSaleResultList = action.payload
+      .addCase(fetchCostOfSaleResult.fulfilled, (state, action) => {
+        state.list = action.payload
         state.isLoading = false
       })
-      .addCase(fetchCosResult.pending, (state) => {
+      .addCase(fetchCostOfSaleResult.pending, (state) => {
         state.isLoading = true
       })
-      .addCase(fetchCosResult.rejected, (state) => {
+      .addCase(fetchCostOfSaleResult.rejected, (state) => {
         state.isLoading = false
       })
   },

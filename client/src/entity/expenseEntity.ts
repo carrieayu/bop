@@ -16,3 +16,9 @@ export interface ExpenseEntity {
   created_at: string | undefined
   updated_at: string | undefined
 }
+
+export interface ExpenseDataEntity {
+  yearlyTotal: number
+  list: any[] 
+  monthlyTotals: any[]
+}

@@ -1,13 +1,12 @@
 import {
-  activeDatesOnGraph,
   calculateMonthlyAdminAndGeneralExpense,
   calculateMonthlyGrossProfit,
   calculateMonthlyGrossProfitMargin,
   calculateMonthlyOperatingIncome,
   calculateMonthlyOperatingProfitMargin,
   calculateMonthlyOrdinaryIncome,
-  reformattedMonthlyTotalValues,
-} from './helperFunctionsUtil'
+} from './financialCalculationsUtil'
+import {  reformattedMonthlyTotalValues,activeDatesOnGraph } from './helperFunctionsUtil'
 
 export const prepareGraphData = (data: any, type) => {
   const {
