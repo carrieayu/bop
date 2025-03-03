@@ -300,7 +300,6 @@ const EmployeesListAndEdit: React.FC = () => {
     }
 
     const modifiedFields = getModifiedFields(originalEmployeesList, employeesList)
-    console.log(modifiedFields)
     if (!token) {
       window.location.href = '/login'
       return

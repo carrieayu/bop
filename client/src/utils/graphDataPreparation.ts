@@ -65,7 +65,6 @@ export const prepareGraphData = (data: any, type) => {
     }
 
   if (type === 'results') {
-        console.log('fixing 0 values', grossProfitMargin) // empty at this point (no record) OK check next step in chain
         return {
         type: type,
         projectSalesRevenueMonthlyResults: reformattedData.salesRevenue,

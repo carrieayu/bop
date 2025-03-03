@@ -116,7 +116,6 @@ const BusinessDivisionsRegistration = () => {
     const recordType = 'businessDivisions'
     // Retrieve field validation checks based on the record type
     const fieldChecks = getFieldChecks(recordType)
-    console.log(fieldChecks)
     // Validate records for the specified project fields
     const validateBusinessDivision = (records) => validateRecords(records, fieldChecks, 'businessDivision')
 
