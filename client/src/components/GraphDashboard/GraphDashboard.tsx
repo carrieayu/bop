@@ -20,6 +20,22 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, financialD
   const currentDateFormatted = formatDate(currentDate)
   const [isToggled, setIsToggled] = useState(false)
 
+  console.log('marginData', marginData)
+//   const testEmptyData = [
+//     -85.53,
+//     -57.32,
+//     -44.65,
+//     -33.88,
+//     null,
+//     null,
+//     null,
+//     null,
+//     null,
+//     null,
+//     null,
+//     null
+  // ]
+  
   const handleToggle = () => {
     setIsToggled((prevState) => !prevState)
   }
@@ -37,6 +53,7 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, financialD
     () =>
       mapDataset(marginData.datasets).map((series) => ({
         ...series,
+        // data: testEmptyData.map((value) => (typeof value === 'number' && isNaN(value) ? null : value)),
         data: series.data.map((value) => (typeof value === 'number' && isNaN(value) ? null : value)),
       })),
     [marginData, isToggled],

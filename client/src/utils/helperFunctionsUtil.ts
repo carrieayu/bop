@@ -433,22 +433,24 @@ export const mapDataset = (datasets: any) =>
 
 // # Maps the necessary data for each line or bar in chart
 export const createGraphData = (
-       datasetMappings: {
-         label: string
-         data: any
-         bgColor: string
-         type: string
-       }[],
-       dates: string[],
-       language,
-     ) => ({
-       labels: dates,
-       datasets: datasetMappings.map(({ label, data, bgColor, type }) => ({
-         type,
-         label: translate(label, language),
-         data: dates.map((date) => data[date] ?? 0),
-         backgroundColor: bgColor,
-         borderColor: type === 'bar' ? 'black' : bgColor,
-         borderWidth: type === 'bar' ? 1 : 2,
-       })),
-     })
+  datasetMappings: {
+    label: string
+    data: any
+    bgColor: string
+    type: string
+  }[],
+  dates: string[],
+  language,
+) => {
+  return ({
+    labels: dates,
+    datasets: datasetMappings.map(({ label, data, bgColor, type }) => ({
+      type,
+      label: translate(label, language),
+      data: dates.map((date) => data[date] ?? 0),
+      backgroundColor: bgColor,
+      borderColor: type === 'bar' ? 'black' : bgColor,
+      borderWidth: type === 'bar' ? 1 : 2,
+    })),
+  })
+}

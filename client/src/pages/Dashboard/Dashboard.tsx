@@ -37,7 +37,7 @@ const Dashboard = () => {
   const { planning, results } = useAppSelector(selectTotals)
   // DATA FOR GRAPH
   const { planningMonthly, resultsMonthly } = useAppSelector(selectGraphValues)
-
+  console.log('planning monthly test 0 values:', resultsMonthly) // also okay here
   const {
     projectSalesRevenueMonthlyPlanning,
     operatingIncomeMonthlyPlanning,
@@ -58,6 +58,7 @@ const Dashboard = () => {
     datesResults,
   } = resultsMonthly
 
+  console.log('DASHBOARD: ordinaryIncomeMonthlyResults', ordinaryIncomeMonthlyResults)
   const dispatch = useAppDispatch()
   const [tableList, setTableList] = useState<any>([])
   const [activeTab, setActiveTab] = useState('/dashboard')
@@ -180,6 +181,12 @@ const Dashboard = () => {
     language,
   )
 
+  console.log(
+    'grossProfitMarginMonthlyResults testing 0:',
+    grossProfitMarginMonthlyResults,
+    'op:',
+    operatingProfitMarginMonthlyResults,
+  )
   // Margins (Results)
   const resultsLineGraphData = createGraphData(
     [
@@ -189,7 +196,7 @@ const Dashboard = () => {
     dates,
     language,
   )
-
+  console.log('resultsLineGraphData testing 0:', resultsLineGraphData)
   return (
     <div className='dashboard_wrapper'>
       <HeaderButtons

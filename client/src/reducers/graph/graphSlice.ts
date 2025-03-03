@@ -9,7 +9,7 @@ const initialState = {
     projectSalesRevenueMonthlyPlanning: [],
     grossProfitMonthlyPlanning: {},
     costOfSalesMonthlyPlanning: [],
-    grossProfitMarginMonthlyPlanning: {},
+    grossProfitMarginMonthlyPlanning: {}, // empty entries/months need to be 'null' for graph
     dates: [], // Eg. '2024-5'
     expensesMonthlyPlanning: [],
     employeeExpensesMonthlyPlanning: [],
@@ -22,7 +22,7 @@ const initialState = {
     projectSalesRevenueMonthlyResults: [],
     grossProfitMonthlyResults: {},
     costOfSalesMonthlyResults: [],
-    grossProfitMarginMonthlyResults: {},
+    grossProfitMarginMonthlyResults: {}, // empty entries/months need to be 'null' for graph
     datesResults: [], // Eg. '2024-5'
     expensesMonthlyResults: [],
     employeeExpensesMonthlyResults: [],
