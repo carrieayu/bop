@@ -107,6 +107,11 @@
   "totalTable": "合計",
   "sellingAndGeneralAdminExpensesShort": "販売及び一般管理費",
   "margins": "益率",
-  "financials": "財務"
+  "financials": "財務",
+  "financialsShort": "財務",
+  "financialsPlanning": "計画: 財務",
+  "financialsResults": "実績: 財務",
+  "marginsPlanning": "計画: 益率",
+  "marginsResults": "実績: 益率"
 }
 

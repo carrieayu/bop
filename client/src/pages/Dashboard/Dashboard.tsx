@@ -274,6 +274,7 @@ const Dashboard = () => {
                 <p
                   style={{
                     padding: '0px',
+                    width: `${language !== 'en' ? '' : '60px'}`,
                   }}
                 >
                   {translate(`${!isPlanningGraph ? 'results' : 'planning'}`, language)}
@@ -284,6 +285,7 @@ const Dashboard = () => {
                   financialData={isPlanningGraph ? planningGraphData : resultsGraphData}
                   marginData={isPlanningGraph ? planningLineGraphData : resultsLineGraphData}
                   language={language}
+                  isPlanningGraph={isPlanningGraph}
                 />
               </div>
             </div>

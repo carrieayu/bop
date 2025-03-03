@@ -11,10 +11,11 @@ interface CustomBarProps {
   financialData: any
   marginData: any
   language
+  isPlanningGraph
   // type
 }
 
-const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, financialData, marginData, language }) => {
+const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, financialData, marginData, language, isPlanningGraph}) => {
   const currentDate = new Date()
   const currentDateFormatted = formatDate(currentDate)
   const [isToggled, setIsToggled] = useState(false)
@@ -43,7 +44,7 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, financialD
 
   const optionsOne: ApexOptions = useMemo(
     () => ({
-      series:[seriesOne],
+      series: [seriesOne],
       chart: {
         type: 'bar',
         height: 350,
@@ -52,7 +53,6 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, financialD
         toolbar: {
           show: true,
           tools: {
-          
             reset: true,
             zoom: false,
             pan: false,
@@ -66,12 +66,17 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, financialD
         },
       },
       title: {
-        text: translate('financials', language),
+        text: translate(`${isPlanningGraph ? 'financialsPlanning' : 'financialsResults'}`, language),
         align: 'left',
       },
       xaxis: {
         categories: financialData.labels,
         tickPlacement: 'on',
+      },
+      legend: {
+        horizontalAlign: 'center',
+        offsetY: 5,
+        // offsetX: 20
       },
       yaxis: {
         // tickAmount:10,
@@ -93,8 +98,7 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, financialD
           colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
           opacity: 0.5,
         },
-        padding: {
-        },
+        padding: {},
       },
       colors: financialData.datasets.map((dataset: any) => dataset.backgroundColor),
       plotOptions: {
@@ -132,17 +136,17 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, financialD
           },
         },
       },
-      
+
       title: {
-        text: translate('margins', language),
+        text: translate(`${isPlanningGraph ? 'marginsPlanning' : 'marginsResults'}`, language),
         align: 'left',
       },
       xaxis: {
         categories: marginData.labels,
         labels: {
           // trim: false,
-          // offsetX:2,
-        }
+          offsetX: 2,
+        },
       },
       yaxis: {
         // tickAmount:10,
@@ -170,8 +174,8 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, financialD
           opacity: 0.5,
         },
         padding: {
-          left:20
-        }
+          left: 20,
+        },
       },
       colors: marginData.datasets.map((dataset: any) => dataset.backgroundColor),
       tooltip: {
@@ -195,12 +199,12 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, financialD
       height='30rem'
       CardClassName='card-custom'
     >
-      <div className='dashboard-graph-switch-type'>
+      <div className='dashboard-graph-switch-type' style={{left: `${language !== 'en' ? '95px' : '120px'}`}}>
         <label className='slider-switch'>
           <input type='checkbox' checked={isToggled} onChange={handleToggle} />
           <span className='slider'></span>
         </label>
-        <p>{translate(isToggled ? 'margins' : 'financials', language)}</p>
+        <p>{translate(isToggled ? 'margins' : 'financialsShort', language)}</p>
       </div>
       <Chart
         keys={isToggled}
