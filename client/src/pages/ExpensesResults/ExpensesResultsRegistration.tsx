@@ -15,7 +15,7 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { maximumEntries, monthNames, resultsScreenTabs, storedUserID, token, years, IDLE_TIMEOUT } from '../../constants'
+import { maximumEntries, monthNames, resultsScreenTabs, storedUserID, token, years } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 import {
   handleDisableKeysOnNumberInputs,
@@ -28,7 +28,6 @@ import {
 import { filterExpenseResults } from '../../api/ExpenseResultEndpoint/FilterExpenseResults'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
 import { MAX_NUMBER_LENGTH } from '../../constants'
-import { useIdleTimer } from '../../hooks/useIdleTimer';
 
 type ExpenseResults = {
   month: string
@@ -76,7 +75,6 @@ const ExpensesResultsRegistration = () => {
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
-  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
 
   const handleTranslationSwitchToggle = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
@@ -337,14 +335,6 @@ const ExpensesResultsRegistration = () => {
     navigate('/expenses-results-list')
   }
 
-  const onIdle = () => {};
-  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
-  useEffect(() => {
-      if (isIdleModalOpen) {
-          setIsNonActiveOpen(true)
-      }
-  }, [isIdleModalOpen]);
-  
   return (
     <div className='expensesResultsRegistration_wrapper'>
       <HeaderButtons
@@ -613,12 +603,6 @@ const ExpensesResultsRegistration = () => {
         onCancel={() => setIsOverwriteModalOpen(false)}
         onConfirm={handleOverwriteConfirmation}
         message={modalMessage}
-      />
-      <AlertModal
-        isOpen={isNonActiveOpen}
-        onConfirm={handleNonActiveConfirm}
-        onCancel={() => setIsNonActiveOpen(false)}
-        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

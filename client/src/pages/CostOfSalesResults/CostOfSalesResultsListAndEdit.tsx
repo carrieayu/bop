@@ -28,8 +28,7 @@ import {
 import { getCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/GetCostOfSalesResults'
 import { deleteCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/DeleteCostOfSalesResults'
 import { updateCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/UpdateCostOfSalesResults'
-import { months, resultsScreenTabs, token, IDLE_TIMEOUT } from '../../constants'
-import { useIdleTimer } from '../../hooks/useIdleTimer';
+import { months, resultsScreenTabs, token } from '../../constants'
 
 const CostOfSalesResultsList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
@@ -54,7 +53,6 @@ const CostOfSalesResultsList: React.FC = () => {
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [deleteComplete, setDeleteComplete] = useState(false)
-  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const onTabClick = (tab) => handleResultsListTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
@@ -364,14 +362,6 @@ const CostOfSalesResultsList: React.FC = () => {
     navigate('/cost-of-sales-results-registration')
   }
 
-  const onIdle = () => {};
-  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
-  useEffect(() => {
-      if (isIdleModalOpen) {
-          setIsNonActiveOpen(true)
-      }
-  }, [isIdleModalOpen]);
-
   return (
     <div className='costOfSalesResultsList_wrapper'>
       <HeaderButtons
@@ -678,12 +668,6 @@ const CostOfSalesResultsList: React.FC = () => {
         onConfirm={handleUpdateConfirm}
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
-      />
-      <AlertModal
-        isOpen={isNonActiveOpen}
-        onConfirm={handleNonActiveConfirm}
-        onCancel={() => setIsNonActiveOpen(false)}
-        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

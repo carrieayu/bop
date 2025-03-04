@@ -29,8 +29,7 @@ import {
   setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
 import { createCostOfSale } from '../../api/CostOfSalesEndpoint/CreateCostOfSale'
-import { months, token, IDLE_TIMEOUT } from '../../constants'
-import { useIdleTimer } from '../../hooks/useIdleTimer';
+import { months, token } from '../../constants'
 
 const CostOfSalesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -54,7 +53,6 @@ const CostOfSalesList: React.FC = () => {
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
-  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const [deleteComplete, setDeleteComplete] = useState(false)
   const onTabClick = (tab) => handlePLListTabsClick(tab, navigate, setActiveTab)
 
@@ -360,14 +358,6 @@ const CostOfSalesList: React.FC = () => {
   const handleNewRegistrationClick = () => {
     navigate('/cost-of-sales-registration')
   }
-
-  const onIdle = () => {};
-  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
-  useEffect(() => {
-      if (isIdleModalOpen) {
-          setIsNonActiveOpen(true)
-      }
-  }, [isIdleModalOpen]);
 
   return (
     <div className='costOfSalesList_wrapper'>
@@ -677,12 +667,6 @@ const CostOfSalesList: React.FC = () => {
         onConfirm={handleUpdateConfirm}
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
-      />
-      <AlertModal
-        isOpen={isNonActiveOpen}
-        onConfirm={handleNonActiveConfirm}
-        onCancel={() => setIsNonActiveOpen(false)}
-        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

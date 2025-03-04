@@ -27,8 +27,7 @@ import {
 import { deleteExpense } from '../../api/ExpenseEndpoint/DeleteExpense'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
 import { updateExpense } from '../../api/ExpenseEndpoint/UpdateExpense'
-import { months, token, IDLE_TIMEOUT } from '../../constants'
-import { useIdleTimer } from '../../hooks/useIdleTimer';
+import { months, token } from '../../constants'
 
 const ExpensesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -49,7 +48,6 @@ const ExpensesList: React.FC = () => {
   const [crudMessage, setCrudMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
-  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const [deleteComplete, setDeleteComplete] = useState(false)
 
   const header: string[] = [
@@ -387,14 +385,6 @@ const ExpensesList: React.FC = () => {
   const handleNewRegistrationClick = () => {
     navigate('/expenses-registration')
   }
-
-  const onIdle = () => {};
-  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
-  useEffect(() => {
-      if (isIdleModalOpen) {
-          setIsNonActiveOpen(true)
-      }
-  }, [isIdleModalOpen]);
 
   return (
     <div className={'expensesList_wrapper'}>
@@ -751,12 +741,6 @@ const ExpensesList: React.FC = () => {
         onConfirm={handleUpdateConfirm}
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
-      />
-      <AlertModal
-        isOpen={isNonActiveOpen}
-        onConfirm={handleNonActiveConfirm}
-        onCancel={() => setIsNonActiveOpen(false)}
-        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

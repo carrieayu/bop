@@ -18,9 +18,8 @@ import {
   checkForDuplicates,
 } from '../../utils/validationUtil'
 import { handleMMRegTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
-import { masterMaintenanceScreenTabs, maximumEntries, storedUserID, token, IDLE_TIMEOUT } from '../../constants'
+import { masterMaintenanceScreenTabs, maximumEntries, storedUserID, token } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
-import { useIdleTimer } from '../../hooks/useIdleTimer';
 
 const BusinessDivisionsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -44,7 +43,6 @@ const BusinessDivisionsRegistration = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
-  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -217,14 +215,6 @@ const BusinessDivisionsRegistration = () => {
     navigate('/business-divisions-list')
   }
 
-  const onIdle = () => {};
-  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
-  useEffect(() => {
-      if (isIdleModalOpen) {
-          setIsNonActiveOpen(true)
-      }
-  }, [isIdleModalOpen]);
-  
   return (
     <div className='BusinessDivisionsRegistration_wrapper'>
       <HeaderButtons
@@ -336,12 +326,6 @@ const BusinessDivisionsRegistration = () => {
         onClose={() => setIsModalOpen(false)}
         isCRUDOpen={isModalOpen}
         validationMessages={crudValidationErrors}
-      />
-      <AlertModal
-        isOpen={isNonActiveOpen}
-        onConfirm={handleNonActiveConfirm}
-        onCancel={() => setIsNonActiveOpen(false)}
-        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

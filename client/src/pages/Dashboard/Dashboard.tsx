@@ -13,11 +13,10 @@ import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import { useAppDispatch } from '../../actions/hooks'
-import { dates, header, smallDate, IDLE_TIMEOUT } from '../../constants'
+import { dates, header, smallDate } from '../../constants'
 import { setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import TableDashboard from '../../components/TableDashboard/TableDashboard'
-import { useIdleTimer } from '../../hooks/useIdleTimer';
 
 function formatNumberWithCommas(number: number): string {
   return number.toLocaleString()
@@ -49,7 +48,6 @@ const Dashboard = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [isThousandYenChecked, setIsThousandYenChecked] = useState(false)
-  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const dispatch = useAppDispatch()
 
   const handleThousandYenToggle = () => {
@@ -175,14 +173,6 @@ const Dashboard = () => {
   const handleSwitchToggle = () => {
     setIsSwitchActive((prevState) => !prevState)
   }
-
-  const onIdle = () => {};
-  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
-  useEffect(() => {
-      if (isIdleModalOpen) {
-          setIsNonActiveOpen(true)
-      }
-  }, [isIdleModalOpen]);
 
   return (
     <div className='dashboard_wrapper'>
@@ -333,12 +323,6 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-      <AlertModal
-        isOpen={isNonActiveOpen}
-        onConfirm={handleNonActiveConfirm}
-        onCancel={() => setIsNonActiveOpen(false)}
-        message={translate('nonActiveMessage', language)}
-      />
     </div>
   )
 }

@@ -16,7 +16,7 @@ import { getFilteredProjectSalesResults } from '../../api/ProjectSalesResultsEnd
 import { createProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/CreateProjectSalesResults'
 import { overwriteProjectSalesResult } from '../../api/ProjectSalesResultsEndpoint/OverwriteProjectSalesResults'
 import { getProject } from '../../api/ProjectsEndpoint/GetProject'
-import { maximumEntries, monthNames, months, resultsScreenTabs, token, years, IDLE_TIMEOUT } from '../../constants'
+import { maximumEntries, monthNames, months, resultsScreenTabs, token, years } from '../../constants'
 import { addFormInput, closeModal, openModal } from '../../actions/hooks'
 import {
   validateRecords,
@@ -35,7 +35,6 @@ import {
   setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
 import { MAX_NUMBER_LENGTH } from '../../constants'
-import { useIdleTimer } from '../../hooks/useIdleTimer';
 
 type Project = {
   client: string
@@ -93,7 +92,6 @@ const ProjectSalesResultsRegistration = () => {
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
   const onTabClick = (tab) => handleResultsRegTabsClick(tab, navigate, setActiveTab)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
-  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
 
   const emptyFormData = {
     id: 1,
@@ -658,14 +656,6 @@ const handleAdd = () => {
     navigate('/project-sales-results-list')
   }
 
-  const onIdle = () => {};
-  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
-  useEffect(() => {
-      if (isIdleModalOpen) {
-          setIsNonActiveOpen(true)
-      }
-  }, [isIdleModalOpen]);
-
   return (
     <div className='projectSalesResultsRegistration_wrapper'>
       <HeaderButtons
@@ -1025,12 +1015,6 @@ const handleAdd = () => {
         onCancel={() => setIsOverwriteModalOpen(false)}
         onConfirm={handleOverwriteConfirmation}
         message={modalMessage}
-      />
-      <AlertModal
-        isOpen={isNonActiveOpen}
-        onConfirm={handleNonActiveConfirm}
-        onCancel={() => setIsNonActiveOpen(false)}
-        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

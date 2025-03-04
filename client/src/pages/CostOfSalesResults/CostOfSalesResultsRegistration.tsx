@@ -30,8 +30,7 @@ import {
 import { getCostOfSale } from '../../api/CostOfSalesEndpoint/GetCostOfSale'
 import { maximumEntries, monthNames, resultsScreenTabs, token } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
-import { MAX_NUMBER_LENGTH, IDLE_TIMEOUT } from '../../constants'
-import { useIdleTimer } from '../../hooks/useIdleTimer';
+import { MAX_NUMBER_LENGTH } from '../../constants'
 
 type CostOfSaleResults = {
   month: string
@@ -60,7 +59,6 @@ const CostOfSalesResultsRegistration = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
-  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const onTabClick = (tab) => handleResultsRegTabsClick(tab, navigate, setActiveTab)
   const emptyFormData = {
     year: '',
@@ -378,15 +376,7 @@ const CostOfSalesResultsRegistration = () => {
     navigate('/cost-of-sales-results-list')
   }
 
-  const onIdle = () => {};
-  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
-  useEffect(() => {
-      if (isIdleModalOpen) {
-          setIsNonActiveOpen(true)
-      }
-  }, [isIdleModalOpen]);
-
-  return (
+    return (
     <div className='costOfSalesResultsRegistration_wrapper'>
       <HeaderButtons
         activeTab={activeTab}
@@ -603,12 +593,6 @@ const CostOfSalesResultsRegistration = () => {
         onCancel={() => setIsOverwriteModalOpen(false)}
         onConfirm={handleOverwriteConfirmation}
         message={modalMessage}
-      />
-      <AlertModal
-        isOpen={isNonActiveOpen}
-        onConfirm={handleNonActiveConfirm}
-        onCancel={() => setIsNonActiveOpen(false)}
-        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

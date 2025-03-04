@@ -28,8 +28,7 @@ import {
 } from '../../utils/helperFunctionsUtil'
 import EmployeeExpensesList from '../EmployeeExpenses/EmployeeExpensesList'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
-import { masterMaintenanceScreenTabs, maximumEntries, token, MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER, IDLE_TIMEOUT } from '../../constants'
-import { useIdleTimer } from '../../hooks/useIdleTimer';
+import { masterMaintenanceScreenTabs, maximumEntries, token, MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER } from '../../constants'
 
 const EmployeesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -64,7 +63,6 @@ const EmployeesRegistration = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
-  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const fetchData = async () => {
     try {
       const resMasterCompany = await dispatch(fetchMasterCompany() as unknown as UnknownAction)
@@ -308,14 +306,6 @@ const EmployeesRegistration = () => {
   const handleListClick = () => {
     navigate('/employees-list')
   }
-
-  const onIdle = () => {};
-  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
-  useEffect(() => {
-      if (isIdleModalOpen) {
-          setIsNonActiveOpen(true)
-      }
-  }, [isIdleModalOpen]);
 
   return (
     <div className='EmployeesRegistration_wrapper'>
@@ -581,12 +571,6 @@ const EmployeesRegistration = () => {
         onClose={() => setIsModalOpen(false)}
         isCRUDOpen={isModalOpen}
         validationMessages={crudValidationErrors}
-      />
-      <AlertModal
-        isOpen={isNonActiveOpen}
-        onConfirm={handleNonActiveConfirm}
-        onCancel={() => setIsNonActiveOpen(false)}
-        message={translate('nonActiveMessage', language)}
       />
     </div>
   )

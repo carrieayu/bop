@@ -23,8 +23,7 @@ import {
 } from '../../utils/validationUtil'
 import { formatDate, handleMMListTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import { getUser } from '../../api/UserEndpoint/GetUser'
-import { masterMaintenanceScreenTabs, token, IDLE_TIMEOUT } from '../../constants'
-import { useIdleTimer } from '../../hooks/useIdleTimer';
+import { masterMaintenanceScreenTabs, token } from '../../constants'
 
 const ClientsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -51,7 +50,6 @@ const ClientsListAndEdit: React.FC = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [userMap, setUserMap] = useState({})
   const [deleteComplete, setDeleteComplete] = useState(false)
-  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const onTabClick = (tab) => handleMMListTabsClick(tab, navigate, setActiveTab)
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -322,14 +320,6 @@ const ClientsListAndEdit: React.FC = () => {
     navigate('/clients-registration')
   }
 
-  const onIdle = () => {};
-  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
-  useEffect(() => {
-      if (isIdleModalOpen) {
-          setIsNonActiveOpen(true)
-      }
-  }, [isIdleModalOpen]);
-  
   return (
     <div className='ClientsListAndEdit_wrapper'>
       <HeaderButtons
@@ -510,12 +500,6 @@ const ClientsListAndEdit: React.FC = () => {
         onConfirm={handleUpdateConfirm}
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
-      />
-      <AlertModal
-        isOpen={isNonActiveOpen}
-        onConfirm={handleNonActiveConfirm}
-        onCancel={() => setIsNonActiveOpen(false)}
-        message={translate('nonActiveMessage', language)}
       />
     </div>
   )
