@@ -20,6 +20,11 @@ const AlertModal: React.FC<AlertModalProps> = ({ message, onConfirm, onCancel, i
     setShowConfirmConfirmation(true)
   }
 
+  const handleNotConfirmClick = () => {
+    setShowConfirmConfirmation(false)
+    onConfirm()
+  }
+
   const handleConfirmAccept = () => {
     setShowConfirmConfirmation(false)
     onConfirm()
@@ -35,8 +40,10 @@ const AlertModal: React.FC<AlertModalProps> = ({ message, onConfirm, onCancel, i
         <div className='alert-modal-content'>
           <p className='alert-modal-message'>{message}</p>
           <div className='alert-modal-buttons'>
-            <Btn label={translate('confirm', language)} onClick={handleConfirmClick} className='btn-confirm' />
-            <Btn label={translate('cancel', language)} onClick={onCancel} className='btn-cancel' />
+            <Btn label={translate('confirm', language)} onClick={onCancel ? handleConfirmClick : handleNotConfirmClick } className='btn-confirm' />
+            {onCancel && (
+              <Btn label={translate('cancel', language)} onClick={onCancel} className='btn-cancel' />
+            )}
           </div>
         </div>
       </div>

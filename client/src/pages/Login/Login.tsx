@@ -50,9 +50,11 @@ const Login = ({ onSubmit }) => {
           }
           dispatch(login({ loginData }))
           const accessToken = data.access
+          const refreshToken = data.refresh
           const decodedAccess = jwtDecode(accessToken)
           const userID = decodedAccess["user_id"]
           localStorage.setItem('accessToken', accessToken)
+          localStorage.setItem('refreshToken', refreshToken)
           localStorage.setItem('userID', userID)
           sessionStorage.setItem("showAlert", "OFF");
           sessionStorage.setItem("showAlertInitialized", "false");

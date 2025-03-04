@@ -25,7 +25,8 @@ import {
 import { getProject } from '../../api/ProjectsEndpoint/GetProject'
 import { updateProject } from '../../api/ProjectsEndpoint/UpdateProject'
 import { deleteProject } from '../../api/ProjectsEndpoint/DeleteProject'
-import { months, token, years, IDLE_TIMEOUT } from '../../constants'
+import { months, token, years, REFRESH_TOKEN, ACCESS_TOKEN } from '../../constants'
+import { refreshToken, useAlertPopup } from "../../routes/ProtectedRoutes";
 import {
   handleDisableKeysOnNumberInputs,
   removeCommas,
@@ -35,7 +36,6 @@ import {
   handlePLListTabsClick,
   setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
-import { useIdleTimer } from '../../hooks/useIdleTimer';
 
 const ProjectsListAndEdit: React.FC = ({}) => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -82,17 +82,17 @@ const ProjectsListAndEdit: React.FC = ({}) => {
     },
   ])
 
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup();
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
-  const [isNonActiveOpen, setIsNonActiveOpen] = useState(false)
   const [deleteComplete, setDeleteComplete] = useState(false)
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
   }
-
+  const [token, setToken] = useState(localStorage.getItem(ACCESS_TOKEN));
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
   }
@@ -379,17 +379,27 @@ const ProjectsListAndEdit: React.FC = ({}) => {
       setOriginalProjectsList(data)
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        window.location.href = '/login' // Redirect to login if unauthorized
+        const tokenRefreshed = await refreshToken();
+        if (tokenRefreshed) {
+          const _ACCESS_TOKEN  = localStorage.getItem(ACCESS_TOKEN);
+          const redata = await getProject(_ACCESS_TOKEN)
+          setProjects(redata)
+          setOriginalProjectsList(redata)
+        } else {
+          showAlertPopup(handleConfirm);
+        }
       } else {
         console.error('There was an error fetching the projects!', error)
       }
     }
   }
+  useEffect(() => {
+    setToken(localStorage.getItem(ACCESS_TOKEN));
+  }, [token]);
 
   useEffect(() => {
     const fetchProjects = async () => {
       if (!token) {
-        setIsNonActiveOpen(true)
         window.location.href = '/login'
         return
       }
@@ -400,14 +410,6 @@ const ProjectsListAndEdit: React.FC = ({}) => {
     fetchClient()
     fetchProjects()
   }, [])
-
-  const onIdle = () => {};
-  const { isIdle, isIdleModalOpen, handleNonActiveConfirm, setIsIdleModalOpen } = useIdleTimer(onIdle, IDLE_TIMEOUT);
-  useEffect(() => {
-      if (isIdleModalOpen) {
-          setIsNonActiveOpen(true)
-      }
-  }, [isIdleModalOpen]);
 
   return (
     <div className='projectsList-wrapper'>
@@ -848,12 +850,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
       />
-      <AlertModal
-        isOpen={isNonActiveOpen}
-        onConfirm={handleNonActiveConfirm}
-        onCancel={() => setIsNonActiveOpen(false)}
-        message={translate('nonActiveMessage', language)}
-      />
+      <AlertPopupComponent />
     </div>
   )
 }

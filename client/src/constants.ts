@@ -1,5 +1,5 @@
 export const ACCESS_TOKEN = 'accessToken'
-export const REFRESH_TOKEN = 'refresh'
+export const REFRESH_TOKEN = 'refreshToken'
 
 export const years = [2024, 2025]
 export const currentYear = new Date().getFullYear()
