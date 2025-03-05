@@ -14,6 +14,7 @@ import AlertModal from '../../components/AlertModal/AlertModal'
 import { createProject } from '../../api/ProjectsEndpoint/CreateProject'
 import { overwriteProject } from '../../api/ProjectsEndpoint/OverwriteProject'
 import { maximumEntries, monthNames, token, years } from '../../constants'
+import { refreshToken, useAlertPopup, checkAccessToken } from "../../routes/ProtectedRoutes";
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 import {
   validateRecords,
@@ -28,7 +29,6 @@ import {
   formatNumberWithDecimal,
   handleInputChange,
   handlePLRegTabsClick,
-  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
 
 const ProjectsRegistration = () => {
@@ -68,7 +68,8 @@ const ProjectsRegistration = () => {
     ordinary_profit_margin: '',
   }
   const [formProjects, setProjects] = useState([emptyFormData])
-
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+ 
   const handleAdd = () => {
     addFormInput(formProjects, setProjects, maximumEntries, emptyFormData)
   }
@@ -393,9 +394,18 @@ const ProjectsRegistration = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
     setLanguage(newLanguage)
   }
+
+  const handleConfirm = async () => {
+    window.location.href = '/login'
+    return
+  }
+
   useEffect(() => {
     fetchDivision()
     fetchClients()
+    checkAccessToken().then(result => {
+      if (!result) { showAlertPopup(handleConfirm); }
+    });
   }, [token])
 
   const handleListClick = () => {
@@ -734,6 +744,7 @@ const ProjectsRegistration = () => {
         onConfirm={handleOverwriteConfirmation}
         message={modalMessage}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

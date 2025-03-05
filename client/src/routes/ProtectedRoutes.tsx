@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Children } from "react";
+  import React, { useState, useEffect, Children } from "react";
 import { Navigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import api from "../api/api";
@@ -7,10 +7,36 @@ import { setupIdleTimer } from '../utils/helperFunctionsUtil'
 import AlertModal from "../components/AlertModal/AlertModal";
 import { translate } from '../utils/translationUtil'
 import { useLanguage } from '../contexts/LanguageContext'
+import axios from 'axios'
+import { getReactActiveEndpoint } from '../toggleEndpoint'
 
 interface ProtectedRoutesProps {
   children: any;
 }
+
+export async function checkAccessToken() {
+  // AccessToken取得できるか
+  const token = localStorage.getItem(ACCESS_TOKEN);
+  if (!token) {
+    return false;
+  }
+  // AccessTokenが取得できる場合、有効期限内かどうか
+  const decoded = jwtDecode(token);
+  const tokenExpiration = decoded.exp;
+  const now = Date.now() / 1000;
+  if (tokenExpiration < now) {
+    // 有効期限を過ぎている場合、RefreshTokenを元に更新する
+    const refreshed = await refreshToken();
+    if (refreshed) {
+      return true;
+    } else {
+      // RefreshTokenの有効期限が切れている時はエラーとする
+      return false;
+    }
+  } else {
+    return true;
+  }
+};
 
 export const useAlertPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
