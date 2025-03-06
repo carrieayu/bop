@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Card from '../Card/Card'
 import Chart from 'react-apexcharts'
 import { ApexOptions } from 'apexcharts'
@@ -8,22 +8,37 @@ import { formatDate, formatNumberWithCommas, mapDataset } from '../../utils/help
 interface CustomBarProps {
   className?: string
   style?: React.CSSProperties
-  financialData: any
-  marginData: any
   language
-  isPlanningGraph
-  // type
+  planningAndResultGraphData
+  graphDataType
+  isToggled
+  handleToggle
 }
 
-const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, financialData, marginData, language, isPlanningGraph}) => {
+const GraphDashboard: React.FC<CustomBarProps> = ({
+  className,
+  style,
+  language,
+  planningAndResultGraphData,
+  graphDataType,
+  isToggled,
+  handleToggle,
+}) => {
   const currentDate = new Date()
   const currentDateFormatted = formatDate(currentDate)
-  const [isToggled, setIsToggled] = useState(false)
 
-  const handleToggle = () => {
-    setIsToggled((prevState) => !prevState)
-  }
+  const { planningData, resultsData } = planningAndResultGraphData
 
+  const planningFinancials = planningData.financial // 円
+  const planningMargins = planningData.margin // %
+
+  const resultsFinancials = resultsData.financial // 円
+  const resultsMargins = resultsData.margin // %
+
+  const financialData = graphDataType === 'planning' ? planningFinancials : resultsFinancials
+  const marginData = graphDataType === 'planning' ? planningMargins : resultsMargins
+
+  // Financials
   const seriesOne = useMemo(
     () =>
       mapDataset(financialData.datasets).map((series) => ({
@@ -33,126 +48,125 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, financialD
     [financialData, isToggled],
   )
 
+  // Margins
   const seriesTwo = useMemo(
     () =>
       mapDataset(marginData.datasets).map((series) => ({
         ...series,
-        // data: testEmptyData.map((value) => (typeof value === 'number' && isNaN(value) ? null : value)),
         data: series.data.map((value) => (typeof value === 'number' && isNaN(value) ? null : value)),
       })),
     [marginData, isToggled],
   )
 
-  const optionsOne: ApexOptions = useMemo(
+  const seriesOneBoth = useMemo(() => {
+    return planningFinancials.datasets.map((dataset, datasetIndex) => ({
+      name: translate(`${dataset.label}`, language), // e.g., "売上"
+      color: dataset.backgroundColor,
+      data: dataset.data.map((value, index) => ({
+        x: planningFinancials.labels[index], // Use index or replace with actual labels if available
+        y: typeof value === 'number' && isNaN(value) ? null : value,
+        goals: resultsFinancials.datasets[datasetIndex] // Check if corresponding data exists in resultsFinancials
+          ? [
+            {
+              name: translate('results', language),
+              value: resultsFinancials.datasets[datasetIndex].data[index] ?? null, // Get the expected value from results
+              strokeHeight: 2,
+              strokeWidth: 4,
+              // strokeLineCap: 'round',
+              strokeColor: 'red',
+            },
+          ]
+          : [],
+      })),
+    }))
+  }, [planningFinancials.datasets, resultsFinancials.datasets])
+
+
+  const seriesTwoBoth = useMemo(() => {
+
+    const planningSeries = planningMargins.datasets.map((dataset, datasetIndex) => ({
+      name: `${translate(`${dataset.label}`, language)} (${translate('planningShort', language)})`,
+      color: dataset.backgroundColor,
+      data: dataset.data.map((value, index) => ({
+        x: planningMargins.labels[index],
+        y: typeof value === 'number' && !isNaN(value) ? value : null,
+      })),
+    }))
+
+    const resultsSeries = resultsMargins.datasets.map((dataset, datasetIndex) => ({
+      name: `${translate(`${dataset.label}`, language)} (${translate('results', language)})`,
+      color: dataset.backgroundColor,
+      data: dataset.data.map((value, index) => ({
+        x: resultsMargins.labels[index],
+        y: typeof value === 'number' && !isNaN(value) ? value : null,
+      })),
+    }))
+
+    return [...planningSeries, ...resultsSeries] // Merge both datasets
+  }, [planningMargins.datasets, resultsMargins.datasets])
+
+  // Helpers
+  const selectedSeries = () => {
+    if (graphDataType === 'both') {
+      return isToggled ? seriesTwoBoth : seriesOneBoth
+    } else {
+      return isToggled ? seriesTwo : seriesOne
+    }
+  }
+
+  let series = selectedSeries()
+
+  const getTitle = () => {
+    const titlesMap = {
+      planning: isToggled ? 'marginsPlanning' : 'financialsPlanning',
+      results: isToggled ? 'marginsResults' : 'financialsResults',
+      both: isToggled ? 'marginsPlanningAndResults' : 'financialsPlanningAndResults',
+    }
+    return titlesMap[graphDataType] || ''; // Return the mapped title or fallback to an empty string
+  }
+
+  const graphTitle = useMemo(() => translate(getTitle(), language), [getTitle, language])
+
+  // Apex Chart Options
+  const options: ApexOptions = useMemo(
     () => ({
-      series: [seriesOne],
       chart: {
-        type: 'bar',
-        height: 350,
-        offsetY: 10,
-        offsetX: -10,
         toolbar: {
           show: true,
           tools: {
-            reset: true,
+            reset: false,
             zoom: false,
             pan: false,
+            zoomin: false,
+            zoomout: false,
           },
           export: {
             csv: {
-              filename: `${translate('csvFileName', language)}:${currentDateFormatted}`,
+              filename: graphTitle,
               headerCategory: translate('yearMonth', language),
+            },
+            png: {
+              filename: graphTitle,
+            },
+            svg: {
+              filename: graphTitle,
             },
           },
         },
       },
       title: {
-        text: translate(`${isPlanningGraph ? 'financialsPlanning' : 'financialsResults'}`, language),
-        align: 'left',
-      },
-      xaxis: {
-        categories: financialData.labels,
-        tickPlacement: 'on',
-      },
-      legend: {
-        horizontalAlign: 'center',
-        offsetY: 5,
-        // offsetX: 20
-      },
-      yaxis: {
-        // tickAmount:10,
-        title: {
-          text: '円',
-          rotate: 0,
-          offsetX: -2,
-        },
-        opposite: true,
-        labels: {
-          formatter: (val: number) => formatNumberWithCommas(val),
-        },
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      grid: {
-        row: {
-          colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
-          opacity: 0.5,
-        },
-        padding: {},
-      },
-      colors: financialData.datasets.map((dataset: any) => dataset.backgroundColor),
-      plotOptions: {
-        bar: {
-          columnWidth: '80%',
-        },
-      },
-      tooltip: {
-        followCursor: true,
-        shared: true,
-        intersect: false,
-
-        y: {
-          formatter: function (val: number) {
-            return `${formatNumberWithCommas(val)} 円`
-          },
-        },
-      },
-    }),
-    [financialData, isToggled],
-  )
-
-  const optionsTwo: ApexOptions = useMemo(
-    () => ({
-      series: [seriesTwo],
-      chart: {
-        type: 'line',
-        // height: 350,
-        toolbar: {
-          export: {
-            csv: {
-              filename: `${translate('csvFileName', language)}:${currentDateFormatted}`,
-              headerCategory: translate('yearMonth', language),
-            },
-          },
-        },
-      },
-
-      title: {
-        text: translate(`${isPlanningGraph ? 'marginsPlanning' : 'marginsResults'}`, language),
+        text: graphTitle,
         align: 'left',
       },
       xaxis: {
         categories: marginData.labels,
         labels: {
-          // trim: false,
           offsetX: 2,
         },
       },
       yaxis: {
-        // tickAmount:10,
         title: {
-          text: '%',
+          text: isToggled ? '%' : '円',
           rotate: 0,
           offsetX: -2,
         },
@@ -168,10 +182,14 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, financialD
         show: true,
         curve: 'straight',
         width: 2,
+        dashArray: graphDataType === 'both' && isToggled ? [5, 5, 0, 0] : [0, 0, 0, 0],
+      },
+      markers: {
+        size: 6,
       },
       grid: {
         row: {
-          colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+          colors: ['#f3f3f3', 'transparent'],
           opacity: 0.5,
         },
         padding: {
@@ -183,14 +201,15 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, financialD
         enabled: true,
         followCursor: true,
         shared: true,
+        intersect: false,
         y: {
-          formatter: (val: number) => `${val} %`,
+          formatter: (val: number) => (isToggled ? `${val} %` : `${formatNumberWithCommas(val)} 円`),
         },
       },
     }),
-    [marginData, isToggled],
+    [isToggled, graphDataType],
   )
-
+  
   return (
     <Card
       backgroundColor='#ffffff'
@@ -200,17 +219,16 @@ const GraphDashboard: React.FC<CustomBarProps> = ({ className, style, financialD
       height='30rem'
       CardClassName='card-custom'
     >
-      <div className='dashboard-graph-switch-type' style={{left: `${language !== 'en' ? '95px' : '120px'}`}}>
+      <div className='dashboard-graph-switch-type' style={{ left: '70px', height: '35px' }}>
         <label className='slider-switch'>
           <input type='checkbox' checked={isToggled} onChange={handleToggle} />
           <span className='slider'></span>
         </label>
-        <p>{translate(isToggled ? 'margins' : 'financialsShort', language)}</p>
       </div>
       <Chart
-        keys={isToggled}
-        options={isToggled ? optionsTwo : optionsOne}
-        series={isToggled ? seriesTwo : seriesOne}
+        key={isToggled}
+        options={options}
+        series={series}
         type={isToggled ? 'line' : 'bar'}
         height={350}
         className='custom-bar'

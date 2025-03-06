@@ -158,5 +158,6 @@
   "yearMonth":"年/月",
   "csvFileName": "CSV: 財務概要",
   "resultsSummary" : "実績-概要",
-  "changeGraphType": "グラフ変更"
+  "changeGraphType": "グラフ変更",
+  "planningShort": "計画"
 }

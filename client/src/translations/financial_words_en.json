@@ -110,9 +110,10 @@
   "operatingProfitMarginShort": "Op. Profit Margin",
   "margins": "Margins",
   "financials": "Financials",
-  "financialsShort": "Fin.",
   "financialsPlanning": "Planning: Financials",
   "financialsResults": "Results: Financials",
   "marginsPlanning": "Planning: Margins",
-  "marginsResults": "Results: Margins"
+  "marginsResults": "Results: Margins", 
+  "financialsPlanningAndResults": "Planning/Results: Financials",
+  "marginsPlanningAndResults": "Planning/Results: Margins"
 }

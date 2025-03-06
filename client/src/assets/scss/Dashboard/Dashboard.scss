@@ -132,6 +132,17 @@
                         padding: 5px 10px 5px 5px;
                         z-index: 2;
                     }
+                    .background-color-planning{
+                        background-color:#fec384c7 ;
+                    }
+                    .background-color-results{
+                        background-color: #CDE4FC;
+                    }
+                    .background-color-both {
+                        background-image: linear-gradient(to bottom right, #fec384c7 50% , #CDE4FC 50%);
+                        background-size: 100% 100%;
+                        background-position: left center;
+                    }
                     .dashboard_graph_wrap{
                         .card-custom{
                             margin-left: 0 !important;

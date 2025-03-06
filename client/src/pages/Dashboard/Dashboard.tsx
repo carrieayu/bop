@@ -30,7 +30,7 @@ import {
 } from '../../reducers/employeeExpense/employeeExpenseResultSlice'
 // Totals
 import { fetchTotals, selectTotals } from '../../reducers/planningAndResultTotals/planningAndResultTotalsSlice'
-import { RootState } from '../../app/store'
+import ThreeOptionSlider from '../../components/Slider/ThreeOptionSlider'
 
 const Dashboard = () => {
   // DATA FOR CARDS
@@ -47,6 +47,7 @@ const Dashboard = () => {
     dates,
   } = planningMonthly
 
+  const optionArray = ['planning', 'results', 'both']
   const {
     projectSalesRevenueMonthlyResults,
     operatingIncomeMonthlyResults,
@@ -69,6 +70,20 @@ const Dashboard = () => {
   const [isThousandYenChecked, setIsThousandYenChecked] = useState(false)
   const handleThousandYenToggle = () => {
     setIsThousandYenChecked((prevState) => !prevState)
+  }
+
+  const [isToggled, setIsToggled] = useState(false)
+
+  const handleToggle = () => {
+    setIsToggled((prevState) => !prevState)
+  }
+
+  const [graphDataType, setGraphDataType] = useState('planning')
+
+  const handleGraphChange = (e) => {
+    const value = parseInt(e.target.value, 10)
+    const options = ['planning', 'results', 'both']
+    setGraphDataType(options[value])
   }
 
   const handleTabClick = (tab) => {
@@ -188,6 +203,18 @@ const Dashboard = () => {
     dates,
     language,
   )
+
+  const planningAndResultGraphData = {
+    planningData: {
+      financial: planningGraphData,
+      margin: planningLineGraphData,
+    },
+    resultsData: {
+      financial: resultsGraphData,
+      margin: resultsLineGraphData,
+    },
+  }
+  
   return (
     <div className='dashboard_wrapper'>
       <HeaderButtons
@@ -259,31 +286,16 @@ const Dashboard = () => {
             </div>
             &nbsp;&nbsp;&nbsp;
             <div className='dashboard_graph_cont'>
-              <div
-                className='dashboard-graph-change'
-                style={{
-                  backgroundColor: `${isPlanningGraph ? '#fec384c7' : '#CDE4FC'}`,
-                }}
-              >
-                <label className='slider-switch'>
-                  <input type='checkbox' checked={!isPlanningGraph} onChange={handleGraphToggle} />
-                  <span className='slider'></span>
-                </label>
-                <p
-                  style={{
-                    padding: '0px',
-                    width: `${language !== 'en' ? '' : '60px'}`,
-                  }}
-                >
-                  {translate(`${!isPlanningGraph ? 'results' : 'planning'}`, language)}
-                </p>
+              <div className={`dashboard-graph-change background-color-${graphDataType}`}>
+              <ThreeOptionSlider min={0} max={2} step={1} optionArray={optionArray} option={graphDataType} onChange={handleGraphChange}/>
               </div>
               <div className='dashboard_graph_wrap'>
                 <GraphDashboard
-                  financialData={isPlanningGraph ? planningGraphData : resultsGraphData}
-                  marginData={isPlanningGraph ? planningLineGraphData : resultsLineGraphData}
                   language={language}
-                  isPlanningGraph={isPlanningGraph}
+                  planningAndResultGraphData={planningAndResultGraphData}
+                  graphDataType={graphDataType}
+                  isToggled={isToggled}
+                  handleToggle={handleToggle}
                 />
               </div>
             </div>

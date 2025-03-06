@@ -30,7 +30,7 @@ export const DashboardCard = ({ title, planningValue, resultValue, translateKey,
             className='dashboard_numTxt'
             style={{ backgroundColor: '#fec384c7', color: '#000', borderRadius: '5px', padding: '2px' }}
           >
-            <span className='dashboard_totalTxt'>{translate('planning', language)}</span>
+            <span className='dashboard_totalTxt'>{translate('planningShort', language)}</span>
             <NumberWithUnit value={planningValue} percentage={percentage} language={language} />
           </p>
         </div>
