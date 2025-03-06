@@ -454,3 +454,30 @@ export const createGraphData = (
     })),
   })
 }
+
+// # Darkens Color: Used for results bars in 
+export const darkenColor = (hex, percent) => {
+  let num = parseInt(hex.replace('#', ''), 16),
+    r = (num >> 16) - percent,
+    g = ((num >> 8) & 0x00ff) - percent,
+    b = (num & 0x0000ff) - percent
+
+  r = Math.min(255, Math.max(0, r))
+  g = Math.min(255, Math.max(0, g))
+  b = Math.min(255, Math.max(0, b))
+
+  return `rgb(${r}, ${g}, ${b})`
+}
+
+// # Changes the order of items in series so that legends and bars charts in chart are side by side.
+// Eg. 売上計画 , 売上実績
+export const reOrderArray = (series, length) => {
+  let arrayOrder
+  if (length === 4) {
+    arrayOrder = [0, 2, 1, 3]
+  }
+  if (length === 8) {
+    arrayOrder = [0, 4, 1, 5, 2, 6, 3, 7]
+  }
+  return arrayOrder.map((index) => series[index])
+}

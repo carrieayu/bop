@@ -287,9 +287,16 @@ const Dashboard = () => {
             &nbsp;&nbsp;&nbsp;
             <div className='dashboard_graph_cont'>
               <div className={`dashboard-graph-change background-color-${graphDataType}`}>
-              <ThreeOptionSlider min={0} max={2} step={1} optionArray={optionArray} option={graphDataType} onChange={handleGraphChange}/>
+                <ThreeOptionSlider
+                  min={0}
+                  max={2}
+                  step={1}
+                  optionArray={optionArray}
+                  option={graphDataType}
+                  onChange={handleGraphChange}
+                />
               </div>
-              <div className='dashboard_graph_wrap'>
+              <div className={`dashboard_graph_wrap ${graphDataType === 'financials' ? 'financials' : 'margins'}`}>
                 <GraphDashboard
                   language={language}
                   planningAndResultGraphData={planningAndResultGraphData}

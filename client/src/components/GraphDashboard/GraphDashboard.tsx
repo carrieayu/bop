@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React from 'react'
 import Card from '../Card/Card'
 import Chart from 'react-apexcharts'
 import { ApexOptions } from 'apexcharts'
 import { translate } from '../../utils/translationUtil'
-import { formatDate, formatNumberWithCommas, mapDataset } from '../../utils/helperFunctionsUtil'
+import { darkenColor, formatNumberWithCommas, mapDataset, reOrderArray } from '../../utils/helperFunctionsUtil'
 
 interface CustomBarProps {
   className?: string
@@ -24,192 +24,163 @@ const GraphDashboard: React.FC<CustomBarProps> = ({
   isToggled,
   handleToggle,
 }) => {
-  const currentDate = new Date()
-  const currentDateFormatted = formatDate(currentDate)
-
   const { planningData, resultsData } = planningAndResultGraphData
 
+  // Planning
   const planningFinancials = planningData.financial // 円
   const planningMargins = planningData.margin // %
-
+  // Results
   const resultsFinancials = resultsData.financial // 円
   const resultsMargins = resultsData.margin // %
-
+  // Set Data based on whether selected graph is planning Or results
   const financialData = graphDataType === 'planning' ? planningFinancials : resultsFinancials
   const marginData = graphDataType === 'planning' ? planningMargins : resultsMargins
 
-  // Financials
-  const seriesOne = useMemo(
-    () =>
-      mapDataset(financialData.datasets).map((series) => ({
-        ...series,
-        data: series.data.map((value) => (typeof value === 'number' && isNaN(value) ? null : value)),
-      })),
-    [financialData, isToggled],
-  )
-
-  // Margins
-  const seriesTwo = useMemo(
-    () =>
-      mapDataset(marginData.datasets).map((series) => ({
-        ...series,
-        data: series.data.map((value) => (typeof value === 'number' && isNaN(value) ? null : value)),
-      })),
-    [marginData, isToggled],
-  )
-
-  const seriesOneBoth = useMemo(() => {
-    return planningFinancials.datasets.map((dataset, datasetIndex) => ({
-      name: translate(`${dataset.label}`, language), // e.g., "売上"
-      color: dataset.backgroundColor,
-      data: dataset.data.map((value, index) => ({
-        x: planningFinancials.labels[index], // Use index or replace with actual labels if available
-        y: typeof value === 'number' && isNaN(value) ? null : value,
-        goals: resultsFinancials.datasets[datasetIndex] // Check if corresponding data exists in resultsFinancials
-          ? [
-            {
-              name: translate('results', language),
-              value: resultsFinancials.datasets[datasetIndex].data[index] ?? null, // Get the expected value from results
-              strokeHeight: 2,
-              strokeWidth: 4,
-              // strokeLineCap: 'round',
-              strokeColor: 'red',
-            },
-          ]
-          : [],
-      })),
-    }))
-  }, [planningFinancials.datasets, resultsFinancials.datasets])
-
-
-  const seriesTwoBoth = useMemo(() => {
-
-    const planningSeries = planningMargins.datasets.map((dataset, datasetIndex) => ({
-      name: `${translate(`${dataset.label}`, language)} (${translate('planningShort', language)})`,
-      color: dataset.backgroundColor,
-      data: dataset.data.map((value, index) => ({
-        x: planningMargins.labels[index],
+  // Helper Functions for Series
+  const createSeries = (data: any, type: 'planning' | 'results', colorModifier?: (hex: string) => string) =>
+    data.datasets.map((dataset: any) => ({
+      name: `${translate(dataset.label, language)} (${translate(type === 'planning' ? 'planningShort' : 'resultsShort', language)})`,
+      color: colorModifier ? colorModifier(dataset.backgroundColor) : dataset.backgroundColor,
+      data: dataset.data.map((value: number, index: number) => ({
+        x: data.labels[index],
         y: typeof value === 'number' && !isNaN(value) ? value : null,
       })),
     }))
 
-    const resultsSeries = resultsMargins.datasets.map((dataset, datasetIndex) => ({
-      name: `${translate(`${dataset.label}`, language)} (${translate('results', language)})`,
-      color: dataset.backgroundColor,
-      data: dataset.data.map((value, index) => ({
-        x: resultsMargins.labels[index],
-        y: typeof value === 'number' && !isNaN(value) ? value : null,
-      })),
+  // Financials (Bar Charts)
+  const seriesFinancials = mapDataset(financialData.datasets).map((series) => ({
+    ...series,
+    data: series.data.map((value) => (typeof value === 'number' && isNaN(value) ? null : value)),
+  }))
+  
+  const seriesFinancialsBoth = reOrderArray(
+    [
+      ...createSeries(planningData.financial, 'planning'),
+      ...createSeries(resultsData.financial, 'results', (color) => darkenColor(color, 40)),
+    ],
+    8,
+  )
+   
+  // Margins (Line Charts)
+  const seriesMargins =
+    mapDataset(marginData.datasets).map((series) => ({
+      ...series,
+      data: series.data.map((value) => (typeof value === 'number' && isNaN(value) ? null : value)),
     }))
+  
+  const seriesMarginsBoth = reOrderArray(
+    [...createSeries(planningData.margin, 'planning'), ...createSeries(resultsData.margin, 'results')],
+    4,
+  )
 
-    return [...planningSeries, ...resultsSeries] // Merge both datasets
-  }, [planningMargins.datasets, resultsMargins.datasets])
-
-  // Helpers
+  // Helpers: Used to reduce code in Apex Options Below
   const selectedSeries = () => {
     if (graphDataType === 'both') {
-      return isToggled ? seriesTwoBoth : seriesOneBoth
+      return isToggled ? seriesMarginsBoth : seriesFinancialsBoth;
     } else {
-      return isToggled ? seriesTwo : seriesOne
+      return isToggled ? seriesMargins : seriesFinancials;
     }
   }
 
-  let series = selectedSeries()
+  const series = selectedSeries()
 
-  const getTitle = () => {
-    const titlesMap = {
+  const graphTitle = translate(
+    {
       planning: isToggled ? 'marginsPlanning' : 'financialsPlanning',
       results: isToggled ? 'marginsResults' : 'financialsResults',
       both: isToggled ? 'marginsPlanningAndResults' : 'financialsPlanningAndResults',
-    }
-    return titlesMap[graphDataType] || ''; // Return the mapped title or fallback to an empty string
-  }
-
-  const graphTitle = useMemo(() => translate(getTitle(), language), [getTitle, language])
+    }[graphDataType] || '',
+    language,
+  )
 
   // Apex Chart Options
-  const options: ApexOptions = useMemo(
-    () => ({
-      chart: {
-        toolbar: {
-          show: true,
-          tools: {
-            reset: false,
-            zoom: false,
-            pan: false,
-            zoomin: false,
-            zoomout: false,
-          },
-          export: {
-            csv: {
-              filename: graphTitle,
-              headerCategory: translate('yearMonth', language),
-            },
-            png: {
-              filename: graphTitle,
-            },
-            svg: {
-              filename: graphTitle,
-            },
-          },
-        },
-      },
-      title: {
-        text: graphTitle,
-        align: 'left',
-      },
-      xaxis: {
-        categories: marginData.labels,
-        labels: {
-          offsetX: 2,
-        },
-      },
-      yaxis: {
-        title: {
-          text: isToggled ? '%' : '円',
-          rotate: 0,
-          offsetX: -2,
-        },
-        opposite: true,
-        labels: {
-          formatter: (val: number) => formatNumberWithCommas(val),
-        },
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      stroke: {
+  const options: ApexOptions = {
+    chart: {
+      toolbar: {
         show: true,
-        curve: 'straight',
-        width: 2,
-        dashArray: graphDataType === 'both' && isToggled ? [5, 5, 0, 0] : [0, 0, 0, 0],
-      },
-      markers: {
-        size: 6,
-      },
-      grid: {
-        row: {
-          colors: ['#f3f3f3', 'transparent'],
-          opacity: 0.5,
+        tools: {
+          reset: false,
+          zoom: false,
+          pan: false,
+          zoomin: false,
+          zoomout: false,
         },
-        padding: {
-          left: 20,
-        },
-      },
-      colors: marginData.datasets.map((dataset: any) => dataset.backgroundColor),
-      tooltip: {
-        enabled: true,
-        followCursor: true,
-        shared: true,
-        intersect: false,
-        y: {
-          formatter: (val: number) => (isToggled ? `${val} %` : `${formatNumberWithCommas(val)} 円`),
+        export: {
+          csv: {
+            filename: graphTitle,
+            headerCategory: translate('yearMonth', language),
+          },
+          png: {
+            filename: graphTitle,
+          },
+          svg: {
+            filename: graphTitle,
+          },
         },
       },
-    }),
-    [isToggled, graphDataType],
-  )
-  
+    },
+    title: {
+      text: graphTitle,
+      align: 'left',
+    },
+    xaxis: {
+      categories: marginData.labels,
+      labels: {
+        offsetX: 2,
+      },
+    },
+    yaxis: {
+      title: {
+        text: isToggled ? '%' : '円',
+        rotate: 0,
+        offsetX: -2,
+      },
+      opposite: true,
+      labels: {
+        formatter: (val: number) => formatNumberWithCommas(val),
+      },
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    stroke: {
+      show: true,
+      curve: 'straight',
+      width: 2,
+      dashArray: graphDataType === 'both' && isToggled ? [5, 0, 5, 0] : [0, 0, 0, 0],
+    },
+    markers: {
+      size: 6,
+    },
+    legend: {
+      show: true,
+      itemMargin: {
+        horizontal: 4,
+        vertical: 4, 
+      },
+    },
+
+    grid: {
+      row: {
+        colors: ['#f3f3f3', 'transparent'],
+        opacity: 0.5,
+      },
+      padding: {
+        left: 20,
+      },
+    },
+    colors: marginData.datasets.map((dataset: any) => dataset.backgroundColor),
+    tooltip: {
+      enabled: true,
+      followCursor: true,
+      shared: true,
+      intersect: false,
+      y: {
+        formatter: (val: number) => (isToggled ? `${val} %` : `${formatNumberWithCommas(val)} 円`),
+      },
+    },
+  }
+
   return (
     <Card
       backgroundColor='#ffffff'
@@ -231,7 +202,7 @@ const GraphDashboard: React.FC<CustomBarProps> = ({
         series={series}
         type={isToggled ? 'line' : 'bar'}
         height={350}
-        className='custom-bar'
+        className={`custom-bar`}
       />
     </Card>
   )

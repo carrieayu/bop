@@ -158,5 +158,6 @@
   "yearMonth": "Year/Month",
   "csvFileName": "CSV: Financial Summary",
   "resultsSummary" : "Results-Summary",
-  "planningShort" : "PL"
+  "planningShort" : "PL.",
+  "resultsShort": "Res."
 }
