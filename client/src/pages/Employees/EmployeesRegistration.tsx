@@ -29,6 +29,7 @@ import {
 import EmployeeExpensesList from '../EmployeeExpenses/EmployeeExpensesList'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 import { masterMaintenanceScreenTabs, maximumEntries, token, MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER } from '../../constants'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 const EmployeesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -63,6 +64,8 @@ const EmployeesRegistration = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const fetchData = async () => {
     try {
       const resMasterCompany = await dispatch(fetchMasterCompany() as unknown as UnknownAction)
@@ -277,8 +280,9 @@ const EmployeesRegistration = () => {
               setIsModalOpen(true)
               break
             case 401:
-              console.error('Validation error:', data)
-              window.location.href = '/login'
+              // console.error('Validation error:', data)
+              console.log("EmployeesRegistration window.location.href 01");
+              // window.location.href = '/login'
               break
             default:
               console.error('There was an error creating the employee data!', error)
@@ -306,6 +310,12 @@ const EmployeesRegistration = () => {
   const handleListClick = () => {
     navigate('/employees-list')
   }
+
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
 
   return (
     <div className='EmployeesRegistration_wrapper'>
@@ -572,6 +582,7 @@ const EmployeesRegistration = () => {
         isCRUDOpen={isModalOpen}
         validationMessages={crudValidationErrors}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

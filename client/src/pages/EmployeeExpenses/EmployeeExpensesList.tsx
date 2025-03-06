@@ -17,6 +17,7 @@ import { deleteEmployeeExpenseX } from '../../api/EmployeeExpenseEndpoint/Delete
 import { deleteProjectAssociation } from '../../api/EmployeeExpenseEndpoint/DeleteProjectAssociation'
 import { formatNumberWithCommas, handlePLListTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import { monthNames, months, token } from '../../constants'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes";
 
 const EmployeeExpensesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -39,6 +40,8 @@ const EmployeeExpensesList: React.FC = () => {
   }>({} as { employee_expense_id: string; project_id: string; mode: 'employee_expense' })
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -80,7 +83,8 @@ const EmployeeExpensesList: React.FC = () => {
   useEffect(() => {
     const fetchEmployeeExpenses = async () => {
       if (!token) {
-        window.location.href = '/login' // Redirect to login if no token found
+        console.log("token 1");
+        //window.location.href = '/login' // Redirect to login if no token found
         return
       }
       getEmployeeExpense(token)
@@ -89,7 +93,8 @@ const EmployeeExpensesList: React.FC = () => {
         })
         .catch((error) => {
           if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
+            console.log("token 2");
+            //window.location.href = '/login' // Redirect to login if unauthorized
           } else {
             console.error('Error fetching employee expenses:', error)
           }
@@ -135,7 +140,8 @@ const EmployeeExpensesList: React.FC = () => {
           })
           .catch((error) => {
             if (error.response && error.response.status === 401) {
-              window.location.href = '/login' // Redirect to login if unauthorized
+              console.log("token 3");
+              //window.location.href = '/login' // Redirect to login if unauthorized
             } else {
               console.error('Error deleting employee expense:', error)
             }
@@ -157,12 +163,23 @@ const EmployeeExpensesList: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          window.location.href = '/login' // Redirect to login if unauthorized
+          console.log("token 4");
+          //window.location.href = '/login' // Redirect to login if unauthorized
         } else {
           console.error('Error removing project association:', error)
         }
       })
   }
+
+  // const handleConfirm = async () => {
+  //   window.location.href = '/login'
+  //   return
+  // }
+  useEffect(() => {
+     checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
 
   return (
     <div className='employeeExpensesList_wrapper'>
@@ -612,6 +629,7 @@ const EmployeeExpensesList: React.FC = () => {
         message={translate('deleteMessage', language)}
       />
       <CrudModal isCRUDOpen={isCRUDOpen} onClose={closeModal} message={crudMessage} />
+      <AlertPopupComponent />
     </div>
   )
 }

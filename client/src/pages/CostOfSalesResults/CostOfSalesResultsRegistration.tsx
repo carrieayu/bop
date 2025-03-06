@@ -31,6 +31,7 @@ import { getCostOfSale } from '../../api/CostOfSalesEndpoint/GetCostOfSale'
 import { maximumEntries, monthNames, resultsScreenTabs, token } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 import { MAX_NUMBER_LENGTH } from '../../constants'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 type CostOfSaleResults = {
   month: string
@@ -59,6 +60,8 @@ const CostOfSalesResultsRegistration = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const onTabClick = (tab) => handleResultsRegTabsClick(tab, navigate, setActiveTab)
   const emptyFormData = {
     year: '',
@@ -376,7 +379,13 @@ const CostOfSalesResultsRegistration = () => {
     navigate('/cost-of-sales-results-list')
   }
 
-    return (
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
+
+  return (
     <div className='costOfSalesResultsRegistration_wrapper'>
       <HeaderButtons
         activeTab={activeTab}
@@ -594,6 +603,7 @@ const CostOfSalesResultsRegistration = () => {
         onConfirm={handleOverwriteConfirmation}
         message={modalMessage}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

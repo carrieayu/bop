@@ -28,6 +28,8 @@ import {
   handleResultsListTabsClick,
   setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes";
+
 const ExpensesResultsList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
@@ -48,6 +50,8 @@ const ExpensesResultsList: React.FC = () => {
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   const header: string[] = [
     'year',
@@ -357,6 +361,12 @@ const ExpensesResultsList: React.FC = () => {
   const handleNewRegistrationClick = () => {
     navigate('/expenses-results-registration')
   }
+
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
 
   return (
     <div className={'expensesResultsList_wrapper'}>
@@ -712,6 +722,7 @@ const ExpensesResultsList: React.FC = () => {
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

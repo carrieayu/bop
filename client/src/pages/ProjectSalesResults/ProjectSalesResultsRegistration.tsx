@@ -35,6 +35,7 @@ import {
   setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
 import { MAX_NUMBER_LENGTH } from '../../constants'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes";
 
 type Project = {
   client: string
@@ -92,6 +93,8 @@ const ProjectSalesResultsRegistration = () => {
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
   const onTabClick = (tab) => handleResultsRegTabsClick(tab, navigate, setActiveTab)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   const emptyFormData = {
     id: 1,
@@ -656,6 +659,12 @@ const handleAdd = () => {
     navigate('/project-sales-results-list')
   }
 
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
+
   return (
     <div className='projectSalesResultsRegistration_wrapper'>
       <HeaderButtons
@@ -1016,6 +1025,7 @@ const handleAdd = () => {
         onConfirm={handleOverwriteConfirmation}
         message={modalMessage}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

@@ -14,7 +14,7 @@ import AlertModal from '../../components/AlertModal/AlertModal'
 import { createProject } from '../../api/ProjectsEndpoint/CreateProject'
 import { overwriteProject } from '../../api/ProjectsEndpoint/OverwriteProject'
 import { maximumEntries, monthNames, token, years } from '../../constants'
-import { refreshToken, useAlertPopup, checkAccessToken } from "../../routes/ProtectedRoutes";
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes";
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 import {
   validateRecords,
@@ -69,6 +69,7 @@ const ProjectsRegistration = () => {
   }
   const [formProjects, setProjects] = useState([emptyFormData])
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
  
   const handleAdd = () => {
     addFormInput(formProjects, setProjects, maximumEntries, emptyFormData)
@@ -395,16 +396,22 @@ const ProjectsRegistration = () => {
     setLanguage(newLanguage)
   }
 
-  const handleConfirm = async () => {
-    window.location.href = '/login'
-    return
-  }
+  // const handleConfirm = async () => {
+  //   window.location.href = '/login'
+  //   return
+  // }
 
   useEffect(() => {
     fetchDivision()
     fetchClients()
-    checkAccessToken().then(result => {
-      if (!result) { showAlertPopup(handleConfirm); }
+    // checkAccessToken().then(result => {
+    //   if (!result) { showAlertPopup(handleConfirm); }
+    // });
+  }, [token])
+
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
     });
   }, [token])
 

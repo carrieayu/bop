@@ -20,6 +20,7 @@ import {
 import { handleMMRegTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import { masterMaintenanceScreenTabs, maximumEntries, storedUserID, token } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 const BusinessDivisionsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -43,6 +44,8 @@ const BusinessDivisionsRegistration = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -172,8 +175,9 @@ const BusinessDivisionsRegistration = () => {
               setIsModalOpen(true)
               break
             case 401:
-              console.error('Validation error:', data)
-              window.location.href = '/login'
+              // console.error('Validation error:', data)
+              // window.location.href = '/login'
+              console.log("BusinessDivisionsRegistration window.location.href 01");
               break
             default:
               console.error('There was an error creating the business division data!', error)
@@ -214,6 +218,12 @@ const BusinessDivisionsRegistration = () => {
   const handleListClick = () => {
     navigate('/business-divisions-list')
   }
+
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
 
   return (
     <div className='BusinessDivisionsRegistration_wrapper'>
@@ -327,6 +337,7 @@ const BusinessDivisionsRegistration = () => {
         isCRUDOpen={isModalOpen}
         validationMessages={crudValidationErrors}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

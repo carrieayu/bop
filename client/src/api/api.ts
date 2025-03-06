@@ -12,7 +12,11 @@ type RequestConfigWithToken = AxiosRequestConfig & {
 api.interceptors.request.use(
   (config: any) => {
     const token = localStorage.getItem(ACCESS_TOKEN);
+
+    console.log("interceptors.request 01")
+
     if (token) {
+      console.log("interceptors.request 02")
       // Extend config with token using a type assertion
       return {
         ...config,
@@ -21,6 +25,7 @@ api.interceptors.request.use(
         } as RequestConfigWithToken["headers"],
       };
     } else {
+      console.log("interceptors.request 03")
       return config;
     }
   },

@@ -26,7 +26,7 @@ import { getProject } from '../../api/ProjectsEndpoint/GetProject'
 import { updateProject } from '../../api/ProjectsEndpoint/UpdateProject'
 import { deleteProject } from '../../api/ProjectsEndpoint/DeleteProject'
 import { months, token, years, REFRESH_TOKEN, ACCESS_TOKEN } from '../../constants'
-import { refreshToken, useAlertPopup } from "../../routes/ProtectedRoutes";
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"  
 import {
   handleDisableKeysOnNumberInputs,
   removeCommas,
@@ -34,7 +34,6 @@ import {
   formatNumberWithDecimal,
   handleInputChange,
   handlePLListTabsClick,
-  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
 
 const ProjectsListAndEdit: React.FC = ({}) => {
@@ -82,7 +81,8 @@ const ProjectsListAndEdit: React.FC = ({}) => {
     },
   ])
 
-  const { showAlertPopup, AlertPopupComponent } = useAlertPopup();
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
@@ -92,7 +92,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
     setActiveTab(tab)
     navigate(tab)
   }
-  const [token, setToken] = useState(localStorage.getItem(ACCESS_TOKEN));
+  // const [token, setToken] = useState(localStorage.getItem(ACCESS_TOKEN));
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
   }
@@ -251,7 +251,8 @@ const ProjectsListAndEdit: React.FC = ({}) => {
               break
             case 401:
               console.error('Validation error:', data)
-              window.location.href = '/login'
+              console.log("ProjectsListAndEdit window.location.href 01");
+              //window.location.href = '/login'
               break
             default:
               console.error('There was an error creating the project data!', error)
@@ -333,8 +334,9 @@ const ProjectsListAndEdit: React.FC = ({}) => {
     // Sets the Validation Errors if any to empty as they are not necessary for delete.
     setCrudValidationErrors([])
     if (!token) {
-      window.location.href = '/login'
-      return
+      console.log("ProjectsListAndEdit window.location.href 02");
+      // window.location.href = '/login'
+      // return
     }
 
     deleteProject(deleteProjectsId, token)
@@ -346,7 +348,8 @@ const ProjectsListAndEdit: React.FC = ({}) => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          window.location.href = '/login'
+          console.log("ProjectsListAndEdit window.location.href 03");
+          // window.location.href = '/login'
         } else {
           console.error('Error deleting projects', error)
         }
@@ -372,6 +375,28 @@ const ProjectsListAndEdit: React.FC = ({}) => {
     }
   }, [deleteComplete])
 
+  // const fetchProjectsHandler = async () => {
+  //   try {
+  //     const data = await getProject(token)
+  //     setProjects(data)
+  //     setOriginalProjectsList(data)
+  //   } catch (error) {
+  //     if (error.response && error.response.status === 401) {
+  //       const tokenRefreshed = await refreshToken();
+  //       if (tokenRefreshed) {
+  //         const _ACCESS_TOKEN  = localStorage.getItem(ACCESS_TOKEN);
+  //         const redata = await getProject(_ACCESS_TOKEN)
+  //         setProjects(redata)
+  //         setOriginalProjectsList(redata)
+  //       } else {
+  //         showAlertPopup(handleConfirm);
+  //       }
+  //     } else {
+  //       console.error('There was an error fetching the projects!', error)
+  //     }
+  //   }
+  // }
+
   const fetchProjectsHandler = async () => {
     try {
       const data = await getProject(token)
@@ -379,37 +404,33 @@ const ProjectsListAndEdit: React.FC = ({}) => {
       setOriginalProjectsList(data)
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        const tokenRefreshed = await refreshToken();
-        if (tokenRefreshed) {
-          const _ACCESS_TOKEN  = localStorage.getItem(ACCESS_TOKEN);
-          const redata = await getProject(_ACCESS_TOKEN)
-          setProjects(redata)
-          setOriginalProjectsList(redata)
-        } else {
-          showAlertPopup(handleConfirm);
-        }
+        console.error('There was an error response 401', error)
       } else {
         console.error('There was an error fetching the projects!', error)
       }
     }
   }
-  useEffect(() => {
-    setToken(localStorage.getItem(ACCESS_TOKEN));
-  }, [token]);
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      if (!token) {
-        window.location.href = '/login'
-        return
-      }
-      fetchProjectsHandler()
-    }
+    // const fetchProjects = async () => {
+    //   if (!token) {
+    //     window.location.href = '/login'
+    //     return
+    //   }
+    //   fetchProjectsHandler()
+    // }
 
     fetchDivision()
     fetchClient()
-    fetchProjects()
+    fetchProjectsHandler()
+    // fetchProjects()
   }, [])
+
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
 
   return (
     <div className='projectsList-wrapper'>

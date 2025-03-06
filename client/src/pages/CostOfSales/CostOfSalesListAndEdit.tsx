@@ -30,6 +30,7 @@ import {
 } from '../../utils/helperFunctionsUtil'
 import { createCostOfSale } from '../../api/CostOfSalesEndpoint/CreateCostOfSale'
 import { months, token } from '../../constants'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes";
 
 const CostOfSalesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -54,6 +55,8 @@ const CostOfSalesList: React.FC = () => {
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const onTabClick = (tab) => handlePLListTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
@@ -165,10 +168,10 @@ const CostOfSalesList: React.FC = () => {
       return
     }
 
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
+    // if (!token) {
+    //   window.location.href = '/login'
+    //   return
+    // }
     updateCostOfSale(modifiedFields, token)
       .then(() => {
         setOriginalCostOfSales(costOfSales)
@@ -180,7 +183,8 @@ const CostOfSalesList: React.FC = () => {
         if (error.response) {
           console.error('Error response:', error.response.data)
           if (error.response.status === 401) {
-            window.location.href = '/login'
+            console.log("CostOfSalesListAndEdit window.location.href 01");
+            // window.location.href = '/login'
           } else {
             console.error('There was an error updating the cost of sales data!', error.response.data)
           }
@@ -198,7 +202,8 @@ const CostOfSalesList: React.FC = () => {
   useEffect(() => {
     const fetchCostOfSales = async () => {
       if (!token) {
-        window.location.href = '/login' // Redirect to login if no token found
+        console.log("CostOfSalesListAndEdit window.location.href 02");
+        // window.location.href = '/login' // Redirect to login if no token found
         return
       }
 
@@ -213,7 +218,8 @@ const CostOfSalesList: React.FC = () => {
           })
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          window.location.href = '/login' // Redirect to login if unauthorized
+          console.log("CostOfSalesListAndEdit window.location.href 03");
+          // window.location.href = '/login' // Redirect to login if unauthorized
         } else {
           console.error('There was an error fetching the cost of sales data!', error)
         }
@@ -329,7 +335,8 @@ const CostOfSalesList: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          window.location.href = '/login' // Redirect to login if unauthorized
+          console.log("CostOfSalesListAndEdit window.location.href 04");
+          // window.location.href = '/login' // Redirect to login if unauthorized
         } else {
           console.error('Error deleting cost of sale:', error)
         }
@@ -358,6 +365,12 @@ const CostOfSalesList: React.FC = () => {
   const handleNewRegistrationClick = () => {
     navigate('/cost-of-sales-registration')
   }
+
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
 
   return (
     <div className='costOfSalesList_wrapper'>
@@ -668,6 +681,7 @@ const CostOfSalesList: React.FC = () => {
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

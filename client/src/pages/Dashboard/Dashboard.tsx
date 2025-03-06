@@ -17,6 +17,7 @@ import { dates, header, smallDate } from '../../constants'
 import { setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import TableDashboard from '../../components/TableDashboard/TableDashboard'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 function formatNumberWithCommas(number: number): string {
   return number.toLocaleString()
@@ -49,6 +50,8 @@ const Dashboard = () => {
   const location = useLocation()
   const [isThousandYenChecked, setIsThousandYenChecked] = useState(false)
   const dispatch = useAppDispatch()
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   const handleThousandYenToggle = () => {
     setIsThousandYenChecked((prevState) => !prevState)
@@ -173,6 +176,12 @@ const Dashboard = () => {
   const handleSwitchToggle = () => {
     setIsSwitchActive((prevState) => !prevState)
   }
+
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [])
 
   return (
     <div className='dashboard_wrapper'>
@@ -323,6 +332,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      <AlertPopupComponent />
     </div>
   )
 }

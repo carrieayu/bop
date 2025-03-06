@@ -24,6 +24,7 @@ import {
 import { formatDate, handleMMListTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import { getUser } from '../../api/UserEndpoint/GetUser'
 import { masterMaintenanceScreenTabs, token } from '../../constants'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 const ClientsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -50,6 +51,8 @@ const ClientsListAndEdit: React.FC = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [userMap, setUserMap] = useState({})
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const onTabClick = (tab) => handleMMListTabsClick(tab, navigate, setActiveTab)
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -181,8 +184,9 @@ const ClientsListAndEdit: React.FC = () => {
               setIsCRUDOpen(true)
               break
             case 401:
-              console.error('Validation error:', data)
-              window.location.href = '/login'
+              // console.error('Validation error:', data)
+              // window.location.href = '/login'
+              console.log("ClientsListAndEdit window.location.href 01");
               break
             default:
               console.error('There was an error updating the clients data!', error)
@@ -202,8 +206,9 @@ const ClientsListAndEdit: React.FC = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       if (!token) {
-        window.location.href = '/login' // Redirect to login if no token found
-        return
+        console.log("ClientsListAndEdit window.location.href 02");
+        // window.location.href = '/login' // Redirect to login if no token found
+        // return
       }
       getClient(token)
         .then((data) => {
@@ -212,7 +217,8 @@ const ClientsListAndEdit: React.FC = () => {
         })
         .catch((error) => {
           if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
+            console.log("ClientsListAndEdit window.location.href 03");
+            // window.location.href = '/login' // Redirect to login if unauthorized
           } else {
             console.error('There was an error fetching the projects!', error)
           }
@@ -290,7 +296,8 @@ const ClientsListAndEdit: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          window.location.href = '/login'
+          console.log("ClientsListAndEdit window.location.href 04");
+          // window.location.href = '/login'
         } else {
           console.error('Error deleting client:', error)
         }
@@ -319,6 +326,12 @@ const ClientsListAndEdit: React.FC = () => {
   const handleNewRegistrationClick = () => {
     navigate('/clients-registration')
   }
+
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
 
   return (
     <div className='ClientsListAndEdit_wrapper'>
@@ -501,6 +514,7 @@ const ClientsListAndEdit: React.FC = () => {
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

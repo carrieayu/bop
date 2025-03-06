@@ -24,6 +24,7 @@ import {
 } from '../../utils/validationUtil'
 import { formatDate, handleMMListTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import { masterMaintenanceScreenTabs, token } from '../../constants'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 const BusinessDivisionsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -53,6 +54,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -176,8 +179,9 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
               setIsCRUDOpen(true)
               break
             case 401:
-              console.error('Validation error:', data)
-              window.location.href = '/login'
+              // console.error('Validation error:', data)
+              // window.location.href = '/login'
+              console.log("BusinessDivisionsListAndEdit window.location.href 01");
               break
             default:
               console.error('There was an error creating the business division data!', error)
@@ -196,8 +200,9 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
 
   const fetchCompanyAndUserData = async () => {
     if (!token) {
-      window.location.href = '/login'
-      return
+      console.log("BusinessDivisionsListAndEdit window.location.href 02");
+      // window.location.href = '/login'
+      // return
     }
     try {
       // Fetch companies
@@ -229,7 +234,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         })
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        window.location.href = '/login'
+        console.log("BusinessDivisionsListAndEdit window.location.href 03");
+        // window.location.href = '/login'
       } else {
         console.error('Error fetching company or user data!', error)
       }
@@ -238,8 +244,9 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
 
   const fetchBusinessDivision = async () => {
     if (!token) {
-      window.location.href = '/login' // Redirect to login if no token found
-      return
+      console.log("BusinessDivisionsListAndEdit window.location.href 04");
+      // window.location.href = '/login' // Redirect to login if no token found
+      // return
     }
 
     getBusinessDivision(token)
@@ -252,7 +259,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
           console.log(error)
         } else {
           if (error.response && error.response.status === 401) {
-            window.location.href = '/login'
+            console.log("BusinessDivisionsListAndEdit window.location.href 05");
+            // window.location.href = '/login'
           } else {
             console.error('There was an error fetching the business!', error)
           }
@@ -321,7 +329,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          window.location.href = '/login'
+          console.log("BusinessDivisionsListAndEdit window.location.href 06");
+          // window.location.href = '/login'
         } else {
           console.error('Error deleting data:', error)
         }
@@ -352,6 +361,12 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
   const handleNewRegistrationClick = () => {
     navigate('/business-divisions-registration')
   }
+
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
 
   return (
     <div className='BusinessDivisionsListAndEdit_wrapper'>
@@ -565,6 +580,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

@@ -36,6 +36,8 @@ import {
   handleMMListTabsClick,
   setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
+
 
 const EmployeesListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -66,6 +68,8 @@ const EmployeesListAndEdit: React.FC = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [userMap, setUserMap] = useState({})
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const onTabClick = (tab) => handleMMListTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
@@ -308,8 +312,9 @@ const EmployeesListAndEdit: React.FC = () => {
     const modifiedFields = getModifiedFields(originalEmployeesList, employeesList)
     console.log(modifiedFields)
     if (!token) {
-      window.location.href = '/login'
-      return
+      console.log("EmployeesListAndEdit window.location.href 01");
+      // window.location.href = '/login'
+      // return
     }
 
     updateEmployee(modifiedFields, token)
@@ -329,7 +334,8 @@ const EmployeesListAndEdit: React.FC = () => {
               break
             case 401:
               console.error('Validation error:', data)
-              window.location.href = '/login'
+              console.log("EmployeesListAndEdit window.location.href 02");
+              // window.location.href = '/login'
               break
             default:
               console.error('There was an error creating the employee data!', error)
@@ -348,8 +354,9 @@ const EmployeesListAndEdit: React.FC = () => {
 
   const fetchEmployees = async () => {
     if (!token) {
-      window.location.href = '/login' // Redirect to login if no token found
-      return
+      console.log("EmployeesListAndEdit window.location.href 03");
+      // window.location.href = '/login' // Redirect to login if no token found
+      // return
     }
 
     // Fetch users
@@ -393,7 +400,8 @@ const EmployeesListAndEdit: React.FC = () => {
       })
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        window.location.href = '/login' // Redirect to login if unauthorized
+        console.log("EmployeesListAndEdit window.location.href 04");
+        // window.location.href = '/login' // Redirect to login if unauthorized
       } else {
         console.error('There was an error fetching the projects!', error)
       }
@@ -465,7 +473,8 @@ const EmployeesListAndEdit: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          window.location.href = '/login'
+          console.log("EmployeesListAndEdit window.location.href 05");
+          // window.location.href = '/login'
         } else {
           console.error('Error deleting project:', error)
         }
@@ -522,6 +531,12 @@ const EmployeesListAndEdit: React.FC = () => {
       return updatedEmployeeData
     })
   }
+
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
 
   return (
     <div className='EmployeesListAndEdit_wrapper'>
@@ -938,6 +953,7 @@ const EmployeesListAndEdit: React.FC = () => {
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

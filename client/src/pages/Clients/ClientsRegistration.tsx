@@ -19,6 +19,7 @@ import {
 import { handleMMRegTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 import { masterMaintenanceScreenTabs, maximumEntries, storedUserID, token } from '../../constants'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 const ClientsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -31,6 +32,8 @@ const ClientsRegistration = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const onTabClick = (tab) => handleMMRegTabsClick(tab, navigate, setActiveTab)
   const emptyFormData = {
     client_name: '',
@@ -131,8 +134,9 @@ const ClientsRegistration = () => {
               setIsModalOpen(true)
               break
             case 401:
-              console.error('Validation error:', data)
-              window.location.href = '/login'
+              // console.error('Validation error:', data)
+              // window.location.href = '/login'
+              console.log("ClientsRegistration window.location.href 01");
               break
             default:
               console.error('There was an error creating the client data!', error)
@@ -169,6 +173,12 @@ const ClientsRegistration = () => {
   const handleListClick = () => {
     navigate('/clients-list')
   }
+
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
 
   return (
     <div className='ClientsRegistration_wrapper'>
@@ -260,6 +270,7 @@ const ClientsRegistration = () => {
         isCRUDOpen={isModalOpen}
         validationMessages={crudValidationErrors}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

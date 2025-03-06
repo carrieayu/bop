@@ -14,6 +14,7 @@ import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import { dates, header, smallDate } from '../../constants'
 import { setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import AlertModal from '../../components/AlertModal/AlertModal'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 const PlanningListAndEdit = () => {
   const [tableList, setTableList] = useState<any>([])
@@ -33,7 +34,9 @@ const PlanningListAndEdit = () => {
 
   const [isEditing, setIsEditing] = useState(false)
   const [initialLanguage, setInitialLanguage] = useState(language)
-  
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+
   const handleThousandYenToggle = () => {
     setIsThousandYenChecked((prevState) => !prevState)
   }
@@ -102,6 +105,12 @@ const PlanningListAndEdit = () => {
       setLanguage(newLanguage)
     }
   }
+
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [])
 
   return (
     <div className='planning_wrapper'>
@@ -215,6 +224,7 @@ const PlanningListAndEdit = () => {
           </div>
         </div>
       </div>
+      <AlertPopupComponent />
     </div>
   )
 }

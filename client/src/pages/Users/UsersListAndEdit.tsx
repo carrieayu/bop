@@ -24,6 +24,7 @@ import {
 } from '../../utils/validationUtil'
 import { formatDate, handleMMListTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import { masterMaintenanceScreenTabs, token } from '../../constants'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 const UsersListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -62,7 +63,9 @@ const UsersListAndEdit: React.FC = () => {
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [deleteComplete, setDeleteComplete] = useState(false)
-  
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
@@ -156,7 +159,8 @@ const UsersListAndEdit: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          window.location.href = '/login'
+          // window.location.href = '/login'
+          console.log("UsersListAndEdit window.location.href 01");
         } else {
           console.error('There was an error updating the user data!', error)
         }
@@ -171,8 +175,9 @@ const UsersListAndEdit: React.FC = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       if (!token) {
-        window.location.href = '/login' // Redirect to login if no token found
-        return
+        // window.location.href = '/login' // Redirect to login if no token found
+        // return
+        console.log("UsersListAndEdit window.location.href 02");
       }
 
       fetchUserListHandler(token)
@@ -279,6 +284,12 @@ const UsersListAndEdit: React.FC = () => {
       }
     }
   };
+
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
 
   return (
     <div className='UsersListAndEdit_wrapper'>
@@ -491,6 +502,7 @@ const UsersListAndEdit: React.FC = () => {
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

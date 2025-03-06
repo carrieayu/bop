@@ -23,6 +23,7 @@ import { getFilteredEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/Fi
 import { currentYear, maximumEntriesEE, monthNames, storedUserID, token } from '../../constants'
 import { handlePLRegTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import { closeModal, openModal } from '../../actions/hooks'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes";
 
 type Date = {
   year: string
@@ -62,6 +63,8 @@ const EmployeeExpensesRegistration = () => {
   ])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const onTabClick = (tab) => handlePLRegTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
@@ -508,6 +511,12 @@ const EmployeeExpensesRegistration = () => {
     navigate('/employee-expenses-list')
   }
 
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
+  
   return (
     <div className='employeeExpensesRegistration_wrapper'>
       <HeaderButtons
@@ -731,6 +740,7 @@ const EmployeeExpensesRegistration = () => {
         isCRUDOpen={isModalOpen}
         validationMessages={crudValidationErrors}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

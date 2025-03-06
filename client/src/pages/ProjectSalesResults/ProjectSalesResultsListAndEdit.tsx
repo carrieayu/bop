@@ -31,6 +31,8 @@ import {
   handleResultsListTabsClick,
   setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes";
+
 const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
@@ -53,6 +55,8 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [selectedProject, setSelectedProject] = useState<any>(null)
   const [deleteProjectsId, setDeleteProjectsId] = useState([])
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const onTabClick = (tab) => handleResultsListTabsClick(tab, navigate, setActiveTab)
   const [formProjects, setFormProjects] = useState([
     {
@@ -177,8 +181,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
     }
     const modifiedFields = getModifiedFields(originalProjectSalesResultsList, projectSalesResults)
     if (!token) {
-      window.location.href = '/login'
-      return
+      console.log("ProjectSalesResultsListAndEdit window.location.href 01");
+      // window.location.href = '/login'
+      // return
     }
 
     updateProjectSalesResults(modifiedFields, token)
@@ -219,8 +224,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       if (!token) {
-        window.location.href = '/login' // Redirect to login if no token found
-        return
+        console.log("ProjectSalesResultsListAndEdit window.location.href 02");
+        // window.location.href = '/login' // Redirect to login if no token found
+        // return
       }
 
       fetchProjectsHandler()
@@ -278,8 +284,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
     setCrudValidationErrors([])
 
     if (!token) {
-      window.location.href = '/login'
-      return
+      console.log("ProjectSalesResultsListAndEdit window.location.href 03");
+      // window.location.href = '/login'
+      // return
     }
 
     deleteProjectSalesResults(deleteProjectsId, token)
@@ -291,7 +298,8 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          window.location.href = '/login'
+          console.log("ProjectSalesResultsListAndEdit window.location.href 04");
+          // window.location.href = '/login'
         } else {
           console.error('Error deleting projects', error)
         }
@@ -326,12 +334,19 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
       setOriginalProjectSalesResultsList(data);
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        window.location.href = '/login'; // Redirect to login if unauthorized
+        console.log("ProjectSalesResultsListAndEdit window.location.href 05");
+        // window.location.href = '/login'; // Redirect to login if unauthorized
       } else {
         console.error('There was an error fetching the projects sales results!', error);
       }
     }
   }
+
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
 
   return (
     <div className='projectSalesResultsList_wrapper'>
@@ -730,6 +745,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

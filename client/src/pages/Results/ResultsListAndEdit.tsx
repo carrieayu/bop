@@ -17,6 +17,7 @@ import * as XLSX from 'xlsx'
 import { monthNames, months, token } from '../../constants'
 import { setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import AlertModal from '../../components/AlertModal/AlertModal'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 const header = ['計画']
 const smallDate = ['2022/24月', '2022/25月', '2022/26月']
@@ -40,6 +41,8 @@ const ResultsListAndEdit = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [initialLanguage, setInitialLanguage] = useState(language)
   const [isXLSModalOpen, setIsXLSModalOpen] = useState(false)
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   const additionalHeaders = {
     1: { en: 'H1', jp: '上期計	' },
@@ -807,6 +810,12 @@ const ResultsListAndEdit = () => {
     }
   }
 
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
+
   return (
     <div className='results_summary_wrapper'>
       <HeaderButtons
@@ -915,6 +924,7 @@ const ResultsListAndEdit = () => {
           </div>
         </div>
       </div>
+      <AlertPopupComponent />
     </div>
   )
 }

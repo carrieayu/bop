@@ -23,6 +23,7 @@ import { getFilteredEmployeeExpenseResults } from '../../api/EmployeeExpensesRes
 import { handleResultsRegTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import { maximumEntriesEE, monthNames, resultsScreenTabs, storedUserID, token } from '../../constants'
 import { closeModal, openModal } from '../../actions/hooks'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes";
 
 type Date = {
   year: string
@@ -59,6 +60,8 @@ const EmployeeExpensesResultsRegistration = () => {
   const [modalMessage, setModalMessage] = useState('')
   const [filteredDates, setFilteredDates] = useState<DateForm[]>([{ form: [{ date: [] }] }])
   const [selectionYearResults, setSelectionYearResults] = useState<DateForm[]>([{ form: [{ date: [] }] }])
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const onTabClick = (tab) => handleResultsRegTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
@@ -222,6 +225,12 @@ const EmployeeExpensesResultsRegistration = () => {
       setEmployeeContainers(updatedContainers)
     }
   }
+
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
 
   const handleInputChange = (containerIndex, projectIndex, event) => {
     const { name, value } = event.target
@@ -564,6 +573,12 @@ const EmployeeExpensesResultsRegistration = () => {
     navigate('/employee-expenses-results-list')
   }
 
+  useEffect(() => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
+
   return (
     <div className='employeeExpensesResultsRegistration_wrapper'>
       <HeaderButtons
@@ -773,6 +788,7 @@ const EmployeeExpensesResultsRegistration = () => {
         isCRUDOpen={isModalOpen}
         validationMessages={crudValidationErrors}
       />
+      <AlertPopupComponent />
     </div>
   )
 }
