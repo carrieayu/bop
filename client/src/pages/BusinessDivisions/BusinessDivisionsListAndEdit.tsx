@@ -91,11 +91,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
   }
 
   const handleSubmit = async () => {
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
     // # Client Side Validation
 
     // Step 1: Preparartion for validation
@@ -179,9 +174,8 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
               setIsCRUDOpen(true)
               break
             case 401:
-              // console.error('Validation error:', data)
-              // window.location.href = '/login'
-              console.log("BusinessDivisionsListAndEdit window.location.href 01");
+              console.error('Validation error:', data)
+              window.location.href = '/login'
               break
             default:
               console.error('There was an error creating the business division data!', error)
@@ -199,11 +193,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
   }
 
   const fetchCompanyAndUserData = async () => {
-    if (!token) {
-      console.log("BusinessDivisionsListAndEdit window.location.href 02");
-      // window.location.href = '/login'
-      // return
-    }
     try {
       // Fetch companies
       getCompany(token).then((data) => {
@@ -234,8 +223,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         })
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        console.log("BusinessDivisionsListAndEdit window.location.href 03");
-        // window.location.href = '/login'
+        window.location.href = '/login'
       } else {
         console.error('Error fetching company or user data!', error)
       }
@@ -243,12 +231,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
   }
 
   const fetchBusinessDivision = async () => {
-    if (!token) {
-      console.log("BusinessDivisionsListAndEdit window.location.href 04");
-      // window.location.href = '/login' // Redirect to login if no token found
-      // return
-    }
-
     getBusinessDivision(token)
       .then((data) => {
         setBusiness(data)
@@ -259,8 +241,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
           console.log(error)
         } else {
           if (error.response && error.response.status === 401) {
-            console.log("BusinessDivisionsListAndEdit window.location.href 05");
-            // window.location.href = '/login'
+            window.location.href = '/login'
           } else {
             console.error('There was an error fetching the business!', error)
           }
@@ -329,8 +310,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          console.log("BusinessDivisionsListAndEdit window.location.href 06");
-          // window.location.href = '/login'
+          window.location.href = '/login'
         } else {
           console.error('Error deleting data:', error)
         }

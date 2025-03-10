@@ -192,11 +192,6 @@ const ExpensesList: React.FC = () => {
       return
     }
 
-    // if (!token) {
-    //   window.location.href = '/login'
-    //   return
-    // }
-
     updateExpense(modifiedFields, token)
       .then(() => {
         setOriginalExpensesList(expensesList)
@@ -215,8 +210,7 @@ const ExpensesList: React.FC = () => {
         if (error.response) {
           console.error('Error response:', error.response.data)
           if (error.response.status === 401) {
-            console.log("ExpensesListAndEdit window.location.href 01");
-            // window.location.href = '/login'
+            window.location.href = '/login'
           } else {
             console.error('There was an error updating the expenses data!', error.response.data)
           }
@@ -232,11 +226,6 @@ const ExpensesList: React.FC = () => {
   }
 
   const fetchExpenses = async () => {
-    if (!token) {
-      console.log("ExpensesListAndEdit window.location.href 02");
-      // window.location.href = '/login' // Redirect to login if no token found
-      return
-    }
     getExpense(token)
       .then((data) => {
         setExpensesList(data)
@@ -244,8 +233,7 @@ const ExpensesList: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          console.log("ExpensesListAndEdit window.location.href 03");
-          // window.location.href = '/login' // Redirect to login if unauthorized
+          window.location.href = '/login' // Redirect to login if unauthorized
         } else {
           console.error('There was an error fetching the expenses!', error)
         }
@@ -362,8 +350,7 @@ const ExpensesList: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          console.log("ExpensesListAndEdit window.location.href 04");
-          // window.location.href = '/login' // Redirect to login if unauthorized
+          window.location.href = '/login' // Redirect to login if unauthorized
         } else {
           console.error('Error deleting expenses:', error)
         }

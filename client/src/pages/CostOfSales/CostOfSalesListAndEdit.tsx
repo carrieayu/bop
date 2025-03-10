@@ -168,10 +168,6 @@ const CostOfSalesList: React.FC = () => {
       return
     }
 
-    // if (!token) {
-    //   window.location.href = '/login'
-    //   return
-    // }
     updateCostOfSale(modifiedFields, token)
       .then(() => {
         setOriginalCostOfSales(costOfSales)
@@ -183,8 +179,7 @@ const CostOfSalesList: React.FC = () => {
         if (error.response) {
           console.error('Error response:', error.response.data)
           if (error.response.status === 401) {
-            console.log("CostOfSalesListAndEdit window.location.href 01");
-            // window.location.href = '/login'
+            window.location.href = '/login'
           } else {
             console.error('There was an error updating the cost of sales data!', error.response.data)
           }
@@ -201,12 +196,6 @@ const CostOfSalesList: React.FC = () => {
 
   useEffect(() => {
     const fetchCostOfSales = async () => {
-      if (!token) {
-        console.log("CostOfSalesListAndEdit window.location.href 02");
-        // window.location.href = '/login' // Redirect to login if no token found
-        return
-      }
-
       try {
         getCostOfSale(token)
           .then((data) => {
@@ -218,8 +207,7 @@ const CostOfSalesList: React.FC = () => {
           })
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          console.log("CostOfSalesListAndEdit window.location.href 03");
-          // window.location.href = '/login' // Redirect to login if unauthorized
+          window.location.href = '/login' // Redirect to login if unauthorized
         } else {
           console.error('There was an error fetching the cost of sales data!', error)
         }
@@ -335,8 +323,7 @@ const CostOfSalesList: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          console.log("CostOfSalesListAndEdit window.location.href 04");
-          // window.location.href = '/login' // Redirect to login if unauthorized
+          window.location.href = '/login' // Redirect to login if unauthorized
         } else {
           console.error('Error deleting cost of sale:', error)
         }

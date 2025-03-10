@@ -188,11 +188,6 @@ const ExpensesResultsRegistration = () => {
       return
     }
 
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
     createExpenseResults(formData, token)
       .then(() => {
         setModalMessage(translate('successfullySaved', language))

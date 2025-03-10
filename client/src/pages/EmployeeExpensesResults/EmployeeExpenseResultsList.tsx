@@ -84,20 +84,13 @@ const EmployeeExpensesResultsList: React.FC = () => {
   // Fetch employee expenses data
   useEffect(() => {
     const fetchEmployeeExpenses = async () => {
-      if (!token) {
-        console.log("EmployeeExpenseResultsList window.location.href 01");
-        // window.location.href = '/login' // Redirect to login if no token found
-        // return
-      }
-
       getEmployeeExpenseResults(token)
         .then((data) => {
           setEmployeeExpenses(data)
         })
         .catch((error) => {
           if (error.response && error.response.status === 401) {
-            console.log("EmployeeExpenseResultsList window.location.href 02");
-            // window.location.href = '/login' // Redirect to login if unauthorized
+            window.location.href = '/login' // Redirect to login if unauthorized
           } else {
             console.error('Error fetching employee expenses:', error)
           }
@@ -144,8 +137,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
           })
           .catch((error) => {
             if (error.response && error.response.status === 401) {
-              console.log("EmployeeExpenseResultsList window.location.href 03");
-              // window.location.href = '/login' // Redirect to login if unauthorized
+              window.location.href = '/login' // Redirect to login if unauthorized
             } else {
               console.error('Error deleting employee expense:', error)
             }
@@ -169,8 +161,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          console.log("EmployeeExpenseResultsList window.location.href 04");
-          // window.location.href = '/login' // Redirect to login if unauthorized
+          window.location.href = '/login' // Redirect to login if unauthorized
         } else {
           console.error('Error removing project association:', error)
         }

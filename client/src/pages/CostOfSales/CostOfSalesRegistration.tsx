@@ -134,11 +134,6 @@ const CostOfSalesRegistration = () => {
     }
     // Continue with submission if no errors
 
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
     createCostOfSale(formData, token)
       .then((data) => {
         setModalMessage(translate('successfullySaved', language))

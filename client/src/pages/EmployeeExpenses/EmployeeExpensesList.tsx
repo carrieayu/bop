@@ -82,19 +82,13 @@ const EmployeeExpensesList: React.FC = () => {
   // Fetch employee expenses data
   useEffect(() => {
     const fetchEmployeeExpenses = async () => {
-      if (!token) {
-        console.log("token 1");
-        //window.location.href = '/login' // Redirect to login if no token found
-        return
-      }
       getEmployeeExpense(token)
         .then((data) => {
           setEmployeeExpenses(data)
         })
         .catch((error) => {
           if (error.response && error.response.status === 401) {
-            console.log("token 2");
-            //window.location.href = '/login' // Redirect to login if unauthorized
+            window.location.href = '/login' // Redirect to login if unauthorized
           } else {
             console.error('Error fetching employee expenses:', error)
           }
@@ -140,8 +134,7 @@ const EmployeeExpensesList: React.FC = () => {
           })
           .catch((error) => {
             if (error.response && error.response.status === 401) {
-              console.log("token 3");
-              //window.location.href = '/login' // Redirect to login if unauthorized
+              window.location.href = '/login' // Redirect to login if unauthorized
             } else {
               console.error('Error deleting employee expense:', error)
             }
@@ -163,18 +156,13 @@ const EmployeeExpensesList: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          console.log("token 4");
-          //window.location.href = '/login' // Redirect to login if unauthorized
+          window.location.href = '/login' // Redirect to login if unauthorized
         } else {
           console.error('Error removing project association:', error)
         }
       })
   }
 
-  // const handleConfirm = async () => {
-  //   window.location.href = '/login'
-  //   return
-  // }
   useEffect(() => {
      checkAccessToken(setIsAuthorized).then(result => {
       if (!result) { showAlertPopup(handleTimeoutConfirm); }

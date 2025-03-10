@@ -504,11 +504,6 @@ const handleAdd = () => {
     }
     // Continue with submission if no errors
 
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
     createProjectSalesResults(updatedCombinedObject, token)
       .then(() => {
         setModalMessage(translate('successfullySaved', language))

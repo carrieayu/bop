@@ -244,11 +244,6 @@ const ProjectsRegistration = () => {
       ordinary_profit_margin: parseFloat(projects.ordinary_profit_margin),
     }))
 
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
     createProject(projectsData, token)
       .then((data) => {
         setModalMessage(translate('successfullySaved', language))
@@ -396,17 +391,9 @@ const ProjectsRegistration = () => {
     setLanguage(newLanguage)
   }
 
-  // const handleConfirm = async () => {
-  //   window.location.href = '/login'
-  //   return
-  // }
-
   useEffect(() => {
     fetchDivision()
     fetchClients()
-    // checkAccessToken().then(result => {
-    //   if (!result) { showAlertPopup(handleConfirm); }
-    // });
   }, [token])
 
   useEffect(() => {

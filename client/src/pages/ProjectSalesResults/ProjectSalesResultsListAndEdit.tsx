@@ -180,12 +180,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
       return modifiedFields
     }
     const modifiedFields = getModifiedFields(originalProjectSalesResultsList, projectSalesResults)
-    if (!token) {
-      console.log("ProjectSalesResultsListAndEdit window.location.href 01");
-      // window.location.href = '/login'
-      // return
-    }
-
     updateProjectSalesResults(modifiedFields, token)
       .then(() => {
         setCrudMessage(translate('successfullyUpdated', language))
@@ -223,12 +217,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      if (!token) {
-        console.log("ProjectSalesResultsListAndEdit window.location.href 02");
-        // window.location.href = '/login' // Redirect to login if no token found
-        // return
-      }
-
       fetchProjectsHandler()
     }
     fetchDivision()
@@ -283,12 +271,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
     // Sets the Validation Errors if any to empty as they are not necessary for delete.
     setCrudValidationErrors([])
 
-    if (!token) {
-      console.log("ProjectSalesResultsListAndEdit window.location.href 03");
-      // window.location.href = '/login'
-      // return
-    }
-
     deleteProjectSalesResults(deleteProjectsId, token)
       .then(() => {
         updateProjectSalesResultLists(deleteProjectsId)
@@ -298,8 +280,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          console.log("ProjectSalesResultsListAndEdit window.location.href 04");
-          // window.location.href = '/login'
+          window.location.href = '/login'
         } else {
           console.error('Error deleting projects', error)
         }
@@ -334,8 +315,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
       setOriginalProjectSalesResultsList(data);
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        console.log("ProjectSalesResultsListAndEdit window.location.href 05");
-        // window.location.href = '/login'; // Redirect to login if unauthorized
+        window.location.href = '/login'; // Redirect to login if unauthorized
       } else {
         console.error('There was an error fetching the projects sales results!', error);
       }

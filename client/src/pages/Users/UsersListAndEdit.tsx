@@ -107,11 +107,6 @@ const UsersListAndEdit: React.FC = () => {
   }
 
   const handleSubmit = async () => {
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
     // Client Side Validation
 
     // Step 1: Preparartion for validation
@@ -159,8 +154,7 @@ const UsersListAndEdit: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          // window.location.href = '/login'
-          console.log("UsersListAndEdit window.location.href 01");
+          window.location.href = '/login'
         } else {
           console.error('There was an error updating the user data!', error)
         }
@@ -174,12 +168,6 @@ const UsersListAndEdit: React.FC = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      if (!token) {
-        // window.location.href = '/login' // Redirect to login if no token found
-        // return
-        console.log("UsersListAndEdit window.location.href 02");
-      }
-
       fetchUserListHandler(token)
     }
     fetchUsers()

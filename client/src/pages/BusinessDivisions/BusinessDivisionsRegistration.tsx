@@ -175,9 +175,8 @@ const BusinessDivisionsRegistration = () => {
               setIsModalOpen(true)
               break
             case 401:
-              // console.error('Validation error:', data)
-              // window.location.href = '/login'
-              console.log("BusinessDivisionsRegistration window.location.href 01");
+              console.error('Validation error:', data)
+              window.location.href = '/login'
               break
             default:
               console.error('There was an error creating the business division data!', error)

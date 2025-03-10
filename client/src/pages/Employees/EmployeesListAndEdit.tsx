@@ -311,11 +311,6 @@ const EmployeesListAndEdit: React.FC = () => {
 
     const modifiedFields = getModifiedFields(originalEmployeesList, employeesList)
     console.log(modifiedFields)
-    if (!token) {
-      console.log("EmployeesListAndEdit window.location.href 01");
-      // window.location.href = '/login'
-      // return
-    }
 
     updateEmployee(modifiedFields, token)
       .then(() => {
@@ -334,8 +329,7 @@ const EmployeesListAndEdit: React.FC = () => {
               break
             case 401:
               console.error('Validation error:', data)
-              console.log("EmployeesListAndEdit window.location.href 02");
-              // window.location.href = '/login'
+              window.location.href = '/login'
               break
             default:
               console.error('There was an error creating the employee data!', error)
@@ -353,12 +347,6 @@ const EmployeesListAndEdit: React.FC = () => {
   }
 
   const fetchEmployees = async () => {
-    if (!token) {
-      console.log("EmployeesListAndEdit window.location.href 03");
-      // window.location.href = '/login' // Redirect to login if no token found
-      // return
-    }
-
     // Fetch users
     getUser(token)
       .then((data) => {
@@ -400,8 +388,7 @@ const EmployeesListAndEdit: React.FC = () => {
       })
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        console.log("EmployeesListAndEdit window.location.href 04");
-        // window.location.href = '/login' // Redirect to login if unauthorized
+        window.location.href = '/login' // Redirect to login if unauthorized
       } else {
         console.error('There was an error fetching the projects!', error)
       }
@@ -473,8 +460,7 @@ const EmployeesListAndEdit: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          console.log("EmployeesListAndEdit window.location.href 05");
-          // window.location.href = '/login'
+          window.location.href = '/login'
         } else {
           console.error('Error deleting project:', error)
         }

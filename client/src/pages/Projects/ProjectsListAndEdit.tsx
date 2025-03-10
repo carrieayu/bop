@@ -229,11 +229,6 @@ const ProjectsListAndEdit: React.FC = ({}) => {
       return modifiedFields
     }
     const modifiedFields = getModifiedFields(originalProjectsList, projects)
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
     updateProject(modifiedFields, token)
       .then(() => {
         setCrudMessage(translate('successfullyUpdated', language))
@@ -251,8 +246,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
               break
             case 401:
               console.error('Validation error:', data)
-              console.log("ProjectsListAndEdit window.location.href 01");
-              //window.location.href = '/login'
+              window.location.href = '/login'
               break
             default:
               console.error('There was an error creating the project data!', error)
@@ -333,12 +327,6 @@ const ProjectsListAndEdit: React.FC = ({}) => {
   const handleConfirm = async () => {
     // Sets the Validation Errors if any to empty as they are not necessary for delete.
     setCrudValidationErrors([])
-    if (!token) {
-      console.log("ProjectsListAndEdit window.location.href 02");
-      // window.location.href = '/login'
-      // return
-    }
-
     deleteProject(deleteProjectsId, token)
       .then(() => {
         updateProjectLists(deleteProjectsId)
@@ -348,8 +336,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          console.log("ProjectsListAndEdit window.location.href 03");
-          // window.location.href = '/login'
+          window.location.href = '/login'
         } else {
           console.error('Error deleting projects', error)
         }
@@ -375,28 +362,6 @@ const ProjectsListAndEdit: React.FC = ({}) => {
     }
   }, [deleteComplete])
 
-  // const fetchProjectsHandler = async () => {
-  //   try {
-  //     const data = await getProject(token)
-  //     setProjects(data)
-  //     setOriginalProjectsList(data)
-  //   } catch (error) {
-  //     if (error.response && error.response.status === 401) {
-  //       const tokenRefreshed = await refreshToken();
-  //       if (tokenRefreshed) {
-  //         const _ACCESS_TOKEN  = localStorage.getItem(ACCESS_TOKEN);
-  //         const redata = await getProject(_ACCESS_TOKEN)
-  //         setProjects(redata)
-  //         setOriginalProjectsList(redata)
-  //       } else {
-  //         showAlertPopup(handleConfirm);
-  //       }
-  //     } else {
-  //       console.error('There was an error fetching the projects!', error)
-  //     }
-  //   }
-  // }
-
   const fetchProjectsHandler = async () => {
     try {
       const data = await getProject(token)
@@ -412,18 +377,9 @@ const ProjectsListAndEdit: React.FC = ({}) => {
   }
 
   useEffect(() => {
-    // const fetchProjects = async () => {
-    //   if (!token) {
-    //     window.location.href = '/login'
-    //     return
-    //   }
-    //   fetchProjectsHandler()
-    // }
-
     fetchDivision()
     fetchClient()
     fetchProjectsHandler()
-    // fetchProjects()
   }, [])
 
   useEffect(() => {

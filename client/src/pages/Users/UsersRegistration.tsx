@@ -87,11 +87,6 @@ const UsersRegistration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
     // # Client Side Validation
 
     // Step 1: Preparartion for validation

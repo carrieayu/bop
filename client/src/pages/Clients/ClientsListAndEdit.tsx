@@ -163,10 +163,6 @@ const ClientsListAndEdit: React.FC = () => {
       return modifiedFields
     }
     const modifiedFields = getModifiedFields(originalClientsList, updatedClients)
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
 
     updateMasterClient(modifiedFields, token)
       .then(() => {
@@ -184,9 +180,8 @@ const ClientsListAndEdit: React.FC = () => {
               setIsCRUDOpen(true)
               break
             case 401:
-              // console.error('Validation error:', data)
-              // window.location.href = '/login'
-              console.log("ClientsListAndEdit window.location.href 01");
+              console.error('Validation error:', data)
+              window.location.href = '/login'
               break
             default:
               console.error('There was an error updating the clients data!', error)
@@ -205,11 +200,6 @@ const ClientsListAndEdit: React.FC = () => {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      if (!token) {
-        console.log("ClientsListAndEdit window.location.href 02");
-        // window.location.href = '/login' // Redirect to login if no token found
-        // return
-      }
       getClient(token)
         .then((data) => {
           setUpdatedClients(data)
@@ -217,8 +207,7 @@ const ClientsListAndEdit: React.FC = () => {
         })
         .catch((error) => {
           if (error.response && error.response.status === 401) {
-            console.log("ClientsListAndEdit window.location.href 03");
-            // window.location.href = '/login' // Redirect to login if unauthorized
+            window.location.href = '/login' // Redirect to login if unauthorized
           } else {
             console.error('There was an error fetching the projects!', error)
           }
@@ -296,8 +285,7 @@ const ClientsListAndEdit: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          console.log("ClientsListAndEdit window.location.href 04");
-          // window.location.href = '/login'
+          window.location.href = '/login'
         } else {
           console.error('Error deleting client:', error)
         }

@@ -280,9 +280,8 @@ const EmployeesRegistration = () => {
               setIsModalOpen(true)
               break
             case 401:
-              // console.error('Validation error:', data)
-              console.log("EmployeesRegistration window.location.href 01");
-              // window.location.href = '/login'
+              console.error('Validation error:', data)
+              window.location.href = '/login'
               break
             default:
               console.error('There was an error creating the employee data!', error)

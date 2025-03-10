@@ -165,10 +165,6 @@ const ExpensesResultsList: React.FC = () => {
       return
     }
 
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
     updateExpenseResults(modifiedFields, token)
       .then(() => {
         setOriginalExpensesResultsList(expensesResultsList)
@@ -203,11 +199,6 @@ const ExpensesResultsList: React.FC = () => {
   }
 
   const fetchExpenses = async () => {
-    if (!token) {
-      window.location.href = '/login' // Redirect to login if no token found
-      return
-    }
-
     getExpenseResults(token)
       .then((data) => {
         setExpensesResultsList(data)

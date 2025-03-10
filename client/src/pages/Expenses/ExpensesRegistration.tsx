@@ -169,11 +169,6 @@ const ExpensesRegistration = () => {
       transaction_fee: ex.transaction_fee,
     }))
 
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
     createExpense(formData, token)
       .then(() => {
         console.log('in create function')
