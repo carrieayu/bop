@@ -4,8 +4,7 @@ import { fetchWithPolling, sumValues } from '../../utils/helperFunctionsUtil'
 
 const initialState = {
   isLoading: false,
-  //PLANNING
-  projectList: [] as ProjectEntity[],
+  list: [] as ProjectEntity[],
   salesRevenueTotal: 0,
   operatingIncomeTotal: 0,
   nonOperatingIncomeTotal: 0,
@@ -25,29 +24,29 @@ const project = createSlice({
   initialState,
   reducers: {
     getProjectTotals: (state) => {
-      state.salesRevenueTotal = sumValues(state.projectList.map((project)=> project.sales_revenue))
-      state.operatingIncomeTotal = sumValues(state.projectList.map((project) => project.operating_income))
-      state.nonOperatingIncomeTotal = sumValues(state.projectList.map((project) => project.non_operating_income))
-      state.nonOperatingExpenseTotal = sumValues(state.projectList.map((project) => project.non_operating_expense))
+      state.salesRevenueTotal = sumValues(state.list.map((project)=> project.sales_revenue))
+      state.operatingIncomeTotal = sumValues(state.list.map((project) => project.operating_income))
+      state.nonOperatingIncomeTotal = sumValues(state.list.map((project) => project.non_operating_income))
+      state.nonOperatingExpenseTotal = sumValues(state.list.map((project) => project.non_operating_expense))
       state.cumulativeOrdinaryIncome =
         (state.operatingIncomeTotal + state.nonOperatingIncomeTotal) - state.nonOperatingExpenseTotal
     },
     getMonthlyValues: (state) => {
-      state.salesRevenueMonthly = state.projectList.map((project) => {
+      state.salesRevenueMonthly = state.list.map((project) => {
         return {
           year: project.year,
           month: project.month,
           total: project.sales_revenue
         }
       })
-      state.nonOperatingExpenseMonthly = state.projectList.map((project) => {
+      state.nonOperatingExpenseMonthly = state.list.map((project) => {
         return {
           year: project.year,
           month: project.month,
           total: project.non_operating_expense,
         }
       })
-      state.nonOperatingIncomeMonthly = state.projectList.map((project) => {
+      state.nonOperatingIncomeMonthly = state.list.map((project) => {
         
         return {
           year: project.year,
@@ -60,7 +59,7 @@ const project = createSlice({
   extraReducers(builder) {
     builder
       .addCase(fetchProject.fulfilled, (state, action) => {
-        state.projectList = action.payload
+        state.list = action.payload
         state.isLoading = false
       })
       .addCase(fetchProject.pending, (state) => {

@@ -22,49 +22,52 @@ export const fetchTotals = createAsyncThunk('totals/fetchTotals', async (_, { di
   // Planning
   const planning = {
     projects: {
+      list: project.list,
       salesRevenueTotal: project.salesRevenueTotal, // total for year
       nonOperatingIncomeTotal: project.nonOperatingIncomeTotal,
-      nonOperatingExpenseTotal: project.nonOperatingExpenseTotal
-      },
+      nonOperatingExpenseTotal: project.nonOperatingExpenseTotal,
+    },
     expenses: {
       list: expenses.list,
       monthlyTotals: expenses.monthlyTotals,
       yearlyTotal: expenses.yearlyTotal,
-      monthlyTotalsByDate: expenses.monthlyTotalsByDate
+      monthlyTotalsByDate: expenses.monthlyTotalsByDate,
     },
     costOfSales: {
       list: costOfSale.list,
       monthlyTotals: costOfSale.totals, // just values in array []
       yearlyTotal: costOfSale.yearlyTotal, // value
-      monthlyTotalsByDate: costOfSale.monthlyTotalsByDate // values and month in arrau [{},{}]
+      monthlyTotalsByDate: costOfSale.monthlyTotalsByDate, // values and month in arrau [{},{}]
     },
     employeeExpenses: {
-      yearlyTotal: employeeExpense.yearlyTotal
-    }
-    }
+      list: employeeExpense.list,
+      yearlyTotal: employeeExpense.yearlyTotal,
+    },
+  }
 
     // Results
   const results = {
     projects: {
-      salesRevenueTotal : projectResult.salesRevenueTotal,
-      nonOperatingIncomeTotal : projectResult.nonOperatingIncomeTotal,
-      nonOperatingExpenseTotal: projectResult.nonOperatingExpenseTotal
+      list: projectResult.list,
+      salesRevenueTotal: projectResult.salesRevenueTotal,
+      nonOperatingIncomeTotal: projectResult.nonOperatingIncomeTotal,
+      nonOperatingExpenseTotal: projectResult.nonOperatingExpenseTotal,
     },
     expenses: {
-      list : expensesResults.list,
-      monthlyTotals : expensesResults.monthlyTotals,
-      yearlyTotal: expensesResults.yearlyTotal
+      list: expensesResults.list,
+      monthlyTotals: expensesResults.monthlyTotals,
+      yearlyTotal: expensesResults.yearlyTotal,
     },
-    costOfSales:
-    {
+    costOfSales: {
       list: costOfSaleResult.list,
       monthlyTotals: costOfSaleResult.monthlyTotals,
-      yearlyTotal: costOfSaleResult.yearlyTotal
-    }, 
+      yearlyTotal: costOfSaleResult.yearlyTotal,
+    },
     employeeExpenses: {
-      yearlyTotal: employeeExpenseResult.yearlyTotal
-    }
-    }
+      list: employeeExpenseResult.list,
+      yearlyTotal: employeeExpenseResult.yearlyTotal,
+    },
+  }
 
     return {
         planning,
@@ -76,10 +79,44 @@ export const fetchTotals = createAsyncThunk('totals/fetchTotals', async (_, { di
 const initialState = {
   isLoading: false,
   planning: {
-    projects: { salesRevenueTotal: 0, nonOperatingIncomeTotal: 0, nonOperatingExpenseTotal: 0, cumulativeOrdinaryIncomeTotal: 0 }, // year totals
-    expenses: { yearlyTotal: 0, list: [], monthlyTotals: [], monthlyTotalsByDate: [] },
-    costOfSales: { yearlyTotal: 0, list: [], monthlyTotals: [], monthlyTotalsByDate: [] },
-    employeeExpenses: { yearlyTotal: 0 },
+    projects: {
+      list: [],
+      salesRevenueTotal: 0,
+      nonOperatingIncomeTotal: 0,
+      nonOperatingExpenseTotal: 0,
+      cumulativeOrdinaryIncomeTotal: 0,
+    }, // year totals
+    expenses: {
+      list: [],
+      yearlyTotal: 0,
+      monthlyTotals: [],
+      monthlyTotalsByDate: [],
+      consumableExpenseMonthlyTotal: [],
+      rentExpenseMonthlyTotal: [],
+      depreciationExpenseMonthlyTotal: [],
+      travelExpenseMonthlyTotal: [],
+      communicationExpenseMonthlyTotal: [],
+      utilitiesExpenseMonthlyTotal: [],
+      transactionFeeMonthlyTotal: [],
+      advertisingExpenseMonthlyTotal: [],
+      entertainmentExpenseExpenseMonthlyTotal: [],
+      professionalServiceFeeMonthlyTotal: []
+      
+    },
+    costOfSales: {
+      yearlyTotal: 0,
+      list: [],
+      monthlyTotals: [],
+      monthlyTotalsByDate: [],
+      purchasesMonthlyTotalsByDate: [],
+      productPurchaseMonthlyTotal: [],
+      outsourcingExpenseMonthlyTotal: [],
+      dispatchLaborExpenseMonthlyTotal: [],
+      communicationExpenseMonthlyTotal: [],
+      workInProgressExpenseMonthlyTotal: [],
+      amortizationExpenseMonthlyTotal: []
+    },
+    employeeExpenses: { list: [], yearlyTotal: 0 },
     calculations: {
       grossProfit: 0,
       grossProfitMargin: 0,
@@ -92,10 +129,16 @@ const initialState = {
     },
   },
   results: {
-    projects: { salesRevenueTotal: 0, nonOperatingIncomeTotal: 0, nonOperatingExpenseTotal: 0, cumulativeOrdinaryIncomeTotal: 0 }, // year totals
-    expenses: { yearlyTotal: 0, list: [], monthlyTotals: [] },
+    projects: {
+      list: [],
+      salesRevenueTotal: 0,
+      nonOperatingIncomeTotal: 0,
+      nonOperatingExpenseTotal: 0,
+      cumulativeOrdinaryIncomeTotal: 0,
+    }, // year totals
+    expenses: { list: [], yearlyTotal: 0, monthlyTotals: [] },
     costOfSales: { yearlyTotal: 0, list: [], monthlyTotals: [] },
-    employeeExpenses: { yearlyTotal: 0 },
+    employeeExpenses: { list: [], yearlyTotal: 0 },
     calculations: {
       grossProfit: 0,
       grossProfitMargin: 0,

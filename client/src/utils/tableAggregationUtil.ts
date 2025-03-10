@@ -91,7 +91,13 @@ export const costOfSalesTotalsFunction = (aggregatedCostOfSalesData) => {
     const communication = Number(aggregatedCostOfSalesData[month]?.communication_expense) || 0
     const workInProgress = Number(aggregatedCostOfSalesData[month]?.work_in_progress_expense) || 0
     const amortization = Number(aggregatedCostOfSalesData[month]?.amortization_expense) || 0
-    return purchases + outsourcing + productPurchase + dispatchLabor + communication + workInProgress + amortization
+
+    const totalValue =
+      purchases + outsourcing + productPurchase + dispatchLabor + communication + workInProgress + amortization
+    
+    return totalValue
+    // return {month, totalValue}
+    // return purchases + outsourcing + productPurchase + dispatchLabor + communication + workInProgress + amortization
   })
 }
 
@@ -116,6 +122,50 @@ export const monthlyTotalsCostOfSalesFunction = (costOfSales) => {
 }
 
 // EMPLOYEE EXPENSES
+export const aggregatedEmployeeExpensesFunctionDashboard = (employee_expenses) => {
+ return employee_expenses.reduce((acc, item) => {
+   const { month, employee, project, ...values } = item // Destructure employee and project
+
+   // Initialize month if not already present
+   if (!acc[month]) {
+     acc[month] = {
+       month,
+      //  employees: [employee], // Store employees as an array
+      //  projects: [project], // Store projects as an array
+       totalSalary: Number(item.salary) || 0, // Initialize totalSalary with the first employee's salary
+       totalExecutiveRemuneration: Number(item.executive_remuneration) || 0,
+       totalBonusAndFuel: Number(item.bonus_and_fuel_allowance) || 0,
+       totalStatutoryWelfare: Number(item.statutory_welfare_expense) || 0,
+       totalWelfare: Number(item.welfare_expense) || 0,
+       totalInsurancePremium: Number(item.insurance_premium) || 0,
+       ...values,
+     }
+   } else {
+     // Add the new employee and project objects to the array
+    //  acc[month].employees.push(employee)
+    //  acc[month].projects.push(project)
+     // Add the employee's salary to the total
+     acc[month].totalSalary += Number(item.salary) || 0
+     acc[month].totalExecutiveRemuneration += Number(item.executive_remuneration) || 0
+     acc[month].totalBonusAndFuel += Number(item.bonus_and_fuel_allowance) || 0
+     acc[month].totalStatutoryWelfare += Number(item.statutory_welfare_expense) || 0
+     acc[month].totalWelfare += Number(item.welfare_expense) || 0
+     acc[month].totalInsurancePremium += Number(item.insurance_premium) || 0
+
+     // Aggregate other numeric fields
+     Object.keys(values).forEach((key) => {
+       if (typeof values[key] === 'number') {
+         acc[month][key] += values[key]
+       } else if (typeof values[key] === 'string') {
+         // Handle strings like `created_at`, `updated_at`, and other concatenation-sensitive fields
+         acc[month][key] = values[key] // Keep the latest value or handle as needed
+       }
+     })
+   }
+   return acc
+ }, {})
+}
+
 export const aggregatedEmployeeExpensesFunction = (employee_expenses) => {
   return employee_expenses.reduce((acc, item) => {
 
@@ -199,6 +249,7 @@ export const monthlyTotalsEmployeeExpenseFunction = (employeeExpense) => {
 }
 // PROJECTS
 export const aggregatedProjectsFunction = (projects) => {
+  // WIP: I think this needs fixing: returns odd values for id and month. (are they even necessary?)  
   return projects.reduce((acc, item) => {
     const { month, ...values } = item
     if (!acc[month]) {
@@ -211,7 +262,6 @@ export const aggregatedProjectsFunction = (projects) => {
         acc[month][key] = (acc[month][key] || 0) + value
       }
     })
-
     return acc
   }, {})
 }
@@ -266,6 +316,20 @@ export const mapValue = (key, data) => {
   return months.map((month) => data[month]?.[key] || 0) // return the mapped values properly
 }
 
+// TEST 
+export const testNewMapValue = (key, data) => {
+  return months.map((month) => {
+    
+    return {
+      month: month,
+      value: data[month]?.[key] || 0
+    }
+
+  }
+  )
+  // return the mapped values properly
+}
+
 // EMPLOYEE EXPENSES FUNCTION FOR EMPLOYEE EXPENSES SLICE 
 // REFACTOR: I FEEL THIS COULD BE COMBINED WITH ALREADY EXISTING FUNCTION)
 export const employeeExpenseYearlyTotals = (state) => {
@@ -295,4 +359,18 @@ export const employeeExpenseYearlyTotals = (state) => {
   }
 
   return totals
+}
+
+// Extract year, month and the remaining values from nested "projects" object in side "project results"
+export const filterListMonthAndYear = (arr) => {
+  // Step 1: Filter the projects that include 'project_sales_result_id'
+  const filteredProjects = arr.filter((project) => Object.keys(project).includes('project_sales_result_id'))
+
+  const updated = filteredProjects.map((project) => {
+    const { year, month } = project.projects
+    const transformedProject = { ...project, year, month }
+
+    return transformedProject
+  })
+  return updated
 }

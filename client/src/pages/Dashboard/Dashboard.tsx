@@ -64,7 +64,6 @@ const Dashboard = () => {
   const [isSwitchActive, setIsSwitchActive] = useState(false)
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const [isPlanningGraph, setIsPlanningGraph] = useState(true)
   const navigate = useNavigate()
   const location = useLocation()
   const [isThousandYenChecked, setIsThousandYenChecked] = useState(false)
@@ -89,10 +88,6 @@ const Dashboard = () => {
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
-  }
-
-  const handleGraphToggle = () => {
-    setIsPlanningGraph((prevState) => !prevState)
   }
 
   useEffect(() => {
@@ -320,7 +315,11 @@ const Dashboard = () => {
             <div className='dashboard_tbl_cont'>
               <div className={`dashboard_table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
                 {/* Render the TablePlanning & TableResults here (TableDashboard) */}
-                <TableDashboard isThousandYenChecked={isThousandYenChecked} />
+                <TableDashboard 
+                isThousandYenChecked={isThousandYenChecked} 
+                results={results}
+                planning={planning}
+                />
               </div>
             </div>
           </div>

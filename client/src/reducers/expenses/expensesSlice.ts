@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { ExpenseEntity } from '../../entity/expenseEntity'
-import { aggregatedExpensesFunction, expensesTotalsFunction, monthlyTotalsExpensesFunction } from '../../utils/tableAggregationUtil'
+import { aggregatedExpensesFunction, expensesTotalsFunction, monthlyTotalsExpensesFunction, testNewMapValue } from '../../utils/tableAggregationUtil'
 import { fetchWithPolling, sumValues } from '../../utils/helperFunctionsUtil'
 
 const initialState = {
