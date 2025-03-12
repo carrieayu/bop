@@ -1,108 +1,57 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../contexts/LanguageContext'
-import { useAppDispatch, useAppSelector } from '../../actions/hooks'
+import { useAppDispatch } from '../../actions/hooks'
 import { translate } from '../../utils/translationUtil'
-import { createGraphData } from '../../utils/helperFunctionsUtil'
+import { handleError } from '../../utils/helperFunctionsUtil'
+// COMPONENTS
+import { DashboardCard } from '../../components/Card/DashboardCard'
 import GraphDashboard from '../../components/GraphDashboard/GraphDashboard'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import TableDashboard from '../../components/TableDashboard/TableDashboard'
 import Sidebar from '../../components/Sidebar/Sidebar'
-import { DashboardCard } from '../../components/Card/DashboardCard'
-// Reducers
-import { fetchGraphData, selectGraphValues } from '../../reducers/graph/graphSlice'
-import { fetchCostOfSale } from '../../reducers/costOfSale/costOfSaleSlice'
-import { getCostOfSaleTotals } from '../../reducers/costOfSale/costOfSaleSlice'
-import { fetchExpense } from '../../reducers/expenses/expensesSlice'
-import { getExpenseTotals } from '../../reducers/expenses/expensesSlice'
-import { fetchEmployeeExpense, getEmployeeExpenseTotals } from '../../reducers/employeeExpense/employeeExpenseSlice'
-import { fetchCostOfSaleResult, getCostOfSaleResultsTotals } from '../../reducers/costOfSale/costOfSaleResultSlice'
-import { fetchExpenseResult, getExpenseResultsTotals } from '../../reducers/expenses/expensesResultsSlice'
-import {
-  fetchProjectResult,
-  getProjectResultTotals,
-  getMonthlyResultValues,
-} from '../../reducers/project/projectResultSlice'
-import { fetchProject, getProjectTotals, getMonthlyValues } from '../../reducers/project/projectSlice'
-import {
-  fetchEmployeeExpenseResult,
-  getEmployeeExpenseResultTotals,
-} from '../../reducers/employeeExpense/employeeExpenseResultSlice'
 import ThreeOptionSlider from '../../components/Slider/ThreeOptionSlider'
-
-// ***** TEST *******
+// REDUCERS
+import { fetchCostOfSale } from '../../reducers/costOfSale/costOfSaleSlice'
+import { fetchExpense } from '../../reducers/expenses/expensesSlice'
+import { fetchEmployeeExpense } from '../../reducers/employeeExpense/employeeExpenseSlice'
+import { fetchCostOfSaleResult } from '../../reducers/costOfSale/costOfSaleResultSlice'
+import { fetchExpenseResult } from '../../reducers/expenses/expensesResultsSlice'
+import { fetchProjectResult } from '../../reducers/project/projectResultSlice'
+import { fetchProject } from '../../reducers/project/projectSlice'
+import { fetchEmployeeExpenseResult } from '../../reducers/employeeExpense/employeeExpenseResultSlice'
+// SELECTORS
 import { planningSelector, planningGraphDataPreparedSelector } from '../../selectors/planning/planningSelector'
-import { resultsSelector, resultsGraphDataPreparedSelector} from '../../selectors/results/resultsSelector'
-import { useSelector } from 'react-redux'
-import { prepareGraphData } from '../../utils/graphDataPreparation'
-// import {planningGraphDataSelector} from '../../selectors/planning/planningGraphDataSelector'
-import { resultsGraphDataSelector } from '../../selectors/results/resultsGraphDataSelector'
+import { resultsSelector, resultsGraphDataPreparedSelector } from '../../selectors/results/resultsSelector'
+import { organiseGraphData } from '../../utils/graphDataOrganiser'
 
 const Dashboard = () => {
-  const dispatch = useAppDispatch()
-  // ************ TEST TEST ************
-  
-  // DATA FOR CARDS AND TABLE
-  const planning = useSelector(planningSelector) // contains data/totals etc. from PLANNING: expenses, costOfSales, projects, employeeExpenses
-  const results = useSelector(resultsSelector) // contains data/totals etc. from RESULTS: expenses, costOfSales, projects, employeeExpenses
-  // ************* GRAPH TEST *********
-  // const graphPlanningData = useSelector(planningGraphDataSelector)
-  const graphResultsData = useSelector(resultsGraphDataSelector)
-
-  // const calculatedDataPlanning = useMemo(() => prepareGraphData(graphPlanningData, 'planning'), [graphPlanningData]);
-  // const calculatedDataResults = useMemo(() => prepareGraphData(graphResultsData, 'results'), [graphResultsData])
-
-  const planningGraphDataTEST= useSelector(planningGraphDataPreparedSelector)
-  const resultsGraphDataTEST = useSelector(resultsGraphDataPreparedSelector)
-  console.log('planning', planning, 'results', results)
-
-  // ************ END TEST TEST ************
-
-  
-  // DATA FOR GRAPH
-  // const { resultsMonthly } = useAppSelector(selectGraphValues)
-  // console.log('planningMonthly', planningMonthly)
-  const {
-    projectSalesRevenueMonthlyPlanning,
-    operatingIncomeMonthlyPlanning,
-    operatingProfitMarginMonthlyPlanning,
-    ordinaryIncomeMonthlyPlanning,
-    grossProfitMarginMonthlyPlanning,
-    grossProfitMonthlyPlanning,
-    dates,
-  } = planningGraphDataTEST
-  
-  const optionArray = ['planning', 'results', 'both']
-
-  const {
-    projectSalesRevenueMonthlyResults,
-    operatingIncomeMonthlyResults,
-    operatingProfitMarginMonthlyResults,
-    ordinaryIncomeMonthlyResults,
-    grossProfitMarginMonthlyResults,
-    grossProfitMonthlyResults,
-    datesResults,
-  } = resultsGraphDataTEST
-
-  const [tableList, setTableList] = useState<any>([])
-  const [activeTab, setActiveTab] = useState('/dashboard')
-  const [isSwitchActive, setIsSwitchActive] = useState(false)
   const { language, setLanguage } = useLanguage()
+  const [activeTab, setActiveTab] = useState('/dashboard')
+  const [graphDataType, setGraphDataType] = useState('planning')
+  const [isSwitchActive, setIsSwitchActive] = useState(false)
+  const [isThousandYenChecked, setIsThousandYenChecked] = useState(false)
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
+  const [isToggled, setIsToggled] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
-  const [isThousandYenChecked, setIsThousandYenChecked] = useState(false)
-  const handleThousandYenToggle = () => {
-    setIsThousandYenChecked((prevState) => !prevState)
-  }
-
-  const [isToggled, setIsToggled] = useState(false)
-
+  const optionArray = ['planning', 'results', 'both']
   const handleToggle = () => {
     setIsToggled((prevState) => !prevState)
   }
-
-  const [graphDataType, setGraphDataType] = useState('planning')
+  const handleThousandYenToggle = () => {
+    setIsThousandYenChecked((prevState) => !prevState)
+  }
+  const dispatch = useAppDispatch()
+  // DATA FOR 'CARDS' AND 'TABLE'
+  const planning = useSelector(planningSelector) // contains data/totals etc. from PLANNING: expenses, costOfSales, projects, employeeExpenses
+  const results = useSelector(resultsSelector) // contains data/totals etc. from RESULTS: expenses, costOfSales, projects, employeeExpenses
+  // DATA FOR 'GRAPH'
+  const planningGraph = useSelector(planningGraphDataPreparedSelector)
+  const resultsGraph = useSelector(resultsGraphDataPreparedSelector)
+  // Organises the graph data for the charts. Color, Chart Type (Line/Bar) etc.
+  const planningAndResultGraphData = organiseGraphData(planningGraph, resultsGraph, language)
 
   const handleGraphChange = (e) => {
     const value = parseInt(e.target.value, 10)
@@ -118,51 +67,25 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [data] = await Promise.all([
-          // PLANNING
-          dispatch(fetchExpense())
-            .catch(handleError('Expenses Planning data')),
-            // .then(() => dispatch(getExpenseTotals())),
-          dispatch(fetchCostOfSale())
-            .catch(handleError('Cost Of Sales Planning data')),
-            // .then(() => dispatch(getCostOfSaleTotals())),
-          dispatch(fetchEmployeeExpense())
-            .catch(handleError('Employee Expenses Planning data')),
-            // .then(() => dispatch(getEmployeeExpenseTotals())),
-          dispatch(fetchProject())
-            .catch(handleError('Projects Planning data')),
-            // .then(() => dispatch(getProjectTotals()))
-            // .then(() => dispatch(getMonthlyValues())),
-          // RESULTS
-          dispatch(fetchExpenseResult())
-            .catch(handleError('Expenses Result data'))
-            .then(() => dispatch(getExpenseResultsTotals())),
-          dispatch(fetchCostOfSaleResult())
-            .catch(handleError('Cost Of Sales Result data'))
-            .then(() => dispatch(getCostOfSaleResultsTotals())),
-          dispatch(fetchEmployeeExpenseResult())
-            .catch(handleError('Employee Expenses Result data'))
-            .then(() => dispatch(getEmployeeExpenseResultTotals())),
-          dispatch(fetchProjectResult())
-            .catch(handleError('Projects Result data'))
-            .then(() => dispatch(getProjectResultTotals()))
-            .then(() => dispatch(getMonthlyResultValues())),
-          // TOTALS / GRAPH
-          // dispatch(fetchTotals()).catch(handleError('Totals data')),
-          dispatch(fetchGraphData()).catch(handleError('new graph data')),
-        ])
-        // if (data) setTableList(data.payload)
+        const fetchActions = [
+          { action: () => dispatch(fetchExpense()) },
+          { action: () => dispatch(fetchCostOfSale()) },
+          { action: () => dispatch(fetchEmployeeExpense()) },
+          { action: () => dispatch(fetchProject()) },
+          { action: () => dispatch(fetchExpenseResult()) },
+          { action: () => dispatch(fetchCostOfSaleResult()) },
+          { action: () => dispatch(fetchEmployeeExpenseResult()) },
+          { action: () => dispatch(fetchProjectResult()) },
+        ]
+
+        await Promise.all(fetchActions.map(({ action }) => action().catch((error) => handleError(action.name, error))))
       } catch (error) {
         console.error('Unexpected error:', error)
       }
     }
+
     fetchData()
   }, [dispatch])
-
-  const handleError = (dataType) => (error) => {
-    console.error(`Error fetching ${dataType}:`, error)
-    return null
-  }
 
   useEffect(() => {
     const path = location.pathname
@@ -178,61 +101,6 @@ const Dashboard = () => {
   const handleTranslationSwitchToggle = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
     setLanguage(newLanguage)
-  }
-
-  // Financials (Planning)
-  const planningGraphData = createGraphData(
-    [
-      { label: 'sales', data: projectSalesRevenueMonthlyPlanning, bgColor: '#6e748c', type: 'bar' },
-      { label: 'grossProfit', data: grossProfitMonthlyPlanning, bgColor: '#7696c6', type: 'bar' },
-      { label: 'operatingIncome', data: operatingIncomeMonthlyPlanning, bgColor: '#b8cbe2', type: 'bar' },
-      { label: 'ordinaryIncome', data: ordinaryIncomeMonthlyPlanning, bgColor: '#bde386', type: 'bar' },
-    ],
-    dates,
-    language,
-  )
-
-  // Margins (Planning)
-  const planningLineGraphData = createGraphData(
-    [
-      { label: 'grossProfitMargin', data: grossProfitMarginMonthlyPlanning, bgColor: '#ff8e13', type: 'line' },
-      { label: 'operatingProfitMargin', data: operatingProfitMarginMonthlyPlanning, bgColor: '#ec3e4a', type: 'line' },
-    ],
-    dates,
-    language,
-  )
-
-  // Financials (Results)
-  const resultsGraphData = createGraphData(
-    [
-      { label: 'sales', data: projectSalesRevenueMonthlyResults, bgColor: '#6e748c', type: 'bar' },
-      { label: 'grossProfit', data: grossProfitMonthlyResults, bgColor: '#7696c6', type: 'bar' },
-      { label: 'operatingIncome', data: operatingIncomeMonthlyResults, bgColor: '#b8cbe2', type: 'bar' },
-      { label: 'ordinaryIncome', data: ordinaryIncomeMonthlyResults, bgColor: '#bde386', type: 'bar' },
-    ],
-    datesResults,
-    language,
-  )
-
-  // Margins (Results)
-  const resultsLineGraphData = createGraphData(
-    [
-      { label: 'grossProfitMargin', data: grossProfitMarginMonthlyResults, bgColor: '#ff8e13', type: 'line' },
-      { label: 'operatingProfitMargin', data: operatingProfitMarginMonthlyResults, bgColor: '#ec3e4a', type: 'line' },
-    ],
-    dates,
-    language,
-  )
-
-  const planningAndResultGraphData = {
-    planningData: {
-      financial: planningGraphData,
-      margin: planningLineGraphData,
-    },
-    resultsData: {
-      financial: resultsGraphData,
-      margin: resultsLineGraphData,
-    },
   }
 
   return (
@@ -339,12 +207,7 @@ const Dashboard = () => {
             </div>
             <div className='dashboard_tbl_cont'>
               <div className={`dashboard_table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
-                {/* Render the TablePlanning & TableResults here (TableDashboard) */}
-                <TableDashboard
-                  isThousandYenChecked={isThousandYenChecked}
-                  results={results}
-                  planning={planning}
-                />
+                <TableDashboard isThousandYenChecked={isThousandYenChecked} results={results} planning={planning} />
               </div>
             </div>
           </div>

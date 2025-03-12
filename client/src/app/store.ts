@@ -1,7 +1,6 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
 import CounterReducer from "../reducers/counter/counterSlice";
 import userReducer from '../reducers/user/userSlice'
-// import CardReducer from "../reducers/card/cardSlice"
 import tableSlice from "../reducers/table/tableSlice";
 import personnelExpensesSlice from "../reducers/personnel/personnelExpensesSlice";
 import personnelSlice from "../reducers/personnel/personnelSlice";
@@ -17,24 +16,23 @@ import projectResultSlice from '../reducers/project/projectResultSlice'
 import employeeExpenseSlice from '../reducers/employeeExpense/employeeExpenseSlice'
 import employeeExpenseResultSlice from '../reducers/employeeExpense/employeeExpenseResultSlice'
 import projectSlice from '../reducers/project/projectSlice'
-import graphSlice from '../reducers/graph/graphSlice'
 
 export const store = configureStore({
   reducer: {
     counter: CounterReducer,
     user: userReducer,
+    // 修正必要: 削除?
     table: tableSlice,
-    graph: graphSlice,
-    // personnel is employee ??
+    // 修正必要: personnel is employee ??
     employee: personnelExpensesSlice,
     personnelData: personnelSlice,
-    // personnelPlanning is employee expenses??
+    // 修正必要: personnelPlanning is employee expenses??
     personnelPlanning: personnelPlanningSlice,
-    
+
     businessDivisions: businessDivisionsSlice,
     masterCompany: masterCompanySlice,
     clientMaster: clientMasterSlice,
-        
+
     employeeExpense: employeeExpenseSlice,
     expenses: expensesSlice,
     costOfSale: costOfSaleSlice,
@@ -43,7 +41,7 @@ export const store = configureStore({
     costOfSaleResult: costOfSaleResultSlice,
     expensesResults: expensesResultsSlice,
     projectResult: projectResultSlice,
-    employeeExpenseResult: employeeExpenseResultSlice
+    employeeExpenseResult: employeeExpenseResultSlice,
   },
 })
 

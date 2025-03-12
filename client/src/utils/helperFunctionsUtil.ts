@@ -432,7 +432,7 @@ export const mapDataset = (datasets: any) =>
   }))
 
 // # Maps the necessary data for each line or bar in chart
-export const createGraphData = (
+export const formatGraphData = (
   datasetMappings: {
     label: string
     data: any
@@ -481,3 +481,8 @@ export const reOrderArray = (series, length) => {
   }
   return arrayOrder.map((index) => series[index])
 }
+
+// Error message for when Redux dispatch data fetch fails on dashboard
+export const handleError = (actionName: string, error: any) => {
+    console.error(`Error fetching ${actionName}:`, error)
+  }

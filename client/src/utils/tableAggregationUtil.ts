@@ -353,20 +353,6 @@ export const mapValue = (key, data) => {
   return months.map((month) => data[month]?.[key] || 0) // return the mapped values properly
 }
 
-// TEST 
-export const testNewMapValue = (key, data) => {
-  return months.map((month) => {
-    
-    return {
-      month: month,
-      value: data[month]?.[key] || 0
-    }
-
-  }
-  )
-  // return the mapped values properly
-}
-
 // EMPLOYEE EXPENSES FUNCTION FOR EMPLOYEE EXPENSES SLICE 
 // REFACTOR: I FEEL THIS COULD BE COMBINED WITH ALREADY EXISTING FUNCTION)
 export const employeeExpenseYearlyTotals = (employeeExpenses) => {

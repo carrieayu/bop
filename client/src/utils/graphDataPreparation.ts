@@ -6,7 +6,7 @@ import {
   calculateMonthlyOperatingProfitMargin,
   calculateMonthlyOrdinaryIncome,
 } from './financialCalculationsUtil'
-import {  reformattedMonthlyTotalValues,activeDatesOnGraph } from './helperFunctionsUtil'
+import {  reformattedMonthlyTotalValues, activeDatesOnGraph } from './helperFunctionsUtil'
 
 export const prepareGraphData = (data: any, type) => {
   const {

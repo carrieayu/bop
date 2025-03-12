@@ -1,12 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { EmployeeExpenseEntity } from '../../entity/employeeExpenseEntity'
-import { fetchWithPolling, sumValues } from '../../utils/helperFunctionsUtil'
-import {
-  aggregatedEmployeeExpensesFunction,
-  employeeExpensesTotalsFunction,
-  monthlyTotalsEmployeeExpenseFunction,
-  employeeExpenseYearlyTotals,
-} from '../../utils/tableAggregationUtil'
+import { fetchWithPolling } from '../../utils/helperFunctionsUtil'
 
 const initialState = {
   isLoading: false,
@@ -24,18 +18,12 @@ const employeeExpense = createSlice({
   name: 'employeeExpense',
   initialState,
   reducers: {
-    getEmployeeExpenseTotals: (state) => { 
-      const employeeExpenseTotals = employeeExpenseYearlyTotals(state.list)
-      state.yearlyTotal = employeeExpenseTotals.combinedTotal
-      state.monthlyTotalsByDate = monthlyTotalsEmployeeExpenseFunction(state.list)
-    },
   },
   extraReducers(builder) {
     builder
       .addCase(fetchEmployeeExpense.fulfilled, (state, action) => {
         state.list = action.payload
         state.isLoading = false
-        state.monthlyTotals = action.payload
       })
       .addCase(fetchEmployeeExpense.pending, (state) => {
         state.isLoading = true
@@ -45,7 +33,5 @@ const employeeExpense = createSlice({
       })
   },
 })
-
-export const { getEmployeeExpenseTotals } = employeeExpense.actions
 
 export default employeeExpense.reducer
