@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { useAppDispatch, useAppSelector } from '../../actions/hooks'
 import { translate } from '../../utils/translationUtil'
-import { createGraphData, reformattedMonthlyTotalValues } from '../../utils/helperFunctionsUtil'
+import { createGraphData } from '../../utils/helperFunctionsUtil'
 import GraphDashboard from '../../components/GraphDashboard/GraphDashboard'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import TableDashboard from '../../components/TableDashboard/TableDashboard'
@@ -28,39 +28,57 @@ import {
   fetchEmployeeExpenseResult,
   getEmployeeExpenseResultTotals,
 } from '../../reducers/employeeExpense/employeeExpenseResultSlice'
-// Totals
-import { fetchTotals, selectTotals } from '../../reducers/planningAndResultTotals/planningAndResultTotalsSlice'
 import ThreeOptionSlider from '../../components/Slider/ThreeOptionSlider'
 
 // ***** TEST *******
 import { planningSelector } from '../../selectors/planning/planningSelector'
-import { costOfSalesResultsSelector } from '../../selectors/costOfSales/costOfSaleResultsSelectors'
-import { expensesResultsSelector } from '../../selectors/expenses/expenseResultsSelectors'
-import { projectsResultsSelector } from '../../selectors/projects/projectResultsSelectors'
-import { employeeExpensesResultsSelector } from '../../selectors/employeeExpenses/employeeExpenseResultsSelectors'
 import { resultsSelector} from '../../selectors/results/resultsSelector'
 import { useSelector } from 'react-redux'
+import { prepareGraphData } from '../../utils/graphDataPreparation'
 
 const Dashboard = () => {
   const dispatch = useAppDispatch()
-  // DATA FOR CARDS
-  const { planning, results } = useAppSelector(selectTotals)
-
   // ************ TEST TEST ************
+  
+  // DATA FOR CARDS AND TABLE
+  const planning = useSelector(planningSelector) // contains data/totals etc. from PLANNING: expenses, costOfSales, projects, employeeExpenses
+  const results = useSelector(resultsSelector) // contains data/totals etc. from RESULTS: expenses, costOfSales, projects, employeeExpenses
 
-  const planningUpdated = useSelector(planningSelector) // contains data/totals etc. from PLANNING: expenses, costOfSales, projects, employeeExpenses
-  const resultsUpdated = useSelector(resultsSelector) // contains data/totals etc. from RESULTS: expenses, costOfSales, projects, employeeExpenses
+  console.log('planning', planning, 'results', results)
 
-  console.log('planningAndResultsSlice -> planning: ', planning)
-  console.log('planningAndResultsSlice -> results: ', results)
+  // ************* GRAPH TEST *********
 
-  console.log('planningUpdated', planningUpdated, 'resultsUpdated', resultsUpdated)
+    const graphPlanningData = {
+      salesRevenueMonthly: planning.projects.salesRevenueMonthly,
+      nonOperatingIncomeMonthly: planning.projects.nonOperatingIncomeMonthly,
+      nonOperatingExpenseMonthly: planning.projects.nonOperatingExpenseMonthly,
+      expensesMonthlyTotalsByDate: planning.expenses.monthlyTotalsByDate,
+      costOfSaleMonthlyTotalsByDate: planning.costOfSales.monthlyTotalsByDate,
+      employeeExpensesMonthlyTotalsByDate: planning.employeeExpenses.monthlyTotalsByDate,
+    }
+  
+ const graphResultsData = {
+    salesRevenueMonthly: results.projects.salesRevenueMonthly,
+    nonOperatingIncomeMonthly: results.projects.nonOperatingIncomeMonthly,
+    nonOperatingExpenseMonthly: results.projects.nonOperatingExpenseMonthly,
+    expensesMonthlyTotalsByDate: results.expenses.monthlyTotalsByDate,
+    costOfSaleMonthlyTotalsByDate: results.costOfSales.monthlyTotalsByDate,
+    employeeExpensesMonthlyTotalsByDate: results.employeeExpenses.monthlyTotalsByDate,
+  }
+
+  const calculatedDataResults = prepareGraphData(graphResultsData, 'results')
+  const resultsMonthlyTEST = { ...calculatedDataResults }
+
+    console.log('graphPlanningData', graphPlanningData)
+    const calculatedDataPlanning = prepareGraphData(graphPlanningData, 'planning')
+    const planningMonthlyTEST = { ...calculatedDataPlanning } 
+    console.log('calculatedDataPlanning',calculatedDataPlanning, 'planningMonthlyTEST', planningMonthlyTEST)
 
   // ************ END TEST TEST ************
 
   // DATA FOR GRAPH
-  const { planningMonthly, resultsMonthly } = useAppSelector(selectGraphValues)
-
+  // const { resultsMonthly } = useAppSelector(selectGraphValues)
+  // console.log('planningMonthly', planningMonthly)
   const {
     projectSalesRevenueMonthlyPlanning,
     operatingIncomeMonthlyPlanning,
@@ -69,7 +87,7 @@ const Dashboard = () => {
     grossProfitMarginMonthlyPlanning,
     grossProfitMonthlyPlanning,
     dates,
-  } = planningMonthly
+  } = planningMonthlyTEST
 
   const optionArray = ['planning', 'results', 'both']
   const {
@@ -80,7 +98,7 @@ const Dashboard = () => {
     grossProfitMarginMonthlyResults,
     grossProfitMonthlyResults,
     datesResults,
-  } = resultsMonthly
+  } = resultsMonthlyTEST
 
   const [tableList, setTableList] = useState<any>([])
   const [activeTab, setActiveTab] = useState('/dashboard')
@@ -146,7 +164,7 @@ const Dashboard = () => {
             .then(() => dispatch(getProjectResultTotals()))
             .then(() => dispatch(getMonthlyResultValues())),
           // TOTALS / GRAPH
-          dispatch(fetchTotals()).catch(handleError('Totals data')),
+          // dispatch(fetchTotals()).catch(handleError('Totals data')),
           dispatch(fetchGraphData()).catch(handleError('new graph data')),
         ])
         if (data) setTableList(data.payload)
@@ -340,8 +358,8 @@ const Dashboard = () => {
                 {/* Render the TablePlanning & TableResults here (TableDashboard) */}
                 <TableDashboard
                   isThousandYenChecked={isThousandYenChecked}
-                  results={resultsUpdated}
-                  planning={planningUpdated}
+                  results={results}
+                  planning={planning}
                 />
               </div>
             </div>

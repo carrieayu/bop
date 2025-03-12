@@ -17,9 +17,10 @@ export const employeeExpensesSelectMonthlyTotalsByDate = createSelector([employe
 
 // **New Memoized Selector for employeeExpensesResults**
 export const employeeExpensesResultsSelector = createSelector(
-  [employeeExpensesList, employeeExpensesYearlyTotals],
-  (list, yearlyTotal) => ({
+  [employeeExpensesList, employeeExpensesYearlyTotals, employeeExpensesSelectMonthlyTotalsByDate],
+  (list, yearlyTotal, monthlyTotalsByDate) => ({
     list,
     yearlyTotal: yearlyTotal,
+    monthlyTotalsByDate: monthlyTotalsByDate,
   }),
 )

@@ -13,7 +13,6 @@ import costOfSaleSlice from "../reducers/costOfSale/costOfSaleSlice";
 import costOfSaleResultSlice from '../reducers/costOfSale/costOfSaleResultSlice'
 import expensesSlice from "../reducers/expenses/expensesSlice";
 import expensesResultsSlice from '../reducers/expenses/expensesResultsSlice'
-import planningAndResultTotalsSlice from '../reducers/planningAndResultTotals/planningAndResultTotalsSlice'
 import projectResultSlice from '../reducers/project/projectResultSlice'
 import employeeExpenseSlice from '../reducers/employeeExpense/employeeExpenseSlice'
 import employeeExpenseResultSlice from '../reducers/employeeExpense/employeeExpenseResultSlice'
@@ -35,9 +34,7 @@ export const store = configureStore({
     businessDivisions: businessDivisionsSlice,
     masterCompany: masterCompanySlice,
     clientMaster: clientMasterSlice,
-    
-    totals: planningAndResultTotalsSlice,
-    
+        
     employeeExpense: employeeExpenseSlice,
     expenses: expensesSlice,
     costOfSale: costOfSaleSlice,
