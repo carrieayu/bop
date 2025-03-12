@@ -1,5 +1,11 @@
 // # FINANCIAL CALCULATIONS
 
+import { CalculationDataEntity } from "../entity/calculationEntity"
+import { CostOfSaleDataEntity } from "../entity/costOfSaleEntity"
+import { EmployeeExpenseDataEntity } from "../entity/employeeExpenseEntity"
+import { ExpenseDataEntity } from "../entity/expenseEntity"
+import { ProjectDataEntity } from "../entity/projectEntity"
+
 // --TOTALS (Single Figures)--
 export const calculateGrossProfit = (salesRevenue, costOfSale) => salesRevenue - costOfSale
 export const calculateGrossProfitMargin = (grossProfit, salesRevenue) => (grossProfit / salesRevenue) * 100
@@ -144,4 +150,43 @@ export const calculateMonthlyOrdinaryIncome = (
     ordinaryIncomeMonthlyByDate[date] = operatingIncome + nonOperatingIncome - nonOperatingExpense
   }
   return ordinaryIncomeMonthlyByDate
+}
+
+// NEW FUNCTIONS FOR REFACTOR USING SELECTORS
+
+export const calculateFinancials = (
+  projects: ProjectDataEntity,
+  expenses: ExpenseDataEntity,
+  costOfSales: CostOfSaleDataEntity,
+  employeeExpenses: EmployeeExpenseDataEntity,
+) => {
+  // Gross Profit
+  const grossProfit = calculateGrossProfit(projects.salesRevenueTotal, costOfSales.yearlyTotal)
+  // Gross Profit Margin
+  const grossProfitMargin =calculateGrossProfitMargin(grossProfit, projects.salesRevenueTotal)
+  // Admin and General Expenses
+  const sellingAndAdminYearlyTotal = calculateSellingAndGeneralAdmin(
+    employeeExpenses.yearlyTotal,
+    expenses.yearlyTotal,
+  )
+  // Operating Income
+  const operatingIncomeYearlyTotal = calculateOperatingIncome(
+    grossProfit,
+    sellingAndAdminYearlyTotal,
+  )
+  // Operating Profit Margin
+  const operatingProfitMargin = calculateOperatingProfitMargin(
+    projects.salesRevenueTotal,
+    operatingIncomeYearlyTotal,
+  )
+  // Ordinary Income
+  const ordinaryIncome = calculateOrdinaryIncome(
+    operatingIncomeYearlyTotal,
+    projects.nonOperatingIncomeTotal,
+    projects.nonOperatingExpenseTotal,
+  )
+
+  return {
+    grossProfit, grossProfitMargin, sellingAndAdminYearlyTotal, operatingIncomeYearlyTotal, operatingProfitMargin, ordinaryIncome
+  }
 }

@@ -21,7 +21,7 @@ export const aggregatedExpensesFunction = (expenses) => {
   }, {})
 }
 
-export const expensesTotalsFunction = (expensesData) => {
+export const expensesTotalsFunction = (expensesData, detailedResponse = false ) => {
 
   return months.map((month) => {
     const consumables = Number(expensesData[month]?.consumable_expense) || 0
@@ -35,7 +35,8 @@ export const expensesTotalsFunction = (expensesData) => {
     const advertisingExpense = Number(expensesData[month]?.advertising_expense) || 0
     const entertainmentExpense = Number(expensesData[month]?.entertainment_expense) || 0
     const professionalServiceFee = Number(expensesData[month]?.professional_service_fee) || 0
-    return (
+    
+    const totals =
       consumables +
       rent +
       taxAndPublicCharge +
@@ -47,7 +48,26 @@ export const expensesTotalsFunction = (expensesData) => {
       advertisingExpense +
       entertainmentExpense +
       professionalServiceFee
-    )
+    
+        if (!detailedResponse) {
+          return totals
+        } else {
+          return {
+            month,
+            totals,
+            consumables,
+            rent,
+            taxAndPublicCharge,
+            depreciation,
+            travelExpense,
+            communicationExpense,
+            utilitiesExpense,
+            transactionFee,
+            advertisingExpense,
+            entertainmentExpense,
+            professionalServiceFee
+          }
+        }
   })
 }
 
@@ -82,7 +102,7 @@ export const aggregatedCostOfSalesFunction = (cost_of_sales) => {
   }, {})
 }
 
-export const costOfSalesTotalsFunction = (aggregatedCostOfSalesData) => {
+export const costOfSalesTotalsFunction = (aggregatedCostOfSalesData, detailedResponse = false) => {
   return months.map((month) => {
     const purchases = Number(aggregatedCostOfSalesData[month]?.purchase) || 0
     const outsourcing = Number(aggregatedCostOfSalesData[month]?.outsourcing_expense) || 0
@@ -95,9 +115,11 @@ export const costOfSalesTotalsFunction = (aggregatedCostOfSalesData) => {
     const totalValue =
       purchases + outsourcing + productPurchase + dispatchLabor + communication + workInProgress + amortization
     
-    return totalValue
-    // return {month, totalValue}
-    // return purchases + outsourcing + productPurchase + dispatchLabor + communication + workInProgress + amortization
+    if (!detailedResponse) {
+      return totalValue
+    } else {
+      return {month, totalValue, purchases, outsourcing, productPurchase, dispatchLabor, communication, workInProgress, amortization}
+    }
   })
 }
 
@@ -212,7 +234,7 @@ export const aggregatedEmployeeExpensesFunction = (employee_expenses) => {
 }
 
 // Array of total per month [] (just number values. not properly assigned months)
-export const employeeExpensesTotalsFunction = (employeeExpensesdata, from = '') => {
+export const employeeExpensesTotalsFunction = (employeeExpensesdata, detailedResponse = false) => {
   return months.map((month) => {
     const executiveRemuneration = Number(employeeExpensesdata[month]?.totalExecutiveRemuneration) || 0
     const salary = Number(employeeExpensesdata[month]?.totalSalary) || 0
@@ -220,14 +242,29 @@ export const employeeExpensesTotalsFunction = (employeeExpensesdata, from = '') 
     const statutoryWelfareExpense = Number(employeeExpensesdata[month]?.totalStatutoryWelfare) || 0
     const welfareExpense = Number(employeeExpensesdata[month]?.totalWelfare) || 0
     const insurancePremium = Number(employeeExpensesdata[month]?.totalInsurancePremium) || 0
-    return (
+    
+    const totals =
       executiveRemuneration +
       salary +
       bonusAndFuelAllowance +
       statutoryWelfareExpense +
       welfareExpense +
       insurancePremium
-    )
+      
+      if (!detailedResponse) {
+          return totals
+        } else {
+          return {
+            month,
+            totals,
+            executiveRemuneration,
+            salary,
+            bonusAndFuelAllowance,
+            statutoryWelfareExpense,
+            welfareExpense,
+            insurancePremium
+          }
+        }
   })
 }
 
@@ -332,13 +369,14 @@ export const testNewMapValue = (key, data) => {
 
 // EMPLOYEE EXPENSES FUNCTION FOR EMPLOYEE EXPENSES SLICE 
 // REFACTOR: I FEEL THIS COULD BE COMBINED WITH ALREADY EXISTING FUNCTION)
-export const employeeExpenseYearlyTotals = (state) => {
-  const salaryTotal = sumValues(state.list.map((emp) => Number(emp.salary) || 0))
-  const executiveRemunerationTotal = sumValues(state.list.map((emp) => Number(emp.executive_remuneration) || 0))
-  const insurancePremiumTotal = sumValues(state.list.map((emp) => Number(emp.insurance_premium) || 0))
-  const welfareExpenseTotal = sumValues(state.list.map((emp) => Number(emp.welfare_expense) || 0))
-  const statutoryWelfareTotal = sumValues(state.list.map((emp) => Number(emp.statutory_welfare_expense) || 0))
-  const bonusAndFuelTotal = sumValues(state.list.map((emp) => Number(emp.bonus_and_fuel_allowance) || 0))
+export const employeeExpenseYearlyTotals = (employeeExpenses) => {
+  console.log('employee expenses:', employeeExpenses)
+  const salaryTotal = sumValues(employeeExpenses.map((emp) => Number(emp.salary) || 0))
+  const executiveRemunerationTotal = sumValues(employeeExpenses.map((emp) => Number(emp.executive_remuneration) || 0))
+  const insurancePremiumTotal = sumValues(employeeExpenses.map((emp) => Number(emp.insurance_premium) || 0))
+  const welfareExpenseTotal = sumValues(employeeExpenses.map((emp) => Number(emp.welfare_expense) || 0))
+  const statutoryWelfareTotal = sumValues(employeeExpenses.map((emp) => Number(emp.statutory_welfare_expense) || 0))
+  const bonusAndFuelTotal = sumValues(employeeExpenses.map((emp) => Number(emp.bonus_and_fuel_allowance) || 0))
 
   const combinedTotal =
     salaryTotal +

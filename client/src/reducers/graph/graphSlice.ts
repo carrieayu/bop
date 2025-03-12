@@ -40,11 +40,12 @@ export const fetchGraphData = createAsyncThunk('graph/fetchGraphData', async (_,
   // PLANNING MONTHLY
   const planningData = {
     salesRevenueMonthly: state.project.salesRevenueMonthly,
-    costOfSaleMonthlyTotalsByDate: state.costOfSale.monthlyTotalsByDate,
-    expensesMonthlyTotalsByDate: state.expenses.monthlyTotalsByDate,
-    employeeExpensesMonthlyTotalsByDate: state.employeeExpense.monthlyTotalsByDate,
     nonOperatingIncomeMonthly: state.project.nonOperatingIncomeMonthly,
     nonOperatingExpenseMonthly: state.project.nonOperatingExpenseMonthly,
+    expensesMonthlyTotalsByDate: state.expenses.monthlyTotalsByDate,
+    costOfSaleMonthlyTotalsByDate: state.costOfSale.monthlyTotalsByDate,
+    // costOfSaleMonthlyTotalsByDate: costOfSalesSelectMonthlyTotalsByDate,
+    employeeExpensesMonthlyTotalsByDate: state.employeeExpense.monthlyTotalsByDate,
   }
 
   const calculatedDataPlanning = prepareGraphData(planningData, 'planning')

@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { CostOfSaleEntity } from '../../entity/costOfSaleEntity'
 import { aggregatedCostOfSalesFunction, costOfSalesTotalsFunction, mapValue, monthlyTotalsCostOfSalesFunction, testNewMapValue } from '../../utils/tableAggregationUtil'
+// import { selectTotals, selectYearlyTotals, selectMonthlyTotalsByDate } from '../../selectors/costOfSaleSelectors'; // Import selectors
 import { fetchWithPolling, sumValues } from '../../utils/helperFunctionsUtil'
 
 const initialState = {

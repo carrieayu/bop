@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { useAppDispatch, useAppSelector } from '../../actions/hooks'
 import { translate } from '../../utils/translationUtil'
-import { createGraphData } from '../../utils/helperFunctionsUtil'
+import { createGraphData, reformattedMonthlyTotalValues } from '../../utils/helperFunctionsUtil'
 import GraphDashboard from '../../components/GraphDashboard/GraphDashboard'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import TableDashboard from '../../components/TableDashboard/TableDashboard'
@@ -32,11 +32,35 @@ import {
 import { fetchTotals, selectTotals } from '../../reducers/planningAndResultTotals/planningAndResultTotalsSlice'
 import ThreeOptionSlider from '../../components/Slider/ThreeOptionSlider'
 
+// ***** TEST *******
+import { planningSelector } from '../../selectors/planning/planningSelector'
+import { costOfSalesResultsSelector } from '../../selectors/costOfSales/costOfSaleResultsSelectors'
+import { expensesResultsSelector } from '../../selectors/expenses/expenseResultsSelectors'
+import { projectsResultsSelector } from '../../selectors/projects/projectResultsSelectors'
+import { employeeExpensesResultsSelector } from '../../selectors/employeeExpenses/employeeExpenseResultsSelectors'
+import { resultsSelector} from '../../selectors/results/resultsSelector'
+import { useSelector } from 'react-redux'
+
 const Dashboard = () => {
+  const dispatch = useAppDispatch()
   // DATA FOR CARDS
   const { planning, results } = useAppSelector(selectTotals)
+
+  // ************ TEST TEST ************
+
+  const planningUpdated = useSelector(planningSelector) // contains data/totals etc. from PLANNING: expenses, costOfSales, projects, employeeExpenses
+  const resultsUpdated = useSelector(resultsSelector) // contains data/totals etc. from RESULTS: expenses, costOfSales, projects, employeeExpenses
+
+  console.log('planningAndResultsSlice -> planning: ', planning)
+  console.log('planningAndResultsSlice -> results: ', results)
+
+  console.log('planningUpdated', planningUpdated, 'resultsUpdated', resultsUpdated)
+
+  // ************ END TEST TEST ************
+
   // DATA FOR GRAPH
   const { planningMonthly, resultsMonthly } = useAppSelector(selectGraphValues)
+
   const {
     projectSalesRevenueMonthlyPlanning,
     operatingIncomeMonthlyPlanning,
@@ -58,7 +82,6 @@ const Dashboard = () => {
     datesResults,
   } = resultsMonthly
 
-  const dispatch = useAppDispatch()
   const [tableList, setTableList] = useState<any>([])
   const [activeTab, setActiveTab] = useState('/dashboard')
   const [isSwitchActive, setIsSwitchActive] = useState(false)
@@ -193,7 +216,7 @@ const Dashboard = () => {
   const resultsLineGraphData = createGraphData(
     [
       { label: 'grossProfitMargin', data: grossProfitMarginMonthlyResults, bgColor: '#ff8e13', type: 'line' },
-      { label: 'operatingProfitMargin', data: operatingProfitMarginMonthlyResults, bgColor: '#ec3e4a',type: 'line' },
+      { label: 'operatingProfitMargin', data: operatingProfitMarginMonthlyResults, bgColor: '#ec3e4a', type: 'line' },
     ],
     dates,
     language,
@@ -209,7 +232,7 @@ const Dashboard = () => {
       margin: resultsLineGraphData,
     },
   }
-  
+
   return (
     <div className='dashboard_wrapper'>
       <HeaderButtons
@@ -315,10 +338,10 @@ const Dashboard = () => {
             <div className='dashboard_tbl_cont'>
               <div className={`dashboard_table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
                 {/* Render the TablePlanning & TableResults here (TableDashboard) */}
-                <TableDashboard 
-                isThousandYenChecked={isThousandYenChecked} 
-                results={results}
-                planning={planning}
+                <TableDashboard
+                  isThousandYenChecked={isThousandYenChecked}
+                  results={resultsUpdated}
+                  planning={planningUpdated}
                 />
               </div>
             </div>

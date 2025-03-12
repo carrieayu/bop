@@ -25,7 +25,7 @@ const employeeExpense = createSlice({
   initialState,
   reducers: {
     getEmployeeExpenseTotals: (state) => { 
-      const employeeExpenseTotals = employeeExpenseYearlyTotals(state)
+      const employeeExpenseTotals = employeeExpenseYearlyTotals(state.list)
       state.yearlyTotal = employeeExpenseTotals.combinedTotal
       state.monthlyTotalsByDate = monthlyTotalsEmployeeExpenseFunction(state.list)
     },

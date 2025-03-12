@@ -37,7 +37,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked}) =>
 
         // PLANNING: COST OF SALES TOTALS VALUES
         const costOfSalesValues = costOfSalesTotalsFunction(aggregatedCostOfSalesData)
-
+        console.log('test test:', costOfSalesValues)
         const purchasesValues = mapValue('purchase', aggregatedCostOfSalesData)
         const outsourcingExpenseValues = mapValue('outsourcing_expense', aggregatedCostOfSalesData)
         const productPurchaseValues = mapValue('product_purchase', aggregatedCostOfSalesData)

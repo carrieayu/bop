@@ -25,13 +25,18 @@ interface TableDashboardProps {
   planning
 }
 
-const TableDashboard: React.FC<TableDashboardProps> = ({ isThousandYenChecked, results, planning }) => {
+const TableDashboard: React.FC<TableDashboardProps> = ({
+  isThousandYenChecked,
+  results,
+  planning,
+}) => {
   const [planningData, setPlanningData] = useState([])
   const [salesRatios, setSalesRatios] = useState([])
   const [resultsData, setResultsData] = useState([])
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
 
+    // add cost of sales object? 
   useEffect(() => {
     // --- PLANNING TABLE DATA ---
 

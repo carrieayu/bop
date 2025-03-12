@@ -91,16 +91,6 @@ const initialState = {
       yearlyTotal: 0,
       monthlyTotals: [],
       monthlyTotalsByDate: [],
-      consumableExpenseMonthlyTotal: [],
-      rentExpenseMonthlyTotal: [],
-      depreciationExpenseMonthlyTotal: [],
-      travelExpenseMonthlyTotal: [],
-      communicationExpenseMonthlyTotal: [],
-      utilitiesExpenseMonthlyTotal: [],
-      transactionFeeMonthlyTotal: [],
-      advertisingExpenseMonthlyTotal: [],
-      entertainmentExpenseExpenseMonthlyTotal: [],
-      professionalServiceFeeMonthlyTotal: []
       
     },
     costOfSales: {
@@ -108,13 +98,6 @@ const initialState = {
       list: [],
       monthlyTotals: [],
       monthlyTotalsByDate: [],
-      purchasesMonthlyTotalsByDate: [],
-      productPurchaseMonthlyTotal: [],
-      outsourcingExpenseMonthlyTotal: [],
-      dispatchLaborExpenseMonthlyTotal: [],
-      communicationExpenseMonthlyTotal: [],
-      workInProgressExpenseMonthlyTotal: [],
-      amortizationExpenseMonthlyTotal: []
     },
     employeeExpenses: { list: [], yearlyTotal: 0 },
     calculations: {
