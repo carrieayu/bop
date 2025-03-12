@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { useAppDispatch, useAppSelector } from '../../actions/hooks'
@@ -31,10 +31,12 @@ import {
 import ThreeOptionSlider from '../../components/Slider/ThreeOptionSlider'
 
 // ***** TEST *******
-import { planningSelector } from '../../selectors/planning/planningSelector'
-import { resultsSelector} from '../../selectors/results/resultsSelector'
+import { planningSelector, planningGraphDataPreparedSelector } from '../../selectors/planning/planningSelector'
+import { resultsSelector, resultsGraphDataPreparedSelector} from '../../selectors/results/resultsSelector'
 import { useSelector } from 'react-redux'
 import { prepareGraphData } from '../../utils/graphDataPreparation'
+// import {planningGraphDataSelector} from '../../selectors/planning/planningGraphDataSelector'
+import { resultsGraphDataSelector } from '../../selectors/results/resultsGraphDataSelector'
 
 const Dashboard = () => {
   const dispatch = useAppDispatch()
@@ -43,39 +45,20 @@ const Dashboard = () => {
   // DATA FOR CARDS AND TABLE
   const planning = useSelector(planningSelector) // contains data/totals etc. from PLANNING: expenses, costOfSales, projects, employeeExpenses
   const results = useSelector(resultsSelector) // contains data/totals etc. from RESULTS: expenses, costOfSales, projects, employeeExpenses
-
-  console.log('planning', planning, 'results', results)
-
   // ************* GRAPH TEST *********
+  // const graphPlanningData = useSelector(planningGraphDataSelector)
+  const graphResultsData = useSelector(resultsGraphDataSelector)
 
-    const graphPlanningData = {
-      salesRevenueMonthly: planning.projects.salesRevenueMonthly,
-      nonOperatingIncomeMonthly: planning.projects.nonOperatingIncomeMonthly,
-      nonOperatingExpenseMonthly: planning.projects.nonOperatingExpenseMonthly,
-      expensesMonthlyTotalsByDate: planning.expenses.monthlyTotalsByDate,
-      costOfSaleMonthlyTotalsByDate: planning.costOfSales.monthlyTotalsByDate,
-      employeeExpensesMonthlyTotalsByDate: planning.employeeExpenses.monthlyTotalsByDate,
-    }
-  
- const graphResultsData = {
-    salesRevenueMonthly: results.projects.salesRevenueMonthly,
-    nonOperatingIncomeMonthly: results.projects.nonOperatingIncomeMonthly,
-    nonOperatingExpenseMonthly: results.projects.nonOperatingExpenseMonthly,
-    expensesMonthlyTotalsByDate: results.expenses.monthlyTotalsByDate,
-    costOfSaleMonthlyTotalsByDate: results.costOfSales.monthlyTotalsByDate,
-    employeeExpensesMonthlyTotalsByDate: results.employeeExpenses.monthlyTotalsByDate,
-  }
+  // const calculatedDataPlanning = useMemo(() => prepareGraphData(graphPlanningData, 'planning'), [graphPlanningData]);
+  // const calculatedDataResults = useMemo(() => prepareGraphData(graphResultsData, 'results'), [graphResultsData])
 
-  const calculatedDataResults = prepareGraphData(graphResultsData, 'results')
-  const resultsMonthlyTEST = { ...calculatedDataResults }
-
-    console.log('graphPlanningData', graphPlanningData)
-    const calculatedDataPlanning = prepareGraphData(graphPlanningData, 'planning')
-    const planningMonthlyTEST = { ...calculatedDataPlanning } 
-    console.log('calculatedDataPlanning',calculatedDataPlanning, 'planningMonthlyTEST', planningMonthlyTEST)
+  const planningGraphDataTEST= useSelector(planningGraphDataPreparedSelector)
+  const resultsGraphDataTEST = useSelector(resultsGraphDataPreparedSelector)
+  console.log('planning', planning, 'results', results)
 
   // ************ END TEST TEST ************
 
+  
   // DATA FOR GRAPH
   // const { resultsMonthly } = useAppSelector(selectGraphValues)
   // console.log('planningMonthly', planningMonthly)
@@ -87,9 +70,10 @@ const Dashboard = () => {
     grossProfitMarginMonthlyPlanning,
     grossProfitMonthlyPlanning,
     dates,
-  } = planningMonthlyTEST
-
+  } = planningGraphDataTEST
+  
   const optionArray = ['planning', 'results', 'both']
+
   const {
     projectSalesRevenueMonthlyResults,
     operatingIncomeMonthlyResults,
@@ -98,7 +82,7 @@ const Dashboard = () => {
     grossProfitMarginMonthlyResults,
     grossProfitMonthlyResults,
     datesResults,
-  } = resultsMonthlyTEST
+  } = resultsGraphDataTEST
 
   const [tableList, setTableList] = useState<any>([])
   const [activeTab, setActiveTab] = useState('/dashboard')
@@ -137,18 +121,18 @@ const Dashboard = () => {
         const [data] = await Promise.all([
           // PLANNING
           dispatch(fetchExpense())
-            .catch(handleError('Expenses Planning data'))
-            .then(() => dispatch(getExpenseTotals())),
+            .catch(handleError('Expenses Planning data')),
+            // .then(() => dispatch(getExpenseTotals())),
           dispatch(fetchCostOfSale())
-            .catch(handleError('Cost Of Sales Planning data'))
-            .then(() => dispatch(getCostOfSaleTotals())),
+            .catch(handleError('Cost Of Sales Planning data')),
+            // .then(() => dispatch(getCostOfSaleTotals())),
           dispatch(fetchEmployeeExpense())
-            .catch(handleError('Employee Expenses Planning data'))
-            .then(() => dispatch(getEmployeeExpenseTotals())),
+            .catch(handleError('Employee Expenses Planning data')),
+            // .then(() => dispatch(getEmployeeExpenseTotals())),
           dispatch(fetchProject())
-            .catch(handleError('Projects Planning data'))
-            .then(() => dispatch(getProjectTotals()))
-            .then(() => dispatch(getMonthlyValues())),
+            .catch(handleError('Projects Planning data')),
+            // .then(() => dispatch(getProjectTotals()))
+            // .then(() => dispatch(getMonthlyValues())),
           // RESULTS
           dispatch(fetchExpenseResult())
             .catch(handleError('Expenses Result data'))
@@ -167,13 +151,13 @@ const Dashboard = () => {
           // dispatch(fetchTotals()).catch(handleError('Totals data')),
           dispatch(fetchGraphData()).catch(handleError('new graph data')),
         ])
-        if (data) setTableList(data.payload)
+        // if (data) setTableList(data.payload)
       } catch (error) {
         console.error('Unexpected error:', error)
       }
     }
     fetchData()
-  }, [tableList])
+  }, [dispatch])
 
   const handleError = (dataType) => (error) => {
     console.error(`Error fetching ${dataType}:`, error)

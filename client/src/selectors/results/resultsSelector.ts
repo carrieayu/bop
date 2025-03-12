@@ -7,6 +7,7 @@ import { employeeExpensesResultsSelector } from '../employeeExpenses/employeeExp
 import { projectsResultsSelector } from '../projects/projectResultsSelectors'
 // Calcualtion Functions
 import { calculateFinancials } from "../../utils/financialCalculationsUtil"; 
+import { prepareGraphData } from "../../utils/graphDataPreparation";
 
 export const resultsSelector = createSelector(
   [costOfSalesResultsSelector, expensesResultsSelector, employeeExpensesResultsSelector, projectsResultsSelector],
@@ -22,4 +23,18 @@ export const resultsSelector = createSelector(
       calculations
     }
   },
+)
+
+export const resultsGraphDataPreparedSelector = createSelector([resultsSelector], (results) =>
+  prepareGraphData(
+    {
+      salesRevenueMonthly: results.projects.salesRevenueMonthly,
+      nonOperatingIncomeMonthly: results.projects.nonOperatingIncomeMonthly,
+      nonOperatingExpenseMonthly: results.projects.nonOperatingExpenseMonthly,
+      expensesMonthlyTotalsByDate: results.expenses.monthlyTotalsByDate,
+      costOfSaleMonthlyTotalsByDate: results.costOfSales.monthlyTotalsByDate,
+      employeeExpensesMonthlyTotalsByDate: results.employeeExpenses.monthlyTotalsByDate,
+    },
+    'results',
+  ),
 )
