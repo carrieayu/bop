@@ -1,12 +1,11 @@
 // # FINANCIAL CALCULATIONS
-
-import { CalculationDataEntity } from "../entity/calculationEntity"
 import { CostOfSaleDataEntity } from "../entity/costOfSaleEntity"
 import { EmployeeExpenseDataEntity } from "../entity/employeeExpenseEntity"
 import { ExpenseDataEntity } from "../entity/expenseEntity"
 import { ProjectDataEntity } from "../entity/projectEntity"
 
 // --TOTALS (Single Figures)--
+// Gross Profit
 export const calculateGrossProfit = (salesRevenue, costOfSale) => salesRevenue - costOfSale
 export const calculateGrossProfitMargin = (grossProfit, salesRevenue) => (grossProfit / salesRevenue) * 100
 // Admin and General Expenses

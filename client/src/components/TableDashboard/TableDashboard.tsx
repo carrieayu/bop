@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { months, monthNames } from '../../constants'
-import { cumulativeSum, organiseTotals } from '../../utils/helperFunctionsUtil'
 import { translate } from '../../utils/translationUtil'
 import { useSelector } from 'react-redux'
 import { planningCalculationsSelector } from '../../selectors/planning/planningCalculationSelectors'
 import { resultsCalculationsSelector } from '../../selectors/results/resultsCalculationSelectors'
+import { planningTableALabelsAndValues } from '../../utils/TablePlanningALabelAndValues'
+import { resultsTableALabelsAndValues } from '../../utils/TableResultsALabelAndValues'
 
 interface TableDashboardProps {
   isThousandYenChecked: boolean
@@ -27,146 +28,11 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
   const resultsCalculations = useSelector(resultsCalculationsSelector)
 
   useEffect(() => {
-    // --- PLANNING TABLE DATA ---
-    const cumulativeOrdinaryIncomeValues = cumulativeSum(planningCalculations.ordinaryIncome.monthlyTotals)
-
-    const labelsAndValues = [
-      // Sales revenue section
-      { label: 'salesRevenue', values: planning.projects.monthlyTotals.salesRevenue },
-      { label: 'sales', values: planning.projects.monthlyTotals.salesRevenue },
-
-      // Cost of sales section
-      { label: 'costOfSales', values: planning.costOfSales.monthlyTotals },
-      { label: 'purchases', values: planning.costOfSales.individualMonthlyTotals.purchase },
-      { label: 'outsourcingExpenses', values: planning.costOfSales.individualMonthlyTotals.outsourcingExpense },
-      { label: 'productPurchases', values: planning.costOfSales.individualMonthlyTotals.productPurchase },
-      { label: 'dispatchLaborExpenses', values: planning.costOfSales.individualMonthlyTotals.dispatchLaborExpense },
-      { label: 'communicationExpenses', values: planning.costOfSales.individualMonthlyTotals.communicationExpense },
-      { label: 'workInProgressExpenses', values: planning.costOfSales.individualMonthlyTotals.workInProgressExpense },
-      { label: 'amortizationExpenses', values: planning.costOfSales.individualMonthlyTotals.amortizationExpense },
-
-      // Gross profit
-      { label: 'grossProfit', values: planningCalculations.grossProfit.monthlyTotals },
-
-      // Employee expense section
-      { label: 'employeeExpenses', values: planning.employeeExpenses.monthlyTotals },
-      {
-        label: 'executiveRemuneration',
-        values: planning.employeeExpenses.individualMonthlyTotals.executiveRemuneration,
-      },
-      { label: 'salary', values: planning.employeeExpenses.individualMonthlyTotals.salary },
-      { label: 'bonusAndFuelAllowance', values: planning.employeeExpenses.individualMonthlyTotals.bonusAndFuel },
-      { label: 'statutoryWelfareExpenses', values: planning.employeeExpenses.individualMonthlyTotals.statutoryWelfare },
-      { label: 'welfareExpenses', values: planning.employeeExpenses.individualMonthlyTotals.welfare },
-      { label: 'insurancePremiums', values: planning.employeeExpenses.individualMonthlyTotals.insurancePremium },
-
-      // Expenses section
-      { label: 'expenses', values: planning.expenses.monthlyTotals },
-      { label: 'consumableExpenses', values: planning.expenses.individualMonthlyTotals.consumable },
-      { label: 'rentExpenses', values: planning.expenses.individualMonthlyTotals.rent },
-      { label: 'taxesAndPublicCharges', values: planning.expenses.individualMonthlyTotals.taxesPublicCharges },
-      { label: 'depreciationExpenses', values: planning.expenses.individualMonthlyTotals.depreciationExpense },
-      { label: 'travelExpenses', values: planning.expenses.individualMonthlyTotals.travelExpense },
-      { label: 'communicationExpenses', values: planning.expenses.individualMonthlyTotals.communicationExpense },
-      { label: 'utilitiesExpenses', values: planning.expenses.individualMonthlyTotals.utilities },
-      { label: 'transactionFees', values: planning.expenses.individualMonthlyTotals.transactionFee },
-      { label: 'advertisingExpenses', values: planning.expenses.individualMonthlyTotals.advertisingExpense },
-      { label: 'entertainmentExpenses', values: planning.expenses.individualMonthlyTotals.entertainmentExpense },
-      { label: 'professionalServicesFees', values: planning.expenses.individualMonthlyTotals.professionalServiceFee },
-
-      // Selling and general admin expenses
-      {
-        label: 'sellingAndGeneralAdminExpensesShort',
-        values: planningCalculations.sellingAndGeneralAdmin.monthlyTotals,
-      },
-
-      // Operating income section
-      { label: 'operatingIncome', values: planningCalculations.operatingIncome.monthlyTotals },
-
-      { label: 'nonOperatingIncome', values: planning.projects.monthlyTotals.nonOperatingIncome },
-      { label: 'nonOperatingExpenses', values: planning.projects.monthlyTotals.nonOperatingExpense },
-
-      { label: 'ordinaryIncome', values: planningCalculations.ordinaryIncome.monthlyTotals },
-      { label: 'cumulativeOrdinaryIncome', values: cumulativeOrdinaryIncomeValues },
-    ]
-
-    const planningDataLabelsAndValues = labelsAndValues.map((item) => ({
-      label: item.label,
-      values: organiseTotals(item.values, item.label),
-    }))
-
-    setPlanningData(planningDataLabelsAndValues)
-
+    // PLANNING TABLE DATA
+    setPlanningData(planningTableALabelsAndValues(planning, planningCalculations))
     // RESULTS TABLE DATA
-    const cumulativeOrdinaryIncomeResultsValues = cumulativeSum(resultsCalculations.ordinaryIncome.monthlyTotals)
-
-    const labelsAndValuesResults = [
-      // Sales revenue section
-      { label: 'salesRevenue', values: results.projects.monthlyTotals.salesRevenue },
-      { label: 'sales', values: results.projects.monthlyTotals.salesRevenue },
-
-      // Cost of sales section
-      { label: 'costOfSales', values: results.costOfSales.monthlyTotals },
-      { label: 'purchases', values: results.costOfSales.individualMonthlyTotals.purchase },
-      { label: 'outsourcingExpenses', values: results.costOfSales.individualMonthlyTotals.outsourcingExpense },
-      { label: 'productPurchases', values: results.costOfSales.individualMonthlyTotals.productPurchase },
-      { label: 'dispatchLaborExpenses', values: results.costOfSales.individualMonthlyTotals.dispatchLaborExpense },
-      { label: 'communicationExpenses', values: results.costOfSales.individualMonthlyTotals.communicationExpense },
-      { label: 'workInProgressExpenses', values: results.costOfSales.individualMonthlyTotals.workInProgressExpense },
-      { label: 'amortizationExpenses', values: results.costOfSales.individualMonthlyTotals.amortizationExpense },
-
-      // Gross profit
-      { label: 'grossProfit', values: resultsCalculations.grossProfit.monthlyTotals },
-
-      // Employee expense section
-      { label: 'employeeExpenses', values: results.employeeExpenses.monthlyTotals },
-      {
-        label: 'executiveRemuneration',
-        values: results.employeeExpenses.individualMonthlyTotals.executiveRemuneration,
-      },
-      { label: 'salary', values: results.employeeExpenses.individualMonthlyTotals.salary },
-      { label: 'bonusAndFuelAllowance', values: results.employeeExpenses.individualMonthlyTotals.bonusAndFuel },
-      { label: 'statutoryWelfareExpenses', values: results.employeeExpenses.individualMonthlyTotals.statutoryWelfare },
-      { label: 'welfareExpenses', values: results.employeeExpenses.individualMonthlyTotals.welfare },
-      { label: 'insurancePremiums', values: results.employeeExpenses.individualMonthlyTotals.insurancePremium },
-
-      // Expenses section
-      { label: 'expenses', values: results.expenses.monthlyTotals },
-      { label: 'consumableExpenses', values: results.expenses.individualMonthlyTotals.consumable },
-      { label: 'rentExpenses', values: results.expenses.individualMonthlyTotals.rent },
-      { label: 'taxesAndPublicCharges', values: results.expenses.individualMonthlyTotals.taxesPublicCharges },
-      { label: 'depreciationExpenses', values: results.expenses.individualMonthlyTotals.depreciationExpense },
-      { label: 'travelExpenses', values: results.expenses.individualMonthlyTotals.travelExpense },
-      { label: 'communicationExpenses', values: results.expenses.individualMonthlyTotals.communicationExpense },
-      { label: 'utilitiesExpenses', values: results.expenses.individualMonthlyTotals.utilities },
-      { label: 'transactionFees', values: results.expenses.individualMonthlyTotals.transactionFee },
-      { label: 'advertisingExpenses', values: results.expenses.individualMonthlyTotals.advertisingExpense },
-      { label: 'entertainmentExpenses', values: results.expenses.individualMonthlyTotals.entertainmentExpense },
-      { label: 'professionalServicesFees', values: results.expenses.individualMonthlyTotals.professionalServiceFee },
-
-      // Selling and general admin expenses
-      {
-        label: 'sellingAndGeneralAdminExpenses',
-        values: resultsCalculations.sellingAndGeneralAdmin.monthlyTotals,
-      },
-
-      // Operating income section
-      { label: 'operatingIncome', values: resultsCalculations.operatingIncome.monthlyTotals },
-
-      { label: 'nonOperatingIncome', values: results.projects.monthlyTotals.nonOperatingIncome },
-      { label: 'nonOperatingExpenses', values: results.projects.monthlyTotals.nonOperatingExpense },
-
-      { label: 'ordinaryIncome', values: resultsCalculations.ordinaryIncome.monthlyTotals },
-      { label: 'cumulativeOrdinaryIncome', values: cumulativeOrdinaryIncomeResultsValues },
-    ]
-
-    const resultsDataLabelsAndValues = labelsAndValuesResults.map((item) => ({
-      label: item.label,
-      values: organiseTotals(item.values, item.label), // planningData is included to calculate sales ratio
-    }))
-
-    setResultsData(resultsDataLabelsAndValues)
-  }, [planning, results])
+    setResultsData(resultsTableALabelsAndValues(results, resultsCalculations))
+  }, [planning, planningCalculations, results, resultsCalculations])
 
   // SALES RATIO (COMPARING RESULTS AND PLANNING)
   const getTotalsOnlyArr = (dataArr) => dataArr.map((item) => item.values[item.values.length - 1])

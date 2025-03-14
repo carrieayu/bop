@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { UnknownAction } from '@reduxjs/toolkit'
-import { fetchAllClientData } from '../../reducers/table/tableSlice'
+import { useSelector } from 'react-redux'
 import Sidebar from '../../components/Sidebar/Sidebar'
-import Btn from '../../components/Button/Button'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { translate } from '../../utils/translationUtil'
@@ -15,19 +12,24 @@ import { RxHamburgerMenu } from 'react-icons/rx'
 import { getResultsA } from '../../api/ResultsEndpoint/GetResultsA'
 import * as XLSX from 'xlsx'
 import { monthNames, months, token } from '../../constants'
+// REDUCERS
+import { fetchCostOfSaleResult } from '../../reducers/costOfSale/costOfSaleResultSlice'
+import { fetchExpenseResult } from '../../reducers/expenses/expensesResultsSlice'
+import { fetchProjectResult } from '../../reducers/project/projectResultSlice'
+import { fetchEmployeeExpenseResult } from '../../reducers/employeeExpense/employeeExpenseResultSlice'
+// SELECTORS
+import { resultsSelector } from '../../selectors/results/resultsSelector'
+import { resultsCalculationsSelector } from '../../selectors/results/resultsCalculationSelectors'
+import { handleError } from '../../utils/helperFunctionsUtil'
+import { useAppDispatch } from '../../actions/hooks'
 
 const header = ['計画']
 const smallDate = ['2022/24月', '2022/25月', '2022/26月']
 const dates = ['04月', '05月', '06月', '07月', '08月', '09月', '10月', '11月', '12月', '1月', '2月', '3月']
 
 const ResultsListAndEdit = () => {
-  const [tableList, setTableList] = useState<any>([])
-  const dispatch = useDispatch()
-  const [currentPage, setCurrentPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(5)
-  const totalPages = Math.ceil(tableList?.length / rowsPerPage)
-  const select = [5, 10, 100]
-  const [paginatedData, setPaginatedData] = useState<any[]>([])
+  const dispatch = useAppDispatch()
+  const [data, setData] = useState<any[]>([])
   const [activeTab, setActiveTab] = useState('/results')
   const [isSwitchActive, setIsSwitchActive] = useState(false)
   const [isThousandYenChecked, setIsThousandYenChecked] = useState(false)
@@ -38,6 +40,29 @@ const ResultsListAndEdit = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [initialLanguage, setInitialLanguage] = useState(language)
   const [isXLSModalOpen, setIsXLSModalOpen] = useState(false)
+  const results = useSelector(resultsSelector)
+  const resultsCalculations = useSelector(resultsCalculationsSelector)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const fetchActions = [
+          { action: () => dispatch(fetchExpenseResult()) },
+          { action: () => dispatch(fetchCostOfSaleResult()) },
+          { action: () => dispatch(fetchEmployeeExpenseResult()) },
+          { action: () => dispatch(fetchProjectResult()) },
+        ]
+
+        await Promise.all(
+          fetchActions.map(({ action }) => action().catch((error) => handleError(action.name, error))),
+        )
+      } catch (error) {
+        console.error('Unexpected error:', error)
+      }
+    }
+
+    fetchData()
+  }, [dispatch])
 
   const additionalHeaders = {
     1: { en: 'H1', jp: '上期計	' },
@@ -743,14 +768,6 @@ const ResultsListAndEdit = () => {
     navigate(tab)
   }
 
-  const fetchData = async () => {
-    try {
-      const res = await dispatch(fetchAllClientData() as unknown as UnknownAction)
-      setTableList(res.payload)
-    } catch (e) {
-      console.error(e)
-    }
-  }
 
   useEffect(() => {
     if (isXLSModalOpen) {
@@ -764,14 +781,6 @@ const ResultsListAndEdit = () => {
     }
   }, [isXLSModalOpen])
 
-  useEffect(() => {
-    fetchData()
-  }, [])
-
-  useEffect(() => {
-    const startIndex = currentPage * rowsPerPage
-    setPaginatedData(tableList?.slice(startIndex, startIndex + rowsPerPage))
-  }, [currentPage, rowsPerPage, tableList])
 
   useEffect(() => {
     const path = location.pathname
@@ -779,19 +788,6 @@ const ResultsListAndEdit = () => {
       setActiveTab(path)
     }
   }, [location.pathname])
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page)
-  }
-
-  const handleRowsPerPageChange = (numRows: number) => {
-    setRowsPerPage(numRows)
-    setCurrentPage(0)
-  }
-
-  const handleSwitchToggle = () => {
-    setIsSwitchActive((prevState) => !prevState)
-  }
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
@@ -896,11 +892,11 @@ const ResultsListAndEdit = () => {
                 <div className='results_summary_tbl_cont'>
                   <div className={`table_content_results_summary ${isSwitchActive ? 'hidden' : ''}`}>
                     {/* Render the TablePlanning component here */}
-                    {isEditing ? <EditTableResults /> : <TableResultsA isThousandYenChecked={isThousandYenChecked} />}
+                    {isEditing ? <EditTableResults /> : <TableResultsA isThousandYenChecked={isThousandYenChecked} results={results} resultsCalculations={resultsCalculations} />}
                   </div>
                   <div className={`table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
                     <TableResultsB
-                      data={paginatedData}
+                      data={data}
                       header={header}
                       dates={dates}
                       smallDate={smallDate}

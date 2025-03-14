@@ -1,21 +1,28 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { UnknownAction } from '@reduxjs/toolkit'
-import { fetchAllClientData } from '../../reducers/table/tableSlice'
-import Sidebar from '../../components/Sidebar/Sidebar'
-import Btn from '../../components/Button/Button'
+import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
-import TablePlanningA from '../../components/Table/TablePlanningA'
-import { TablePlanningB } from '../../components/Table/TablePlanningB'
-import { useLanguage } from '../../contexts/LanguageContext'
+import { handleError } from '../../utils/helperFunctionsUtil'
 import { translate } from '../../utils/translationUtil'
+import { useLanguage } from '../../contexts/LanguageContext'
+import { TablePlanningB } from '../../components/Table/TablePlanningB'
+import Sidebar from '../../components/Sidebar/Sidebar'
+import TablePlanningA from '../../components/Table/TablePlanningA'
 import EditTablePlanning from '../../components/Table/EditTablePlanning'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import { dates, header, smallDate } from '../../constants'
+// REDUCERS
+import { fetchExpense } from '../../reducers/expenses/expensesSlice'
+import { fetchCostOfSale } from '../../reducers/costOfSale/costOfSaleSlice'
+import { fetchEmployeeExpense } from '../../reducers/employeeExpense/employeeExpenseSlice'
+import { fetchProject } from '../../reducers/project/projectSlice'
+import { useAppDispatch } from '../../actions/hooks'
+// SELECTORS
+import { planningSelector } from '../../selectors/planning/planningSelector'
+import { planningCalculationsSelector } from '../../selectors/planning/planningCalculationSelectors'
 
 const PlanningListAndEdit = () => {
   const [tableList, setTableList] = useState<any>([])
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const [currentPage, setCurrentPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const totalPages = Math.ceil(tableList?.length / rowsPerPage)
@@ -28,9 +35,10 @@ const PlanningListAndEdit = () => {
   const location = useLocation()
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-
   const [isEditing, setIsEditing] = useState(false)
   const [initialLanguage, setInitialLanguage] = useState(language)
+  const planning = useSelector(planningSelector)
+  const planningCalculations = useSelector(planningCalculationsSelector)
 
   const handleThousandYenToggle = () => {
     setIsThousandYenChecked((prevState) => !prevState)
@@ -40,6 +48,28 @@ const PlanningListAndEdit = () => {
     setIsThousandYenChecked(false)
     setIsEditing((prevState) => !prevState)
   }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const fetchActions = [
+          { action: () => dispatch(fetchExpense()) },
+          { action: () => dispatch(fetchCostOfSale()) },
+          { action: () => dispatch(fetchEmployeeExpense()) },
+          { action: () => dispatch(fetchProject()) },
+        ]
+
+        await Promise.all(
+          fetchActions.map(({ action }) => action().catch((error) => handleError(action.name, error))),
+        )
+      } catch (error) {
+        console.error('Unexpected error:', error)
+      }
+    }
+
+    fetchData()
+  }, [dispatch])
+
   useEffect(() => {
     if (isEditing) {
       setLanguage(initialLanguage)
@@ -50,19 +80,6 @@ const PlanningListAndEdit = () => {
     setActiveTab(tab)
     navigate(tab)
   }
-
-  const fetchData = async () => {
-    try {
-      const res = await dispatch(fetchAllClientData() as unknown as UnknownAction)
-      setTableList(res.payload)
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  useEffect(() => {
-    fetchData()
-  }, [])
 
   useEffect(() => {
     const startIndex = currentPage * rowsPerPage
@@ -196,7 +213,15 @@ const PlanningListAndEdit = () => {
                 <div className='planning_tbl_cont'>
                   <div className={`table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
                     {/* Render the TablePlanning component here */}
-                    {isEditing ? <EditTablePlanning /> : <TablePlanningA isThousandYenChecked={isThousandYenChecked} />}
+                    {isEditing ? (
+                      <EditTablePlanning />
+                    ) : (
+                      <TablePlanningA
+                        isThousandYenChecked={isThousandYenChecked}
+                        planning={planning}
+                        planningCalculations={planningCalculations}
+                      />
+                    )}
                   </div>
                   <div className={`table_content_props ${isSwitchActive ? '' : 'hidden'}`}>
                     <TablePlanningB
