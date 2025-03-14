@@ -100,6 +100,11 @@ const EmployeeExpensesList: React.FC = () => {
     fetchEmployeeExpenses()
   }, [])
 
+  useEffect((
+  ) => {
+      console.log('EmployeeExpenses', employeeExpenses)
+  },[employeeExpenses])
+
   const openModal = (users, id) => {
     setSelectedEmployeeExpenses(users)
     setModalIsOpen(true)

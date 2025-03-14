@@ -144,50 +144,64 @@ export const monthlyTotalsCostOfSalesFunction = (costOfSales) => {
 }
 
 // EMPLOYEE EXPENSES
+// Uses employee-expenses/list
 export const aggregatedEmployeeExpensesFunctionDashboard = (employee_expenses) => {
- return employee_expenses.reduce((acc, item) => {
-   const { month, employee, project, ...values } = item // Destructure employee and project
+  const parseNumber = (value) => Number(value) || 0
 
-   // Initialize month if not already present
-   if (!acc[month]) {
-     acc[month] = {
-       month,
-      //  employees: [employee], // Store employees as an array
-      //  projects: [project], // Store projects as an array
-       totalSalary: Number(item.salary) || 0, // Initialize totalSalary with the first employee's salary
-       totalExecutiveRemuneration: Number(item.executive_remuneration) || 0,
-       totalBonusAndFuel: Number(item.bonus_and_fuel_allowance) || 0,
-       totalStatutoryWelfare: Number(item.statutory_welfare_expense) || 0,
-       totalWelfare: Number(item.welfare_expense) || 0,
-       totalInsurancePremium: Number(item.insurance_premium) || 0,
-       ...values,
-     }
-   } else {
-     // Add the new employee and project objects to the array
-    //  acc[month].employees.push(employee)
-    //  acc[month].projects.push(project)
-     // Add the employee's salary to the total
-     acc[month].totalSalary += Number(item.salary) || 0
-     acc[month].totalExecutiveRemuneration += Number(item.executive_remuneration) || 0
-     acc[month].totalBonusAndFuel += Number(item.bonus_and_fuel_allowance) || 0
-     acc[month].totalStatutoryWelfare += Number(item.statutory_welfare_expense) || 0
-     acc[month].totalWelfare += Number(item.welfare_expense) || 0
-     acc[month].totalInsurancePremium += Number(item.insurance_premium) || 0
+  return employee_expenses.reduce((acc, item) => {
+    const { month, year, employee_expense_id, ...rest } = item
 
-     // Aggregate other numeric fields
-     Object.keys(values).forEach((key) => {
-       if (typeof values[key] === 'number') {
-         acc[month][key] += values[key]
-       } else if (typeof values[key] === 'string') {
-         // Handle strings like `created_at`, `updated_at`, and other concatenation-sensitive fields
-         acc[month][key] = values[key] // Keep the latest value or handle as needed
-       }
-     })
-   }
-   return acc
- }, {})
+    if (!acc[month]) {
+      acc[month] = {
+        month,
+        year,
+        employee_expense_id,
+        employees: [],
+        projects: [],
+        totalSalary: 0,
+        totalExecutiveRemuneration: 0,
+        totalBonusAndFuel: 0,
+        totalStatutoryWelfare: 0,
+        totalWelfare: 0,
+        totalInsurancePremium: 0,
+      }
+    }
+
+    // Add employee and project details
+    acc[month].employees.push({
+      employee_id: rest.employee_id,
+      employee_type: rest.employee_type,
+      first_name: rest.first_name,
+      last_name: rest.last_name,
+      salary: rest.salary,
+      executive_remuneration: rest.executive_remuneration,
+      bonus_and_fuel_allowance: rest.bonus_and_fuel_allowance,
+      statutory_welfare_expense: rest.statutory_welfare_expense,
+      welfare_expense: rest.welfare_expense,
+      insurance_premium: rest.insurance_premium,
+    })
+
+    acc[month].projects.push({
+      project_id: rest.project_id,
+      project_name: rest.project_name,
+      client_name: rest.client_name,
+      business_division_name: rest.business_division_name,
+    })
+
+    // Aggregate totals using parseNumber helper
+    acc[month].totalSalary += parseNumber(rest.salary)
+    acc[month].totalExecutiveRemuneration += parseNumber(rest.executive_remuneration)
+    acc[month].totalBonusAndFuel += parseNumber(rest.bonus_and_fuel_allowance)
+    acc[month].totalStatutoryWelfare += parseNumber(rest.statutory_welfare_expense)
+    acc[month].totalWelfare += parseNumber(rest.welfare_expense)
+    acc[month].totalInsurancePremium += parseNumber(rest.insurance_premium)
+
+    return acc
+  }, {})
 }
 
+
+// uses 'planningList' which strudtures employee expenses slightly differently to employee-expenes/list
 export const aggregatedEmployeeExpensesFunction = (employee_expenses) => {
   return employee_expenses.reduce((acc, item) => {
 
@@ -356,7 +370,6 @@ export const mapValue = (key, data) => {
 // EMPLOYEE EXPENSES FUNCTION FOR EMPLOYEE EXPENSES SLICE 
 // REFACTOR: I FEEL THIS COULD BE COMBINED WITH ALREADY EXISTING FUNCTION)
 export const employeeExpenseYearlyTotals = (employeeExpenses) => {
-  console.log('employee expenses:', employeeExpenses)
   const salaryTotal = sumValues(employeeExpenses.map((emp) => Number(emp.salary) || 0))
   const executiveRemunerationTotal = sumValues(employeeExpenses.map((emp) => Number(emp.executive_remuneration) || 0))
   const insurancePremiumTotal = sumValues(employeeExpenses.map((emp) => Number(emp.insurance_premium) || 0))

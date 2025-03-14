@@ -1,8 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
-import {
-
-} from '../../utils/tableAggregationUtil'
+import { aggregatedProjectsFunction, mapValue } from '../../utils/tableAggregationUtil'
 import { sumValues } from '../../utils/helperFunctionsUtil'
 
 export const projectsList = createSelector([(state: RootState) => state.project.list], (list) => list)
@@ -28,7 +26,7 @@ export const cumulativeOrdinaryIncome = createSelector(
   (operatingIncomeTotal, nonOperatingIncomeTotal, nonOperatingExpenseTotal) =>
     operatingIncomeTotal + nonOperatingIncomeTotal - nonOperatingExpenseTotal,
 )
-
+// FOR GRAPH
 export const salesRevenueMonthly = createSelector([projectsList], (list) =>
   list.map((project) => ({
     year: project.year,
@@ -36,7 +34,7 @@ export const salesRevenueMonthly = createSelector([projectsList], (list) =>
     total: project.sales_revenue,
   })),
 )
-
+// FOR GRAPH
 export const nonOperatingExpenseMonthly = createSelector([projectsList], (list) =>
   list.map((project) => ({
     year: project.year,
@@ -44,7 +42,7 @@ export const nonOperatingExpenseMonthly = createSelector([projectsList], (list) 
     total: project.non_operating_expense,
   })),
 )
-
+// FOR GRAPH
 export const nonOperatingIncomeMonthly = createSelector([projectsList], (list) =>
   list.map((project) => ({
     year: project.year,
@@ -53,6 +51,17 @@ export const nonOperatingIncomeMonthly = createSelector([projectsList], (list) =
   })),
 )
 
+export const projectsSelectMonthlyTotalsByCategory = createSelector([projectsList], (list) => {
+  const aggregatedProjectsData = aggregatedProjectsFunction(list)
+  
+  const monthlyTotals = {
+    nonOperatingIncome: mapValue('non_operating_income', aggregatedProjectsData),
+    nonOperatingExpense: mapValue('non_operating_expense', aggregatedProjectsData),
+    salesRevenue: mapValue('sales_revenue', aggregatedProjectsData),
+  }
+
+  return monthlyTotals
+})
 // **New Memoized Selector for projectsPlanning**
 
 export const projectsPlanningSelector = createSelector(
@@ -66,6 +75,7 @@ export const projectsPlanningSelector = createSelector(
     salesRevenueMonthly,
     nonOperatingIncomeMonthly,
     nonOperatingExpenseMonthly,
+    projectsSelectMonthlyTotalsByCategory,
   ],
   (
     list,
@@ -77,6 +87,7 @@ export const projectsPlanningSelector = createSelector(
     salesRevenueMonthly,
     nonOperatingIncomeMonthly,
     nonOperatingExpenseMonthly,
+    monthlyTotals,
   ) => ({
     list,
     salesRevenueTotal,
@@ -87,5 +98,6 @@ export const projectsPlanningSelector = createSelector(
     salesRevenueMonthly,
     nonOperatingIncomeMonthly,
     nonOperatingExpenseMonthly,
+    monthlyTotals,
   }),
 )

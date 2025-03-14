@@ -3,21 +3,9 @@ import { useLanguage } from '../../contexts/LanguageContext'
 import { months, monthNames } from '../../constants'
 import { cumulativeSum, organiseTotals } from '../../utils/helperFunctionsUtil'
 import { translate } from '../../utils/translationUtil'
-import {
-  aggregatedCostOfSalesFunction,
-  aggregatedExpensesFunction,
-  aggregatedProjectsFunction,
-  costOfSalesTotalsFunction,
-  expensesTotalsFunction,
-  employeeExpensesTotalsFunction,
-  grossProfitFunction,
-  sellingAndGeneralAdminExpenseFunction,
-  operatingIncomeFunction,
-  ordinaryProfitFunction,
-  mapValue,
-  aggregatedEmployeeExpensesFunctionDashboard,
-  filterListMonthAndYear,
-} from '../../utils/tableAggregationUtil'
+import { useSelector } from 'react-redux'
+import { planningCalculationsSelector } from '../../selectors/planning/planningCalculationSelectors'
+import { resultsCalculationsSelector } from '../../selectors/results/resultsCalculationSelectors'
 
 interface TableDashboardProps {
   isThousandYenChecked: boolean
@@ -35,136 +23,70 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
   const [resultsData, setResultsData] = useState([])
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
+  const planningCalculations = useSelector(planningCalculationsSelector)
+  const resultsCalculations = useSelector(resultsCalculationsSelector)
 
-    // add cost of sales object? 
   useEffect(() => {
     // --- PLANNING TABLE DATA ---
-
-    // PLANNING:COST OF SALES
-    const aggregatedCostOfSalesData = aggregatedCostOfSalesFunction(planning.costOfSales.list)
-    // PLANNING:EXPENSES
-    const aggregatedExpensesData = aggregatedExpensesFunction(planning.expenses.list)
-    // PLANNING:EMPLOYEE EXPENSES
-    const aggregatedEmployeeExpensesData = aggregatedEmployeeExpensesFunctionDashboard(planning.employeeExpenses.list)
-    // PLANNING:PROJECTS
-    const aggregatedProjectsData = aggregatedProjectsFunction(planning.projects.list)
-    // PLANNING:SALES REVENUE
-    const salesRevenueValues = mapValue('sales_revenue', aggregatedProjectsData)
-    // PLANNING: COST OF SALES TOTALS VALUES
-    const costOfSalesValues = costOfSalesTotalsFunction(aggregatedCostOfSalesData)
-
-    const purchaseValues = mapValue('purchase', aggregatedCostOfSalesData)
-    const outsourcingExpenseValues = mapValue('outsourcing_expense', aggregatedCostOfSalesData)
-    const productPurchaseValues = mapValue('product_purchase', aggregatedCostOfSalesData)
-    const dispatchLaborExpenseValues = mapValue('dispatch_labor_expense', aggregatedCostOfSalesData)
-    const communicationCostValues = mapValue('communication_expense', aggregatedCostOfSalesData)
-    const workInProgressExpenseValues = mapValue('work_in_progress_expense', aggregatedCostOfSalesData)
-    const amortizationExpenseValues = mapValue('amortization_expense', aggregatedCostOfSalesData)
-
-    // PLANNING:GROSS PROFIT
-    const grossProfitValues = grossProfitFunction(salesRevenueValues, costOfSalesValues)
-    // PLANNING:EMPLOYEE EXPENSE
-    const employeeExpenseExecutiveRemunerationValues = mapValue(
-      'totalExecutiveRemuneration',
-      aggregatedEmployeeExpensesData,
-    )
-    const employeeExpenseSalaryValues = mapValue('totalSalary', aggregatedEmployeeExpensesData)
-    const employeeExpenseBonusAndFuelAllowanceValues = mapValue('totalBonusAndFuel', aggregatedEmployeeExpensesData)
-    const employeeExpenseStatutoryWelfareExpenseValues = mapValue(
-      'totalStatutoryWelfare',
-      aggregatedEmployeeExpensesData,
-    )
-    const employeeExpenseWelfareExpenseValues = mapValue('totalWelfare', aggregatedEmployeeExpensesData)
-    const employeeExpenseInsurancePremiumValues = mapValue('totalInsurancePremium', aggregatedEmployeeExpensesData)
-
-    // PLANNING:EMPLOYEE EXPENSE TOTALS
-    const employeeExpenseValues = employeeExpensesTotalsFunction(aggregatedEmployeeExpensesData)
-    // PLANNING:EXPENSES
-    const expenseValues = expensesTotalsFunction(aggregatedExpensesData)
-
-    const consumableValues = mapValue('consumable_expense', aggregatedExpensesData)
-    const rentValues = mapValue('rent_expense', aggregatedExpensesData)
-    const taxesPublicChargesValues = mapValue('tax_and_public_charge', aggregatedExpensesData)
-    const depreciationExpenseValues = mapValue('depreciation_expense', aggregatedExpensesData)
-    const travelExpenseValues = mapValue('travel_expense', aggregatedExpensesData)
-    const communicationExpenseValues = mapValue('communication_expense', aggregatedExpensesData)
-    const utilitiesValues = mapValue('utilities_expense', aggregatedExpensesData)
-    const transactionFeeValues = mapValue('transaction_fee', aggregatedExpensesData)
-    const advertisingExpenseValues = mapValue('advertising_expense', aggregatedExpensesData)
-    const entertainmentExpenseValues = mapValue('entertainment_expense', aggregatedExpensesData)
-    const professionalServiceFeeValues = mapValue('professional_service_fee', aggregatedExpensesData)
-
-    // PLANNING:SELLING AND GENERAL ADMIN EXPENSES
-    const sellingAndGeneralAdminExpenseValues = sellingAndGeneralAdminExpenseFunction(
-      employeeExpenseValues,
-      expenseValues,
-    )
-
-    // PLANNING:OPERATING INCOME
-    const operatingIncomeValues = operatingIncomeFunction(grossProfitValues, sellingAndGeneralAdminExpenseValues)
-
-    // Non-Operating Income & Expense
-    const nonOperatingIncomeValues = mapValue('non_operating_income', aggregatedProjectsData)
-    const nonOperatingExpenseValues = mapValue('non_operating_expense', aggregatedProjectsData)
-
-    // PLANNING:ORDINARY PROFIT
-    const ordinaryIncomeValues = ordinaryProfitFunction(
-      operatingIncomeValues,
-      nonOperatingIncomeValues,
-      nonOperatingExpenseValues,
-    )
-
-    const cumulativeOrdinaryIncomeValues = cumulativeSum(ordinaryIncomeValues)
+    const cumulativeOrdinaryIncomeValues = cumulativeSum(planningCalculations.ordinaryIncome.monthlyTotals)
 
     const labelsAndValues = [
       // Sales revenue section
-      { label: 'salesRevenue', values: salesRevenueValues },
-      { label: 'sales', values: salesRevenueValues },
+      { label: 'salesRevenue', values: planning.projects.monthlyTotals.salesRevenue },
+      { label: 'sales', values: planning.projects.monthlyTotals.salesRevenue },
 
       // Cost of sales section
-      { label: 'costOfSales', values: costOfSalesValues },
-      { label: 'purchases', values: purchaseValues },
-      { label: 'outsourcingExpenses', values: outsourcingExpenseValues },
-      { label: 'productPurchases', values: productPurchaseValues },
-      { label: 'dispatchLaborExpenses', values: dispatchLaborExpenseValues },
-      { label: 'communicationExpenses', values: communicationCostValues },
-      { label: 'workInProgressExpenses', values: workInProgressExpenseValues },
-      { label: 'amortizationExpenses', values: amortizationExpenseValues },
+      { label: 'costOfSales', values: planning.costOfSales.monthlyTotals },
+      { label: 'purchases', values: planning.costOfSales.individualMonthlyTotals.purchase },
+      { label: 'outsourcingExpenses', values: planning.costOfSales.individualMonthlyTotals.outsourcingExpense },
+      { label: 'productPurchases', values: planning.costOfSales.individualMonthlyTotals.productPurchase },
+      { label: 'dispatchLaborExpenses', values: planning.costOfSales.individualMonthlyTotals.dispatchLaborExpense },
+      { label: 'communicationExpenses', values: planning.costOfSales.individualMonthlyTotals.communicationExpense },
+      { label: 'workInProgressExpenses', values: planning.costOfSales.individualMonthlyTotals.workInProgressExpense },
+      { label: 'amortizationExpenses', values: planning.costOfSales.individualMonthlyTotals.amortizationExpense },
 
       // Gross profit
-      { label: 'grossProfit', values: grossProfitValues },
+      { label: 'grossProfit', values: planningCalculations.grossProfit.monthlyTotals },
 
       // Employee expense section
-      { label: 'employeeExpenses', values: employeeExpenseValues },
-      { label: 'executiveRemuneration', values: employeeExpenseExecutiveRemunerationValues },
-      { label: 'salary', values: employeeExpenseSalaryValues },
-      { label: 'bonusAndFuelAllowance', values: employeeExpenseBonusAndFuelAllowanceValues },
-      { label: 'statutoryWelfareExpenses', values: employeeExpenseStatutoryWelfareExpenseValues },
-      { label: 'welfareExpenses', values: employeeExpenseWelfareExpenseValues },
-      { label: 'insurancePremiums', values: employeeExpenseInsurancePremiumValues },
+      { label: 'employeeExpenses', values: planning.employeeExpenses.monthlyTotals },
+      {
+        label: 'executiveRemuneration',
+        values: planning.employeeExpenses.individualMonthlyTotals.executiveRemuneration,
+      },
+      { label: 'salary', values: planning.employeeExpenses.individualMonthlyTotals.salary },
+      { label: 'bonusAndFuelAllowance', values: planning.employeeExpenses.individualMonthlyTotals.bonusAndFuel },
+      { label: 'statutoryWelfareExpenses', values: planning.employeeExpenses.individualMonthlyTotals.statutoryWelfare },
+      { label: 'welfareExpenses', values: planning.employeeExpenses.individualMonthlyTotals.welfare },
+      { label: 'insurancePremiums', values: planning.employeeExpenses.individualMonthlyTotals.insurancePremium },
 
       // Expenses section
-      { label: 'expenses', values: expenseValues },
-      { label: 'consumableExpenses', values: consumableValues },
-      { label: 'rentExpenses', values: rentValues },
-      { label: 'taxesAndPublicCharges', values: taxesPublicChargesValues },
-      { label: 'depreciationExpenses', values: depreciationExpenseValues },
-      { label: 'travelExpenses', values: travelExpenseValues },
-      { label: 'communicationExpenses', values: communicationExpenseValues },
-      { label: 'utilitiesExpenses', values: utilitiesValues },
-      { label: 'transactionFees', values: transactionFeeValues },
-      { label: 'advertisingExpenses', values: advertisingExpenseValues },
-      { label: 'entertainmentExpenses', values: entertainmentExpenseValues },
-      { label: 'professionalServicesFees', values: professionalServiceFeeValues },
+      { label: 'expenses', values: planning.expenses.monthlyTotals },
+      { label: 'consumableExpenses', values: planning.expenses.individualMonthlyTotals.consumable },
+      { label: 'rentExpenses', values: planning.expenses.individualMonthlyTotals.rent },
+      { label: 'taxesAndPublicCharges', values: planning.expenses.individualMonthlyTotals.taxesPublicCharges },
+      { label: 'depreciationExpenses', values: planning.expenses.individualMonthlyTotals.depreciationExpense },
+      { label: 'travelExpenses', values: planning.expenses.individualMonthlyTotals.travelExpense },
+      { label: 'communicationExpenses', values: planning.expenses.individualMonthlyTotals.communicationExpense },
+      { label: 'utilitiesExpenses', values: planning.expenses.individualMonthlyTotals.utilities },
+      { label: 'transactionFees', values: planning.expenses.individualMonthlyTotals.transactionFee },
+      { label: 'advertisingExpenses', values: planning.expenses.individualMonthlyTotals.advertisingExpense },
+      { label: 'entertainmentExpenses', values: planning.expenses.individualMonthlyTotals.entertainmentExpense },
+      { label: 'professionalServicesFees', values: planning.expenses.individualMonthlyTotals.professionalServiceFee },
 
       // Selling and general admin expenses
-      { label: 'sellingAndGeneralAdminExpensesShort', values: sellingAndGeneralAdminExpenseValues },
+      {
+        label: 'sellingAndGeneralAdminExpensesShort',
+        values: planningCalculations.sellingAndGeneralAdmin.monthlyTotals,
+      },
 
       // Operating income section
-      { label: 'operatingIncome', values: operatingIncomeValues },
-      { label: 'nonOperatingIncome', values: nonOperatingIncomeValues },
-      { label: 'nonOperatingExpenses', values: nonOperatingExpenseValues },
-      { label: 'ordinaryIncome', values: ordinaryIncomeValues },
+      { label: 'operatingIncome', values: planningCalculations.operatingIncome.monthlyTotals },
+
+      { label: 'nonOperatingIncome', values: planning.projects.monthlyTotals.nonOperatingIncome },
+      { label: 'nonOperatingExpenses', values: planning.projects.monthlyTotals.nonOperatingExpense },
+
+      { label: 'ordinaryIncome', values: planningCalculations.ordinaryIncome.monthlyTotals },
       { label: 'cumulativeOrdinaryIncome', values: cumulativeOrdinaryIncomeValues },
     ]
 
@@ -175,149 +97,66 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
 
     setPlanningData(planningDataLabelsAndValues)
 
-    // --- RESULTS TABLE DATA ---
-
-    // RESULTS:COST OF SALES
-    const aggregatedResultsCostOfSalesData = aggregatedCostOfSalesFunction(results.costOfSales.list)
-    // RESULTS:EXPENSES
-    const aggregatedResultsExpensesData = aggregatedExpensesFunction(results.expenses.list)
-    // RESULTS:EMPLOYEE EXPENSES
-    const aggregatedResultsEmployeeExpensesData = aggregatedEmployeeExpensesFunctionDashboard(
-      results.employeeExpenses.list,
-    )
-    // RESULTS:PROJECTS
-    const aggregatedResultsProjectsData = aggregatedProjectsFunction(filterListMonthAndYear(results.projects.list))
-    // RESULTS:SALES REVENUE
-    const salesRevenueResultsValues = mapValue('sales_revenue', aggregatedResultsProjectsData)
-    // RESULTS:COST OF SALES
-    const costOfSalesResultsValues = costOfSalesTotalsFunction(aggregatedResultsCostOfSalesData)
-
-    const purchaseResultsValues = mapValue('purchase', aggregatedResultsCostOfSalesData)
-    const outsourcingExpenseResultsValues = mapValue('outsourcing_expense', aggregatedResultsCostOfSalesData)
-    const productPurchaseResultsValues = mapValue('product_purchase', aggregatedResultsCostOfSalesData)
-    const dispatchLaborExpenseResultsValues = mapValue('dispatch_labor_expense', aggregatedResultsCostOfSalesData)
-    const communicationCostResultsValues = mapValue('communication_expense', aggregatedResultsCostOfSalesData)
-    const workInProgressResultsValues = mapValue('work_in_progress_expense', aggregatedResultsCostOfSalesData)
-    const amortizationResultsValues = mapValue('amortization_expense', aggregatedResultsCostOfSalesData)
-
-    // RESULTS:GROSS PROFIT
-    const grossProfitResultsValues = grossProfitFunction(salesRevenueResultsValues, costOfSalesResultsValues)
-    // RESULTS:EMPLOYEE EXPENSE
-    const employeeExpenseExecutiveRemunerationResultsValues = mapValue(
-      'totalExecutiveRemuneration',
-      aggregatedResultsEmployeeExpensesData,
-    )
-    const employeeExpenseSalaryResultsValues = mapValue('totalSalary', aggregatedResultsEmployeeExpensesData)
-    const employeeExpenseBonusAndFuelAllowanceResultsValues = mapValue(
-      'totalBonusAndFuel',
-      aggregatedResultsEmployeeExpensesData,
-    )
-    const employeeExpenseStatutoryWelfareExpenseResultsValues = mapValue(
-      'totalStatutoryWelfare',
-      aggregatedResultsEmployeeExpensesData,
-    )
-    const employeeExpenseWelfareExpenseResultsValues = mapValue('totalWelfare', aggregatedResultsEmployeeExpensesData)
-    const employeeExpenseInsurancePremiumResultsValues = mapValue(
-      'totalInsurancePremium',
-      aggregatedResultsEmployeeExpensesData,
-    )
-
-    // RESULTS:EMPLOYEE EXPENSE TOTALS
-    const employeeExpensesResultsValues = employeeExpensesTotalsFunction(aggregatedResultsEmployeeExpensesData)
-    // RESULTS:EXPENSES
-    const expenseResultsValues = expensesTotalsFunction(aggregatedResultsExpensesData)
-
-    const consumableResultsValues = mapValue('consumable_expense', aggregatedResultsExpensesData)
-    const rentResultsValues = mapValue('rent_expense', aggregatedResultsExpensesData)
-    const taxesPublicChargesResultsValues = mapValue('tax_and_public_charge', aggregatedResultsExpensesData)
-    const depreciationExpensesResultsValues = mapValue('depreciation_expense', aggregatedResultsExpensesData)
-    const travelExpenseResultsValues = mapValue('travel_expense', aggregatedResultsExpensesData)
-    const communicationExpenseResultsValues = mapValue('communication_expense', aggregatedResultsExpensesData)
-    const utilitiesResultsValues = mapValue('utilities_expense', aggregatedResultsExpensesData)
-    const transactionFeeResultsValues = mapValue('transaction_fee', aggregatedResultsExpensesData)
-    const advertisingExpenseResultsValues = mapValue('advertising_expense', aggregatedResultsExpensesData)
-    const entertainmentExpenseResultsValues = mapValue('entertainment_expense', aggregatedResultsExpensesData)
-    const professionalServiceFeeResultsValues = mapValue('professional_service_fee', aggregatedResultsExpensesData)
-
-    // RESULTS:SELLING AND GENERAL ADMIN EXPENSES
-    const sellingAndGeneralAdminExpenseResultsValues = sellingAndGeneralAdminExpenseFunction(
-      employeeExpensesResultsValues,
-      expenseResultsValues,
-    )
-
-    // RESULTS:OPERATING INCOME
-    const operatingIncomeResultsValues = operatingIncomeFunction(
-      grossProfitResultsValues,
-      sellingAndGeneralAdminExpenseResultsValues,
-    )
-
-    //Non-Operating Income & Expense
-    const nonOperatingIncomeResultsValues = mapValue('non_operating_income', aggregatedResultsProjectsData)
-    const nonOperatingExpensesResultsValues = mapValue('non_operating_expense', aggregatedResultsProjectsData)
-
-    // RESULTS:ORDINARY PROFIT
-    const ordinaryIncomeResultsValues = ordinaryProfitFunction(
-      operatingIncomeResultsValues,
-      nonOperatingIncomeResultsValues,
-      nonOperatingExpensesResultsValues,
-    )
-
-    const cumulativeOrdinaryIncomeResultsValues = cumulativeSum(ordinaryIncomeResultsValues)
+    // RESULTS TABLE DATA
+    const cumulativeOrdinaryIncomeResultsValues = cumulativeSum(resultsCalculations.ordinaryIncome.monthlyTotals)
 
     const labelsAndValuesResults = [
       // Sales revenue section
-      { label: 'salesRevenue', values: salesRevenueResultsValues },
-      { label: 'sales', values: salesRevenueResultsValues },
+      { label: 'salesRevenue', values: results.projects.monthlyTotals.salesRevenue },
+      { label: 'sales', values: results.projects.monthlyTotals.salesRevenue },
 
       // Cost of sales section
-      { label: 'costOfSales', values: costOfSalesResultsValues },
-      { label: 'purchases', values: purchaseResultsValues },
-      { label: 'outsourcingExpenses', values: outsourcingExpenseResultsValues },
-      { label: 'productPurchases', values: productPurchaseResultsValues },
-      { label: 'dispatchLaborExpenses', values: dispatchLaborExpenseResultsValues },
-      { label: 'communicationExpenses', values: communicationCostResultsValues },
-      { label: 'workInProgressExpenses', values: workInProgressResultsValues },
-      { label: 'amortizationExpenses', values: amortizationResultsValues },
+      { label: 'costOfSales', values: results.costOfSales.monthlyTotals },
+      { label: 'purchases', values: results.costOfSales.individualMonthlyTotals.purchase },
+      { label: 'outsourcingExpenses', values: results.costOfSales.individualMonthlyTotals.outsourcingExpense },
+      { label: 'productPurchases', values: results.costOfSales.individualMonthlyTotals.productPurchase },
+      { label: 'dispatchLaborExpenses', values: results.costOfSales.individualMonthlyTotals.dispatchLaborExpense },
+      { label: 'communicationExpenses', values: results.costOfSales.individualMonthlyTotals.communicationExpense },
+      { label: 'workInProgressExpenses', values: results.costOfSales.individualMonthlyTotals.workInProgressExpense },
+      { label: 'amortizationExpenses', values: results.costOfSales.individualMonthlyTotals.amortizationExpense },
 
       // Gross profit
-      { label: 'grossProfit', values: grossProfitResultsValues },
+      { label: 'grossProfit', values: resultsCalculations.grossProfit.monthlyTotals },
 
       // Employee expense section
-      { label: 'employeeExpenses', values: employeeExpensesResultsValues },
-      { label: 'executiveRemuneration', values: employeeExpenseExecutiveRemunerationResultsValues },
-      { label: 'salary', values: employeeExpenseSalaryResultsValues },
-      { label: 'bonusAndFuelAllowance', values: employeeExpenseBonusAndFuelAllowanceResultsValues },
-      { label: 'statutoryWelfareExpenses', values: employeeExpenseStatutoryWelfareExpenseResultsValues },
-      { label: 'welfareExpenses', values: employeeExpenseWelfareExpenseResultsValues },
-      { label: 'insurancePremiums', values: employeeExpenseInsurancePremiumResultsValues },
+      { label: 'employeeExpenses', values: results.employeeExpenses.monthlyTotals },
+      {
+        label: 'executiveRemuneration',
+        values: results.employeeExpenses.individualMonthlyTotals.executiveRemuneration,
+      },
+      { label: 'salary', values: results.employeeExpenses.individualMonthlyTotals.salary },
+      { label: 'bonusAndFuelAllowance', values: results.employeeExpenses.individualMonthlyTotals.bonusAndFuel },
+      { label: 'statutoryWelfareExpenses', values: results.employeeExpenses.individualMonthlyTotals.statutoryWelfare },
+      { label: 'welfareExpenses', values: results.employeeExpenses.individualMonthlyTotals.welfare },
+      { label: 'insurancePremiums', values: results.employeeExpenses.individualMonthlyTotals.insurancePremium },
 
       // Expenses section
-      { label: 'expenses', values: expenseResultsValues },
-      { label: 'consumableExpenses', values: consumableResultsValues },
-      { label: 'rentExpenses', values: rentResultsValues },
-      { label: 'taxesAndPublicCharges', values: taxesPublicChargesResultsValues },
-      { label: 'depreciationExpenses', values: depreciationExpensesResultsValues },
-      { label: 'travelExpenses', values: travelExpenseResultsValues },
-      { label: 'communicationExpenses', values: communicationExpenseResultsValues },
-      { label: 'utilitiesExpenses', values: utilitiesResultsValues },
-      { label: 'transactionFees', values: transactionFeeResultsValues },
-      { label: 'advertisingExpenses', values: advertisingExpenseResultsValues },
-      { label: 'entertainmentExpenses', values: entertainmentExpenseResultsValues },
-      { label: 'professionalServicesFees', values: professionalServiceFeeResultsValues },
+      { label: 'expenses', values: results.expenses.monthlyTotals },
+      { label: 'consumableExpenses', values: results.expenses.individualMonthlyTotals.consumable },
+      { label: 'rentExpenses', values: results.expenses.individualMonthlyTotals.rent },
+      { label: 'taxesAndPublicCharges', values: results.expenses.individualMonthlyTotals.taxesPublicCharges },
+      { label: 'depreciationExpenses', values: results.expenses.individualMonthlyTotals.depreciationExpense },
+      { label: 'travelExpenses', values: results.expenses.individualMonthlyTotals.travelExpense },
+      { label: 'communicationExpenses', values: results.expenses.individualMonthlyTotals.communicationExpense },
+      { label: 'utilitiesExpenses', values: results.expenses.individualMonthlyTotals.utilities },
+      { label: 'transactionFees', values: results.expenses.individualMonthlyTotals.transactionFee },
+      { label: 'advertisingExpenses', values: results.expenses.individualMonthlyTotals.advertisingExpense },
+      { label: 'entertainmentExpenses', values: results.expenses.individualMonthlyTotals.entertainmentExpense },
+      { label: 'professionalServicesFees', values: results.expenses.individualMonthlyTotals.professionalServiceFee },
 
       // Selling and general admin expenses
       {
         label: 'sellingAndGeneralAdminExpenses',
-        values: sellingAndGeneralAdminExpenseResultsValues,
+        values: resultsCalculations.sellingAndGeneralAdmin.monthlyTotals,
       },
 
       // Operating income section
-      { label: 'operatingIncome', values: operatingIncomeResultsValues },
+      { label: 'operatingIncome', values: resultsCalculations.operatingIncome.monthlyTotals },
 
-      { label: 'nonOperatingIncome', values: nonOperatingIncomeResultsValues },
-      { label: 'nonOperatingExpenses', values: nonOperatingExpensesResultsValues },
+      { label: 'nonOperatingIncome', values: results.projects.monthlyTotals.nonOperatingIncome },
+      { label: 'nonOperatingExpenses', values: results.projects.monthlyTotals.nonOperatingExpense },
 
-      { label: 'ordinaryIncome', values: ordinaryIncomeResultsValues },
+      { label: 'ordinaryIncome', values: resultsCalculations.ordinaryIncome.monthlyTotals },
       { label: 'cumulativeOrdinaryIncome', values: cumulativeOrdinaryIncomeResultsValues },
     ]
 

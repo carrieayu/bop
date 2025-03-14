@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
-import {} from '../../utils/tableAggregationUtil'
+import { aggregatedProjectsFunction, filterListMonthAndYear, mapValue } from '../../utils/tableAggregationUtil'
 import { sumValues } from '../../utils/helperFunctionsUtil'
 
 export const projectsList = createSelector([(state: RootState) => state.projectResult.list], (list) => list)
@@ -51,6 +51,18 @@ export const nonOperatingIncomeMonthly = createSelector([projectsList], (list) =
   })),
 )
 
+export const projectsSelectMonthlyTotalsByCategory = createSelector([projectsList], (list) => {
+  const aggregatedProjectsData = aggregatedProjectsFunction(filterListMonthAndYear(list))
+  
+  const monthlyTotals = {
+    nonOperatingIncome: mapValue('non_operating_income', aggregatedProjectsData),
+    nonOperatingExpense: mapValue('non_operating_expense', aggregatedProjectsData),
+    salesRevenue: mapValue('sales_revenue', aggregatedProjectsData),
+  }
+
+  return monthlyTotals
+})
+
 // **New Memoized Selector for projectsResults**
 
 export const projectsResultsSelector = createSelector(
@@ -64,6 +76,7 @@ export const projectsResultsSelector = createSelector(
     salesRevenueMonthly,
     nonOperatingIncomeMonthly,
     nonOperatingExpenseMonthly,
+    projectsSelectMonthlyTotalsByCategory,
   ],
   (
     list,
@@ -75,6 +88,7 @@ export const projectsResultsSelector = createSelector(
     salesRevenueMonthly,
     nonOperatingIncomeMonthly,
     nonOperatingExpenseMonthly,
+    monthlyTotals,
   ) => ({
     list,
     salesRevenueTotal,
@@ -85,5 +99,6 @@ export const projectsResultsSelector = createSelector(
     salesRevenueMonthly,
     nonOperatingIncomeMonthly,
     nonOperatingExpenseMonthly,
+    monthlyTotals,
   }),
 )

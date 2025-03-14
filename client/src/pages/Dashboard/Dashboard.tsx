@@ -47,12 +47,14 @@ const Dashboard = () => {
   // DATA FOR 'CARDS' AND 'TABLE'
   const planning = useSelector(planningSelector) // contains data/totals etc. from PLANNING: expenses, costOfSales, projects, employeeExpenses
   const results = useSelector(resultsSelector) // contains data/totals etc. from RESULTS: expenses, costOfSales, projects, employeeExpenses
+  console.log('planning', planning)
   // DATA FOR 'GRAPH'
   const planningGraph = useSelector(planningGraphDataPreparedSelector)
   const resultsGraph = useSelector(resultsGraphDataPreparedSelector)
   // Organises the graph data for the charts. Color, Chart Type (Line/Bar) etc.
   const planningAndResultGraphData = organiseGraphData(planningGraph, resultsGraph, language)
 
+ 
   const handleGraphChange = (e) => {
     const value = parseInt(e.target.value, 10)
     const options = ['planning', 'results', 'both']

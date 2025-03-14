@@ -13,7 +13,7 @@ export const calculateGrossProfitMargin = (grossProfit, salesRevenue) => (grossP
 export const calculateSellingAndGeneralAdmin = (employeeExpense, expense) => employeeExpense + expense
 // Operating Income
 export const calculateOperatingIncome = (grossProfit, sellingAndGeneralAdmin) => grossProfit - sellingAndGeneralAdmin
-export const calculateOperatingProfitMargin = (salesRevenue, operatingIncome) => (operatingIncome / salesRevenue) * 100
+export const calculateOperatingProfitMargin = (operatingIncome, salesRevenue) => (operatingIncome / salesRevenue) * 100
 // Ordinary Income
 export const calculateOrdinaryIncome = (operatingIncome, nonOperatingIncome, nonOperatingExpense) =>
   operatingIncome + nonOperatingIncome - nonOperatingExpense

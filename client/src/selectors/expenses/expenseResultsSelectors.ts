@@ -3,6 +3,7 @@ import { RootState } from '../../app/store'
 import {
   aggregatedExpensesFunction,
   expensesTotalsFunction,
+  mapValue,
   monthlyTotalsExpensesFunction,
 } from '../../utils/tableAggregationUtil'
 import { sumValues } from '../../utils/helperFunctionsUtil'
@@ -27,14 +28,41 @@ export const expensesCategoryTotals = createSelector([expensesList], (list) => {
   return expensesTotalsFunction(list, true)
 })
 
+export const expensesSelectMonthlyTotalsByCategory = createSelector([expensesList], (list) => {
+  const aggregatedExpensesData = aggregatedExpensesFunction(list)
+
+  const monthlyTotals = {
+    consumable: mapValue('consumable_expense', aggregatedExpensesData),
+    rent: mapValue('rent_expense', aggregatedExpensesData),
+    taxesPublicCharges: mapValue('tax_and_public_charge', aggregatedExpensesData),
+    depreciationExpense: mapValue('depreciation_expense', aggregatedExpensesData),
+    travelExpense: mapValue('travel_expense', aggregatedExpensesData),
+    communicationExpense: mapValue('communication_expense', aggregatedExpensesData),
+    utilities: mapValue('utilities_expense', aggregatedExpensesData),
+    transactionFee: mapValue('transaction_fee', aggregatedExpensesData),
+    advertisingExpense: mapValue('advertising_expense', aggregatedExpensesData),
+    entertainmentExpense: mapValue('entertainment_expense', aggregatedExpensesData),
+    professionalServiceFee: mapValue('professional_service_fee', aggregatedExpensesData),
+  }
+  return monthlyTotals
+})
+
 // **New Memoized Selector for expensesResults**
 export const expensesResultsSelector = createSelector(
-  [expensesList, expensesTotals, expensesSelectMonthlyTotalsByDate, expensesYearlyTotals, expensesCategoryTotals],
-  (list, totals, monthlyTotalsByDate, yearlyTotal, categories) => ({
+  [
+    expensesList,
+    expensesTotals,
+    expensesSelectMonthlyTotalsByDate,
+    expensesYearlyTotals,
+    expensesCategoryTotals,
+    expensesSelectMonthlyTotalsByCategory,
+  ],
+  (list, totals, monthlyTotalsByDate, yearlyTotal, categories, individualMonthlyTotals) => ({
     list,
     monthlyTotals: totals,
     monthlyTotalsByDate,
     yearlyTotal,
     categories,
+    individualMonthlyTotals,
   }),
 )
