@@ -4,7 +4,9 @@ import { aggregatedEmployeeExpensesFunctionDashboard, employeeExpensesTotalsFunc
 
 // RESULTS
 
-export const employeeExpensesList = createSelector([(state: RootState) => state.employeeExpenseResult.list], (list) => list)
+export const employeeExpensesList = createSelector([(state: RootState) => state.employeeExpenseResult.list], (list) =>
+  list.map((item) => ({ ...item })),
+)
 
 export const employeeExpensesMonthlyTotals = createSelector([employeeExpensesList], (list) => {
   const aggregatedEmployeeExpensesData = aggregatedEmployeeExpensesFunctionDashboard(list)

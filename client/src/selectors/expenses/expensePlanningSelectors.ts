@@ -8,7 +8,9 @@ import {
 } from '../../utils/tableAggregationUtil'
 import { sumValues } from '../../utils/helperFunctionsUtil'
 
-export const expensesList = createSelector([(state: RootState) => state.expenses.list], (list) => list)
+export const expensesList = createSelector([(state: RootState) => state.expenses.list], (list) =>
+  list.map((item) => ({ ...item })),
+)
 
 export const expensesTotals = createSelector([expensesList], (list) => {
   const aggregatedExpensesData = aggregatedExpensesFunction(list)

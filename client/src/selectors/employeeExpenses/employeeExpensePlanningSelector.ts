@@ -10,7 +10,7 @@ import {
 
 //PLANNING
 
-export const employeeExpensesList = createSelector([(state: RootState) => state.employeeExpense.list], (list) => list)
+export const employeeExpensesList = createSelector([(state: RootState) => state.employeeExpense.list], (list) => list.map((item) => ({...item})))
 
 export const employeeExpensesMonthlyTotals = createSelector([employeeExpensesList], (list) => {
   const aggregatedEmployeeExpensesData = aggregatedEmployeeExpensesFunctionDashboard(list)

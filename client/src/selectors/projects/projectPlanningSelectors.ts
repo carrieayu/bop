@@ -3,7 +3,9 @@ import { RootState } from '../../app/store'
 import { aggregatedProjectsFunction, mapValue } from '../../utils/tableAggregationUtil'
 import { sumValues } from '../../utils/helperFunctionsUtil'
 
-export const projectsList = createSelector([(state: RootState) => state.project.list], (list) => list)
+export const projectsList = createSelector([(state: RootState) => state.project.list], (list) =>
+  list.map((item) => ({ ...item })),
+)
 
 export const salesRevenueTotal = createSelector([projectsList], (list) =>
   sumValues(list.map((project) => project.sales_revenue)),

@@ -5,7 +5,7 @@ import { sumValues } from "../../utils/helperFunctionsUtil";
 
 // PLANNING
 
-export const costOfSalesList =createSelector([(state:RootState) => state.costOfSale.list], (list)=> list)
+export const costOfSalesList =createSelector([(state:RootState) => state.costOfSale.list], (list)=> list.map((item) => ({...item})))
 
 export const costOfSalesTotals = createSelector([costOfSalesList], (list) => {
   const aggregatedCostOfSalesData = aggregatedCostOfSalesFunction(list)
