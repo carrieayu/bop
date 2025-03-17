@@ -16,7 +16,7 @@ import { getEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpo
 import { deleteEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/DeleteEmployeeExpenseResult'
 import { deleteProjectAssociationResults } from '../../api/EmployeeExpensesResultEndpoint/DeleteProjectAssociationResults'
 import { formatNumberWithCommas, handleResultsListTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
-import { monthNames, resultsScreenTabs, token } from '../../constants'
+import { monthNames, resultsScreenTabs, token, ACCESS_TOKEN } from '../../constants'
 import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes";
 
 const months: number[] = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3] // Store as numbers
@@ -80,25 +80,6 @@ const EmployeeExpensesResultsList: React.FC = () => {
   const handleNewRegistrationClick = () => {
     navigate('/employee-expenses-results-registration')
   }
-
-  // Fetch employee expenses data
-  useEffect(() => {
-    const fetchEmployeeExpenses = async () => {
-      getEmployeeExpenseResults(token)
-        .then((data) => {
-          setEmployeeExpenses(data)
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('Error fetching employee expenses:', error)
-          }
-        })
-    }
-
-    fetchEmployeeExpenses()
-  }, [])
 
   const openModal = (users, id) => {
     setSelectedEmployeeExpenses(users)
@@ -168,9 +149,27 @@ const EmployeeExpensesResultsList: React.FC = () => {
       })
   }
 
+  // Fetch employee expenses data
   useEffect(() => {
     checkAccessToken(setIsAuthorized).then(result => {
-      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+      if (!result) {
+          showAlertPopup(handleTimeoutConfirm);
+      } else {
+        const fetchEmployeeExpenses = async () => {
+          getEmployeeExpenseResults(localStorage.getItem(ACCESS_TOKEN))
+            .then((data) => {
+              setEmployeeExpenses(data)
+            })
+            .catch((error) => {
+              if (error.response && error.response.status === 401) {
+                window.location.href = '/login' // Redirect to login if unauthorized
+              } else {
+                console.error('Error fetching employee expenses:', error)
+              }
+            })
+        }
+        fetchEmployeeExpenses()
+      }
     });
   }, [token])
 

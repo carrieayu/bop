@@ -16,7 +16,7 @@ import { getFilteredProjectSalesResults } from '../../api/ProjectSalesResultsEnd
 import { createProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/CreateProjectSalesResults'
 import { overwriteProjectSalesResult } from '../../api/ProjectSalesResultsEndpoint/OverwriteProjectSalesResults'
 import { getProject } from '../../api/ProjectsEndpoint/GetProject'
-import { maximumEntries, monthNames, months, resultsScreenTabs, token, years } from '../../constants'
+import { maximumEntries, monthNames, months, resultsScreenTabs, token, years, ACCESS_TOKEN } from '../../constants'
 import { addFormInput, closeModal, openModal } from '../../actions/hooks'
 import {
   validateRecords,
@@ -252,149 +252,6 @@ const handleAdd = () => {
       })
     })
   }
-
-  useEffect(() => {
-    formProjects.forEach((project, index) => {
-      const month = project.month || null
-      const year = project.year || null
-      const projectId = project.project_name || null
-      if (month !== null || year !== null || projectId !== null) {
-        const filterParams = {
-          ...(month !== null && { month }),
-          ...(year !== null && { year }),
-          ...(projectId !== null && { projectId }),
-        }
-        if (filterParams.year) {
-          getFilteredProjectSalesResults(filterParams, token)
-            .then((data) => {
-              const uniqueData = data.filter(
-                (item, index, self) =>
-                  index === self.findIndex((t) => t.month === item.month)
-              );
-              setFilteredMonth((prev) => {
-                return prev.map((month, monthIndex) => {
-                  if (index == monthIndex) {
-                    return { month: uniqueData }
-                  }
-                  return month
-                })
-              })
-            })
-        }
-        if (filterParams.year && filterParams.month && filterParams.projectId) {
-          getFilteredProjectSalesResults(filterParams, token)
-            .then((data) => {
-              let matchedClients = []
-              let matchedBusinessDivision = []
-              data.forEach((item) => {
-                const client_id = item.client
-                const business_id = item.business_division
-                const filteredClients = clients.filter((client) => client.client_id === client_id)
-                const filteredBusinessDivision = businessSelection.filter(
-                  (business) => business.business_division_id === business_id,
-                )
-                if (filteredClients.length > 0) {
-                  matchedClients = [...matchedClients, ...filteredClients]
-                }
-                if (filteredBusinessDivision.length > 0) {
-                  matchedBusinessDivision = [...matchedBusinessDivision, ...filteredBusinessDivision]
-                }
-              })
-              setBusinessDivisionFilter((prev) => {
-                return prev.map((row, projectIndex) => {
-                  if (index == projectIndex) {
-                    return {
-                      divisions: matchedBusinessDivision,
-                    }
-                  }
-                  return row
-                })
-              })
-              setClientsFilter((prev) => {
-                return prev.map((row, projectIndex) => {
-                  if (index == projectIndex) {
-                    return {
-                      clients: matchedClients,
-                    }
-                  }
-                  return row
-                })
-              })
-              setProjectsList((prev) => {
-                return prev.map((row, projectIndex) => {
-                  if (index == projectIndex) {
-                    return {
-                      projects: data,
-                    }
-                  }
-                  return row
-                })
-              })
-              setProjectDataResult(data)
-            })
-            .catch((error) => {
-              console.error('Error fetching project sales result list:', error)
-            })
-        } else if (filterParams.year && filterParams.month) {
-          setEnabled(true)
-          getFilteredProjectSalesResults(filterParams, token).then((data) => {
-            setProjectsListSelection((prev) => {
-              return prev.map((row, projectIndex) => {
-                if (index == projectIndex) {
-                  return {
-                    projects: data,
-                  }
-                }
-                return row
-              })
-            })
-            setBusinessDivisionFilter((prev) => {
-              return prev.map((row, projectIndex) => {
-                if (index == projectIndex) {
-                  return {
-                    divisions: [],
-                  }
-                }
-                return row
-              })
-            })
-            setClientsFilter((prev) => {
-              return prev.map((row, projectIndex) => {
-                if (index == projectIndex) {
-                  return {
-                    clients: [],
-                  }
-                }
-                return row
-              })
-            })
-            setProjectsList((prev) => {
-              return prev.map((row, projectIndex) => {
-                if (index == projectIndex) {
-                  return {
-                    projects: [],
-                  }
-                }
-                return row
-              })
-            })
-            setProjectDataResult(data)
-          })
-          console.log(projectListSelection)
-        } else {
-          setEnabled(false)
-        }
-      }
-    })
-    getProject(token)
-      .then((data) => {
-        console.table(data);
-        setProjectYear(data)
-      })
-      .catch((error) => {
-        console.log(' error fetching project sales results data: ' + error)
-      })
-  }, [formProjects])
 
   const HandleClientChange = (e) => {
     setSelectedClient(e.target.value)
@@ -645,20 +502,165 @@ const handleAdd = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
     setLanguage(newLanguage)
   }
-  useEffect(() => {
-    fetchDivision()
-    fetchClients()
-  }, [token])
 
   const handleListClick = () => {
     navigate('/project-sales-results-list')
   }
 
+  const fetchGetProject = async () => {
+    getProject(localStorage.getItem(ACCESS_TOKEN))
+      .then((data) => {
+        console.table(data);
+        setProjectYear(data)
+      })
+      .catch((error) => {
+        console.log(' error fetching project sales results data: ' + error)
+      })
+  }
+
   useEffect(() => {
     checkAccessToken(setIsAuthorized).then(result => {
-      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+      if (!result) {
+        showAlertPopup(handleTimeoutConfirm);
+      } else {
+        fetchDivision()
+        fetchClients()
+        formProjects.forEach((project, index) => {
+          const month = project.month || null
+          const year = project.year || null
+          const projectId = project.project_name || null
+          if (month !== null || year !== null || projectId !== null) {
+            const filterParams = {
+              ...(month !== null && { month }),
+              ...(year !== null && { year }),
+              ...(projectId !== null && { projectId }),
+            }
+            if (filterParams.year) {
+              getFilteredProjectSalesResults(filterParams, localStorage.getItem(ACCESS_TOKEN))
+                .then((data) => {
+                  const uniqueData = data.filter(
+                    (item, index, self) =>
+                      index === self.findIndex((t) => t.month === item.month)
+                  );
+                  setFilteredMonth((prev) => {
+                    return prev.map((month, monthIndex) => {
+                      if (index == monthIndex) {
+                        return { month: uniqueData }
+                      }
+                      return month
+                    })
+                  })
+                })
+            }
+            if (filterParams.year && filterParams.month && filterParams.projectId) {
+              getFilteredProjectSalesResults(filterParams, localStorage.getItem(ACCESS_TOKEN))
+                .then((data) => {
+                  let matchedClients = []
+                  let matchedBusinessDivision = []
+                  data.forEach((item) => {
+                    const client_id = item.client
+                    const business_id = item.business_division
+                    const filteredClients = clients.filter((client) => client.client_id === client_id)
+                    const filteredBusinessDivision = businessSelection.filter(
+                      (business) => business.business_division_id === business_id,
+                    )
+                    if (filteredClients.length > 0) {
+                      matchedClients = [...matchedClients, ...filteredClients]
+                    }
+                    if (filteredBusinessDivision.length > 0) {
+                      matchedBusinessDivision = [...matchedBusinessDivision, ...filteredBusinessDivision]
+                    }
+                  })
+                  setBusinessDivisionFilter((prev) => {
+                    return prev.map((row, projectIndex) => {
+                      if (index == projectIndex) {
+                        return {
+                          divisions: matchedBusinessDivision,
+                        }
+                      }
+                      return row
+                    })
+                  })
+                  setClientsFilter((prev) => {
+                    return prev.map((row, projectIndex) => {
+                      if (index == projectIndex) {
+                        return {
+                          clients: matchedClients,
+                        }
+                      }
+                      return row
+                    })
+                  })
+                  setProjectsList((prev) => {
+                    return prev.map((row, projectIndex) => {
+                      if (index == projectIndex) {
+                        return {
+                          projects: data,
+                        }
+                      }
+                      return row
+                    })
+                  })
+                  setProjectDataResult(data)
+                })
+                .catch((error) => {
+                  console.error('Error fetching project sales result list:', error)
+                })
+            } else if (filterParams.year && filterParams.month) {
+              setEnabled(true)
+              getFilteredProjectSalesResults(filterParams, localStorage.getItem(ACCESS_TOKEN)).then((data) => {
+                setProjectsListSelection((prev) => {
+                  return prev.map((row, projectIndex) => {
+                    if (index == projectIndex) {
+                      return {
+                        projects: data,
+                      }
+                    }
+                    return row
+                  })
+                })
+                setBusinessDivisionFilter((prev) => {
+                  return prev.map((row, projectIndex) => {
+                    if (index == projectIndex) {
+                      return {
+                        divisions: [],
+                      }
+                    }
+                    return row
+                  })
+                })
+                setClientsFilter((prev) => {
+                  return prev.map((row, projectIndex) => {
+                    if (index == projectIndex) {
+                      return {
+                        clients: [],
+                      }
+                    }
+                    return row
+                  })
+                })
+                setProjectsList((prev) => {
+                  return prev.map((row, projectIndex) => {
+                    if (index == projectIndex) {
+                      return {
+                        projects: [],
+                      }
+                    }
+                    return row
+                  })
+                })
+                setProjectDataResult(data)
+              })
+              console.log(projectListSelection)
+            } else {
+              setEnabled(false)
+            }
+          }
+        })
+        fetchGetProject()
+      }
     });
-  }, [token])
+  }, [token, formProjects])
 
   return (
     <div className='projectSalesResultsRegistration_wrapper'>

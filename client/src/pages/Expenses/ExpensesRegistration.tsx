@@ -12,7 +12,7 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { createExpense } from '../../api/ExpenseEndpoint/CreateExpense'
 import { overwriteExpense } from '../../api/ExpenseEndpoint/OverwriteExpense'
-import { maximumEntries, monthNames, storedUserID, token, years } from '../../constants'
+import { maximumEntries, monthNames, storedUserID, token, years, ACCESS_TOKEN } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput, useTranslateSwitch } from '../../actions/hooks'
 import {
   validateRecords,

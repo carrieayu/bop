@@ -16,7 +16,7 @@ import {
 } from '../../utils/validationUtil'
 import { handleMMRegTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import { closeModal, openModal } from '../../actions/hooks'
-import { masterMaintenanceScreenTabs, token } from '../../constants'
+import { masterMaintenanceScreenTabs, token, ACCESS_TOKEN } from '../../constants'
 import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 const UsersRegistration = () => {

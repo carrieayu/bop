@@ -15,11 +15,12 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { maximumEntries, monthNames, resultsScreenTabs, storedUserID, token, years } from '../../constants'
+import { maximumEntries, monthNames, resultsScreenTabs, storedUserID, token, ACCESS_TOKEN } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 import {
   handleDisableKeysOnNumberInputs,
   formatNumberWithCommas,
+  removeCommas,
   sortByFinancialYear,
   handleGeneralResultsInputChange,
   handleResultsRegTabsClick,
@@ -71,6 +72,13 @@ const ExpensesResultsRegistration = () => {
     updated_at: '',
   }
   const [formData, setFormData] = useState([emptyFormData])
+  const uniqueYears = expenseYear.reduce((acc, item) => {
+    if (!acc.includes(item.year)) {
+      acc.push(item.year)
+    }
+    return acc
+  }, [])
+
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
@@ -85,7 +93,49 @@ const ExpensesResultsRegistration = () => {
   }
 
   const handleChange = (index, event) => {
+    const { name, value } = event.target
+    const rawValue = removeCommas(value)
     const nonFinancialValuesArray = ['year', 'month']
+
+    if (!nonFinancialValuesArray.includes(name)) {
+      if (rawValue.length > MAX_NUMBER_LENGTH) {
+        return
+      }
+    }
+
+    setFormData((prevFormData) => {
+      return prevFormData.map((form, i) => {
+        if (i === index) {
+          const resetFields = {
+            params: ['months'],
+          }
+          let month = form.month
+          if (name == 'year' && value == '') {
+            form.month = ''
+            setFilteredMonth((prev) => {
+              return prev.map((eachMonth, monthIndex) => {
+                if (index == monthIndex) {
+                  return [{}]
+                }
+                return eachMonth
+              })
+            })
+          }
+          const fieldsToReset = resetFields[name] || []
+          const resetValues = fieldsToReset.reduce((acc, field) => {
+            acc[field] = ''
+            return acc
+          }, {})
+          return {
+            ...form,
+            [name]: rawValue,
+            ...resetValues,
+          }
+        }
+        return form
+      })
+    })
+
     handleGeneralResultsInputChange(index, event, setFormData, nonFinancialValuesArray, setFilteredMonth)
   }
 
@@ -237,7 +287,7 @@ const ExpensesResultsRegistration = () => {
   }
 
   const handleSubmitConfirmed = async () => {
-    overwriteExpenseResults(formData, token)
+    overwriteExpenseResults(formData, localStorage.getItem(ACCESS_TOKEN))
       .then(() => {
         setModalMessage(translate('overWrite', language))
         setIsModalOpen(true)
@@ -269,45 +319,6 @@ const ExpensesResultsRegistration = () => {
       })
   }
 
-  useEffect(() => {
-    formData.forEach((exp, index) => {
-      let month = exp.month || ''
-      const year = exp.year || ''
-      let filterParams: FilterParams = {
-        ...(year !== null && { year }),
-      }
-      if (filterParams.year) {
-        filterExpenseResults(filterParams, token).then((data) => {
-          setExpenseResultData((prev) => {
-            return prev.map((row, projectIndex) => {
-              if (index == projectIndex) {
-                return {
-                  cosr: data,
-                }
-              }
-              return row
-            })
-          })
-          setFilteredMonth((prev) => {
-            return prev.map((month, monthIndex) => {
-              if (index == monthIndex) {
-                return { month: data }
-              }
-              return month
-            })
-          })
-        })
-      }
-    })
-    getExpense(token)
-      .then((data) => {
-        setExpenseYear(data)
-      })
-      .catch((error) => {
-        console.log(' error fetching cost of sales data: ' + error)
-      })
-  }, [formData])
-
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
@@ -333,11 +344,54 @@ const ExpensesResultsRegistration = () => {
     navigate('/expenses-results-list')
   }
 
+  const fetchGetExpense = async () => {
+    getExpense(localStorage.getItem(ACCESS_TOKEN))
+      .then((data) => {
+        setExpenseYear(data)
+      })
+      .catch((error) => {
+        console.log(' error fetching cost of sales data: ' + error)
+      })
+  }
+
   useEffect(() => {
     checkAccessToken(setIsAuthorized).then(result => {
-      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+      if (!result) {
+        showAlertPopup(handleTimeoutConfirm);
+      } else {
+        formData.forEach((exp, index) => {
+          let month = exp.month || ''
+          const year = exp.year || ''
+          let filterParams: FilterParams = {
+            ...(year !== null && { year }),
+          }
+          if (filterParams.year) {
+            filterExpenseResults(filterParams, localStorage.getItem(ACCESS_TOKEN)).then((data) => {
+              setExpenseResultData((prev) => {
+                return prev.map((row, projectIndex) => {
+                  if (index == projectIndex) {
+                    return {
+                      cosr: data,
+                    }
+                  }
+                  return row
+                })
+              })
+              setFilteredMonth((prev) => {
+                return prev.map((month, monthIndex) => {
+                  if (index == monthIndex) {
+                    return { month: data }
+                  }
+                  return month
+                })
+              })
+            })
+          }
+        })
+        fetchGetExpense()
+      }
     });
-  }, [token])
+  }, [token, formData])
 
   return (
     <div className='expensesResultsRegistration_wrapper'>
@@ -381,7 +435,7 @@ const ExpensesResultsRegistration = () => {
                             onChange={(e) => handleChange(index, e)}
                           >
                             <option value=''>{translate('selectYear', language)}</option>
-                            {years.map((year, idx) => (
+                            {uniqueYears.map((year, idx) => (
                               <option key={idx} value={year}>
                                 {year}
                               </option>

@@ -16,7 +16,7 @@ import { getEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/GetEmploye
 import { deleteEmployeeExpenseX } from '../../api/EmployeeExpenseEndpoint/DeleteEmployeeExpenseX'
 import { deleteProjectAssociation } from '../../api/EmployeeExpenseEndpoint/DeleteProjectAssociation'
 import { formatNumberWithCommas, handlePLListTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
-import { monthNames, months, token } from '../../constants'
+import { monthNames, months, token, ACCESS_TOKEN } from '../../constants'
 import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes";
 
 const EmployeeExpensesList: React.FC = () => {
@@ -78,25 +78,6 @@ const EmployeeExpensesList: React.FC = () => {
   const handleNewRegistrationClick = () => {
     navigate('/employee-expenses-registration')
   }
-
-  // Fetch employee expenses data
-  useEffect(() => {
-    const fetchEmployeeExpenses = async () => {
-      getEmployeeExpense(token)
-        .then((data) => {
-          setEmployeeExpenses(data)
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('Error fetching employee expenses:', error)
-          }
-        })
-    }
-
-    fetchEmployeeExpenses()
-  }, [])
 
   const openModal = (users, id) => {
     setSelectedEmployeeExpenses(users)
@@ -163,9 +144,28 @@ const EmployeeExpensesList: React.FC = () => {
       })
   }
 
+  // Fetch employee expenses data
+  const fetchEmployeeExpenses = async () => {
+    getEmployeeExpense(localStorage.getItem(ACCESS_TOKEN))
+      .then((data) => {
+        setEmployeeExpenses(data)
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login' // Redirect to login if unauthorized
+        } else {
+          console.error('Error fetching employee expenses:', error)
+        }
+      })
+  }
+
   useEffect(() => {
-     checkAccessToken(setIsAuthorized).then(result => {
-      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) {
+        showAlertPopup(handleTimeoutConfirm);
+      } else {
+        fetchEmployeeExpenses()
+      }
     });
   }, [token])
 

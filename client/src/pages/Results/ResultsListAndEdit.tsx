@@ -14,7 +14,7 @@ import TableResultsA from '../../components/TableResults/TableResultA'
 import { RxHamburgerMenu } from 'react-icons/rx'
 import { getResultsA } from '../../api/ResultsEndpoint/GetResultsA'
 import * as XLSX from 'xlsx'
-import { monthNames, months, token } from '../../constants'
+import { monthNames, months, token, ACCESS_TOKEN } from '../../constants'
 import { setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import AlertModal from '../../components/AlertModal/AlertModal'
 import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
@@ -69,7 +69,7 @@ const ResultsListAndEdit = () => {
   }
 
   const downloadXLS = () => {
-    getResultsA(token)
+    getResultsA(localStorage.getItem(ACCESS_TOKEN))
       .then((response) => {
         const aggregatedData = response.cost_of_sales_results.reduce((acc, item) => {
           const { month, ...values } = item
@@ -770,10 +770,6 @@ const ResultsListAndEdit = () => {
   }, [isXLSModalOpen])
 
   useEffect(() => {
-    fetchData()
-  }, [])
-
-  useEffect(() => {
     const startIndex = currentPage * rowsPerPage
     setPaginatedData(tableList?.slice(startIndex, startIndex + rowsPerPage))
   }, [currentPage, rowsPerPage, tableList])
@@ -812,7 +808,7 @@ const ResultsListAndEdit = () => {
 
   useEffect(() => {
     checkAccessToken(setIsAuthorized).then(result => {
-      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+      if (!result) { showAlertPopup(handleTimeoutConfirm); } else { fetchData() }
     });
   }, [token])
 

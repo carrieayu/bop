@@ -75,10 +75,6 @@ const EmployeesRegistration = () => {
     }
   }
 
-  useEffect(() => {
-    fetchData()
-  }, [])
-
   // This could possible be combined into handleInputChange (refactoring)
   const handleEmployeeTypePulldown = (e, containerIndex) => {
     const newType = e.target.value
@@ -312,7 +308,7 @@ const EmployeesRegistration = () => {
 
   useEffect(() => {
     checkAccessToken(setIsAuthorized).then(result => {
-      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+      if (!result) { showAlertPopup(handleTimeoutConfirm); } else { fetchData() }
     });
   }, [token])
 

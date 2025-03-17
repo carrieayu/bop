@@ -20,7 +20,7 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { months, resultsScreenTabs, token } from '../../constants'
+import { months, resultsScreenTabs, token, ACCESS_TOKEN } from '../../constants'
 import {
   handleDisableKeysOnNumberInputs,
   formatNumberWithCommas,
@@ -198,25 +198,6 @@ const ExpensesResultsList: React.FC = () => {
     setIsUpdateConfirmationOpen(false)
   }
 
-  const fetchExpenses = async () => {
-    getExpenseResults(token)
-      .then((data) => {
-        setExpensesResultsList(data)
-        setOriginalExpensesResultsList(data)
-      })
-      .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login' // Redirect to login if unauthorized
-        } else {
-          console.error('There was an error fetching the expenses!', error)
-        }
-      })
-  }
-
-  useEffect(() => {
-    fetchExpenses()
-  }, [])
-
   useEffect(() => {
     const path = location.pathname
     if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
@@ -353,9 +334,23 @@ const ExpensesResultsList: React.FC = () => {
     navigate('/expenses-results-registration')
   }
 
+  const fetchExpenses = async () => {
+    getExpenseResults(localStorage.getItem(ACCESS_TOKEN))
+      .then((data) => {
+        setExpensesResultsList(data)
+        setOriginalExpensesResultsList(data)
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login' // Redirect to login if unauthorized
+        } else {
+          console.error('There was an error fetching the expenses!', error)
+        }
+      })
+  }
   useEffect(() => {
     checkAccessToken(setIsAuthorized).then(result => {
-      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+      if (!result) { showAlertPopup(handleTimeoutConfirm); } else { fetchExpenses(); }
     });
   }, [token])
 

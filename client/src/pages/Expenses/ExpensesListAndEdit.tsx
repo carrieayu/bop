@@ -27,7 +27,7 @@ import {
 import { deleteExpense } from '../../api/ExpenseEndpoint/DeleteExpense'
 import { getExpense } from '../../api/ExpenseEndpoint/GetExpense'
 import { updateExpense } from '../../api/ExpenseEndpoint/UpdateExpense'
-import { months, token } from '../../constants'
+import { months, token, ACCESS_TOKEN } from '../../constants'
 import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes";
 
 const ExpensesList: React.FC = () => {
@@ -225,25 +225,6 @@ const ExpensesList: React.FC = () => {
     setIsUpdateConfirmationOpen(false)
   }
 
-  const fetchExpenses = async () => {
-    getExpense(token)
-      .then((data) => {
-        setExpensesList(data)
-        setOriginalExpensesList(data)
-      })
-      .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login' // Redirect to login if unauthorized
-        } else {
-          console.error('There was an error fetching the expenses!', error)
-        }
-      })
-  }
-
-  useEffect(() => {
-    fetchExpenses()
-  }, [])
-
   useEffect(() => {
     const path = location.pathname
     if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
@@ -380,9 +361,24 @@ const ExpensesList: React.FC = () => {
     navigate('/expenses-registration')
   }
 
+  
+  const fetchExpenses = async () => {
+    getExpense(localStorage.getItem(ACCESS_TOKEN))
+      .then((data) => {
+        setExpensesList(data)
+        setOriginalExpensesList(data)
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login' // Redirect to login if unauthorized
+        } else {
+          console.error('There was an error fetching the expenses!', error)
+        }
+      })
+  }
   useEffect(() => {
     checkAccessToken(setIsAuthorized).then(result => {
-      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+      if (!result) { showAlertPopup(handleTimeoutConfirm); } else { fetchExpenses() }
     });
   }, [token])
 

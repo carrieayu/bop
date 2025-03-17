@@ -29,7 +29,7 @@ import {
   setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
 import { createCostOfSale } from '../../api/CostOfSalesEndpoint/CreateCostOfSale'
-import { months, token } from '../../constants'
+import { months, token, ACCESS_TOKEN } from '../../constants'
 import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes";
 
 const CostOfSalesList: React.FC = () => {
@@ -195,29 +195,6 @@ const CostOfSalesList: React.FC = () => {
   }
 
   useEffect(() => {
-    const fetchCostOfSales = async () => {
-      try {
-        getCostOfSale(token)
-          .then((data) => {
-            setCostOfSales(data)
-            setOriginalCostOfSales(data)
-          })
-          .catch((error) => {
-            console.error('Error creating data:', error)
-          })
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login' // Redirect to login if unauthorized
-        } else {
-          console.error('There was an error fetching the cost of sales data!', error)
-        }
-      }
-    }
-
-    fetchCostOfSales()
-  }, [])
-
-  useEffect(() => {
     const startIndex = currentPage * rowsPerPage
     setPaginatedData(costOfSales.slice(startIndex, startIndex + rowsPerPage))
   }, [currentPage, rowsPerPage, costOfSales])
@@ -353,9 +330,28 @@ const CostOfSalesList: React.FC = () => {
     navigate('/cost-of-sales-registration')
   }
 
+  const fetchCostOfSales = async () => {
+    try {
+      getCostOfSale(localStorage.getItem(ACCESS_TOKEN))
+        .then((data) => {
+          setCostOfSales(data)
+          setOriginalCostOfSales(data)
+        })
+        .catch((error) => {
+          console.error('Error creating data:', error)
+        })
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        window.location.href = '/login' // Redirect to login if unauthorized
+      } else {
+        console.error('There was an error fetching the cost of sales data!', error)
+      }
+    }
+  }
+
   useEffect(() => {
     checkAccessToken(setIsAuthorized).then(result => {
-      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+      if (!result) { showAlertPopup(handleTimeoutConfirm); } else { fetchCostOfSales() }
     });
   }, [token])
 

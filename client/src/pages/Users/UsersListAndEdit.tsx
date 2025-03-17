@@ -23,7 +23,7 @@ import {
   checkForDuplicateUsers,
 } from '../../utils/validationUtil'
 import { formatDate, handleMMListTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
-import { masterMaintenanceScreenTabs, token } from '../../constants'
+import { masterMaintenanceScreenTabs, token, ACCESS_TOKEN } from '../../constants'
 import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 const UsersListAndEdit: React.FC = () => {
@@ -166,13 +166,6 @@ const UsersListAndEdit: React.FC = () => {
     setIsUpdateConfirmationOpen(false)
   }
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      fetchUserListHandler(token)
-    }
-    fetchUsers()
-  }, [])
-
   useEffect(() => {}, [originalUserList])
 
   useEffect(() => {
@@ -275,7 +268,14 @@ const UsersListAndEdit: React.FC = () => {
 
   useEffect(() => {
     checkAccessToken(setIsAuthorized).then(result => {
-      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+      if (!result) {
+        showAlertPopup(handleTimeoutConfirm);
+      } else {
+        const fetchUsers = async () => {
+          fetchUserListHandler(localStorage.getItem(ACCESS_TOKEN))
+        }
+        fetchUsers()
+      }
     });
   }, [token])
 

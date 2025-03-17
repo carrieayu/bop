@@ -28,7 +28,7 @@ import {
 import { getCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/GetCostOfSalesResults'
 import { deleteCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/DeleteCostOfSalesResults'
 import { updateCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/UpdateCostOfSalesResults'
-import { months, resultsScreenTabs, token } from '../../constants'
+import { months, resultsScreenTabs, token, ACCESS_TOKEN } from '../../constants'
 import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 const CostOfSalesResultsList: React.FC = () => {
@@ -199,25 +199,6 @@ const CostOfSalesResultsList: React.FC = () => {
   }
 
   useEffect(() => {
-    const fetchCostOfSales = async () => {
-      try {
-        getCostOfSaleResults(token).then((data) => {
-          setCostOfSalesResults(data)
-          setOriginalCostOfSalesResults(data)
-        })
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login' // Redirect to login if unauthorized
-        } else {
-          console.error('There was an error fetching the cost of sales data!', error)
-        }
-      }
-    }
-
-    fetchCostOfSales()
-  }, [])
-
-  useEffect(() => {
     const startIndex = currentPage * rowsPerPage
     setPaginatedData(costOfSalesResults.slice(startIndex, startIndex + rowsPerPage))
   }, [currentPage, rowsPerPage, costOfSalesResults])
@@ -358,7 +339,26 @@ const CostOfSalesResultsList: React.FC = () => {
 
   useEffect(() => {
     checkAccessToken(setIsAuthorized).then(result => {
-      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+      if (!result) {
+        showAlertPopup(handleTimeoutConfirm);
+      } else {
+        const fetchCostOfSales = async () => {
+          try {
+            getCostOfSaleResults(localStorage.getItem(ACCESS_TOKEN)).then((data) => {
+              setCostOfSalesResults(data)
+              setOriginalCostOfSalesResults(data)
+            })
+          } catch (error) {
+            if (error.response && error.response.status === 401) {
+              window.location.href = '/login' // Redirect to login if unauthorized
+            } else {
+              console.error('There was an error fetching the cost of sales data!', error)
+            }
+          }
+        }
+    
+        fetchCostOfSales()
+      }
     });
   }, [token])
 

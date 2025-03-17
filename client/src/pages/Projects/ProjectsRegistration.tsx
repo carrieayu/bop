@@ -392,13 +392,13 @@ const ProjectsRegistration = () => {
   }
 
   useEffect(() => {
-    fetchDivision()
-    fetchClients()
-  }, [token])
-
-  useEffect(() => {
     checkAccessToken(setIsAuthorized).then(result => {
-      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+      if (!result) {
+          showAlertPopup(handleTimeoutConfirm);
+      } else {
+        fetchDivision()
+        fetchClients()
+      }
     });
   }, [token])
 

@@ -23,7 +23,7 @@ import {
 } from '../../utils/validationUtil'
 import { formatDate, handleMMListTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import { getUser } from '../../api/UserEndpoint/GetUser'
-import { masterMaintenanceScreenTabs, token } from '../../constants'
+import { masterMaintenanceScreenTabs, token, ACCESS_TOKEN } from '../../constants'
 import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 const ClientsListAndEdit: React.FC = () => {
@@ -199,41 +199,6 @@ const ClientsListAndEdit: React.FC = () => {
   }
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      getClient(token)
-        .then((data) => {
-          setUpdatedClients(data)
-          setOriginalClientsList(data)
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('There was an error fetching the projects!', error)
-          }
-        })
-      // Fetch users
-      getUser(token)
-        .then((data) => {
-          const users = data
-          const userMapping = users.reduce((map, user) => {
-            map[user.id] = user.last_name + ' ' + user.first_name
-            return map
-          }, {})
-          setUserMap(userMapping)
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            console.log(error)
-          } else {
-            console.error('There was an error fetching the projects!', error)
-          }
-        })
-    }
-    fetchProjects()
-  }, [])
-
-  useEffect(() => {
     const startIndex = currentPage * rowsPerPage
     setPaginatedData(updatedClients.slice(startIndex, startIndex + rowsPerPage))
   }, [currentPage, rowsPerPage, updatedClients])
@@ -317,7 +282,42 @@ const ClientsListAndEdit: React.FC = () => {
 
   useEffect(() => {
     checkAccessToken(setIsAuthorized).then(result => {
-      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+      if (!result) {
+        showAlertPopup(handleTimeoutConfirm);
+      } else {
+        const fetchProjects = async () => {
+          getClient(localStorage.getItem(ACCESS_TOKEN))
+            .then((data) => {
+              setUpdatedClients(data)
+              setOriginalClientsList(data)
+            })
+            .catch((error) => {
+              if (error.response && error.response.status === 401) {
+                window.location.href = '/login' // Redirect to login if unauthorized
+              } else {
+                console.error('There was an error fetching the projects!', error)
+              }
+            })
+          // Fetch users
+          getUser(localStorage.getItem(ACCESS_TOKEN))
+            .then((data) => {
+              const users = data
+              const userMapping = users.reduce((map, user) => {
+                map[user.id] = user.last_name + ' ' + user.first_name
+                return map
+              }, {})
+              setUserMap(userMapping)
+            })
+            .catch((error) => {
+              if (error.response && error.response.status === 401) {
+                console.log(error)
+              } else {
+                console.error('There was an error fetching the projects!', error)
+              }
+            })
+        }
+        fetchProjects()
+      }
     });
   }, [token])
 

@@ -364,7 +364,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
 
   const fetchProjectsHandler = async () => {
     try {
-      const data = await getProject(token)
+      const data = await getProject(localStorage.getItem(ACCESS_TOKEN))
       setProjects(data)
       setOriginalProjectsList(data)
     } catch (error) {
@@ -377,14 +377,14 @@ const ProjectsListAndEdit: React.FC = ({}) => {
   }
 
   useEffect(() => {
-    fetchDivision()
-    fetchClient()
-    fetchProjectsHandler()
-  }, [])
-
-  useEffect(() => {
     checkAccessToken(setIsAuthorized).then(result => {
-      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+      if (!result) {
+        showAlertPopup(handleTimeoutConfirm);
+      } else {
+        fetchDivision()
+        fetchClient()
+        fetchProjectsHandler()
+      }
     });
   }, [token])
 

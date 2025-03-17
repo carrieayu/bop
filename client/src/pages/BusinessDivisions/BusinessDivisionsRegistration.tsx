@@ -18,7 +18,7 @@ import {
   checkForDuplicates,
 } from '../../utils/validationUtil'
 import { handleMMRegTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
-import { masterMaintenanceScreenTabs, maximumEntries, storedUserID, token } from '../../constants'
+import { masterMaintenanceScreenTabs, maximumEntries, storedUserID, token, ACCESS_TOKEN } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
@@ -107,11 +107,6 @@ const BusinessDivisionsRegistration = () => {
       auth_user_id: business.auth_user_id,
     }))
 
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
     // # Client Side Validation
 
     // Step 1: Preparartion for validation
@@ -188,24 +183,6 @@ const BusinessDivisionsRegistration = () => {
       })
   }
 
-  useEffect(() => {
-    const fetchCompany = async () => {
-      try {
-        const response = await axios.get(`${getReactActiveEndpoint()}/api/master-companies/list/`, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        setCompanyList(response.data)
-      } catch (error) {
-        console.error('Error fetching business:', error)
-      }
-    }
-
-    fetchCompany()
-  }, [token])
-
   const handleCompanyChange = (e) => {
     setSelectedCompany(e.target.value) // Update the selected company state
   }
@@ -220,7 +197,25 @@ const BusinessDivisionsRegistration = () => {
 
   useEffect(() => {
     checkAccessToken(setIsAuthorized).then(result => {
-      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+      if (!result) {
+        showAlertPopup(handleTimeoutConfirm);
+      } else {
+        const fetchCompany = async () => {
+          try {
+            const response = await axios.get(`${getReactActiveEndpoint()}/api/master-companies/list/`, {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem(ACCESS_TOKEN)}`,
+              },
+            })
+            setCompanyList(response.data)
+          } catch (error) {
+            console.error('Error fetching business:', error)
+          }
+        }
+    
+        fetchCompany()
+      }
     });
   }, [token])
 

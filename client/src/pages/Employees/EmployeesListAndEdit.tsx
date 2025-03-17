@@ -27,7 +27,7 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { masterMaintenanceScreenTabs, token, MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER } from '../../constants'
+import { masterMaintenanceScreenTabs, token, MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER, ACCESS_TOKEN } from '../../constants'
 import {
   handleDisableKeysOnNumberInputs,
   formatDate,
@@ -82,7 +82,7 @@ const EmployeesListAndEdit: React.FC = () => {
       const resMasterCompany = await dispatch(fetchMasterCompany() as unknown as UnknownAction)
       setCompanySelection(resMasterCompany.payload)
       if (isEditing) {
-        editEmployee(token)
+        editEmployee(ACCESS_TOKEN)
           .then((data) => {
             const businessDivisions = data.reduce((acc, item) => acc.concat(item.business_divisions), [])
             setBusinessSelection(businessDivisions)
@@ -348,7 +348,7 @@ const EmployeesListAndEdit: React.FC = () => {
 
   const fetchEmployees = async () => {
     // Fetch users
-    getUser(token)
+    getUser(localStorage.getItem(ACCESS_TOKEN))
       .then((data) => {
         const users = data
         const userMapping = users.reduce((map, user) => {
@@ -366,7 +366,7 @@ const EmployeesListAndEdit: React.FC = () => {
       })
 
     try {
-      const url = isEditing ? await editEmployee(token) : await getEmployee(token)
+      const url = isEditing ? await editEmployee(localStorage.getItem(ACCESS_TOKEN)) : await getEmployee(localStorage.getItem(ACCESS_TOKEN))
       const employeesListWithBusinessSelection = url.map((employee) => ({
         ...employee,
         businessSelection: [], // Initialize businessSelection as an empty array
@@ -375,7 +375,7 @@ const EmployeesListAndEdit: React.FC = () => {
       setOriginalEmployeesList(employeesListWithBusinessSelection)
       // Update business divisions for each employee
       employeesListWithBusinessSelection.forEach((employee, index) => {
-        getSelectedBusinessDivisionCompany(employee.company_id, token)
+        getSelectedBusinessDivisionCompany(employee.company_id, localStorage.getItem(ACCESS_TOKEN))
           .then((data) => {
             const employeeBusinessDivisions = data.filter((division) => division.employee_id === employee.employee_id)
             const updatedEmployeesList = [...employeesListWithBusinessSelection]
@@ -406,11 +406,6 @@ const EmployeesListAndEdit: React.FC = () => {
       return [item]
     })
   }, [isEditing])
-
-  // useEffect(() => {
-  //   const startIndex = currentPage * rowsPerPage
-  //   setPaginatedData(projects.slice(startIndex, startIndex + rowsPerPage))
-  // }, [currentPage, rowsPerPage, projects])
 
   useEffect(() => {
     const path = location.pathname
@@ -520,7 +515,7 @@ const EmployeesListAndEdit: React.FC = () => {
 
   useEffect(() => {
     checkAccessToken(setIsAuthorized).then(result => {
-      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+      if (!result) { showAlertPopup(handleTimeoutConfirm); } else { fetchEmployees() }
     });
   }, [token])
 

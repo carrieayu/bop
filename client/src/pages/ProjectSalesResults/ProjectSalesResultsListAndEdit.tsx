@@ -16,7 +16,7 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
 import { updateProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/UpdateProjectSalesResults'
 import { deleteProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/DeleteProjectSalesResults'
-import { resultsScreenTabs, token } from '../../constants'
+import { resultsScreenTabs, token, ACCESS_TOKEN } from '../../constants'
 import {
   validateRecords,
   translateAndFormatErrors,
@@ -216,15 +216,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   }
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      fetchProjectsHandler()
-    }
-    fetchDivision()
-    fetchClient()
-    fetchProjects()
-  }, [])
-
-  useEffect(() => {
     const startIndex = currentPage * rowsPerPage
     setPaginatedData(projectSalesResults.slice(startIndex, startIndex + rowsPerPage))
   }, [currentPage, rowsPerPage, projectSalesResults])
@@ -308,9 +299,18 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
     }
   }, [deleteComplete])
 
+  const fetchProjects = async () => {
+    const fetchProjects = async () => {
+      fetchProjectsHandler()
+    }
+    fetchDivision()
+    fetchClient()
+    fetchProjects()
+  }
+
   const fetchProjectsHandler = async () => {
     try {
-      const data = await getProjectSalesResults(token);
+      const data = await getProjectSalesResults(localStorage.getItem(ACCESS_TOKEN));
       setProjectSalesResults(data);
       setOriginalProjectSalesResultsList(data);
     } catch (error) {
@@ -324,7 +324,11 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
 
   useEffect(() => {
     checkAccessToken(setIsAuthorized).then(result => {
-      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+      if (!result) {
+        showAlertPopup(handleTimeoutConfirm);
+      } else {
+        fetchProjects()
+      }
     });
   }, [token])
 
