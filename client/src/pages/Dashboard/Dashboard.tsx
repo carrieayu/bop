@@ -47,7 +47,6 @@ const Dashboard = () => {
   // DATA FOR 'CARDS' AND 'TABLE'
   const planning = useSelector(planningSelector) // contains data/totals etc. from PLANNING: expenses, costOfSales, projects, employeeExpenses
   const results = useSelector(resultsSelector) // contains data/totals etc. from RESULTS: expenses, costOfSales, projects, employeeExpenses
-  console.log('planning', planning)
   // DATA FOR 'GRAPH'
   const planningGraph = useSelector(planningGraphDataPreparedSelector)
   const resultsGraph = useSelector(resultsGraphDataPreparedSelector)

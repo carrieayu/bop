@@ -26,22 +26,22 @@ export const DashboardCard = ({ title, planningValue, resultValue, translateKey,
       <div className='dashboard_custom-card-content'>
         <p className='dashboard_text1'>{title}</p>
         <div className='dashboard-card-planning'>
-          <p
+          <div
             className='dashboard_numTxt'
             style={{ backgroundColor: '#fec384c7', color: '#000', borderRadius: '5px', padding: '2px' }}
           >
             <span className='dashboard_totalTxt'>{translate('planningShort', language)}</span>
             <NumberWithUnit value={planningValue} percentage={percentage} language={language} />
-          </p>
+          </div>
         </div>
         <div className='dashboard-card-result'>
-          <p
+          <div
             className='dashboard_numTxt'
             style={{ backgroundColor: '#CDE4FC', color: '#000', borderRadius: '5px', padding: '2px' }}
           >
             <span className='dashboard_totalTxt'>{translate('results', language)}</span>
             <NumberWithUnit value={resultValue} percentage={percentage} language={language} />
-          </p>
+          </div>
         </div>
       </div>
     </Card>
