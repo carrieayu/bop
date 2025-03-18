@@ -79,11 +79,6 @@ const EmployeeExpensesList: React.FC = () => {
     navigate('/employee-expenses-registration')
   }
 
-  useEffect((
-  ) => {
-      console.log('EmployeeExpenses', employeeExpenses)
-  },[employeeExpenses])
-
   const openModal = (users, id) => {
     setSelectedEmployeeExpenses(users)
     setModalIsOpen(true)
@@ -120,8 +115,7 @@ const EmployeeExpensesList: React.FC = () => {
           })
           .catch((error) => {
             if (error.response && error.response.status === 401) {
-              console.log("EmployeeExpensesList 0002 --- ");
-              // window.location.href = '/login' // Redirect to login if unauthorized
+              window.location.href = '/login' // Redirect to login if unauthorized
             } else {
               console.error('Error deleting employee expense:', error)
             }
@@ -143,8 +137,7 @@ const EmployeeExpensesList: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          console.log("EmployeeExpensesList 0003 --- ");
-          // window.location.href = '/login' // Redirect to login if unauthorized
+          window.location.href = '/login' // Redirect to login if unauthorized
         } else {
           console.error('Error removing project association:', error)
         }
@@ -159,8 +152,7 @@ const EmployeeExpensesList: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          console.log("EmployeeExpensesList 0004 --- ");
-          // window.location.href = '/login' // Redirect to login if unauthorized
+          window.location.href = '/login' // Redirect to login if unauthorized
         } else {
           console.error('Error fetching employee expenses:', error)
         }
