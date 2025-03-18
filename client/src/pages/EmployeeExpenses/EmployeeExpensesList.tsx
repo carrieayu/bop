@@ -79,29 +79,6 @@ const EmployeeExpensesList: React.FC = () => {
     navigate('/employee-expenses-registration')
   }
 
-  // Fetch employee expenses data
-  useEffect(() => {
-    const fetchEmployeeExpenses = async () => {
-      if (!token) {
-        window.location.href = '/login' // Redirect to login if no token found
-        return
-      }
-      getEmployeeExpense(token)
-        .then((data) => {
-          setEmployeeExpenses(data)
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('Error fetching employee expenses:', error)
-          }
-        })
-    }
-
-    fetchEmployeeExpenses()
-  }, [])
-
   useEffect((
   ) => {
       console.log('EmployeeExpenses', employeeExpenses)
@@ -143,7 +120,8 @@ const EmployeeExpensesList: React.FC = () => {
           })
           .catch((error) => {
             if (error.response && error.response.status === 401) {
-              window.location.href = '/login' // Redirect to login if unauthorized
+              console.log("EmployeeExpensesList 0002 --- ");
+              // window.location.href = '/login' // Redirect to login if unauthorized
             } else {
               console.error('Error deleting employee expense:', error)
             }
@@ -165,7 +143,8 @@ const EmployeeExpensesList: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          window.location.href = '/login' // Redirect to login if unauthorized
+          console.log("EmployeeExpensesList 0003 --- ");
+          // window.location.href = '/login' // Redirect to login if unauthorized
         } else {
           console.error('Error removing project association:', error)
         }
@@ -180,7 +159,8 @@ const EmployeeExpensesList: React.FC = () => {
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
-          window.location.href = '/login' // Redirect to login if unauthorized
+          console.log("EmployeeExpensesList 0004 --- ");
+          // window.location.href = '/login' // Redirect to login if unauthorized
         } else {
           console.error('Error fetching employee expenses:', error)
         }
