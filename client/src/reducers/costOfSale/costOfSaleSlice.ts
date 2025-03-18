@@ -1,56 +1,37 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import api from '../../api/api'
-import { getReactActiveEndpoint } from '../../toggleEndpoint'
-import { CostOfSaleEntity } from '../../entity/cosEntity'
+import { CostOfSaleEntity } from '../../entity/costOfSaleEntity'
+import { fetchWithPolling } from '../../utils/helperFunctionsUtil'
 
 const initialState = {
   isLoading: false,
-  costOfSaleList: [] as CostOfSaleEntity[],
-}
-const POLLING_INTERVAL = 60000
-const MAX_RETRIES = 12
-
-async function fetchWithPolling(retries = MAX_RETRIES): Promise<CostOfSaleEntity[]> {
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      const response = await api.get<CostOfSaleEntity[]>(`${getReactActiveEndpoint()}/api/cost-of-sales/list/`)
-
-      if (response.data && response.data.length > 0) {
-        return response.data
-      } else {
-        console.log(`Attempt ${attempt}: Data is empty, retrying in 5 minutes...`)
-      }
-    } catch (error) {
-      console.error(`Attempt ${attempt}: Error fetching data -`, error)
-    }
-    await new Promise((resolve) => setTimeout(resolve, POLLING_INTERVAL))
-  }
-  throw new Error('Failed to fetch data after maximum retries.')
+  list: [] as CostOfSaleEntity[],
+  totals: [],
+  yearlyTotal: 0,
+  monthlyTotalsByDate: [],
 }
 
-export const fetchCos = createAsyncThunk('cost-of-sale/fetch', async () => {
-  return await fetchWithPolling()
+export const fetchCostOfSale = createAsyncThunk('cost-of-sale/fetch', async () => {
+  return await fetchWithPolling<CostOfSaleEntity[]>('cost-of-sales/list/')
 })
 
 const costOfSale = createSlice({
-  name: 'cos',
+  name: 'costOfSale',
   initialState,
-  reducers: {},
+  reducers: {
+  },
   extraReducers(builder) {
     builder
-      .addCase(fetchCos.fulfilled, (state, action) => {
-        state.costOfSaleList = action.payload
+      .addCase(fetchCostOfSale.fulfilled, (state, action) => {
+        state.list = action.payload
         state.isLoading = false
       })
-      .addCase(fetchCos.pending, (state) => {
+      .addCase(fetchCostOfSale.pending, (state) => {
         state.isLoading = true
       })
-      .addCase(fetchCos.rejected, (state) => {
+      .addCase(fetchCostOfSale.rejected, (state) => {
         state.isLoading = false
       })
   },
 })
-
-export const {} = costOfSale.actions
 
 export default costOfSale.reducer

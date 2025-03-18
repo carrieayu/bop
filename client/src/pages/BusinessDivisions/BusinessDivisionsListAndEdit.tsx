@@ -98,7 +98,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
     const recordType = 'businessDivisions'
     // Retrieve field validation checks based on the record type
     const fieldChecks = getFieldChecks(recordType)
-    console.log(fieldChecks)
     // Validate records for the specified project fields
     const validateBusinessDivision = (records) => validateRecords(records, fieldChecks, 'businessDivision')
 
@@ -121,7 +120,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
     if (firstError) {
       const { errors, errorType } = firstError
       const translatedErrors = translateAndFormatErrors(errors, language, errorType)
-      console.log(translatedErrors, 'trans errors')
       setCrudMessage(translatedErrors)
       setCrudValidationErrors(translatedErrors)
       setIsCRUDOpen(true)

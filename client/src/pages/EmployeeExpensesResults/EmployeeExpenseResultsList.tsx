@@ -249,8 +249,8 @@ const EmployeeExpensesResultsList: React.FC = () => {
 
                               const existingIndex = yearGroup.employees.findIndex(
                                 (emp) =>
-                                  emp.employee_last_name === expense.employee_last_name &&
-                                  emp.employee_first_name === expense.employee_first_name,
+                                  emp.last_name === expense.last_name &&
+                                  emp.first_name === expense.first_name,
                               )
 
                               // Parse the month from the expense
@@ -272,18 +272,18 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                 if (monthIndex !== -1) {
                                   monthlyExpenses[monthIndex].projects.push({
                                     project_name: expense.project_name,
-                                    employee_salary: expense.employee_salary,
+                                    salary: expense.salary,
                                     executive_remuneration: expense.executive_remuneration,
                                     project_id: expense.project_id,
                                     employee_expense_result_id: expense.employee_expense_result_id,
                                   })
-                                  monthlyExpenses[monthIndex].total_salary += expense.employee_salary
+                                  monthlyExpenses[monthIndex].total_salary += expense.salary
                                 }
                                 yearGroup.employees.push({
                                   employee_expense_result_id: expense.employee_expense_result_id,
                                   project_id: expense.project_id,
-                                  employee_last_name: expense.employee_last_name,
-                                  employee_first_name: expense.employee_first_name,
+                                  last_name: expense.last_name,
+                                  first_name: expense.first_name,
                                   monthlyExpenses,
                                 })
                               } else {
@@ -292,12 +292,12 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                 if (monthIndex !== -1) {
                                   existingMonthlyExpenses[monthIndex].projects.push({
                                     project_name: expense.project_name,
-                                    employee_salary: expense.employee_salary,
+                                    salary: expense.salary,
                                     executive_remuneration: expense.executive_remuneration,
                                     project_id: expense.project_id,
                                     employee_expense_result_id: expense.employee_expense_result_id,
                                   })
-                                  existingMonthlyExpenses[monthIndex].total_salary += expense.employee_salary
+                                  existingMonthlyExpenses[monthIndex].total_salary += expense.salary
                                 }
                               }
 
@@ -322,7 +322,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                     className='employeeExpensesResultsList_user_name'
                                   >
                                     <td className='employeeExpensesResultsList_td'>
-                                      <p className='employeeExpensesResultsList_user_name_value'>{`${employee.employee_last_name} ${employee.employee_first_name}`}</p>
+                                      <p className='employeeExpensesResultsList_user_name_value'>{`${employee.last_name} ${employee.first_name}`}</p>
                                     </td>
                                     <td>
                                       <div className='employeeExpensesResultsList_year_value'>{yearGroup.year}</div>
@@ -375,13 +375,13 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                                   <div className='employeeExpensesResultsList_txt1_txt2_flex'>
                                                     <div className='employeeExpensesResultsList_txt1'>
                                                       <div className='employeeExpensesResultsList_txt1_label1'>
-                                                        {project.employee_salary
+                                                        {project.salary
                                                           ? translate('salary', language)
                                                           : translate('executiveRemuneration', language)}
                                                       </div>
                                                       <div className='employeeExpensesResultsList_txt1_label2'>
-                                                        {project.employee_salary
-                                                          ? formatNumberWithCommas(project.employee_salary)
+                                                        {project.salary
+                                                          ? formatNumberWithCommas(project.salary)
                                                           : formatNumberWithCommas(project.executive_remuneration)}
                                                       </div>
                                                     </div>
@@ -463,8 +463,8 @@ const EmployeeExpensesResultsList: React.FC = () => {
 
                             const existingIndex = yearGroup.employees.findIndex(
                               (emp) =>
-                                emp.employee_last_name === expense.employee_last_name &&
-                                emp.employee_first_name === expense.employee_first_name,
+                                emp.last_name === expense.last_name &&
+                                emp.first_name === expense.first_name,
                             )
 
                             // Parse the month from the expense
@@ -488,16 +488,16 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                   project_name: expense.project_name,
                                   client_name: expense.client_name,
                                   business_division_name: expense.business_division_name,
-                                  employee_salary: expense.employee_salary,
+                                  salary: expense.salary,
                                   executive_remuneration: expense.executive_remuneration,
                                 })
-                                monthlyExpenses[monthIndex].total_salary += expense.employee_salary
+                                monthlyExpenses[monthIndex].total_salary += expense.salary
                               }
 
                               yearGroup.employees.push({
                                 employee_expense_result_id: expense.employee_expense_result_id,
-                                employee_last_name: expense.employee_last_name,
-                                employee_first_name: expense.employee_first_name,
+                                last_name: expense.last_name,
+                                first_name: expense.first_name,
                                 monthlyExpenses,
                               })
                             } else {
@@ -508,10 +508,10 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                   project_name: expense.project_name,
                                   client_name: expense.client_name,
                                   business_division_name: expense.business_division_name,
-                                  employee_salary: expense.employee_salary,
+                                  salary: expense.salary,
                                   executive_remuneration: expense.executive_remuneration,
                                 })
-                                existingMonthlyExpenses[monthIndex].total_salary += expense.employee_salary
+                                existingMonthlyExpenses[monthIndex].total_salary += expense.salary
                               }
                             }
                             return acc
@@ -534,7 +534,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                 className='employeeExpensesResultsList_user_name'
                               >
                                 <td className='employeeExpensesResultsList_td'>
-                                  <p className='employeeExpensesResultsList_user_name_value'>{`${employee.employee_last_name} ${employee.employee_first_name}`}</p>
+                                  <p className='employeeExpensesResultsList_user_name_value'>{`${employee.last_name} ${employee.first_name}`}</p>
                                 </td>
                                 <td className='employeeExpensesResultsList_td'>
                                   <div className='employeeExpensesResultsList_year_value'>{yearGroup.year}</div>
@@ -578,13 +578,13 @@ const EmployeeExpensesResultsList: React.FC = () => {
                                             <div className='employeeExpensesResultsList_txt1_txt2_flex'>
                                               <div className='employeeExpensesResultsList_txt1'>
                                                 <div className='employeeExpensesResultsList_txt1_label1'>
-                                                  {project.employee_salary
+                                                  {project.salary
                                                     ? translate('salary', language)
                                                     : translate('executiveRemuneration', language)}
                                                 </div>
                                                 <div className='employeeExpensesResultsList_txt1_label2'>
-                                                  {project.employee_salary
-                                                    ? formatNumberWithCommas(project.employee_salary)
+                                                  {project.salary
+                                                    ? formatNumberWithCommas(project.salary)
                                                     : formatNumberWithCommas(project.executive_remuneration)}
                                                 </div>
                                               </div>

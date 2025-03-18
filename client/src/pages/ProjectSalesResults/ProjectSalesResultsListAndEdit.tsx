@@ -127,7 +127,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
 
     // Step 2: Validate client-side input
     const validationErrors = validateProjects(projectSalesResults)
-    console.log('formProjects #2', projectSalesResults, validationErrors)
 
     // Step 3: Check for duplicate entries on specific fields
     // In this screen Month / Year / Project_name/ Client / Business Division cannot be edited.
