@@ -143,6 +143,11 @@ const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({ children }) => {
       if (event.key === ACCESS_TOKEN && !event.newValue) {
         setIsNonActiveOpen(true);
       }
+      // REFRESH_TOKEN の変更チェック
+      if (event.key === REFRESH_TOKEN && !event.newValue) {
+        // REFRESH_TOKENが削除された場合の処理
+        setIsNonActiveOpen(true); // 必要に応じてアクションを調整
+      }
     };
     window.addEventListener("storage", handleStorageChange);
     return () => {
