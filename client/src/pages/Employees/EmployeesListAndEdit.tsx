@@ -82,7 +82,7 @@ const EmployeesListAndEdit: React.FC = () => {
       const resMasterCompany = await dispatch(fetchMasterCompany() as unknown as UnknownAction)
       setCompanySelection(resMasterCompany.payload)
       if (isEditing) {
-        editEmployee(ACCESS_TOKEN)
+        editEmployee(localStorage.getItem(ACCESS_TOKEN))
           .then((data) => {
             const businessDivisions = data.reduce((acc, item) => acc.concat(item.business_divisions), [])
             setBusinessSelection(businessDivisions)
@@ -388,15 +388,22 @@ const EmployeesListAndEdit: React.FC = () => {
   }
 
   useEffect(() => {
-    fetchEmployees()
-    if (isEditing) {
-      fetchData()
-    }
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) {
+          showAlertPopup(handleTimeoutConfirm);
+      } else {
 
-    //test type value is being returned
-    const types = employeesList.map((item) => {
-      return [item]
-    })
+        fetchEmployees()
+        if (isEditing) {
+          fetchData()
+        }
+
+        //test type value is being returned
+        const types = employeesList.map((item) => {
+          return [item]
+        })
+      }
+    });
   }, [isEditing])
 
   useEffect(() => {

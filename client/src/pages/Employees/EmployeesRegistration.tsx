@@ -28,7 +28,7 @@ import {
 } from '../../utils/helperFunctionsUtil'
 import EmployeeExpensesList from '../EmployeeExpenses/EmployeeExpensesList'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
-import { masterMaintenanceScreenTabs, maximumEntries, token, MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER } from '../../constants'
+import { masterMaintenanceScreenTabs, maximumEntries, token, MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER, ACCESS_TOKEN } from '../../constants'
 import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 const EmployeesRegistration = () => {
@@ -127,35 +127,47 @@ const EmployeesRegistration = () => {
   }
 
   useEffect(() => {
-    const fetchBusinessDivisionsForCompany = async () => {
-      if (selectedCompanyId) {
-        getSelectedBusinessDivisionCompany(selectedCompanyId, token)
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) {
+        showAlertPopup(handleTimeoutConfirm);
+      } else {
+        const fetchBusinessDivisionsForCompany = async () => {
+          if (selectedCompanyId) {
+            getSelectedBusinessDivisionCompany(selectedCompanyId, localStorage.getItem(ACCESS_TOKEN))
+              .then((data) => {
+                setBusinessDivisionSelection(data)
+              })
+              .catch((error) => {
+                console.error('Error fetching business divisions:', error)
+              })
+          } else {
+            setBusinessDivisionSelection([]) // Clear if no company is selected
+          }
+        }
+
+        fetchBusinessDivisionsForCompany()
+      }
+    });
+  }, [selectedCompanyId])
+
+  const handleCompanyChange = async (containerIndex, companyId) => {
+    checkAccessToken(setIsAuthorized).then(result => {
+      if (!result) {
+        showAlertPopup(handleTimeoutConfirm);
+      } else {
+        const newContainers = [...employees]
+        newContainers[containerIndex].company_name = companyId // Set the selected company ID
+        setEmployees(newContainers)
+    
+        getSelectedBusinessDivisionCompany(companyId, localStorage.getItem(ACCESS_TOKEN))
           .then((data) => {
             setBusinessDivisionSelection(data)
           })
           .catch((error) => {
             console.error('Error fetching business divisions:', error)
           })
-      } else {
-        setBusinessDivisionSelection([]) // Clear if no company is selected
       }
-    }
-
-    fetchBusinessDivisionsForCompany()
-  }, [selectedCompanyId])
-
-  const handleCompanyChange = async (containerIndex, companyId) => {
-    const newContainers = [...employees]
-    newContainers[containerIndex].company_name = companyId // Set the selected company ID
-    setEmployees(newContainers)
-
-    getSelectedBusinessDivisionCompany(companyId, token)
-      .then((data) => {
-        setBusinessDivisionSelection(data)
-      })
-      .catch((error) => {
-        console.error('Error fetching business divisions:', error)
-      })
+    });
   }
 
   const handleTabClick = (tab) => {
