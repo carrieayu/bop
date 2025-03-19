@@ -1,5 +1,5 @@
 import { translate } from '../utils/translationUtil'
-import { inputFieldConfigurations } from '../inputFieldConfigurations'
+import { fields } from './inputFieldConfigurations'
 import { MAX_SAFE_INTEGER } from '../constants'
 
 // # CLIENT SIDE //
@@ -11,7 +11,7 @@ import { MAX_SAFE_INTEGER } from '../constants'
 // # HELPER FUNCTION FOR GETTING FIELDS AND VALIDATION CONFIGURATIONS BASED ON RECORD TYPE
 export const getFieldChecks = (recordType: string) => {
   // Check if the recordType exists in the inputFieldConfigurations object
-  const recordInputConfig = inputFieldConfigurations[recordType]
+  const recordInputConfig = fields[recordType]
 
   // If recordType exists, return the configuration, else return an empty array
   return recordInputConfig ? recordInputConfig : []

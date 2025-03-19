@@ -1,7 +1,13 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import { aggregatedCostOfSalesFunction, costOfSalesTotalsFunction, mapValue, monthlyTotalsCostOfSalesFunction } from "../../utils/tableAggregationUtil";
+import {
+  aggregatedCostOfSalesFunction,
+  getCostOfSalesMonthlyTotals,
+  mapValue,
+  getGraphDataForCostOfSales,
+} from '../../utils/tableAggregationUtil'
 import { sumValues } from "../../utils/helperFunctionsUtil";
+import { fields } from "../../utils/inputFieldConfigurations";
 
 // PLANNING
 
@@ -9,32 +15,30 @@ export const costOfSalesList =createSelector([(state:RootState) => state.costOfS
 
 export const costOfSalesTotals = createSelector([costOfSalesList], (list) => {
   const aggregatedCostOfSalesData = aggregatedCostOfSalesFunction(list)
-  return costOfSalesTotalsFunction(aggregatedCostOfSalesData)
+  return getCostOfSalesMonthlyTotals(aggregatedCostOfSalesData)
 })
 
 export const costOfSalesYearlyTotals = createSelector([costOfSalesTotals], (totals) => sumValues(totals))
 
 export const costOfSalesSelectMonthlyTotalsByDate = createSelector([costOfSalesList], (list) =>
-  monthlyTotalsCostOfSalesFunction(list),
+  getGraphDataForCostOfSales(list),
 )
 
 export const costOfSalesCategoryTotals = createSelector([costOfSalesList], (list) => {
   // Second Param (true). This means detailed response = true (gives individual item totals)
-  return costOfSalesTotalsFunction(list, true)
+  return getCostOfSalesMonthlyTotals(list, true)
 })
 
 export const costOfSalesSelectMonthlyTotalsByCategory = createSelector([costOfSalesList], (list) => {
-  const aggregatedCostOfSalesData = aggregatedCostOfSalesFunction(list)
+  const costOfSalesFinancialFields = fields.costOfSales.filter((item) => item.isFinancial === true)
 
-  const monthlyTotals = {
-    purchase: mapValue('purchase', aggregatedCostOfSalesData),
-    outsourcingExpense:  mapValue('outsourcing_expense', aggregatedCostOfSalesData),
-    productPurchase: mapValue('product_purchase', aggregatedCostOfSalesData),
-    dispatchLaborExpense:mapValue('dispatch_labor_expense', aggregatedCostOfSalesData),
-    communicationExpense:mapValue('communication_expense', aggregatedCostOfSalesData),
-    workInProgressExpense: mapValue('work_in_progress_expense', aggregatedCostOfSalesData),
-    amortizationExpense: mapValue('amortization_expense', aggregatedCostOfSalesData),
-  }
+  const aggregatedCostOfSalesData = aggregatedCostOfSalesFunction(list)
+  
+  const monthlyTotals = costOfSalesFinancialFields.reduce((acc, item) => {
+    acc[item.fieldName] = mapValue(item.field, aggregatedCostOfSalesData)
+    return acc
+  }, {})
+
   return monthlyTotals
 })
 

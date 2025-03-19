@@ -24,7 +24,12 @@ const GraphDashboard: React.FC<CustomBarProps> = ({
   isToggled,
   handleToggle,
 }) => {
-  const { planningData, resultsData } = planningAndResultGraphData
+  // Provides Default empty data for cases when dara fails to load.
+  const defaultGraphData = { financial: { datasets: [], labels: [] }, margin: { datasets: [], labels: [] } }
+
+  const { planningData = defaultGraphData, resultsData = defaultGraphData } = planningAndResultGraphData || {}
+
+
 
   // Planning
   const planningFinancials = planningData.financial // 円
@@ -38,7 +43,7 @@ const GraphDashboard: React.FC<CustomBarProps> = ({
 
   // Helper Functions for Series
   const createSeries = (data: any, type: 'planning' | 'results', colorModifier?: (hex: string) => string) =>
-    data.datasets.map((dataset: any) => ({
+    (data?.datasets || []).map((dataset: any) => ({
       name: `${translate(dataset.label, language)} (${translate(type === 'planning' ? 'planningShort' : 'resultsShort', language)})`,
       color: colorModifier ? colorModifier(dataset.backgroundColor) : dataset.backgroundColor,
       data: dataset.data.map((value: number, index: number) => ({
@@ -196,14 +201,18 @@ const GraphDashboard: React.FC<CustomBarProps> = ({
           <span className='slider'></span>
         </label>
       </div>
-      <Chart
-        key={isToggled}
-        options={options}
-        series={series}
-        type={isToggled ? 'line' : 'bar'}
-        height={350}
-        className={`custom-bar`}
-      />
+      {series && options ? (
+        <Chart
+          key={isToggled}
+          options={ options || {} }
+          series={ series || [] }
+          type={isToggled ? 'line' : 'bar'}
+          height={350}
+          className={`custom-bar`}
+        />
+      ) : (
+        <div>Loading</div>
+      )}
     </Card>
   )
 }
