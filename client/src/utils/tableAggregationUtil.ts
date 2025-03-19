@@ -9,7 +9,6 @@ const projectFinancialFields = fields.projects.filter((item) => item.isFinancial
 
 // HELPER FUNCTIONS
 const generalAggregate = (acc, item) => {
-  console.log('acc', acc)
   const { month, ...values } = item
   if (!acc[month]) {
     acc[month] = { month, ...values } // Include month in the object
@@ -230,7 +229,6 @@ export const monthlyTotalsEmployeeExpenseFunction = (employeeExpense) => {
 export const aggregatedProjectsFunction = (projects) => {
   // WIP: I think this needs fixing: returns odd values for id and month. (are they even necessary?)  
   return projects.reduce((acc, item) => {
-    console.log('acc projects', acc)
     
     const { month, ...values } = item
     

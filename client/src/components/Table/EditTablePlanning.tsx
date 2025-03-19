@@ -5,7 +5,7 @@ import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { getPlanningA } from '../../api/PlanningEndpoint/GetPlanningA'
 import { updatePlanning } from '../../api/PlanningEndpoint/UpdatePlanning'
-import { months, token } from '../../constants'
+import { halfYears, months, token } from '../../constants'
 import { organiseTotals } from '../../utils/helperFunctionsUtil'
 
 const EditTablePlanning = () => {
@@ -852,7 +852,6 @@ const EditTablePlanning = () => {
     'professionalServicesFees',
   ]
 
-  const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable']
   const [editableData, setEditableData] = useState(data)
   const isRowEditable = (label) => editableLabels.includes(label)
 

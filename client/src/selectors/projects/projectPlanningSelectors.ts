@@ -63,7 +63,6 @@ export const projectsSelectMonthlyTotalsByCategory = createSelector([projectsLis
     item.field === 'sales_revenue' 
   )
   const aggregatedProjectsData = aggregatedProjectsFunction(list)
-  console.log('aggregatedProjectsData', aggregatedProjectsData)
   const monthlyTotals = filteredProjectsFinancialFields.reduce((acc, item) => {
     acc[item.fieldName] = mapValue(item.field, aggregatedProjectsData)
     return acc

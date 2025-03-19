@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useLanguage } from '../../contexts/LanguageContext'
-import { months, monthNames } from '../../constants'
+import { months, monthNames, halfYears } from '../../constants'
 import { translate } from '../../utils/translationUtil'
 import { useSelector } from 'react-redux'
 import { planningCalculationsSelector } from '../../selectors/planning/planningCalculationSelectors'
@@ -37,26 +37,24 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
   // SALES RATIO (COMPARING RESULTS AND PLANNING)
   const getTotalsOnlyArr = (dataArr) => dataArr.map((item) => item.values[item.values.length - 1])
 
-  let planningTotalsOnlyArr
-  let resultsTotalsOnlyArr
-
   useEffect(() => {
-    planningTotalsOnlyArr = getTotalsOnlyArr(planningData)
-    resultsTotalsOnlyArr = getTotalsOnlyArr(resultsData)
+    const planningTotalsOnlyArr = getTotalsOnlyArr(planningData)
+    const resultsTotalsOnlyArr = getTotalsOnlyArr(resultsData)
+    let saleRatioArr = []
+    
     if (planningTotalsOnlyArr.length && resultsTotalsOnlyArr.length) {
-      const saleRatio = getSalesRatios(planningTotalsOnlyArr, resultsTotalsOnlyArr)
+      saleRatioArr = getSalesRatios(planningTotalsOnlyArr, resultsTotalsOnlyArr)
     }
 
-    const saleRatioArr = getSalesRatios(planningTotalsOnlyArr, resultsTotalsOnlyArr)
     setSalesRatios(saleRatioArr)
-  }, [resultsData]) // Runs whenever data updates
+  }, [resultsData])
 
   const getSalesRatios = (planningArr, resultsArr) => {
     return resultsArr.map((resultTotalValue, i) => {
       const planningTotalValue = planningArr[i]
       // Prevent division by zero
       const salesRatio = planningTotalValue !== 0 ? (resultTotalValue / planningTotalValue) * 100 : 0
-      return salesRatio.toFixed(2) // Optional: round to 2 decimal places
+      return salesRatio.toFixed(2) // Round to 2 decimal places
     })
   }
 
@@ -77,7 +75,7 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
   ]
 
   // Assigns Class based on whether it needs indentation or not.
-  const handleNoIdentLabels = (noIndentLabels, item) => {
+  const handleNoIndentLabels = (noIndentLabels, item) => {
     return noIndentLabels.includes(item.label)
       ? language !== 'en'
         ? 'no-indent'
@@ -87,7 +85,7 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
         : 'indented-label-english-mode'
   }
 
-  const hanldeIsThousandYenChecked = (isThousandYenChecked, value) => {
+  const handleIsThousandYenChecked = (isThousandYenChecked, value) => {
     if (value === undefined || value === null) return '';
     
     if (isThousandYenChecked) {
@@ -96,8 +94,6 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
 
     return value.toLocaleString()
   }
-
-  const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable']
   
   return (
     <div className='table-planning-container editScrollable'>
@@ -144,15 +140,15 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
           <tbody>
             {planningData.map((item, index) => (
               <tr key={`planningData-${item.label}-${index}`}>
-                <td className={`sticky border-sides-shadow ${handleNoIdentLabels(noIndentLabels, item)}`}>
+                <td className={`sticky border-sides-shadow ${handleNoIndentLabels(noIndentLabels, item)}`}>
                   {translate(item.label, language)}
                 </td>
                 {item.values.map((value, valueIndex) => [
                   <td key={`planning-${index}-${valueIndex}`} className='month-data planning-cells'>
-                    {hanldeIsThousandYenChecked(isThousandYenChecked, value)}
+                    {handleIsThousandYenChecked(isThousandYenChecked, value)}
                   </td>,
                   <td key={`results-${index}-${valueIndex}`} className='month-data result-cells'>
-                    {hanldeIsThousandYenChecked(isThousandYenChecked, resultsData[index].values[valueIndex] )}
+                    {handleIsThousandYenChecked(isThousandYenChecked, resultsData[index].values[valueIndex])}
                   </td>,
                 ])}
                 <td key={`sale-ratio-${index}`} className='sale-ratio-cells' colSpan={2}>

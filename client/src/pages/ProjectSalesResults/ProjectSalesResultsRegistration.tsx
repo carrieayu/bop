@@ -384,7 +384,6 @@ const handleAdd = () => {
     })
     getProject(token)
       .then((data) => {
-        // console.table(data);
         setProjectYear(data)
       })
       .catch((error) => {

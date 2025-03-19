@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { translate } from '../../utils/translationUtil';
-import { monthNames, months } from '../../constants';
+import { halfYears, monthNames, months } from '../../constants';
 import { planningTableALabelsAndValues } from '../../utils/TablePlanningALabelAndValues'
 
 interface TablePlanningAProps {
@@ -35,8 +35,6 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked, pla
     'ordinaryIncome',
     'cumulativeOrdinaryIncome',
   ]
-
-  const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable']
 
   return (
     <div className='table-planning-container editScrollable'>

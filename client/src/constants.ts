@@ -53,3 +53,5 @@ export const MAX_VALUE = Number.MAX_VALUE //1.7976931348623157e+308
 
 export const POLLING_INTERVAL = 60000
 export const MAX_RETRIES = 12
+
+export const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable']
