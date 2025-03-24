@@ -7,8 +7,6 @@ import { setupIdleTimer } from '../utils/helperFunctionsUtil'
 import AlertModal from "../components/AlertModal/AlertModal";
 import { translate } from '../utils/translationUtil'
 import { useLanguage } from '../contexts/LanguageContext'
-import axios from 'axios'
-import { getReactActiveEndpoint } from '../toggleEndpoint'
 
 interface ProtectedRoutesProps {
   children: any;
@@ -21,26 +19,23 @@ export const handleTimeoutConfirm = async () => {
 
 export async function checkAccessToken(setIsAuthorized: (value: boolean | null) => void) {
   try {
-	  const token = localStorage.getItem(ACCESS_TOKEN);
-	  const decoded = jwtDecode(token);
-	  const tokenExpiration = decoded.exp;
-	  const now = Date.now() / 1000;
-	  if (tokenExpiration < now) {
-	    // 有効期限を過ぎているのでNG
-	    // リフレッシュトークンを再取得して、AccessTokenを更新する
-	    const refreshed = await refreshToken();
-	    if (refreshed) {
-	      setIsAuthorized(refreshed);
-	    } else {
-	      return false;
-	    }
-	  } else {
-	    // 有効期限内でOK
-	    setIsAuthorized(true);
-	  }
-	  return true;
+    const refreshed = await refreshToken();
+    if (!refreshed) {
+      setIsAuthorized(true);
+      return false;
+    }
+    const token = localStorage.getItem(ACCESS_TOKEN);
+    const decoded = jwtDecode(token);
+    const accessTokenExpiration = decoded.exp;
+    const now = Date.now() / 1000;
+    if (accessTokenExpiration < now) {
+      setIsAuthorized(true);
+      return false;
+    } else {
+      setIsAuthorized(false);
+      return true;
+    }
   } catch (err) {
-    console.table(err);
     return false;
   }
 };
@@ -49,21 +44,13 @@ export const useAlertPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [onConfirm, setOnConfirm] = useState<(() => void) | null>(null);
   const { language, setLanguage } = useLanguage()
-
   const showAlertPopup = (onConfirm: () => void) => {
     setOnConfirm(() => onConfirm);
     setIsOpen(true);
   };
-
-  const closePopup = () => {
-    setIsOpen(false);
-    setOnConfirm(null);
-  };
-
   const handleNotConfirmClick = () => {
     window.location.href = "/login";
   };
-
   const AlertPopupComponent = () => (
     <AlertModal
       isOpen={isOpen}
@@ -75,19 +62,26 @@ export const useAlertPopup = () => {
       message={translate('nonActiveMessage', language)}
     />
   );
-
   return { showAlertPopup, AlertPopupComponent };
 };
- 
+
 export const refreshToken = async (onAuthorizeChange?: (status: boolean) => void) => {
   const refreshToken = localStorage.getItem(REFRESH_TOKEN);
   try {
+    const decoded = jwtDecode(refreshToken);
+    const refreshTokenExpiration = decoded.exp;
+    const now = Date.now() / 1000;
+    if (refreshTokenExpiration < now) {
+      if (onAuthorizeChange) {
+        onAuthorizeChange(false);
+      }
+      return false;
+    }
     const res = await api.post("/api/token/refresh/", {
       refresh: refreshToken,
     });
     if (res.status === 200) {
       localStorage.setItem(ACCESS_TOKEN, res.data.access);
-      // コールバックを使用して状態を更新
       if (onAuthorizeChange) {
         onAuthorizeChange(true);
       }
@@ -99,10 +93,6 @@ export const refreshToken = async (onAuthorizeChange?: (status: boolean) => void
       return false;
     }
   } catch (err) {
-    console.table(err);
-    if (onAuthorizeChange) {
-      onAuthorizeChange(false);
-    }
     return false;
   }
 };
@@ -110,26 +100,26 @@ export const refreshToken = async (onAuthorizeChange?: (status: boolean) => void
 const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({ children }) => {
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const [isNonActiveOpen, setIsNonActiveOpen] = useState<boolean>(false);
-  const { language, setLanguage } = useLanguage()
-  const [isOpen, setIsOpen] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [onConfirm, setOnConfirm] = useState<(() => void) | null>(null);
+  const {language, setLanguage} = useLanguage()
   useEffect(() => {
     auth().catch(() => setIsAuthorized(false));
   }, []);
-
   const auth = async () => {
-    const token = localStorage.getItem(ACCESS_TOKEN);
-    if (!token) {
+    const accessToken = localStorage.getItem(ACCESS_TOKEN);
+    if (!accessToken) {
       setIsNonActiveOpen(true);
       return;
     }
-    const decoded = jwtDecode(token);
-    const tokenExpiration = decoded.exp;
+    const decoded = jwtDecode(accessToken);
+    const accessTokenExpiration = decoded.exp;
     const now = Date.now() / 1000;
-    if (tokenExpiration < now) {
-      // const refreshed = await refreshToken();
-      const refreshed = await refreshToken((status) => setIsAuthorized(status));
+    if (accessTokenExpiration < now) {
+      const refreshed = await refreshToken((status) => {
+        setIsAuthorized(status);
+        if (!status) {
+          setIsNonActiveOpen(true);
+        }
+      });
       if (refreshed) {
         setIsAuthorized(refreshed);
       }
@@ -143,10 +133,8 @@ const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({ children }) => {
       if (event.key === ACCESS_TOKEN && !event.newValue) {
         setIsNonActiveOpen(true);
       }
-      // REFRESH_TOKEN の変更チェック
       if (event.key === REFRESH_TOKEN && !event.newValue) {
-        // REFRESH_TOKENが削除された場合の処理
-        setIsNonActiveOpen(true); // 必要に応じてアクションを調整
+        setIsNonActiveOpen(true);
       }
     };
     window.addEventListener("storage", handleStorageChange);
@@ -157,10 +145,17 @@ const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({ children }) => {
 
   useEffect(() => {
     const idleTimer = setupIdleTimer(() => {
-      refreshToken().catch(() => setIsNonActiveOpen(true));
+      const refreshed = refreshToken((status) => {
+        if (!status) {
+          setIsNonActiveOpen(true);
+          return;
+        }
+      });
     }, IDLE_TIMEOUT);
     idleTimer.startListening();
-    return () => idleTimer.stopListening();
+    return () => {
+      idleTimer.stopListening();
+    };
   }, [IDLE_TIMEOUT]);
 
   const handleNotConfirmClick = () => {
@@ -171,7 +166,6 @@ const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({ children }) => {
   };
 
   if (isAuthorized === null) {
-    console.log("isAuthorized Loading... 301 isAuthorized -> " + isAuthorized);
     return <div>Loading...</div>;
   }
 
@@ -188,7 +182,6 @@ const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({ children }) => {
       {isAuthorized ? children : <Navigate to="/login" />}
     </>
   );
-
 };
 
 export default ProtectedRoutes;
