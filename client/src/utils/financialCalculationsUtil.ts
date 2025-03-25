@@ -23,14 +23,13 @@ export const calculateOrdinaryIncome = (operatingIncome, nonOperatingIncome, non
 // Eg. { 2024 - 4: 500000, ..., 2025 - 3: 40000 } '
 
 // # Gross Profit Monthly By Date: Object
-export const calculateMonthlyGrossProfit = (cosMonths, salesRevenueMonths) => {
+// USED IN GRAPH
+export const calculateMonthlyGrossProfit = (salesRevenueMonths, cosMonths) => {
   // ƒormula: sales revenue - cost of sale
   const grossProfitMonthlyByDate = {}
 
   const allDates = new Set([...Object.keys(cosMonths), ...Object.keys(salesRevenueMonths)])
-
-  const allMonths = new Set([...Object.keys(cosMonths), ...Object.keys(salesRevenueMonths)])
-  allMonths.forEach((key) => {
+  allDates.forEach((key) => {
     const sales = salesRevenueMonths[key] || 0
     const costOfSales = cosMonths[key] || 0
     grossProfitMonthlyByDate[key] = sales - costOfSales

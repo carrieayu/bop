@@ -8,6 +8,7 @@ const initialState = {
   monthlyTotals: [],
   yearlyTotal: 0,
   monthlyTotalsByDate: [],
+  editableData: [],
 }
 
 export const fetchExpense = createAsyncThunk('expense/fetch', async () => {
@@ -18,6 +19,9 @@ const expense = createSlice({
   name: 'expense',
   initialState,
   reducers: {
+    updateExpenses: (state, action) => {
+      return action.payload
+    }
   },
   extraReducers(builder) {
     builder
@@ -33,5 +37,7 @@ const expense = createSlice({
       })
   },
 })
+
+export const { updateExpenses } = expense.actions
 
 export default expense.reducer

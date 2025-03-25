@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { translate } from '../../utils/translationUtil';
-import { halfYears, monthNames, months } from '../../constants';
+import { halfYears, monthNames, months, noIndentLabels } from '../../constants';
 import { planningTableALabelsAndValues } from '../../utils/TablePlanningALabelAndValues'
 
 interface TablePlanningAProps {
@@ -23,18 +23,6 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked, pla
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
   }, [language])
-
-  const noIndentLabels = [
-    'salesRevenue',
-    'costOfSales',
-    'grossProfit',
-    'employeeExpenses',
-    'expenses',
-    'sellingAndGeneralAdminExpensesShort', // Just a shorter version for English Language Mode
-    'operatingIncome',
-    'ordinaryIncome',
-    'cumulativeOrdinaryIncome',
-  ]
 
   return (
     <div className='table-planning-container editScrollable'>

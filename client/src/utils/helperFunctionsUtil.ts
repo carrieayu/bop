@@ -1,7 +1,7 @@
 // GENERAL HELPER FUNCTIONS
 
 import api from '../api/api'
-import { MAX_NUMBER_LENGTH, MAX_RETRIES, MAX_SAFE_INTEGER, MAX_VALUE, POLLING_INTERVAL } from '../constants'
+import { MAX_NUMBER_LENGTH, MAX_RETRIES, MAX_SAFE_INTEGER, MAX_VALUE, months, POLLING_INTERVAL } from '../constants'
 import { getReactActiveEndpoint } from '../toggleEndpoint'
 import { translate } from './translationUtil'
 
@@ -486,3 +486,17 @@ export const reOrderArray = (series, length) => {
 export const handleError = (actionName: string, error: any) => {
     console.error(`Error fetching ${actionName}:`, error)
   }
+
+export const getValueAndId = (valueName, recordType, aggregatedData) => {
+  const values = months.map((month) => {
+    const dataEntry = aggregatedData[month]
+    if (dataEntry) {
+      return {
+        id: dataEntry[`${recordType}_id`],
+        [valueName]: dataEntry[valueName] || 0,
+      }
+    }
+    return { id: null, [valueName]: 0 }
+  })
+  return values
+       }

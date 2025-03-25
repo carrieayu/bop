@@ -40,6 +40,19 @@ const PlanningListAndEdit = () => {
   const planning = useSelector(planningSelector)
   const planningCalculations = useSelector(planningCalculationsSelector)
 
+  // TEST~~
+  const [editableDataTest, setEditableDataTest] = useState([])
+
+  
+  useEffect(() => { 
+    console.log('editableDataTest', editableDataTest)
+  }, [editableDataTest])
+  
+  const handleEditableDataTest = (testData) => {
+    setEditableDataTest(testData)
+  }
+  // TEST END
+
   const handleThousandYenToggle = () => {
     setIsThousandYenChecked((prevState) => !prevState)
   }
@@ -117,6 +130,8 @@ const PlanningListAndEdit = () => {
       setLanguage(newLanguage)
     }
   }
+
+  // TEST 
 
   return (
     <div className='planning_wrapper'>
@@ -214,7 +229,12 @@ const PlanningListAndEdit = () => {
                   <div className={`table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
                     {/* Render the TablePlanning component here */}
                     {isEditing ? (
-                      <EditTablePlanning />
+                      <EditTablePlanning
+                        editableDataTest={editableDataTest}
+                        handleEditableDataTest={handleEditableDataTest}
+                        // planning={planning}
+                        // planningCalculations={planningCalculations}
+                      />
                     ) : (
                       <TablePlanningA
                         isThousandYenChecked={isThousandYenChecked}

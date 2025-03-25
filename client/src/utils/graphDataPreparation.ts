@@ -27,7 +27,8 @@ export const prepareGraphData = (data: any, type) => {
     nonOperatingExpense: reformattedMonthlyTotalValues(nonOperatingExpenseMonthly),
   }
 
-  const grossProfit = calculateMonthlyGrossProfit(reformattedData.costOfSales, reformattedData.salesRevenue)
+  const grossProfit = calculateMonthlyGrossProfit(reformattedData.salesRevenue, reformattedData.costOfSales)
+  console.log('gross profit graph data:', grossProfit)
   const dates = activeDatesOnGraph(reformattedData.costOfSales, reformattedData.salesRevenue)
   
   const grossProfitMargin = calculateMonthlyGrossProfitMargin(reformattedData.salesRevenue, grossProfit)

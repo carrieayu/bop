@@ -2,19 +2,19 @@ import { createSelector } from '@reduxjs/toolkit'
 import { selectProjects } from '../listSelectors'
 import { planningSelector } from './planningSelector'
 import {
-  calculateGrossProfit,
-  calculateMonthlyGrossProfit,
+  calculateGrossProfit,  
+  
   calculateGrossProfitMargin,
   calculateMonthlyGrossProfitMargin,
+  calculateOperatingProfitMargin,
   calculateMonthlyOperatingProfitMargin,
   calculateMonthlyOrdinaryIncome,
   calculateOperatingIncome,
-  calculateOperatingProfitMargin,
   calculateOrdinaryIncome,
   calculateSellingAndGeneralAdmin,
+  calculateMonthlyGrossProfit,
 } from '../../utils/financialCalculationsUtil'
 import {
-  grossProfitFunction,
   operatingIncomeFunction,
   ordinaryProfitFunction,
   sellingAndGeneralAdminExpenseFunction,
@@ -24,15 +24,15 @@ import {
 export const selectGrossProfit = createSelector(
   [planningSelector],
   (planning) => {
-    const monthlyTotalsFuncOneCalc = calculateMonthlyGrossProfit(planning.projects.monthlyTotals.salesRevenue, planning.costOfSales.monthlyTotals)
-    const monthlyTotalsFuncTwoAgg = grossProfitFunction(planning.projects.monthlyTotals.salesRevenue, planning.costOfSales.monthlyTotals)
+    
+    // Takes Monthly Values From Object and Puts Them in an Array.
+    const monthlyGrossProfitArray = Object.values(
+      calculateMonthlyGrossProfit(planning.projects.monthlyTotals.salesRevenue, planning.costOfSales.monthlyTotals),
+    )
 
- 
     return {
       yearTotal: calculateGrossProfit(planning.projects.salesRevenueTotal, planning.costOfSales.yearlyTotal),
-      monthlyTotals: grossProfitFunction(planning.projects.monthlyTotals.salesRevenue, planning.costOfSales.monthlyTotals)
-      // monthlyTotals: calculateMonthlyGrossProfit(planning.projects.monthlyTotals.salesRevenue, planning.costOfSales.monthlyTotals)
-
+      monthlyTotals: monthlyGrossProfitArray
     }
 
   },
@@ -95,12 +95,6 @@ export const selectOrdinaryIncome = createSelector(
       planning.projects.monthlyTotals.nonOperatingIncome,
       planning.projects.monthlyTotals.nonOperatingExpense,
     ),
-
-    // monthlyTotals: calculateMonthlyOrdinaryIncome(
-    //   operatingIncome.monthlyTotals,
-    //   planning.projects.monthlyTotals.nonOperatingIncome,
-    //   planning.projects.monthlyTotals.nonOperatingExpense,
-    // ),
   }),
 )
 

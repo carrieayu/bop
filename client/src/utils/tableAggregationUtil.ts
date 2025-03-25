@@ -51,8 +51,6 @@ const prepareGraphData = (data, financialFields) => {
   })
 }
 
-
-
 // EXPENSES
 export const aggregatedExpensesFunction = (expenses) => {
   return expenses.reduce((acc, item) => {
@@ -247,6 +245,8 @@ export const aggregatedProjectsFunction = (projects) => {
 }
 
 // GROSS PROFIT
+// DELETE?? NOW USING "calculateMonthlyGrossProfit" and converting results into value Array.
+
 export const grossProfitFunction = (salesRevenue, costOfSalesValues) => {
   return months.map((month, index) => {
     const totalSales = salesRevenue[index] // Get the salesRevenue  for the current month
