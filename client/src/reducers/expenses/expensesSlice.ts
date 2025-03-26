@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { ExpenseEntity } from '../../entity/expenseEntity'
 import { fetchWithPolling } from '../../utils/helperFunctionsUtil'
+import { mappingExpensesLabels } from '../../utils/labelConverter'
 
 const initialState = {
   isLoading: false,
@@ -19,9 +20,25 @@ const expense = createSlice({
   name: 'expense',
   initialState,
   reducers: {
-    updateExpenses: (state, action) => {
-      return action.payload
-    }
+    updateExpensesPlanningScreen: (state, action) => {
+      console.log("inside expense slice", action.payload)
+      state.list = state.list.map((item) => {
+        const recordToBeChanged = action.payload.changedData[item.expense_id]
+
+        if (recordToBeChanged) {
+          console.log("recordToBeChanged",recordToBeChanged)
+          const updatedItem = { ...item }
+
+          recordToBeChanged.forEach((record) => {
+            const recordLabel = record.label
+            const convertedLabel = mappingExpensesLabels(recordLabel)
+            updatedItem[convertedLabel] = record.value
+          })
+          return updatedItem
+        }
+        return item // Return item as is if no match
+      })
+    },
   },
   extraReducers(builder) {
     builder
@@ -38,6 +55,6 @@ const expense = createSlice({
   },
 })
 
-export const { updateExpenses } = expense.actions
+export const { updateExpensesPlanningScreen } = expense.actions
 
 export default expense.reducer

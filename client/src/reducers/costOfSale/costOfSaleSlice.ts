@@ -22,6 +22,7 @@ const costOfSale = createSlice({
   reducers: {
     updateCostOfSalesPlanningScreen: (state, action) => {
       state.list = state.list.map((item) => {
+      console.log('inside costOfSale slice', action.payload)
 
         const recordToBeChanged = action.payload.changedData[item.cost_of_sale_id]
 

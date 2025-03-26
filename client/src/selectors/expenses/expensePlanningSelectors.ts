@@ -46,7 +46,7 @@ export const expensesEditable = createSelector([expensesList], (list) => {
   const rentValues = getValueAndId('rent_expense', 'expense', aggregatedExpensesData)
   const taxesPublicChargesValues = getValueAndId('tax_and_public_charge', 'expense', aggregatedExpensesData)
   const depreciationExpensesValues = getValueAndId('depreciation_expense', 'expense', aggregatedExpensesData)
-  const travelExpenseValues = getValueAndId('travel_expense', 'expenses', aggregatedExpensesData)
+  const travelExpenseValues = getValueAndId('travel_expense', 'expense', aggregatedExpensesData)
   const communicationExpenseValues = getValueAndId('communication_expense', 'expense', aggregatedExpensesData)
   const utilitiesValues = getValueAndId('utilities_expense', 'expense', aggregatedExpensesData)
   const transactionFeeValues = getValueAndId('transaction_fee', 'expense', aggregatedExpensesData)

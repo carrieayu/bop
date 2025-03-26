@@ -5,7 +5,10 @@ import { updatePlanning } from '../../api/PlanningEndpoint/UpdatePlanning'
 import { editableLabels, halfYears, months, noIndentLabels, token } from '../../constants'
 import { editingTableALabelsAndValues } from '../../utils/tableEditingALabelAndValues'
 import { useDispatch, useSelector } from 'react-redux'
-import { updateCostOfSalesPlanningScreen, fetchCostOfSale } from '../../reducers/costOfSale/costOfSaleSlice'
+import { updateCostOfSalesPlanningScreen } from '../../reducers/costOfSale/costOfSaleSlice'
+import { updateExpensesPlanningScreen } from '../../reducers/expenses/expensesSlice'
+
+
 import { useAppDispatch } from '../../actions/hooks'
 import { useAppSelector } from '../../actions/hooks'
 // SELECTORS
@@ -173,12 +176,20 @@ const handleInputChange = (rowIndex, valueIndex, e) => {
         return null
       })
       .filter((row) => row !== null)
-
-    dispatch(
+    
+    // Actions to be dispatched on Update (Optimistic Update)
+    const actions = [
       updateCostOfSalesPlanningScreen({
         changedData,
       }),
-    )
+      updateExpensesPlanningScreen({
+        changedData,
+      })
+    ]
+
+    actions.forEach((action) => dispatch(action))
+    
+    // Update Backend Database
     saveData(updatedData)
   }
 

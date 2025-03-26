@@ -11,4 +11,20 @@ export const mappingCostOfSalesLabels = (recordLabel) => {
   return mapping[recordLabel] || recordLabel
 }
 
-// Need to add expenses Later
+export const mappingExpensesLabels = (recordLabel) => {
+  const mapping = {
+    travelExpenses: 'travel_expense',
+    consumableExpenses: 'consumable_expense',
+    rentExpenses: 'rent_expense',
+    taxesAndPublicCharges: 'tax_and_public_charge',
+    depreciationExpenses: 'depreciation_expense',
+    communicationExpenses: 'communication_expense',
+    utilitiesExpenses: 'utilities_expense',
+    transactionFees: 'transaction_fee',
+    advertisingExpenses: 'advertising_expense',
+    entertainmentExpenses: 'entertainment_expense',
+    professionalServicesFees: 'professional_services_fee',
+  }
+
+  return mapping[recordLabel] || recordLabel
+}
