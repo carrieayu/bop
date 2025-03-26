@@ -21,12 +21,10 @@ const expense = createSlice({
   initialState,
   reducers: {
     updateExpensesPlanningScreen: (state, action) => {
-      console.log("inside expense slice", action.payload)
       state.list = state.list.map((item) => {
         const recordToBeChanged = action.payload.changedData[item.expense_id]
 
         if (recordToBeChanged) {
-          console.log("recordToBeChanged",recordToBeChanged)
           const updatedItem = { ...item }
 
           recordToBeChanged.forEach((record) => {

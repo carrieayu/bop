@@ -4,18 +4,14 @@ import { useLanguage } from '../../contexts/LanguageContext'
 import { updatePlanning } from '../../api/PlanningEndpoint/UpdatePlanning'
 import { editableLabels, halfYears, months, noIndentLabels, token } from '../../constants'
 import { editingTableALabelsAndValues } from '../../utils/tableEditingALabelAndValues'
-import { useDispatch, useSelector } from 'react-redux'
 import { updateCostOfSalesPlanningScreen } from '../../reducers/costOfSale/costOfSaleSlice'
 import { updateExpensesPlanningScreen } from '../../reducers/expenses/expensesSlice'
-
 
 import { useAppDispatch } from '../../actions/hooks'
 import { useAppSelector } from '../../actions/hooks'
 // SELECTORS
 import { planningSelector } from '../../selectors/planning/planningSelector'
 import { planningCalculationsSelector } from '../../selectors/planning/planningCalculationSelectors'
-import { RootState } from '../../app/store'
-import { handleError } from '../../utils/helperFunctionsUtil'
 
 // Editing Screen Default Data is also from planning selector and planningCalculations
 
@@ -30,25 +26,19 @@ import { handleError } from '../../utils/helperFunctionsUtil'
 const EditTablePlanning = ({ editableDataTest, handleEditableDataTest }) => {
   const dispatch = useAppDispatch()
 
-  const planning = useSelector(planningSelector)
-  const planningCalculations = useSelector(planningCalculationsSelector)
+  const planning = useAppSelector(planningSelector)
+  const planningCalculations = useAppSelector(planningCalculationsSelector)
   const costOfSalesList = useAppSelector((state) => state.costOfSale.list)
-  console.log('costOfSalesList', costOfSalesList)
 
   const [data, setData] = useState([])
-  const [testData, setTestData] = useState([])
   // TEST
   const [editableData, setEditableData] = useState(data)
-  // const [editableData, setEditableData] = useState(editableDataTest)
 
-  // console.log('editableDataTest AFTER', editableDataTest)
   const [previousData, setPreviousData] = useState([])
-  const previousCostOfSaleData = costOfSalesList
 
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
 
-  const testDataList = editingTableALabelsAndValues(planning, planningCalculations)
   const [changedData, setChangedData] = useState({})
 
   useEffect(() => {
@@ -67,18 +57,15 @@ const EditTablePlanning = ({ editableDataTest, handleEditableDataTest }) => {
   const isRowEditable = (label) => editableLabels.includes(label)
 
 const handleInputChange = (rowIndex, valueIndex, e) => {
-  console.log('rowIndex, valueIndex, e', rowIndex, valueIndex, e)
-
   // Get the updated data array
   const updatedData = [...data]
 
   if (!updatedData[rowIndex] || !updatedData[rowIndex].values) {
     return
   }
-
+  
   // Parse the new value and ensure it's a number
   const newValue = parseFloat(e.target.value) || 0
-  console.log('newValue', newValue)
 
   if (updatedData[rowIndex].values[valueIndex] !== newValue) {
     // Update the values in the updatedData array
@@ -89,11 +76,9 @@ const handleInputChange = (rowIndex, valueIndex, e) => {
 
     // Track changes in changedData state
     const updatedChangedData = { ...changedData }
-    const changedObjectId = updatedData[rowIndex].id[valueIndex]
-    console.log('changedObjectId', changedObjectId, 'updatedData[row]', updatedData[rowIndex])
-
+    const changedObjectId = updatedData[rowIndex].id[valueIndex]    
     const label = updatedData[rowIndex].label
-    console.log('label', label)
+    const tableName = updatedData[rowIndex].table
 
     // Ensure the updatedChangedData object is properly initialized for the id
     if (!updatedChangedData[changedObjectId]) {
@@ -112,6 +97,7 @@ const handleInputChange = (rowIndex, valueIndex, e) => {
         id: changedObjectId,
         label: label,
         value: newValue,
+        table: tableName,
       })
     }
 
@@ -154,7 +140,6 @@ const handleInputChange = (rowIndex, valueIndex, e) => {
         const filteredIds = []
         const filteredValues = []
 
-        // console.log('filteredIds', filteredIds, 'filteredValues', filteredValues)
         valuesArray.forEach((value, index) => {
           if (value !== previousValuesArray[index] && value !== 0) {
             filteredIds.push(idArray[index])
@@ -177,14 +162,17 @@ const handleInputChange = (rowIndex, valueIndex, e) => {
       })
       .filter((row) => row !== null)
     
+    const costOfSalesData = Object.fromEntries(Object.entries(changedData).filter(([id]) => id.startsWith('A')))
+    const expensesData = Object.fromEntries(Object.entries(changedData).filter(([id]) => id.startsWith('B')))
+
     // Actions to be dispatched on Update (Optimistic Update)
     const actions = [
       updateCostOfSalesPlanningScreen({
-        changedData,
+        changedData: costOfSalesData,
       }),
       updateExpensesPlanningScreen({
-        changedData,
-      })
+        changedData: expensesData,
+      }),
     ]
 
     actions.forEach((action) => dispatch(action))
