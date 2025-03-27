@@ -1,53 +1,47 @@
 import React, { useEffect, useState } from 'react'
-import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { updatePlanning } from '../../api/PlanningEndpoint/UpdatePlanning'
-import { editableLabels, halfYears, months, noIndentLabels, token } from '../../constants'
 import { editingTableALabelsAndValues } from '../../utils/tableEditingALabelAndValues'
-import { updateCostOfSalesPlanningScreen } from '../../reducers/costOfSale/costOfSaleSlice'
-import { updateExpensesPlanningScreen } from '../../reducers/expenses/expensesSlice'
-
+import { translate } from '../../utils/translationUtil'
+import { editableLabels, halfYears, months, noIndentLabels, token } from '../../constants'
+// HOOKS
 import { useAppDispatch } from '../../actions/hooks'
 import { useAppSelector } from '../../actions/hooks'
 // SELECTORS
 import { planningSelector } from '../../selectors/planning/planningSelector'
 import { planningCalculationsSelector } from '../../selectors/planning/planningCalculationSelectors'
+// REDUCERS
+import { updateCostOfSalesPlanningScreen } from '../../reducers/costOfSale/costOfSaleSlice'
+import { updateExpensesPlanningScreen } from '../../reducers/expenses/expensesSlice'
 
-// Editing Screen Default Data is also from planning selector and planningCalculations
-
-// [NOT DONE] 1. (A) Input data stays in input boxes on switch
-                    //- planning data can stay as original, editing inputs should be whatever was input (unsaved)
-
-// [done] 1. (B) - If updated planning and editing table data will be identical 
-// [done] 2. When Update use redux.　[done]
-// [done] 3. Redux should know the data has been updated and should rerender [done]
-
-
-const EditTablePlanning = ({ editableDataTest, handleEditableDataTest }) => {
+const EditTablePlanning = ({
+  editableData,
+  handleEditableData,
+  hasUnsavedChanges,
+  setHasUnsavedChanges,
+  changedData,
+  setChangedData,
+  setEditableData,
+}) => {
   const dispatch = useAppDispatch()
-
   const planning = useAppSelector(planningSelector)
   const planningCalculations = useAppSelector(planningCalculationsSelector)
-  const costOfSalesList = useAppSelector((state) => state.costOfSale.list)
 
-  const [data, setData] = useState([])
-  // TEST
-  const [editableData, setEditableData] = useState(data)
-
-  const [previousData, setPreviousData] = useState([])
+  const [data, setData] = useState([]) // empty array
 
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
 
-  const [changedData, setChangedData] = useState({})
+  const updateEditableData = (newData) => {
+    handleEditableData(newData) // Update the parent's state
+  }
 
   useEffect(() => {
-    // PLANNING TABLE DATA
-  }, [changedData])
+    console.log('hasUnsavedChanges', hasUnsavedChanges)
+  }, [hasUnsavedChanges])
 
   useEffect(() => {
-    const updatedList = editingTableALabelsAndValues(planning, planningCalculations)
-    setData(updatedList)
+    setData(editingTableALabelsAndValues(planning, planningCalculations))
   }, [planning, planningCalculations])
 
   useEffect(() => {
@@ -56,55 +50,56 @@ const EditTablePlanning = ({ editableDataTest, handleEditableDataTest }) => {
 
   const isRowEditable = (label) => editableLabels.includes(label)
 
-const handleInputChange = (rowIndex, valueIndex, e) => {
-  // Get the updated data array
-  const updatedData = [...data]
+  const handleInputChange = (rowIndex, valueIndex, e) => {
+    // Get the updated data array
+    const updatedData = hasUnsavedChanges ? [...editableData] : [...data]
 
-  if (!updatedData[rowIndex] || !updatedData[rowIndex].values) {
-    return
-  }
-  
-  // Parse the new value and ensure it's a number
-  const newValue = parseFloat(e.target.value) || 0
-
-  if (updatedData[rowIndex].values[valueIndex] !== newValue) {
-    // Update the values in the updatedData array
-    updatedData[rowIndex].values[valueIndex] = newValue
-
-    // Update the editable data state
-    setEditableData(updatedData)
-
-    // Track changes in changedData state
-    const updatedChangedData = { ...changedData }
-    const changedObjectId = updatedData[rowIndex].id[valueIndex]    
-    const label = updatedData[rowIndex].label
-    const tableName = updatedData[rowIndex].table
-
-    // Ensure the updatedChangedData object is properly initialized for the id
-    if (!updatedChangedData[changedObjectId]) {
-      updatedChangedData[changedObjectId] = []
+    if (!updatedData[rowIndex] || !updatedData[rowIndex].values) {
+      return
     }
 
-    // Check if the entry with the same label already exists for this id
-    const existingChange = updatedChangedData[changedObjectId].find((entry) => entry.label === label)
+    // Parse the new value and ensure it's a number
+    const newValue = parseFloat(e.target.value) || 0
 
-    if (existingChange) {
-      // If the label exists, update the value
-      existingChange.value = newValue
-    } else {
-      // If no entry exists for the label, add a new one
-      updatedChangedData[changedObjectId].push({
-        id: changedObjectId,
-        label: label,
-        value: newValue,
-        table: tableName,
-      })
+    if (updatedData[rowIndex].values[valueIndex] !== newValue) {
+      // Update the values in the updatedData array
+      updatedData[rowIndex].values[valueIndex] = newValue
+
+      // Track changes in changedData state
+
+      const previousChangedData = changedData
+      const updatedChangedData = hasUnsavedChanges ? { ...previousChangedData } : { ...changedData }
+      // const updatedChangedData = { ...changedData }
+      const changedObjectId = updatedData[rowIndex].id[valueIndex]
+      const label = updatedData[rowIndex].label
+      const tableName = updatedData[rowIndex].table
+
+      // Ensure the updatedChangedData object is properly initialized for the id
+      if (!updatedChangedData[changedObjectId]) {
+        updatedChangedData[changedObjectId] = []
+      }
+
+      // Check if the entry with the same label already exists for this id
+      const existingChange = updatedChangedData[changedObjectId].find((entry) => entry.label === label)
+
+      if (existingChange) {
+        // If the label exists, update the value
+        existingChange.value = newValue
+      } else {
+        // If no entry exists for the label, add a new one
+        updatedChangedData[changedObjectId].push({
+          id: changedObjectId,
+          label: label,
+          value: newValue,
+          table: tableName,
+        })
+      }
+      setEditableData(updatedData)
+
+      // Update the changedData state with the updated changes
+      setChangedData(updatedChangedData)
     }
-
-    // Update the changedData state with the updated changes
-    setChangedData(updatedChangedData)
   }
-}
 
   const saveData = async (changedData) => {
     if (!token) {
@@ -127,44 +122,44 @@ const handleInputChange = (rowIndex, valueIndex, e) => {
 
   const handleSubmit = (event) => {
     event.preventDefault()
+    console.log('editableData', editableData)
+    const updatedDataFiltered = hasUnsavedChanges ? [...editableData] : [...data]
 
-    const updatedData = editableData
+    const updatedData = updatedDataFiltered
       .map((row, rowIndex) => {
         const idArray = Array.isArray(row.id) ? row.id : []
         const valuesArray = Array.isArray(row.values) ? row.values : []
+        const tableName = updatedDataFiltered[rowIndex].table
 
-        const previousRow = previousData[rowIndex]
-        const previousValuesArray = Array.isArray(previousRow?.values) ? previousRow.values : []
-
-        // Filter the ids and values to include only updated ones
+        // Filter the ids and values to include only updated
         const filteredIds = []
         const filteredValues = []
 
         valuesArray.forEach((value, index) => {
-          if (value !== previousValuesArray[index] && value !== 0) {
-            filteredIds.push(idArray[index])
-            filteredValues.push(value)
-          }
+          filteredIds.push(idArray[index])
+          filteredValues.push(value)
         })
 
         // Only return the row if there are valid ids and values
         if (filteredIds.length > 0 && filteredValues.length > 0) {
-          
-          const filteredData =  {
+          const filteredData = {
             id: filteredIds,
             label: row.label,
             values: filteredValues,
+            table: tableName,
           }
+          console.log('filtered data', filteredData)
           return filteredData
         }
 
         return null
       })
       .filter((row) => row !== null)
-    
+    // for switching
+    updateEditableData(updatedData)
+
     const costOfSalesData = Object.fromEntries(Object.entries(changedData).filter(([id]) => id.startsWith('A')))
     const expensesData = Object.fromEntries(Object.entries(changedData).filter(([id]) => id.startsWith('B')))
-
     // Actions to be dispatched on Update (Optimistic Update)
     const actions = [
       updateCostOfSalesPlanningScreen({
@@ -174,14 +169,40 @@ const handleInputChange = (rowIndex, valueIndex, e) => {
         changedData: expensesData,
       }),
     ]
-
+    // Updates Frontend (redux store)
     actions.forEach((action) => dispatch(action))
-    
-    // Update Backend Database
+    // Updates Backend Database
     saveData(updatedData)
+    // Display Screen and Inputs for Editable data are the same
+    // Temprorarily stored data for edit screen not needed.
+    setHasUnsavedChanges(false)
   }
 
-  const displayData = editableDataTest.length > 0 ? editableDataTest : data
+  useEffect(() => {
+    console.log('hasUnsavedChanges:', hasUnsavedChanges)
+  }, [hasUnsavedChanges])
+
+  const handleCancel = () => {
+    // setHasUnsavedChanges(true)
+
+    console.log('Before reset:', editableData)
+    console.log('Original data:', data)
+    setChangedData([])
+    //original from redux store
+    setEditableData(editingTableALabelsAndValues(planning, planningCalculations))
+    setHasUnsavedChanges(true)
+
+    setTimeout(() => {
+      // setHasUnsavedChanges(false)
+      console.log('After reset:', editableData)
+    }, 500)
+  }
+
+  useEffect(() => {
+    console.log('editableData updated:', editableData)
+  }, [editableData])
+
+  const displayData = hasUnsavedChanges ? editableData : data
 
   return (
     <div className='table-planning-container'>
@@ -242,7 +263,10 @@ const handleInputChange = (rowIndex, valueIndex, e) => {
             ))}
           </tbody>
         </table>
-        <div className='div_submit'>
+        <div className='button-container'>
+          <button className='edit_cancel_btn' onClick={handleCancel} title={translate('resetExplanation', language)}>
+            {translate('cancel', language)}
+          </button>
           <button className='edit_submit_btn' onClick={handleSubmit}>
             {translate('update', language)}
           </button>

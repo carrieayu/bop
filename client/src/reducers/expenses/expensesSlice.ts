@@ -21,6 +21,7 @@ const expense = createSlice({
   initialState,
   reducers: {
     updateExpensesPlanningScreen: (state, action) => {
+      console.log("inside expense",action.payload)
       state.list = state.list.map((item) => {
         const recordToBeChanged = action.payload.changedData[item.expense_id]
 

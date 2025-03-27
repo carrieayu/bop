@@ -23,7 +23,7 @@ export const mappingExpensesLabels = (recordLabel) => {
     transactionFees: 'transaction_fee',
     advertisingExpenses: 'advertising_expense',
     entertainmentExpenses: 'entertainment_expense',
-    professionalServicesFees: 'professional_services_fee',
+    professionalServicesFees: 'professional_service_fee',
   }
 
   return mapping[recordLabel] || recordLabel

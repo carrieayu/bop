@@ -41,16 +41,35 @@ const PlanningListAndEdit = () => {
   const planningCalculations = useSelector(planningCalculationsSelector)
 
   // TEST~~
-  const [editableDataTest, setEditableDataTest] = useState([])
+  const [editableData, setEditableData] = useState([])
+  // const [editableData, setEditableData] = useState([])
+  const [normalData, setNormalData] = useState([])
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false) // Tracks unsaved changes
 
-  
-  useEffect(() => { 
-    console.log('editableDataTest', editableDataTest)
-  }, [editableDataTest])
-  
-  const handleEditableDataTest = (testData) => {
-    setEditableDataTest(testData)
+  useEffect(() => {
+    console.log('editableData', editableData)
+  }, [editableData])
+
+  const handleEditableData = (testData) => {
+    console.log('handleEditableData', testData)
+    setEditableData(testData)
   }
+
+  const checkChanges = () => {
+    const isDataModified = JSON.stringify(editableData) !== JSON.stringify(normalData)
+    if (isDataModified) {
+      // Handle the update logic, like saving the changes
+      console.log('Data has changed!')
+      setHasUnsavedChanges(true)
+    } else {
+      console.log('No changes detected.')
+      setHasUnsavedChanges(false)
+    }
+  }
+
+  useEffect(() => {
+    console.log("hasUnsavedChanges",hasUnsavedChanges)
+  },[hasUnsavedChanges])
   // TEST END
 
   const handleThousandYenToggle = () => {
@@ -60,6 +79,7 @@ const PlanningListAndEdit = () => {
   const handleEditModeToggle = () => {
     setIsThousandYenChecked(false)
     setIsEditing((prevState) => !prevState)
+    checkChanges()
   }
 
   useEffect(() => {
@@ -72,9 +92,7 @@ const PlanningListAndEdit = () => {
           { action: () => dispatch(fetchProject()) },
         ]
 
-        await Promise.all(
-          fetchActions.map(({ action }) => action().catch((error) => handleError(action.name, error))),
-        )
+        await Promise.all(fetchActions.map(({ action }) => action().catch((error) => handleError(action.name, error))))
       } catch (error) {
         console.error('Unexpected error:', error)
       }
@@ -131,7 +149,10 @@ const PlanningListAndEdit = () => {
     }
   }
 
-  // TEST 
+  const [changedData, setChangedData] = useState({})
+
+
+  // TEST
 
   return (
     <div className='planning_wrapper'>
@@ -230,10 +251,13 @@ const PlanningListAndEdit = () => {
                     {/* Render the TablePlanning component here */}
                     {isEditing ? (
                       <EditTablePlanning
-                        editableDataTest={editableDataTest}
-                        handleEditableDataTest={handleEditableDataTest}
-                        // planning={planning}
-                        // planningCalculations={planningCalculations}
+                        editableData={editableData}
+                        handleEditableData={handleEditableData}
+                        hasUnsavedChanges={hasUnsavedChanges}
+                        setHasUnsavedChanges={setHasUnsavedChanges}
+                        changedData={changedData}
+                        setChangedData={setChangedData}
+                        setEditableData={setEditableData}
                       />
                     ) : (
                       <TablePlanningA
