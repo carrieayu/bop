@@ -23,7 +23,7 @@ const costOfSale = createSlice({
     updateCostOfSalesPlanningScreen: (state, action) => {
       state.list = state.list.map((item) => {
 
-        const recordToBeChanged = action.payload.changedData[item.cost_of_sale_id]
+        const recordToBeChanged = action.payload.modifiedFields[item.cost_of_sale_id]
 
         if (recordToBeChanged) {
 

@@ -3,6 +3,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { translate } from '../../utils/translationUtil';
 import { halfYears, monthNames, months, noIndentLabels } from '../../constants';
 import { planningTableALabelsAndValues } from '../../utils/TablePlanningALabelAndValues'
+import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil';
 
 interface TablePlanningAProps {
   isThousandYenChecked: boolean
@@ -66,7 +67,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked, pla
                   <td className='month-data' key={valueIndex}>
                     {isThousandYenChecked
                       ? (Math.round((value / 1000) * 10) / 10).toLocaleString() // Rounds to 1 decimal place
-                      : value.toLocaleString()}
+                      : formatNumberWithCommas(value)}
                   </td>
                 ))}
               </tr>

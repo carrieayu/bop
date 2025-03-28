@@ -23,7 +23,7 @@ const expense = createSlice({
     updateExpensesPlanningScreen: (state, action) => {
       console.log("inside expense",action.payload)
       state.list = state.list.map((item) => {
-        const recordToBeChanged = action.payload.changedData[item.expense_id]
+        const recordToBeChanged = action.payload.modifiedFields[item.expense_id]
 
         if (recordToBeChanged) {
           const updatedItem = { ...item }
