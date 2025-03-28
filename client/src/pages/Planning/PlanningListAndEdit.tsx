@@ -158,12 +158,14 @@ const PlanningListAndEdit = () => {
 
   return (
     <div className='planning_wrapper'>
+      <div className='main-header-buttons'>
       <HeaderButtons
         activeTab={activeTab}
         handleTabClick={handleTabClick}
         isTranslateSwitchActive={isTranslateSwitchActive}
         handleTranslationSwitchToggle={handleTranslationSwitchToggle}
       />
+      </div>
       <div className='planning_content_wrapper'>
         <Sidebar />
         <div className='planning_table_wrapper'>

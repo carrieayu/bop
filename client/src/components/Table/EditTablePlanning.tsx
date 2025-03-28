@@ -252,26 +252,24 @@ const EditTablePlanning = ({
     <div className='table-planning-container'>
       <div className='table-planning editScrollable'>
         <table>
-          <thead>
-            <tr>
-              <th></th>
+          <thead className=''>
+            <tr className='test-container'>
+              <th className=''></th>
               {renderMonths()}
               {renderHalfYears()}
             </tr>
             <tr className='scnd-row'>{renderPlanningHeaders()}</tr>
           </thead>
-          <tbody>
-            {renderTableBody()}
-          </tbody>
+          <tbody>{renderTableBody()}</tbody>
         </table>
-        <div className='button-container'>
-          <button className='edit_cancel_btn' onClick={handleCancel} title={translate('resetExplanation', language)}>
-            {translate('cancel', language)}
-          </button>
-          <button className='edit_submit_btn' onClick={handleSubmit}>
-            {translate('update', language)}
-          </button>
-        </div>
+      </div>
+      <div className='button-container'>
+        <button className='edit_cancel_btn' onClick={handleCancel} title={translate('resetExplanation', language)}>
+          {translate('cancel', language)}
+        </button>
+        <button className='edit_submit_btn' onClick={handleSubmit}>
+          {translate('update', language)}
+        </button>
       </div>
     </div>
   )
