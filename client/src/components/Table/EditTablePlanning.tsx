@@ -226,21 +226,25 @@ const EditTablePlanning = ({
 
   const renderTableBody = () => {
     return displayData.map((item, index) => (
-      <tr key={index}>
-        <td className={noIndentLabels.includes(item.label) ? 'no-indent' : 'indented-label'}>
+      <tr className='column-headers' key={index}>
+        <td className={`${noIndentLabels.includes(item.label) ? 'no-indent' : 'indented-label'} column-headers`}>
           {translate(item.label, language)}
         </td>
         {item.values.map((value, valueIndex) => (
-          <td key={valueIndex}>
+          <td className='value-container' key={valueIndex}>
             {isEditableInput(item, valueIndex) ? (
-              <input
-                className='input_tag'
-                type='text'
-                value={formatNumberWithCommas(value)}
-                onChange={(e) => handleInputChange(index, valueIndex, e)}
-              />
+              <div className='values input-container '>
+                {' '}
+                {/* Styling container */}
+                <input
+                  className='input_tag'
+                  type='text'
+                  value={formatNumberWithCommas(value)}
+                  onChange={(e) => handleInputChange(index, valueIndex, e)}
+                />
+              </div>
             ) : (
-              value.toLocaleString()
+                <div className='values'>{value.toLocaleString()}</div>
             )}
           </td>
         ))}
@@ -252,15 +256,15 @@ const EditTablePlanning = ({
     <div className='table-planning-container'>
       <div className='table-planning editScrollable'>
         <table>
-          <thead className=''>
-            <tr className='test-container'>
+          <thead>
+            <tr className='table-header-sticky'>
               <th className=''></th>
               {renderMonths()}
               {renderHalfYears()}
             </tr>
             <tr className='scnd-row'>{renderPlanningHeaders()}</tr>
           </thead>
-          <tbody>{renderTableBody()}</tbody>
+          <tbody className='table-body'>{renderTableBody()}</tbody>
         </table>
       </div>
       <div className='button-container'>

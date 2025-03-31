@@ -113,7 +113,7 @@
               }
             }
             .planning_tbl_cont{
-
+              
               // background-color: cyan;
               height: 100%;
               .editScrollable{
@@ -126,7 +126,7 @@
               }
               .table_content_planning{
                 .table-planning-container{
-                  width: 100% !important;
+                  // width: 100% !important;
                   // height: 100%;
                   @media only screen and (min-width: 1920px){
                     // height: 122vh;
@@ -189,9 +189,9 @@
     }
   }
 }
-.test-container{
-  position: sticky;
-  background-color: white;
-  z-index: 2;
-  top: -1px !important;
-}
+.table-header-sticky{
+      position: sticky;
+      background-color: white;
+      z-index: 2;
+      top: -1px !important; // Need this to deal with padding on container so content does not reappear above header when scrolling
+    }
