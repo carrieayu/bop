@@ -4,15 +4,24 @@ import { formatNumberWithCommas } from "../../utils/helperFunctionsUtil"
 import { translate } from "../../utils/translationUtil"
 
 const NumberWithUnit = ({ value, percentage, language }) => {
-    const formattedValue = percentage ? value : formatNumberWithCommas(value)
-    const unit = percentage ? '%' : translate('yen', language)
-    return (
-      <div className='dashboard_total_number'>
-        {formattedValue}&nbsp;
-        <span>{unit}</span>
-      </div>
-    )
+  const checkedValue = isNaN(value) ? '' : value
+
+  const formattedValue = percentage
+    ? checkedValue !== ''
+      ? checkedValue
+      : '-' 
+    : formatNumberWithCommas(checkedValue)
+  
+  const unit = percentage ? '%' : translate('yen', language)
+
+  return (
+    <div className='dashboard_total_number'>
+      {formattedValue}&nbsp;
+      <span>{unit}</span>
+    </div>
+  )
 }
+
   
 export const DashboardCard = ({ title, planningValue, resultValue, translateKey, language, percentage = false }) => {
   return (
