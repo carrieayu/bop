@@ -65,7 +65,6 @@ const EmployeesRegistration = () => {
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const fetchData = async () => {
     try {
       const resMasterCompany = await dispatch(fetchMasterCompany() as unknown as UnknownAction)
@@ -127,7 +126,7 @@ const EmployeesRegistration = () => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) {
         showAlertPopup(handleTimeoutConfirm);
       } else {
@@ -151,7 +150,7 @@ const EmployeesRegistration = () => {
   }, [selectedCompanyId])
 
   const handleCompanyChange = async (containerIndex, companyId) => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) {
         showAlertPopup(handleTimeoutConfirm);
       } else {
@@ -318,7 +317,7 @@ const EmployeesRegistration = () => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) { showAlertPopup(handleTimeoutConfirm); } else { fetchData() }
     });
   }, [token])

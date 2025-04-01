@@ -64,7 +64,6 @@ const EmployeeExpensesRegistration = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const onTabClick = (tab) => handlePLRegTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
@@ -477,7 +476,7 @@ const EmployeeExpensesRegistration = () => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) {
           showAlertPopup(handleTimeoutConfirm);
       } else {

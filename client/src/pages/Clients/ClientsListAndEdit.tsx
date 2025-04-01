@@ -52,7 +52,6 @@ const ClientsListAndEdit: React.FC = () => {
   const [userMap, setUserMap] = useState({})
   const [deleteComplete, setDeleteComplete] = useState(false)
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const onTabClick = (tab) => handleMMListTabsClick(tab, navigate, setActiveTab)
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -280,7 +279,7 @@ const ClientsListAndEdit: React.FC = () => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) {
         showAlertPopup(handleTimeoutConfirm);
       } else {

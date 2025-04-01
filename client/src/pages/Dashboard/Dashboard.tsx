@@ -43,7 +43,6 @@ const Dashboard = () => {
   const location = useLocation()
   const dispatch = useAppDispatch()
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const optionArray = ['planning', 'results', 'both']
   const handleToggle = () => {
     setIsToggled((prevState) => !prevState)

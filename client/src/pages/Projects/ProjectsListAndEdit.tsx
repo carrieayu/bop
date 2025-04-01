@@ -82,7 +82,6 @@ const ProjectsListAndEdit: React.FC = ({}) => {
   ])
 
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
@@ -377,7 +376,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) {
         showAlertPopup(handleTimeoutConfirm);
       } else {

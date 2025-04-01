@@ -61,7 +61,6 @@ const EmployeeExpensesResultsRegistration = () => {
   const [filteredDates, setFilteredDates] = useState<DateForm[]>([{ form: [{ date: [] }] }])
   const [selectionYearResults, setSelectionYearResults] = useState<DateForm[]>([{ form: [{ date: [] }] }])
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const onTabClick = (tab) => handleResultsRegTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
@@ -533,7 +532,7 @@ const EmployeeExpensesResultsRegistration = () => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) {
         showAlertPopup(handleTimeoutConfirm);
       } else {

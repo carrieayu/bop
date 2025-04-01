@@ -33,8 +33,7 @@ const UsersRegistration = () => {
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
-
+  
   const emptyFormData = {
     username: '',
     first_name: '',
@@ -146,7 +145,7 @@ const UsersRegistration = () => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) { showAlertPopup(handleTimeoutConfirm); }
     });
   }, [token])

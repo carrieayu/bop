@@ -69,7 +69,6 @@ const ProjectsRegistration = () => {
   }
   const [formProjects, setProjects] = useState([emptyFormData])
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
  
   const handleAdd = () => {
     addFormInput(formProjects, setProjects, maximumEntries, emptyFormData)
@@ -392,7 +391,7 @@ const ProjectsRegistration = () => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) {
           showAlertPopup(handleTimeoutConfirm);
       } else {

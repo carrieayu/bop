@@ -44,7 +44,6 @@ const ResultsListAndEdit = () => {
   const [initialLanguage, setInitialLanguage] = useState(language)
   const [isXLSModalOpen, setIsXLSModalOpen] = useState(false)
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const results = useSelector(resultsSelector)
   const resultsCalculations = useSelector(resultsCalculationsSelector)
 
@@ -806,7 +805,7 @@ const ResultsListAndEdit = () => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) { showAlertPopup(handleTimeoutConfirm); }
     });
   }, [token])

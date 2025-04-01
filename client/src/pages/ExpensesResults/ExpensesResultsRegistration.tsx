@@ -85,7 +85,6 @@ const ExpensesResultsRegistration = () => {
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   const handleTranslationSwitchToggle = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
@@ -355,7 +354,7 @@ const ExpensesResultsRegistration = () => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) {
         showAlertPopup(handleTimeoutConfirm);
       } else {

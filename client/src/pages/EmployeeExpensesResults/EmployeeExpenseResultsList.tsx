@@ -42,7 +42,6 @@ const EmployeeExpensesResultsList: React.FC = () => {
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const onTabClick = (tab) => handleResultsListTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
@@ -151,7 +150,7 @@ const EmployeeExpensesResultsList: React.FC = () => {
 
   // Fetch employee expenses data
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) {
           showAlertPopup(handleTimeoutConfirm);
       } else {

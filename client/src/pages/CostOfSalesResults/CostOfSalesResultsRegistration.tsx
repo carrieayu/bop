@@ -61,7 +61,6 @@ const CostOfSalesResultsRegistration = () => {
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const onTabClick = (tab) => handleResultsRegTabsClick(tab, navigate, setActiveTab)
   const emptyFormData = {
     year: '',
@@ -336,7 +335,7 @@ const CostOfSalesResultsRegistration = () => {
   }
 
   const fetchGetCostOfSale = async () => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) {
         showAlertPopup(handleTimeoutConfirm);
       } else {
@@ -352,7 +351,7 @@ const CostOfSalesResultsRegistration = () => {
   }
 
   useEffect(() => { 
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) {
         showAlertPopup(handleTimeoutConfirm);
       } else {

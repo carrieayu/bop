@@ -51,7 +51,6 @@ const ExpensesList: React.FC = () => {
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [deleteComplete, setDeleteComplete] = useState(false)
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   const header: string[] = [
     'year',
@@ -377,7 +376,7 @@ const ExpensesList: React.FC = () => {
       })
   }
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) { showAlertPopup(handleTimeoutConfirm); } else { fetchExpenses() }
     });
   }, [token])

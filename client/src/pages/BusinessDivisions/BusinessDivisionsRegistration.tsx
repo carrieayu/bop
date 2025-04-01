@@ -45,8 +45,7 @@ const BusinessDivisionsRegistration = () => {
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
-
+  
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
@@ -195,7 +194,7 @@ const BusinessDivisionsRegistration = () => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) {
         showAlertPopup(handleTimeoutConfirm);
       } else {

@@ -54,7 +54,6 @@ const CostOfSalesRegistration = () => {
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const onTabClick = (tab) => handlePLRegTabsClick(tab, navigate, setActiveTab)
 
   const handleAdd = () => {
@@ -259,7 +258,7 @@ const CostOfSalesRegistration = () => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) { showAlertPopup(handleTimeoutConfirm); }
     });
   }, [token])

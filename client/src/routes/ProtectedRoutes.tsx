@@ -17,22 +17,20 @@ export const handleTimeoutConfirm = async () => {
   return
 }
 
-export async function checkAccessToken(setIsAuthorized: (value: boolean | null) => void) {
+export async function checkAccessToken() {
   try {
     const refreshed = await refreshToken();
     if (!refreshed) {
-      setIsAuthorized(true);
       return false;
     }
+
     const token = localStorage.getItem(ACCESS_TOKEN);
     const decoded = jwtDecode(token);
     const accessTokenExpiration = decoded.exp;
     const now = Date.now() / 1000;
     if (accessTokenExpiration < now) {
-      setIsAuthorized(true);
       return false;
     } else {
-      setIsAuthorized(false);
       return true;
     }
   } catch (err) {
@@ -66,6 +64,7 @@ export const useAlertPopup = () => {
 };
 
 export const refreshToken = async (onAuthorizeChange?: (status: boolean) => void) => {
+
   const refreshToken = localStorage.getItem(REFRESH_TOKEN);
   try {
     const decoded = jwtDecode(refreshToken);
@@ -77,9 +76,11 @@ export const refreshToken = async (onAuthorizeChange?: (status: boolean) => void
       }
       return false;
     }
+    
     const res = await api.post("/api/token/refresh/", {
       refresh: refreshToken,
     });
+
     if (res.status === 200) {
       localStorage.setItem(ACCESS_TOKEN, res.data.access);
       if (onAuthorizeChange) {

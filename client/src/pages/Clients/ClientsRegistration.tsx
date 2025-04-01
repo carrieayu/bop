@@ -33,7 +33,6 @@ const ClientsRegistration = () => {
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const onTabClick = (tab) => handleMMRegTabsClick(tab, navigate, setActiveTab)
   const emptyFormData = {
     client_name: '',
@@ -173,7 +172,7 @@ const ClientsRegistration = () => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) { showAlertPopup(handleTimeoutConfirm); }
     });
   }, [token])

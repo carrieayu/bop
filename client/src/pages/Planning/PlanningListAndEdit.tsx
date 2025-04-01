@@ -41,7 +41,6 @@ const PlanningListAndEdit = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [initialLanguage, setInitialLanguage] = useState(language)
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const planning = useSelector(planningSelector)
   const planningCalculations = useSelector(planningCalculationsSelector)
 
@@ -124,7 +123,7 @@ const PlanningListAndEdit = () => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) { showAlertPopup(handleTimeoutConfirm); }
     });
   }, [])

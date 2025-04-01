@@ -56,7 +56,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [selectedProject, setSelectedProject] = useState<any>(null)
   const [deleteProjectsId, setDeleteProjectsId] = useState([])
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const onTabClick = (tab) => handleResultsListTabsClick(tab, navigate, setActiveTab)
   const [formProjects, setFormProjects] = useState([
     {
@@ -322,7 +321,7 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) {
         showAlertPopup(handleTimeoutConfirm);
       } else {

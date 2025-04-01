@@ -94,7 +94,6 @@ const ProjectSalesResultsRegistration = () => {
   const onTabClick = (tab) => handleResultsRegTabsClick(tab, navigate, setActiveTab)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   const emptyFormData = {
     id: 1,
@@ -519,7 +518,7 @@ const handleAdd = () => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) {
         showAlertPopup(handleTimeoutConfirm);
       } else {

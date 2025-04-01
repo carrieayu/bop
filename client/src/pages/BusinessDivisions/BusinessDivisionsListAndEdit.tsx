@@ -55,7 +55,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [deleteComplete, setDeleteComplete] = useState(false)
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -332,7 +331,7 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) {
         showAlertPopup(handleTimeoutConfirm);
       } else {

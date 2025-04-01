@@ -56,7 +56,6 @@ const CostOfSalesList: React.FC = () => {
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [deleteComplete, setDeleteComplete] = useState(false)
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const onTabClick = (tab) => handlePLListTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
@@ -350,7 +349,7 @@ const CostOfSalesList: React.FC = () => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) { showAlertPopup(handleTimeoutConfirm); } else { fetchCostOfSales() }
     });
   }, [token])

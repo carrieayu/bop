@@ -69,7 +69,6 @@ const EmployeesListAndEdit: React.FC = () => {
   const [userMap, setUserMap] = useState({})
   const [deleteComplete, setDeleteComplete] = useState(false)
   const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const onTabClick = (tab) => handleMMListTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
@@ -388,7 +387,7 @@ const EmployeesListAndEdit: React.FC = () => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) {
           showAlertPopup(handleTimeoutConfirm);
       } else {
@@ -513,7 +512,7 @@ const EmployeesListAndEdit: React.FC = () => {
   }
 
   useEffect(() => {
-    checkAccessToken(setIsAuthorized).then(result => {
+    checkAccessToken().then(result => {
       if (!result) { showAlertPopup(handleTimeoutConfirm); } else { fetchEmployees() }
     });
   }, [token])
