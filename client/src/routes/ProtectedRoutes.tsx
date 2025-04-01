@@ -143,14 +143,13 @@ const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({ children }) => {
     };
   }, []);
 
+  const logout = () => {
+    localStorage.clear()
+    setIsAuthorized(false)
+  }
   useEffect(() => {
     const idleTimer = setupIdleTimer(() => {
-      const refreshed = refreshToken((status) => {
-        if (!status) {
-          setIsNonActiveOpen(true);
-          return;
-        }
-      });
+      logout()
     }, IDLE_TIMEOUT);
     idleTimer.startListening();
     return () => {
