@@ -9,7 +9,7 @@ const NumberWithUnit = ({ value, percentage, language }) => {
   const formattedValue = percentage
     ? checkedValue !== ''
       ? checkedValue
-      : '-' 
+      : '' 
     : formatNumberWithCommas(checkedValue)
   
   const unit = percentage ? '%' : translate('yen', language)

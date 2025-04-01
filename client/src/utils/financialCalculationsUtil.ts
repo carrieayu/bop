@@ -7,12 +7,12 @@ import { ProjectDataEntity } from "../entity/projectEntity"
 // --TOTALS (Single Figures)--
 // Gross Profit
 export const calculateGrossProfit = (salesRevenue, costOfSale) => salesRevenue - costOfSale
-export const calculateGrossProfitMargin = (grossProfit, salesRevenue) => (grossProfit / salesRevenue) * 100
+export const calculateGrossProfitMargin = (grossProfit, salesRevenue) => salesRevenue !== 0 ? (grossProfit / salesRevenue) * 100 : 0
 // Admin and General Expenses
 export const calculateSellingAndGeneralAdmin = (employeeExpense, expense) => employeeExpense + expense
 // Operating Income
 export const calculateOperatingIncome = (grossProfit, sellingAndGeneralAdmin) => grossProfit - sellingAndGeneralAdmin
-export const calculateOperatingProfitMargin = (operatingIncome, salesRevenue) => (operatingIncome / salesRevenue) * 100
+export const calculateOperatingProfitMargin = (operatingIncome, salesRevenue) => salesRevenue !== 0 ? (operatingIncome / salesRevenue) * 100 : 0
 // Ordinary Income
 export const calculateOrdinaryIncome = (operatingIncome, nonOperatingIncome, nonOperatingExpense) =>
   operatingIncome + nonOperatingIncome - nonOperatingExpense
