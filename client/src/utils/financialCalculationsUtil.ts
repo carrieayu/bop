@@ -31,8 +31,8 @@ export const calculateMonthlyGrossProfit = (cosMonths, salesRevenueMonths) => {
 
   const allMonths = new Set([...Object.keys(cosMonths), ...Object.keys(salesRevenueMonths)])
   allMonths.forEach((key) => {
-    const sales = salesRevenueMonths[key] || 0
-    const costOfSales = cosMonths[key] || 0
+    const sales = salesRevenueMonths[key] ?? 0
+    const costOfSales = cosMonths[key] ?? 0
     grossProfitMonthlyByDate[key] = sales - costOfSales
   })
 
@@ -54,7 +54,7 @@ export const calculateMonthlyAdminAndGeneralExpense = (expenseMonths, employeeEx
 
     adminAndGeneralMonthlyTotalByDate[date] = expenseTotal + employeeTotal
   }
-
+  console.log('adminAndGeneralMonthlyTotalByDate', adminAndGeneralMonthlyTotalByDate)
   return adminAndGeneralMonthlyTotalByDate
 }
 
@@ -68,8 +68,8 @@ export const calculateMonthlyGrossProfitMargin = (salesRevenueMonths, grossProfi
   for (let date of allDates) {
 
     if (grossProfitsMonths[date]) {
-      const salesRevenueAmount = salesRevenueMonths[date]
-      const grossProfitAmount = grossProfitsMonths[date] || 0
+      const salesRevenueAmount = salesRevenueMonths[date] ?? 0
+      const grossProfitAmount = grossProfitsMonths[date] ?? 0
       // Check if salesRevenueAmount is 0
       if (salesRevenueMonths === 0) {
         grossProfitMarginByDate[date] = null // or another default value, like '0'
@@ -91,8 +91,8 @@ export const calculateMonthlyOperatingIncome = (grossProfitMonths, adminGeneralM
   const allDates = new Set([...Object.keys(grossProfitMonths), ...Object.keys(adminGeneralMonths)])
 
   for (let date of allDates) {
-    const grossProfitTotal = grossProfitMonths[date]
-    const adminGeneralTotal = adminGeneralMonths[date]
+    const grossProfitTotal = grossProfitMonths[date] ?? 0
+    const adminGeneralTotal = adminGeneralMonths[date] ?? 0
 
     operatingIncomeMonthlyTotalByDate[date] = grossProfitTotal - adminGeneralTotal
   }
@@ -109,8 +109,8 @@ export const calculateMonthlyOperatingProfitMargin = (operatingIncomeMonths, sal
   const allDates = new Set([...Object.keys(operatingIncomeMonths), ...Object.keys(salesRevenueMonths)])
 
   for (let date of allDates) {
-    const operatingIncomeAmount = operatingIncomeMonths[date]
-    const salesRevenueAmount = salesRevenueMonths[date]
+    const operatingIncomeAmount = operatingIncomeMonths[date] ?? 0
+    const salesRevenueAmount = salesRevenueMonths[date] ?? 0
 
     // Check if salesRevenueAmount is 0
     if (salesRevenueAmount === 0) {
@@ -142,9 +142,9 @@ export const calculateMonthlyOrdinaryIncome = (
 
   for (let date of allDates) {
 
-    const operatingIncome = operatingIncomeMonths[date] || 0;
-    const nonOperatingIncome = nonOperatingIncomeMonths[date] || 0;
-    const nonOperatingExpense = nonOperatingExpenseMonths[date] || 0;
+    const operatingIncome = operatingIncomeMonths[date] ?? 0;
+    const nonOperatingIncome = nonOperatingIncomeMonths[date] ?? 0;
+    const nonOperatingExpense = nonOperatingExpenseMonths[date] ?? 0;
 
     ordinaryIncomeMonthlyByDate[date] = operatingIncome + nonOperatingIncome - nonOperatingExpense
   }
