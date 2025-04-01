@@ -54,7 +54,6 @@ export const calculateMonthlyAdminAndGeneralExpense = (expenseMonths, employeeEx
 
     adminAndGeneralMonthlyTotalByDate[date] = expenseTotal + employeeTotal
   }
-  console.log('adminAndGeneralMonthlyTotalByDate', adminAndGeneralMonthlyTotalByDate)
   return adminAndGeneralMonthlyTotalByDate
 }
 
