@@ -19,13 +19,13 @@ export const handleTimeoutConfirm = async () => {
 
 export async function checkAccessToken() {
   try {
-    const refreshed = await refreshToken();
-    if (!refreshed) {
+    const resultOfRefreshToken = await updateRefreshToken();
+    if (!resultOfRefreshToken) {
       return false;
     }
 
-    const token = localStorage.getItem(ACCESS_TOKEN);
-    const decoded = jwtDecode(token);
+    const localStorageAccessToken = localStorage.getItem(ACCESS_TOKEN);
+    const decoded = jwtDecode(localStorageAccessToken);
     const accessTokenExpiration = decoded.exp;
     const now = Date.now() / 1000;
     if (accessTokenExpiration < now) {
@@ -63,34 +63,25 @@ export const useAlertPopup = () => {
   return { showAlertPopup, AlertPopupComponent };
 };
 
-export const refreshToken = async (onAuthorizeChange?: (status: boolean) => void) => {
+  export const updateRefreshToken = async () => {
 
-  const refreshToken = localStorage.getItem(REFRESH_TOKEN);
+  const localStorageRefreshToken = localStorage.getItem(REFRESH_TOKEN);
   try {
-    const decoded = jwtDecode(refreshToken);
+    const decoded = jwtDecode(localStorageRefreshToken);
     const refreshTokenExpiration = decoded.exp;
     const now = Date.now() / 1000;
     if (refreshTokenExpiration < now) {
-      if (onAuthorizeChange) {
-        onAuthorizeChange(false);
-      }
       return false;
     }
     
     const res = await api.post("/api/token/refresh/", {
-      refresh: refreshToken,
+      refresh: localStorageRefreshToken,
     });
 
     if (res.status === 200) {
       localStorage.setItem(ACCESS_TOKEN, res.data.access);
-      if (onAuthorizeChange) {
-        onAuthorizeChange(true);
-      }
       return true;
     } else {
-      if (onAuthorizeChange) {
-        onAuthorizeChange(false);
-      }
       return false;
     }
   } catch (err) {
@@ -115,14 +106,10 @@ const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({ children }) => {
     const accessTokenExpiration = decoded.exp;
     const now = Date.now() / 1000;
     if (accessTokenExpiration < now) {
-      const refreshed = await refreshToken((status) => {
-        setIsAuthorized(status);
-        if (!status) {
-          setIsNonActiveOpen(true);
-        }
-      });
-      if (refreshed) {
-        setIsAuthorized(refreshed);
+      const esultOfRefreshToken = await updateRefreshToken();
+      setIsAuthorized(esultOfRefreshToken);
+      if (!esultOfRefreshToken) {
+        setIsNonActiveOpen(true);
       }
     } else {
       setIsAuthorized(true);
