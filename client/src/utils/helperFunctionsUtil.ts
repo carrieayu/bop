@@ -1,7 +1,7 @@
 // GENERAL HELPER FUNCTIONS
 
 import api from '../api/api'
-import { MAX_NUMBER_LENGTH, MAX_RETRIES, MAX_SAFE_INTEGER, MAX_VALUE, months, POLLING_INTERVAL } from '../constants'
+import { currentYear, MAX_NUMBER_LENGTH, MAX_RETRIES, MAX_SAFE_INTEGER, months, POLLING_INTERVAL } from '../constants'
 import { getReactActiveEndpoint } from '../toggleEndpoint'
 import { translate } from './translationUtil'
 
@@ -393,7 +393,28 @@ export const reformattedMonthlyTotalValues = (valuesArr) => {
   }, {})
 }
 
-// # Year/Months with data to be displayed on graph in Financial Year Order.
+// Empty Array of dates for current financial year
+// Eg. [ "2024-4","2024-5",..."2025-3"]
+export const monthlyDatesForGraphByYear = () => {
+
+  // 1 financial year includes 2 years (eg. fiscal year: 2024 = 2024-1 -> 2025-3)
+  const thisYear = currentYear.toString()
+  const nextYear = (currentYear + 1).toString()
+
+  const months = [4,5,6,7,8,9,10,11,12,1,2,3];;
+
+  const formattedYearAndMonth = months.map((month) => {
+    if (month >= 4) {
+      return `${thisYear}-${month}`
+    } else {
+      return `${nextYear}-${month}`
+    }
+  })
+
+  return formattedYearAndMonth
+}
+ 
+// # Year/Months with data to  be displayed on graph in Financial Year Order.
 // EG. ['2024-4',... '2025-3']
 export const activeDatesOnGraph = (datesArrOne, datesArrTwo) => {
     const datesSet = new Set([...Object.keys(datesArrOne), ...Object.keys(datesArrTwo)])

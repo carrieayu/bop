@@ -1,7 +1,7 @@
 export const ACCESS_TOKEN = 'accessToken'
 export const REFRESH_TOKEN = 'refresh'
 
-export const years = [2024, 2025]
+export const years = [2025, 2026]
 export const currentYear = new Date().getFullYear()
 export const token = localStorage.getItem('accessToken')
 export const maximumEntries = 10

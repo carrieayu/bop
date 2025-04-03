@@ -366,7 +366,7 @@ class CostOfSalesResults(models.Model):
                 numeric_part = int(max_id[1:]) + 1  # Extract numeric part after 'A'
             else:
                 numeric_part = 1  # Start with 1 if no records exist
-            self.cost_of_sale_result_id = f'AR{numeric_part:09d}'  # Format as 'A000000001'
+            self.cost_of_sale_result_id = f'A{numeric_part:09d}'  # Format as 'A000000001'
         
         super().save(*args, **kwargs) 
 
