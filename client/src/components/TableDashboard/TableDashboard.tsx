@@ -7,6 +7,7 @@ import { planningCalculationsSelector } from '../../selectors/planning/planningC
 import { resultsCalculationsSelector } from '../../selectors/results/resultsCalculationSelectors'
 import { planningTableALabelsAndValues } from '../../utils/TablePlanningALabelAndValues'
 import { resultsTableALabelsAndValues } from '../../utils/TableResultsALabelAndValues'
+import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil'
 
 interface TableDashboardProps {
   isThousandYenChecked: boolean
@@ -82,6 +83,9 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
 
     return value.toLocaleString()
   }
+
+  const formatValue = (value, isChecked) =>
+    isChecked ? handleIsThousandYenChecked(isChecked, value) : formatNumberWithCommas(value)
   
   return (
     <div className='table-planning-container editScrollable'>
@@ -133,10 +137,10 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
                 </td>
                 {item.values.map((value, valueIndex) => [
                   <td key={`planning-${index}-${valueIndex}`} className='month-data planning-cells'>
-                    {handleIsThousandYenChecked(isThousandYenChecked, value)}
+                    {formatValue(value, isThousandYenChecked)}
                   </td>,
                   <td key={`results-${index}-${valueIndex}`} className='month-data result-cells'>
-                    {handleIsThousandYenChecked(isThousandYenChecked, resultsData[index].values[valueIndex])}
+                    {formatValue(resultsData[index].values[valueIndex], isThousandYenChecked)}
                   </td>,
                 ])}
                 <td key={`sale-ratio-${index}`} className='sale-ratio-cells' colSpan={2}>
