@@ -14,7 +14,7 @@ export const resultsSelector = createSelector(
   (costOfSales, expenses, employeeExpenses, projects) => {
     // Calculate financials
     const calculations = calculateFinancials(projects, expenses, costOfSales, employeeExpenses)
-
+    
     return {
       costOfSales,
       expenses,

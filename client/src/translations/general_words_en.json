@@ -159,5 +159,6 @@
   "csvFileName": "CSV: Financial Summary",
   "resultsSummary" : "Results-Summary",
   "planningShort" : "PL.",
-  "resultsShort": "Res."
+  "resultsShort": "Res.",
+  "noData": "No Data"
 }

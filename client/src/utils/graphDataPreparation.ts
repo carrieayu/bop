@@ -6,7 +6,7 @@ import {
   calculateMonthlyOperatingProfitMargin,
   calculateMonthlyOrdinaryIncome,
 } from './financialCalculationsUtil'
-import {  reformattedMonthlyTotalValues, activeDatesOnGraph } from './helperFunctionsUtil'
+import {  reformattedMonthlyTotalValues, monthlyDatesForGraphByYear } from './helperFunctionsUtil'
 
 export const prepareGraphData = (data: any, type) => {
   const {
@@ -28,8 +28,7 @@ export const prepareGraphData = (data: any, type) => {
   }
 
   const grossProfit = calculateMonthlyGrossProfit(reformattedData.costOfSales, reformattedData.salesRevenue)
-  const dates = activeDatesOnGraph(reformattedData.costOfSales, reformattedData.salesRevenue)
-  
+
   const grossProfitMargin = calculateMonthlyGrossProfitMargin(reformattedData.salesRevenue, grossProfit)
 
   const adminAndGeneralExpenses = calculateMonthlyAdminAndGeneralExpense(
@@ -47,37 +46,40 @@ export const prepareGraphData = (data: any, type) => {
     reformattedData.nonOperatingExpense,
   )
 
+  // All 12 months for 1 fiscal year
+  const dates = monthlyDatesForGraphByYear()
+  
   if (type === 'planning') {
-        return {
-          type: type,
-          projectSalesRevenueMonthlyPlanning: reformattedData.salesRevenue,
-          costOfSalesMonthlyPlanning: reformattedData.costOfSales,
-          grossProfitMonthlyPlanning: grossProfit,
-          grossProfitMarginMonthlyPlanning: grossProfitMargin,
-          dates: dates,
-          expensesMonthlyPlanning: reformattedData.expenses,
-          employeeExpensesMonthlyPlanning: reformattedData.employeeExpenses,
-          adminAndGeneralExpensesMonthlyPlanning: adminAndGeneralExpenses,
-          operatingIncomeMonthlyPlanning: operatingIncome,
-          operatingProfitMarginMonthlyPlanning: operatingProfitMargin,
-          ordinaryIncomeMonthlyPlanning: ordinaryIncome,
-        }
+    return {
+      type: type,
+      projectSalesRevenueMonthlyPlanning: reformattedData.salesRevenue,
+      costOfSalesMonthlyPlanning: reformattedData.costOfSales,
+      grossProfitMonthlyPlanning: grossProfit,
+      grossProfitMarginMonthlyPlanning: grossProfitMargin,
+      dates: dates,
+      expensesMonthlyPlanning: reformattedData.expenses,
+      employeeExpensesMonthlyPlanning: reformattedData.employeeExpenses,
+      adminAndGeneralExpensesMonthlyPlanning: adminAndGeneralExpenses,
+      operatingIncomeMonthlyPlanning: operatingIncome,
+      operatingProfitMarginMonthlyPlanning: operatingProfitMargin,
+      ordinaryIncomeMonthlyPlanning: ordinaryIncome,
     }
+  }
 
   if (type === 'results') {
-        return {
-        type: type,
-        projectSalesRevenueMonthlyResults: reformattedData.salesRevenue,
-        costOfSalesMonthlyResults: reformattedData.costOfSales,
-        grossProfitMonthlyResults: grossProfit,
-        grossProfitMarginMonthlyResults: grossProfitMargin,
-        datesResults: dates,
-        expensesMonthlyResults: reformattedData.expenses,
-        employeeExpensesMonthlyResults: reformattedData.employeeExpenses,
-        adminAndGeneralExpensesMonthlyResults: adminAndGeneralExpenses,
-        operatingIncomeMonthlyResults: operatingIncome,
-        operatingProfitMarginMonthlyResults: operatingProfitMargin,
-        ordinaryIncomeMonthlyResults: ordinaryIncome,
-      }
+    return {
+      type: type,
+      projectSalesRevenueMonthlyResults: reformattedData.salesRevenue,
+      costOfSalesMonthlyResults: reformattedData.costOfSales,
+      grossProfitMonthlyResults: grossProfit,
+      grossProfitMarginMonthlyResults: grossProfitMargin,
+      datesResults: dates,
+      expensesMonthlyResults: reformattedData.expenses,
+      employeeExpensesMonthlyResults: reformattedData.employeeExpenses,
+      adminAndGeneralExpensesMonthlyResults: adminAndGeneralExpenses,
+      operatingIncomeMonthlyResults: operatingIncome,
+      operatingProfitMarginMonthlyResults: operatingProfitMargin,
+      ordinaryIncomeMonthlyResults: ordinaryIncome,
     }
+  }
 }

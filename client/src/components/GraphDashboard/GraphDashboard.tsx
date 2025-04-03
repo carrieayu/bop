@@ -26,17 +26,16 @@ const GraphDashboard: React.FC<CustomBarProps> = ({
 }) => {
   // Provides Default empty data for cases when dara fails to load.
   const defaultGraphData = { financial: { datasets: [], labels: [] }, margin: { datasets: [], labels: [] } }
-
-  const { planningData = defaultGraphData, resultsData = defaultGraphData } = planningAndResultGraphData || {}
-
-
+  
+  const planningData = planningAndResultGraphData?.planningData || defaultGraphData
+  const resultsData = planningAndResultGraphData?.resultsData || defaultGraphData
 
   // Planning
-  const planningFinancials = planningData.financial // 円
-  const planningMargins = planningData.margin // %
+  const planningFinancials = planningData?.financial // 円
+  const planningMargins = planningData?.margin // %
   // Results
-  const resultsFinancials = resultsData.financial // 円
-  const resultsMargins = resultsData.margin // %
+  const resultsFinancials = resultsData?.financial // 円
+  const resultsMargins = resultsData?.margin // %
   // Set Data based on whether selected graph is planning Or results
   const financialData = graphDataType === 'planning' ? planningFinancials : resultsFinancials
   const marginData = graphDataType === 'planning' ? planningMargins : resultsMargins
@@ -67,11 +66,10 @@ const GraphDashboard: React.FC<CustomBarProps> = ({
   )
    
   // Margins (Line Charts)
-  const seriesMargins =
-    mapDataset(marginData.datasets).map((series) => ({
-      ...series,
-      data: series.data.map((value) => (typeof value === 'number' && isNaN(value) ? null : value)),
-    }))
+  const seriesMargins = mapDataset(marginData.datasets).map((series) => ({
+    ...series,
+    data: series.data.map((value) => (typeof value === 'number' && value !== null ? value : null)),
+  }))
   
   const seriesMarginsBoth = reOrderArray(
     [...createSeries(planningData.margin, 'planning'), ...createSeries(resultsData.margin, 'results')],
@@ -83,7 +81,7 @@ const GraphDashboard: React.FC<CustomBarProps> = ({
     if (graphDataType === 'both') {
       return isToggled ? seriesMarginsBoth : seriesFinancialsBoth;
     } else {
-      return isToggled ? seriesMargins : seriesFinancials;
+      return isToggled ? seriesMargins : seriesFinancials
     }
   }
 
@@ -100,6 +98,7 @@ const GraphDashboard: React.FC<CustomBarProps> = ({
 
   // Apex Chart Options
   const options: ApexOptions = {
+
     chart: {
       toolbar: {
         show: true,
@@ -152,7 +151,18 @@ const GraphDashboard: React.FC<CustomBarProps> = ({
       show: true,
       curve: 'straight',
       width: 2,
-      dashArray: graphDataType === 'both' && isToggled ? [5, 0, 5, 0] : [0, 0, 0, 0],
+      dashArray:
+        graphDataType === 'planning'
+          ? isToggled
+            ? [5, 5] // dashed line for planning when toggled
+            : [0, 0]
+          : graphDataType === 'results'
+            ? [0, 0] // solid line for results
+            : graphDataType === 'both'
+              ? isToggled
+                ? [5, 0, 5, 0] // dashed line for planning and solid for results in both
+                : [0, 0, 0, 0] // solid for both
+              : [0, 0, 0, 0], // default case
     },
     markers: {
       size: 6,
@@ -161,7 +171,7 @@ const GraphDashboard: React.FC<CustomBarProps> = ({
       show: true,
       itemMargin: {
         horizontal: 4,
-        vertical: 4, 
+        vertical: 4,
       },
     },
 
@@ -181,7 +191,12 @@ const GraphDashboard: React.FC<CustomBarProps> = ({
       shared: true,
       intersect: false,
       y: {
-        formatter: (val: number) => (isToggled ? `${val} %` : `${formatNumberWithCommas(val)} 円`),
+        formatter: (val: number | null | string) => {
+          if (val === null || val === '' || Number.isNaN(val)) {
+            return translate('noData', language)
+          }
+          return isToggled ? `${val} %` : `${formatNumberWithCommas(val)} 円`
+        },
       },
     },
   }
@@ -203,7 +218,7 @@ const GraphDashboard: React.FC<CustomBarProps> = ({
       </div>
       {series && options ? (
         <Chart
-          key={isToggled}
+          key={`${graphDataType}-${isToggled}`}  // Force re-render when toggling graphs
           options={ options || {} }
           series={ series || [] }
           type={isToggled ? 'line' : 'bar'}
