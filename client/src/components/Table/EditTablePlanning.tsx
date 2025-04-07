@@ -41,12 +41,19 @@ const EditTablePlanning = ({
     setIsTranslateSwitchActive(language === 'en')
   }, [language])
 
+  useEffect(() => {
+    if (!hasUnsavedChanges) {
+      setEditedData(originalData)
+    }
+  },[originalData])
+  
   const isRowEditable = (label) => editableLabels.includes(label)
 
   const handleInputChange = (rowIndex, valueIndex, e) => {
     const { name, value } = e.target
     const newValue = removeCommas(value) || 0
     
+    setHasUnsavedChanges(true)
     // Prevent entry of more than 15 digits in Input
     if (newValue.length > MAX_NUMBER_LENGTH) {
       return 
@@ -73,6 +80,7 @@ const EditTablePlanning = ({
       // Ensure the updatedChangedData object is properly initialized for the id
       if (!modifiedFields[changedObjectId]) {
         modifiedFields[changedObjectId] = []
+        
       }
 
       // Check if the entry with the same label already exists for this id
@@ -91,6 +99,7 @@ const EditTablePlanning = ({
         })
       }
       // Update the modifiedFields state with the updated changes
+      
       setModifiedFields(modifiedFields)
     }
   }
@@ -148,7 +157,7 @@ const EditTablePlanning = ({
       })
       .filter((row) => row !== null)
     // Used When switching beween Display and Edit (Unsaved Edited Data)
-    setEditedData(updatedData)
+    // setEditedData(updatedData)
     // # Backend Database Upd ate (API)
     saveData(updatedData)
 
@@ -179,6 +188,8 @@ const EditTablePlanning = ({
   }
 
   const displayData = hasUnsavedChanges ? editedData : originalData
+  console.log('displayData', hasUnsavedChanges ? "editedData" : "originalData")
+  console.log('displayData', hasUnsavedChanges ? editedData : originalData)
 
   // JSX Helpers
   const renderMonths = () => {
