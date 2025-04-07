@@ -196,7 +196,7 @@ const handleAdd = () => {
       "non_operating_expense"
     ];
     if (relevantFields.includes(name)) {
-      const { sales_revenue, indirect_employee_expense, dispatch_labor_expense, employee_expense, expense, non_operating_income } = updatedProjects[index];
+      const { sales_revenue, indirect_employee_expense, dispatch_labor_expense, employee_expense, expense, non_operating_income, non_operating_expense} = updatedProjects[index];
       const operating_income_ = parseFloat(sales_revenue) - 
                                 (
                                   (parseFloat(indirect_employee_expense)  || 0) +
@@ -205,9 +205,9 @@ const handleAdd = () => {
                                   (parseFloat(expense)                    || 0)
                                 );
       updatedProjects[index].operating_income = operating_income_.toString();
-      const _ordinary_profit = operating_income_ + parseFloat(non_operating_income)
+      const _ordinary_profit = operating_income_ + parseFloat(non_operating_income) - parseFloat(non_operating_expense)
       updatedProjects[index].ordinary_profit = _ordinary_profit.toString();
-      const _ordinary_profit_margin = ((operating_income_ / (parseFloat(sales_revenue))) * 100)
+      const _ordinary_profit_margin = (_ordinary_profit / parseFloat(sales_revenue)) * 100
       updatedProjects[index].ordinary_profit_margin = _ordinary_profit_margin.toFixed(2);
     }
     setProjects(updatedProjects)
@@ -384,7 +384,6 @@ const handleAdd = () => {
     })
     getProject(token)
       .then((data) => {
-        console.table(data);
         setProjectYear(data)
       })
       .catch((error) => {

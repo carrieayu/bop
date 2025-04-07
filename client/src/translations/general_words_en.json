@@ -157,5 +157,8 @@
   "projectResults": "Project Result",
   "yearMonth": "Year/Month",
   "csvFileName": "CSV: Financial Summary",
-  "resultsSummary" : "Results-Summary"
+  "resultsSummary" : "Results-Summary",
+  "planningShort" : "PL.",
+  "resultsShort": "Res.",
+  "noData": "No Data"
 }

@@ -1,6 +1,9 @@
 // GENERAL HELPER FUNCTIONS
 
-import { MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER, MAX_VALUE } from '../constants'
+import api from '../api/api'
+import { currentYear, MAX_NUMBER_LENGTH, MAX_RETRIES, MAX_SAFE_INTEGER, POLLING_INTERVAL } from '../constants'
+import { getReactActiveEndpoint } from '../toggleEndpoint'
+import { translate } from './translationUtil'
 
 // # Helper to block non-numeric key presses for number inputs
 
@@ -43,7 +46,7 @@ export const handleDisableKeysOnNumberInputs = (event) => {
 export const formatNumberWithCommas = (value: number | string): string => {
   // Trim the string and remove non-numeric characters,
   if (typeof value === 'string') {
-    value = value.replace(/[^0-9]/g, '') // Remove non-numeric characters
+    value = value.replace(/[^0-9-]/g, '') // Remove non-numeric characters
   }
 
   // Convert the sanitized string to a number
@@ -316,13 +319,26 @@ export const getRatio = (result, planning) => {
 
 export const sumValues = (arr) => arr.reduce((acc, value) => acc + parseFloat(value), 0)
 
-export const organiseTotals = (arr, planningArr = []) => {  
-  const firstHalfTotal = sumValues(arr.slice(0, 6)) // First Half Total
-  const secondHalfTotal = sumValues(arr.slice(6)) // Second Half Total
-  const total = sumValues(arr) // Total
+// Create new array: get totals for values in each row for planning, result, analysis tables.
+export const organiseTotals = (valuesArr, label = '') => {
+
+  let firstHalfTotal
+  let secondHalfTotal
+  let total
+
+  if (label === 'cumulativeOrdinaryIncome') {
+    firstHalfTotal = valuesArr[5] // values already summed in cumulative so do not need sumValues.
+    secondHalfTotal = valuesArr[11] // values already summed in cumulative so do not need sumValues.
+    total = valuesArr[11] // values already summed in cumulative so do not need sumValues. (secondHalfTotal === total)
+  }
+  else {
+    firstHalfTotal = sumValues(valuesArr.slice(0, 6)) // First Half Total
+    secondHalfTotal = sumValues(valuesArr.slice(6)) // Second Half Total
+    total = sumValues(valuesArr) // Total
+  }
 
   return [
-    ...arr,
+    ...valuesArr,
     firstHalfTotal, // First Half Total
     secondHalfTotal, // Second Half Total
     total, // Total
@@ -333,3 +349,161 @@ export const cumulativeSum = (arr) => {
   let sum = 0
   return arr.map((value) => (sum += value))
 }
+
+export const grossProfitTotal = (salesRevenueTotal, costOfSalesTotal) => {
+  const grossProfit = salesRevenueTotal - costOfSalesTotal // Calculate gross profit
+  return grossProfit
+}
+
+export async function fetchWithPolling<T>(
+  endpoint: string,
+  retries = MAX_RETRIES,
+  pollingInterval = POLLING_INTERVAL,
+): Promise<T> {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await api.get(`${getReactActiveEndpoint()}/api/${endpoint}`)
+      if (response.data && response.data.length > 0) {
+        return response.data // Ensure this is returning the correct type T
+      } else {
+        console.error(`Attempt ${attempt}: Data is empty, retrying in ${pollingInterval / 1000} seconds...`)
+      }
+    } catch (error) {
+      console.error(`Attempt ${attempt}: Error fetching data -`, error)
+    }
+    await new Promise((resolve) => setTimeout(resolve, pollingInterval))
+  }
+  throw new Error('Failed to fetch data after maximum retries.')
+}
+
+// -- DASHBOARD CALCULATIONS USED IN GRAPH SLICE --
+
+// # Creates Object with year & month, monthly total. 
+// Eg. { 2024 - 5: 500000, 2024 - 6: 40000 } '
+export const reformattedMonthlyTotalValues = (valuesArr) => {
+  return valuesArr.reduce((acc, item) => {
+    const label = `${item.year}-${item.month}`
+    const monthValue = item.total
+    if (acc[label]) {
+      acc[label] += Number(monthValue)
+    } else {
+      acc[label] = Number(monthValue)
+    }
+    return acc
+  }, {})
+}
+
+// Empty Array of dates for current financial year
+// Eg. [ "2024-4","2024-5",..."2025-3"]
+export const monthlyDatesForGraphByYear = () => {
+
+  // 1 financial year includes 2 years (eg. fiscal year: 2024 = 2024-1 -> 2025-3)
+  const thisYear = currentYear.toString()
+  const nextYear = (currentYear + 1).toString()
+
+  const months = [4,5,6,7,8,9,10,11,12,1,2,3];;
+
+  const formattedYearAndMonth = months.map((month) => {
+    if (month >= 4) {
+      return `${thisYear}-${month}`
+    } else {
+      return `${nextYear}-${month}`
+    }
+  })
+
+  return formattedYearAndMonth
+}
+ 
+// # Year/Months with data to  be displayed on graph in Financial Year Order.
+// EG. ['2024-4',... '2025-3']
+export const activeDatesOnGraph = (datesArrOne, datesArrTwo) => {
+    const datesSet = new Set([...Object.keys(datesArrOne), ...Object.keys(datesArrTwo)])
+    const dates = Array.from(datesSet)
+
+    dates.sort((a, b) => {
+      const [yearA, monthA] = a.split('-').map(Number)
+      const [yearB, monthB] = b.split('-').map(Number)
+
+      const fiscalYearA = monthA >= 4 ? yearA : yearA - 1
+      const fiscalYearB = monthB >= 4 ? yearB : yearB - 1
+
+      // Sort by fiscal year first
+      if (fiscalYearA !== fiscalYearB) {
+        return fiscalYearA - fiscalYearB
+      }
+
+      // If same fiscal year, prioritize April-Dec (4-12) over Jan-March (1-3)
+      const aPriority = monthA >= 4 ? monthA : monthA + 12
+      const bPriority = monthB >= 4 ? monthB : monthB + 12
+
+      return aPriority - bPriority
+    })
+  
+    return dates
+}
+
+// -- Graph Dashboard  --
+
+export const mapDataset = (datasets: any) =>
+  datasets.map((dataset: any) => ({
+    name: dataset.label,
+    data: dataset.data,
+    type: dataset.type,
+    color: dataset.backgroundColor,
+  }))
+
+// # Maps the necessary data for each line or bar in chart
+export const formatGraphData = (
+  datasetMappings: {
+    label: string
+    data: any
+    bgColor: string
+    type: string
+  }[],
+  dates: string[],
+  language,
+) => {
+  return ({
+    labels: dates,
+    datasets: datasetMappings.map(({ label, data, bgColor, type }) => ({
+      type,
+      label: translate(label, language),
+      data: dates.map((date) => data[date] ?? 0),
+      backgroundColor: bgColor,
+      borderColor: type === 'bar' ? 'black' : bgColor,
+      borderWidth: type === 'bar' ? 1 : 2,
+    })),
+  })
+}
+
+// # Darkens Color: Used for results bars in 
+export const darkenColor = (hex, percent) => {
+  let num = parseInt(hex.replace('#', ''), 16),
+    r = (num >> 16) - percent,
+    g = ((num >> 8) & 0x00ff) - percent,
+    b = (num & 0x0000ff) - percent
+
+  r = Math.min(255, Math.max(0, r))
+  g = Math.min(255, Math.max(0, g))
+  b = Math.min(255, Math.max(0, b))
+
+  return `rgb(${r}, ${g}, ${b})`
+}
+
+// # Changes the order of items in series so that legends and bars charts in chart are side by side.
+// Eg. 売上計画 , 売上実績
+export const reOrderArray = (series, length) => {
+  let arrayOrder
+  if (length === 4) {
+    arrayOrder = [0, 2, 1, 3]
+  }
+  if (length === 8) {
+    arrayOrder = [0, 4, 1, 5, 2, 6, 3, 7]
+  }
+  return arrayOrder.map((index) => series[index])
+}
+
+// Error message for when Redux dispatch data fetch fails on dashboard
+export const handleError = (actionName: string, error: any) => {
+    console.error(`Error fetching ${actionName}:`, error)
+  }

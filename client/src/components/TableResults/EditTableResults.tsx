@@ -3,7 +3,7 @@ import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { getResultsA } from '../../api/ResultsEndpoint/GetResultsA'
 import { updateResults } from '../../api/ResultsEndpoint/UpdateResults'
-import { months, token } from '../../constants'
+import { halfYears, months, token } from '../../constants'
 import { organiseTotals } from '../../utils/helperFunctionsUtil'
 
 const EditTableResults = () => {
@@ -625,7 +625,7 @@ const EditTableResults = () => {
           },
           {
             label: 'cumulativeOrdinaryIncome',
-            values: organiseTotals(cumulativeOrdinaryProfitValues),
+            values: organiseTotals(cumulativeOrdinaryProfitValues, 'cumulativeOrdinaryIncome'),
           },
         ]
 
@@ -810,7 +810,7 @@ const EditTableResults = () => {
           },
           {
             label: 'cumulativeOrdinaryIncome',
-            values: organiseTotals(cumulativeOrdinaryProfitValues),
+            values: organiseTotals(cumulativeOrdinaryProfitValues, 'cumulativeOrdinaryIncome'),
           },
         ]
 
@@ -858,7 +858,6 @@ const EditTableResults = () => {
     'professionalServicesFees',
   ]
 
-  const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable']
   const [editableData, setEditableData] = useState(data)
   const isRowEditable = (label) => editableLabels.includes(label)
 
@@ -944,7 +943,6 @@ const EditTableResults = () => {
                   {translate(`${halfYear}`, language)}
                 </th>
               ))}
-              <th className='total-txt'>{translate('salesRatio', language)}</th>
             </tr>
             <tr className='scnd-row'>
               <th className='borderless'></th>
@@ -956,7 +954,6 @@ const EditTableResults = () => {
                   {translate('results', language)}
                 </th>
               ))}
-              <th>{''}</th>
             </tr>
           </thead>
           <tbody>

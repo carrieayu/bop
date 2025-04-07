@@ -5,7 +5,7 @@ import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { getPlanningA } from '../../api/PlanningEndpoint/GetPlanningA'
 import { updatePlanning } from '../../api/PlanningEndpoint/UpdatePlanning'
-import { months, token } from '../../constants'
+import { halfYears, months, token } from '../../constants'
 import { organiseTotals } from '../../utils/helperFunctionsUtil'
 
 const EditTablePlanning = () => {
@@ -620,7 +620,7 @@ const EditTablePlanning = () => {
           },
           {
             label: 'cumulativeOrdinaryIncome',
-            values: organiseTotals(cumulativeOrdinaryProfitValues),
+            values: organiseTotals(cumulativeOrdinaryProfitValues, 'cumulativeOrdinaryIncome'), 
           },
         ]
 
@@ -804,7 +804,7 @@ const EditTablePlanning = () => {
           },
           {
             label: 'cumulativeOrdinaryIncome',
-            values: organiseTotals(cumulativeOrdinaryProfitValues),
+            values: organiseTotals(cumulativeOrdinaryProfitValues, 'cumulativeOrdinaryIncome'),
           },
         ]
 
@@ -815,14 +815,6 @@ const EditTablePlanning = () => {
         console.error(error)
       })
   }, [])
-
-  useEffect(() => {
-    console.log('data',data)
-  },[data])
-
-  useEffect(() => {
-    console.log('previous data', previousData)
-  }, [previousData])
 
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
@@ -860,7 +852,6 @@ const EditTablePlanning = () => {
     'professionalServicesFees',
   ]
 
-  const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable']
   const [editableData, setEditableData] = useState(data)
   const isRowEditable = (label) => editableLabels.includes(label)
 
@@ -952,7 +943,6 @@ const EditTablePlanning = () => {
                   {translate(`${halfYear}`, language)}
                 </th>
               ))}
-              <th className='total-txt'>{translate('salesRatio', language)}</th>
             </tr>
             <tr className='scnd-row'>
               <th className='borderless'></th>
@@ -964,7 +954,6 @@ const EditTablePlanning = () => {
                   {translate('planning', language)}
                 </th>
               ))}
-              <th>{''}</th>
             </tr>
           </thead>
           <tbody>

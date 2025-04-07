@@ -1309,6 +1309,7 @@ class EmployeeExpensesList(generics.ListAPIView):
                 employee_statutory_welfare_expense = employee['statutory_welfare_expense'] if employee else 0
                 employee_welfare_expense = employee['welfare_expense'] if employee else 0
                 employee_insurance_premium = employee['insurance_premium'] if employee else 0
+                employee_bonus_and_fuel_allowance = employee['bonus_and_fuel_allowance'] if employee else 0
                 employee_id = employee['employee_id'] if project else '' 
                 project_name = project['project_name'] if project else ''  # Default to empty string if None
                 project_id = project['project_id'] if project else ''
@@ -1319,14 +1320,15 @@ class EmployeeExpensesList(generics.ListAPIView):
                     'employee_expense_id': expense.get('employee_expense_id', ''),
                     'year': expense.get('year', ''),
                     'month': expense.get('month', ''),
-                    'employee_last_name': employee_last_name,
-                    'employee_first_name': employee_first_name,
+                    'last_name': employee_last_name,
+                    'first_name': employee_first_name,
                     'employee_type': employee_type,
-                    'employee_salary': employee_salary,
+                    'salary': employee_salary,
                     'executive_remuneration': employee_executive_remuneration,
                     'statutory_welfare_expense':employee_statutory_welfare_expense,
                     'welfare_expense':employee_welfare_expense,
                     'insurance_premium':employee_insurance_premium,
+                    'bonus_and_fuel_allowance': employee_bonus_and_fuel_allowance,
                     'employee_id': employee_id,
                     'project_name': project_name,
                     'project_id': project_id,
@@ -1488,6 +1490,7 @@ class EmployeeExpensesResultsList(generics.ListAPIView):
             employee_statutory_welfare_expense = employee['statutory_welfare_expense'] if employee else 0
             employee_welfare_expense = employee['welfare_expense'] if employee else 0
             employee_insurance_premium = employee['insurance_premium'] if employee else 0
+            employee_bonus_and_fuel_allowance = employee['bonus_and_fuel_allowance'] if employee else 0
             employee_id = employee['employee_id'] if project else '' 
             project_name = project.get('project_name') if project else ''  
             project_id = project['project_id'] if project else ''  
@@ -1499,14 +1502,15 @@ class EmployeeExpensesResultsList(generics.ListAPIView):
                 'employee_expense_result_id': expense.get('employee_expense_result_id', ''),
                 'year': expense.get('year', ''),
                 'month': expense.get('month', ''),
-                'employee_last_name': employee_last_name,
-                'employee_first_name': employee_first_name,
+                'last_name': employee_last_name,
+                'first_name': employee_first_name,
                 'employee_type': employee_type,
-                'employee_salary': employee_salary,
+                'salary': employee_salary,
                 'executive_remuneration': employee_executive_remuneration,
                 'statutory_welfare_expense':employee_statutory_welfare_expense,
                 'welfare_expense':employee_welfare_expense,
                 'insurance_premium':employee_insurance_premium,
+                'bonus_and_fuel_allowance': employee_bonus_and_fuel_allowance,
                 'employee_id': employee_id,
                 'project_name': project_name,
                 'project_id': project_id,

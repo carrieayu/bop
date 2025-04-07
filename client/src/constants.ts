@@ -1,7 +1,7 @@
 export const ACCESS_TOKEN = 'accessToken'
 export const REFRESH_TOKEN = 'refresh'
 
-export const years = [2024, 2025]
+export const years = [2025, 2026]
 export const currentYear = new Date().getFullYear()
 export const token = localStorage.getItem('accessToken')
 export const maximumEntries = 10
@@ -50,3 +50,8 @@ export const masterMaintenanceScreenTabs = [
 export const MAX_NUMBER_LENGTH = 15 // 15 digits [000,000,000,000,000]
 export const MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER // 9007199254740991
 export const MAX_VALUE = Number.MAX_VALUE //1.7976931348623157e+308
+
+export const POLLING_INTERVAL = 60000
+export const MAX_RETRIES = 12
+
+export const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable']

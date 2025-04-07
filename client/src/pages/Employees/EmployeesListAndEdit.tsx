@@ -124,10 +124,7 @@ const EmployeesListAndEdit: React.FC = () => {
     const rawValue = removeCommas(value)
 
     if (name === 'salary' || name === 'executive_remuneration' || name === 'bonus_and_fuel_allowance') {
-      console.log('name', name, 'value:', rawValue, 'length', rawValue.length)
-
       if (rawValue.length > MAX_NUMBER_LENGTH) {
-        console.log('rawValue.length > MAX_NUMBER_LENGTH:', rawValue.length > MAX_NUMBER_LENGTH, rawValue.length)
         return
       }
 
@@ -219,7 +216,6 @@ const EmployeesListAndEdit: React.FC = () => {
     const recordType = 'employees'
     // Retrieve field validation checks based on the record type
     const fieldChecks = getFieldChecks(recordType)
-    console.log('fieldChecks', fieldChecks)
 
     // The format of the records from ListAndEditScreen is slightly different.
     // This gets the employee object from each record and returns an Array of employees.
@@ -230,7 +226,6 @@ const EmployeesListAndEdit: React.FC = () => {
 
     // Step 2: Validate client-side input
     const validationErrors = validateEmployees(employees) // Only one User can be registered but function expects an Array.
-    console.log('Employees in List/Edit Screen: ', employees)
     // Step 3: Check for duplicate entries on specific fields
     const uniqueFields = ['email']
     const duplicateErrors = checkForDuplicates(employees, uniqueFields, 'employee', language)
@@ -247,7 +242,6 @@ const EmployeesListAndEdit: React.FC = () => {
     if (firstError) {
       const { errors, errorType } = firstError
       const translatedErrors = translateAndFormatErrors(errors, language, errorType)
-      console.log(translatedErrors, 'trans errors')
       setCrudMessage(translatedErrors)
       setCrudValidationErrors(translatedErrors)
       setIsCRUDOpen(true)
@@ -306,7 +300,6 @@ const EmployeesListAndEdit: React.FC = () => {
     }
 
     const modifiedFields = getModifiedFields(originalEmployeesList, employeesList)
-    console.log(modifiedFields)
     if (!token) {
       window.location.href = '/login'
       return

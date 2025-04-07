@@ -3,7 +3,7 @@
 // Maybe can leave this for backend validation ? -Ed
 
 // INPUT FIELDS FOR Registration & ListAndEdit SCREENS USED IN CLIENT-SIDE VALIDATION 
-export const inputFieldConfigurations = {
+export const fields = {
   // Projects
   projects: [
     { field: 'year', fieldName: 'year', isNumber: true, duplicateCheck: true },
@@ -12,45 +12,44 @@ export const inputFieldConfigurations = {
     { field: 'project_type', fieldName: 'projectType', isNumber: false, duplicateCheck: true }, // Currently Allowed to be NULL
     { field: 'business_division', fieldName: 'businessDivision', isNumber: false, duplicateCheck: true }, // business_division_id
     { field: 'client', fieldName: 'clientName', isNumber: false, duplicateCheck: true }, // client_id
-    { field: 'sales_revenue', fieldName: 'salesRevenue', isNumber: true },
-    { field: 'dispatch_labor_expense', fieldName: 'dispatchLaborExpense', isNumber: true },
-    { field: 'employee_expense', fieldName: 'employeeExpense', isNumber: true },
-    { field: 'indirect_employee_expense', fieldName: 'indirectEmployeeExpense', isNumber: true },
-    { field: 'expense', fieldName: 'expense', isNumber: true },
-    { field: 'operating_income', fieldName: 'operatingIncome', isNumber: true },
-    { field: 'non_operating_income', fieldName: 'nonOperatingIncome', isNumber: true },
-    { field: 'non_operating_expense', fieldName: 'nonOperatingExpense', isNumber: true },
-    { field: 'ordinary_profit', fieldName: 'ordinaryProfit', isNumber: true },
-    { field: 'ordinary_profit_margin', fieldName: 'ordinaryProfitMargin', isNumber: true },
+    { field: 'sales_revenue', fieldName: 'salesRevenue', isNumber: true , isFinancial: true},
+    { field: 'dispatch_labor_expense', fieldName: 'dispatchLaborExpense', isNumber: true, isFinancial: true },
+    { field: 'employee_expense', fieldName: 'employeeExpense', isNumber: true, isFinancial: true },
+    { field: 'indirect_employee_expense', fieldName: 'indirectEmployeeExpense', isNumber: true, isFinancial: true },
+    { field: 'expense', fieldName: 'expense', isNumber: true, isFinancial: true },
+    { field: 'operating_income', fieldName: 'operatingIncome', isNumber: true, isFinancial: true },
+    { field: 'non_operating_income', fieldName: 'nonOperatingIncome', isNumber: true, isFinancial: true },
+    { field: 'non_operating_expense', fieldName: 'nonOperatingExpense', isNumber: true, isFinancial: true },
+    { field: 'ordinary_profit', fieldName: 'ordinaryProfit', isNumber: true, isFinancial: true},
+    { field: 'ordinary_profit_margin', fieldName: 'ordinaryProfitMargin', isNumber: true, isFinancial: true },
   ],
   // Expenses
   expenses: [
-    { field: 'year', fieldName: 'year', isNumber: true },
-    { field: 'month', fieldName: 'month', isNumber: true },
-    { field: 'consumable_expense', fieldName: 'consumableExpense', isNumber: true },
-    { field: 'rent_expense', fieldName: 'rentExpense', isNumber: true },
-    { field: 'tax_and_public_charge', fieldName: 'taxAndPublicCharge', isNumber: true },
-    { field: 'depreciation_expense', fieldName: 'depreciationExpense', isNumber: true },
-    { field: 'travel_expense', fieldName: 'travelExpense', isNumber: true },
-    { field: 'communication_expense', fieldName: 'communicationExpense', isNumber: true },
-    { field: 'utilities_expense', fieldName: 'utilitiesExpense', isNumber: true },
-    { field: 'transaction_fee', fieldName: 'transactionFee', isNumber: true },
-    { field: 'advertising_expense', fieldName: 'advertisingExpense', isNumber: true },
-    { field: 'entertainment_expense', fieldName: 'entertainmentExpense', isNumber: true },
-    { field: 'professional_service_fee', fieldName: 'professionalServicesFee', isNumber: true },
+    { field: 'year', fieldName: 'year', isNumber: true, isFinancial: false },
+    { field: 'month', fieldName: 'month', isNumber: true, isFinancial: false },
+    { field: 'consumable_expense', fieldName: 'consumableExpense', isNumber: true, isFinancial: true },
+    { field: 'rent_expense', fieldName: 'rentExpense', isNumber: true, isFinancial: true },
+    { field: 'tax_and_public_charge', fieldName: 'taxAndPublicCharge', isNumber: true, isFinancial: true },
+    { field: 'depreciation_expense', fieldName: 'depreciationExpense', isNumber: true, isFinancial: true },
+    { field: 'travel_expense', fieldName: 'travelExpense', isNumber: true, isFinancial: true },
+    { field: 'communication_expense', fieldName: 'communicationExpense', isNumber: true, isFinancial: true },
+    { field: 'utilities_expense', fieldName: 'utilitiesExpense', isNumber: true, isFinancial: true },
+    { field: 'transaction_fee', fieldName: 'transactionFee', isNumber: true, isFinancial: true },
+    { field: 'advertising_expense', fieldName: 'advertisingExpense', isNumber: true, isFinancial: true },
+    { field: 'entertainment_expense', fieldName: 'entertainmentExpense', isNumber: true, isFinancial: true },
+    { field: 'professional_service_fee', fieldName: 'professionalServicesFee', isNumber: true, isFinancial: true },
   ],
   // Cost Of Sales
   costOfSales: [
     { field: 'year', fieldName: 'year', isNumber: true },
     { field: 'month', fieldName: 'month', isNumber: true },
-    { field: 'purchase', fieldName: 'purchase', isNumber: true },
-    { field: 'outsourcing_expense', fieldName: 'outsourcingExpense', isNumber: true },
-    { field: 'product_purchase', fieldName: 'productPurchase', isNumber: true },
-    { field: 'dispatch_labor_expense', fieldName: 'dispatchLaborExpense', isNumber: true },
-    { field: 'communication_expense', fieldName: 'communicationExpense', isNumber: true },
-    { field: 'work_in_progress_expense', fieldName: 'workInProgressExpense', isNumber: true },
-    { field: 'transaction_fee', fieldName: 'transactionFee', isNumber: true },
-    { field: 'amortization_expense', fieldName: 'amortizationExpense', isNumber: true },
+    { field: 'purchase', fieldName: 'purchase', isNumber: true , isFinancial: true },
+    { field: 'outsourcing_expense', fieldName: 'outsourcingExpense', isNumber: true, isFinancial: true  },
+    { field: 'product_purchase', fieldName: 'productPurchase', isNumber: true, isFinancial: true  },
+    { field: 'dispatch_labor_expense', fieldName: 'dispatchLaborExpense', isNumber: true, isFinancial: true  },
+    { field: 'communication_expense', fieldName: 'communicationExpense', isNumber: true, isFinancial: true  },
+    { field: 'work_in_progress_expense', fieldName: 'workInProgressExpense', isNumber: true, isFinancial: true  },
+    { field: 'amortization_expense', fieldName: 'amortizationExpense', isNumber: true, isFinancial: true  },
   ],
   // Cost Of SalesResults
   costOfSalesResults: [
@@ -62,7 +61,6 @@ export const inputFieldConfigurations = {
     { field: 'dispatch_labor_expense', fieldName: 'dispatchLaborExpense', isNumber: true },
     { field: 'communication_expense', fieldName: 'communicationExpense', isNumber: true },
     { field: 'work_in_progress_expense', fieldName: 'workInProgressExpense', isNumber: true },
-    { field: 'transaction_fee', fieldName: 'transactionFee', isNumber: true },
     { field: 'amortization_expense', fieldName: 'amortizationExpense', isNumber: true },
   ],
   // Employee Expenses
@@ -122,10 +120,14 @@ export const inputFieldConfigurations = {
     { field: 'email', fieldName: 'email', isRequired: true, isNumber: false, isEmail: true },
     { field: 'type', fieldName: 'type', isRequired: true, isNumber: false },
     { field: 'company_name', fieldName: 'companyName', isRequired: true, isNumber: false },
-    { field: 'salary', fieldName: 'salary', isNumber: true },
-    { field: 'executive_remuneration', fieldName: 'executiveRemuneration', isNumber: true },
     { field: 'business_division_name', fieldName: 'businessDivision', isNumber: false },
-    { field: 'bonus_and_fuel_allowance', fieldName: 'bonusAndFuelAllowance', isRequired: true, isNumber: false },
+    { field: 'salary', fieldName: 'salary', isNumber: true, isFinancial: true},
+    { field: 'executive_remuneration', fieldName: 'executiveRemuneration', isNumber: true, isFinancial: true},
+    { field: 'bonus_and_fuel_allowance', fieldName: 'bonusAndFuelAllowance', isRequired: true, isNumber: false, isFinancial: true },
+    { field: 'welfare_expense', fieldName: 'welfareExpense', isRequired: true, isNumber: false, isFinancial: true },
+    { field: 'statutory_welfare_expense', fieldName: 'statutoryWelfareExpense', isRequired: true, isNumber: false, isFinancial: true },
+    { field: 'insurance_premium', fieldName: 'insurancePremium', isRequired: true, isNumber: false, isFinancial: true },
+
   ],
   login: [
     { field: 'username', fieldName: 'username', isRequired: true, isNumber: false },

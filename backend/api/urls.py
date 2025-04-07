@@ -58,7 +58,7 @@ urlpatterns = [
     path('api/projects/<int:pk>/delete/', views.ProjectsDelete.as_view(), name="projects-delete"), 
 
     # Project Sales Results
-    path('api/project-sales-results/list/', views.ProjectSalesResultsList.as_view(), name="project-list"), 
+    path('api/project-sales-results/list/', views.ProjectSalesResultsList.as_view(), name="project-sales-results-list"), 
     path('api/project-sales-results/create/', views.ProjectSalesResultsCreate.as_view(), name="project-sales-results-create"), 
     path('api/project-sales-results/update/', views.ProjectSalesResultsUpdate.as_view(), name="project-sales-results-update"),   
     path('api/project-sales-results/<int:pk>/delete/', views.ProjectSalesResultsDelete.as_view(), name="project-sales-results-delete"),
