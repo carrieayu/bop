@@ -20,9 +20,10 @@ import {
 } from '../../utils/validationUtil'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
 import { getFilteredEmployeeExpenseResults } from '../../api/EmployeeExpensesResultEndpoint/FilterGetEmployeeExpenseResult'
-import { handleResultsRegTabsClick } from '../../utils/helperFunctionsUtil'
-import { maximumEntriesEE, monthNames, resultsScreenTabs, storedUserID, token } from '../../constants'
+import { handleResultsRegTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
+import { maximumEntriesEE, monthNames, resultsScreenTabs, storedUserID, token, ACCESS_TOKEN } from '../../constants'
 import { closeModal, openModal } from '../../actions/hooks'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes";
 
 type Date = {
   year: string
@@ -59,6 +60,7 @@ const EmployeeExpensesResultsRegistration = () => {
   const [modalMessage, setModalMessage] = useState('')
   const [filteredDates, setFilteredDates] = useState<DateForm[]>([{ form: [{ date: [] }] }])
   const [selectionYearResults, setSelectionYearResults] = useState<DateForm[]>([{ form: [{ date: [] }] }])
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
   const onTabClick = (tab) => handleResultsRegTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
@@ -99,41 +101,6 @@ const EmployeeExpensesResultsRegistration = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
     setLanguage(newLanguage)
   }
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        getEmployee(token)
-          .then((data) => {
-            setEmployees(data)
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 401) {
-              console.log(error)
-            } else {
-              console.error('There was an error fetching the employee!', error)
-            }
-          })
-
-        getProjectSalesResults(token)
-          .then((data) => {
-            const result = uniqueProjectsResults(data)
-            setProjectSalesResult(result)
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 401) {
-              console.log(error)
-            } else {
-              console.error('There was an error fetching the projects!', error)
-            }
-          })
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      }
-    }
-
-    fetchData()
-  }, [token])
 
   //This function will make ProjectName unique base on project_name , client and business_division on Employee Expense Results
   const uniqueProjectsResults = (projects) => {
@@ -564,6 +531,48 @@ const EmployeeExpensesResultsRegistration = () => {
     navigate('/employee-expenses-results-list')
   }
 
+  useEffect(() => {
+    checkAccessToken().then(result => {
+      if (!result) {
+        showAlertPopup(handleTimeoutConfirm);
+      } else {
+
+        const fetchData = async () => {
+          try {
+            getEmployee(localStorage.getItem(ACCESS_TOKEN))
+              .then((data) => {
+                setEmployees(data)
+              })
+              .catch((error) => {
+                if (error.response && error.response.status === 401) {
+                  console.log(error)
+                } else {
+                  console.error('There was an error fetching the employee!', error)
+                }
+              })
+
+            getProjectSalesResults(localStorage.getItem(ACCESS_TOKEN))
+              .then((data) => {
+                const result = uniqueProjectsResults(data)
+                setProjectSalesResult(result)
+              })
+              .catch((error) => {
+                if (error.response && error.response.status === 401) {
+                  console.log(error)
+                } else {
+                  console.error('There was an error fetching the projects!', error)
+                }
+              })
+          } catch (error) {
+            console.error('Error fetching data:', error)
+          }
+        }
+
+        fetchData()
+      }
+    });
+  }, [token])
+
   return (
     <div className='employeeExpensesResultsRegistration_wrapper'>
       <HeaderButtons
@@ -773,6 +782,7 @@ const EmployeeExpensesResultsRegistration = () => {
         isCRUDOpen={isModalOpen}
         validationMessages={crudValidationErrors}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

@@ -15,8 +15,9 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/GetEmployeeExpense'
 import { deleteEmployeeExpenseX } from '../../api/EmployeeExpenseEndpoint/DeleteEmployeeExpenseX'
 import { deleteProjectAssociation } from '../../api/EmployeeExpenseEndpoint/DeleteProjectAssociation'
-import { formatNumberWithCommas, handlePLListTabsClick } from '../../utils/helperFunctionsUtil'
-import { monthNames, months, token } from '../../constants'
+import { formatNumberWithCommas, handlePLListTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
+import { monthNames, months, token, ACCESS_TOKEN } from '../../constants'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes";
 
 const EmployeeExpensesList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -32,7 +33,6 @@ const EmployeeExpensesList: React.FC = () => {
   const [deleteEmployeeExpensesId, setDeleteEmployeeExpensesId] = useState([])
   const [deletedId, setDeletedId] = useState<any>(null)
   const onTabClick = (tab) => handlePLListTabsClick(tab, navigate, setActiveTab)
-
   const [employeeProjectId, setEmployeeProjectId] = useState<{
     employee_expense_id: string
     project_id: string
@@ -40,6 +40,7 @@ const EmployeeExpensesList: React.FC = () => {
   }>({} as { employee_expense_id: string; project_id: string; mode: 'employee_expense' })
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -76,34 +77,6 @@ const EmployeeExpensesList: React.FC = () => {
   const handleNewRegistrationClick = () => {
     navigate('/employee-expenses-registration')
   }
-
-  // Fetch employee expenses data
-  useEffect(() => {
-    const fetchEmployeeExpenses = async () => {
-      if (!token) {
-        window.location.href = '/login' // Redirect to login if no token found
-        return
-      }
-      getEmployeeExpense(token)
-        .then((data) => {
-          setEmployeeExpenses(data)
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login' // Redirect to login if unauthorized
-          } else {
-            console.error('Error fetching employee expenses:', error)
-          }
-        })
-    }
-
-    fetchEmployeeExpenses()
-  }, [])
-
-  useEffect((
-  ) => {
-      console.log('EmployeeExpenses', employeeExpenses)
-  },[employeeExpenses])
 
   const openModal = (users, id) => {
     setSelectedEmployeeExpenses(users)
@@ -169,6 +142,31 @@ const EmployeeExpensesList: React.FC = () => {
         }
       })
   }
+
+  // Fetch employee expenses data
+  const fetchEmployeeExpenses = async () => {
+    getEmployeeExpense(localStorage.getItem(ACCESS_TOKEN))
+      .then((data) => {
+        setEmployeeExpenses(data)
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login' // Redirect to login if unauthorized
+        } else {
+          console.error('Error fetching employee expenses:', error)
+        }
+      })
+  }
+
+  useEffect(() => {
+    checkAccessToken().then(result => {
+      if (!result) {
+        showAlertPopup(handleTimeoutConfirm);
+      } else {
+        fetchEmployeeExpenses()
+      }
+    });
+  }, [token])
 
   return (
     <div className='employeeExpensesList_wrapper'>
@@ -618,6 +616,7 @@ const EmployeeExpensesList: React.FC = () => {
         message={translate('deleteMessage', language)}
       />
       <CrudModal isCRUDOpen={isCRUDOpen} onClose={closeModal} message={crudMessage} />
+      <AlertPopupComponent />
     </div>
   )
 }

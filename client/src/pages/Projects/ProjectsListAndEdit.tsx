@@ -25,7 +25,8 @@ import {
 import { getProject } from '../../api/ProjectsEndpoint/GetProject'
 import { updateProject } from '../../api/ProjectsEndpoint/UpdateProject'
 import { deleteProject } from '../../api/ProjectsEndpoint/DeleteProject'
-import { months, token, years } from '../../constants'
+import { months, token, years, REFRESH_TOKEN, ACCESS_TOKEN } from '../../constants'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"  
 import {
   handleDisableKeysOnNumberInputs,
   removeCommas,
@@ -80,6 +81,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
     },
   ])
 
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
   const [isCRUDOpen, setIsCRUDOpen] = useState(false)
   const [crudMessage, setCrudMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
@@ -89,7 +91,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
     setActiveTab(tab)
     navigate(tab)
   }
-
+  // const [token, setToken] = useState(localStorage.getItem(ACCESS_TOKEN));
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
   }
@@ -226,11 +228,6 @@ const ProjectsListAndEdit: React.FC = ({}) => {
       return modifiedFields
     }
     const modifiedFields = getModifiedFields(originalProjectsList, projects)
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
     updateProject(modifiedFields, token)
       .then(() => {
         setCrudMessage(translate('successfullyUpdated', language))
@@ -284,20 +281,6 @@ const ProjectsListAndEdit: React.FC = ({}) => {
   }
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      if (!token) {
-        window.location.href = '/login' // Redirect to login if no token found
-        return
-      }
-
-      fetchProjectsHandler()
-    }
-    fetchDivision()
-    fetchClient()
-    fetchProjects()
-  }, [])
-
-  useEffect(() => {
     const startIndex = currentPage * rowsPerPage
     setPaginatedData(projects.slice(startIndex, startIndex + rowsPerPage))
   }, [currentPage, rowsPerPage, projects])
@@ -343,12 +326,6 @@ const ProjectsListAndEdit: React.FC = ({}) => {
   const handleConfirm = async () => {
     // Sets the Validation Errors if any to empty as they are not necessary for delete.
     setCrudValidationErrors([])
-
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
     deleteProject(deleteProjectsId, token)
       .then(() => {
         updateProjectLists(deleteProjectsId)
@@ -386,17 +363,29 @@ const ProjectsListAndEdit: React.FC = ({}) => {
 
   const fetchProjectsHandler = async () => {
     try {
-      const data = await getProject(token)
+      const data = await getProject(localStorage.getItem(ACCESS_TOKEN))
       setProjects(data)
       setOriginalProjectsList(data)
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        window.location.href = '/login' // Redirect to login if unauthorized
+        console.error('There was an error response 401', error)
       } else {
         console.error('There was an error fetching the projects!', error)
       }
     }
   }
+
+  useEffect(() => {
+    checkAccessToken().then(result => {
+      if (!result) {
+        showAlertPopup(handleTimeoutConfirm);
+      } else {
+        fetchDivision()
+        fetchClient()
+        fetchProjectsHandler()
+      }
+    });
+  }, [token])
 
   return (
     <div className='projectsList-wrapper'>
@@ -844,6 +833,7 @@ const ProjectsListAndEdit: React.FC = ({}) => {
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

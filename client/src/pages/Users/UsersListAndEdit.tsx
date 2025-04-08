@@ -22,8 +22,9 @@ import {
   getFieldChecks,
   checkForDuplicateUsers,
 } from '../../utils/validationUtil'
-import { formatDate, handleMMListTabsClick } from '../../utils/helperFunctionsUtil'
-import { masterMaintenanceScreenTabs, token } from '../../constants'
+import { formatDate, handleMMListTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
+import { masterMaintenanceScreenTabs, token, ACCESS_TOKEN } from '../../constants'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 const UsersListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -62,6 +63,7 @@ const UsersListAndEdit: React.FC = () => {
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -104,11 +106,6 @@ const UsersListAndEdit: React.FC = () => {
   }
 
   const handleSubmit = async () => {
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
     // Client Side Validation
 
     // Step 1: Preparartion for validation
@@ -166,18 +163,6 @@ const UsersListAndEdit: React.FC = () => {
     await handleSubmit() // Call the submit function for update
     setIsUpdateConfirmationOpen(false)
   }
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      if (!token) {
-        window.location.href = '/login' // Redirect to login if no token found
-        return
-      }
-
-      fetchUserListHandler(token)
-    }
-    fetchUsers()
-  }, [])
 
   useEffect(() => {}, [originalUserList])
 
@@ -278,6 +263,19 @@ const UsersListAndEdit: React.FC = () => {
       }
     }
   };
+
+  useEffect(() => {
+    checkAccessToken().then(result => {
+      if (!result) {
+        showAlertPopup(handleTimeoutConfirm);
+      } else {
+        const fetchUsers = async () => {
+          fetchUserListHandler(localStorage.getItem(ACCESS_TOKEN))
+        }
+        fetchUsers()
+      }
+    });
+  }, [token])
 
   return (
     <div className='UsersListAndEdit_wrapper'>
@@ -490,6 +488,7 @@ const UsersListAndEdit: React.FC = () => {
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

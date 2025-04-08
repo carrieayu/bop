@@ -11,7 +11,10 @@ import TableResultsA from '../../components/TableResults/TableResultA'
 import { RxHamburgerMenu } from 'react-icons/rx'
 import { getResultsA } from '../../api/ResultsEndpoint/GetResultsA'
 import * as XLSX from 'xlsx'
-import { monthNames, months, token } from '../../constants'
+import { monthNames, months, token, ACCESS_TOKEN } from '../../constants'
+import { setupIdleTimer } from '../../utils/helperFunctionsUtil'
+import AlertModal from '../../components/AlertModal/AlertModal'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 // REDUCERS
 import { fetchCostOfSaleResult } from '../../reducers/costOfSale/costOfSaleResultSlice'
 import { fetchExpenseResult } from '../../reducers/expenses/expensesResultsSlice'
@@ -40,6 +43,7 @@ const ResultsListAndEdit = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [initialLanguage, setInitialLanguage] = useState(language)
   const [isXLSModalOpen, setIsXLSModalOpen] = useState(false)
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
   const results = useSelector(resultsSelector)
   const resultsCalculations = useSelector(resultsCalculationsSelector)
 
@@ -89,7 +93,7 @@ const ResultsListAndEdit = () => {
   }
 
   const downloadXLS = () => {
-    getResultsA(token)
+    getResultsA(localStorage.getItem(ACCESS_TOKEN))
       .then((response) => {
         const aggregatedData = response.cost_of_sales_results.reduce((acc, item) => {
           const { month, ...values } = item
@@ -781,7 +785,6 @@ const ResultsListAndEdit = () => {
     }
   }, [isXLSModalOpen])
 
-
   useEffect(() => {
     const path = location.pathname
     if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
@@ -800,6 +803,12 @@ const ResultsListAndEdit = () => {
       setLanguage(newLanguage)
     }
   }
+
+  useEffect(() => {
+    checkAccessToken().then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
 
   return (
     <div className='results_summary_wrapper'>
@@ -909,6 +918,7 @@ const ResultsListAndEdit = () => {
           </div>
         </div>
       </div>
+      <AlertPopupComponent />
     </div>
   )
 }

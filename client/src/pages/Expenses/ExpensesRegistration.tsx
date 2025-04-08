@@ -12,7 +12,7 @@ import CrudModal from '../../components/CrudModal/CrudModal'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { createExpense } from '../../api/ExpenseEndpoint/CreateExpense'
 import { overwriteExpense } from '../../api/ExpenseEndpoint/OverwriteExpense'
-import { maximumEntries, monthNames, storedUserID, token, years } from '../../constants'
+import { maximumEntries, monthNames, storedUserID, token, years, ACCESS_TOKEN } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput, useTranslateSwitch } from '../../actions/hooks'
 import {
   validateRecords,
@@ -26,7 +26,9 @@ import {
   formatNumberWithCommas,
   handleInputChange,
   handlePLRegTabsClick,
+  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes";
 
 const ExpensesRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -59,7 +61,8 @@ const ExpensesRegistration = () => {
   const [modalMessage, setModalMessage] = useState('')
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
-
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  
   const handleTranslationSwitchToggle = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
     setLanguage(newLanguage)
@@ -164,11 +167,6 @@ const ExpensesRegistration = () => {
       travel_expense: ex.travel_expense,
       transaction_fee: ex.transaction_fee,
     }))
-
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
 
     createExpense(formData, token)
       .then(() => {
@@ -275,6 +273,12 @@ const ExpensesRegistration = () => {
     navigate('/expenses-list')
   }
 
+  useEffect(() => {
+    checkAccessToken().then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
+  
   return (
     <div className='expensesRegistration_wrapper'>
       <HeaderButtons
@@ -548,6 +552,7 @@ const ExpensesRegistration = () => {
         onConfirm={handleOverwriteConfirmation}
         message={modalMessage}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

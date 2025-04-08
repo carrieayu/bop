@@ -16,9 +16,10 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleMMRegTabsClick } from '../../utils/helperFunctionsUtil'
+import { handleMMRegTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 import { masterMaintenanceScreenTabs, maximumEntries, storedUserID, token } from '../../constants'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 const ClientsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -31,6 +32,7 @@ const ClientsRegistration = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
   const onTabClick = (tab) => handleMMRegTabsClick(tab, navigate, setActiveTab)
   const emptyFormData = {
     client_name: '',
@@ -169,6 +171,12 @@ const ClientsRegistration = () => {
     navigate('/clients-list')
   }
 
+  useEffect(() => {
+    checkAccessToken().then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
+
   return (
     <div className='ClientsRegistration_wrapper'>
       <HeaderButtons
@@ -259,6 +267,7 @@ const ClientsRegistration = () => {
         isCRUDOpen={isModalOpen}
         validationMessages={crudValidationErrors}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

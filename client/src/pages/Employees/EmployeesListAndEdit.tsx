@@ -27,15 +27,17 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { masterMaintenanceScreenTabs, token } from '../../constants'
+import { masterMaintenanceScreenTabs, token, MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER, ACCESS_TOKEN } from '../../constants'
 import {
   handleDisableKeysOnNumberInputs,
   formatDate,
   formatNumberWithCommas,
   removeCommas,
   handleMMListTabsClick,
+  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
-import { MAX_NUMBER_LENGTH, MAX_SAFE_INTEGER } from '../../constants'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
+
 
 const EmployeesListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -66,6 +68,7 @@ const EmployeesListAndEdit: React.FC = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [userMap, setUserMap] = useState({})
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
   const onTabClick = (tab) => handleMMListTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
@@ -78,7 +81,7 @@ const EmployeesListAndEdit: React.FC = () => {
       const resMasterCompany = await dispatch(fetchMasterCompany() as unknown as UnknownAction)
       setCompanySelection(resMasterCompany.payload)
       if (isEditing) {
-        editEmployee(token)
+        editEmployee(localStorage.getItem(ACCESS_TOKEN))
           .then((data) => {
             const businessDivisions = data.reduce((acc, item) => acc.concat(item.business_divisions), [])
             setBusinessSelection(businessDivisions)
@@ -300,11 +303,6 @@ const EmployeesListAndEdit: React.FC = () => {
     }
 
     const modifiedFields = getModifiedFields(originalEmployeesList, employeesList)
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
     updateEmployee(modifiedFields, token)
       .then(() => {
         setOriginalEmployeesList(employeesList)
@@ -340,13 +338,8 @@ const EmployeesListAndEdit: React.FC = () => {
   }
 
   const fetchEmployees = async () => {
-    if (!token) {
-      window.location.href = '/login' // Redirect to login if no token found
-      return
-    }
-
     // Fetch users
-    getUser(token)
+    getUser(localStorage.getItem(ACCESS_TOKEN))
       .then((data) => {
         const users = data
         const userMapping = users.reduce((map, user) => {
@@ -364,7 +357,7 @@ const EmployeesListAndEdit: React.FC = () => {
       })
 
     try {
-      const url = isEditing ? await editEmployee(token) : await getEmployee(token)
+      const url = isEditing ? await editEmployee(localStorage.getItem(ACCESS_TOKEN)) : await getEmployee(localStorage.getItem(ACCESS_TOKEN))
       const employeesListWithBusinessSelection = url.map((employee) => ({
         ...employee,
         businessSelection: [], // Initialize businessSelection as an empty array
@@ -373,7 +366,7 @@ const EmployeesListAndEdit: React.FC = () => {
       setOriginalEmployeesList(employeesListWithBusinessSelection)
       // Update business divisions for each employee
       employeesListWithBusinessSelection.forEach((employee, index) => {
-        getSelectedBusinessDivisionCompany(employee.company_id, token)
+        getSelectedBusinessDivisionCompany(employee.company_id, localStorage.getItem(ACCESS_TOKEN))
           .then((data) => {
             const employeeBusinessDivisions = data.filter((division) => division.employee_id === employee.employee_id)
             const updatedEmployeesList = [...employeesListWithBusinessSelection]
@@ -394,21 +387,23 @@ const EmployeesListAndEdit: React.FC = () => {
   }
 
   useEffect(() => {
-    fetchEmployees()
-    if (isEditing) {
-      fetchData()
-    }
+    checkAccessToken().then(result => {
+      if (!result) {
+          showAlertPopup(handleTimeoutConfirm);
+      } else {
 
-    //test type value is being returned
-    const types = employeesList.map((item) => {
-      return [item]
-    })
+        fetchEmployees()
+        if (isEditing) {
+          fetchData()
+        }
+
+        //test type value is being returned
+        const types = employeesList.map((item) => {
+          return [item]
+        })
+      }
+    });
   }, [isEditing])
-
-  // useEffect(() => {
-  //   const startIndex = currentPage * rowsPerPage
-  //   setPaginatedData(projects.slice(startIndex, startIndex + rowsPerPage))
-  // }, [currentPage, rowsPerPage, projects])
 
   useEffect(() => {
     const path = location.pathname
@@ -515,6 +510,12 @@ const EmployeesListAndEdit: React.FC = () => {
       return updatedEmployeeData
     })
   }
+
+  useEffect(() => {
+    checkAccessToken().then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); } else { fetchEmployees() }
+    });
+  }, [token])
 
   return (
     <div className='EmployeesListAndEdit_wrapper'>
@@ -931,6 +932,7 @@ const EmployeesListAndEdit: React.FC = () => {
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
       />
+      <AlertPopupComponent />
     </div>
   )
 }
