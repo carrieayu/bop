@@ -55,3 +55,35 @@ export const POLLING_INTERVAL = 60000
 export const MAX_RETRIES = 12
 
 export const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable']
+
+export const noIndentLabels = [
+    'salesRevenue',
+    'costOfSales',
+    'grossProfit',
+    'employeeExpenses',
+    'expenses',
+    'sellingAndGeneralAdminExpensesShort', // Just a shorter version for English Language Mode
+    'operatingIncome',
+    'ordinaryIncome',
+    'cumulativeOrdinaryIncome',
+]
+  
+ export const editableLabels = [
+   'purchases',
+   'outsourcingExpenses',
+   'productPurchases',
+   'dispatchLaborExpenses',
+   'communicationExpenses',
+   'workInProgressExpenses',
+   'amortizationExpenses',
+   'consumableExpenses',
+   'rentExpenses',
+   'taxesAndPublicCharges',
+   'depreciationExpenses',
+   'travelExpenses',
+   'utilitiesExpenses',
+   'transactionFees',
+   'advertisingExpenses',
+   'entertainmentExpenses',
+   'professionalServicesFees',
+ ]

@@ -160,5 +160,6 @@
   "resultsSummary" : "Results-Summary",
   "planningShort" : "PL.",
   "resultsShort": "Res.",
-  "noData": "No Data"
+  "noData": "No Data",
+  "resetExplanation": "Resets Modified Data in Inputs"
 }

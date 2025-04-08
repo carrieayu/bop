@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useLanguage } from '../../contexts/LanguageContext'
-import { months, monthNames, halfYears } from '../../constants'
+import { months, monthNames, halfYears, noIndentLabels } from '../../constants'
 import { translate } from '../../utils/translationUtil'
 import { useSelector } from 'react-redux'
 import { planningCalculationsSelector } from '../../selectors/planning/planningCalculationSelectors'
@@ -62,18 +62,6 @@ const TableDashboard: React.FC<TableDashboardProps> = ({
   useEffect(() => {
     setIsTranslateSwitchActive(language === 'en')
   }, [language])
-
-  const noIndentLabels = [
-    'salesRevenue',
-    'costOfSales',
-    'grossProfit',
-    'employeeExpenses',
-    'expenses',
-    'sellingAndGeneralAdminExpensesShort', // Just a shorter version for English Language Mode
-    'operatingIncome',
-    'ordinaryIncome',
-    'cumulativeOrdinaryIncome',
-  ]
 
   // Assigns Class based on whether it needs indentation or not.
   const handleNoIndentLabels = (noIndentLabels, item) => {

@@ -19,6 +19,7 @@ import { useAppDispatch } from '../../actions/hooks'
 // SELECTORS
 import { planningSelector } from '../../selectors/planning/planningSelector'
 import { planningCalculationsSelector } from '../../selectors/planning/planningCalculationSelectors'
+import { editingTableALabelsAndValues } from '../../utils/tableEditingALabelAndValues'
 
 const PlanningListAndEdit = () => {
   const [tableList, setTableList] = useState<any>([])
@@ -35,39 +36,29 @@ const PlanningListAndEdit = () => {
   const location = useLocation()
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
-  const [isEditing, setIsEditing] = useState(false)
   const [initialLanguage, setInitialLanguage] = useState(language)
   const planning = useSelector(planningSelector)
   const planningCalculations = useSelector(planningCalculationsSelector)
+  const [isEditing, setIsEditing] = useState(false)
 
   const handleThousandYenToggle = () => {
     setIsThousandYenChecked((prevState) => !prevState)
   }
 
-  const handleEditModeToggle = () => {
-    setIsThousandYenChecked(false)
-    setIsEditing((prevState) => !prevState)
-  }
-
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchAllData = async () => {
       try {
-        const fetchActions = [
-          { action: () => dispatch(fetchExpense()) },
-          { action: () => dispatch(fetchCostOfSale()) },
-          { action: () => dispatch(fetchEmployeeExpense()) },
-          { action: () => dispatch(fetchProject()) },
-        ]
-
-        await Promise.all(
-          fetchActions.map(({ action }) => action().catch((error) => handleError(action.name, error))),
-        )
+        await Promise.all([
+          dispatch(fetchExpense()),
+          dispatch(fetchCostOfSale()),
+          dispatch(fetchEmployeeExpense()),
+          dispatch(fetchProject()),
+        ])
       } catch (error) {
-        console.error('Unexpected error:', error)
+        handleError('fetchAllData', error)
       }
     }
-
-    fetchData()
+    fetchAllData()
   }, [dispatch])
 
   useEffect(() => {
@@ -102,7 +93,8 @@ const PlanningListAndEdit = () => {
     setCurrentPage(0)
   }
 
-  const handleSwitchToggle = () => {
+  const handleDisplayByProjectToggle = () => {
+    console.log('switch')
     setIsSwitchActive((prevState) => !prevState)
   }
 
@@ -118,14 +110,62 @@ const PlanningListAndEdit = () => {
     }
   }
 
+  // # FOR EditTablePlanning Table/Component
+
+  // Used as a comparison for editedData to check for unsaved changes.
+  const [initialData, setInitialData] = useState(editingTableALabelsAndValues(planning, planningCalculations))
+
+  // Variables below (↓) are all data to be passed into EditTablePlanning where it can be modified.
+
+  // # Initialize as a copy of initalData to be updated in edit screen.
+  // # Temporarlity Storing Edited (unsaved) data between (Display/Edit) (can be updated in edit screen)
+  const [editedData, setEditedData] = useState(editingTableALabelsAndValues(planning, planningCalculations))
+  // # Initialize Object that stores ONLY modified inputs with Record ID from database table as key.
+  const [modifiedFields, setModifiedFields] = useState({})
+  // # Boolean that tracks if there are any unsaved changes
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+
+  // # For Displaying Edited Unsaved Data on Edit Screen
+  // # If changes have been made in edit screen but have NOT been saved.
+  // # For Displaying Edited Unsaved Data on Edit Screen
+  // If changes have been made in edit screen but have NOT been saved.
+  const isDataModified = JSON.stringify(editedData) !== JSON.stringify(initialData)
+
+  const checkChanges = () => {
+    if (isDataModified) {
+      setHasUnsavedChanges(true)
+    } else {
+      setHasUnsavedChanges(false)
+    }
+  }
+
+  const handleEditModeToggle = () => {
+    setIsThousandYenChecked(false)
+    setIsEditing((prevState) => !prevState)
+    checkChanges()
+  }
+
+  // # JSX Helper
+  const renderSwitch = (checked, onChange, disabled, label) => (
+    <>
+      <p className={`${disabled ? 'planning_pl-label_disabled' : 'planning_pl-label'}`}>{translate(label, language)}</p>
+      <label className='planning_switch'>
+        <input type='checkbox' checked={checked} onChange={onChange} disabled={disabled} />
+        <span className='planning_slider'></span>
+      </label>
+    </>
+  )
+
   return (
     <div className='planning_wrapper'>
+      <div className='main-header-buttons'>
       <HeaderButtons
         activeTab={activeTab}
         handleTabClick={handleTabClick}
         isTranslateSwitchActive={isTranslateSwitchActive}
         handleTranslationSwitchToggle={handleTranslationSwitchToggle}
       />
+      </div>
       <div className='planning_content_wrapper'>
         <Sidebar />
         <div className='planning_table_wrapper'>
@@ -138,83 +178,36 @@ const PlanningListAndEdit = () => {
                   </div>
                   <div className='planning_right-content'>
                     <div className='planning_paginate'>
-                      {isSwitchActive ? (
-                        <p className='planning_mode_switch_disabled'>
-                          {isEditing
-                            ? translate('switchToDisplayMode', language)
-                            : translate('switchToEditMode', language)}
-                        </p>
-                      ) : (
-                        <p className='planning_mode_switch'>
-                          {isEditing
-                            ? translate('switchToDisplayMode', language)
-                            : translate('switchToEditMode', language)}
-                        </p>
-                      )}
-
+                      <p className={`${isSwitchActive ? 'planning_mode_switch_disabled' : 'planning_mode_switch'}`}>
+                        {isEditing
+                          ? translate('switchToDisplayMode', language)
+                          : translate('switchToEditMode', language)}
+                      </p>
                       <label className='planning_switch'>
-                        {isSwitchActive ? (
-                          <label className='swith_edit'>
-                            <input type='checkbox' checked={isEditing} onChange={handleEditModeToggle} disabled />
-                            <span className='planning_slider'></span>
-                          </label>
-                        ) : (
-                          <div>
-                            <label className='swith_edit'>
-                              <input type='checkbox' checked={isEditing} onChange={handleEditModeToggle} />
-                              <span className='planning_slider'></span>
-                            </label>
-                          </div>
-                        )}
+                        <input
+                          type='checkbox'
+                          checked={isEditing}
+                          onChange={handleEditModeToggle}
+                          disabled={isSwitchActive}
+                        />
+                        <span className='planning_slider'></span>
                       </label>
-                      {isEditing ? (
-                        <p className='planning_pl-label_disabled'>{translate('displayByProject', language)}</p>
-                      ) : (
-                        <p className='planning_pl-label'>{translate('displayByProject', language)}</p>
-                      )}
-
-                      {isEditing ? (
-                        <label className='planning_switch'>
-                          <input type='checkbox' checked={isSwitchActive} onChange={handleSwitchToggle} disabled />
-                          <span className='planning_slider'></span>
-                        </label>
-                      ) : (
-                        <label className='planning_switch'>
-                          <input type='checkbox' checked={isSwitchActive} onChange={handleSwitchToggle} />
-                          <span className='planning_slider'></span>
-                        </label>
-                      )}
-
-                      {isEditing ? (
-                        <p className='planning_pl-label_disabled'>{translate('thousandYen', language)}</p>
-                      ) : (
-                        <p className='planning_pl-label'>{translate('thousandYen', language)}</p>
-                      )}
-
-                      {isEditing ? (
-                        <label className='planning_switch'>
-                          <input
-                            type='checkbox'
-                            checked={isThousandYenChecked}
-                            onChange={handleThousandYenToggle}
-                            disabled
-                          />
-                          <span className='planning_slider'></span>
-                        </label>
-                      ) : (
-                        <label className='planning_switch'>
-                          <input type='checkbox' checked={isThousandYenChecked} onChange={handleThousandYenToggle} />
-                          <span className='planning_slider'></span>
-                        </label>
-                      )}
+                      {renderSwitch(isSwitchActive, handleDisplayByProjectToggle, isEditing, 'displayByProject')}
+                      {renderSwitch(isThousandYenChecked, handleThousandYenToggle, isEditing, 'thousandYen')}
                     </div>
                   </div>
                 </div>
                 <div className='planning_tbl_cont'>
                   <div className={`table_content_planning ${isSwitchActive ? 'hidden' : ''}`}>
-                    {/* Render the TablePlanning component here */}
                     {isEditing ? (
-                      <EditTablePlanning />
+                      <EditTablePlanning
+                        editedData={editedData}
+                        setEditedData={setEditedData}
+                        modifiedFields={modifiedFields}
+                        setModifiedFields={setModifiedFields}
+                        hasUnsavedChanges={hasUnsavedChanges}
+                        setHasUnsavedChanges={setHasUnsavedChanges}
+                      />
                     ) : (
                       <TablePlanningA
                         isThousandYenChecked={isThousandYenChecked}

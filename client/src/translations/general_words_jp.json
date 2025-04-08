@@ -161,5 +161,6 @@
   "changeGraphType": "グラフ変更",
   "planningShort": "計画",
   "resultsShort": "実績",
-  "noData": "データ無し"
+  "noData": "データ無し",
+  "resetExplanation": "入力内容をリセットします"
 }
