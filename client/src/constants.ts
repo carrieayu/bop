@@ -1,7 +1,7 @@
 export const ACCESS_TOKEN = 'accessToken'
 export const REFRESH_TOKEN = 'refreshToken'
 
-export const years = [2024, 2025, 2026]
+export const years = [2025, 2026]
 export const currentYear = new Date().getFullYear()
 export const token = localStorage.getItem('accessToken')
 export const maximumEntries = 10
@@ -52,3 +52,37 @@ export const MAX_VALUE = Number.MAX_VALUE //1.7976931348623157e+308
 export const IDLE_TIMEOUT = 900000;
 export const POLLING_INTERVAL = 60000
 export const MAX_RETRIES = 12
+
+export const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable']
+
+export const noIndentLabels = [
+    'salesRevenue',
+    'costOfSales',
+    'grossProfit',
+    'employeeExpenses',
+    'expenses',
+    'sellingAndGeneralAdminExpensesShort', // Just a shorter version for English Language Mode
+    'operatingIncome',
+    'ordinaryIncome',
+    'cumulativeOrdinaryIncome',
+]
+  
+ export const editableLabels = [
+   'purchases',
+   'outsourcingExpenses',
+   'productPurchases',
+   'dispatchLaborExpenses',
+   'communicationExpenses',
+   'workInProgressExpenses',
+   'amortizationExpenses',
+   'consumableExpenses',
+   'rentExpenses',
+   'taxesAndPublicCharges',
+   'depreciationExpenses',
+   'travelExpenses',
+   'utilitiesExpenses',
+   'transactionFees',
+   'advertisingExpenses',
+   'entertainmentExpenses',
+   'professionalServicesFees',
+ ]

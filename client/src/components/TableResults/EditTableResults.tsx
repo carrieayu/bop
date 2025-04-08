@@ -3,7 +3,7 @@ import { translate } from '../../utils/translationUtil'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { getResultsA } from '../../api/ResultsEndpoint/GetResultsA'
 import { updateResults } from '../../api/ResultsEndpoint/UpdateResults'
-import { months, token } from '../../constants'
+import { editableLabels, halfYears, months, noIndentLabels, token } from '../../constants'
 import { organiseTotals } from '../../utils/helperFunctionsUtil'
 
 const EditTableResults = () => {
@@ -826,39 +826,6 @@ const EditTableResults = () => {
     setIsTranslateSwitchActive(language === 'en')
   }, [language])
 
-  const noIndentLabels = [
-    'salesRevenue',
-    'costOfSales',
-    'grossProfit',
-    'employeeExpenses',
-    'expenses',
-    'sellingAndGeneralAdminExpensesShort', // 'Short' is for English label as it was too long for UI.
-    'operatingIncome',
-    'ordinaryIncome',
-    'cumulativeOrdinaryIncome',
-  ]
-
-  const editableLabels = [
-    'purchases',
-    'outsourcingExpenses',
-    'productPurchases',
-    'dispatchLaborExpenses',
-    'communicationExpenses',
-    'workInProgressExpenses',
-    'amortizationExpenses',
-    'consumableExpenses',
-    'rentExpenses',
-    'taxesAndPublicCharges',
-    'depreciationExpenses',
-    'travelExpenses',
-    'utilitiesExpenses',
-    'transactionFees',
-    'advertisingExpenses',
-    'entertainmentExpenses',
-    'professionalServicesFees',
-  ]
-
-  const halfYears = ['firstHalftotal', 'secondHalftotal', 'totalTable']
   const [editableData, setEditableData] = useState(data)
   const isRowEditable = (label) => editableLabels.includes(label)
 

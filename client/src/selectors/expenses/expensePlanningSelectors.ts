@@ -1,12 +1,14 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
+import { fields } from '../../utils/inputFieldConfigurations'
+
 import {
   aggregatedExpensesFunction,
-  expensesTotalsFunction,
+  getMonthlyExpensesTotals,
   mapValue,
-  monthlyTotalsExpensesFunction,
+  getGraphDataForExpenses,
 } from '../../utils/tableAggregationUtil'
-import { sumValues } from '../../utils/helperFunctionsUtil'
+import { getValueAndId, sumValues } from '../../utils/helperFunctionsUtil'
 
 export const expensesList = createSelector([(state: RootState) => state.expenses.list], (list) =>
   list.map((item) => ({ ...item })),
@@ -14,37 +16,59 @@ export const expensesList = createSelector([(state: RootState) => state.expenses
 
 export const expensesTotals = createSelector([expensesList], (list) => {
   const aggregatedExpensesData = aggregatedExpensesFunction(list)
-  return expensesTotalsFunction(aggregatedExpensesData)
+  return getMonthlyExpensesTotals(aggregatedExpensesData, false, "planning")
 })
 
 export const expensesYearlyTotals = createSelector([expensesTotals], (totals) => sumValues(totals))
 
 export const expensesSelectMonthlyTotalsByDate = createSelector([expensesList], (list) =>
-  monthlyTotalsExpensesFunction(list),
+  getGraphDataForExpenses(list),
 )
 
-export const expensesCategoryTotals = createSelector([expensesList], (list) => {
-  // Second Param (true). This means detailed response = true (gives individual item totals)
-  return expensesTotalsFunction(list, true)
-})
-
 export const expensesSelectMonthlyTotalsByCategory = createSelector([expensesList], (list) => {
+  const expenseFinancialFields = fields.expenses.filter((item) => item.isFinancial === true)
+  
   const aggregatedExpensesData = aggregatedExpensesFunction(list)
 
-  const monthlyTotals = {
-    consumable: mapValue('consumable_expense', aggregatedExpensesData),
-    rent: mapValue('rent_expense', aggregatedExpensesData),
-    taxesPublicCharges: mapValue('tax_and_public_charge', aggregatedExpensesData),
-    depreciationExpense: mapValue('depreciation_expense', aggregatedExpensesData),
-    travelExpense: mapValue('travel_expense', aggregatedExpensesData),
-    communicationExpense: mapValue('communication_expense', aggregatedExpensesData),
-    utilities: mapValue('utilities_expense', aggregatedExpensesData),
-    transactionFee: mapValue('transaction_fee', aggregatedExpensesData),
-    advertisingExpense: mapValue('advertising_expense', aggregatedExpensesData),
-    entertainmentExpense: mapValue('entertainment_expense', aggregatedExpensesData),
-    professionalServiceFee: mapValue('professional_service_fee', aggregatedExpensesData)
-  }
+  const monthlyTotals = expenseFinancialFields.reduce((acc, item) => {
+    const fieldName = item.fieldName
+    acc[fieldName] = mapValue(item.field, aggregatedExpensesData)
+    return acc
+  }, {})
+
   return monthlyTotals
+})
+
+export const expensesEditable = createSelector([expensesList], (list) => {
+  
+  const aggregatedExpensesData = aggregatedExpensesFunction(list)
+  const consumableValues = getValueAndId('purchase', 'expense', aggregatedExpensesData)
+  const rentValues = getValueAndId('rent_expense', 'expense', aggregatedExpensesData)
+  const taxesPublicChargesValues = getValueAndId('tax_and_public_charge', 'expense', aggregatedExpensesData)
+  const depreciationExpensesValues = getValueAndId('depreciation_expense', 'expense', aggregatedExpensesData)
+  const travelExpenseValues = getValueAndId('travel_expense', 'expense', aggregatedExpensesData)
+  const communicationExpenseValues = getValueAndId('communication_expense', 'expense', aggregatedExpensesData)
+  const utilitiesValues = getValueAndId('utilities_expense', 'expense', aggregatedExpensesData)
+  const transactionFeeValues = getValueAndId('transaction_fee', 'expense', aggregatedExpensesData)
+  const advertisingExpenseValues = getValueAndId('advertising_expense', 'expense', aggregatedExpensesData)
+  const entertainmentExpenseValues = getValueAndId('entertainment_expense', 'expense', aggregatedExpensesData)
+  const professionalServiceFeeValues = getValueAndId('professional_service_fee', 'expense', aggregatedExpensesData)
+
+  const ValueAndId = {
+    consumableValues,
+    rentValues,
+    taxesPublicChargesValues,
+    depreciationExpensesValues,
+    travelExpenseValues,
+    communicationExpenseValues,
+    utilitiesValues,
+    transactionFeeValues,
+    advertisingExpenseValues,
+    entertainmentExpenseValues,
+    professionalServiceFeeValues
+  }
+
+  return ValueAndId
 })
 
 // **New Memoized Selector for expensesPlanning**
@@ -54,15 +78,15 @@ export const expensesPlanningSelector = createSelector(
     expensesTotals,
     expensesSelectMonthlyTotalsByDate,
     expensesYearlyTotals,
-    expensesCategoryTotals,
     expensesSelectMonthlyTotalsByCategory,
+    expensesEditable,
   ],
-  (list, totals, monthlyTotalsByDate, yearlyTotal, categories, individualMonthlyTotals) => ({
+  (list, totals, monthlyTotalsByDate, yearlyTotal, individualMonthlyTotals, editable) => ({
     list,
     monthlyTotals: totals,
     monthlyTotalsByDate,
     yearlyTotal,
-    categories,
     individualMonthlyTotals,
+    editable,
   }),
 )

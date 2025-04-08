@@ -2,6 +2,7 @@ import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
 import { aggregatedProjectsFunction, filterListMonthAndYear, mapValue } from '../../utils/tableAggregationUtil'
 import { sumValues } from '../../utils/helperFunctionsUtil'
+import { fields } from '../../utils/inputFieldConfigurations'
 
 export const projectsList = createSelector([(state: RootState) => state.projectResult.list], (list) =>
   list.map((item) => ({ ...item })),
@@ -54,13 +55,20 @@ export const nonOperatingIncomeMonthly = createSelector([projectsList], (list) =
 )
 
 export const projectsSelectMonthlyTotalsByCategory = createSelector([projectsList], (list) => {
-  const aggregatedProjectsData = aggregatedProjectsFunction(filterListMonthAndYear(list))
+  const projectsFinancialFields = fields.projects.filter((item) => item.isFinancial === true)
+
+  const filteredProjectsFinancialFields = projectsFinancialFields.filter((item) =>
+      item.field === 'non_operating_income' || 
+      item.field === 'non_operating_expense' || 
+      item.field === 'sales_revenue',
+  )
   
-  const monthlyTotals = {
-    nonOperatingIncome: mapValue('non_operating_income', aggregatedProjectsData),
-    nonOperatingExpense: mapValue('non_operating_expense', aggregatedProjectsData),
-    salesRevenue: mapValue('sales_revenue', aggregatedProjectsData),
-  }
+  const aggregatedProjectsData = aggregatedProjectsFunction(filterListMonthAndYear(list))
+
+  const monthlyTotals = filteredProjectsFinancialFields.reduce((acc, item) => {
+    acc[item.fieldName] = mapValue(item.field, aggregatedProjectsData)
+    return acc
+  }, {})
 
   return monthlyTotals
 })

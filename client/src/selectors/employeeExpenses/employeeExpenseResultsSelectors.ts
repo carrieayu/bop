@@ -1,6 +1,8 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
-import { aggregatedEmployeeExpensesFunctionDashboard, employeeExpensesTotalsFunction, employeeExpenseYearlyTotals, mapValue, monthlyTotalsEmployeeExpenseFunction } from '../../utils/tableAggregationUtil'
+import { aggregatedEmployeeExpensesFunctionDashboard, employeeExpensesTotalsFunction, mapValue, monthlyTotalsEmployeeExpenseFunction } from '../../utils/tableAggregationUtil'
+import { sumValues } from '../../utils/helperFunctionsUtil'
+import { fields } from '../../utils/inputFieldConfigurations'
 
 // RESULTS
 
@@ -13,9 +15,8 @@ export const employeeExpensesMonthlyTotals = createSelector([employeeExpensesLis
   return employeeExpensesTotalsFunction(aggregatedEmployeeExpensesData)
 })
 
-export const employeeExpensesYearlyTotals = createSelector([employeeExpensesList], (list) => {
-  const totals = employeeExpenseYearlyTotals(list)
-  return totals.combinedTotal
+export const employeeExpensesYearlyTotals = createSelector([employeeExpensesMonthlyTotals], (totals) => {
+  return sumValues(totals)
 })
 
 export const employeeExpensesSelectMonthlyTotalsByDate = createSelector([employeeExpensesList], (list) =>
@@ -23,16 +24,15 @@ export const employeeExpensesSelectMonthlyTotalsByDate = createSelector([employe
 )
 
 export const employeeExpensesSelectMonthlyTotalsByCategory = createSelector([employeeExpensesList], (list) => {
+  const employeeFinancialFields = fields.employees.filter((item) => item.isFinancial === true)
+
   const aggregatedEmployeeExpensesData = aggregatedEmployeeExpensesFunctionDashboard(list)
 
-  const monthlyTotals = {
-    executiveRemuneration: mapValue('totalExecutiveRemuneration', aggregatedEmployeeExpensesData),
-    salary: mapValue('totalSalary', aggregatedEmployeeExpensesData),
-    bonusAndFuel: mapValue('totalBonusAndFuel', aggregatedEmployeeExpensesData),
-    statutoryWelfare: mapValue('totalStatutoryWelfare', aggregatedEmployeeExpensesData),
-    welfare: mapValue('totalWelfare', aggregatedEmployeeExpensesData),
-    insurancePremium: mapValue('totalInsurancePremium', aggregatedEmployeeExpensesData),
-  }
+  const monthlyTotals = employeeFinancialFields.reduce((acc, item) => {
+    acc[item.fieldName] = mapValue(item.fieldName, aggregatedEmployeeExpensesData)
+    return acc
+  }, {})
+  
   return monthlyTotals
 })
 // **New Memoized Selector for employeeExpensesResults**

@@ -510,11 +510,12 @@ const ProjectsListAndEdit: React.FC = ({}) => {
                                         onChange={(e) => handleChange(index, e)}
                                       >
                                         <option value=''></option>
-                                        {project.months && project.months.map((month, idx) => (
-                                          <option key={idx} value={month}>
-                                            {month}月
-                                          </option>
-                                        ))}
+                                        {project.months &&
+                                          project.months.map((month, idx) => (
+                                            <option key={idx} value={month}>
+                                              {month}月
+                                            </option>
+                                          ))}
                                       </select>
                                       {}
                                     </td>
@@ -611,7 +612,8 @@ const ProjectsListAndEdit: React.FC = ({}) => {
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
-                                    <td className='projectsList-table-body-content-vertical'>
+                                    <td
+                                      className='projectsList-table-body-content-vertical'>
                                       <input
                                         type='text'
                                         name='operating_income'
@@ -620,7 +622,8 @@ const ProjectsListAndEdit: React.FC = ({}) => {
                                         onKeyDown={handleDisableKeysOnNumberInputs}
                                       />
                                     </td>
-                                    <td className='projectsList-table-body-content-vertical'>
+                                    <td
+                                      className='projectsList-table-body-content-vertical'>
                                       <input
                                         type='text'
                                         name='non_operating_income'
@@ -761,11 +764,15 @@ const ProjectsListAndEdit: React.FC = ({}) => {
                                   <td className='projectsList-table-body-content-vertical'>
                                     {formatNumberWithCommas(project.expense)}
                                   </td>
-                                  <td className='projectsList-table-body-content-vertical'>
-                                    {formatNumberWithCommas(project.non_operating_income)}
-                                  </td>
-                                  <td className='projectsList-table-body-content-vertical'>
+                                  <td
+                                    className='projectsList-table-body-content-vertical'
+                                  >
                                     {formatNumberWithCommas(project.operating_income)}
+                                  </td>
+                                  <td
+                                    className='projectsList-table-body-content-vertical'
+                                  >
+                                    {formatNumberWithCommas(project.non_operating_income)}
                                   </td>
                                   <td className='projectsList-table-body-content-vertical'>
                                     {formatNumberWithCommas(project.non_operating_expense)}

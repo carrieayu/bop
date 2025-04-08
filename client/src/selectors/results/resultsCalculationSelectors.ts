@@ -3,8 +3,9 @@ import { selectProjects, selectProjectsResults } from '../listSelectors'
 import { resultsSelector } from './resultsSelector'
 import {
   calculateGrossProfit,
-  calculateMonthlyGrossProfit,
+
   calculateGrossProfitMargin,
+  calculateMonthlyGrossProfit,
   calculateMonthlyGrossProfitMargin,
   calculateMonthlyOperatingProfitMargin,
   calculateMonthlyOrdinaryIncome,
@@ -14,32 +15,28 @@ import {
   calculateSellingAndGeneralAdmin,
 } from '../../utils/financialCalculationsUtil'
 import {
-  grossProfitFunction,
   operatingIncomeFunction,
   ordinaryProfitFunction,
   sellingAndGeneralAdminExpenseFunction,
 } from '../../utils/tableAggregationUtil'
 
 // Gross Profit Calculation
-export const selectGrossProfit = createSelector([resultsSelector], (results) => {
-  const monthlyTotalsFuncOneCalc = calculateMonthlyGrossProfit(
-    results.costOfSales.monthlyTotals,
-    results.projects.monthlyTotals.salesRevenue,
-  )
-  const monthlyTotalsFuncTwoAgg = grossProfitFunction(
-    results.projects.monthlyTotals.salesRevenue,
-    results.costOfSales.monthlyTotals,
-  )
+export const selectGrossProfit = createSelector(
+  [resultsSelector],
+  (results) => {
+    
+    // Takes Monthly Values From Object and Puts Them in an Array.
+    const monthlyGrossProfitArray = Object.values(
+      calculateMonthlyGrossProfit(results.projects.monthlyTotals.salesRevenue, results.costOfSales.monthlyTotals),
+    )
 
-  return {
-    yearTotal: calculateGrossProfit(results.projects.salesRevenueTotal, results.costOfSales.yearlyTotal),
-    monthlyTotals: grossProfitFunction(
-      results.projects.monthlyTotals.salesRevenue,
-      results.costOfSales.monthlyTotals,
-    ),
-    // monthlyTotals: calculateMonthlyGrossProfit(results.projects.monthlyTotals.salesRevenue, results.costOfSales.monthlyTotals)
-  }
-})
+    return {
+      yearTotal: calculateGrossProfit(results.projects.salesRevenueTotal, results.costOfSales.yearlyTotal),
+      monthlyTotals: monthlyGrossProfitArray
+    }
+
+  },
+)
 
 // Gross Profit Margin Calculation
 export const selectGrossProfitMargin = createSelector(
@@ -97,12 +94,6 @@ export const selectOrdinaryIncome = createSelector(
       results.projects.monthlyTotals.nonOperatingIncome,
       results.projects.monthlyTotals.nonOperatingExpense,
     ),
-
-    // monthlyTotals: calculateMonthlyOrdinaryIncome(
-    //   operatingIncome.monthlyTotals,
-    //   results.projects.monthlyTotals.nonOperatingIncome,
-    //   results.projects.monthlyTotals.nonOperatingExpense,
-    // ),
   }),
 )
 

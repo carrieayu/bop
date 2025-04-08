@@ -3,16 +3,17 @@ import { CostOfSaleDataEntity } from "../entity/costOfSaleEntity"
 import { EmployeeExpenseDataEntity } from "../entity/employeeExpenseEntity"
 import { ExpenseDataEntity } from "../entity/expenseEntity"
 import { ProjectDataEntity } from "../entity/projectEntity"
+import { monthlyDatesForGraphByYear } from "./helperFunctionsUtil"
 
 // --TOTALS (Single Figures)--
 // Gross Profit
 export const calculateGrossProfit = (salesRevenue, costOfSale) => salesRevenue - costOfSale
-export const calculateGrossProfitMargin = (grossProfit, salesRevenue) => (grossProfit / salesRevenue) * 100
+export const calculateGrossProfitMargin = (grossProfit, salesRevenue) => salesRevenue !== 0 ? (grossProfit / salesRevenue) * 100 : 0
 // Admin and General Expenses
 export const calculateSellingAndGeneralAdmin = (employeeExpense, expense) => employeeExpense + expense
 // Operating Income
 export const calculateOperatingIncome = (grossProfit, sellingAndGeneralAdmin) => grossProfit - sellingAndGeneralAdmin
-export const calculateOperatingProfitMargin = (operatingIncome, salesRevenue) => (operatingIncome / salesRevenue) * 100
+export const calculateOperatingProfitMargin = (operatingIncome, salesRevenue) => salesRevenue !== 0 ? (operatingIncome / salesRevenue) * 100 : 0
 // Ordinary Income
 export const calculateOrdinaryIncome = (operatingIncome, nonOperatingIncome, nonOperatingExpense) =>
   operatingIncome + nonOperatingIncome - nonOperatingExpense
@@ -23,16 +24,16 @@ export const calculateOrdinaryIncome = (operatingIncome, nonOperatingIncome, non
 // Eg. { 2024 - 4: 500000, ..., 2025 - 3: 40000 } '
 
 // # Gross Profit Monthly By Date: Object
-export const calculateMonthlyGrossProfit = (cosMonths, salesRevenueMonths) => {
+// USED IN GRAPH
+export const calculateMonthlyGrossProfit = (salesRevenueMonths, cosMonths) => {
   // ƒormula: sales revenue - cost of sale
   const grossProfitMonthlyByDate = {}
 
-  const allDates = new Set([...Object.keys(cosMonths), ...Object.keys(salesRevenueMonths)])
-
   const allMonths = new Set([...Object.keys(cosMonths), ...Object.keys(salesRevenueMonths)])
+
   allMonths.forEach((key) => {
-    const sales = salesRevenueMonths[key] || 0
-    const costOfSales = cosMonths[key] || 0
+    const sales = salesRevenueMonths[key] ?? 0
+    const costOfSales = cosMonths[key] ?? 0
     grossProfitMonthlyByDate[key] = sales - costOfSales
   })
 
@@ -54,45 +55,54 @@ export const calculateMonthlyAdminAndGeneralExpense = (expenseMonths, employeeEx
 
     adminAndGeneralMonthlyTotalByDate[date] = expenseTotal + employeeTotal
   }
-
   return adminAndGeneralMonthlyTotalByDate
 }
 
 // # Gross Profit Margin Monthly
 // Eg. { 2024 - 4: 82.45, ..., 2025 - 3: 89.12 }
 export const calculateMonthlyGrossProfitMargin = (salesRevenueMonths, grossProfitsMonths) => {
-  // ƒormula: gross profit / sales revenue * 100
   const grossProfitMarginByDate = {}
-  
-  const allDates = new Set([...Object.keys(grossProfitsMonths), ...Object.keys(salesRevenueMonths)])
-  for (let date of allDates) {
 
-    if (grossProfitsMonths[date]) {
+  const dates = monthlyDatesForGraphByYear()
+  const allDates = new Set([...Object(dates)])
+
+  for (let date of allDates) {
+    if (grossProfitsMonths.hasOwnProperty(date) || salesRevenueMonths.hasOwnProperty(date)) {
       const salesRevenueAmount = salesRevenueMonths[date]
-      const grossProfitAmount = grossProfitsMonths[date] || 0
-      // Check if salesRevenueAmount is 0
-      if (salesRevenueMonths === 0) {
-        grossProfitMarginByDate[date] = null // or another default value, like '0'
-      } else {
+      const grossProfitAmount = grossProfitsMonths[date]
+      // If sales revenue is missing, set to null (to break the line)
+      if (salesRevenueAmount === undefined || salesRevenueAmount === null) {
+        grossProfitMarginByDate[date] = ""
+      }
+      // If sales revenue is explicitly 0, keep it as 0 so the graph shows it
+      else if (salesRevenueAmount === 0) {
+        grossProfitMarginByDate[date] = ""
+      }
+      // Normal calculation
+      else {
         const margin = ((grossProfitAmount / salesRevenueAmount) * 100).toFixed(2)
         grossProfitMarginByDate[date] = parseFloat(margin)
       }
+    } else {
+      // Empty Month
+       grossProfitMarginByDate[date] = ""
     }
   }
-
   return grossProfitMarginByDate
 }
+
 
 // # Operating Income Monthly
 // Eg. { 2024 - 4: 500000, ..., 2025 - 3: 400000 } '
 export const calculateMonthlyOperatingIncome = (grossProfitMonths, adminGeneralMonths) => {
   // ƒormula: operating income =  gross profit + admin and general expense
   const operatingIncomeMonthlyTotalByDate = {}
+
   const allDates = new Set([...Object.keys(grossProfitMonths), ...Object.keys(adminGeneralMonths)])
 
   for (let date of allDates) {
-    const grossProfitTotal = grossProfitMonths[date]
-    const adminGeneralTotal = adminGeneralMonths[date]
+    const grossProfitTotal = grossProfitMonths[date] ?? 0
+    const adminGeneralTotal = adminGeneralMonths[date] ?? 0
 
     operatingIncomeMonthlyTotalByDate[date] = grossProfitTotal - adminGeneralTotal
   }
@@ -106,20 +116,21 @@ export const calculateMonthlyOperatingProfitMargin = (operatingIncomeMonths, sal
   // ƒormula: operating income / sales revenue * 100
   const operatingIncomeMonthlyProfitMarginByDate = {}
 
-  const allDates = new Set([...Object.keys(operatingIncomeMonths), ...Object.keys(salesRevenueMonths)])
+  const dates = monthlyDatesForGraphByYear()
+  const allDates = new Set([...Object(dates)])
 
   for (let date of allDates) {
-    const operatingIncomeAmount = operatingIncomeMonths[date]
-    const salesRevenueAmount = salesRevenueMonths[date]
+      const operatingIncomeAmount = operatingIncomeMonths[date] ?? 0
+      const salesRevenueAmount = salesRevenueMonths[date] ?? 0
 
-    // Check if salesRevenueAmount is 0
-    if (salesRevenueAmount === 0) {
-      operatingIncomeMonthlyProfitMarginByDate[date] = '' // or another default value, like '0'
-    } else {
-      const margin = ((operatingIncomeAmount / salesRevenueAmount) * 100).toFixed(2)
-      operatingIncomeMonthlyProfitMarginByDate[date] = parseFloat(margin)
-    }
-  }
+      // Check if salesRevenueAmount is 0
+      if (salesRevenueAmount === undefined || salesRevenueAmount === null || salesRevenueAmount === 0) {
+        operatingIncomeMonthlyProfitMarginByDate[date] = '' // or another default value, like '0'
+      } else {
+        const margin = ((operatingIncomeAmount / salesRevenueAmount) * 100).toFixed(2)
+        operatingIncomeMonthlyProfitMarginByDate[date] = parseFloat(margin)
+      }
+  } 
   return operatingIncomeMonthlyProfitMarginByDate
 }
 
@@ -142,9 +153,9 @@ export const calculateMonthlyOrdinaryIncome = (
 
   for (let date of allDates) {
 
-    const operatingIncome = operatingIncomeMonths[date] || 0;
-    const nonOperatingIncome = nonOperatingIncomeMonths[date] || 0;
-    const nonOperatingExpense = nonOperatingExpenseMonths[date] || 0;
+    const operatingIncome = operatingIncomeMonths[date] ?? 0;
+    const nonOperatingIncome = nonOperatingIncomeMonths[date] ?? 0;
+    const nonOperatingExpense = nonOperatingExpenseMonths[date] ?? 0;
 
     ordinaryIncomeMonthlyByDate[date] = operatingIncome + nonOperatingIncome - nonOperatingExpense
   }
