@@ -14,9 +14,10 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleMMRegTabsClick } from '../../utils/helperFunctionsUtil'
+import { handleMMRegTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import { closeModal, openModal } from '../../actions/hooks'
-import { masterMaintenanceScreenTabs, token } from '../../constants'
+import { masterMaintenanceScreenTabs, token, ACCESS_TOKEN } from '../../constants'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 const UsersRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -31,7 +32,8 @@ const UsersRegistration = () => {
   const [isEmailValid, setIsEmailValid] = useState(true)
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const [modalIsOpen, setModalIsOpen] = useState(false)
-
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  
   const emptyFormData = {
     username: '',
     first_name: '',
@@ -84,11 +86,6 @@ const UsersRegistration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
     // # Client Side Validation
 
     // Step 1: Preparartion for validation
@@ -118,7 +115,6 @@ const UsersRegistration = () => {
     if (firstError) {
       const { errors, errorType } = firstError
       const translatedErrors = translateAndFormatErrors(errors, language, errorType)
-      console.log(translatedErrors, 'trans errors')
       setModalMessage(translatedErrors)
       setCrudValidationErrors(translatedErrors)
       setIsModalOpen(true)
@@ -147,6 +143,12 @@ const UsersRegistration = () => {
   const handleListClick = () => {
     navigate('/users-list')
   }
+
+  useEffect(() => {
+    checkAccessToken().then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); }
+    });
+  }, [token])
 
   return (
     <div className='UsersRegistration_wrapper'>
@@ -306,6 +308,7 @@ const UsersRegistration = () => {
         isCRUDOpen={isModalOpen}
         validationMessages={crudValidationErrors}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

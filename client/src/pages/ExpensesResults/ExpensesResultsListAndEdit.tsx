@@ -20,13 +20,16 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { months, resultsScreenTabs, token } from '../../constants'
+import { months, resultsScreenTabs, token, ACCESS_TOKEN } from '../../constants'
 import {
   handleDisableKeysOnNumberInputs,
   formatNumberWithCommas,
   handleInputChange,
   handleResultsListTabsClick,
+  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes";
+
 const ExpensesResultsList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
@@ -47,6 +50,7 @@ const ExpensesResultsList: React.FC = () => {
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
 
   const header: string[] = [
     'year',
@@ -160,10 +164,6 @@ const ExpensesResultsList: React.FC = () => {
       return
     }
 
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
     updateExpenseResults(modifiedFields, token)
       .then(() => {
         setOriginalExpensesResultsList(expensesResultsList)
@@ -196,30 +196,6 @@ const ExpensesResultsList: React.FC = () => {
     await handleSubmit() // Call the submit function for update
     setIsUpdateConfirmationOpen(false)
   }
-
-  const fetchExpenses = async () => {
-    if (!token) {
-      window.location.href = '/login' // Redirect to login if no token found
-      return
-    }
-
-    getExpenseResults(token)
-      .then((data) => {
-        setExpensesResultsList(data)
-        setOriginalExpensesResultsList(data)
-      })
-      .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          window.location.href = '/login' // Redirect to login if unauthorized
-        } else {
-          console.error('There was an error fetching the expenses!', error)
-        }
-      })
-  }
-
-  useEffect(() => {
-    fetchExpenses()
-  }, [])
 
   useEffect(() => {
     const path = location.pathname
@@ -356,6 +332,26 @@ const ExpensesResultsList: React.FC = () => {
   const handleNewRegistrationClick = () => {
     navigate('/expenses-results-registration')
   }
+
+  const fetchExpenses = async () => {
+    getExpenseResults(localStorage.getItem(ACCESS_TOKEN))
+      .then((data) => {
+        setExpensesResultsList(data)
+        setOriginalExpensesResultsList(data)
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login' // Redirect to login if unauthorized
+        } else {
+          console.error('There was an error fetching the expenses!', error)
+        }
+      })
+  }
+  useEffect(() => {
+    checkAccessToken().then(result => {
+      if (!result) { showAlertPopup(handleTimeoutConfirm); } else { fetchExpenses(); }
+    });
+  }, [token])
 
   return (
     <div className={'expensesResultsList_wrapper'}>
@@ -711,6 +707,7 @@ const ExpensesResultsList: React.FC = () => {
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

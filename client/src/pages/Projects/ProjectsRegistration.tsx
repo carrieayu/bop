@@ -14,6 +14,7 @@ import AlertModal from '../../components/AlertModal/AlertModal'
 import { createProject } from '../../api/ProjectsEndpoint/CreateProject'
 import { overwriteProject } from '../../api/ProjectsEndpoint/OverwriteProject'
 import { maximumEntries, monthNames, token, years } from '../../constants'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes";
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 import {
   validateRecords,
@@ -67,7 +68,8 @@ const ProjectsRegistration = () => {
     ordinary_profit_margin: '',
   }
   const [formProjects, setProjects] = useState([emptyFormData])
-
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+ 
   const handleAdd = () => {
     addFormInput(formProjects, setProjects, maximumEntries, emptyFormData)
   }
@@ -151,7 +153,7 @@ const ProjectsRegistration = () => {
       "non_operating_expense"
     ];
     if (relevantFields.includes(name)) {
-      const { sales_revenue, indirect_employee_expense, dispatch_labor_expense, employee_expense, expense, non_operating_income } = updatedProjects[index];
+      const { sales_revenue, indirect_employee_expense, dispatch_labor_expense, employee_expense, expense, non_operating_income, non_operating_expense } = updatedProjects[index];
       const operating_income_ = parseFloat(sales_revenue) - 
                                 (
                                   (parseFloat(indirect_employee_expense)  || 0) +
@@ -160,9 +162,9 @@ const ProjectsRegistration = () => {
                                   (parseFloat(expense)                    || 0)
                                 );
       updatedProjects[index].operating_income = operating_income_.toString();
-      const _ordinary_profit = operating_income_ + parseFloat(non_operating_income)
+      const _ordinary_profit = operating_income_ + parseFloat(non_operating_income) - parseFloat(non_operating_expense)
       updatedProjects[index].ordinary_profit = _ordinary_profit.toString();
-      const _ordinary_profit_margin = ((operating_income_ / (parseFloat(sales_revenue))) * 100)
+      const _ordinary_profit_margin = (_ordinary_profit / parseFloat(sales_revenue)) * 100
       updatedProjects[index].ordinary_profit_margin = _ordinary_profit_margin.toFixed(2);
     }
 
@@ -240,11 +242,6 @@ const ProjectsRegistration = () => {
       ordinary_profit: parseFloat(projects.ordinary_profit),
       ordinary_profit_margin: parseFloat(projects.ordinary_profit_margin),
     }))
-
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
 
     createProject(projectsData, token)
       .then((data) => {
@@ -392,9 +389,16 @@ const ProjectsRegistration = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
     setLanguage(newLanguage)
   }
+
   useEffect(() => {
-    fetchDivision()
-    fetchClients()
+    checkAccessToken().then(result => {
+      if (!result) {
+          showAlertPopup(handleTimeoutConfirm);
+      } else {
+        fetchDivision()
+        fetchClients()
+      }
+    });
   }, [token])
 
   const handleListClick = () => {
@@ -733,6 +737,7 @@ const ProjectsRegistration = () => {
         onConfirm={handleOverwriteConfirmation}
         message={modalMessage}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

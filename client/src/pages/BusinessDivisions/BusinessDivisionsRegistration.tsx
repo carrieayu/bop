@@ -17,9 +17,10 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { handleMMRegTabsClick } from '../../utils/helperFunctionsUtil'
-import { masterMaintenanceScreenTabs, maximumEntries, storedUserID, token } from '../../constants'
+import { handleMMRegTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
+import { masterMaintenanceScreenTabs, maximumEntries, storedUserID, token, ACCESS_TOKEN } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 const BusinessDivisionsRegistration = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -43,7 +44,8 @@ const BusinessDivisionsRegistration = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
-
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
+  
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     navigate(tab)
@@ -104,11 +106,6 @@ const BusinessDivisionsRegistration = () => {
       auth_user_id: business.auth_user_id,
     }))
 
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
     // # Client Side Validation
 
     // Step 1: Preparartion for validation
@@ -116,7 +113,6 @@ const BusinessDivisionsRegistration = () => {
     const recordType = 'businessDivisions'
     // Retrieve field validation checks based on the record type
     const fieldChecks = getFieldChecks(recordType)
-    console.log(fieldChecks)
     // Validate records for the specified project fields
     const validateBusinessDivision = (records) => validateRecords(records, fieldChecks, 'businessDivision')
 
@@ -185,24 +181,6 @@ const BusinessDivisionsRegistration = () => {
       })
   }
 
-  useEffect(() => {
-    const fetchCompany = async () => {
-      try {
-        const response = await axios.get(`${getReactActiveEndpoint()}/api/master-companies/list/`, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        setCompanyList(response.data)
-      } catch (error) {
-        console.error('Error fetching business:', error)
-      }
-    }
-
-    fetchCompany()
-  }, [token])
-
   const handleCompanyChange = (e) => {
     setSelectedCompany(e.target.value) // Update the selected company state
   }
@@ -214,6 +192,30 @@ const BusinessDivisionsRegistration = () => {
   const handleListClick = () => {
     navigate('/business-divisions-list')
   }
+
+  useEffect(() => {
+    checkAccessToken().then(result => {
+      if (!result) {
+        showAlertPopup(handleTimeoutConfirm);
+      } else {
+        const fetchCompany = async () => {
+          try {
+            const response = await axios.get(`${getReactActiveEndpoint()}/api/master-companies/list/`, {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem(ACCESS_TOKEN)}`,
+              },
+            })
+            setCompanyList(response.data)
+          } catch (error) {
+            console.error('Error fetching business:', error)
+          }
+        }
+    
+        fetchCompany()
+      }
+    });
+  }, [token])
 
   return (
     <div className='BusinessDivisionsRegistration_wrapper'>
@@ -327,6 +329,7 @@ const BusinessDivisionsRegistration = () => {
         isCRUDOpen={isModalOpen}
         validationMessages={crudValidationErrors}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

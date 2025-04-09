@@ -20,9 +20,10 @@ import {
   checkForDuplicates,
 } from '../../utils/validationUtil'
 import { getFilteredEmployeeExpense } from '../../api/EmployeeExpenseEndpoint/FilterGetEmployeeExpense'
-import { currentYear, maximumEntriesEE, monthNames, storedUserID, token } from '../../constants'
-import { handlePLRegTabsClick } from '../../utils/helperFunctionsUtil'
+import { currentYear, maximumEntriesEE, monthNames, storedUserID, token, ACCESS_TOKEN } from '../../constants'
+import { handlePLRegTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
 import { closeModal, openModal } from '../../actions/hooks'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes";
 
 type Date = {
   year: string
@@ -62,6 +63,7 @@ const EmployeeExpensesRegistration = () => {
   ])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
   const onTabClick = (tab) => handlePLRegTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
@@ -102,41 +104,6 @@ const EmployeeExpensesRegistration = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
     setLanguage(newLanguage)
   }
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        getEmployee(token)
-          .then((data) => {
-            setEmployees(data)
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 401) {
-              console.log(error)
-            } else {
-              console.error('There was an error fetching the employee!', error)
-            }
-          })
-
-        getProject(token)
-          .then((data) => {
-            const result = uniqueProjects(data)
-            setProjects(result)
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 401) {
-              console.log(error)
-            } else {
-              console.error('There was an error fetching the projects!', error)
-            }
-          })
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      }
-    }
-
-    fetchData()
-  }, [token])
 
   //This function will make ProjectName unique base on project_name, client and business_division
   const uniqueProjects = (projects) => {
@@ -508,6 +475,48 @@ const EmployeeExpensesRegistration = () => {
     navigate('/employee-expenses-list')
   }
 
+  useEffect(() => {
+    checkAccessToken().then(result => {
+      if (!result) {
+          showAlertPopup(handleTimeoutConfirm);
+      } else {
+        
+        const fetchData = async () => {
+          try {
+            getEmployee(localStorage.getItem(ACCESS_TOKEN))
+              .then((data) => {
+                setEmployees(data)
+              })
+              .catch((error) => {
+                if (error.response && error.response.status === 401) {
+                  console.log(error)
+                } else {
+                  console.error('There was an error fetching the employee!', error)
+                }
+              })
+    
+            getProject(localStorage.getItem(ACCESS_TOKEN))
+              .then((data) => {
+                const result = uniqueProjects(data)
+                setProjects(result)
+              })
+              .catch((error) => {
+                if (error.response && error.response.status === 401) {
+                  console.log(error)
+                } else {
+                  console.error('There was an error fetching the projects!', error)
+                }
+              })
+          } catch (error) {
+            console.error('Error fetching data:', error)
+          }
+        }
+    
+        fetchData()
+      }
+    });
+  }, [token])
+  
   return (
     <div className='employeeExpensesRegistration_wrapper'>
       <HeaderButtons
@@ -731,6 +740,7 @@ const EmployeeExpensesRegistration = () => {
         isCRUDOpen={isModalOpen}
         validationMessages={crudValidationErrors}
       />
+      <AlertPopupComponent />
     </div>
   )
 }

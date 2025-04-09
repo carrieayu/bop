@@ -120,6 +120,7 @@
   "projectOverwriteMessage": "The selected fields with: '${existingEntries}' already has data registered. Do you want to overwrite it?",
   "projectNewEntry": " And save the new selected fields with: '${newEntries}'?",
   "updateMessage": "Are you sure you would like to update this data?",
+  "nonActiveMessage": "You are being logged out due to an error or inactivity",
   "listScreen": "List Screen",
   "employeeExpensesDuplicateData": "The selected project already exists for ${date} for employee ${employeeName}.",
   "type": "Type",
@@ -157,5 +158,9 @@
   "projectResults": "Project Result",
   "yearMonth": "Year/Month",
   "csvFileName": "CSV: Financial Summary",
-  "resultsSummary" : "Results-Summary"
+  "resultsSummary" : "Results-Summary",
+  "planningShort" : "PL.",
+  "resultsShort": "Res.",
+  "noData": "No Data",
+  "resetExplanation": "Resets Modified Data in Inputs"
 }

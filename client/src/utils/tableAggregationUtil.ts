@@ -1,6 +1,13 @@
-
 import { months } from "../constants"
+import { fields } from "./inputFieldConfigurations"
 
+// Get Relevant Field Names for (expenses, costOfSales, employeeExpenses, projects)
+const expenseFinancialFields = fields.expenses.filter((item) => item.isFinancial === true)
+const costOfSalesFinancialFields = fields.costOfSales.filter((item) => item.isFinancial === true)
+const employeeFinancialFields = fields.employees.filter((item) => item.isFinancial === true)
+const projectFinancialFields = fields.projects.filter((item) => item.isFinancial === true)
+
+// HELPER FUNCTIONS
 const generalAggregate = (acc, item) => {
   const { month, ...values } = item
   if (!acc[month]) {
@@ -13,41 +20,51 @@ const generalAggregate = (acc, item) => {
   return acc
 }
 
+const getMonthlyTotals = (data, financialFields, detailedResponse = false, from ="") => {
+  return months.map((month) => {
+
+    const dataForMonth = data[month] || []
+
+    const totalsObject = financialFields.reduce((acc, { field, fieldName }) => {
+      acc[fieldName] = Number(dataForMonth[field] || 0)
+      return acc
+    }, {})
+
+    const totals = Object.values(totalsObject).reduce((sum: any, value: any) => sum + value, 0)
+    
+    return detailedResponse ? { month, totals, ...totalsObject, from } : totals
+  })
+}
+
+const prepareGraphData = (data, financialFields) => {
+  
+  return data.map((item) => {
+    const total = financialFields.reduce((sum, { field }) => {
+      return sum + parseFloat(item[field] || 0)
+    }, 0)
+
+    return {
+      month: item.month,
+      year: item.year,
+      total
+    }
+  })
+}
+
 // EXPENSES
 export const aggregatedExpensesFunction = (expenses) => {
   return expenses.reduce((acc, item) => {
-      return generalAggregate(acc, item)
+    return generalAggregate(acc, item)
   }, {})
 }
 
-export const expensesTotalsFunction = (expensesData) => {
+export const getMonthlyExpensesTotals = (expensesData, detailedResponse = false, from = '') =>
+  getMonthlyTotals(expensesData, expenseFinancialFields, detailedResponse, from)
 
-  return months.map((month) => {
-    const consumables = Number(expensesData[month]?.consumable_expense) || 0
-    const rent = Number(expensesData[month]?.rent_expense) || 0
-    const taxAndPublicCharge = Number(expensesData[month]?.tax_and_public_charge) || 0
-    const depreciation = Number(expensesData[month]?.depreciation_expense) || 0
-    const travelExpense = Number(expensesData[month]?.travel_expense) || 0
-    const communicationExpense = Number(expensesData[month]?.communication_expense) || 0
-    const utilitiesExpense = Number(expensesData[month]?.utilities_expense) || 0
-    const transactionFee = Number(expensesData[month]?.transaction_fee) || 0
-    const advertisingExpense = Number(expensesData[month]?.advertising_expense) || 0
-    const entertainmentExpense = Number(expensesData[month]?.entertainment_expense) || 0
-    const professionalServiceFee = Number(expensesData[month]?.professional_service_fee) || 0
-    return (
-      consumables +
-      rent +
-      taxAndPublicCharge +
-      depreciation +
-      travelExpense +
-      communicationExpense +
-      utilitiesExpense +
-      transactionFee +
-      advertisingExpense +
-      entertainmentExpense +
-      professionalServiceFee
-    )
-  })
+
+// USED FOR GRAPH / REDUX
+export const getGraphDataForExpenses = (expenses) => {
+  return prepareGraphData(expenses, expenseFinancialFields)
 }
 
 // COST OF SALES
@@ -57,20 +74,71 @@ export const aggregatedCostOfSalesFunction = (cost_of_sales) => {
   }, {})
 }
 
-export const costOfSalesTotalsFunction = (aggregatedCostOfSalesData) => {
-  return months.map((month) => {
-    const purchases = Number(aggregatedCostOfSalesData[month]?.purchase) || 0
-    const outsourcing = Number(aggregatedCostOfSalesData[month]?.outsourcing_expense) || 0
-    const productPurchase = Number(aggregatedCostOfSalesData[month]?.product_purchase) || 0
-    const dispatchLabor = Number(aggregatedCostOfSalesData[month]?.dispatch_labor_expense) || 0
-    const communication = Number(aggregatedCostOfSalesData[month]?.communication_expense) || 0
-    const workInProgress = Number(aggregatedCostOfSalesData[month]?.work_in_progress_expense) || 0
-    const amortization = Number(aggregatedCostOfSalesData[month]?.amortization_expense) || 0
-    return purchases + outsourcing + productPurchase + dispatchLabor + communication + workInProgress + amortization
-  })
+
+export const getCostOfSalesMonthlyTotals = (costOfSalesData, detailedResponse = false) =>
+  getMonthlyTotals(costOfSalesData, costOfSalesFinancialFields, detailedResponse)
+
+
+// USED FOR GRAPH / REDUX
+export const getGraphDataForCostOfSales = (costOfSales) => {
+    return prepareGraphData(costOfSales, costOfSalesFinancialFields)
 }
 
 // EMPLOYEE EXPENSES
+// Uses employee-expenses/list
+export const aggregatedEmployeeExpensesFunctionDashboard = (employee_expenses) => {
+  const parseNumber = (value) => Number(value) || 0
+
+  return employee_expenses.reduce((acc, item) => {
+    const { month, year, employee_expense_id, ...rest } = item
+
+    if (!acc[month]) {
+      acc[month] = {
+        month,
+        year,
+        employee_expense_id,
+        employees: [],
+        projects: [],
+        salary: 0, // totals for month
+        executiveRemuneration: 0, // totals for month
+        bonusAndFuelAllowance: 0, // totals for month
+        statutoryWelfareExpense: 0, // totals for month
+        welfareExpense: 0, // totals for month
+        insurancePremium: 0, // totals for month
+      }
+    }
+
+    // Add employee and project details
+    acc[month].employees.push({
+      employee_id: rest.employee_id,
+      employee_type: rest.employee_type,
+      first_name: rest.first_name,
+      last_name: rest.last_name,
+      salary: rest.salary,
+      executive_remuneration: rest.executive_remuneration,
+      bonus_and_fuel_allowance: rest.bonus_and_fuel_allowance,
+      statutory_welfare_expense: rest.statutory_welfare_expense,
+      welfare_expense: rest.welfare_expense,
+      insurance_premium: rest.insurance_premium,
+    })
+
+    acc[month].projects.push({
+      project_id: rest.project_id,
+      project_name: rest.project_name,
+      client_name: rest.client_name,
+      business_division_name: rest.business_division_name,
+    })
+    
+    // Aggregate totals using parseNumber helper
+    employeeFinancialFields.forEach(({ field, fieldName }) => {
+      acc[month][fieldName] += parseNumber(rest[field])
+    })
+    
+    return acc
+  }, {})
+}
+
+// uses 'planningList' which strudtures employee expenses slightly differently to employee-expenes/list
 export const aggregatedEmployeeExpensesFunction = (employee_expenses) => {
   return employee_expenses.reduce((acc, item) => {
 
@@ -82,12 +150,12 @@ export const aggregatedEmployeeExpensesFunction = (employee_expenses) => {
         month,
         employees: [employee], // Store employees as an array
         projects: [project], // Store projects as an array
-        totalSalary: Number(employee.salary) || 0, // Initialize totalSalary with the first employee's salary
-        totalExecutiveRemuneration: Number(employee.executive_remuneration) || 0,
-        totalBonusAndFuel: Number(employee.bonus_and_fuel_allowance) || 0,
-        totalStatutoryWelfare: Number(employee.statutory_welfare_expense) || 0,
-        totalWelfare: Number(employee.welfare_expense) || 0,
-        totalInsurancePremium: Number(employee.insurance_premium) || 0,
+        salary: Number(employee.salary) || 0, // Initialize totalSalary with the first employee's salary
+        executiveRemuneration: Number(employee.executive_remuneration) || 0,
+        bonusAndFuelAllowance: Number(employee.bonus_and_fuel_allowance) || 0,
+        statutoryWelfareExpense: Number(employee.statutory_welfare_expense) || 0,
+        welfareExpense: Number(employee.welfare_expense) || 0,
+        insurancePremium: Number(employee.insurance_premium) || 0,
         ...values,
       }
     } else {
@@ -95,12 +163,12 @@ export const aggregatedEmployeeExpensesFunction = (employee_expenses) => {
       acc[month].employees.push(employee)
       acc[month].projects.push(project)
       // Add the employee's salary to the total
-      acc[month].totalSalary += Number(employee.salary) || 0
-      acc[month].totalExecutiveRemuneration += Number(employee.executive_remuneration) || 0
-      acc[month].totalBonusAndFuel += Number(employee.bonus_and_fuel_allowance) || 0
-      acc[month].totalStatutoryWelfare += Number(employee.statutory_welfare_expense) || 0
-      acc[month].totalWelfare += Number(employee.welfare_expense) || 0
-      acc[month].totalInsurancePremium += Number(employee.insurance_premium) || 0
+      acc[month].salary += Number(employee.salary) || 0
+      acc[month].executiveRemuneration += Number(employee.executive_remuneration) || 0
+      acc[month].bonusAndFuelAllowance += Number(employee.bonus_and_fuel_allowance) || 0
+      acc[month].statutoryWelfareExpense += Number(employee.statutory_welfare_expense) || 0
+      acc[month].welfareExpense += Number(employee.welfare_expense) || 0
+      acc[month].insurancePremium += Number(employee.insurance_premium) || 0
 
       // Aggregate other numeric fields
       Object.keys(values).forEach((key) => {
@@ -116,29 +184,52 @@ export const aggregatedEmployeeExpensesFunction = (employee_expenses) => {
   }, {})
 }
 
-export const employeeExpensesTotalsFunction = (employeeExpensesdata) => {
+
+// Array of total per month [] (just number values. not properly assigned months)
+export const employeeExpensesTotalsFunction = (employeeExpensesdata, detailedResponse = false) => {
   return months.map((month) => {
-    const executiveRemuneration = Number(employeeExpensesdata[month]?.totalExecutiveRemuneration) || 0
-    const salary = Number(employeeExpensesdata[month]?.totalSalary) || 0
-    const bonusAndFuelAllowance = Number(employeeExpensesdata[month]?.totalBonusAndFuel) || 0
-    const statutoryWelfareExpense = Number(employeeExpensesdata[month]?.totalStatutoryWelfare) || 0
-    const welfareExpense = Number(employeeExpensesdata[month]?.totalWelfare) || 0
-    const insurancePremium = Number(employeeExpensesdata[month]?.totalInsurancePremium) || 0
-    return (
-      executiveRemuneration +
-      salary +
-      bonusAndFuelAllowance +
-      statutoryWelfareExpense +
-      welfareExpense +
-      insurancePremium
-    )
+    const dataForMonth = employeeExpensesdata[month] // Access month data
+    // In case data for the month doesn't exist
+    if (!dataForMonth) {
+      return detailedResponse ? { month, totals: 0 } : 0
+    }
+
+    const employeeExpenses = employeeFinancialFields.reduce((acc, { fieldName }) => {
+      acc[fieldName] = Number(dataForMonth[fieldName] || 0) // Convert strings to numbers
+      return acc
+    }, {})
+
+    const totals = Object.values(employeeExpenses).reduce((sum:any, value:any) => sum + value, 0)
+
+    const detailedObject = { month, totals, ...employeeExpenses }
+
+    return detailedResponse ? detailedObject : totals
   })
 }
 
+// USED FOR GRAPH 
+export const monthlyTotalsEmployeeExpenseFunction = (employeeExpense) => {
+  return employeeExpense.map((item) => {
+    const total = employeeFinancialFields.reduce((sum, {field}) => {
+      return sum + parseFloat(item[field] || 0)
+    },0)
+
+    const object = {
+      month: item.month,
+      year: item.year,
+      total
+    }
+    return object
+  })
+}
 // PROJECTS
+
 export const aggregatedProjectsFunction = (projects) => {
+  // WIP: I think this needs fixing: returns odd values for id and month. (are they even necessary?)  
   return projects.reduce((acc, item) => {
+    
     const { month, ...values } = item
+    
     if (!acc[month]) {
       acc[month] = { month }
     }
@@ -149,12 +240,13 @@ export const aggregatedProjectsFunction = (projects) => {
         acc[month][key] = (acc[month][key] || 0) + value
       }
     })
-
     return acc
   }, {})
 }
 
 // GROSS PROFIT
+// DELETE?? NOW USING "calculateMonthlyGrossProfit" and converting results into value Array.
+
 export const grossProfitFunction = (salesRevenue, costOfSalesValues) => {
   return months.map((month, index) => {
     const totalSales = salesRevenue[index] // Get the salesRevenue  for the current month
@@ -198,7 +290,23 @@ export const ordinaryProfitFunction = (
     return totalOrdinaryIncome
   })
 }
+
 // OTHER
 export const mapValue = (key, data) => {
   return months.map((month) => data[month]?.[key] || 0) // return the mapped values properly
+}
+
+
+// Extract year, month and the remaining values from nested "projects" object in side "project results"
+export const filterListMonthAndYear = (arr) => {
+  // Step 1: Filter the projects that include 'project_sales_result_id'
+  const filteredProjects = arr.filter((project) => Object.keys(project).includes('project_sales_result_id'))
+
+  const updated = filteredProjects.map((project) => {
+    const { year, month } = project.projects
+    const transformedProject = { ...project, year, month }
+
+    return transformedProject
+  })
+  return updated
 }

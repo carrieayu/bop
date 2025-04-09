@@ -1,5 +1,5 @@
 import { translate } from '../utils/translationUtil'
-import { inputFieldConfigurations } from '../inputFieldConfigurations'
+import { fields } from './inputFieldConfigurations'
 import { MAX_SAFE_INTEGER } from '../constants'
 
 // # CLIENT SIDE //
@@ -11,7 +11,7 @@ import { MAX_SAFE_INTEGER } from '../constants'
 // # HELPER FUNCTION FOR GETTING FIELDS AND VALIDATION CONFIGURATIONS BASED ON RECORD TYPE
 export const getFieldChecks = (recordType: string) => {
   // Check if the recordType exists in the inputFieldConfigurations object
-  const recordInputConfig = inputFieldConfigurations[recordType]
+  const recordInputConfig = fields[recordType]
 
   // If recordType exists, return the configuration, else return an empty array
   return recordInputConfig ? recordInputConfig : []
@@ -306,17 +306,14 @@ export const validateField = (
 
   // Number validations
   if (isNumber) {
-    console.log('is number:', isNumber, 'typeof value:', typeof value, 'Number.isInteger:', Number.isInteger(value))
     Number(value)
     if (value < 0) return createError('cannotBeLessThanZero')
     if (Number.isInteger(value) && value > MAX_SAFE_INTEGER) {
-      console.log('is integer:', typeof value)
       return createError('valueTooLarge')
     }
     if (!Number.isInteger(value)) {
       if (typeof value === 'string') { 
         if (Number(value) > MAX_SAFE_INTEGER) {
-          console.log('is integer:', typeof value)
           return createError('valueTooLarge')
          }
       } 

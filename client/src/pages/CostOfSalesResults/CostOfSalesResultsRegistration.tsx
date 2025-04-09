@@ -25,11 +25,13 @@ import {
   sortByFinancialYear,
   handleGeneralResultsInputChange,
   handleResultsRegTabsClick,
+  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
 import { getCostOfSale } from '../../api/CostOfSalesEndpoint/GetCostOfSale'
-import { maximumEntries, monthNames, resultsScreenTabs, token } from '../../constants'
+import { maximumEntries, monthNames, resultsScreenTabs, token, ACCESS_TOKEN } from '../../constants'
 import { addFormInput, closeModal, openModal, removeFormInput } from '../../actions/hooks'
 import { MAX_NUMBER_LENGTH } from '../../constants'
+import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 
 type CostOfSaleResults = {
   month: string
@@ -58,6 +60,7 @@ const CostOfSalesResultsRegistration = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [isOverwriteModalOpen, setIsOverwriteModalOpen] = useState(false)
   const [isOverwriteConfirmed, setIsOverwriteConfirmed] = useState(false)
+  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
   const onTabClick = (tab) => handleResultsRegTabsClick(tab, navigate, setActiveTab)
   const emptyFormData = {
     year: '',
@@ -200,12 +203,7 @@ const CostOfSalesResultsRegistration = () => {
     }
     // Continue with submission if no errors
 
-    if (!token) {
-      window.location.href = '/login'
-      return
-    }
-
-    createCostOfSaleResults(combinedObject, token)
+    createCostOfSaleResults(combinedObject, localStorage.getItem(ACCESS_TOKEN))
       .then(() => {
         setModalMessage(translate('successfullySaved', language))
         setIsModalOpen(true)
@@ -291,7 +289,7 @@ const CostOfSalesResultsRegistration = () => {
     })
 
     try {
-      overwriteCostOfSaleResults(updatedCombinedObject, token).then((data) => {
+      overwriteCostOfSaleResults(updatedCombinedObject, localStorage.getItem(ACCESS_TOKEN)).then((data) => {
         setModalMessage(translate('overWrite', language))
         setIsModalOpen(true)
         setFormData([
@@ -316,46 +314,7 @@ const CostOfSalesResultsRegistration = () => {
     }
   }
 
-  useEffect(() => {
-    formData.forEach((cosr, index) => {
-      let month = cosr.month || ''
-      const year = cosr.year || ''
-      let filterParams: FilterParams = {
-        ...(year !== null && { year }),
-      }
-      if (filterParams.year) {
-        filterCostOfSaleResults(filterParams, token).then((data) => {
-          setCostOfSaleResultsData((prev) => {
-            return prev.map((row, projectIndex) => {
-              if (index == projectIndex) {
-                return {
-                  cosr: data,
-                }
-              }
-              return row
-            })
-          })
-          setFilteredMonth((prev) => {
-            return prev.map((month, monthIndex) => {
-              if (index == monthIndex) {
-                return { month: data }
-              }
-              return month
-            })
-          })
-        })
-      }
-    })
-    getCostOfSale(token)
-      .then((data) => {
-        setCostOfSalesYear(data)
-      })
-      .catch((error) => {
-        console.log(' error fetching cost of sales data: ' + error)
-      })
-  }, [formData])
-
-  useEffect(() => {
+  useEffect(() => { 
     const path = location.pathname
     if (path === '/dashboard' || path === '/planning-list' || path === '/*') {
       setActiveTab(path)
@@ -374,6 +333,61 @@ const CostOfSalesResultsRegistration = () => {
   const handleListClick = () => {
     navigate('/cost-of-sales-results-list')
   }
+
+  const fetchGetCostOfSale = async () => {
+    checkAccessToken().then(result => {
+      if (!result) {
+        showAlertPopup(handleTimeoutConfirm);
+      } else {
+        getCostOfSale(localStorage.getItem(ACCESS_TOKEN))
+        .then((data) => {
+          setCostOfSalesYear(data)
+        })
+        .catch((error) => {
+          console.log(' error fetching cost of sales data: ' + error)
+        })
+      }
+    });
+  }
+
+  useEffect(() => { 
+    checkAccessToken().then(result => {
+      if (!result) {
+        showAlertPopup(handleTimeoutConfirm);
+      } else {
+        formData.forEach((cosr, index) => {
+          let month = cosr.month || ''
+          const year = cosr.year || ''
+          let filterParams: FilterParams = {
+            ...(year !== null && { year }),
+          }
+          if (filterParams.year) {
+            filterCostOfSaleResults(filterParams, localStorage.getItem(ACCESS_TOKEN)).then((data) => {
+              setCostOfSaleResultsData((prev) => {
+                return prev.map((row, projectIndex) => {
+                  if (index == projectIndex) {
+                    return {
+                      cosr: data,
+                    }
+                  }
+                  return row
+                })
+              })
+              setFilteredMonth((prev) => {
+                return prev.map((month, monthIndex) => {
+                  if (index == monthIndex) {
+                    return { month: data }
+                  }
+                  return month
+                })
+              })
+            })
+          }
+        })
+        fetchGetCostOfSale()
+      }
+    });
+  }, [token, formData])
 
   return (
     <div className='costOfSalesResultsRegistration_wrapper'>
@@ -593,6 +607,7 @@ const CostOfSalesResultsRegistration = () => {
         onConfirm={handleOverwriteConfirmation}
         message={modalMessage}
       />
+      <AlertPopupComponent />
     </div>
   )
 }
