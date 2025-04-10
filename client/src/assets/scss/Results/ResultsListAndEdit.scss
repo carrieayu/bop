@@ -1,36 +1,39 @@
-.results_summary_wrapper{
-  .results_summary_content_wrapper{
+.results_wrapper{
+  .main-header-buttons{
+}
+  .results_content_wrapper{
     display: flex;
     background-color: #EFEDEA;
+    
     @media only screen and (max-width: 1000px){
         flex-direction: column;
     }
-    .results_summary_table_wrapper{
+    .results_table_wrapper{
       width: 100%;
-      height: 100%;
-      padding: 20px;
-      max-width: 100%; /* Prevent overflow */
-      overflow-x: hidden; /* Prevent horizontal scroll */
-      box-sizing: border-box;
-      .results_summary_top_cont{
+      height: 88vh;
+      padding: 20px 20px 20px 20px;
+
+      .results_top_cont{
         border: 1px solid #fff;
         border-radius: 5px;
         background-color: #fff;
         height: 100%;
-        .results_summary_content{
-          .results_summary_btm{
-            .results_summary_header_text{
+
+        .results_content{
+          .results_btm{
+            .results_header_text{
               display: flex;
-              width: 100%;
               justify-content: space-between;
-              .results_summary_left-content{
+              margin-bottom: 10px;
+              .results_left-content{
                 font-weight: bold;
                 margin-top: 13px;
                 margin-left: 10px;
               }
-              .results_summary_right-content{
+              .results_right-content{
                 padding: 10px 10px 5px 0px;
-                .results_summary_paginate{
+
+                .results_paginate{
                   gap: 10px;
                   display: flex;
                   justify-content: center;
@@ -38,23 +41,24 @@
                   padding: 3px 10px;
                   border-radius: 5px;
                   align-items: center;
-                  .results_summary_pl-label{
+
+                  .results_pl-label{
                     display: inline-block;
                   }
-                  p.results_summary_pl-label_disabled {
+                  p.results_pl-label_disabled {
                       color: #c6c6c6;
                   }
-                  button.results_summary_mode_switch {
+                  button.results_mode_switch {
                     border: 1px solid;
                     padding: 3px 21px;
                     border-radius: 5px;
                     font-weight: 500;
                     background-color: #f3f3f3;
                   }
-                  p.results_summary_mode_switch_disabled {
+                  p.results_mode_switch_disabled {
                       color: #c6c6c6;
                   }
-                  .results_summary_switch{
+                  .results_switch{
                     position: relative;
                     display: inline-block;
                     width: 40px;
@@ -65,19 +69,19 @@
                       width: 0;
                       height: 0;
     
-                      &:checked + .results_summary_slider {
+                      &:checked + .results_slider {
                         background-color: #2196F3;
                       }
     
-                      &:focus + .results_summary_slider {
+                      &:focus + .results_slider {
                         box-shadow: 0 0 1px #2196F3;
                       }
     
-                      &:checked + .results_summary_slider:before {
+                      &:checked + .results_slider:before {
                         transform: translateX(20px);
                       }
                     }
-                    .results_summary_slider{
+                    .results_slider{
                       position: absolute;
                       cursor: pointer;
                       height: 21px;
@@ -101,7 +105,7 @@
                       }
                     }
                   }
-                  .results_summary_burger{
+                  .results_burger{
                         width: 41px;
                         height: 20px;
                         margin-left: 2px;
@@ -134,20 +138,22 @@
                 }
               }
             }
-            .results_summary_tbl_cont{
-              .editScrollable{
-                overflow-x: auto;
-                padding: 0px 0px 0px 0px;
+            .results_tbl_cont{
+              height: 100%;
+              .table-header-sticky{
+                position: sticky;
+                background-color: white;
+                z-index: 2;
+                // Need this to deal with padding on container so content does not reappear above header when scrolling
+                top: -1px !important; 
               }
-              .table_content_results_summary{
-                .table-results_summary-container{
-                  width: 100% !important;
-                  // height: 100%;
+              .editScrollable{
+              }
+              .table_content_results{
+                .table-results_container{
                   @media only screen and (min-width: 1920px){
-                    // height: 122vh;
                   }
                   table{
-                    // width: 100%;
                   }
                 }
               }
@@ -155,17 +161,32 @@
                 display: none;
               }
               .table_content_props{
-                // height: 118vh;
                 @media only screen and (min-width: 1920px){
-                  // height: 120vh;
                 }
-                .results_summary_scrollable{
-                  // max-height: 115vh;
+                .results_scrollable{
                 }
               }
               .div_submit {
                 float: right;
                 padding: 0px 8px;
+              }
+              .button-container{
+                display: flex;
+                position: absolute;
+                bottom: 0px;
+                right: 10px;
+                justify-content: end;
+                align-items: center;
+              }
+               button.edit_cancel_btn {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 1%;
+                padding: 5px 20px 5px 20px;
+                border-radius: 7px;
+                margin: 20px 6px;
+                background: #f4f4f6;
               }
               button.edit_submit_btn {
                 display: flex;

@@ -1,6 +1,5 @@
 .planning_wrapper{
 .main-header-buttons{
-
 }
   .planning_content_wrapper{
     display: flex;
@@ -105,6 +104,36 @@
                         transition: transform 0.4s;
                       }
                     }
+                  }
+                  .results_burger{
+                        width: 41px;
+                        height: 20px;
+                        margin-left: 2px;
+                        display: flex;
+                        justify-content: end;
+                        font-weight: 900;
+                        color: gray;
+                        cursor: pointer;
+                  }
+                  .results-csv-modal {
+                        position: absolute;
+                        display: flex;
+                        transform: translate(135px, 39px);
+                        align-items: flex-start;
+                        background: white;
+                        z-index: 1000;
+                          p.results-csv-p {
+                            font-size: 12px;
+                            text-align: left;
+                            cursor: pointer;
+                        }
+                  }
+
+                  .results-csv-modal-content {
+                    background: white;
+                    padding: 15px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
                   }
                 }
               }

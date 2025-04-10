@@ -6,7 +6,7 @@ import {
   mapValue,
   getGraphDataForCostOfSales,
 } from '../../utils/tableAggregationUtil'
-import { sumValues } from '../../utils/helperFunctionsUtil'
+import { getValueAndId, sumValues } from '../../utils/helperFunctionsUtil'
 import { fields } from '../../utils/inputFieldConfigurations'
 
 // RESULTS
@@ -44,6 +44,29 @@ export const costOfSalesSelectMonthlyTotalsByCategory = createSelector([costOfSa
   return monthlyTotals
 })
 
+export const costOfSalesEditable = createSelector([costOfSalesList], (list) => {
+  const aggregatedCostOfSalesData = aggregatedCostOfSalesFunction(list)
+  const purchasesValues = getValueAndId('purchase', 'cost_of_sale', aggregatedCostOfSalesData, 'results')
+  const outsourcingExpenseValues = getValueAndId('outsourcing_expense', 'cost_of_sale', aggregatedCostOfSalesData, 'results')
+  const productPurchaseValues = getValueAndId('product_purchase', 'cost_of_sale', aggregatedCostOfSalesData, 'results')
+  const dispatchLaborExpenseValues = getValueAndId('dispatch_labor_expense', 'cost_of_sale', aggregatedCostOfSalesData, 'results')
+  const communicationCostValues = getValueAndId('communication_expense', 'cost_of_sale', aggregatedCostOfSalesData, 'results')
+  const workInProgressValues = getValueAndId('work_in_progress_expense', 'cost_of_sale', aggregatedCostOfSalesData, 'results')
+  const amortizationValues = getValueAndId('amortization_expense', 'cost_of_sale', aggregatedCostOfSalesData, 'results')
+
+  const ValueAndId = {
+    purchasesValues,
+    outsourcingExpenseValues,
+    productPurchaseValues,
+    dispatchLaborExpenseValues,
+    communicationCostValues,
+    workInProgressValues,
+    amortizationValues,
+  }
+
+  return ValueAndId
+})
+
 // **New Memoized Selector for costOfSalesResults**
 export const costOfSalesResultsSelector = createSelector(
   [
@@ -53,13 +76,15 @@ export const costOfSalesResultsSelector = createSelector(
     costOfSalesYearlyTotals,
     costOfSalesCategoryTotals,
     costOfSalesSelectMonthlyTotalsByCategory,
+    costOfSalesEditable,
   ],
-  (list, totals, monthlyTotalsByDate, yearlyTotal, categories, individualMonthlyTotals) => ({
+  (list, totals, monthlyTotalsByDate, yearlyTotal, categories, individualMonthlyTotals, editable) => ({
     list,
     monthlyTotals: totals,
     monthlyTotalsByDate,
     yearlyTotal,
     categories,
     individualMonthlyTotals,
+    editable,
   }),
 )

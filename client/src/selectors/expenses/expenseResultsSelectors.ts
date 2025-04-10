@@ -6,7 +6,7 @@ import {
   mapValue,
   getGraphDataForExpenses,
 } from '../../utils/tableAggregationUtil'
-import { sumValues } from '../../utils/helperFunctionsUtil'
+import { getValueAndId, sumValues } from '../../utils/helperFunctionsUtil'
 import { fields } from '../../utils/inputFieldConfigurations'
 
 // RESULTS
@@ -43,6 +43,37 @@ export const expensesSelectMonthlyTotalsByCategory = createSelector([expensesLis
   return monthlyTotals
 })
 
+export const expensesEditable = createSelector([expensesList], (list) => {
+  const aggregatedExpensesData = aggregatedExpensesFunction(list)
+  const consumableValues = getValueAndId('purchase', 'expense', aggregatedExpensesData, 'results')
+  const rentValues = getValueAndId('rent_expense', 'expense', aggregatedExpensesData, 'results')
+  const taxesPublicChargesValues = getValueAndId('tax_and_public_charge', 'expense', aggregatedExpensesData, 'results')
+  const depreciationExpensesValues = getValueAndId('depreciation_expense', 'expense', aggregatedExpensesData, 'results')
+  const travelExpenseValues = getValueAndId('travel_expense', 'expense', aggregatedExpensesData, 'results')
+  const communicationExpenseValues = getValueAndId('communication_expense', 'expense', aggregatedExpensesData, 'results')
+  const utilitiesValues = getValueAndId('utilities_expense', 'expense', aggregatedExpensesData, 'results')
+  const transactionFeeValues = getValueAndId('transaction_fee', 'expense', aggregatedExpensesData, 'results')
+  const advertisingExpenseValues = getValueAndId('advertising_expense', 'expense', aggregatedExpensesData, 'results')
+  const entertainmentExpenseValues = getValueAndId('entertainment_expense', 'expense', aggregatedExpensesData, 'results')
+  const professionalServiceFeeValues = getValueAndId('professional_service_fee', 'expense', aggregatedExpensesData, 'results')
+
+  const ValueAndId = {
+    consumableValues,
+    rentValues,
+    taxesPublicChargesValues,
+    depreciationExpensesValues,
+    travelExpenseValues,
+    communicationExpenseValues,
+    utilitiesValues,
+    transactionFeeValues,
+    advertisingExpenseValues,
+    entertainmentExpenseValues,
+    professionalServiceFeeValues,
+  }
+
+  return ValueAndId
+})
+
 // **New Memoized Selector for expensesResults**
 export const expensesResultsSelector = createSelector(
   [
@@ -52,13 +83,15 @@ export const expensesResultsSelector = createSelector(
     expensesYearlyTotals,
     expensesCategoryTotals,
     expensesSelectMonthlyTotalsByCategory,
+    expensesEditable,
   ],
-  (list, totals, monthlyTotalsByDate, yearlyTotal, categories, individualMonthlyTotals) => ({
+  (list, totals, monthlyTotalsByDate, yearlyTotal, categories, individualMonthlyTotals, editable) => ({
     list,
     monthlyTotals: totals,
     monthlyTotalsByDate,
     yearlyTotal,
     categories,
     individualMonthlyTotals,
+    editable,
   }),
 )

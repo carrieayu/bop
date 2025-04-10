@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { updatePlanning } from '../../api/PlanningEndpoint/UpdatePlanning'
-import { editingTableALabelsAndValues } from '../../utils/tableEditingALabelAndValues'
+import { tableEditingLabelAndValues} from '../../utils/tableAEditingLabelAndValues'
 import { translate } from '../../utils/translationUtil'
 import { editableLabels, halfYears, MAX_NUMBER_LENGTH, months, noIndentLabels, token } from '../../constants'
 // HOOKS
@@ -28,7 +28,7 @@ const EditTablePlanning = ({
   const planningCalculations = useAppSelector(planningCalculationsSelector)
 
   const [originalData, setOriginalData] = useState([]) // empty array
-  const reduxState = editingTableALabelsAndValues(planning, planningCalculations) // intial data
+  const reduxState = tableEditingLabelAndValues(planning, planningCalculations) // intial data
 
   useEffect(() => {
     setOriginalData(reduxState)
@@ -188,8 +188,6 @@ const EditTablePlanning = ({
   }
 
   const displayData = hasUnsavedChanges ? editedData : originalData
-  console.log('displayData', hasUnsavedChanges ? "editedData" : "originalData")
-  console.log('displayData', hasUnsavedChanges ? editedData : originalData)
 
   // JSX Helpers
   const renderMonths = () => {
@@ -225,9 +223,11 @@ const EditTablePlanning = ({
   }
 
   const isEditableInput = (item, valueIndex) => {
+
     if (!isRowEditable(item.label) || valueIndex >= 12) return false
 
     const id = item.id
+
     if (Array.isArray(id)) {
       return id[valueIndex] !== null && id[valueIndex] !== undefined
     }

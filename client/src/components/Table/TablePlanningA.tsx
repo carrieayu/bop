@@ -3,6 +3,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { translate } from '../../utils/translationUtil';
 import { halfYears, monthNames, months, noIndentLabels } from '../../constants';
 import { planningTableALabelsAndValues } from '../../utils/TablePlanningALabelAndValues'
+import { thousandYenConversion } from '../../utils/helperFunctionsUtil';
 
 interface TablePlanningAProps {
   isThousandYenChecked: boolean
@@ -65,7 +66,7 @@ const TablePlanning: React.FC<TablePlanningAProps> = ({isThousandYenChecked, pla
         </td>
         {item.values.map((value, valueIndex) => (
           <td className='value-container' key={valueIndex}>  
-              <div className='values'>{value.toLocaleString()}</div>
+              <div className='values'>{isThousandYenChecked ? thousandYenConversion(value) : value.toLocaleString()}</div>
           </td>
         ))}
       </tr>

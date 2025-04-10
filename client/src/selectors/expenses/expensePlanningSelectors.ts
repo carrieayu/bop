@@ -42,17 +42,17 @@ export const expensesSelectMonthlyTotalsByCategory = createSelector([expensesLis
 export const expensesEditable = createSelector([expensesList], (list) => {
   
   const aggregatedExpensesData = aggregatedExpensesFunction(list)
-  const consumableValues = getValueAndId('purchase', 'expense', aggregatedExpensesData)
-  const rentValues = getValueAndId('rent_expense', 'expense', aggregatedExpensesData)
-  const taxesPublicChargesValues = getValueAndId('tax_and_public_charge', 'expense', aggregatedExpensesData)
-  const depreciationExpensesValues = getValueAndId('depreciation_expense', 'expense', aggregatedExpensesData)
-  const travelExpenseValues = getValueAndId('travel_expense', 'expense', aggregatedExpensesData)
-  const communicationExpenseValues = getValueAndId('communication_expense', 'expense', aggregatedExpensesData)
-  const utilitiesValues = getValueAndId('utilities_expense', 'expense', aggregatedExpensesData)
-  const transactionFeeValues = getValueAndId('transaction_fee', 'expense', aggregatedExpensesData)
-  const advertisingExpenseValues = getValueAndId('advertising_expense', 'expense', aggregatedExpensesData)
-  const entertainmentExpenseValues = getValueAndId('entertainment_expense', 'expense', aggregatedExpensesData)
-  const professionalServiceFeeValues = getValueAndId('professional_service_fee', 'expense', aggregatedExpensesData)
+  const consumableValues = getValueAndId('purchase', 'expense', aggregatedExpensesData, 'planning')
+  const rentValues = getValueAndId('rent_expense', 'expense', aggregatedExpensesData, 'planning')
+  const taxesPublicChargesValues = getValueAndId('tax_and_public_charge', 'expense', aggregatedExpensesData, 'planning')
+  const depreciationExpensesValues = getValueAndId('depreciation_expense', 'expense', aggregatedExpensesData, 'planning')
+  const travelExpenseValues = getValueAndId('travel_expense', 'expense', aggregatedExpensesData, 'planning')
+  const communicationExpenseValues = getValueAndId('communication_expense', 'expense', aggregatedExpensesData, 'planning')
+  const utilitiesValues = getValueAndId('utilities_expense', 'expense', aggregatedExpensesData, 'planning')
+  const transactionFeeValues = getValueAndId('transaction_fee', 'expense', aggregatedExpensesData, 'planning')
+  const advertisingExpenseValues = getValueAndId('advertising_expense', 'expense', aggregatedExpensesData, 'planning')
+  const entertainmentExpenseValues = getValueAndId('entertainment_expense', 'expense', aggregatedExpensesData, 'planning')
+  const professionalServiceFeeValues = getValueAndId('professional_service_fee', 'expense', aggregatedExpensesData, 'planning')
 
   const ValueAndId = {
     consumableValues,
