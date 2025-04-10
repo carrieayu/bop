@@ -537,12 +537,14 @@ export const handleError = (actionName: string, error: any) => {
     console.error(`Error fetching ${actionName}:`, error)
   }
 
-export const getValueAndId = (valueName, recordType, aggregatedData) => {
+export const getValueAndId = (valueName, recordType, aggregatedData, dataType) => { 
   const values = months.map((month) => {
     const dataEntry = aggregatedData[month]
     if (dataEntry) {
+      const isPlanning = dataType === 'planning' // dataType === planning || results
+
       return {
-        id: dataEntry[`${recordType}_id`],
+        id: dataEntry[isPlanning ? `${recordType}_id` : `${recordType}_result_id`],
         [valueName]: dataEntry[valueName] || 0,
       }
     }

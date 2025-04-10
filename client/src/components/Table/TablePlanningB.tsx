@@ -54,6 +54,7 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
       
       getPlanningB(token)
         .then((data) => {
+          console.log("data",data)
           const groupedData: { [key: string]: EntityGrid } = {}
 
           data.forEach((project) => {

@@ -10,8 +10,6 @@ import TablePlanningA from '../../components/Table/TablePlanningA'
 import EditTablePlanning from '../../components/Table/EditTablePlanning'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import { dates, header, smallDate } from '../../constants'
-import { setupIdleTimer } from '../../utils/helperFunctionsUtil'
-import AlertModal from '../../components/AlertModal/AlertModal'
 import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 // REDUCERS
 import { fetchExpense } from '../../reducers/expenses/expensesSlice'
@@ -22,7 +20,7 @@ import { useAppDispatch } from '../../actions/hooks'
 // SELECTORS
 import { planningSelector } from '../../selectors/planning/planningSelector'
 import { planningCalculationsSelector } from '../../selectors/planning/planningCalculationSelectors'
-import { editingTableALabelsAndValues } from '../../utils/tableEditingALabelAndValues'
+import { tableEditingLabelAndValues } from '../../utils/tableAEditingLabelAndValues'
 
 const PlanningListAndEdit = () => {
   const [tableList, setTableList] = useState<any>([])
@@ -122,13 +120,13 @@ const PlanningListAndEdit = () => {
   // # FOR EditTablePlanning Table/Component
 
   // Used as a comparison for editedData to check for unsaved changes.
-  const [initialData, setInitialData] = useState(editingTableALabelsAndValues(planning, planningCalculations))
+  const [initialData, setInitialData] = useState(tableEditingLabelAndValues(planning, planningCalculations))
 
   // Variables below (↓) are all data to be passed into EditTablePlanning where it can be modified.
 
   // # Initialize as a copy of initalData to be updated in edit screen.
   // # Temporarlity Storing Edited (unsaved) data between (Display/Edit) (can be updated in edit screen)
-  const [editedData, setEditedData] = useState(editingTableALabelsAndValues(planning, planningCalculations))
+  const [editedData, setEditedData] = useState(tableEditingLabelAndValues(planning, planningCalculations))
   // # Initialize Object that stores ONLY modified inputs with Record ID from database table as key.
   const [modifiedFields, setModifiedFields] = useState({})
   // # Boolean that tracks if there are any unsaved changes

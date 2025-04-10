@@ -45,13 +45,13 @@ export const costOfSalesSelectMonthlyTotalsByCategory = createSelector([costOfSa
 export const costOfSalesEditable = createSelector([costOfSalesList], (list) => {
       
     const aggregatedCostOfSalesData = aggregatedCostOfSalesFunction(list)
-    const purchasesValues = getValueAndId('purchase', 'cost_of_sale', aggregatedCostOfSalesData)
-    const outsourcingExpenseValues = getValueAndId('outsourcing_expense', 'cost_of_sale', aggregatedCostOfSalesData)
-    const productPurchaseValues = getValueAndId('product_purchase', 'cost_of_sale', aggregatedCostOfSalesData)
-    const dispatchLaborExpenseValues = getValueAndId('dispatch_labor_expense','cost_of_sale', aggregatedCostOfSalesData)
-    const communicationCostValues = getValueAndId('communication_expense', 'cost_of_sale', aggregatedCostOfSalesData)
-    const workInProgressValues = getValueAndId('work_in_progress_expense','cost_of_sale', aggregatedCostOfSalesData)
-    const amortizationValues = getValueAndId('amortization_expense','cost_of_sale', aggregatedCostOfSalesData)
+    const purchasesValues = getValueAndId('purchase', 'cost_of_sale', aggregatedCostOfSalesData, "planning")
+    const outsourcingExpenseValues = getValueAndId('outsourcing_expense', 'cost_of_sale', aggregatedCostOfSalesData, "planning")
+    const productPurchaseValues = getValueAndId('product_purchase', 'cost_of_sale', aggregatedCostOfSalesData, "planning")
+    const dispatchLaborExpenseValues = getValueAndId('dispatch_labor_expense','cost_of_sale', aggregatedCostOfSalesData, "planning")
+    const communicationCostValues = getValueAndId('communication_expense', 'cost_of_sale', aggregatedCostOfSalesData, "planning")
+    const workInProgressValues = getValueAndId('work_in_progress_expense','cost_of_sale', aggregatedCostOfSalesData, "planning")
+    const amortizationValues = getValueAndId('amortization_expense','cost_of_sale', aggregatedCostOfSalesData, "planning")
     
     const ValueAndId = {
       purchasesValues,
