@@ -18,14 +18,12 @@
         }
         &::-webkit-scrollbar-thumb {
             background-color: rgba(0, 0, 0, 0.5);
-
         }
         &::-webkit-scrollbar-track {
             background: transparent;
         }
     }
     .table-planning {
-      // width: 100%;
       padding: 0 0 0 10px;
       table {
         width: 100%;

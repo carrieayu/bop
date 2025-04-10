@@ -4,7 +4,7 @@ import { translate } from '../../utils/translationUtil'
 import axios from 'axios'
 import { getReactActiveEndpoint } from '../../toggleEndpoint'
 import { getPlanningB } from '../../api/PlanningEndpoint/GetPlanningB'
-import { formatNumberWithCommas } from '../../utils/helperFunctionsUtil'
+import { formatNumberWithCommas, thousandYenConversion } from '../../utils/helperFunctionsUtil'
 import { monthNames, months, token } from '../../constants'
 
 type TableProps = {
@@ -113,11 +113,6 @@ export const TablePlanningB: React.FC<TableProps> = (props) => {
   const handleTranslationSwitchToggle = () => {
     const newLanguage = isTranslateSwitchActive ? 'jp' : 'en'
     setLanguage(newLanguage)
-  }
-
-
-  const thousandYenConversion = (value) => {
-    return (Math.round((value / 1000) * 10) / 10).toLocaleString() // Rounds to 1 decimal place  
   }
   
   return (

@@ -269,8 +269,8 @@ const EditTableResults = ({
   }
 
   return (
-    <div className='table-results_summary-container editScrollable'>
-      <div className='table-results_summary'>
+    <div className='table-results-container editScrollable'>
+      <div className='table-results'>
         <table>
           <thead>
             <tr className='table-header-sticky'>

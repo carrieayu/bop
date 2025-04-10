@@ -9,11 +9,7 @@ import EditTableResults from '../../components/TableResults/EditTableResults'
 import { TableResultsB } from '../../components/TableResults/TableResultB'
 import TableResultsA from '../../components/TableResults/TableResultA'
 import { RxHamburgerMenu } from 'react-icons/rx'
-// import { getResultsA } from '../../api/ResultsEndpoint/GetResultsA'
-// import * as XLSX from 'xlsx'
-import { monthNames, months, token, ACCESS_TOKEN, dates, smallDate } from '../../constants'
-// import { setupIdleTimer } from '../../utils/helperFunctionsUtil'
-// import AlertModal from '../../components/AlertModal/AlertModal'
+import { dates, smallDate, token } from '../../constants'
 import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 // REDUCERS
 import { fetchCostOfSaleResult } from '../../reducers/costOfSale/costOfSaleResultSlice'
@@ -27,8 +23,6 @@ import { handleError } from '../../utils/helperFunctionsUtil'
 import { useAppDispatch } from '../../actions/hooks'
 import { downloadXLS } from './resultsDownloadXLS'
 import {  tableEditingLabelAndValues } from '../../utils/tableAEditingLabelAndValues'
-
-const header = ['TEST']
 
 const ResultsListAndEdit = () => {
   const dispatch = useAppDispatch()
@@ -113,12 +107,14 @@ const ResultsListAndEdit = () => {
 
   const handleClickOutside = (e: MouseEvent) => {
     const modal = document.querySelector('.results-csv-modal')
-    const burgerIcon = document.querySelector('.results_summary_burger')
+    const burgerIcon = document.querySelector('.results_burger')
 
     if (modal && !modal.contains(e.target as Node) && burgerIcon && !burgerIcon.contains(e.target as Node)) {
       setIsXLSModalOpen(false)
     }
   }
+
+  const header = [translate('planning', language)]
 
   useEffect(() => {
     if (isXLSModalOpen) {
@@ -179,54 +175,54 @@ const ResultsListAndEdit = () => {
   // # JSX Helper
   const renderSwitch = (checked, onChange, disabled, label) => (
     <>
-      <p className={`${disabled ? 'results_summary_pl-label_disabled' : 'results_summary_pl-label'}`}>
+      <p className={`${disabled ? 'results_pl-label_disabled' : 'results_pl-label'}`}>
         {translate(label, language)}
       </p>
-      <label className='results_summary_switch'>
+      <label className='results_switch'>
         <input type='checkbox' checked={checked} onChange={onChange} disabled={disabled} />
-        <span className='results_summary_slider'></span>
+        <span className='results_slider'></span>
       </label>
     </>
   )
 
   return (
-    <div className='results_summary_wrapper'>
-      <HeaderButtons
-        activeTab={activeTab}
-        handleTabClick={handleTabClick}
-        isTranslateSwitchActive={isTranslateSwitchActive}
-        handleTranslationSwitchToggle={handleTranslationSwitchToggle}
-      />
-      <div className='results_summary_content_wrapper'>
+    <div className='results_wrapper'>
+      <div className='main-header-buttons'>
+        <HeaderButtons
+          activeTab={activeTab}
+          handleTabClick={handleTabClick}
+          isTranslateSwitchActive={isTranslateSwitchActive}
+          handleTranslationSwitchToggle={handleTranslationSwitchToggle}
+        />
+      </div>
+      <div className='results_content_wrapper'>
         <Sidebar />
-        <div className='results_summary_table_wrapper'>
-          <div className='results_summary_top_cont'>
-            <div className='results_summary_content'>
-              <div className='results_summary_btm'>
-                <div className='results_summary_header_text'>
-                  <div className='results_summary_left-content'>
+        <div className='results_table_wrapper'>
+          <div className='results_top_cont'>
+            <div className='results_content'>
+              <div className='results_btm'>
+                <div className='results_header_text'>
+                  <div className='results_left-content'>
                     <p>{translate('results', language)}</p>
                   </div>
-                  <div className='results_summary_right-content'>
-                    <div className='results_summary_paginate'>
-                      <p
-                        className={`${isSwitchActive ? 'results_summary_mode_switch_disabled' : 'results_summary_mode_switch'}`}
-                      >
+                  <div className='results_right-content'>
+                    <div className='results_paginate'>
+                      <p className={`${isSwitchActive ? 'results_mode_switch_disabled' : 'results_mode_switch'}`}>
                         {isEditing
                           ? translate('switchToDisplayMode', language)
                           : translate('switchToEditMode', language)}
                       </p>
-                      <label className='results_summary_switch'>
+                      <label className='results_switch'>
                         <input
                           type='checkbox'
                           checked={isEditing}
                           onChange={handleEditModeToggle}
                           disabled={isSwitchActive}
                         />
-                        <span className='results_summary_slider'></span>
+                        <span className='results_slider'></span>
                       </label>
                       {renderSwitch(isThousandYenChecked, handleThousandYenToggle, isEditing, 'thousandYen')}
-                      <label className='results_summary_burger'>
+                      <label className='results_burger'>
                         <RxHamburgerMenu onClick={toggleModal} />
                       </label>
                       {isXLSModalOpen && (
@@ -241,8 +237,8 @@ const ResultsListAndEdit = () => {
                     </div>
                   </div>
                 </div>
-                <div className='results_summary_tbl_cont'>
-                  <div className={`table_content_results_summary ${isSwitchActive ? 'hidden' : ''}`}>
+                <div className='results_tbl_cont'>
+                  <div className={`table_content_results ${isSwitchActive ? 'hidden' : ''}`}>
                     {/* Render the TablePlanning component here */}
                     {isEditing ? (
                       <EditTableResults

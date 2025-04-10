@@ -552,3 +552,7 @@ export const getValueAndId = (valueName, recordType, aggregatedData, dataType) =
   })
   return values
 }
+
+  export const thousandYenConversion = (value) => {
+    return (Math.round((value / 1000) * 10) / 10).toLocaleString() // Rounds to 1 decimal place
+  }
