@@ -120,7 +120,6 @@
   "projectOverwriteMessage": "選択されたフィールド '${existingEntries}' には既にデータが登録されています。上書きしますか？",
   "projectNewEntry": "そして、新しく選択されたフィールド '${newEntries}' を保存しますか？",
   "updateMessage": "このデータを更新してもよろしいですか？",
-  "nonActiveMessage": "エラーまたは一定時間操作がないため、ログアウトされます",
   "listScreen": "一覧画面",
   "employeeExpensesDuplicateData": "選択されたプロジェクトは、${date}に${employeeName}のために既に存在しています。",
   "type": "種別",

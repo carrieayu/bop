@@ -23,13 +23,11 @@ import {
   handleInputChange,
   formatNumberWithCommas,
   handleResultsListTabsClick,
-  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
 import { getCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/GetCostOfSalesResults'
 import { deleteCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/DeleteCostOfSalesResults'
 import { updateCostOfSaleResults } from '../../api/CostOfSalesResultsEndpoint/UpdateCostOfSalesResults'
-import { months, resultsScreenTabs, token, ACCESS_TOKEN } from '../../constants'
-import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
+import { months, resultsScreenTabs, token } from '../../constants'
 
 const CostOfSalesResultsList: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
@@ -54,7 +52,6 @@ const CostOfSalesResultsList: React.FC = () => {
   const [crudMessage, setCrudMessage] = useState('')
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [deleteComplete, setDeleteComplete] = useState(false)
-  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
   const onTabClick = (tab) => handleResultsListTabsClick(tab, navigate, setActiveTab)
 
   const handleTabClick = (tab) => {
@@ -171,6 +168,10 @@ const CostOfSalesResultsList: React.FC = () => {
       return
     }
 
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
     updateCostOfSaleResults(modifiedFields, token)
       .then(() => {
         setOriginalCostOfSalesResults(costOfSalesResults)
@@ -196,6 +197,30 @@ const CostOfSalesResultsList: React.FC = () => {
     await handleSubmit() // Call the submit function for update
     setIsUpdateConfirmationOpen(false)
   }
+
+  useEffect(() => {
+    const fetchCostOfSales = async () => {
+      if (!token) {
+        window.location.href = '/login' // Redirect to login if no token found
+        return
+      }
+
+      try {
+        getCostOfSaleResults(token).then((data) => {
+          setCostOfSalesResults(data)
+          setOriginalCostOfSalesResults(data)
+        })
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          window.location.href = '/login' // Redirect to login if unauthorized
+        } else {
+          console.error('There was an error fetching the cost of sales data!', error)
+        }
+      }
+    }
+
+    fetchCostOfSales()
+  }, [])
 
   useEffect(() => {
     const startIndex = currentPage * rowsPerPage
@@ -335,31 +360,6 @@ const CostOfSalesResultsList: React.FC = () => {
   const handleNewRegistrationClick = () => {
     navigate('/cost-of-sales-results-registration')
   }
-
-  useEffect(() => {
-    checkAccessToken().then(result => {
-      if (!result) {
-        showAlertPopup(handleTimeoutConfirm);
-      } else {
-        const fetchCostOfSales = async () => {
-          try {
-            getCostOfSaleResults(localStorage.getItem(ACCESS_TOKEN)).then((data) => {
-              setCostOfSalesResults(data)
-              setOriginalCostOfSalesResults(data)
-            })
-          } catch (error) {
-            if (error.response && error.response.status === 401) {
-              window.location.href = '/login' // Redirect to login if unauthorized
-            } else {
-              console.error('There was an error fetching the cost of sales data!', error)
-            }
-          }
-        }
-    
-        fetchCostOfSales()
-      }
-    });
-  }, [token])
 
   return (
     <div className='costOfSalesResultsList_wrapper'>
@@ -668,7 +668,6 @@ const CostOfSalesResultsList: React.FC = () => {
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
       />
-      <AlertPopupComponent />
     </div>
   )
 }

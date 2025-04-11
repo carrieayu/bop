@@ -345,35 +345,6 @@ export const organiseTotals = (valuesArr, label = '') => {
   ]
 }
 
-export const setupIdleTimer = (onIdle, idleTimeLimit) => {
-  let timer;
-
-  const resetTimer = () => {
-    if (timer) clearTimeout(timer);
-    timer = setTimeout(() => {
-      onIdle();
-    }, idleTimeLimit);
-  };
-
-  const startListening = () => {
-    const events = ["mousemove", "keydown", "click", "scroll"];
-    events.forEach((event) => {
-      window.addEventListener(event, resetTimer);
-    });
-    resetTimer();
-  };
-
-  const stopListening = () => {
-    const events = ["mousemove", "keydown", "click", "scroll"];
-    events.forEach((event) => {
-      window.removeEventListener(event, resetTimer);
-    });
-    if (timer) clearTimeout(timer);
-  };
-
-  return { startListening, stopListening };
-};
-
 export const cumulativeSum = (arr) => {
   let sum = 0
   return arr.map((value) => (sum += value))
@@ -549,4 +520,4 @@ export const getValueAndId = (valueName, recordType, aggregatedData) => {
     return { id: null, [valueName]: 0 }
   })
   return values
-}
+       }

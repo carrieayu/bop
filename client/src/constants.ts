@@ -1,5 +1,5 @@
 export const ACCESS_TOKEN = 'accessToken'
-export const REFRESH_TOKEN = 'refreshToken'
+export const REFRESH_TOKEN = 'refresh'
 
 export const years = [2025, 2026]
 export const currentYear = new Date().getFullYear()
@@ -11,6 +11,7 @@ export const header = ['計画	']
 export const smallDate = ['2022/24月', '2022/25月', '2022/26月']
 export const dates = ['04月', '05月', '06月', '07月', '08月', '09月', '10月', '11月', '12月', '1月', '2月', '3月']
 export const months = [4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]
+
 export const monthNames: { [key: number]: { en: string; jp: string } } = {
   1: { en: 'January', jp: '1月' },
   2: { en: 'February', jp: '2月' },
@@ -49,7 +50,7 @@ export const masterMaintenanceScreenTabs = [
 export const MAX_NUMBER_LENGTH = 15 // 15 digits [000,000,000,000,000]
 export const MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER // 9007199254740991
 export const MAX_VALUE = Number.MAX_VALUE //1.7976931348623157e+308
-export const IDLE_TIMEOUT = 900000;
+
 export const POLLING_INTERVAL = 60000
 export const MAX_RETRIES = 12
 
