@@ -25,11 +25,6 @@ import { fetchEmployeeExpenseResult } from '../../reducers/employeeExpense/emplo
 import { planningSelector, planningGraphDataPreparedSelector } from '../../selectors/planning/planningSelector'
 import { resultsSelector, resultsGraphDataPreparedSelector } from '../../selectors/results/resultsSelector'
 import { organiseGraphData } from '../../utils/graphDataOrganiser'
-import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
-
-function formatNumberWithCommas(number: number): string {
-  return number.toLocaleString()
-}
 
 const Dashboard = () => {
   const { language, setLanguage } = useLanguage()
@@ -41,8 +36,6 @@ const Dashboard = () => {
   const [isToggled, setIsToggled] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
-  const dispatch = useAppDispatch()
-  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
   const optionArray = ['planning', 'results', 'both']
   const handleToggle = () => {
     setIsToggled((prevState) => !prevState)
@@ -50,6 +43,7 @@ const Dashboard = () => {
   const handleThousandYenToggle = () => {
     setIsThousandYenChecked((prevState) => !prevState)
   }
+  const dispatch = useAppDispatch()
   // DATA FOR 'CARDS' AND 'TABLE'
   const planning = useSelector(planningSelector) // contains data/totals etc. from PLANNING: expenses, costOfSales, projects, employeeExpenses
   const results = useSelector(resultsSelector) // contains data/totals etc. from RESULTS: expenses, costOfSales, projects, employeeExpenses
@@ -220,7 +214,6 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-      <AlertPopupComponent />
     </div>
   )
 }

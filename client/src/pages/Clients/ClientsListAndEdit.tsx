@@ -21,10 +21,9 @@ import {
   getFieldChecks,
   checkForDuplicates,
 } from '../../utils/validationUtil'
-import { formatDate, handleMMListTabsClick, setupIdleTimer } from '../../utils/helperFunctionsUtil'
+import { formatDate, handleMMListTabsClick } from '../../utils/helperFunctionsUtil'
 import { getUser } from '../../api/UserEndpoint/GetUser'
-import { masterMaintenanceScreenTabs, token, ACCESS_TOKEN } from '../../constants'
-import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
+import { masterMaintenanceScreenTabs, token } from '../../constants'
 
 const ClientsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -51,7 +50,6 @@ const ClientsListAndEdit: React.FC = () => {
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [userMap, setUserMap] = useState({})
   const [deleteComplete, setDeleteComplete] = useState(false)
-  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
   const onTabClick = (tab) => handleMMListTabsClick(tab, navigate, setActiveTab)
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -161,6 +159,10 @@ const ClientsListAndEdit: React.FC = () => {
       return modifiedFields
     }
     const modifiedFields = getModifiedFields(originalClientsList, updatedClients)
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
 
     updateMasterClient(modifiedFields, token)
       .then(() => {
@@ -195,6 +197,45 @@ const ClientsListAndEdit: React.FC = () => {
     await handleSubmit() // Call the submit function for update
     setIsUpdateConfirmationOpen(false)
   }
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      if (!token) {
+        window.location.href = '/login' // Redirect to login if no token found
+        return
+      }
+      getClient(token)
+        .then((data) => {
+          setUpdatedClients(data)
+          setOriginalClientsList(data)
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            window.location.href = '/login' // Redirect to login if unauthorized
+          } else {
+            console.error('There was an error fetching the projects!', error)
+          }
+        })
+      // Fetch users
+      getUser(token)
+        .then((data) => {
+          const users = data
+          const userMapping = users.reduce((map, user) => {
+            map[user.id] = user.last_name + ' ' + user.first_name
+            return map
+          }, {})
+          setUserMap(userMapping)
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            console.log(error)
+          } else {
+            console.error('There was an error fetching the projects!', error)
+          }
+        })
+    }
+    fetchProjects()
+  }, [])
 
   useEffect(() => {
     const startIndex = currentPage * rowsPerPage
@@ -277,47 +318,6 @@ const ClientsListAndEdit: React.FC = () => {
   const handleNewRegistrationClick = () => {
     navigate('/clients-registration')
   }
-
-  useEffect(() => {
-    checkAccessToken().then(result => {
-      if (!result) {
-        showAlertPopup(handleTimeoutConfirm);
-      } else {
-        const fetchProjects = async () => {
-          getClient(localStorage.getItem(ACCESS_TOKEN))
-            .then((data) => {
-              setUpdatedClients(data)
-              setOriginalClientsList(data)
-            })
-            .catch((error) => {
-              if (error.response && error.response.status === 401) {
-                window.location.href = '/login' // Redirect to login if unauthorized
-              } else {
-                console.error('There was an error fetching the projects!', error)
-              }
-            })
-          // Fetch users
-          getUser(localStorage.getItem(ACCESS_TOKEN))
-            .then((data) => {
-              const users = data
-              const userMapping = users.reduce((map, user) => {
-                map[user.id] = user.last_name + ' ' + user.first_name
-                return map
-              }, {})
-              setUserMap(userMapping)
-            })
-            .catch((error) => {
-              if (error.response && error.response.status === 401) {
-                console.log(error)
-              } else {
-                console.error('There was an error fetching the projects!', error)
-              }
-            })
-        }
-        fetchProjects()
-      }
-    });
-  }, [token])
 
   return (
     <div className='ClientsListAndEdit_wrapper'>
@@ -500,7 +500,6 @@ const ClientsListAndEdit: React.FC = () => {
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
       />
-      <AlertPopupComponent />
     </div>
   )
 }

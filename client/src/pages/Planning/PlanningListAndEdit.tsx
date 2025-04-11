@@ -10,9 +10,6 @@ import TablePlanningA from '../../components/Table/TablePlanningA'
 import EditTablePlanning from '../../components/Table/EditTablePlanning'
 import HeaderButtons from '../../components/HeaderButtons/HeaderButtons'
 import { dates, header, smallDate } from '../../constants'
-import { setupIdleTimer } from '../../utils/helperFunctionsUtil'
-import AlertModal from '../../components/AlertModal/AlertModal'
-import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
 // REDUCERS
 import { fetchExpense } from '../../reducers/expenses/expensesSlice'
 import { fetchCostOfSale } from '../../reducers/costOfSale/costOfSaleSlice'
@@ -40,7 +37,6 @@ const PlanningListAndEdit = () => {
   const { language, setLanguage } = useLanguage()
   const [isTranslateSwitchActive, setIsTranslateSwitchActive] = useState(language === 'en')
   const [initialLanguage, setInitialLanguage] = useState(language)
-  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
   const planning = useSelector(planningSelector)
   const planningCalculations = useSelector(planningCalculationsSelector)
   const [isEditing, setIsEditing] = useState(false)
@@ -114,11 +110,6 @@ const PlanningListAndEdit = () => {
     }
   }
 
-  useEffect(() => {
-    checkAccessToken().then(result => {
-      if (!result) { showAlertPopup(handleTimeoutConfirm); }
-    });
-  }, [])
   // # FOR EditTablePlanning Table/Component
 
   // Used as a comparison for editedData to check for unsaved changes.
@@ -240,7 +231,6 @@ const PlanningListAndEdit = () => {
           </div>
         </div>
       </div>
-      <AlertPopupComponent />
     </div>
   )
 }
