@@ -23,8 +23,7 @@ import {
   checkForDuplicates,
 } from '../../utils/validationUtil'
 import { formatDate, handleMMListTabsClick } from '../../utils/helperFunctionsUtil'
-import { masterMaintenanceScreenTabs, token, ACCESS_TOKEN } from '../../constants'
-import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes"
+import { masterMaintenanceScreenTabs, token } from '../../constants'
 
 const BusinessDivisionsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/planning-list')
@@ -54,7 +53,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
   const [isUpdateConfirmationOpen, setIsUpdateConfirmationOpen] = useState(false)
   const [crudValidationErrors, setCrudValidationErrors] = useState([])
   const [deleteComplete, setDeleteComplete] = useState(false)
-  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -90,6 +88,11 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
   }
 
   const handleSubmit = async () => {
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
+
     // # Client Side Validation
 
     // Step 1: Preparartion for validation
@@ -189,6 +192,77 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
     setIsUpdateConfirmationOpen(false)
   }
 
+  const fetchCompanyAndUserData = async () => {
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
+    try {
+      // Fetch companies
+      getCompany(token).then((data) => {
+        const companies = data
+        const companyMapping = companies.reduce((map, company) => {
+          map[company.company_id] = company.company_name
+          return map
+        }, {})
+        setCompanyMap(companyMapping)
+      })
+
+      // Fetch users
+      getUser(token)
+        .then((data) => {
+          const users = data
+          const userMapping = users.reduce((map, user) => {
+            map[user.id] = user.last_name + ' ' + user.first_name
+            return map
+          }, {})
+          setUserMap(userMapping)
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            console.log(error)
+          } else {
+            console.error('There was an error fetching the projects!', error)
+          }
+        })
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        window.location.href = '/login'
+      } else {
+        console.error('Error fetching company or user data!', error)
+      }
+    }
+  }
+
+  const fetchBusinessDivision = async () => {
+    if (!token) {
+      window.location.href = '/login' // Redirect to login if no token found
+      return
+    }
+
+    getBusinessDivision(token)
+      .then((data) => {
+        setBusiness(data)
+        setOriginalBusinessList(data)
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          console.log(error)
+        } else {
+          if (error.response && error.response.status === 401) {
+            window.location.href = '/login'
+          } else {
+            console.error('There was an error fetching the business!', error)
+          }
+        }
+      })
+  }
+
+  useEffect(() => {
+    fetchBusinessDivision()
+    fetchCompanyAndUserData()
+  }, [])
+
   const handleCompanyChange = (event) => {
     setSelectedCompany(event.target.value) // Set selected company ID
   }
@@ -232,6 +306,10 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
     // Sets the Validation Errors if any to empty as they are not necessary for delete.
     setCrudValidationErrors([])
 
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
     deleteBusinessDivision(selectedBusiness, token)
       .then(() => {
         updateBusinessDivisionLists(selectedBusiness)
@@ -272,74 +350,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
   const handleNewRegistrationClick = () => {
     navigate('/business-divisions-registration')
   }
-
-  const fetchBusinessDivision = async () => {
-    getBusinessDivision(localStorage.getItem(ACCESS_TOKEN))
-      .then((data) => {
-        setBusiness(data)
-        setOriginalBusinessList(data)
-      })
-      .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          console.log(error)
-        } else {
-          if (error.response && error.response.status === 401) {
-            window.location.href = '/login'
-          } else {
-            console.error('There was an error fetching the business!', error)
-          }
-        }
-      })
-  }
-
-  const fetchCompanyAndUserData = async () => {
-    try {
-      // Fetch companies
-      getCompany(localStorage.getItem(ACCESS_TOKEN)).then((data) => {
-        const companies = data
-        const companyMapping = companies.reduce((map, company) => {
-          map[company.company_id] = company.company_name
-          return map
-        }, {})
-        setCompanyMap(companyMapping)
-      })
-
-      // Fetch users
-      getUser(localStorage.getItem(ACCESS_TOKEN))
-        .then((data) => {
-          const users = data
-          const userMapping = users.reduce((map, user) => {
-            map[user.id] = user.last_name + ' ' + user.first_name
-            return map
-          }, {})
-          setUserMap(userMapping)
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            console.log(error)
-          } else {
-            console.error('There was an error fetching the projects!', error)
-          }
-        })
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        window.location.href = '/login'
-      } else {
-        console.error('Error fetching company or user data!', error)
-      }
-    }
-  }
-
-  useEffect(() => {
-    checkAccessToken().then(result => {
-      if (!result) {
-        showAlertPopup(handleTimeoutConfirm);
-      } else {
-        fetchBusinessDivision()
-        fetchCompanyAndUserData()
-      }
-    });
-  }, [token])
 
   return (
     <div className='BusinessDivisionsListAndEdit_wrapper'>
@@ -553,7 +563,6 @@ const BusinessDivisionsListAndEdit: React.FC = () => {
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
       />
-      <AlertPopupComponent />
     </div>
   )
 }

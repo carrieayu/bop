@@ -16,7 +16,7 @@ import '../../assets/scss/Components/SliderToggle.scss'
 import { getProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/GetProjectSalesResults'
 import { updateProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/UpdateProjectSalesResults'
 import { deleteProjectSalesResults } from '../../api/ProjectSalesResultsEndpoint/DeleteProjectSalesResults'
-import { resultsScreenTabs, token, ACCESS_TOKEN } from '../../constants'
+import { resultsScreenTabs, token } from '../../constants'
 import {
   validateRecords,
   translateAndFormatErrors,
@@ -29,10 +29,7 @@ import {
   formatNumberWithDecimal,
   handleInputChange,
   handleResultsListTabsClick,
-  setupIdleTimer,
 } from '../../utils/helperFunctionsUtil'
-import { useAlertPopup, checkAccessToken, handleTimeoutConfirm } from "../../routes/ProtectedRoutes";
-
 const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [activeTab, setActiveTab] = useState('/results')
   const navigate = useNavigate()
@@ -55,7 +52,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [selectedProject, setSelectedProject] = useState<any>(null)
   const [deleteProjectsId, setDeleteProjectsId] = useState([])
-  const { showAlertPopup, AlertPopupComponent } = useAlertPopup()
   const onTabClick = (tab) => handleResultsListTabsClick(tab, navigate, setActiveTab)
   const [formProjects, setFormProjects] = useState([
     {
@@ -178,6 +174,11 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
       return modifiedFields
     }
     const modifiedFields = getModifiedFields(originalProjectSalesResultsList, projectSalesResults)
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
+
     updateProjectSalesResults(modifiedFields, token)
       .then(() => {
         setCrudMessage(translate('successfullyUpdated', language))
@@ -212,6 +213,20 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
       console.error(e)
     }
   }
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      if (!token) {
+        window.location.href = '/login' // Redirect to login if no token found
+        return
+      }
+
+      fetchProjectsHandler()
+    }
+    fetchDivision()
+    fetchClient()
+    fetchProjects()
+  }, [])
 
   useEffect(() => {
     const startIndex = currentPage * rowsPerPage
@@ -260,6 +275,11 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
     // Sets the Validation Errors if any to empty as they are not necessary for delete.
     setCrudValidationErrors([])
 
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
+
     deleteProjectSalesResults(deleteProjectsId, token)
       .then(() => {
         updateProjectSalesResultLists(deleteProjectsId)
@@ -297,18 +317,9 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
     }
   }, [deleteComplete])
 
-  const fetchProjects = async () => {
-    const fetchProjects = async () => {
-      fetchProjectsHandler()
-    }
-    fetchDivision()
-    fetchClient()
-    fetchProjects()
-  }
-
   const fetchProjectsHandler = async () => {
     try {
-      const data = await getProjectSalesResults(localStorage.getItem(ACCESS_TOKEN));
+      const data = await getProjectSalesResults(token);
       setProjectSalesResults(data);
       setOriginalProjectSalesResultsList(data);
     } catch (error) {
@@ -319,16 +330,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
       }
     }
   }
-
-  useEffect(() => {
-    checkAccessToken().then(result => {
-      if (!result) {
-        showAlertPopup(handleTimeoutConfirm);
-      } else {
-        fetchProjects()
-      }
-    });
-  }, [token])
 
   return (
     <div className='projectSalesResultsList_wrapper'>
@@ -727,7 +728,6 @@ const ProjectSalesResultsListAndEdit: React.FC = () => {
         onCancel={() => setIsUpdateConfirmationOpen(false)}
         message={translate('updateMessage', language)}
       />
-      <AlertPopupComponent />
     </div>
   )
 }
